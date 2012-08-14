@@ -19,7 +19,7 @@ Indexing is configured through the managed object store and **must** be done bef
 	RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
 	
 	// Configure indexing for the Recipe entity
-	[managedObjectStore addSearchIndexingToEntityForName:@"Recipe" attributes:@[ @"name", @"description" ]];
+	[managedObjectStore addSearchIndexingToEntityForName:@"Recipe" onAttributes:@[ @"name", @"description" ]];
 	
 	// Create the managed object contexts and start indexing
 	[managedObjectStore createManagedObjectContexts];
@@ -62,7 +62,7 @@ The unit tests and headers are very thoroughly documented for this component. If
 
 ## Implementation Details
 
-Search is implemented using the Apple recommended pattern of maintaining a relationship from the searchable entity to a bundled `RKSearchWordEntity` entity modeling each word in the designated searchable attributes. The `RKSearchWordEntity` entity is bundled with RestKit and is dynamically related to your Core Data entities at run time via invocation of `[RKSearchIndexer addSearchIndexingToEntity: forAttributeNames:]`. For each searchable entity a to-many relationship called `searchWords` is added to the entity and an inverse relationship named after the searchable entity is added to the `RKSearchWordEntity`.
+Search is implemented using the Apple recommended pattern of maintaining a relationship from the searchable entity to a bundled `RKSearchWordEntity` entity modeling each word in the designated searchable attributes. The `RKSearchWordEntity` entity is bundled with RestKit and is dynamically related to your Core Data entities at run time via invocation of `[RKSearchIndexer addSearchIndexingToEntity: onAttributes:]`. For each searchable entity a to-many relationship called `searchWords` is added to the entity and an inverse relationship named after the searchable entity is added to the `RKSearchWordEntity`.
 
 ### Indexing
 
@@ -88,6 +88,6 @@ The `RKSearchPredicate` is a very lightweight subclass of `NSCompoundPredicate`.
 
 The search support is designed to be very easy to configure and use by snapping into the `RKManagedObjectStore` class. The relevant API's are:
 
-- **Configure an Entity for Search**: `- (void)addSearchIndexingToEntityForName:(NSString *)entityName attributes:(NSArray *)attributes` - Adds search indexing to the entity with the given name in the receiver's managed object model for the given set of searchable string attributes.
+- **Configure an Entity for Search**: `- (void)addSearchIndexingToEntityForName:(NSString *)entityName onAttributes:(NSArray *)attributes` - Adds search indexing to the entity with the given name in the receiver's managed object model for the given set of searchable string attributes.
 - **Accessing the Search Indexer**: `@property (nonatomic, readonly) RKSearchIndexer *searchIndexer` Once indexing is configured for an entity, the `searchIndexer` property becomes available for use.
 - **Managing Automatic Indexing**: `- (void)startIndexingPrimaryManagedObjectContext` and `- (void)stopIndexingPrimaryManagedObjectContext`. These methods provide quick control over automatic indexing of the primary managed object context on save.

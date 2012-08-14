@@ -34,13 +34,14 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  RKSearchIndexer and searched via an RKSearchPredicate in a fetch request.
  
  The given entity must exist in a mutable managed object model (that is, one that has not
- been used to create an object graph in a managed object context). The given list of attribute
- names must identify attributes in the given entity with the attribute type of NSStringAttributeType.
+ been used to create an object graph in a managed object context). The given list of attributes
+ must identify attributes of the given entity with the attribute type of NSStringAttributeType.
  
  @param entity The entity to which search indexing support is to be added.
- @param attributeNames An array of the names of string attributes that are to be indexed.
+ @param attributes An array of NSAttributeDescription objects or NSString attribute names specifying the
+    NSStringAttributeType attributes that are to be indexed for searching.
  */
-+ (void)addSearchIndexingToEntity:(NSEntityDescription *)entity forAttributeNames:(NSArray *)attributeNames;
++ (void)addSearchIndexingToEntity:(NSEntityDescription *)entity onAttributes:(NSArray *)attributes;
 
 ///-----------------------------------------------------------------------------
 /// @name Configuring Indexing

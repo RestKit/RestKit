@@ -22,7 +22,7 @@
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
     NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
-    [RKSearchIndexer addSearchIndexingToEntity:entity forAttributeNames:@[ @"name", @"nickName" ]];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     // Check that the entity now exists
     searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
@@ -43,6 +43,74 @@
     assertThat(attributes, is(equalTo(@[ @"name", @"nickName" ])));
 }
 
+- (void)testAddingSearchIndexingToEntityWithMixtureOfNSAttributeDescriptionAndStringNames
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    assertThat(searchWordEntity, is(nilValue()));
+    NSAttributeDescription *nickNameAttribute = [entity.attributesByName objectForKey:@"nickName"];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", nickNameAttribute ]];
+    
+    // Check that the entity now exists
+    searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    assertThat(searchWordEntity, is(notNilValue()));
+    
+    // Check that Human now has a searchWords relationship
+    NSRelationshipDescription *searchWordsRelationship = [[entity relationshipsByName] objectForKey:@"searchWords"];
+    assertThat(searchWordsRelationship, is(notNilValue()));
+    
+    // Check that RKSearchWord now has a RKHuman inverse
+    NSRelationshipDescription *humanInverse = [[searchWordEntity relationshipsByName] objectForKey:@"RKHuman"];
+    assertThat(humanInverse, is(notNilValue()));
+    assertThat([humanInverse inverseRelationship], is(equalTo(searchWordsRelationship)));
+    assertThat([searchWordsRelationship inverseRelationship], is(equalTo(humanInverse)));
+    
+    // Check the userInfo of the Human entity for the searchable attributes
+    NSArray *attributes = [entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
+    assertThat(attributes, is(equalTo(@[ @"name", @"nickName" ])));
+}
+
+- (void)testAddingSearchIndexingToNonStringAttributeTypeRaisesException
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    assertThat(searchWordEntity, is(nilValue()));
+    
+    NSException *exception = nil;
+    @try {
+        [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"railsID" ]];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(notNilValue()));
+        assertThat(exception.reason, containsString(@"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, got 200."));
+    }
+}
+
+- (void)testAddingSearchIndexingToNonExistantAttributeRaisesException
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    assertThat(searchWordEntity, is(nilValue()));
+    
+    NSException *exception = nil;
+    @try {
+        [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"doesNotExist" ]];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(notNilValue()));
+        assertThat(exception.reason, containsString(@"Invalid attribute identifier given: No attribute with the name 'doesNotExist' found in the 'RKHuman' entity."));
+    }
+}
+
 - (void)testAddingSearchIndexingToTwoEntitiesManipulatesTheSameSearchWordEntity
 {
     NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
@@ -50,9 +118,9 @@
     NSEntityDescription *catEntity = [[managedObjectModel entitiesByName] objectForKey:@"RKCat"];
 
     [RKSearchIndexer addSearchIndexingToEntity:humanEntity
-                      forAttributeNames:@[ @"name", @"nickName" ]];
+                      onAttributes:@[ @"name", @"nickName" ]];
     [RKSearchIndexer addSearchIndexingToEntity:catEntity
-                      forAttributeNames:@[ @"name", @"nickName" ]];
+                      onAttributes:@[ @"name", @"nickName" ]];
 
     NSEntityDescription *searchWordEntity = [[managedObjectModel entitiesByName] objectForKey:RKSearchWordEntityName];
     
@@ -66,7 +134,7 @@
 {
     NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
-    [RKSearchIndexer addSearchIndexingToEntity:entity forAttributeNames:@[ @"name", @"nickName" ]];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
     NSError *error;
@@ -91,7 +159,7 @@
 {
     NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
-    [RKSearchIndexer addSearchIndexingToEntity:entity forAttributeNames:@[ @"name", @"nickName" ]];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
     NSError *error;
@@ -122,7 +190,7 @@
 {
     NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
-    [RKSearchIndexer addSearchIndexingToEntity:entity forAttributeNames:@[ @"name", @"nickName" ]];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
     NSError *error;

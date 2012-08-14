@@ -20,10 +20,10 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 
 @implementation RKSearchIndexer
 
-+ (void)addSearchIndexingToEntity:(NSEntityDescription *)entity forAttributeNames:(NSArray *)searchableAttributes
++ (void)addSearchIndexingToEntity:(NSEntityDescription *)entity onAttributes:(NSArray *)attributes
 {
     NSParameterAssert(entity);
-    NSParameterAssert(searchableAttributes);
+    NSParameterAssert(attributes);
     
     // Create a relationship from the RKSearchWordEntity to the given searchable entity
     NSEntityDescription *searchWordEntity = [[entity.managedObjectModel entitiesByName] objectForKey:RKSearchWordEntityName];
@@ -35,9 +35,28 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
         [entity.managedObjectModel setEntities:[entities arrayByAddingObject:searchWordEntity]];
     }
     
+    NSMutableArray *attributeNames = [NSMutableArray arrayWithCapacity:[attributes count]];
+    for (id attributeIdentifier in attributes) {
+        NSAttributeDescription *attribute = nil;
+        if ([attributeIdentifier isKindOfClass:[NSString class]]) {
+            // Look it up by name
+            attribute = [[entity attributesByName] objectForKey:attributeIdentifier];
+            NSAssert(attribute, @"Invalid attribute identifier given: No attribute with the name '%@' found in the '%@' entity.", attributeIdentifier, entity.name);
+        } else if ([attributeIdentifier isKindOfClass:[NSAttributeDescription class]]) {
+            attribute = attributeIdentifier;
+        } else {
+            @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                           reason:[NSString stringWithFormat:@"Unable to configure search indexing: Invalid attribute identifier of type '%@' given, expected an NSString or NSAttributeDescription. (Value: %@)", [attributeIdentifier class], attributeIdentifier]
+                                         userInfo:nil];
+        }
+        
+        NSAssert(attribute.attributeType == NSStringAttributeType, @"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, got %d.", attribute.attributeType);
+        [attributeNames addObject:attribute.name];
+    }
+    
     // Store the searchable attributes into the user info dictionary
     NSMutableDictionary *userInfo = [[entity userInfo] mutableCopy];
-    [userInfo setObject:searchableAttributes forKey:RKSearchableAttributeNamesUserInfoKey];
+    [userInfo setObject:attributeNames forKey:RKSearchableAttributeNamesUserInfoKey];
     [entity setUserInfo:userInfo];
     
     // Create a relationship from our indexed entity to the RKSearchWord entity
@@ -90,7 +109,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     RKLogDebug(@"Indexing searchable attributes of managed object: %@", managedObject);
     NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
     if (! searchableAttributes) {
-        [NSException raise:NSInvalidArgumentException format:@"The given managed object %@ is for an entity (%@) that does not define any searchable attributes. Perhaps you forgot to invoke addSearchIndexingToEntity:forAttributeNames:?", managedObject, managedObject.entity];
+        [NSException raise:NSInvalidArgumentException format:@"The given managed object %@ is for an entity (%@) that does not define any searchable attributes. Perhaps you forgot to invoke addSearchIndexingToEntity:onAttributes:?", managedObject, managedObject.entity];
         return NSNotFound;
     }
     
