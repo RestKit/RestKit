@@ -25,7 +25,7 @@
 #import "RKLog.h"
 #import "RKPathMatcher.h"
 #import "NSString+RKAdditions.h"
-#import "RKDirectory.h"
+#import "RKDirectoryUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -224,7 +224,7 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 - (NSString *)cachePath
 {
     NSString *cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@", [self.baseURL host]];
-    NSString *cachePath = [[RKDirectory cachesDirectory]
+    NSString *cachePath = [RKCachesDirectory()
                            stringByAppendingPathComponent:cacheDirForClient];
     return cachePath;
 }
