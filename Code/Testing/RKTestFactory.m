@@ -113,7 +113,7 @@ static RKTestFactory *sharedFactory = nil;
     }];
 
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
-        NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
+        NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
         RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
         NSError *error;
         NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
@@ -216,7 +216,7 @@ static RKTestFactory *sharedFactory = nil;
     [RKObjectMapping setDefaultDateFormatters:nil];
 
     // Delete the store if it exists
-    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
+    NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
         [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
@@ -240,7 +240,7 @@ static RKTestFactory *sharedFactory = nil;
 + (void)clearCacheDirectory
 {
     NSError *error = nil;
-    NSString *cachePath = [RKDirectory cachesDirectory];
+    NSString *cachePath = RKCachesDirectory();
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
     if (success) {
         RKLogDebug(@"Cleared cache directory...");

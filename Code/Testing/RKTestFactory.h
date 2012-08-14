@@ -227,7 +227,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  Clears the contents of the cache directory by removing the directory and
  recreating it.
 
- @see [RKDirectory cachesDirectory]
+ @see RKCachesDirectory()
  */
 + (void)clearCacheDirectory;
 

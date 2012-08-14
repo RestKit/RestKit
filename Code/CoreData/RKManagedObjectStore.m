@@ -22,7 +22,7 @@
 #import "RKLog.h"
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
-#import "RKDirectory.h"
+#import "RKDirectoryUtilities.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKFetchRequestManagedObjectCache.h"
 #import "NSBundle+RKAdditions.h"
@@ -364,7 +364,7 @@ static RKManagedObjectStore *defaultStore = nil;
 
 + (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename DEPRECATED_ATTRIBUTE
 {
-    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:filename];
+    NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:filename];
     [self deleteStoreAtPath:path];
 }
 
@@ -400,8 +400,8 @@ static RKManagedObjectStore *defaultStore = nil;
         NSString *storeDirectory = nilOrDirectoryPath;
         if (storeDirectory == nil) {
             // If initializing into Application Data directory, ensure the directory exists
-            storeDirectory = [RKDirectory applicationDataDirectory];
-            [RKDirectory ensureDirectoryExistsAtPath:storeDirectory error:nil];
+            storeDirectory = RKApplicationDataDirectory();
+            RKEnsureDirectoryExistsAtPath(storeDirectory, nil);
         } else {
             // If path given, caller is responsible for directory's existence
             BOOL isDir;
