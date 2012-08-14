@@ -165,12 +165,13 @@
 {
     NSUInteger sectionIndex = ([self sectionCount] - 1);
     id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:sectionIndex];
-    NSUInteger nonFooterRowCount = [sectionInfo numberOfObjects];
+    NSUInteger firstFooterIndex = [sectionInfo numberOfObjects];
     if (sectionIndex == 0) {
-        nonFooterRowCount += (![self isEmpty] || self.showsHeaderRowsWhenEmpty) ? [self.headerItems count] : 0;
-        nonFooterRowCount += ([self isEmpty] && self.emptyItem) ? 1 : 0;
+        firstFooterIndex += (![self isEmpty] || self.showsHeaderRowsWhenEmpty) ? [self.headerItems count] : 0;
+        firstFooterIndex += ([self isEmpty] && self.emptyItem) ? 1 : 0;
     }
-    return (row > (nonFooterRowCount - 1));
+    
+    return row >= firstFooterIndex;
 }
 
 - (BOOL)isHeaderIndexPath:(NSIndexPath *)indexPath
