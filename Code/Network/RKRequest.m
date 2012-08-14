@@ -369,6 +369,15 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
                                   tokenSecret:self.OAuth1AccessTokenSecret];
+        else if (self.method == RKRequestMethodDELETE)
+            echo = [GCOAuth URLRequestForPath:pathWithPrevervedTrailingSlash
+                             DELETEParameters:parameters
+                                       scheme:[_URL scheme]
+                                         host:[_URL hostAndPort]
+                                  consumerKey:self.OAuth1ConsumerKey
+                               consumerSecret:self.OAuth1ConsumerSecret
+                                  accessToken:self.OAuth1AccessToken
+                                  tokenSecret:self.OAuth1AccessTokenSecret];
         else
             echo = [GCOAuth URLRequestForPath:pathWithPrevervedTrailingSlash
                                 GETParameters:[_URL queryParameters]
