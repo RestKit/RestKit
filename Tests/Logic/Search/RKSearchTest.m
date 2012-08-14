@@ -21,7 +21,7 @@
     __block NSError *error;
     NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
-    [managedObjectStore addSearchIndexingToEntityForName:@"RKCat" attributes:@[ @"name" ]];
+    [managedObjectStore addSearchIndexingToEntityForName:@"RKCat" onAttributes:@[ @"name" ]];
     [managedObjectStore addInMemoryPersistentStore:&error];
     [managedObjectStore createManagedObjectContexts];
     [managedObjectStore startIndexingPrimaryManagedObjectContext];

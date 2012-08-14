@@ -24,13 +24,13 @@
  of search words. If no search indexer exists, a new 
  
  @param entityName The name of the entity in the receiver's managed object model that should be made searchable.
- @param attributes An array of NSString attribute names specifying the NSStringAttributeType attributes 
-    that should be indexed for searching.
+ @param attributes An array of NSAttributeDescription objects or NSString attribute names specifying the 
+    NSStringAttributeType attributes that are to be indexed for searching.
  
  @warning Must be invoked before adding persistent stores as the managed object model will become
     immutable once the persistent store coordinator is created.
  */
-- (void)addSearchIndexingToEntityForName:(NSString *)entityName attributes:(NSArray *)attributes;
+- (void)addSearchIndexingToEntityForName:(NSString *)entityName onAttributes:(NSArray *)attributes;
 
 /**
  The search indexer for the receiver's primary managed object context.

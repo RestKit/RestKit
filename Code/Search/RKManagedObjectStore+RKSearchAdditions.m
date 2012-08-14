@@ -34,14 +34,14 @@ static char searchIndexerAssociationKey;
     [searchIndexer release];
 }
 
-- (void)addSearchIndexingToEntityForName:(NSString *)entityName attributes:(NSArray *)attributes
+- (void)addSearchIndexingToEntityForName:(NSString *)entityName onAttributes:(NSArray *)attributes
 {
     NSAssert(! self.persistentStoreCoordinator, @"Add indexing to your entities before adding persistent stores. The managed object model must be mutable to add indexing.");
     
     if (! self.searchIndexer) [self createSearchIndexer];
     
     NSEntityDescription *entity = [[self.managedObjectModel entitiesByName] objectForKey:entityName];
-    [RKSearchIndexer addSearchIndexingToEntity:entity forAttributeNames:attributes];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:attributes];
 }
 
 - (void)startIndexingPrimaryManagedObjectContext
