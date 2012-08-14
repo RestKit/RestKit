@@ -278,7 +278,7 @@
 - (BOOL)finishImporting:(NSError **)error
 {
     __block BOOL success;
-    __block NSError *localError;
+    __block NSError *localError = nil;
     [self.managedObjectContext performBlockAndWait:^{
         success = [self.managedObjectContext save:&localError];
         if (! success) {
@@ -286,7 +286,7 @@
         }
     }];
 
-    if (error) *error = localError;
+    if (! success && error) *error = localError;
     return success;
 }
 
