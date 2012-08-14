@@ -72,7 +72,7 @@
     other.railsID = [NSNumber numberWithInt:5678];
     other.name = @"other";
     NSError *error = nil;
-    [managedObjectStore save:&error];
+    [managedObjectStore.primaryManagedObjectContext save:&error];
     assertThat(error, is(nilValue()));
     assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKHuman"  predicate:nil error:nil], is(equalToInt(2)));
 
@@ -114,7 +114,7 @@
     nakedEvent.location = @"Performance Hall";
     nakedEvent.summary = @"Shindig";
     NSError *error = nil;
-    [managedObjectStore save:&error];
+    [managedObjectStore.primaryManagedObjectContext save:&error];
     assertThat(error, is(nilValue()));
     assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKEvent"  predicate:nil error:nil], is(equalToInt(1)));
 
@@ -837,6 +837,104 @@
     assertThatBool([tableController isFooterRow:0], is(equalToBool(NO)));
     assertThatBool([tableController isFooterRow:1], is(equalToBool(NO)));
     assertThatBool([tableController isFooterRow:2], is(equalToBool(YES)));
+}
+
+- (void)testIsFooterRowIsAccurateWhenThereIsAFooterRowWithoutAHeaderRowInASingleSection
+{
+    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
+    [self bootstrapStoreAndCache];
+    UITableView *tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController *tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/empty.json";
+    [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Footer";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    tableController.showsFooterRowsWhenEmpty = YES;
+    tableController.predicate = [NSPredicate predicateWithValue:NO];
+    [tableController loadTable];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(YES)));
+}
+
+- (void)testIsFooterRowIsAccurateWhenThereIsAHeaderAndAFooterRowInASingleSection
+{
+    [self bootstrapStoreAndCache];
+    UITableView *tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController *tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/empty.json";
+    [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Header";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Footer";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    tableController.showsFooterRowsWhenEmpty = YES;
+    tableController.predicate = [NSPredicate predicateWithValue:NO];
+    [tableController loadTable];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(NO)));
+    indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(YES)));
+}
+
+- (void)testIsFooterRowIsAccurateWhenThereIsAreContentRowsAndAHeaderAndAFooterRowInASingleSection
+{    
+    [self bootstrapStoreAndCache];
+    UITableView *tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController *tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/all.json";
+    [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Header";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Footer";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    [tableController loadTable];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    assertThatBool([tableController isHeaderIndexPath:indexPath], is(equalToBool(YES)));
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(NO)));
+    
+    // Check the content rows -- there are 2 of them in the JSON
+    indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
+    assertThatBool([tableController isHeaderIndexPath:indexPath], is(equalToBool(NO)));
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(NO)));
+    indexPath = [NSIndexPath indexPathForRow:2 inSection:0];
+    assertThatBool([tableController isHeaderIndexPath:indexPath], is(equalToBool(NO)));
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(NO)));
+    
+    indexPath = [NSIndexPath indexPathForRow:3 inSection:0];
+    assertThatBool([tableController isHeaderIndexPath:indexPath], is(equalToBool(NO)));
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(YES)));
 }
 
 - (void)testDetermineIfASectionIndexIsAnEmptySection
