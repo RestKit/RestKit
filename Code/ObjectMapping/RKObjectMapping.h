@@ -272,6 +272,14 @@ relationship. Relationships are processed using an object mapping as well.
 - (void)mapAttributes:(NSString *)attributeKey, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
+ Adds attribute mappings from a given dictionary wherein the keys represent the source key path
+ and the values represent the names of the target attributes on the destination object.
+ 
+ @param keyPathToAttributeNames A dictionary keyed by source key to destination attribute name.
+ */
+- (void)addAttributeMappingsFromDictionary:(NSDictionary *)keyPathToAttributeNames;
+
+/**
  Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
  destination attribute property have the same name.
 
@@ -297,7 +305,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
 
-    [mapping mapAttributesFromSet:[NSArray arrayWithObjects:@"name", @"age", nil]];
+    [mapping mapAttributesFromArray:[NSArray arrayWithObjects:@"name", @"age", nil]];
 
  @param array An array of string attribute keyPaths to deifne mappings for
  */

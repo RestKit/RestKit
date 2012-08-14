@@ -244,6 +244,13 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     [self mapAttributesCollection:attributeKeyPaths];
 }
 
+- (void)addAttributeMappingsFromDictionary:(NSDictionary *)keyPathToAttributeNames
+{
+    for (NSString *attributeKeyPath in keyPathToAttributeNames) {
+        [self addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:attributeKeyPath toKeyPath:keyPathToAttributeNames[attributeKeyPath]]];
+    }
+}
+
 - (void)mapAttributesFromSet:(NSSet *)set
 {
     [self mapAttributesCollection:set];
