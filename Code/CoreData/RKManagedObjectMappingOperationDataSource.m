@@ -156,7 +156,7 @@
     if ([mappingOperation.mapping isKindOfClass:[RKEntityMapping class]]) {
         [self emitDeadlockWarningIfNecessary];
         
-        for (RKConnectionMapping *connectionMapping in [(RKEntityMapping *)mappingOperation.mapping connections]) {
+        for (RKConnectionMapping *connectionMapping in [(RKEntityMapping *)mappingOperation.mapping connectionMappings]) {
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
                                                                                                           connectionMapping:connectionMapping
                                                                                                          managedObjectCache:self.managedObjectCache];

@@ -130,7 +130,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self.mutableConnections addObject:mapping];
 }
 
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
+- (void)removeConnectionMapping:(RKConnectionMapping *)connectionMapping
+{
+    [self.mutableConnections removeObject:connectionMapping];
+}
+
+- (void)connectRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping
 {
     NSAssert(sourceKeyPath, @"Cannot connect relationship: mapping for %@ has no source key attribute specified", relationshipName);
     NSAssert(destinationKeyPath, @"Cannot connect relationship: mapping for %@ has no destination key attribute specified", relationshipName);
@@ -138,18 +143,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self addConnectionMapping:mapping];
 }
 
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value
+- (void)connectRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value
 {
-    RKDynamicMappingMatcher* matcher = [[RKDynamicMappingMatcher alloc] initWithKey:keyPath value:value primaryKeyAttribute:sourceKeyPath];
-    RKConnectionMapping* mapping = [RKConnectionMapping connectionMappingForRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping matcher:matcher];
+    RKDynamicMappingMatcher *matcher = [[RKDynamicMappingMatcher alloc] initWithKey:keyPath value:value primaryKeyAttribute:sourceKeyPath];
+    RKConnectionMapping *mapping = [RKConnectionMapping connectionMappingForRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping matcher:matcher];
     [self addConnectionMapping:mapping];
     [matcher release];
 }
 
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingEvaluationBlock:(BOOL (^)(id data))block
+- (void)connectRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping usingEvaluationBlock:(BOOL (^)(id data))block
 {
-    RKDynamicMappingMatcher* matcher = [[RKDynamicMappingMatcher alloc] initWithPrimaryKeyAttribute:sourceKeyPath evaluationBlock:block];
-    RKConnectionMapping* mapping = [RKConnectionMapping connectionMappingForRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping matcher:matcher];
+    RKDynamicMappingMatcher *matcher = [[RKDynamicMappingMatcher alloc] initWithPrimaryKeyAttribute:sourceKeyPath evaluationBlock:block];
+    RKConnectionMapping *mapping = [RKConnectionMapping connectionMappingForRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping matcher:matcher];
     [self addConnectionMapping:mapping];
     [matcher release];
 }
@@ -217,42 +222,42 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 }
 
 /* Deprecated */
-- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute
+- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
 {
     RKMapping *objectOrDynamicMapping = [self objectMappingForRelationship:relationshipName];
     NSString *sourceKeyPath = primaryKeyAttribute;
     NSString *destinationKeyPath = [self primaryKeyPathForRelationship:relationshipName];
     
-    RKConnectionMapping* mapping = [RKConnectionMapping connectionMappingForRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping];
+    RKConnectionMapping *mapping = [RKConnectionMapping connectionMappingForRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping];
     [self addConnectionMapping:mapping];
 }
 
-- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString*)firstRelationshipName, ...
+- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ...
 {
     va_list args;
     va_start(args, firstRelationshipName);
-    for (NSString* relationshipName = firstRelationshipName; relationshipName != nil; relationshipName = va_arg(args, NSString*)) {
-		NSString* primaryKeyAttribute = va_arg(args, NSString*);
+    for (NSString *relationshipName = firstRelationshipName; relationshipName != nil; relationshipName = va_arg(args, NSString*)) {
+		NSString *primaryKeyAttribute = va_arg(args, NSString *);
         [self connectRelationship:relationshipName withObjectForPrimaryKeyAttribute:primaryKeyAttribute];
         // TODO: Raise proper exception here, argument error...
     }
     va_end(args);
 }
 
-- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value
 {
     RKMapping *objectOrDynamicMapping = [self objectMappingForRelationship:relationshipName];
     NSString *sourceKeyPath = primaryKeyAttribute;
     NSString *destinationKeyPath = [self primaryKeyPathForRelationship:relationshipName];
-    [self connectRelationship:relationshipName withMapping:objectOrDynamicMapping fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath whenValueOfKeyPath:keyPath isEqualTo:value];
+    [self connectRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping whenValueOfKeyPath:keyPath isEqualTo:value];
 }
 
-- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block
 {
     RKMapping *objectOrDynamicMapping = [self objectMappingForRelationship:relationshipName];
     NSString *sourceKeyPath = primaryKeyAttribute;
     NSString *destinationKeyPath = [self primaryKeyPathForRelationship:relationshipName];
-    [self connectRelationship:relationshipName withMapping:objectOrDynamicMapping fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath usingEvaluationBlock:block];
+    [self connectRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping usingEvaluationBlock:block];
 }
 
 @end

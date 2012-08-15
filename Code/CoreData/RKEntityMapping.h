@@ -94,7 +94,21 @@
  
  @see RKConnectionMapping
  */
-@property (nonatomic, readonly) NSArray *connections;
+@property (nonatomic, readonly) NSArray *connectionMappings;
+
+/**
+ Adds a connection mapping to the receiver.
+ 
+ @param connectionMapping The connection mapping to be added.
+ */
+- (void)addConnectionMapping:(RKConnectionMapping *)connectionMapping;
+
+/**
+ Removes a connection mapping from the receiver.
+ 
+ @param connectionMapping The connection mapping to be added.
+ */
+- (void)removeConnectionMapping:(RKConnectionMapping *)connectionMapping;
 
 /**
  Returns the RKObjectRelationshipMapping connection for the specified relationship.
@@ -125,9 +139,9 @@
  You can also do the reverse. Given a User object associated with a Project, with a
  'project' relationship:
 
- [mapping connectRelationship:@"project" withMapping:projectMapping fromKeyPath:@"id" toKeyPath:@"userId"];
+ [mapping connectRelationship:@"project" fromKeyPath:@"id" toKeyPath:@"userId" withMapping:projectMapping];
  */
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
+- (void)connectRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping;
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
@@ -136,7 +150,7 @@
  For example, given a Project object associated with a User, where the 'admin' relationship is
  specified by a adminID property on the managed object:
 
- [mapping connectRelationship:@"admin" withMapping:userMapping fromKeyPath:@"adminId" toKeyPath:@"id" whenValueOfKeyPath:@"userType" isEqualTo:@"Admin"];
+ [mapping connectRelationship:@"admin" fromKeyPath:@"adminId" toKeyPath:@"id" withMapping:userMapping whenValueOfKeyPath:@"userType" isEqualTo:@"Admin"];
 
  Will hydrate the 'admin' association on the managed object with the object
  in the local object graph having the primary key specified in the managed object's
@@ -145,7 +159,7 @@
 
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
+- (void)connectRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
@@ -155,7 +169,7 @@
  For example, given a Project object associated with a User, where the 'admin' relationship is
  specified by a adminID property on the managed object:
 
- [mapping connectRelationship:@"admin" withMapping:userMapping fromKeyPath:@"adminId" toKeyPath:@"adminID" usingEvaluationBlock:^(id data) {
+ [mapping connectRelationship:@"admin" fromKeyPath:@"adminId" toKeyPath:@"adminID" withMapping:userMapping usingEvaluationBlock:^(id data) {
     return [User isAuthenticated];
  }];
 
@@ -166,7 +180,7 @@
 
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingEvaluationBlock:(BOOL (^)(id data))block;
+- (void)connectRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping usingEvaluationBlock:(BOOL (^)(id data))block;
 
 /**
  Returns the default value for the specified attribute as expressed in the Core Data entity definition. This value will

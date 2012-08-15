@@ -39,7 +39,7 @@
         [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];
 
         // Hydrate the assignedUser association via primary key
-        [taskMapping connectRelationship:@"assignedUser" withMapping:userMapping fromKeyPath:@"assignedUserID" toKeyPath:@"userID"];
+        [taskMapping connectRelationship:@"assignedUser" fromKeyPath:@"assignedUserID" toKeyPath:@"userID" withMapping:userMapping];
 
         // NOTE - Project is not backed by Core Data
         RKObjectMapping *projectMapping = [RKObjectMapping mappingForClass:[Project class]];
