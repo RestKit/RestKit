@@ -78,7 +78,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
         __block RKClient *client;
-        
+
         RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
             RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
                 client = [RKClient clientWithBaseURL:self.baseURL];
@@ -92,13 +92,13 @@ static RKTestFactory *sharedFactory = nil;
 
     [self defineFactory:RKTestFactoryDefaultNamesObjectManager withBlock:^id {
         __block RKObjectManager *objectManager;
-        
+
         RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
             RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
                 objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
                 RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
                 objectManager.mappingProvider = mappingProvider;
-                
+
                 // Force reachability determination
                 [objectManager.client.reachabilityObserver getFlags];
             });
@@ -167,7 +167,7 @@ static RKTestFactory *sharedFactory = nil;
 
 + (NSSet *)factoryNames
 {
-    return [NSSet setWithArray:[[RKTestFactory sharedFactory].factoryBlocks allKeys] ];
+    return [NSSet setWithArray:[[RKTestFactory sharedFactory].factoryBlocks allKeys]];
 }
 
 + (id)client
@@ -206,7 +206,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     [RKObjectManager setDefaultMappingQueue:dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL)];
     [RKObjectMapping setDefaultDateFormatters:nil];
-    
+
     // Delete the store if it exists
     NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
@@ -231,8 +231,8 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)clearCacheDirectory
 {
-    NSError* error = nil;
-    NSString* cachePath = [RKDirectory cachesDirectory];
+    NSError *error = nil;
+    NSString *cachePath = [RKDirectory cachesDirectory];
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
     if (success) {
         RKLogDebug(@"Cleared cache directory...");

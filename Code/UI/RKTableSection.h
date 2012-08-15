@@ -24,33 +24,30 @@
 
 @class RKTableController;
 
-@interface RKTableSection : NSObject {
- @protected
-    NSMutableArray *_objects;
-}
+@interface RKTableSection : NSObject
 
 // Basics
-@property (nonatomic, assign)   RKTableController* tableController;
-@property (nonatomic, readonly) UITableView* tableView;
+@property (nonatomic, assign)   RKTableController *tableController;
+@property (nonatomic, readonly) UITableView *tableView;
 
 // Object Mapping Table Stuff
-@property (nonatomic, retain) NSArray* objects;
-@property (nonatomic, retain) RKTableViewCellMappings* cellMappings;
+@property (nonatomic, retain) NSArray *objects;
+@property (nonatomic, retain) RKTableViewCellMappings *cellMappings;
 
 // Header & Footer Views, etc.
-@property (nonatomic, retain) NSString* headerTitle;
-@property (nonatomic, retain) NSString* footerTitle;
+@property (nonatomic, retain) NSString *headerTitle;
+@property (nonatomic, retain) NSString *footerTitle;
 @property (nonatomic, assign) CGFloat headerHeight;
 @property (nonatomic, assign) CGFloat footerHeight;
-@property (nonatomic, retain) UIView* headerView;
-@property (nonatomic, retain) UIView* footerView;
+@property (nonatomic, retain) UIView *headerView;
+@property (nonatomic, retain) UIView *footerView;
 
 // number of cells in the section
 @property (nonatomic, readonly) NSUInteger rowCount;
 
 + (id)section;
 + (id)sectionUsingBlock:(void (^)(RKTableSection *))block;
-+ (id)sectionForObjects:(NSArray*)objects withMappings:(RKTableViewCellMappings*)cellMappings;
++ (id)sectionForObjects:(NSArray *)objects withMappings:(RKTableViewCellMappings *)cellMappings;
 
 - (id)objectAtIndex:(NSUInteger)rowIndex;
 - (void)insertObject:(id)object atIndex:(NSUInteger)index;

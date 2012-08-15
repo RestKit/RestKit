@@ -30,8 +30,8 @@ typedef enum {
 
 @protocol RKRefreshTriggerProtocol <NSObject>
 @optional
-- (NSDate*)pullToRefreshDataSourceLastUpdated:(UIGestureRecognizer*)recognizer;
-- (BOOL)pullToRefreshDataSourceIsLoading:(UIGestureRecognizer*)recognizer;
+- (NSDate *)pullToRefreshDataSourceLastUpdated:(UIGestureRecognizer *)recognizer;
+- (BOOL)pullToRefreshDataSourceIsLoading:(UIGestureRecognizer *)recognizer;
 @end
 
 @interface RKRefreshGestureRecognizer : UIGestureRecognizer

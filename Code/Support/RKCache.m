@@ -27,23 +27,24 @@
 
 @implementation RKCache
 
-- (id)initWithPath:(NSString*)cachePath subDirectories:(NSArray*)subDirectories {
+- (id)initWithPath:(NSString *)cachePath subDirectories:(NSArray *)subDirectories
+{
     self = [super init];
     if (self) {
         _cachePath = [cachePath copy];
         _cacheLock = [[NSRecursiveLock alloc] init];
 
-        NSFileManager* fileManager = [NSFileManager defaultManager];
-        NSMutableArray* pathArray = [NSMutableArray arrayWithObject:_cachePath];
-        for (NSString* subDirectory in subDirectories) {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSMutableArray *pathArray = [NSMutableArray arrayWithObject:_cachePath];
+        for (NSString *subDirectory in subDirectories) {
             [pathArray addObject:[_cachePath stringByAppendingPathComponent:subDirectory]];
         }
 
-        for (NSString* path in pathArray) {
+        for (NSString *path in pathArray) {
             BOOL isDirectory = NO;
             BOOL fileExists = [fileManager fileExistsAtPath:path isDirectory:&isDirectory];
             if (!fileExists) {
-                NSError* error = nil;
+                NSError *error = nil;
                 BOOL created = [fileManager createDirectoryAtPath:path
                                       withIntermediateDirectories:YES
                                                        attributes:nil
@@ -63,7 +64,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_cachePath release];
     _cachePath = nil;
     [_cacheLock release];
@@ -71,30 +73,34 @@
     [super dealloc];
 }
 
-- (NSString*)cachePath {
+- (NSString *)cachePath
+{
     return _cachePath;
 }
 
-- (NSString*)pathForCacheKey:(NSString*)cacheKey {
+- (NSString *)pathForCacheKey:(NSString *)cacheKey
+{
     [_cacheLock lock];
-    NSString* pathForCacheKey = [_cachePath stringByAppendingPathComponent:cacheKey];
+    NSString *pathForCacheKey = [_cachePath stringByAppendingPathComponent:cacheKey];
     [_cacheLock unlock];
     RKLogTrace(@"Found cachePath '%@' for %@", pathForCacheKey, cacheKey);
     return pathForCacheKey;
 }
 
-- (BOOL)hasEntry:(NSString*)cacheKey {
+- (BOOL)hasEntry:(NSString *)cacheKey
+{
     [_cacheLock lock];
     BOOL hasEntry = NO;
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    NSString* cachePath = [self pathForCacheKey:cacheKey];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *cachePath = [self pathForCacheKey:cacheKey];
     hasEntry = [fileManager fileExistsAtPath:cachePath];
     [_cacheLock unlock];
     RKLogTrace(@"Determined hasEntry: %@ => %@", cacheKey, hasEntry ? @"YES" : @"NO");
     return hasEntry;
 }
 
-- (void)writeDictionary:(NSDictionary*)dictionary withCacheKey:(NSString*)cacheKey {
+- (void)writeDictionary:(NSDictionary *)dictionary withCacheKey:(NSString *)cacheKey
+{
     if (dictionary) {
         [_cacheLock lock];
         RKLogTrace(@"Writing dictionary to cache key: '%@'", cacheKey);
@@ -108,12 +114,13 @@
     }
 }
 
-- (void)writeData:(NSData*)data withCacheKey:(NSString*)cacheKey {
+- (void)writeData:(NSData *)data withCacheKey:(NSString *)cacheKey
+{
     if (data) {
         [_cacheLock lock];
-        NSString* cachePath = [self pathForCacheKey:cacheKey];
+        NSString *cachePath = [self pathForCacheKey:cacheKey];
         if (cachePath) {
-            NSError* error = nil;
+            NSError *error = nil;
             BOOL success = [data writeToFile:cachePath options:NSDataWritingAtomic error:&error];
             if (success) {
                 RKLogTrace(@"Wrote cached data to path '%@'", cachePath);
@@ -125,10 +132,11 @@
     }
 }
 
-- (NSDictionary*)dictionaryForCacheKey:(NSString*)cacheKey {
+- (NSDictionary *)dictionaryForCacheKey:(NSString *)cacheKey
+{
     [_cacheLock lock];
-    NSDictionary* dictionary = nil;
-    NSString* cachePath = [self pathForCacheKey:cacheKey];
+    NSDictionary *dictionary = nil;
+    NSString *cachePath = [self pathForCacheKey:cacheKey];
     if (cachePath) {
         dictionary = [NSDictionary dictionaryWithContentsOfFile:cachePath];
         if (dictionary) {
@@ -143,10 +151,11 @@
     return dictionary;
 }
 
-- (NSData*)dataForCacheKey:(NSString*)cacheKey {
+- (NSData *)dataForCacheKey:(NSString *)cacheKey
+{
     [_cacheLock lock];
-    NSData* data = nil;
-    NSString* cachePath = [self pathForCacheKey:cacheKey];
+    NSData *data = nil;
+    NSString *cachePath = [self pathForCacheKey:cacheKey];
     if (cachePath) {
         data = [NSData dataWithContentsOfFile:cachePath];
         if (data) {
@@ -159,35 +168,37 @@
     return data;
 }
 
-- (void)invalidateEntry:(NSString*)cacheKey {
+- (void)invalidateEntry:(NSString *)cacheKey
+{
     [_cacheLock lock];
     RKLogDebug(@"Invalidating cache entry for '%@'", cacheKey);
-    NSString* cachePath = [self pathForCacheKey:cacheKey];
+    NSString *cachePath = [self pathForCacheKey:cacheKey];
     if (cachePath) {
-        NSFileManager* fileManager = [NSFileManager defaultManager];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
         [fileManager removeItemAtPath:cachePath error:NULL];
         RKLogTrace(@"Removed cache entry at path '%@' for '%@'", cachePath, cacheKey);
     }
     [_cacheLock unlock];
 }
 
-- (void)invalidateSubDirectory:(NSString*)subDirectory {
+- (void)invalidateSubDirectory:(NSString *)subDirectory
+{
     [_cacheLock lock];
     if (_cachePath && subDirectory) {
-        NSString* subDirectoryPath = [_cachePath stringByAppendingPathComponent:subDirectory];
+        NSString *subDirectoryPath = [_cachePath stringByAppendingPathComponent:subDirectory];
         RKLogInfo(@"Invalidating cache at path: %@", subDirectoryPath);
-        NSFileManager* fileManager = [NSFileManager defaultManager];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
 
         BOOL isDirectory = NO;
         BOOL fileExists = [fileManager fileExistsAtPath:subDirectoryPath isDirectory:&isDirectory];
 
         if (fileExists && isDirectory) {
-            NSError* error = nil;
-            NSArray* cacheEntries = [fileManager contentsOfDirectoryAtPath:subDirectoryPath error:&error];
+            NSError *error = nil;
+            NSArray *cacheEntries = [fileManager contentsOfDirectoryAtPath:subDirectoryPath error:&error];
 
             if (nil == error) {
-                for (NSString* cacheEntry in cacheEntries) {
-                    NSString* cacheEntryPath = [subDirectoryPath stringByAppendingPathComponent:cacheEntry];
+                for (NSString *cacheEntry in cacheEntries) {
+                    NSString *cacheEntryPath = [subDirectoryPath stringByAppendingPathComponent:cacheEntry];
                     [fileManager removeItemAtPath:cacheEntryPath error:&error];
                     if (nil != error) {
                         RKLogError(@"Failed to delete cache entry for file: %@", cacheEntryPath);
@@ -201,22 +212,23 @@
     [_cacheLock unlock];
 }
 
-- (void)invalidateAll {
+- (void)invalidateAll
+{
     [_cacheLock lock];
     if (_cachePath) {
         RKLogInfo(@"Invalidating cache at path: %@", _cachePath);
-        NSFileManager* fileManager = [NSFileManager defaultManager];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
 
         BOOL isDirectory = NO;
         BOOL fileExists = [fileManager fileExistsAtPath:_cachePath isDirectory:&isDirectory];
 
         if (fileExists && isDirectory) {
-            NSError* error = nil;
-            NSArray* cacheEntries = [fileManager contentsOfDirectoryAtPath:_cachePath error:&error];
+            NSError *error = nil;
+            NSArray *cacheEntries = [fileManager contentsOfDirectoryAtPath:_cachePath error:&error];
 
             if (nil == error) {
-                for (NSString* cacheEntry in cacheEntries) {
-                    NSString* cacheEntryPath = [_cachePath stringByAppendingPathComponent:cacheEntry];
+                for (NSString *cacheEntry in cacheEntries) {
+                    NSString *cacheEntryPath = [_cachePath stringByAppendingPathComponent:cacheEntry];
                     [fileManager removeItemAtPath:cacheEntryPath error:&error];
                     if (nil != error) {
                         RKLogError(@"Failed to delete cache entry for file: %@", cacheEntryPath);

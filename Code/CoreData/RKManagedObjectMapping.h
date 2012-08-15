@@ -29,8 +29,6 @@
  entity.
  */
 @interface RKManagedObjectMapping : RKObjectMapping {
-    NSEntityDescription *_entity;
-    NSString *_primaryKeyAttribute;
     NSMutableDictionary *_relationshipToPrimaryKeyMappings;
 }
 

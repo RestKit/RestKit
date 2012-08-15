@@ -88,7 +88,7 @@
  Return a new array of RKTableItem instances given a nil terminated list of strings.
  Each table item will have the text property set to the string provided.
  */
-+ (NSArray*)tableItemsFromStrings:(NSString *)firstString, ... NS_REQUIRES_NIL_TERMINATION;
++ (NSArray *)tableItemsFromStrings:(NSString *)firstString, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
  Returns a new table item
@@ -122,7 +122,7 @@
 
  For example:
 
-    NSArray* tableItems = [NSArray arrayWithObjects:[MyTableItem tableItemWithText:@"Foo"
+    NSArray *tableItems = [NSArray arrayWithObjects:[MyTableItem tableItemWithText:@"Foo"
                                                                         usingBlock:^(RKTableItem *tableItem) {
                                                                             [(MyTableItem *)tableItem setURL:@"app://whatever"];
                                                                         }], ...];

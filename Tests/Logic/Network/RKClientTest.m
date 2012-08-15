@@ -28,23 +28,27 @@
 
 @implementation RKClientTest
 
-- (void)setUp {
+- (void)setUp
+{
     [RKTestFactory setUp];
 }
 
-- (void)tearDown {
+- (void)tearDown
+{
     [RKTestFactory tearDown];
 }
 
-- (void)testShouldDetectNetworkStatusWithAHostname {
-    RKClient* client = [[RKClient alloc] initWithBaseURLString:@"http://restkit.org"];
+- (void)testShouldDetectNetworkStatusWithAHostname
+{
+    RKClient *client = [[RKClient alloc] initWithBaseURLString:@"http://restkit.org"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
     assertThatInt(status, is(equalToInt(RKReachabilityReachableViaWiFi)));
     [client release];
 }
 
-- (void)testShouldDetectNetworkStatusWithAnIPAddressBaseName {
+- (void)testShouldDetectNetworkStatusWithAnIPAddressBaseName
+{
     RKClient *client = [[RKClient alloc] initWithBaseURLString:@"http://173.45.234.197"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
@@ -52,25 +56,28 @@
     [client release];
 }
 
-- (void)testShouldSetTheCachePolicyOfTheRequest {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+- (void)testShouldSetTheCachePolicyOfTheRequest
+{
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.cachePolicy = RKRequestCachePolicyLoadIfOffline;
-    RKRequest* request = [client requestWithResourcePath:@""];
+    RKRequest *request = [client requestWithResourcePath:@""];
     assertThatInt(request.cachePolicy, is(equalToInt(RKRequestCachePolicyLoadIfOffline)));
 }
 
-- (void)testShouldInitializeTheCacheOfTheRequest {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+- (void)testShouldInitializeTheCacheOfTheRequest
+{
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.requestCache = [[[RKRequestCache alloc] init] autorelease];
-    RKRequest* request = [client requestWithResourcePath:@""];
+    RKRequest *request = [client requestWithResourcePath:@""];
     assertThat(request.cache, is(equalTo(client.requestCache)));
 }
 
-- (void)testShouldLoadPageWithNoContentTypeInformation {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.semiose.fr"];
+- (void)testShouldLoadPageWithNoContentTypeInformation
+{
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://www.semiose.fr"];
     client.defaultHTTPEncoding = NSISOLatin1StringEncoding;
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKRequest* request = [client requestWithResourcePath:@"/"];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [client requestWithResourcePath:@"/"];
     request.delegate = loader;
     [request send];
     [loader waitForResponse];
@@ -79,22 +86,24 @@
     assertThatInteger([loader.response bodyEncoding], is(equalToInteger(NSISOLatin1StringEncoding)));
 }
 
-- (void)testShouldAllowYouToChangeTheBaseURL {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
+- (void)testShouldAllowYouToChangeTheBaseURL
+{
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     assertThatBool([client isNetworkReachable], is(equalToBool(YES)));
     client.baseURL = [RKURL URLWithString:@"http://www.restkit.org"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     assertThatBool([client isNetworkReachable], is(equalToBool(YES)));
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKRequest* request = [client requestWithResourcePath:@"/"];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [client requestWithResourcePath:@"/"];
     request.delegate = loader;
     [request send];
     [loader waitForResponse];
     assertThatBool(loader.wasSuccessful, is(equalToBool(YES)));
 }
 
-- (void)testShouldLetYouChangeTheHTTPAuthCredentials {
+- (void)testShouldLetYouChangeTheHTTPAuthCredentials
+{
     RKClient *client = [RKTestFactory client];
     client.authenticationType = RKRequestAuthenticationTypeHTTP;
     client.username = @"invalid";
@@ -111,13 +120,15 @@
     assertThatBool(responseLoader.wasSuccessful, is(equalToBool(YES)));
 }
 
-- (void)testShouldSuspendTheQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
+- (void)testShouldSuspendTheQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished
+{
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
     client.baseURL = [RKURL URLWithString:@"http://restkit.org"];
     assertThatBool(client.requestQueue.suspended, is(equalToBool(YES)));
 }
 
-- (void)testShouldNotSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasBeenEstablished {
+- (void)testShouldNotSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasBeenEstablished
+{
     RKReachabilityObserver *observer = [RKReachabilityObserver reachabilityObserverForInternet];
     [observer getFlags];
     assertThatBool([observer isReachabilityDetermined], is(equalToBool(YES)));
@@ -127,39 +138,43 @@
     assertThatBool(client.requestQueue.suspended, is(equalToBool(NO)));
 }
 
-- (void)testShouldAllowYouToChangeTheTimeoutInterval {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+- (void)testShouldAllowYouToChangeTheTimeoutInterval
+{
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.timeoutInterval = 20.0;
-    RKRequest* request = [client requestWithResourcePath:@""];
+    RKRequest *request = [client requestWithResourcePath:@""];
     assertThatFloat(request.timeoutInterval, is(equalToFloat(20.0)));
 }
 
-- (void)testShouldPerformAPUTWithParams {
+- (void)testShouldPerformAPUTWithParams
+{
     NSLog(@"PENDING ---> FIX ME!!!");
     return;
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://ohblockhero.appspot.com/api/v1"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://ohblockhero.appspot.com/api/v1"];
     client.cachePolicy = RKRequestCachePolicyNone;
-    RKParams *params=[RKParams params];
+    RKParams *params = [RKParams params];
     [params setValue:@"username" forParam:@"username"];
     [params setValue:@"Dear Daniel" forParam:@"fullName"];
     [params setValue:@"aa@aa.com" forParam:@"email"];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     [client put:@"/userprofile" params:params delegate:loader];
     STAssertNoThrow([loader waitForResponse], @"");
     [loader waitForResponse];
     assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
 }
 
-- (void)testShouldAllowYouToChangeTheCacheTimeoutInterval {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+- (void)testShouldAllowYouToChangeTheCacheTimeoutInterval
+{
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.cacheTimeoutInterval = 20.0;
-    RKRequest* request = [client requestWithResourcePath:@""];
+    RKRequest *request = [client requestWithResourcePath:@""];
     assertThatFloat(request.cacheTimeoutInterval, is(equalToFloat(20.0)));
 }
 
-- (void)testThatRunLoopModePropertyRespected {
+- (void)testThatRunLoopModePropertyRespected
+{
     NSString * const dummyRunLoopMode = @"dummyRunLoopMode";
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKClient *client = [RKTestFactory client];
     client.runLoopMode = dummyRunLoopMode;
     [client get:[[RKTestFactory baseURL] absoluteString] delegate:loader];

@@ -29,6 +29,6 @@
 /**
  * Returns the resource path to send requests for a given object and HTTP method
  */
-- (NSString*)resourcePathForObject:(NSObject*)object method:(RKRequestMethod)method;
+- (NSString *)resourcePathForObject:(NSObject *)object method:(RKRequestMethod)method;
 
 @end

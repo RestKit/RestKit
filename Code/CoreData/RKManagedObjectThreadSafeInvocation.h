@@ -21,18 +21,17 @@
 #import "RKManagedObjectStore.h"
 
 @interface RKManagedObjectThreadSafeInvocation : NSInvocation {
-    NSMutableDictionary* _argumentKeyPaths;
-    RKManagedObjectStore* _objectStore;
+    NSMutableDictionary *_argumentKeyPaths;
 }
 
-@property (nonatomic, retain) RKManagedObjectStore* objectStore;
+@property (nonatomic, retain) RKManagedObjectStore *objectStore;
 
-+ (RKManagedObjectThreadSafeInvocation*)invocationWithMethodSignature:(NSMethodSignature*)methodSignature;
-- (void)setManagedObjectKeyPaths:(NSSet*)keyPaths forArgument:(NSInteger)index;
++ (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature;
+- (void)setManagedObjectKeyPaths:(NSSet *)keyPaths forArgument:(NSInteger)index;
 - (void)invokeOnMainThread;
 
 // Private
-- (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths;
-- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths;
+- (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths;
+- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths;
 
 @end

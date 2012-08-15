@@ -31,14 +31,14 @@
  * the resourcePath using a single colon delimiter, such as /users/:userID
  */
 @interface RKObjectRouter : NSObject <RKRouter> {
-    NSMutableDictionary* _routes;
+    NSMutableDictionary *_routes;
 }
 
 /**
  * Register a mapping from an object class to a resource path. This resourcePath can be static
  * (i.e. /this/is/the/path) or dynamic (i.e. /users/:userID/:username). Dynamic routes are
  * evaluated against the object being routed using Key-Value coding and coerced into a string.
- * *NOTE* - The pattern matcher fully supports KVM, so /:key1.otherKey normally resolves as it
+ * *NOTE *- The pattern matcher fully supports KVM, so /:key1.otherKey normally resolves as it
  * would in any other KVM situation, ... otherKey is a sub-key on a the object represented by
  * key1.  This presents a problem in situations where you might want to build a pattern like
  * /:filename.json, where the dot isn't intended as a sub-key on the dynamic "filename", but
@@ -46,13 +46,13 @@
  * dot with two backslashes, like so: /:filename\\.json
  * @see RKPathMatcher
  */
-- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern;
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString *)resourcePathPattern;
 
 /**
  * Register a mapping from an object class to a resource path for a specific HTTP method.
  * @see RKPathMatcher
  */
-- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern forMethod:(RKRequestMethod)method;
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString *)resourcePathPattern forMethod:(RKRequestMethod)method;
 
 /**
  * Register a mapping from an object class to a resource path for a specific HTTP method,
@@ -63,13 +63,13 @@
  * @"%2Fthis%2Fis%2Fthe%2Fpath".
  * @see RKPathMatcher
  */
-- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes;
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString *)resourcePathPattern forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes;
 
 @end
 
 // Method signatures being phased out
 @interface RKObjectRouter (CompatibilityAliases)
-- (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath;
-- (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method;
-- (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes;
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath;
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath forMethod:(RKRequestMethod)method;
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes;
 @end

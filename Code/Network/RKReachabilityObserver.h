@@ -75,11 +75,7 @@ typedef enum {
  code sample: http://developer.apple.com/library/ios/#samplecode/Reachability/Listings/Classes_Reachability_m.html
  */
 @interface RKReachabilityObserver : NSObject {
-    NSString *_host;
     SCNetworkReachabilityRef _reachabilityRef;
-    BOOL _reachabilityDetermined;
-    BOOL _monitoringLocalWiFi;
-    SCNetworkReachabilityFlags _reachabilityFlags;
 }
 
 ///-----------------------------------------------------------------------------

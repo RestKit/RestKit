@@ -50,7 +50,7 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
         RKLogInfo(@"Caching instances of Entity '%@' by primary key attribute '%@'", entity.name, primaryKeyAttribute);
         [entityCache cacheObjectsForEntity:entity byAttribute:primaryKeyAttribute];
         RKEntityByAttributeCache *attributeCache = [entityCache attributeCacheForEntity:entity attribute:primaryKeyAttribute];
-        RKLogTrace(@"Cached %ld objects", (long) [attributeCache count]);
+        RKLogTrace(@"Cached %ld objects", (long)[attributeCache count]);
     }
 
     return [entityCache objectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue];

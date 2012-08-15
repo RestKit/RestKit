@@ -21,8 +21,8 @@
 #import "RKTestEnvironment.h"
 #import "RKClient.h"
 
-static NSString* const RKAuthenticationTestUsername = @"restkit";
-static NSString* const RKAuthenticationTestPassword = @"authentication";
+static NSString * const RKAuthenticationTestUsername = @"restkit";
+static NSString * const RKAuthenticationTestPassword = @"authentication";
 
 @interface RKAuthenticationTest : RKTestCase {
 
@@ -32,17 +32,19 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 
 @implementation RKAuthenticationTest
 
-- (void)testShouldAccessUnprotectedResourcePaths {
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = [RKTestFactory client];
+- (void)testShouldAccessUnprotectedResourcePaths
+{
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKTestFactory client];
     [client get:@"/authentication/none" delegate:loader];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }
 
-- (void)testShouldAuthenticateViaHTTPAuthBasic {
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = [RKTestFactory client];
+- (void)testShouldAuthenticateViaHTTPAuthBasic
+{
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = RKAuthenticationTestPassword;
     [client get:@"/authentication/basic" delegate:loader];
@@ -50,9 +52,10 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }
 
-- (void)testShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic {
-    RKTestResponseLoader* loader = [RKTestResponseLoader new];
-    RKClient* client = [RKTestFactory client];
+- (void)testShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic
+{
+    RKTestResponseLoader *loader = [RKTestResponseLoader new];
+    RKClient *client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = @"INVALID";
     [client get:@"/authentication/basic" delegate:loader];
@@ -64,9 +67,10 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
     [loader release];
 }
 
-- (void)testShouldAuthenticateViaHTTPAuthDigest {
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = [RKTestFactory client];
+- (void)testShouldAuthenticateViaHTTPAuthDigest
+{
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = RKAuthenticationTestPassword;
     [client get:@"/authentication/digest" delegate:loader];

@@ -61,11 +61,13 @@
 @dynamic loading;
 @dynamic response;
 
-+ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider
+{
     return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider] autorelease];
 }
 
-- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider
+{
     self = [super initWithURL:URL];
     if (self) {
         _mappingProvider = [mappingProvider retain];
@@ -75,13 +77,14 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_mappingProvider release];
     _mappingProvider = nil;
     [_sourceObject release];
     _sourceObject = nil;
     [_targetObject release];
-    _targetObject = nil;    
+    _targetObject = nil;
     [_objectMapping release];
     _objectMapping = nil;
     [_result release];
@@ -102,13 +105,15 @@
     [super dealloc];
 }
 
-- (void)reset {
+- (void)reset
+{
     [super reset];
     [_result release];
     _result = nil;
 }
 
-- (void)informDelegateOfError:(NSError *)error {
+- (void)informDelegateOfError:(NSError *)error
+{
     [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
 
     if (self.onDidFailWithError) {
@@ -120,10 +125,11 @@
 
 // NOTE: This method is significant because the notifications posted are used by
 // RKRequestQueue to remove requests from the queue. All requests need to be finalized.
-- (void)finalizeLoad:(BOOL)successful {
+- (void)finalizeLoad:(BOOL)successful
+{
     self.loading = NO;
     self.loaded = successful;
-    
+
     if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate performSelectorOnMainThread:@selector(objectLoaderDidFinishLoading:)
                                                                            withObject:self waitUntilDone:YES];
@@ -133,10 +139,11 @@
 }
 
 // Invoked on the main thread. Inform the delegate.
-- (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary*)resultDictionary {
+- (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary *)resultDictionary
+{
     NSAssert([NSThread isMainThread], @"RKObjectLoaderDelegate callbacks must occur on the main thread");
 
-    RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:resultDictionary];
+    RKObjectMappingResult *result = [RKObjectMappingResult mappingResultWithDictionary:resultDictionary];
 
     // Dictionary callback
     if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
@@ -175,14 +182,16 @@
  at thread boundaries.
  @protected
  */
-- (void)processMappingResult:(RKObjectMappingResult*)result {
+- (void)processMappingResult:(RKObjectMappingResult *)result
+{
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithResultDictionary:) withObject:[result asDictionary] waitUntilDone:YES];
 }
 
 #pragma mark - Response Object Mapping
 
-- (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject inContext:(RKObjectMappingProviderContext)context error:(NSError**)error {
+- (RKObjectMappingResult *)mapResponseWithMappingProvider:(RKObjectMappingProvider *)mappingProvider toObject:(id)targetObject inContext:(RKObjectMappingProviderContext)context error:(NSError **)error
+{
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
 
@@ -211,11 +220,11 @@
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self willMapData:&parsedData];
     }
 
-    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
+    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
     mapper.targetObject = targetObject;
     mapper.delegate = self;
     mapper.context = context;
-    RKObjectMappingResult* result = [mapper performMapping];
+    RKObjectMappingResult *result = [mapper performMapping];
 
     // Log any mapping errors
     if (mapper.errorCount > 0) {
@@ -232,7 +241,8 @@
     return result;
 }
 
-- (RKObjectMappingDefinition *)configuredObjectMapping {
+- (RKObjectMappingDefinition *)configuredObjectMapping
+{
     if (self.objectMapping) {
         return self.objectMapping;
     }
@@ -240,10 +250,11 @@
     return [self.mappingProvider objectMappingForResourcePath:self.resourcePath];
 }
 
-- (RKObjectMappingResult*)performMapping:(NSError**)error {
+- (RKObjectMappingResult *)performMapping:(NSError **)error
+{
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping should occur on a background thread");
 
-    RKObjectMappingProvider* mappingProvider;
+    RKObjectMappingProvider *mappingProvider;
     RKObjectMappingDefinition *configuredObjectMapping = [self configuredObjectMapping];
     if (configuredObjectMapping) {
         mappingProvider = [RKObjectMappingProvider mappingProvider];
@@ -260,10 +271,11 @@
     return [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject inContext:RKObjectMappingProviderContextObjectsByKeyPath error:error];
 }
 
-- (void)performMappingInDispatchQueue {
+- (void)performMappingInDispatchQueue
+{
     NSAssert(self.mappingQueue, @"mappingQueue cannot be nil");
     dispatch_async(self.mappingQueue, ^{
-        NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
         RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %s", dispatch_queue_get_label(self.mappingQueue));
         NSError *error = nil;
@@ -279,7 +291,8 @@
     });
 }
 
-- (BOOL)canParseMIMEType:(NSString*)MIMEType {
+- (BOOL)canParseMIMEType:(NSString *)MIMEType
+{
     if ([[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType]) {
         return YES;
     }
@@ -288,7 +301,8 @@
     return NO;
 }
 
-- (BOOL)isResponseMappable {
+- (BOOL)isResponseMappable
+{
     if ([self.response isServiceUnavailable]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
     }
@@ -312,8 +326,8 @@
         return NO;
     } else if (NO == [self canParseMIMEType:[self.response MIMEType]]) {
         // We can't parse the response, it's unmappable regardless of the status code
-        RKLogWarning(@"Encountered unexpected response with status code: %ld (MIME Type: %@ -> URL: %@)", (long) self.response.statusCode, self.response.MIMEType, self.URL);
-        NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];
+        RKLogWarning(@"Encountered unexpected response with status code: %ld (MIME Type: %@ -> URL: %@)", (long)self.response.statusCode, self.response.MIMEType, self.URL);
+        NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];
         if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
         } else {
@@ -334,7 +348,8 @@
     return YES;
 }
 
-- (void)handleResponseError {
+- (void)handleResponseError
+{
     // Since we are mapping what we know to be an error response, we don't want to map the result back onto our
     // target object
     NSError *error = nil;
@@ -352,12 +367,13 @@
 #pragma mark - RKRequest & RKRequestDelegate methods
 
 // Invoked just before request hits the network
-- (BOOL)prepareURLRequest {
+- (BOOL)prepareURLRequest
+{
     if ((self.sourceObject && self.params == nil) && (self.method == RKRequestMethodPOST || self.method == RKRequestMethodPUT)) {
         NSAssert(self.serializationMapping, @"You must provide a serialization mapping for objects of type '%@'", NSStringFromClass([self.sourceObject class]));
         RKLogDebug(@"POST or PUT request for source object %@, serializing to MIME Type %@ for transport...", self.sourceObject, self.serializationMIMEType);
-        RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:self.sourceObject mapping:self.serializationMapping];
-        NSError* error = nil;
+        RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:self.sourceObject mapping:self.serializationMapping];
+        NSError *error = nil;
         id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];
 
         if (error) {
@@ -383,9 +399,10 @@
     return [super prepareURLRequest];
 }
 
-- (void)didFailLoadWithError:(NSError *)error {
+- (void)didFailLoadWithError:(NSError *)error
+{
     NSParameterAssert(error);
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
     if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
         [self.cache hasResponseForRequest:self]) {
@@ -402,12 +419,12 @@
 
         // If we failed due to a transport error or before we have a response, the request itself failed
         if (!self.response || [self.response isFailure]) {
-            NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
             [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification
                                                                 object:self
                                                               userInfo:userInfo];
         }
-        
+
         if (! self.isCancelled) {
             [self informDelegateOfError:error];
         }
@@ -419,7 +436,8 @@
 }
 
 // NOTE: We do NOT call super here. We are overloading the default behavior from RKRequest
-- (void)didFinishLoad:(RKResponse*)response {
+- (void)didFinishLoad:(RKResponse *)response
+{
     NSAssert([NSThread isMainThread], @"RKObjectLoaderDelegate callbacks must occur on the main thread");
     self.response = response;
 
@@ -442,7 +460,7 @@
     }
 
     // Post the notification
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:self.response
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:self.response
                                                          forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification
                                                         object:self
@@ -451,7 +469,7 @@
     if ([self isResponseMappable]) {
         // Determine if we are synchronous here or not.
         if (_sentSynchronously) {
-            NSError* error = nil;
+            NSError *error = nil;
             _result = [[self performMapping:&error] retain];
             if (self.result) {
                 [self processMappingResult:self.result];
@@ -464,7 +482,8 @@
     }
 }
 
-- (void)setMappingQueue:(dispatch_queue_t)newMappingQueue {
+- (void)setMappingQueue:(dispatch_queue_t)newMappingQueue
+{
     if (_mappingQueue) {
         dispatch_release(_mappingQueue);
         _mappingQueue = nil;
@@ -478,11 +497,13 @@
 
 // Proxy the delegate property back to our superclass implementation. The object loader should
 // really not be a subclass of RKRequest.
-- (void)setDelegate:(id<RKObjectLoaderDelegate>)delegate {
+- (void)setDelegate:(id<RKObjectLoaderDelegate>)delegate
+{
     [super setDelegate:delegate];
 }
 
-- (id<RKObjectLoaderDelegate>)delegate {
+- (id<RKObjectLoaderDelegate>)delegate
+{
     return (id<RKObjectLoaderDelegate>) [super delegate];
 }
 
@@ -490,11 +511,13 @@
 
 @implementation RKObjectLoader (Deprecations)
 
-+ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate {
++ (id)loaderWithResourcePath:(NSString *)resourcePath objectManager:(RKObjectManager *)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate
+{
     return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
 }
 
-- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)theDelegate {
+- (id)initWithResourcePath:(NSString *)resourcePath objectManager:(RKObjectManager *)objectManager delegate:(id<RKObjectLoaderDelegate>)theDelegate
+{
     if ((self = [self initWithURL:[objectManager.baseURL URLByAppendingResourcePath:resourcePath] mappingProvider:objectManager.mappingProvider])) {
         [objectManager.client configureRequest:self];
         _delegate = theDelegate;

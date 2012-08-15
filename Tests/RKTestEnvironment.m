@@ -22,7 +22,7 @@
 #import "RKTestEnvironment.h"
 #import "RKParserRegistry.h"
 
-RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader)
+RKOAuthClient *RKTestNewOAuthClient(RKTestResponseLoader *loader)
 {
     [loader setTimeout:10];
     RKOAuthClient *client = [RKOAuthClient clientWithClientID:@"4fa42a4a7184796662000001" secret:@"restkit_secret"];

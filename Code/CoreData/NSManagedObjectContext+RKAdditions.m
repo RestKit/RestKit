@@ -15,7 +15,7 @@ static char NSManagedObject_RKManagedObjectStoreAssociatedKey;
 
 - (RKManagedObjectStore *)managedObjectStore
 {
-    return (RKManagedObjectStore *) objc_getAssociatedObject(self, &NSManagedObject_RKManagedObjectStoreAssociatedKey);
+    return (RKManagedObjectStore *)objc_getAssociatedObject(self, &NSManagedObject_RKManagedObjectStoreAssociatedKey);
 }
 
 - (void)setManagedObjectStore:(RKManagedObjectStore *)managedObjectStore

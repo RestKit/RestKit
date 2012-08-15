@@ -21,10 +21,7 @@
 #import <Foundation/Foundation.h>
 
 // Defines the rules for mapping a particular element
-@interface RKObjectAttributeMapping : NSObject <NSCopying> {
-    NSString *_sourceKeyPath;
-    NSString *_destinationKeyPath;
-}
+@interface RKObjectAttributeMapping : NSObject <NSCopying>
 
 @property (nonatomic, retain) NSString *sourceKeyPath;
 @property (nonatomic, retain) NSString *destinationKeyPath;

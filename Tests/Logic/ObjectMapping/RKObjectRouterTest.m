@@ -26,7 +26,8 @@
 @interface RKTestObject : NSObject
 @end
 @implementation RKTestObject
-+ (id)object {
++ (id)object
+{
     return [[self new] autorelease];
 }
 @end
@@ -43,7 +44,8 @@
 
 @implementation RKTestUser (PolymorphicResourcePath)
 
-- (NSString *)polymorphicResourcePath {
+- (NSString *)polymorphicResourcePath
+{
     return @"/this/is/the/path";
 }
 
@@ -51,69 +53,76 @@
 
 @implementation RKObjectRouterTest
 
--(void)testThrowAnExceptionWhenAskedForAPathForAnUnregisteredClassAndMethod {
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    NSException* exception = nil;
+- (void)testThrowAnExceptionWhenAskedForAPathForAnUnregisteredClassAndMethod
+{
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
+    NSException *exception = nil;
     @try {
         [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodPOST];
     }
-    @catch (NSException * e) {
+    @catch (NSException *e) {
         exception = e;
     }
     assertThat(exception, isNot(nilValue()));
 }
 
--(void)testThrowAnExceptionWhenAskedForAPathForARegisteredClassButUnregisteredMethod {
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+- (void)testThrowAnExceptionWhenAskedForAPathForARegisteredClassButUnregisteredMethod
+{
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
-    NSException* exception = nil;
+    NSException *exception = nil;
     @try {
         [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodPOST];
     }
-    @catch (NSException * e) {
+    @catch (NSException *e) {
         exception = e;
     }
     assertThat(exception, isNot(nilValue()));
 }
 
--(void)testReturnPathsRegisteredForTestificRequestMethods {
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+- (void)testReturnPathsRegisteredForTestificRequestMethods
+{
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
-    NSString* path = [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodGET];
+    NSString *path = [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodGET];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
 }
 
--(void)testReturnPathsRegisteredForTheClassAsAWhole {
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+- (void)testReturnPathsRegisteredForTheClassAsAWhole
+{
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp"];
-    NSString* path = [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodGET];
+    NSString *path = [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodGET];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
     path = [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodPOST];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
 }
 
-- (void)testShouldReturnPathsIfTheSuperclassIsRegistered {
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+- (void)testShouldReturnPathsIfTheSuperclassIsRegistered
+{
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp"];
-    NSString* path = [router resourcePathForObject:[RKTestSubclassedObject new] method:RKRequestMethodGET];
+    NSString *path = [router resourcePathForObject:[RKTestSubclassedObject new] method:RKRequestMethodGET];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
 }
 
-- (void)testShouldFavorExactMatcherOverSuperclassMatches {
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+- (void)testShouldFavorExactMatcherOverSuperclassMatches
+{
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp"];
     [router routeClass:[RKTestSubclassedObject class] toResourcePath:@"/SubclassedHumanService.asp"];
-    NSString* path = [router resourcePathForObject:[RKTestSubclassedObject new] method:RKRequestMethodGET];
+    NSString *path = [router resourcePathForObject:[RKTestSubclassedObject new] method:RKRequestMethodGET];
     assertThat(path, is(equalTo(@"/SubclassedHumanService.asp")));
     path = [router resourcePathForObject:[RKTestObject new] method:RKRequestMethodPOST];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
 }
 
--(void)testFavorTestificMethodsWhenClassAndTestificMethodsAreRegistered {
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+- (void)testFavorTestificMethodsWhenClassAndTestificMethodsAreRegistered
+{
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp"];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanServiceForPUT.asp" forMethod:RKRequestMethodPUT];
-    NSString* path = [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodGET];
+    NSString *path = [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodGET];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
     path = [router resourcePathForObject:[RKTestObject object] method:RKRequestMethodPOST];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
@@ -121,60 +130,65 @@
     assertThat(path, is(equalTo(@"/HumanServiceForPUT.asp")));
 }
 
--(void)testRaiseAnExceptionWhenAttemptIsMadeToRegisterOverAnExistingRoute {
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+- (void)testRaiseAnExceptionWhenAttemptIsMadeToRegisterOverAnExistingRoute
+{
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
-    NSException* exception = nil;
+    NSException *exception = nil;
     @try {
         [router routeClass:[RKTestObject class] toResourcePathPattern:@"/HumanService.asp" forMethod:RKRequestMethodGET];
     }
-    @catch (NSException * e) {
+    @catch (NSException *e) {
         exception = e;
     }
     assertThat(exception, isNot(nilValue()));
 }
 
-- (void)testShouldInterpolatePropertyNamesReferencedInTheMapping {
-    RKTestUser* blake = [RKTestUser user];
+- (void)testShouldInterpolatePropertyNamesReferencedInTheMapping
+{
+    RKTestUser *blake = [RKTestUser user];
     blake.name = @"blake";
     blake.userID = [NSNumber numberWithInt:31337];
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestUser class] toResourcePathPattern:@"/humans/:userID/:name" forMethod:RKRequestMethodGET];
 
-    NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
+    NSString *resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
     assertThat(resourcePath, is(equalTo(@"/humans/31337/blake")));
 }
 
-- (void)testShouldInterpolatePropertyNamesReferencedInTheMappingWithDeprecatedParentheses {
-    RKTestUser* blake = [RKTestUser user];
+- (void)testShouldInterpolatePropertyNamesReferencedInTheMappingWithDeprecatedParentheses
+{
+    RKTestUser *blake = [RKTestUser user];
     blake.name = @"blake";
     blake.userID = [NSNumber numberWithInt:31337];
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestUser class] toResourcePathPattern:@"/humans/(userID)/(name)" forMethod:RKRequestMethodGET];
 
-    NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
+    NSString *resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
     assertThat(resourcePath, is(equalTo(@"/humans/31337/blake")));
 }
 
-- (void)testShouldAllowForPolymorphicURLsViaMethodCalls {
-    RKTestUser* blake = [RKTestUser user];
+- (void)testShouldAllowForPolymorphicURLsViaMethodCalls
+{
+    RKTestUser *blake = [RKTestUser user];
     blake.name = @"blake";
     blake.userID = [NSNumber numberWithInt:31337];
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestUser class] toResourcePathPattern:@":polymorphicResourcePath" forMethod:RKRequestMethodGET escapeRoutedPath:NO];
 
-    NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
+    NSString *resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
     assertThat(resourcePath, is(equalTo(@"/this/is/the/path")));
 }
 
-- (void)testShouldAllowForPolymorphicURLsViaMethodCallsWithDeprecatedParentheses {
-    RKTestUser* blake = [RKTestUser user];
+- (void)testShouldAllowForPolymorphicURLsViaMethodCallsWithDeprecatedParentheses
+{
+    RKTestUser *blake = [RKTestUser user];
     blake.name = @"blake";
     blake.userID = [NSNumber numberWithInt:31337];
-    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+    RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestUser class] toResourcePathPattern:@"(polymorphicResourcePath)" forMethod:RKRequestMethodGET escapeRoutedPath:NO];
 
-    NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
+    NSString *resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
     assertThat(resourcePath, is(equalTo(@"/this/is/the/path")));
 }
 
