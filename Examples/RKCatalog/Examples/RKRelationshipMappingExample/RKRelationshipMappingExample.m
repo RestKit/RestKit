@@ -51,7 +51,7 @@
         
         // Complete Core Data initialization
         NSError *error;
-        NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:@"RKRelationshipMappingExample.sqlite"];
+        NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"RKRelationshipMappingExample.sqlite"];
         NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
         NSAssert(persistentStore, @"Failed to create persistent store with error: %@", error);
         [managedObjectStore createManagedObjectContexts];

@@ -77,7 +77,7 @@
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelTrace);
     
     NSError *error;
-    NSString *seedStorePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:@"RKSeedDatabase.sqlite"];
+    NSString *seedStorePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"RKSeedDatabase.sqlite"];
     RKManagedObjectImporter *importer = [[RKManagedObjectImporter alloc] initWithManagedObjectModel:managedObjectModel storePath:seedStorePath];
     [importer importObjectsFromItemAtPath:[[NSBundle mainBundle] pathForResource:@"restkit" ofType:@"json"]
                               withMapping:statusMapping
@@ -98,7 +98,7 @@
      Complete Core Data stack initialization
      */
     [managedObjectStore createPersistentStoreCoordinator];
-    NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:@"RKTwitter.sqlite"];
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"RKTwitter.sqlite"];
     NSString *seedPath = [[NSBundle mainBundle] pathForResource:@"RKSeedDatabase" ofType:@"sqlite"];
     NSError *error;
     NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath error:&error];
