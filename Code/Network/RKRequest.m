@@ -476,8 +476,9 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
                 }
             }
             
-            //Check the cache control max age
             if (cacheControl) {
+                
+                //Check the cache control max age
                 NSError *error = NULL;
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\bmax-age=(\\d)+"
                                                                                        options:NSRegularExpressionCaseInsensitive
@@ -489,10 +490,20 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
                     NSDate* date = [self.cache cacheDateForRequest:self];
                     NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:date];                                        
                     if (interval < maxAge) {
-                        RKLogDebug(@"Reusing cached content with maxAge %d and current age %d", maxAge, (NSInteger)interval);
+                        RKLogDebug(@"Reusing cached result for %@ with maxAge %d and current age %d", [self.URL absoluteString], maxAge, (NSInteger)interval);
                         return YES;
                     }
-                }                
+                }
+                
+                //Check the cache control no-cache
+                regex = [NSRegularExpression regularExpressionWithPattern:@"\\bno-cache\\b"
+                                                                  options:NSRegularExpressionCaseInsensitive
+                                                                    error:&error];
+                
+                rangeOfFirstMatch = [regex rangeOfFirstMatchInString:cacheControl options:0 range:NSMakeRange(0, [cacheControl length])];
+                if (rangeOfFirstMatch.location != NSNotFound) {
+                    return NO;
+                }
             }
         }
         
