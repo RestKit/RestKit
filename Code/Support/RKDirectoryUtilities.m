@@ -30,8 +30,7 @@ NSString * RKApplicationDataDirectory(void)
     }
     
     if (appSupportDir) {
-        NSString *executableName = [RKDirectory executableName];
-        appDirectory = [appSupportDir URLByAppendingPathComponent:executableName];
+        appDirectory = [appSupportDir URLByAppendingPathComponent:RKExecutableName()];
         return [appDirectory path];
     }
     
@@ -58,7 +57,7 @@ NSString * RKCachesDirectory(void)
     NSString *path = nil;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     if ([paths count]) {
-        path = [[paths objectAtIndex:0] stringByAppendingPathComponent:[RKDirectory executableName]];
+        path = [[paths objectAtIndex:0] stringByAppendingPathComponent:RKExecutableName()];
     }
     
     return path;
