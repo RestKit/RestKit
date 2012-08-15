@@ -49,7 +49,7 @@
         // Create the managed object store and add a SQLite persistent store
         NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
         RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
-        NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:@"RKCoreDataExample.sqlite"];
+        NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"RKCoreDataExample.sqlite"];
         NSError *error;
         NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
         NSAssert(persistentStore, @"Failed to create SQLite store at path %@ due to error: %@", storePath, error);
