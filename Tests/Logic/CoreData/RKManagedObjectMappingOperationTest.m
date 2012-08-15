@@ -82,7 +82,7 @@
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
-    [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID"];
+    [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping];
 
     // Create a cat to connect
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -116,7 +116,7 @@
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", @"railsID", nil];
-    [catMapping connectRelationship:@"favoriteOfHumans" withMapping:humanMapping fromKeyPath:@"railsID" toKeyPath:@"favoriteCatID"];
+    [catMapping connectRelationship:@"favoriteOfHumans" fromKeyPath:@"railsID" toKeyPath:@"favoriteCatID" withMapping:humanMapping];
 
     // Create some humans to connect
     RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -164,7 +164,7 @@
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
-    [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID"];
+    [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping];
 
     // Create a cat to connect
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -197,7 +197,7 @@
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
-    [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID"];
+    [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping];
 
     // Create a cat to connect
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -230,7 +230,7 @@
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"catIDs", nil];
-    [humanMapping connectRelationship:@"cats" withMapping:catMapping fromKeyPath:@"catIDs" toKeyPath:@"railsID"];
+    [humanMapping connectRelationship:@"cats" fromKeyPath:@"catIDs" toKeyPath:@"railsID" withMapping:catMapping];
 
     // Create a couple of cats to connect
     RKCat *asia = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -271,7 +271,7 @@
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", @"humanId", nil];
-    [catMapping connectRelationship:@"human" withMapping:humanMapping fromKeyPath:@"humanId" toKeyPath:@"railsID"];
+    [catMapping connectRelationship:@"human" fromKeyPath:@"humanId" toKeyPath:@"railsID" withMapping:humanMapping];
 
     // Create a human to connect
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -402,7 +402,7 @@
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
-    [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" whenValueOfKeyPath:@"name" isEqualTo:@"Blake"];
+    [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping whenValueOfKeyPath:@"name" isEqualTo:@"Blake"];
 
     // Create a cat to connect
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -435,7 +435,7 @@
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
-    [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" whenValueOfKeyPath:@"name" isEqualTo:@"Jeff"];
+    [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping whenValueOfKeyPath:@"name" isEqualTo:@"Jeff"];
 
     // Create a cat to connect
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -500,7 +500,7 @@
 
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"RKChild" inManagedObjectStore:managedObjectStore];
     [childMapping mapAttributes:@"fatherID", nil];
-    [childMapping connectRelationship:@"father" withMapping:parentMapping fromKeyPath:@"fatherID" toKeyPath:@"parentID"];
+    [childMapping connectRelationship:@"father" fromKeyPath:@"fatherID" toKeyPath:@"parentID" withMapping:parentMapping];
 
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider new];
     // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary

@@ -1461,7 +1461,6 @@
 		25160D45145650490060A5C5 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */,
 				25160D46145650490060A5C5 /* CoreData.h */,
 				7394DF3814CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.h */,
 				7394DF3914CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.m */,
@@ -1490,9 +1489,10 @@
 				259D98531550C69A008C90F5 /* RKEntityByAttributeCache.m */,
 				259D985C155218E4008C90F5 /* RKEntityCache.h */,
 				259D985D155218E4008C90F5 /* RKEntityCache.m */,
-				258113CC15781871009835EB /* RKObjectMappingProvider+CoreData.m */,
 				258113C615781848009835EB /* RKObjectMappingProvider+CoreData.h */,
+				258113CC15781871009835EB /* RKObjectMappingProvider+CoreData.m */,
 				258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */,
+				25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */,
 				2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */,
 				2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */,
 			);
