@@ -100,7 +100,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (RKConnectionMapping *)connectionMappingForRelationshipWithName:(NSString *)relationshipName
 {
-    for (RKConnectionMapping *connection in self.connections) {
+    for (RKConnectionMapping *connection in self.connectionMappings) {
         if ([connection.relationshipName isEqualToString:relationshipName]) {
             return connection;
         }
@@ -191,7 +191,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     }
 }
 
-- (NSArray *)connections
+- (NSArray *)connectionMappings
 {
     return [NSArray arrayWithArray:self.mutableConnections];
 }
