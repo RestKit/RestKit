@@ -92,7 +92,7 @@ extern NSString * const RKTableControllerDidBecomeOffline;
  @constant RKTableControllerStateNotYetLoaded Indicates that the table controller is
  has not yet attempted a load and state is unknown.
  */
-enum RKTableControllerState {
+enum {
     RKTableControllerStateNormal        = 0,
     RKTableControllerStateLoading       = 1 << 1,
     RKTableControllerStateEmpty         = 1 << 2,
