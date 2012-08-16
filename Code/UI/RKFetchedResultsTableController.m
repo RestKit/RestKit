@@ -21,9 +21,8 @@
 #import "RKFetchedResultsTableController.h"
 #import "RKAbstractTableController_Internals.h"
 #import "RKManagedObjectStore.h"
-#import "NSManagedObject+ActiveRecord.h"
-#import "RKObjectMappingOperation.h"
-#import "RKManagedObjectMapping.h"
+#import "RKMappingOperation.h"
+#import "RKEntityMapping.h"
 #import "RKLog.h"
 #import "RKObjectMappingProvider+CoreData.h"
 
@@ -32,7 +31,10 @@
 #define RKLogComponent lcl_cRestKitUI
 
 @interface RKFetchedResultsTableController ()
+
+@property (nonatomic, assign) BOOL isEmptyBeforeAnimation;
 @property (nonatomic, retain, readwrite) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, retain) NSArray *arraySortedFetchedObjects;
 
 - (BOOL)performFetch:(NSError **)error;
 - (void)updateSortedArray;
@@ -53,6 +55,8 @@
 @synthesize sortSelector = _sortSelector;
 @synthesize sortComparator = _sortComparator;
 @synthesize fetchRequest = _fetchRequest;
+@synthesize arraySortedFetchedObjects = _arraySortedFetchedObjects;
+@synthesize isEmptyBeforeAnimation = _isEmptyBeforeAnimation;
 
 - (void)dealloc
 {
@@ -82,9 +86,10 @@
 
 - (BOOL)performFetch:(NSError **)error
 {
-    // TODO: We could be doing a KVO on the predicate/sortDescriptors/sectionKeyPath and intelligently deleting the cache
-    [NSFetchedResultsController deleteCacheWithName:_fetchedResultsController.cacheName];
-    BOOL success = [_fetchedResultsController performFetch:error];
+    NSAssert(self.fetchedResultsController, @"Cannot perform a fetch: self.fetchedResultsController is nil.");
+    
+    [NSFetchedResultsController deleteCacheWithName:self.fetchedResultsController.cacheName];    
+    BOOL success = [self.fetchedResultsController performFetch:error];
     if (!success) {
         RKLogError(@"performFetch failed with error: %@", [*error localizedDescription]);
         return NO;
@@ -110,17 +115,16 @@
 
 - (void)updateSortedArray
 {
-    [_arraySortedFetchedObjects release];
-    _arraySortedFetchedObjects = nil;
+    self.arraySortedFetchedObjects = nil;
 
-    if (_sortSelector || _sortComparator) {
-        if (_sortSelector) {
-            _arraySortedFetchedObjects = [[_fetchedResultsController.fetchedObjects sortedArrayUsingSelector:_sortSelector] retain];
-        } else if (_sortComparator) {
-            _arraySortedFetchedObjects = [[_fetchedResultsController.fetchedObjects sortedArrayUsingComparator:_sortComparator] retain];
+    if (self.sortSelector || self.sortComparator) {
+        if (self.sortSelector) {
+            self.arraySortedFetchedObjects = [self.fetchedResultsController.fetchedObjects sortedArrayUsingSelector:self.sortSelector];
+        } else if (self.sortComparator) {
+            self.arraySortedFetchedObjects = [self.fetchedResultsController.fetchedObjects sortedArrayUsingComparator:self.sortComparator];
         }
 
-        NSAssert(_arraySortedFetchedObjects.count == _fetchedResultsController.fetchedObjects.count,
+        NSAssert(self.arraySortedFetchedObjects.count == self.fetchedResultsController.fetchedObjects.count,
                  @"sortSelector or sortComparator sort resulted in fewer objects than expected");
     }
 }
@@ -160,13 +164,14 @@
 - (BOOL)isFooterRow:(NSUInteger)row
 {
     NSUInteger sectionIndex = ([self sectionCount] - 1);
-    id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:sectionIndex];
-    NSUInteger nonFooterRowCount = [sectionInfo numberOfObjects];
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:sectionIndex];
+    NSUInteger firstFooterIndex = [sectionInfo numberOfObjects];
     if (sectionIndex == 0) {
-        nonFooterRowCount += (![self isEmpty] || self.showsHeaderRowsWhenEmpty) ? [self.headerItems count] : 0;
-        nonFooterRowCount += ([self isEmpty] && self.emptyItem) ? 1 : 0;
+        firstFooterIndex += (![self isEmpty] || self.showsHeaderRowsWhenEmpty) ? [self.headerItems count] : 0;
+        firstFooterIndex += ([self isEmpty] && self.emptyItem) ? 1 : 0;
     }
-    return (row > (nonFooterRowCount - 1));
+    
+    return row >= firstFooterIndex;
 }
 
 - (BOOL)isHeaderIndexPath:(NSIndexPath *)indexPath
@@ -250,31 +255,33 @@
 
 - (NSFetchRequest *)fetchRequest
 {
-    return _fetchRequest ? _fetchRequest : _fetchedResultsController.fetchRequest;
+    return _fetchRequest ? _fetchRequest : self.fetchedResultsController.fetchRequest;
 }
 
 - (void)loadTable
 {
     NSFetchRequest *fetchRequest = nil;
-    if (_resourcePath) {
+    if (self.resourcePath) {
         fetchRequest = [self.objectManager.mappingProvider fetchRequestForResourcePath:self.resourcePath];
     } else {
-        fetchRequest = _fetchRequest;
+        fetchRequest = self.fetchRequest;
     }
     NSAssert(fetchRequest != nil, @"Attempted to load RKFetchedResultsTableController with nil fetchRequest for resourcePath %@, fetchRequest %@", _resourcePath, _fetchRequest);
 
-    if (_predicate) {
-        [fetchRequest setPredicate:_predicate];
+    if (self.predicate) {
+        [fetchRequest setPredicate:self.predicate];
     }
-    if (_sortDescriptors) {
-        [fetchRequest setSortDescriptors:_sortDescriptors];
+    if (self.sortDescriptors) {
+        [fetchRequest setSortDescriptors:self.sortDescriptors];
     }
     
-    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                        managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
-                                                                          sectionNameKeyPath:_sectionNameKeyPath
-                                                                                   cacheName:_cacheName];
-    [self.fetchedResultsController release];
+    RKLogTrace(@"Loading fetched results table view from managed object context %@ with fetch request: %@", self.managedObjectContext, fetchRequest);
+    NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                                               managedObjectContext:self.managedObjectContext
+                                                                                                 sectionNameKeyPath:self.sectionNameKeyPath
+                                                                                                          cacheName:self.cacheName];
+    self.fetchedResultsController = fetchedResultsController;
+    [fetchedResultsController release];
     self.fetchedResultsController.delegate = self;
 
     // Perform the load
@@ -300,17 +307,17 @@
 
 - (void)setSortSelector:(SEL)sortSelector
 {
-    NSAssert(_sectionNameKeyPath == nil, @"Attempted to sort fetchedObjects across multiple sections");
-    NSAssert(_sortComparator == nil, @"Attempted to sort fetchedObjects with a sortSelector when a sortComparator already exists");
-    _sortSelector = sortSelector;
+    NSAssert(self.sectionNameKeyPath == nil, @"Attempted to sort fetchedObjects across multiple sections");
+    NSAssert(self.sortComparator == nil, @"Attempted to sort fetchedObjects with a sortSelector when a sortComparator already exists");
+    self.sortSelector = sortSelector;
 }
 
 - (void)setSortComparator:(NSComparator)sortComparator
 {
-    NSAssert(_sectionNameKeyPath == nil, @"Attempted to sort fetchedObjects across multiple sections");
-    NSAssert(_sortSelector == nil, @"Attempted to sort fetchedObjects with a sortComparator when a sortSelector already exists");
-    if (_sortComparator) {
-        Block_release(_sortComparator);
+    NSAssert(self.sectionNameKeyPath == nil, @"Attempted to sort fetchedObjects across multiple sections");
+    NSAssert(self.sortSelector == nil, @"Attempted to sort fetchedObjects with a sortComparator when a sortSelector already exists");
+    if (self.sortComparator) {
+        Block_release(self.sortComparator);
         _sortComparator = nil;
     }
     _sortComparator = Block_copy(sortComparator);
@@ -318,8 +325,8 @@
 
 - (void)setSectionNameKeyPath:(NSString *)sectionNameKeyPath
 {
-    NSAssert(_sortSelector == nil, @"Attempted to create a sectioned fetchedResultsController when a sortSelector is present");
-    NSAssert(_sortComparator == nil, @"Attempted to create a sectioned fetchedResultsController when a sortComparator is present");
+    NSAssert(self.sortSelector == nil, @"Attempted to create a sectioned fetchedResultsController when a sortSelector is present");
+    NSAssert(self.sortComparator == nil, @"Attempted to create a sectioned fetchedResultsController when a sortComparator is present");
     [sectionNameKeyPath retain];
     [_sectionNameKeyPath release];
     _sectionNameKeyPath = sectionNameKeyPath;
@@ -345,12 +352,12 @@
 
 - (NSUInteger)sectionCount
 {
-    return [[_fetchedResultsController sections] count];
+    return [[self.fetchedResultsController sections] count];
 }
 
 - (NSUInteger)rowCount
 {
-    NSUInteger fetchedItemCount = [[_fetchedResultsController fetchedObjects] count];
+    NSUInteger fetchedItemCount = [[self.fetchedResultsController fetchedObjects] count];
     NSUInteger nonFetchedItemCount = 0;
     if (fetchedItemCount == 0) {
         nonFetchedItemCount += self.emptyItem ? 1 : 0;
@@ -366,7 +373,7 @@
 - (NSIndexPath *)indexPathForObject:(id)object
 {
     if ([object isKindOfClass:[NSManagedObject class]]) {
-        return [self indexPathForFetchedResultsIndexPath:[_fetchedResultsController indexPathForObject:object]];
+        return [self indexPathForFetchedResultsIndexPath:[self.fetchedResultsController indexPathForObject:object]];
     } else if ([object isKindOfClass:[RKTableItem class]]) {
         if ([object isEqual:self.emptyItem]) {
             return ([self isEmpty]) ? [self emptyItemIndexPath] : nil;
@@ -377,7 +384,7 @@
             return [NSIndexPath indexPathForRow:row inSection:[self headerSectionIndex]];
         } else if ([self.footerItems containsObject:object]) {
             NSUInteger footerSectionIndex = [self sectionCount] - 1;
-            id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:footerSectionIndex];
+            id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:footerSectionIndex];
             NSUInteger numberOfFetchedResults = sectionInfo.numberOfObjects;
             NSUInteger objectIndex = [self.footerItems indexOfObject:object];
             NSUInteger row = numberOfFetchedResults + objectIndex;
@@ -406,15 +413,15 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)theTableView
 {
     NSAssert(theTableView == self.tableView, @"numberOfSectionsInTableView: invoked with inappropriate tableView: %@", theTableView);
-    RKLogTrace(@"numberOfSectionsInTableView: %d (%@)", [[_fetchedResultsController sections] count], [[_fetchedResultsController sections] valueForKey:@"name"]);
-    return [[_fetchedResultsController sections] count];
+    RKLogTrace(@"numberOfSectionsInTableView: %d (%@)", [[self.fetchedResultsController sections] count], [[self.fetchedResultsController sections] valueForKey:@"name"]);
+    return [[self.fetchedResultsController sections] count];
 }
 
 - (NSInteger)tableView:(UITableView *)theTableView numberOfRowsInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"tableView:numberOfRowsInSection: invoked with inappropriate tableView: %@", theTableView);
     RKLogTrace(@"%@ numberOfRowsInSection:%d = %d", self, section, self.sectionCount);
-    id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
     NSUInteger numberOfRows = [sectionInfo numberOfObjects];
 
     if ([self isHeaderSection:section]) {
@@ -451,7 +458,7 @@
 - (NSInteger)tableView:(UITableView *)theTableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
     if (theTableView.style == UITableViewStylePlain && self.showsSectionIndexTitles) {
-        return [_fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
+        return [self.fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
     }
     return 0;
 }
@@ -462,8 +469,8 @@
     if (self.canEditRows && editingStyle == UITableViewCellEditingStyleDelete) {
         NSManagedObject *managedObject = [self objectForRowAtIndexPath:indexPath];
         RKObjectMapping *mapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[managedObject class]];
-        if ([mapping isKindOfClass:[RKManagedObjectMapping class]]) {
-            RKManagedObjectMapping *managedObjectMapping = (RKManagedObjectMapping *)mapping;
+        if ([mapping isKindOfClass:[RKEntityMapping class]]) {
+            RKEntityMapping *managedObjectMapping = (RKEntityMapping *)mapping;
             NSString *primaryKeyAttribute = managedObjectMapping.primaryKeyAttribute;
 
             if ([managedObject valueForKeyPath:primaryKeyAttribute]) {
@@ -471,13 +478,16 @@
                 [[RKObjectManager sharedManager] deleteObject:managedObject delegate:self];
             } else {
                 RKLogTrace(@"About to locally delete managedObject: %@", managedObject);
-                [managedObject.managedObjectContext deleteObject:managedObject];
-
-                NSError *error = nil;
-                [managedObject.managedObjectContext save:&error];
-                if (error) {
-                    RKLogError(@"Failed to save managedObjectContext after a delete with error: %@", error);
-                }
+                NSManagedObjectContext *managedObjectContext = managedObject.managedObjectContext;
+                [managedObjectContext performBlock:^{
+                    [managedObjectContext deleteObject:managedObject];
+                    
+                    NSError *error = nil;
+                    [managedObjectContext save:&error];
+                    if (error) {
+                        RKLogError(@"Failed to save managedObjectContext after a delete with error: %@", error);
+                    }
+                }];
             }
         }
     }
@@ -505,7 +515,7 @@
 - (CGFloat)tableView:(UITableView *)theTableView heightForHeaderInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"heightForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
-    return _heightForHeaderInSection;
+    return self.heightForHeaderInSection;
 }
 
 - (CGFloat)tableView:(UITableView *)theTableView heightForFooterInSection:(NSInteger)sectionIndex
@@ -517,10 +527,10 @@
 - (UIView *)tableView:(UITableView *)theTableView viewForHeaderInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"viewForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
-    if (_onViewForHeaderInSection) {
+    if (self.onViewForHeaderInSection) {
         NSString *sectionTitle = [self tableView:self.tableView titleForHeaderInSection:section];
         if (sectionTitle) {
-            return _onViewForHeaderInSection(section, sectionTitle);
+            return self.onViewForHeaderInSection(section, sectionTitle);
         }
     }
     return nil;
@@ -542,7 +552,7 @@
         NSUInteger row = ([self isEmpty] && self.emptyItem) ? (indexPath.row - 1) : indexPath.row;
         return [self.headerItems objectAtIndex:row];
     } else if ([self isFooterIndexPath:indexPath]) {
-        id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:indexPath.section];
+        id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:indexPath.section];
         NSUInteger footerRow = (indexPath.row - sectionInfo.numberOfObjects);
         if (indexPath.section == 0) {
             footerRow -= (![self isEmpty] || self.showsHeaderRowsWhenEmpty) ? [self.headerItems count] : 0;
@@ -550,14 +560,14 @@
         }
         return [self.footerItems objectAtIndex:footerRow];
 
-    } else if (_sortSelector || _sortComparator) {
-        return [_arraySortedFetchedObjects objectAtIndex:[self fetchedResultsIndexPathForIndexPath:indexPath].row];
+    } else if (self.sortSelector || self.sortComparator) {
+        return [self.arraySortedFetchedObjects objectAtIndex:[self fetchedResultsIndexPathForIndexPath:indexPath].row];
     }
     
     NSIndexPath *fetchedResultsIndexPath = [self fetchedResultsIndexPathForIndexPath:indexPath];
     id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:fetchedResultsIndexPath.section];
     if (fetchedResultsIndexPath.row < [sectionInfo numberOfObjects]) {
-        return [_fetchedResultsController objectAtIndexPath:fetchedResultsIndexPath];
+        return [self.fetchedResultsController objectAtIndexPath:fetchedResultsIndexPath];
     } else {
         return nil;
     }
@@ -589,10 +599,10 @@
 {
     RKLogTrace(@"Beginning updates for fetchedResultsController (%@). Current section count = %d (resource path: %@)", controller, [[controller sections] count], _resourcePath);
 
-    if (_sortSelector) return;
+    if (self.sortSelector) return;
 
     [self.tableView beginUpdates];
-    _isEmptyBeforeAnimation = [self isEmpty];
+    self.isEmptyBeforeAnimation = [self isEmpty];
 }
 
 - (void)controller:(NSFetchedResultsController *)controller
@@ -652,11 +662,8 @@
             break;
 
         case NSFetchedResultsChangeUpdate:
-            /**
-             TODO: Missing a call to a replacement for configureCell:atIndexPath: which updates
-             the contents of a given cell with the information from a managed object
-             at a given index path in the fetched results controller
-             */
+            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:adjIndexPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
             break;
 
         case NSFetchedResultsChangeMove:
@@ -683,7 +690,7 @@
 
     [self updateSortedArray];
 
-    if (_sortSelector) {
+    if (self.sortSelector) {
         [self.tableView reloadData];
     } else {
         [self.tableView endUpdates];

@@ -13,7 +13,7 @@
 RK_FIX_CATEGORY_BUG(RKObjectMappingProvider_CoreData)
 @implementation RKObjectMappingProvider (CoreData)
 
-- (void)setObjectMapping:(RKObjectMappingDefinition *)objectMapping forResourcePathPattern:(NSString *)resourcePath withFetchRequestBlock:(RKObjectMappingProviderFetchRequestBlock)fetchRequestBlock
+- (void)setObjectMapping:(RKMapping *)objectMapping forResourcePathPattern:(NSString *)resourcePath withFetchRequestBlock:(RKObjectMappingProviderFetchRequestBlock)fetchRequestBlock
 {
     [self setEntry:[RKObjectMappingProviderContextEntry contextEntryWithMapping:objectMapping
                                                                        userData:Block_copy(fetchRequestBlock)] forResourcePathPattern:resourcePath];

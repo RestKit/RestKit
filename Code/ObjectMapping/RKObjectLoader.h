@@ -20,11 +20,11 @@
 
 #import "Network.h"
 #import "RKObjectMapping.h"
-#import "RKObjectMappingResult.h"
+#import "RKMappingResult.h"
 #import "RKObjectMappingProvider.h"
 
-@class RKObjectMappingProvider;
-@class RKObjectLoader;
+@class RKObjectMappingProvider, RKObjectLoader, RKObjectMapper;
+@protocol RKMappingOperationDataSource;
 
 // Block Types
 typedef void(^RKObjectLoaderBlock)(RKObjectLoader *loader);
@@ -135,11 +135,7 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * RKManagedObjectLoader instead of RKObjectLoader. RKManagedObjectLoader is a descendent class that
  * includes Core Data specific mapping logic.
  */
-@interface RKObjectLoader : RKRequest {
-  @protected
-    id<NSObject> _sourceObject;
-    id<NSObject> _targetObject;
-}
+@interface RKObjectLoader : RKRequest
 
 /**
  The object that acts as the delegate of the receiving object loader.
@@ -204,6 +200,8 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  */
 @property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
 
+@property (nonatomic, retain) id<RKMappingOperationDataSource> mappingOperationDataSource;
+
 /**
  * The underlying response object for this loader
  */
@@ -214,7 +212,7 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * object mapping has completed. Provides access to the final products of the
  * object mapper in a variety of formats.
  */
-@property (nonatomic, readonly) RKObjectMappingResult *result;
+@property (nonatomic, retain, readonly) RKMappingResult *result;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Serialization
@@ -280,6 +278,9 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * Handle an error in the response preventing it from being mapped, called from -isResponseMappable
  */
 - (void)handleResponseError;
+
+// Subclass hook for RKManagedObjectLoader...
+- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper;
 
 @end
 

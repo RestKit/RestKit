@@ -19,154 +19,283 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKManagedObjectCaching.h"
 
 @class RKManagedObjectStore;
 
+// Option containing the path to the seed database a SQLite store was initialized with
+extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
+
 /**
- * Notifications
+ THe RKManagedObjectStore class encapsulates a Core Data stack including a
+ managed object model, a persistent store coordinator, and a set of managed
+ object contexts. The managed object store simplifies the task of properly 
+ setting up a Core Data stack and provides some additional functionality, such
+ as the use of a seed database to initialize a SQLite backed persistent store and
+ a simple code path for resetting the store by destroying and recreating the persistent
+ stores.
+ 
+ ## Initialization
+ 
+ The managed object store is designed to easily initialize a Core Data stack in a recommended
+ configuration. A store object must always be initialized with a managed object model, but this
+ managed object model can be directly provided, inferred from an already configured persistent
+ store coordinator, or read from the currently available bundles within the application. Note
+ that several features provided by the framework rely on the store being initialized with a mutable
+ managed object model. Please refer to the documentation in the initWithManagedObjectModel: for details.
+ 
+ ## Managed Object Contexts
+ 
+ The managed object store provides the application developer with a pair of managed
+ objects with which to work with Core Data. The store configures a primary managed object
+ context with the NSPrivateQueueConcurrencyType that is associated with the 
+ persistent store coordinator for handling Core Data persistence. A second context is also
+ created with the NSMainQueueConcurrencyType that is a child of the primary managed object
+ context for doing work on the main queue. Additional child contexts can be created directly
+ or via a convenience method interface provided by the store (see newChildManagedObjectContextWithConcurrencyType:).
+ 
+ The managed object context hierarchy is designed to isolate the main thread from disk I/O
+ and avoid deadlocks. Because the primary context manages its own private queue, saving the
+ main queue context will not result in the objects being saved to the persistent store. The primary
+ context must be saved as well for objects to be persisted to disk. 
+ 
+ It is also worth noting that because of the parent/child context hierarchy, objects created on the main 
+ thread will not obtain permanent managed object ID's even after the primary context has been saved. 
+ If you need to refer to the permanent representations of objects created on the main thread after a save,
+ you may ask the main queue context to obtain permanent managed objects for your objects via `obtainPermanentIDsForObjects:error:`. 
+ Be warned that when obtaining permanent managed object ID's, you must include all newly created objects 
+ that are reachable from the object you are concerned with in the set of objects provided to `obtainPermanentIDsForObjects:error:`.
+ This means any newly created object in a one-to-one or one-to-many relationship must be provided or you
+ will face a crash from the managed object context. This is due to a bug in Core Data present as of iOS 6
+ (see Open Radar http://openradar.appspot.com/11478919).
+ 
+ @see NSManagedObjectContext (RKAdditions)
+ @see NSEntityDescription (RKAdditions)
  */
-extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
-
-///////////////////////////////////////////////////////////////////
-
-@protocol RKManagedObjectStoreDelegate
-@optional
-
-- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCreatePersistentStoreCoordinatorWithError:(NSError *)error;
-
-- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToDeletePersistentStore:(NSString *)pathToStoreFile error:(NSError *)error;
-
-- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCopySeedDatabase:(NSString *)seedDatabase error:(NSError *)error;
-
-- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToSaveContext:(NSManagedObjectContext *)context error:(NSError *)error exception:(NSException *)exception;
-
-@end
-
-///////////////////////////////////////////////////////////////////
-
 @interface RKManagedObjectStore : NSObject
-
-// The delegate for this object store
-@property (nonatomic, assign) NSObject<RKManagedObjectStoreDelegate> *delegate;
-
-// The filename of the database backing this object store
-@property (nonatomic, readonly) NSString *storeFilename;
-
-// The full path to the database backing this object store
-@property (nonatomic, readonly) NSString *pathToStoreFile;
-
-// Core Data
-@property (nonatomic, readonly) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 ///-----------------------------------------------------------------------------
 /// @name Accessing the Default Object Store
 ///-----------------------------------------------------------------------------
 
-+ (RKManagedObjectStore *)defaultObjectStore;
-+ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore;
-
-///-----------------------------------------------------------------------------
-/// @name Deleting Store Files
-///-----------------------------------------------------------------------------
+/**
+ Returns the default managed object store for the application.
+ 
+ @return The default managed object store.
+ */
++ (RKManagedObjectStore *)defaultStore;
 
 /**
- Deletes the SQLite file backing an RKManagedObjectStore instance at a given path.
-
- @param path The complete path to the store file to delete.
+ Sets the default managed object store for the application.
+ 
+ @param managedObjectStore The new default managed object store.
  */
-+ (void)deleteStoreAtPath:(NSString *)path;
-
-/**
- Deletes the SQLite file backing an RKManagedObjectStore instance with a given
- filename within the application data directory.
-
- @param filename The name of the file within the application data directory backing a managed object store.
- */
-+ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename;
++ (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore;
 
 ///-----------------------------------------------------------------------------
 /// @name Initializing an Object Store
 ///-----------------------------------------------------------------------------
 
 /**
-
+ Initializes the receiver with a given managed object model. This is the designated initializer for RKManagedObjectStore.
+ 
+ @param managedObjectModel The managed object model with which to initialize the receiver.
+ @return The receiver, initialized with the given managed object model.
+ @bug Several features require that the managed object model used to initialize the store be mutable so
+ that entities may be changed before the persistent store coordinator is created. Since iOS 5, managed object models
+ initialized via initWithContentsOfURL: return an immutable model. The application developer must send the returned 
+ managed object model a mutable copy message to ensure that it is mutable before initializing the managed object store.
+ The recommended approach for initializing a managed object store is as follows:
+ 
+    NSURL *modelURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"MyApplication" ofType:@"momd"]];
+    // NOTE: Due to an iOS 5 bug, the managed object model returned is immutable.
+    NSManagedObjectModel *managedObjectModel = [[[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL] mutableCopy];
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
  */
-@property (nonatomic, retain) NSObject<RKManagedObjectCaching> *cacheStrategy;
-
-/**
- * Initialize a new managed object store with a SQLite database with the filename specified
- */
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename;
-
-/**
- * Initialize a new managed object store backed by a SQLite database with the specified filename.
- * If a seed database name is provided and no existing database is found, initialize the store by
- * copying the seed database from the main bundle. If the managed object model provided is nil,
- * all models will be merged from the main bundle for you.
- */
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
-
-/**
- * Initialize a new managed object store backed by a SQLite database with the specified filename,
- * in the specified directory. If no directory is specified, will use the app's Documents
- * directory. If a seed database name is provided and no existing database is found, initialize
- * the store by copying the seed database from the main bundle. If the managed object model
- * provided is nil, all models will be merged from the main bundle for you.
- */
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
+- (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
 
 /**
- * Initialize a new managed object store with a SQLite database with the filename specified
- * @deprecated
+ Initializes the receiver with an existing persistent store coordinator.
+ 
+ The managed object model from the persistent store coordinator will be used to initialize the receiver 
+ and the given persistent store coordinator will be configured as the persistent store coordinator for the
+ managed object store.
+ 
+ This initialization method provides for easy integration with an existing Core Data stack.
+ 
+ @param persistentStoreCoordinator The persistent store coordinator with which to initialize the receiver.
+ @return The receiver, initialized with the managed object model of the given persistent store coordinator and
+    the persistent store coordinator.
  */
-- (id)initWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE;
+- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
 
 /**
- * Save the current contents of the managed object store
+ Initializes the receiver with a managed object model obtained by merging the models from all of
+ the application's non-framework bundles.
+ 
+ @see [NSBundle allBundles]
+ @see [NSManagedObjectModel mergedModelFromBundles:]
+ 
+ @warning Obtaining a managed object model by merging all bundles may result in an application error
+ if versioned object models are in use.
  */
-- (BOOL)save:(NSError **)error;
-
-/**
- * This deletes and recreates the managed object context and
- * persistent store, effectively clearing all data
- */
-- (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile;
-- (void)deletePersistentStore;
-
-/**
- * Retrieves a model object from the appropriate context using the objectId
- */
-- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID;
-
-/**
- * Retrieves a array of model objects from the appropriate context using
- * an array of NSManagedObjectIDs
- */
-- (NSArray *)objectsWithIDs:(NSArray *)objectIDs;
+- (id)init;
 
 ///-----------------------------------------------------------------------------
-/// @name Retrieving Managed Object Contexts
+/// @name Configuring Persistent Stores
 ///-----------------------------------------------------------------------------
 
 /**
- Retrieves the Managed Object Context for the main thread that was initialized when
- the object store was created.
+ Creates a persistent store coordinator with the receiver's managed object model. After invocation,
+ the persistentStoreCoordinator property will no longer be nil.
+ 
+ @warning Creating the persistent store coordinator will render the managed object model
+ immutable. Attempts to use functionality that requires a mutable managed object model after
+ the persistent store coordinator has been created will raise an application error.
+ */
+- (void)createPersistentStoreCoordinator;
+
+/**
+ Adds a new in memory persistent store to the persistent store coordinator of the receiver.
+ 
+ This method will invoke createPersistentStore if a persistent store coordinator has not yet been created.
+ 
+ @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error 
+    object containing the error information. You may specify nil for this parameter if you do not want the error information.
+ @returns The new persistent store, or nil in the event of an error.
+ */
+- (NSPersistentStore *)addInMemoryPersistentStore:(NSError **)error;
+
+/**
+ Adds a new SQLite persistent store, optionally initialized with a seed database, to the persistent store coordinator of the receiver.
+ 
+ @param storePath The path at which to save the persistent store on disk.
+ @param seedPath An optional path to a seed database to copy to the given storePath in the event that a store does not yet exist.
+ @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error
+ object containing the error information. You may specify nil for this parameter if you do not want the error information.
+ 
+ @warning If the seed database at the given path was created with an incompatible managed object model an application error
+    may be raised.
+ */
+- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error;
+
+/**
+ Resets the persistent stores in the receiver's persistent store coordinator and recreates them. If a store being reset
+ is backed by a file on disk (such as a SQLite file), the file will be removed prior to recreating the store. If the
+ store was originally created using a seed database, the seed will be recopied to reset the store to its seeded state.
+ 
+ @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error
+ object containing the error information. You may specify nil for this parameter if you do not want the error information.
+ @return A Boolean value indicating if the reset was successful.
+ 
+ @warning This method will implictly result in the managed object contexts associated with the receiver to be discarded
+ and recreated. Any managed objects or additional child contexts associated with the store will need to be discarded or else 
+ exceptions may be raised (i.e. NSObjectInaccessibleException).
+ */
+- (BOOL)resetPersistentStores:(NSError **)error;
+
+///-----------------------------------------------------------------------------
+/// @name Retrieving Details about the Store
+///-----------------------------------------------------------------------------
+
+/**
+ Returns the managed object model of the receiver.
+ 
+ @return The managed object model of the receiver.
+ */
+@property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
+
+/**
+ Returns the persistent store coordinator of the receiver.
+ 
+ @return The persistent store coordinator of the receiver.
+ */
+@property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+
+/**
+ The managed object cache associated with the receiver.
+ 
+ The managed object cache is used to accelerate intensive Core Data operations by
+ caching managed objects by their primary key value.
+ 
+ @see RKManagedObjectCaching
+ @warning A nil managed object cache will result in a store that is unable to uniquely identify
+ existing objects by primary key attribute value and may result in the creation of duplicate objects
+ within the store.
+ */
+@property (nonatomic, retain) id<RKManagedObjectCaching> managedObjectCache;
+
+///-----------------------------------------------------------------------------
+/// @name Working with Managed Object Contexts
+///-----------------------------------------------------------------------------
+
+/**
+ Creates the primary and main queue managed object contexts for the receiver.
+ 
+ @see primaryManagedObjectContext
+ @see mainQueueManagedObjectContext
+ @raises NSInternalInconsistencyException Raised if the managed object contexts have already been created.
+ */
+- (void)createManagedObjectContexts;
+
+/**
+ The primary managed object context of the receiver.
+ 
+ The primary context is responsible for managing persistence to the persistent store coordinator for the
+ managed object store. The context is created with the NSPrivateQueueConcurrencyType and as such must
+ be interacted with using [NSManagedObjectContext performBlock:] or [NSManagedObjectContext performBlockAndWait:].
+ The primary context is useful as the parent context for scratch contexts or main queue contexts for interacting
+ with the user interface. Created by the invocation of createManagedObjectContexts.
+ 
+ @see createManagedObjectContexts
  */
 @property (nonatomic, retain, readonly) NSManagedObjectContext *primaryManagedObjectContext;
 
 /**
- Instantiates a new managed object context
+ The main queue managed object context of the receiver.
+ 
+ The main queue context is available for usage on the main queue to drive user interface needs. The context is
+ created with the NSMainQueueConcurrencyType and as such may be messaged directly from the main thread. The context
+ is a child context of the primaryManagedObjectContext and can persist changes up to the parent via a save.
  */
-- (NSManagedObjectContext *)newManagedObjectContext;
+@property (nonatomic, retain, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 
-/*
- * This returns an appropriate managed object context for this object store.
- * Because of the intrecacies of how Core Data works across threads it returns
- * a different NSManagedObjectContext for each thread.
+/**
+ Creates a new child managed object context of the primary managed object context with a given concurrency type.
+ 
+ @param concurrencyType The desired concurrency type for the new context.
+ @return A newly created managed object context with the given concurrency type whose parent is the primaryManagedObjectContext.
  */
-- (NSManagedObjectContext *)managedObjectContextForCurrentThread;
+- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType;
+
+@end
+
+@interface RKManagedObjectStore (Deprecations)
++ (RKManagedObjectStore *)defaultObjectStore DEPRECATED_ATTRIBUTE;
++ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
+- (id)initWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE;
+- (NSManagedObjectContext *)newManagedObjectContext DEPRECATED_ATTRIBUTE;
+- (NSManagedObjectContext *)managedObjectContextForCurrentThread DEPRECATED_ATTRIBUTE;
+- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID DEPRECATED_ATTRIBUTE;
+- (NSArray *)objectsWithIDs:(NSArray *)objectIDs DEPRECATED_ATTRIBUTE;
+
+- (id<RKManagedObjectCaching>)cacheStrategy DEPRECATED_ATTRIBUTE;
+- (void)setCacheStrategy:(id<RKManagedObjectCaching>)cacheStrategy DEPRECATED_ATTRIBUTE;
+
+- (NSString *)storeFilename DEPRECATED_ATTRIBUTE;
+- (NSString *)pathToStoreFile DEPRECATED_ATTRIBUTE;
+
+- (BOOL)save:(NSError **)error DEPRECATED_ATTRIBUTE;
+
+// TODO: Deprecate all of these...
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE;
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE;
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE;
+
++ (void)deleteStoreAtPath:(NSString *)path DEPRECATED_ATTRIBUTE;
++ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename DEPRECATED_ATTRIBUTE;
+- (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile DEPRECATED_ATTRIBUTE;
+- (void)deletePersistentStore DEPRECATED_ATTRIBUTE;
 
 @end

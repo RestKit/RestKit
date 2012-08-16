@@ -39,8 +39,13 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
     1. Programmatically, by retrieving the NSEntityDescription instance and
  setting the property's value.
 
- Programmatically configured values take precedence over the user info
- dictionary.
+ Configuring the primary key attribute programmatically is a convenience interface
+ for directly manipulating the user info dictionary of the receiver. As such, the entity
+ **must** exist within a mutable managed object model. By default, models are returned in
+ an immutable state and must be sent the mutableCopy message to retrieve an mutable copy. Managed
+ object models are rendered immutable once used to create a persistent store coordinator, therefore
+ the developer **must** configure primary key attributes programmatically before creating a PSC during
+ Core Data initialization.
  */
 @property (nonatomic, retain) NSString *primaryKeyAttributeName;
 

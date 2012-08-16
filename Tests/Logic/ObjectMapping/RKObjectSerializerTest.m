@@ -33,8 +33,8 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
     NSError *error = nil;
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
@@ -48,8 +48,8 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
     NSError *error = nil;
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
@@ -69,8 +69,8 @@
     dateFormatter.dateFormat = @"MM/dd/yyyy";
     dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
     mapping.preferredDateFormatter = dateFormatter;
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
     NSError *error = nil;
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
@@ -86,8 +86,8 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
 
     NSError *error = nil;
@@ -104,8 +104,8 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDecimalNumber decimalNumberWithString:@"18274191731731.4557723623"], @"number", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"number" toKeyPath:@"number-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"number" toKeyPath:@"number-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
 
     NSError *error = nil;
@@ -128,10 +128,10 @@
                             nil];
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"relationship1.relatioship1Key1" toKeyPath:@"relationship1-form-name[r1k1]"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"relationship2.subKey1" toKeyPath:@"relationship2-form-name[subKey1]"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"relationship1.relatioship1Key1" toKeyPath:@"relationship1-form-name[r1k1]"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"relationship2.subKey1" toKeyPath:@"relationship2-form-name[subKey1]"]];
 
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
     NSError *error = nil;
@@ -151,8 +151,8 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
     NSError *error = nil;
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
@@ -167,7 +167,7 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
     NSError *error = nil;
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
@@ -212,8 +212,8 @@
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     mapping.rootKeyPath = @"stuff";
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
     NSError *error = nil;
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
@@ -254,7 +254,7 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSNumber numberWithBool:YES], @"boolean", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    RKObjectAttributeMapping *attributeMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"boolean" toKeyPath:@"boolean-value"];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping mappingFromKeyPath:@"boolean" toKeyPath:@"boolean-value"];
     [mapping addAttributeMapping:attributeMapping];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
 
@@ -274,8 +274,8 @@
                             [NSOrderedSet orderedSetWithObjects:@"setElementOne", @"setElementTwo", @"setElementThree", nil], @"set",
                             nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"set" toKeyPath:@"set-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"set" toKeyPath:@"set-form-name"]];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
 
     NSError *error = nil;

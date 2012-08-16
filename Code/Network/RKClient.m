@@ -25,7 +25,7 @@
 #import "RKLog.h"
 #import "RKPathMatcher.h"
 #import "NSString+RKAdditions.h"
-#import "RKDirectory.h"
+#import "RKDirectoryUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -127,8 +127,8 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 
 + (RKClient *)clientWithBaseURL:(NSURL *)baseURL
 {
-    RKClient *client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
-    return client;
+    RKClient *client = [self alloc];
+    return [[client initWithBaseURL:baseURL] autorelease];
 }
 
 + (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password
@@ -224,7 +224,7 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 - (NSString *)cachePath
 {
     NSString *cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@", [self.baseURL host]];
-    NSString *cachePath = [[RKDirectory cachesDirectory]
+    NSString *cachePath = [RKCachesDirectory()
                            stringByAppendingPathComponent:cacheDirForClient];
     return cachePath;
 }
@@ -241,7 +241,9 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 
 - (void)configureRequest:(RKRequest *)request
 {
-    request.additionalHTTPHeaders = _HTTPHeaders;
+    NSAssert(self.HTTPHeaders, @"Headers should not be nil");
+
+    request.additionalHTTPHeaders = self.HTTPHeaders;
     request.authenticationType = self.authenticationType;
     request.username = self.username;
     request.password = self.password;

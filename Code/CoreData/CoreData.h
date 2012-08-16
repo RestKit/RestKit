@@ -20,19 +20,16 @@
 
 #import <CoreData/CoreData.h>
 #import "ObjectMapping.h"
-#import "NSManagedObject+ActiveRecord.h"
 #import "RKManagedObjectStore.h"
-#import "RKManagedObjectSeeder.h"
+#import "RKManagedObjectImporter.h"
+#import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKManagedObjectLoader.h"
-#import "RKManagedObjectMapping.h"
-#import "RKManagedObjectMappingOperation.h"
+#import "RKEntityMapping.h"
 #import "RKManagedObjectCaching.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKFetchRequestManagedObjectCache.h"
-#import "RKSearchableManagedObject.h"
-#import "RKSearchWord.h"
 
-#import "RKObjectPropertyInspector+CoreData.h"
+#import "RKPropertyInspector+CoreData.h"
 #import "RKObjectMappingProvider+CoreData.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 #import "NSManagedObject+RKAdditions.h"

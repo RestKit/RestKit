@@ -45,7 +45,7 @@
                                      userInfo:nil];
     }
 
-    [_cellMappings setObject:cellMapping forKey:objectClass];
+    [_cellMappings setObject:cellMapping forKey:(id<NSCopying>)objectClass];
 }
 
 - (RKTableViewCellMapping *)cellMappingForClass:(Class)objectClass

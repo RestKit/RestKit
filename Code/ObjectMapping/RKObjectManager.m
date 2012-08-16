@@ -42,7 +42,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 @implementation RKObjectManager
 
 @synthesize client = _client;
-@synthesize objectStore = _objectStore;
+@synthesize managedObjectStore = _managedObjectStore;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize networkStatus = _networkStatus;
@@ -126,7 +126,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
-    RKObjectManager *manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];
+    RKObjectManager *manager = [[[self alloc] initWithBaseURL:[RKURL URLWithBaseURL:baseURL]] autorelease];
     return manager;
 }
 
@@ -134,14 +134,11 @@ static NSOperationQueue *defaultMappingQueue = nil;
 {
     [self removeObserver:self forKeyPath:@"client.reachabilityObserver"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    self.client = nil;
-    [_objectStore release];
-    _objectStore = nil;
+    
+    [_client release];
+    [_managedObjectStore release];
     [_serializationMIMEType release];
-    _serializationMIMEType = nil;
     [_mappingProvider release];
-    _mappingProvider = nil;
 
     [super dealloc];
 }
@@ -206,7 +203,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 - (void)setAcceptMIMEType:(NSString *)MIMEType
 {
-    [_client setValue:MIMEType forHTTPHeaderField:@"Accept"];
+    [self.client setValue:MIMEType forHTTPHeaderField:@"Accept"];
 }
 
 - (NSString *)acceptMIMEType
@@ -220,7 +217,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 - (Class)objectLoaderClass
 {
     Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
-    if (self.objectStore && managedObjectLoaderClass) {
+    if (self.managedObjectStore && managedObjectLoaderClass) {
         return managedObjectLoaderClass;
     }
 
@@ -238,7 +235,10 @@ static NSOperationQueue *defaultMappingQueue = nil;
     RKObjectLoader *loader = [[self objectLoaderClass] loaderWithURL:URL mappingProvider:self.mappingProvider];
     loader.configurationDelegate = self;
     if ([loader isKindOfClass:[RKManagedObjectLoader class]]) {
-        [(RKManagedObjectLoader *)loader setObjectStore:self.objectStore];
+        RKManagedObjectLoader *managedObjectLoader = (RKManagedObjectLoader *)loader;
+        managedObjectLoader.managedObjectContext = self.managedObjectStore.primaryManagedObjectContext;
+        managedObjectLoader.mainQueueManagedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
+        managedObjectLoader.managedObjectCache = self.managedObjectStore.managedObjectCache;
     }
     [self configureObjectLoader:loader];
 
@@ -262,15 +262,13 @@ static NSOperationQueue *defaultMappingQueue = nil;
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method
 {
     RKURL *URL = [self.router URLForObject:object method:method];
-//    NSString* resourcePath = (method == RKRequestMethodInvalid) ? nil : [route resourcePathForObject:object];
-//    RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
     RKObjectLoader *loader = [self loaderWithURL:URL];
     loader.method = method;
     loader.sourceObject = object;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
 
-    RKObjectMappingDefinition *objectMapping = URL.resourcePath ? [self.mappingProvider objectMappingForResourcePath:URL.resourcePath] : nil;
+    RKMapping *objectMapping = URL.resourcePath ? [self.mappingProvider objectMappingForResourcePath:URL.resourcePath] : nil;
     if (objectMapping == nil || ([objectMapping isKindOfClass:[RKObjectMapping class]] && [object isMemberOfClass:[(RKObjectMapping *)objectMapping objectClass]])) {
         loader.targetObject = object;
     } else {
@@ -347,14 +345,6 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 - (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader *))block
 {
-//    RKRoute *route = [self.router routeForObject:object method:method];
-//    NSString *resourcePath = [route resourcePathForObject:object];
-//    RKURL *URL = [self.router URLForObject:object method:method];
-//    [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
-//        loader.method = method;
-//        block(loader);
-//    }];
-
     RKObjectLoader *loader = [self loaderForObject:object method:method];
     // Yield to the block for setup
     block(loader);
@@ -493,6 +483,16 @@ static NSOperationQueue *defaultMappingQueue = nil;
     loader.objectMapping = objectMapping;
 
     [loader send];
+}
+
+- (RKManagedObjectStore *)objectStore
+{
+    return self.managedObjectStore;
+}
+
+- (void)setObjectStore:(RKManagedObjectStore *)objectStore
+{
+    self.managedObjectStore = objectStore;
 }
 
 @end

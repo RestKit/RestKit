@@ -23,6 +23,6 @@
 #import "RKObjectMapping.h"
 #import "RKObjectSerializer.h"
 #import "RKObjectMappingProvider.h"
-#import "RKObjectMappingResult.h"
+#import "RKMappingResult.h"
 #import "RKObjectMapper.h"
 #import "RKParserRegistry.h"

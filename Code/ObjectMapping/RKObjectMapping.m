@@ -19,13 +19,18 @@
 //
 
 #import "RKObjectMapping.h"
-#import "RKObjectRelationshipMapping.h"
-#import "RKObjectPropertyInspector.h"
+#import "RKRelationshipMapping.h"
+#import "RKPropertyInspector.h"
 #import "RKLog.h"
 #import "RKISO8601DateFormatter.h"
 
 // Constants
 NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
+
+@interface RKObjectMapping () {
+    NSMutableArray *_mappings;
+}
+@end
 
 @implementation RKObjectMapping
 
@@ -119,7 +124,7 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     copy.dateFormatters = self.dateFormatters;
     copy.preferredDateFormatter = self.preferredDateFormatter;
 
-    for (RKObjectAttributeMapping *mapping in self.mappings) {
+    for (RKAttributeMapping *mapping in self.mappings) {
         [copy addAttributeMapping:mapping];
     }
 
@@ -153,8 +158,8 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 - (NSArray *)attributeMappings
 {
     NSMutableArray *mappings = [NSMutableArray array];
-    for (RKObjectAttributeMapping *mapping in self.mappings) {
-        if ([mapping isMemberOfClass:[RKObjectAttributeMapping class]]) {
+    for (RKAttributeMapping *mapping in self.mappings) {
+        if ([mapping isMemberOfClass:[RKAttributeMapping class]]) {
             [mappings addObject:mapping];
         }
     }
@@ -165,8 +170,8 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 - (NSArray *)relationshipMappings
 {
     NSMutableArray *mappings = [NSMutableArray array];
-    for (RKObjectAttributeMapping *mapping in self.mappings) {
-        if ([mapping isMemberOfClass:[RKObjectRelationshipMapping class]]) {
+    for (RKAttributeMapping *mapping in self.mappings) {
+        if ([mapping isMemberOfClass:[RKRelationshipMapping class]]) {
             [mappings addObject:mapping];
         }
     }
@@ -174,13 +179,13 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     return mappings;
 }
 
-- (void)addAttributeMapping:(RKObjectAttributeMapping *)mapping
+- (void)addAttributeMapping:(RKAttributeMapping *)mapping
 {
     NSAssert1([[self mappedKeyPaths] containsObject:mapping.destinationKeyPath] == NO, @"Unable to add mapping for keyPath %@, one already exists...", mapping.destinationKeyPath);
     [_mappings addObject:mapping];
 }
 
-- (void)addRelationshipMapping:(RKObjectRelationshipMapping *)mapping
+- (void)addRelationshipMapping:(RKRelationshipMapping *)mapping
 {
     [self addAttributeMapping:mapping];
 }
@@ -197,7 +202,7 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
 {
-    for (RKObjectAttributeMapping *mapping in _mappings) {
+    for (RKAttributeMapping *mapping in _mappings) {
         if ([mapping.sourceKeyPath isEqualToString:sourceKeyPath]) {
             return mapping;
         }
@@ -208,7 +213,7 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 
 - (id)mappingForDestinationKeyPath:(NSString *)destinationKeyPath
 {
-    for (RKObjectAttributeMapping *mapping in _mappings) {
+    for (RKAttributeMapping *mapping in _mappings) {
         if ([mapping.destinationKeyPath isEqualToString:destinationKeyPath]) {
             return mapping;
         }
@@ -220,7 +225,7 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 - (void)mapAttributesCollection:(id<NSFastEnumeration>)attributes
 {
     for (NSString *attributeKeyPath in attributes) {
-        [self addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:attributeKeyPath toKeyPath:attributeKeyPath]];
+        [self addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:attributeKeyPath toKeyPath:attributeKeyPath]];
     }
 }
 
@@ -239,6 +244,13 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     [self mapAttributesCollection:attributeKeyPaths];
 }
 
+- (void)addAttributeMappingsFromDictionary:(NSDictionary *)keyPathToAttributeNames
+{
+    for (NSString *attributeKeyPath in keyPathToAttributeNames) {
+        [self addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:attributeKeyPath toKeyPath:keyPathToAttributeNames[attributeKeyPath]]];
+    }
+}
+
 - (void)mapAttributesFromSet:(NSSet *)set
 {
     [self mapAttributesCollection:set];
@@ -249,34 +261,34 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     [self mapAttributesCollection:[NSSet setWithArray:array]];
 }
 
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping serialize:(BOOL)serialize
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping serialize:(BOOL)serialize
 {
-    RKObjectRelationshipMapping *mapping = [RKObjectRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath withMapping:objectOrDynamicMapping reversible:serialize];
+    RKRelationshipMapping *mapping = [RKRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath withMapping:objectOrDynamicMapping reversible:serialize];
     [self addRelationshipMapping:mapping];
 }
 
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping
 {
     [self mapKeyPath:relationshipKeyPath toRelationship:keyPath withMapping:objectOrDynamicMapping serialize:YES];
 }
 
-- (void)mapRelationship:(NSString *)relationshipKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
+- (void)mapRelationship:(NSString *)relationshipKeyPath withMapping:(RKMapping *)objectOrDynamicMapping
 {
     [self mapKeyPath:relationshipKeyPath toRelationship:relationshipKeyPath withMapping:objectOrDynamicMapping];
 }
 
 - (void)mapKeyPath:(NSString *)sourceKeyPath toAttribute:(NSString *)destinationKeyPath
 {
-    RKObjectAttributeMapping *mapping = [RKObjectAttributeMapping mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
+    RKAttributeMapping *mapping = [RKAttributeMapping mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
     [self addAttributeMapping:mapping];
 }
 
-- (void)hasMany:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
+- (void)hasMany:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping
 {
     [self mapRelationship:keyPath withMapping:objectOrDynamicMapping];
 }
 
-- (void)hasOne:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
+- (void)hasOne:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping
 {
     [self mapRelationship:keyPath withMapping:objectOrDynamicMapping];
 }
@@ -286,14 +298,14 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     [_mappings removeAllObjects];
 }
 
-- (void)removeMapping:(RKObjectAttributeMapping *)attributeOrRelationshipMapping
+- (void)removeMapping:(RKAttributeMapping *)attributeOrRelationshipMapping
 {
     [_mappings removeObject:attributeOrRelationshipMapping];
 }
 
 - (void)removeMappingForKeyPath:(NSString *)keyPath
 {
-    RKObjectAttributeMapping *mapping = [self mappingForKeyPath:keyPath];
+    RKAttributeMapping *mapping = [self mappingForKeyPath:keyPath];
     [self removeMapping:mapping];
 }
 
@@ -304,13 +316,13 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 {
     NSAssert(depth < MAX_INVERSE_MAPPING_RECURSION_DEPTH, @"Exceeded max recursion level in inverseMapping. This is likely due to a loop in the serialization graph. To break this loop, specify one-way relationships by setting serialize to NO in mapKeyPath:toRelationship:withObjectMapping:serialize:");
     RKObjectMapping *inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    for (RKObjectAttributeMapping *attributeMapping in self.attributeMappings) {
+    for (RKAttributeMapping *attributeMapping in self.attributeMappings) {
         [inverseMapping mapKeyPath:attributeMapping.destinationKeyPath toAttribute:attributeMapping.sourceKeyPath];
     }
 
-    for (RKObjectRelationshipMapping *relationshipMapping in self.relationshipMappings) {
+    for (RKRelationshipMapping *relationshipMapping in self.relationshipMappings) {
         if (relationshipMapping.reversible) {
-            RKObjectMappingDefinition *mapping = relationshipMapping.mapping;
+            RKMapping *mapping = relationshipMapping.mapping;
             if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
                 RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", relationshipMapping.sourceKeyPath, NSStringFromClass([mapping class]));
                 continue;
@@ -345,14 +357,14 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     [self mapKeyPath:RKObjectMappingNestingAttributeKeyName toAttribute:attributeName];
 }
 
-- (RKObjectAttributeMapping *)attributeMappingForKeyOfNestedDictionary
+- (RKAttributeMapping *)attributeMappingForKeyOfNestedDictionary
 {
     return [self mappingForKeyPath:RKObjectMappingNestingAttributeKeyName];
 }
 
-- (RKObjectAttributeMapping *)mappingForAttribute:(NSString *)attributeKey
+- (RKAttributeMapping *)mappingForAttribute:(NSString *)attributeKey
 {
-    for (RKObjectAttributeMapping *mapping in [self attributeMappings]) {
+    for (RKAttributeMapping *mapping in [self attributeMappings]) {
         if ([mapping.destinationKeyPath isEqualToString:attributeKey]) {
             return mapping;
         }
@@ -361,9 +373,9 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     return nil;
 }
 
-- (RKObjectRelationshipMapping *)mappingForRelationship:(NSString *)relationshipKey
+- (RKRelationshipMapping *)mappingForRelationship:(NSString *)relationshipKey
 {
-    for (RKObjectRelationshipMapping *mapping in [self relationshipMappings]) {
+    for (RKRelationshipMapping *mapping in [self relationshipMappings]) {
         if ([mapping.destinationKeyPath isEqualToString:relationshipKey]) {
             return mapping;
         }
@@ -377,14 +389,9 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     return nil;
 }
 
-- (id)mappableObjectForData:(id)mappableData
-{
-    return [[self.objectClass new] autorelease];
-}
-
 - (Class)classForProperty:(NSString *)propertyName
 {
-    return [[RKObjectPropertyInspector sharedInspector] typeForProperty:propertyName ofClass:self.objectClass];
+    return [[RKPropertyInspector sharedInspector] typeForProperty:propertyName ofClass:self.objectClass];
 }
 
 #pragma mark - Date and Time
@@ -414,8 +421,8 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     // Check that the number of attribute/relationship mappings is equal and compare all
     if ([self.mappings count] != [otherMapping.mappings count]) return NO;
 
-    for (RKObjectAttributeMapping *attributeMapping in self.mappings) {
-        RKObjectAttributeMapping *otherAttributeMapping = [otherMapping mappingForSourceKeyPath:attributeMapping.sourceKeyPath];
+    for (RKAttributeMapping *attributeMapping in self.mappings) {
+        RKAttributeMapping *otherAttributeMapping = [otherMapping mappingForSourceKeyPath:attributeMapping.sourceKeyPath];
         if (! [attributeMapping isEqualToMapping:otherAttributeMapping]) return NO;
     }
 

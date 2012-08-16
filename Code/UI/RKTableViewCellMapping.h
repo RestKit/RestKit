@@ -222,6 +222,7 @@
  The block will be invoked each time a cell is either initialized or dequeued for reuse.
  */
 - (void)addPrepareCellBlock:(void (^)(UITableViewCell *cell))block;
+@property (nonatomic, readonly) NSArray *prepareCellBlocks;
 
 /** @name Configuring Control Actions */
 // TODO: Docs!!!

@@ -24,7 +24,7 @@
 #import "RKLog.h"
 #import "RKPathMatcher.h"
 #import "RKDotNetDateFormatter.h"
-#import "RKDirectory.h"
+#import "RKDirectoryUtilities.h"
 #import "RKBenchmark.h"
 
 // Load our categories

@@ -18,12 +18,11 @@
 //  limitations under the License.
 //
 
-#import "NSManagedObject+ActiveRecord.h"
+#import <CoreData/CoreData.h>
 
 @class RKCat;
 
-@interface RKHuman : NSManagedObject {
-}
+@interface RKHuman : NSManagedObject
 
 @property (nonatomic, retain) NSNumber *railsID;
 @property (nonatomic, retain) NSString *name;

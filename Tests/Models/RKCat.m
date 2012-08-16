@@ -21,7 +21,6 @@
 
 #import "RKCat.h"
 
-
 @implementation RKCat
 
 @dynamic age;

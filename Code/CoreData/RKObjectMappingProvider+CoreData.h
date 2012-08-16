@@ -41,7 +41,7 @@ typedef NSFetchRequest *(^RKObjectMappingProviderFetchRequestBlock)(NSString *re
  @see RKURL
  @see RKObjectLoader
  */
-- (void)setObjectMapping:(RKObjectMappingDefinition *)objectMapping forResourcePathPattern:(NSString *)resourcePathPattern withFetchRequestBlock:(RKObjectMappingProviderFetchRequestBlock)fetchRequestBlock;
+- (void)setObjectMapping:(RKMapping *)objectMapping forResourcePathPattern:(NSString *)resourcePathPattern withFetchRequestBlock:(RKObjectMappingProviderFetchRequestBlock)fetchRequestBlock;
 
 /**
  Retrieves the NSFetchRequest object that will retrieve cached objects for a given resourcePath.

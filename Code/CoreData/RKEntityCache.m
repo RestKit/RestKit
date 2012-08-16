@@ -65,25 +65,25 @@
     return (attributeCache && attributeCache.isLoaded);
 }
 
-- (NSManagedObject *)objectForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue
+- (NSManagedObject *)objectForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue inContext:(NSManagedObjectContext *)context
 {
     NSAssert(entity, @"Cannot retrieve cached objects with a nil entity");
     NSAssert(attributeName, @"Cannot retrieve cached objects by a nil entity");
     RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attribute:attributeName];
     if (attributeCache) {
-        return [attributeCache objectWithAttributeValue:attributeValue];
+        return [attributeCache objectWithAttributeValue:attributeValue inContext:context];
     }
 
     return nil;
 }
 
-- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue
+- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue inContext:(NSManagedObjectContext *)context
 {
     NSAssert(entity, @"Cannot retrieve cached objects with a nil entity");
     NSAssert(attributeName, @"Cannot retrieve cached objects by a nil entity");
     RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attribute:attributeName];
     if (attributeCache) {
-        return [attributeCache objectsWithAttributeValue:attributeValue];
+        return [attributeCache objectsWithAttributeValue:attributeValue inContext:context];
     }
 
     return [NSSet set];

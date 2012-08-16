@@ -148,8 +148,8 @@
 	}
 	if([expectations count] > 0)
 	{
-		[NSException raise:NSInternalInconsistencyException format:@"%@ : %d expected methods were not invoked: %@", 
-			[self description], [expectations count], [self _recorderDescriptions:YES]];
+		[NSException raise:NSInternalInconsistencyException format:@"%@ : %ld expected methods were not invoked: %@",
+			[self description], (long)[expectations count], [self _recorderDescriptions:YES]];
 	}
 	if([exceptions count] > 0)
 	{

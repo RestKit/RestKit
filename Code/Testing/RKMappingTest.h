@@ -19,8 +19,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectMappingOperation.h"
+#import "RKMappingOperation.h"
 #import "RKMappingTestExpectation.h"
+
+@protocol RKMappingOperationDataSource;
 
 /**
  An RKMappingTest object provides support for unit testing
@@ -97,7 +99,7 @@
  @param evaluationBlock A block with which to evaluate the success of the mapping.
  @see RKObjectMappingTestExpectation
  */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock;
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKAttributeMapping *mapping, id value))evaluationBlock;
 
 /**
  Creates and adds an expectation that a key path on the source object will be mapped to a new
@@ -108,7 +110,7 @@
  @param mapping An object mapping that should be used for mapping the source key path.
  @see RKObjectMappingTestExpectation
  */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKObjectMappingDefinition *)mapping;
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKMapping *)mapping;
 
 /**
  Adds an expectation to the receiver to be evaluated during verification.
@@ -154,6 +156,13 @@
 @property (nonatomic, strong, readonly) RKObjectMapping *mapping;
 
 /**
+ A data source for the mapping operation.
+ 
+ Defaults to an instance of RKObjectMappingOperationDataSource.
+ */
+@property (nonatomic, strong) id<RKMappingOperationDataSource> mappingOperationDataSource;
+
+/**
  A key path to apply to the source object to specify the location of the root
  of the data under test. Useful when testing subsets of a larger payload or
  object graph.
@@ -171,10 +180,10 @@
  The destionation object being mapped to.
 
  If nil, the mapping test will instantiate a destination object to perform the mapping
- by invoking `[self.mapping mappableObjectForData:self.sourceObject]` and set the
- new object as the value for the destinationObject property.
+ by invoking `[self.mappingOperationDataSource objectForMappableContent:self.sourceObject mapping:self.mapping]`
+ to obtain a new object from the data source and then assign the object as the value for the destinationObject property.
 
- @see [RKObjectMapping mappableObjectForData:]
+ @see RKMappingOperationDataSource
  */
 @property (nonatomic, strong, readonly) id destinationObject;
 

@@ -20,10 +20,10 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "RKObjectMappingDefinition.h"
+#import "RKMapping.h"
 
-@class RKConnectionMapping;
-@class RKDynamicObjectMappingMatcher;
+@class RKConnectionMapping, RKDynamicMappingMatcher;
+@protocol RKManagedObjectCaching;
 
 typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
@@ -33,8 +33,8 @@ typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 @property (nonatomic, retain, readonly) NSString *relationshipName;
 @property (nonatomic, retain, readonly) NSString *sourceKeyPath;
 @property (nonatomic, retain, readonly) NSString *destinationKeyPath;
-@property (nonatomic, retain, readonly) RKObjectMappingDefinition *mapping;
-@property (nonatomic, retain, readonly) RKDynamicObjectMappingMatcher *matcher;
+@property (nonatomic, retain, readonly) RKMapping *mapping;
+@property (nonatomic, retain, readonly) RKDynamicMappingMatcher *matcher;
 
 /**
  Defines a mapping that is used to connect a source object relationship to
@@ -50,7 +50,7 @@ typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
  @return A new instance of a RKObjectConnectionMapping.
  */
-+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
++ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping;
 
 /**
  Defines a mapping that is used to connect a source object relationship to
@@ -60,18 +60,11 @@ typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
  @return A new instance of a RKObjectConnectionMapping.
  */
-+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher;
++ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher;
 
 /**
  Initializes the receiver with a relationship name, source key path, destination key path, mapping, and matcher.
  */
-- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher;
-
-/**
- Finds the connected objects for this relationship mapping.
-
- @return A single object, a set of 0 or more objects or nil.
- */
-- (id)findConnected:(NSManagedObject *)source;
+- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher;
 
 @end

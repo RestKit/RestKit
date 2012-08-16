@@ -131,7 +131,7 @@ typedef void(^RKObjectPaginatorDidFailWithErrorBlock)(NSError *error, RKObjectLo
  An object store for accessing Core Data. Required if the objects being paginated
  are stored into Core Data.
  */
-@property (nonatomic, retain) RKManagedObjectStore *objectStore;
+@property (nonatomic, retain) RKManagedObjectStore *managedObjectStore;
 
 /** @name Pagination Metadata */
 

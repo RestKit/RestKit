@@ -20,6 +20,7 @@
 
 #import "RKObjectLoader.h"
 #import "RKManagedObjectStore.h"
+#import "RKManagedObjectCaching.h"
 
 /**
  A subclass of the object loader that is dispatched when you
@@ -27,20 +28,33 @@
  transient object loader only by handling the special threading
  concerns imposed by Core Data.
  */
-@interface RKManagedObjectLoader : RKObjectLoader {
-    NSManagedObjectID *_targetObjectID;
-    NSMutableSet *_managedObjectKeyPaths;
-    BOOL _deleteObjectOnFailure;
-}
+@interface RKManagedObjectLoader : RKObjectLoader
 
 /**
- A reference to a RestKit managed object store for interacting with Core Data
-
- @see RKManagedObjectStore
+ The managed object cache to consult for retrieving existing object instances. Passed
+ to the underlying object mapping operation.
  */
-@property (nonatomic, retain) RKManagedObjectStore *objectStore;
+@property (nonatomic, retain) id<RKManagedObjectCaching> managedObjectCache;
 
-+ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
-- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
+/**
+ The managed object context in which a successful object load will be persisted. The managed
+ object loader constructs a private child context in which the object mapping operation is
+ performed. If successful, this context is saved, 'pushing' the object loader results into the
+ parent context.
+ */
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 
+/**
+ A main queue managed object context used to retrieve object mapping results for the main thread. After a mapping
+ operation has completed, the receiver will serialize the managed objects from the mapping result to NSManagedObjectID's,
+ then jump to the main thread and fetch the managed objects from the mainQueueManagedObjectContext and call back the delegate
+ with the results of the object loader.
+ */
+@property (nonatomic, retain) NSManagedObjectContext *mainQueueManagedObjectContext;
+
+@end
+
+@interface RKManagedObjectLoader (Deprecations)
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
 @end

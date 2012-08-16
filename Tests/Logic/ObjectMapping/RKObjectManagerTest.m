@@ -22,7 +22,7 @@
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
 #import "RKTestResponseLoader.h"
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKObjectMappingProvider.h"
 #import "RKHuman.h"
 #import "RKCat.h"
@@ -41,40 +41,41 @@
     [RKTestFactory setUp];
 
     _objectManager = [RKTestFactory objectManager];
-    _objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
+    _objectManager.managedObjectStore = [RKTestFactory managedObjectStore];
     [RKObjectManager setSharedManager:_objectManager];
-    [_objectManager.objectStore deletePersistentStore];
+    NSError *error;
+    [_objectManager.managedObjectStore resetPersistentStores:&error];
 
     RKObjectMappingProvider *provider = [[RKObjectMappingProvider new] autorelease];
 
-    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:_objectManager.objectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:_objectManager.managedObjectStore];
     humanMapping.rootKeyPath = @"human";
-    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
-    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
-    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
-    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
-    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"age" toKeyPath:@"age"]];
-    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
-    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
-    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
+    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
+    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
+    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"age" toKeyPath:@"age"]];
+    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
+    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
+    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
 
-    RKManagedObjectMapping *catObjectMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:_objectManager.objectStore];
-    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
-    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
-    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
-    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
-    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"age" toKeyPath:@"age"]];
-    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
-    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
-    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:_objectManager.managedObjectStore];
+    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
+    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
+    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
+    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"age" toKeyPath:@"age"]];
+    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
+    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
+    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
 
-    [catObjectMapping addRelationshipMapping:[RKObjectRelationshipMapping mappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catObjectMapping]];
+    [catMapping addRelationshipMapping:[RKRelationshipMapping mappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
 
     [provider setMapping:humanMapping forKeyPath:@"human"];
     [provider setMapping:humanMapping forKeyPath:@"humans"];
 
     RKObjectMapping *humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [humanSerialization addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [humanSerialization addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [provider setSerializationMapping:humanSerialization forClass:[RKHuman class]];
     _objectManager.mappingProvider = provider;
     [_objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class] resourcePathPattern:@"/humans" method:RKRequestMethodPOST]];
@@ -87,34 +88,28 @@
 
 - (void)testShouldSetTheAcceptHeaderAppropriatelyForTheFormat
 {
-
     assertThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"], is(equalTo(@"application/json")));
 }
 
 // TODO: Move to Core Data specific spec file...
 - (void)testShouldUpdateACoreDataBackedTargetObject
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.primaryManagedObjectContext];
+    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     temporaryHuman.name = @"My Name";
-
-    // TODO: We should NOT have to save the object store here to make this
-    // spec pass. Without it we are crashing inside the mapper internals. Believe
-    // that we just need a way to save the context before we begin mapping or something
-    // on success. Always saving means that we can abandon objects on failure...
-    [_objectManager.objectStore save:nil];
+    
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     [_objectManager postObject:temporaryHuman delegate:loader];
     [loader waitForResponse];
 
     assertThat(loader.objects, isNot(empty()));
     RKHuman *human = (RKHuman *)[loader.objects objectAtIndex:0];
-    assertThat(human, is(equalTo(temporaryHuman)));
+    assertThat(human.objectID, is(equalTo(temporaryHuman.objectID)));
     assertThat(human.railsID, is(equalToInt(1)));
 }
 
-- (void)testShouldDeleteACoreDataBackedTargetObjectOnError
+- (void)testShouldNotPersistTemporaryEntityToPersistentStoreOnError
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.primaryManagedObjectContext];
+    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping mapAttributes:@"name", nil];
@@ -129,18 +124,18 @@
     [objectLoader send];
     [loader waitForResponse];
 
-    assertThat(temporaryHuman.managedObjectContext, is(equalTo(nil)));
+    assertThatBool([temporaryHuman isNew], is(equalToBool(YES)));
 }
 
 - (void)testShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.primaryManagedObjectContext];
+    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping mapAttributes:@"name", nil];
 
     // Save it to suppress deletion
-    [_objectManager.objectStore save:nil];
+    [_objectManager.managedObjectStore.primaryManagedObjectContext save:nil];
 
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     NSString *resourcePath = @"/humans/fail";
@@ -152,7 +147,7 @@
     [objectLoader send];
     [loader waitForResponse];
 
-    assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.objectStore.primaryManagedObjectContext)));
+    assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.managedObjectStore.primaryManagedObjectContext)));
 }
 
 // TODO: Move to Core Data specific spec file...
@@ -268,7 +263,7 @@
     [mapping mapAttributes:@"name", @"age", nil];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
 
-    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *responseLoader = [[RKTestResponseLoader responseLoader] retain];
     [objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" usingBlock:^(RKObjectLoader *loader) {
         loader.delegate = responseLoader;
         loader.objectMapping = mapping;
@@ -294,6 +289,7 @@
         loader.delegate = responseLoader;
         loader.resourcePath = @"/humans/1";
     }];
+    responseLoader.timeout = 50;
     [responseLoader waitForResponse];
     assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
 }

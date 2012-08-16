@@ -19,6 +19,8 @@
 //
 
 #import "RKMappingTest.h"
+#import "RKEntityMapping.h"
+#import "RKObjectMappingOperationDataSource.h"
 
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
@@ -27,27 +29,27 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @interface RKMappingTestEvent : NSObject
 
-@property (nonatomic, strong, readonly) RKObjectAttributeMapping *mapping;
+@property (nonatomic, strong, readonly) RKAttributeMapping *mapping;
 @property (nonatomic, strong, readonly) id value;
 
 @property (nonatomic, readonly) NSString *sourceKeyPath;
 @property (nonatomic, readonly) NSString *destinationKeyPath;
 
-+ (RKMappingTestEvent *)eventWithMapping:(RKObjectAttributeMapping *)mapping value:(id)value;
++ (RKMappingTestEvent *)eventWithMapping:(RKAttributeMapping *)mapping value:(id)value;
 
 @end
 
 @interface RKMappingTestEvent ()
 @property (nonatomic, strong, readwrite) id value;
-@property (nonatomic, strong, readwrite) RKObjectAttributeMapping *mapping;
+@property (nonatomic, strong, readwrite) RKAttributeMapping *mapping;
 @end
 
 @implementation RKMappingTestEvent
 
-@synthesize value;
-@synthesize mapping;
+@synthesize value = _value;
+@synthesize mapping = _mapping;
 
-+ (RKMappingTestEvent *)eventWithMapping:(RKObjectAttributeMapping *)mapping value:(id)value
++ (RKMappingTestEvent *)eventWithMapping:(RKAttributeMapping *)mapping value:(id)value
 {
     RKMappingTestEvent *event = [RKMappingTestEvent new];
     event.value = value;
@@ -77,7 +79,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 ///-----------------------------------------------------------------------------
 ///-----------------------------------------------------------------------------
 
-@interface RKMappingTest () <RKObjectMappingOperationDelegate>
+@interface RKMappingTest () <RKMappingOperationDelegate>
 @property (nonatomic, strong, readwrite) RKObjectMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
 @property (nonatomic, strong, readwrite) id destinationObject;
@@ -101,6 +103,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 @synthesize events = _events;
 @synthesize verifiesOnExpect = _verifiesOnExpect;
 @synthesize performedMapping = _performedMapping;
+@synthesize mappingOperationDataSource = _mappingOperationDataSource;
 
 + (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject
 {
@@ -119,13 +122,14 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
     self = [super init];
     if (self) {
-        _sourceObject = sourceObject;
-        _destinationObject = destinationObject;
-        _mapping = mapping;
-        _expectations = [NSMutableArray new];
-        _events = [NSMutableArray new];
-        _verifiesOnExpect = NO;
-        _performedMapping = NO;
+        self.sourceObject = sourceObject;
+        self.destinationObject = destinationObject;
+        self.mapping = mapping;
+        self.expectations = [NSMutableArray new];
+        self.events = [NSMutableArray new];
+        self.verifiesOnExpect = NO;
+        self.performedMapping = NO;
+        self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
 
     return self;
@@ -151,12 +155,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath value:value]];
 }
 
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKAttributeMapping *mapping, id value))evaluationBlock
 {
     [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath evaluationBlock:evaluationBlock]];
 }
 
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKObjectMappingDefinition *)mapping
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKMapping *)mapping
 {
     [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:mapping]];
 }
@@ -192,9 +196,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
                              [self description], expectation, [event.value class], event.value];
         }
     } else if (expectation.mapping) {
-        if ([event.mapping isKindOfClass:[RKObjectRelationshipMapping class]]) {
+        if ([event.mapping isKindOfClass:[RKRelationshipMapping class]]) {
             // Check the mapping that was used to map the relationship
-            RKObjectMappingDefinition *relationshipMapping = [(RKObjectRelationshipMapping *)event.mapping mapping];
+            RKMapping *relationshipMapping = [(RKRelationshipMapping *)event.mapping mapping];
             success = [relationshipMapping isEqualToMapping:expectation.mapping];
 
             if (! success) {
@@ -224,9 +228,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
         if (nil == self.destinationObject) {
-            self.destinationObject = [self.mapping mappableObjectForData:self.sourceObject];
+            self.destinationObject = [self.mappingOperationDataSource objectForMappableContent:self.sourceObject mapping:self.mapping];
         }
-        RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:self.destinationObject withMapping:self.mapping];
+        RKMappingOperation *mappingOperation = [RKMappingOperation mappingOperationFromObject:sourceObject toObject:self.destinationObject withMapping:self.mapping];
+        mappingOperation.dataSource = self.mappingOperationDataSource;
         NSError *error = nil;
         mappingOperation.delegate = self;
         BOOL success = [mappingOperation performMapping:&error];
@@ -289,12 +294,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self.events addObject:event];
 }
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping
+- (void)mappingOperation:(RKMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping
 {
     [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
 }
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping
+- (void)mappingOperation:(RKMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping
 {
     [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
 }

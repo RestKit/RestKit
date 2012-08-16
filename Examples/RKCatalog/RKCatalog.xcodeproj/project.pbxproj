@@ -371,7 +371,7 @@
 		2501DE4F13607B67003DE9E4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Two Toasters";
 			};
 			buildConfigurationList = 2501DE5213607B67003DE9E4 /* Build configuration list for PBXProject "RKCatalog" */;
@@ -569,6 +569,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "App/RKCatalog-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "App/RKCatalog-Info.plist";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)\"";
@@ -585,6 +586,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "App/RKCatalog-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "App/RKCatalog-Info.plist";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)\"";
