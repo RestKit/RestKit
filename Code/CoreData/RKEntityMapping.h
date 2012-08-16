@@ -111,11 +111,6 @@
 - (void)removeConnectionMapping:(RKConnectionMapping *)connectionMapping;
 
 /**
- Returns the RKObjectRelationshipMapping connection for the specified relationship.
- */
-- (RKConnectionMapping *)connectionMappingForRelationshipWithName:(NSString *)relationshipName;
-
-/**
  Instructs RestKit to connect a relationship of the object being mapped to the
  appropriate target object(s).  It does this by using the value of the object's
  fromKeyPath attribute to query instances of the target entity that have the
