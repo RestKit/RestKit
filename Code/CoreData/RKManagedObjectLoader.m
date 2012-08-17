@@ -163,7 +163,7 @@
 
             mapper.targetObject = localObject;
         }
-        mappingResult = [mapper performMapping];
+        mappingResult = [mapper performMapping:&error];
     }];
 
     // Allow any enqueued operations to execute

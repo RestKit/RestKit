@@ -28,3 +28,5 @@ enum {
     RKMappingErrorFromMappingResult     = 1004,     // The error was returned from the mapping result
     RKMappingErrorValidationFailure     = 1005      // Generic error code for use when constructing validation errors
 };
+
+extern NSString * const RKMappingErrorKeyPathErrorKey; // The key path the error is associated with

@@ -225,7 +225,7 @@
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
     __block RKMappingResult *mappingResult;
     [self.managedObjectContext performBlockAndWait:^{
-        mappingResult = [mapper performMapping];
+        mappingResult = [mapper performMapping:error];
     }];
     if (mappingResult == nil) {
         // TODO: Return error

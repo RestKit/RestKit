@@ -51,3 +51,5 @@ extern NSString * const RKErrorNotificationErrorKey;
  @see RKObjectMappingResult
  */
 extern NSString * const RKObjectMapperErrorObjectsKey;
+
+extern NSString * const RKDetailedErrorsKey; // When multiple errors occur, they are stored in a composite error

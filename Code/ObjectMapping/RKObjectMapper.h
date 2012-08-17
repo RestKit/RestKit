@@ -45,6 +45,7 @@
 
 // Primary entry point for the mapper. Examines the type of object and processes it appropriately...
 - (RKMappingResult *)performMapping;
+- (RKMappingResult *)performMapping:(NSError **)error;
 
 @end
 

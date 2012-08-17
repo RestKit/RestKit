@@ -255,7 +255,7 @@
 // Factored into a method to support RKManagedObjectLoader
 - (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper 
 {
-    return [mapper performMapping];
+    return [mapper performMapping:nil];
 }
 
 - (RKMapping *)configuredObjectMapping

@@ -23,6 +23,9 @@
 #import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
+#import "RKMappingDescriptor.h"
+
+NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
 // Set Logging Component
 #undef RKLogComponent
@@ -334,7 +337,7 @@
 }
 
 // Primary entry point for the mapper.
-- (RKMappingResult *)performMapping
+- (RKMappingResult *)performMapping:(NSError **)error
 {
     NSAssert(self.sourceObject != nil, @"Cannot perform object mapping without a source object to map from");
     NSAssert(self.mappingProvider != nil, @"Cannot perform object mapping without an object mapping provider");
@@ -377,7 +380,13 @@
     // If the content is empty, we don't consider it an error
     BOOL isEmpty = [self.sourceObject respondsToSelector:@selector(count)] && ([self.sourceObject count] == 0);
     if (foundMappable == NO && !isEmpty) {
-        [self addErrorForUnmappableKeyPath:@""];
+        NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                         NSLocalizedString(@"Unable to find any mappings for the given content", nil), NSLocalizedDescriptionKey,
+                                         [NSNull null], RKMappingErrorKeyPathErrorKey,
+                                         self.errors, RKDetailedErrorsKey,
+                                         nil];
+        NSError *compositeError = [[NSError alloc] initWithDomain:RKErrorDomain code:RKMappingErrorNotFound userInfo:userInfo];
+        if (error) *error = compositeError;
         return nil;
     }
 
