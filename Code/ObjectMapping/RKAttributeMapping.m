@@ -66,7 +66,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"RKObjectKeyPathMapping: %@ => %@", self.sourceKeyPath, self.destinationKeyPath];
+    return [NSString stringWithFormat:@"<%@: %p %@ => %@>", self.class, self, self.sourceKeyPath, self.destinationKeyPath];
 }
 
 + (RKAttributeMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
