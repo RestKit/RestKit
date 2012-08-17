@@ -32,19 +32,21 @@
 
 @interface RKObjectMapper : NSObject
 
-@property (nonatomic, readonly) id sourceObject;
-@property (nonatomic, assign) id targetObject;
-@property (nonatomic, readonly) RKObjectMappingProvider *mappingProvider;
+@property (nonatomic, strong, readonly) id sourceObject;
+@property (nonatomic, weak) id targetObject;
+@property (nonatomic, strong, readonly) RKObjectMappingProvider *mappingProvider;
+@property (nonatomic, strong, readwrite) NSDictionary *mappingsDictionary; // TODO: Becomes read-only...
 @property (nonatomic, assign) RKObjectMappingProviderContext context;
-@property (nonatomic, assign) id<RKObjectMapperDelegate> delegate;
+@property (nonatomic, weak) id<RKObjectMapperDelegate> delegate;
 @property (nonatomic, readonly) NSArray *errors;
-@property (nonatomic, retain) id<RKMappingOperationDataSource> mappingOperationDataSource;
+@property (nonatomic, strong) id<RKMappingOperationDataSource> mappingOperationDataSource;
 
 + (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 - (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
+- (id)initWithObject:(id)object mappingsDictionary:(NSDictionary *)mappingsDictionary;
+
 // Primary entry point for the mapper. Examines the type of object and processes it appropriately...
-- (RKMappingResult *)performMapping;
 - (RKMappingResult *)performMapping:(NSError **)error;
 
 @end

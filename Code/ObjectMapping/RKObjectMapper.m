@@ -33,45 +33,45 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
 @interface RKObjectMapper ()
 
-@property (nonatomic, retain) NSMutableArray *mappingErrors;
-
+@property (nonatomic, strong) NSMutableArray *mappingErrors;
+@property (nonatomic, strong) id sourceObject;
+@property (nonatomic, strong, readwrite) RKObjectMappingProvider *mappingProvider;
+//@property (nonatomic, strong, readwrite) NSDictionary *mappingsDictionary; // TODO: Becomes read-only
 @end
 
 @implementation RKObjectMapper
 
-@synthesize sourceObject = _sourceObject;
-@synthesize targetObject = _targetObject;
-@synthesize delegate = _delegate;
-@synthesize mappingProvider = _mappingProvider;
-@synthesize mappingOperationDataSource = _mappingOperationDataSource;
-@synthesize mappingErrors = _mappingErrors;
-@synthesize context = _context;
-
 + (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider
 {
-    return [[[self alloc] initWithObject:object mappingProvider:mappingProvider] autorelease];
+    return [[self alloc] initWithObject:object mappingProvider:mappingProvider];
 }
 
 - (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider
 {
     self = [super init];
     if (self) {
-        _sourceObject = [object retain];
-        _mappingProvider = mappingProvider;
-        _mappingErrors = [NSMutableArray new];
-        _context = RKObjectMappingProviderContextObjectsByKeyPath;
-        _mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
+        self.sourceObject = object;
+        self.mappingProvider = mappingProvider;
+        self.mappingErrors = [NSMutableArray new];
+        self.context = RKObjectMappingProviderContextObjectsByKeyPath;
+        self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
 
     return self;
 }
 
-- (void)dealloc
+- (id)initWithObject:(id)object mappingsDictionary:(NSDictionary *)mappingsDictionary;
 {
-    [_sourceObject release];
-    [_mappingErrors release];
-    [_mappingOperationDataSource release];
-    [super dealloc];
+    self = [super init];
+    if (self) {
+        self.sourceObject = object;
+        self.mappingsDictionary = mappingsDictionary;
+        self.mappingErrors = [NSMutableArray new];
+        self.context = RKObjectMappingProviderContextObjectsByKeyPath;
+        self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
+    }
+    
+    return self;
 }
 
 #pragma mark - Errors
@@ -97,7 +97,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 {
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                      errorMessage, NSLocalizedDescriptionKey,
-                                     @"RKObjectMapperKeyPath", keyPath ? keyPath : (NSString *)[NSNull null],
+                                     keyPath ? keyPath : [NSNull null], RKMappingErrorKeyPathErrorKey,
                                      nil];
     [userInfo addEntriesFromDictionary:otherInfo];
     NSError *error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];
@@ -258,6 +258,8 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 - (id)objectWithMapping:(RKMapping *)mapping andData:(id)mappableData
 {
     NSAssert([mapping isKindOfClass:[RKMapping class]], @"Expected an RKMapping object");
+    NSAssert(self.mappingOperationDataSource, @"Cannot find or instantiate objects without a data source");
+    
     RKObjectMapping *objectMapping = nil;
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
         objectMapping = [(RKDynamicMapping *)mapping objectMappingForDictionary:mappableData];
@@ -271,7 +273,8 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
     }
 
     if (objectMapping) {
-        return [self.mappingOperationDataSource objectForMappableContent:mappableData mapping:objectMapping];
+        id object = [self.mappingOperationDataSource objectForMappableContent:mappableData mapping:objectMapping];
+        return object;
     }
 
     return nil;
@@ -301,7 +304,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
         RKLogTrace(@"Examining keyPath '%@' for mappable content...", keyPath);
 
-        if ([keyPath isEqualToString:@""]) {
+        if ([keyPath isEqualToString:@""] || [keyPath isEqual:[NSNull null]]) {
             mappableValue = self.sourceObject;
         } else {
             mappableValue = [self.sourceObject valueForKeyPath:keyPath];
@@ -340,7 +343,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 - (RKMappingResult *)performMapping:(NSError **)error
 {
     NSAssert(self.sourceObject != nil, @"Cannot perform object mapping without a source object to map from");
-    NSAssert(self.mappingProvider != nil, @"Cannot perform object mapping without an object mapping provider");
+    NSAssert(self.mappingProvider || self.mappingsDictionary, @"Cannot perform object mapping without an object mapping provider or dictionary of mappings");
 
     RKLogDebug(@"Performing object mapping sourceObject: %@\n and targetObject: %@", self.sourceObject, self.targetObject);
 
@@ -353,22 +356,28 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
     NSMutableDictionary *results = nil;
 
     // Handle mapping selection for context
-    id mappingsForContext = [self.mappingProvider valueForContext:self.context];
-    if ([mappingsForContext isKindOfClass:[NSDictionary class]]) {
-        results = [self performKeyPathMappingUsingMappingDictionary:mappingsForContext];
+    if (self.mappingsDictionary) {
+        results = [self performKeyPathMappingUsingMappingDictionary:self.mappingsDictionary];
         foundMappable = (results != nil);
-    } else if ([mappingsForContext isKindOfClass:[RKMapping class]]) {
-        id mappableData = self.sourceObject;
-        if ([mappingsForContext rootKeyPath] != nil) {
-            NSString *rootKeyPath = [mappingsForContext rootKeyPath];
-            mappableData = [self.sourceObject valueForKeyPath:rootKeyPath];
-            RKLogDebug(@"Selected object mapping has rootKeyPath. Apply valueForKeyPath to mappable data: %@", rootKeyPath);
-        }
+    } else {
+        // Legacy RKObjectMappingProvider support...
+        id mappingsForContext = [self.mappingProvider valueForContext:self.context];
+        if ([mappingsForContext isKindOfClass:[NSDictionary class]]) {
+            results = [self performKeyPathMappingUsingMappingDictionary:mappingsForContext];
+            foundMappable = (results != nil);
+        } else if ([mappingsForContext isKindOfClass:[RKMapping class]]) {
+            id mappableData = self.sourceObject;
+            if ([mappingsForContext rootKeyPath] != nil) {
+                NSString *rootKeyPath = [mappingsForContext rootKeyPath];
+                mappableData = [self.sourceObject valueForKeyPath:rootKeyPath];
+                RKLogDebug(@"Selected object mapping has rootKeyPath. Apply valueForKeyPath to mappable data: %@", rootKeyPath);
+            }
 
-        if (mappableData) {
-            id mappingResult = [self performMappingForObject:mappableData atKeyPath:@"" usingMapping:mappingsForContext];
-            foundMappable = YES;
-            results = mappingResult ? [NSDictionary dictionaryWithObject:mappingResult forKey:@""] : nil;
+            if (mappableData) {
+                id mappingResult = [self performMappingForObject:mappableData atKeyPath:@"" usingMapping:mappingsForContext];
+                foundMappable = YES;
+                results = mappingResult ? [NSDictionary dictionaryWithObject:mappingResult forKey:@""] : nil;
+            }
         }
     }
 
