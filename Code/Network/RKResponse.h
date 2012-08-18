@@ -277,6 +277,13 @@
 - (BOOL)isCreated;
 
 /**
+ Indicates an HTTP response code of 202.
+
+ @return YES if the response is 202 Accepted.
+ */
+- (BOOL)isAccepted;
+
+/**
  Indicates an HTTP response code of 204.
 
  @return YES if the response is 204 No Content.

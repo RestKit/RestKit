@@ -124,6 +124,15 @@
     assertThatBool([mock isCreated], is(equalToBool(YES)));
 }
 
+- (void)testShouldConsiderATwoHundredAndTwoResponseAccepted
+{
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
+    id mock = [OCMockObject partialMockForObject:response];
+    NSInteger statusCode = 202;
+    [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
+    assertThatBool([mock isAccepted], is(equalToBool(YES)));
+}
+
 - (void)testShouldConsiderAFourOhThreeResponseForbidden
 {
     RKResponse *response = [[[RKResponse alloc] init] autorelease];
