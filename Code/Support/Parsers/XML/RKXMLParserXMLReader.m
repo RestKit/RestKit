@@ -7,6 +7,7 @@
 //
 
 #import "RKXMLParserXMLReader.h"
+#import "XMLReader.h"
 
 @implementation RKXMLParserXMLReader
 
