@@ -321,7 +321,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             [_URLRequest setValue:[_params performSelector:@selector(ContentTypeHTTPHeader)] forHTTPHeaderField:@"Content-Type"];
         }
         if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
-            [_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
+            [_URLRequest setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
         }
     } else {
         [_URLRequest setValue:@"0" forHTTPHeaderField:@"Content-Length"];
