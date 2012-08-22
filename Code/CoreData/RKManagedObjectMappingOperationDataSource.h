@@ -44,31 +44,6 @@
 @property (nonatomic, retain) NSOperationQueue *operationQueue;
 
 /**
- A Boolean value determing if the receiver keeps tracks of inserted objects.
- 
- Tracking inserted objects is useful in mapping operations that are performed on a background thread
- but intend to return results to another thread. In these cases, it is necessary to obtain permanent object
- ID's for all inserted objects so that they may be reliably fetched across NSManagedObjectContext instances.
- Managed objects inserted into a context that is not directly related to the persistent store coordinator (i.e.
- child managed object contexts) do not have their managed object ID's updtated from temporary to persistent when
- saved to the persistent store through a parent context.
- 
- **Default**: NO
- */
-@property (nonatomic, assign) BOOL tracksInsertedObjects;
-
-/**
- Returns the list of managed objects inserted into the receiver's managed object context during the course of
- a managed object mapping operation.
- */
-@property (nonatomic, readonly) NSArray *insertedObjects;
-
-/**
- Clears the list of inserted objects tracked by the receiver.
- */
-- (void)clearInsertedObjects;
-
-/**
  Initializes the receiver with a given managed object context and managed object cache.
  
  @param managedObjectContext The managed object context with which to associate the receiver. Cannot be nil.

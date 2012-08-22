@@ -19,7 +19,6 @@
 @interface RKManagedObjectMappingOperationDataSource ()
 @property (nonatomic, retain, readwrite) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, retain, readwrite) id<RKManagedObjectCaching> managedObjectCache;
-@property (nonatomic, retain) NSMutableArray *mutableInsertedObjects;
 @end
 
 @implementation RKManagedObjectMappingOperationDataSource
@@ -27,8 +26,6 @@
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectCache = _managedObjectCache;
 @synthesize operationQueue = _operationQueue;
-@synthesize tracksInsertedObjects = _tracksInsertedObjects;
-@synthesize mutableInsertedObjects = _mutableInsertedObjects;
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
 {
@@ -38,8 +35,6 @@
     if (self) {
         self.managedObjectContext = managedObjectContext;
         self.managedObjectCache = managedObjectCache;
-        self.mutableInsertedObjects = [NSMutableArray array];
-        self.tracksInsertedObjects = NO;
     }
     
     return self;
@@ -50,7 +45,6 @@
     [_managedObjectCache release];
     [_managedObjectContext release];
     [_operationQueue release];
-    [_mutableInsertedObjects release];
     
     [super dealloc];
 }
@@ -124,10 +118,6 @@
         if ([self.managedObjectCache respondsToSelector:@selector(didCreateObject:)]) {
             [self.managedObjectCache didCreateObject:object];
         }
-        
-        if (self.tracksInsertedObjects) {
-            [self.mutableInsertedObjects addObject:object];
-        }
     }
     
     return object;
@@ -168,16 +158,6 @@
             [operation release];
         }
     }
-}
-
-- (NSArray *)insertedObjects
-{
-    return [NSArray arrayWithArray:self.mutableInsertedObjects];
-}
-
-- (void)clearInsertedObjects
-{
-    self.mutableInsertedObjects = [NSMutableArray array];
 }
 
 @end

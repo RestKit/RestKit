@@ -105,7 +105,6 @@
     dataSource.operationQueue = [[NSOperationQueue new] autorelease];
     [dataSource.operationQueue setSuspended:YES];
     [dataSource.operationQueue setMaxConcurrentOperationCount:1];
-    dataSource.tracksInsertedObjects = YES; // We need to be able to obtain permanent object ID's
     self.mappingOperationDataSource = dataSource;
 }
 
@@ -241,27 +240,31 @@
         [self deleteCachedObjectsMissingFromResult:result];
         __block BOOL success = NO;
         __block NSError *error = nil;
-            
-        NSArray *insertedObjects = [(RKManagedObjectMappingOperationDataSource *)self.mappingOperationDataSource insertedObjects];
-        RKLogDebug(@"Obtaining permanent object ID's for %ld objects", (unsigned long) [insertedObjects count]);
-        [self.privateContext performBlockAndWait:^{
-            success = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:&error];
-        }];
         
-        if (! success) {
-            RKLogError(@"Failed to obtain permanent object ID's for %ld managed objects. Error: %@", (unsigned long) [insertedObjects count], [error localizedDescription]);
+        NSArray *insertedObjects = [[self.privateContext insertedObjects] allObjects];
+        if ([insertedObjects count] > 0) {
+            RKLogDebug(@"Obtaining permanent object ID's for %ld objects", (unsigned long) [insertedObjects count]);
+            [self.privateContext performBlockAndWait:^{
+                success = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:&error];
+            }];
+            
+            if (! success) {
+                RKLogError(@"Failed to obtain permanent object ID's for %ld managed objects. Error: %@", (unsigned long) [insertedObjects count], [error localizedDescription]);
+            }
         }
         
-        [self.privateContext performBlockAndWait:^{
-            success = [self.privateContext save:&error];
-        }];
-        if (! success) {
-            RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self performSelector:@selector(informDelegateOfError:) withObject:error];
-                [self finalizeLoad:success];
-            });
-            return;
+        if ([self.privateContext hasChanges]) {
+            [self.privateContext performBlockAndWait:^{
+                success = [self.privateContext save:&error];
+            }];
+            if (! success) {
+                RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self performSelector:@selector(informDelegateOfError:) withObject:error];
+                    [self finalizeLoad:success];
+                });
+                return;
+            }
         }
     }
 
