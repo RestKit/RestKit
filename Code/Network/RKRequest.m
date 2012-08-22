@@ -369,7 +369,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
                                HTTPMethod:methodString 
                                parameters:(self.method == RKRequestMethodGET) ? [_URL queryParameters] : parameters 
                                    scheme:[_URL scheme] 
-                                     host:[_URL host] 
+                                     host:[_URL hostAndPort]
                               consumerKey:self.OAuth1ConsumerKey 
                            consumerSecret:self.OAuth1ConsumerSecret 
                               accessToken:self.OAuth1AccessToken 
