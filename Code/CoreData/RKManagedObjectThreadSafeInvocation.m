@@ -19,6 +19,11 @@
 //
 
 #import "RKManagedObjectThreadSafeInvocation.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
 
 @interface RKManagedObjectThreadSafeInvocation ()
 @property (nonatomic, retain) NSMutableDictionary *argumentKeyPaths;
@@ -103,6 +108,7 @@
                     [self.mainQueueManagedObjectContext performBlockAndWait:^{
                         managedObject = [self.mainQueueManagedObjectContext existingObjectWithID:(NSManagedObjectID *)subObject error:&error];
                     }];
+                    NSAssert(managedObject, @"Expected managed object for ID %@, got nil: %@", subObject, error);
                     [collection addObject:managedObject];
                 } else {
                     [collection addObject:subObject];
