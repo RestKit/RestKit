@@ -61,54 +61,28 @@
     RKRoute *route = [self.routeSet routeForName:routeName];
     if (! route) return nil;
     if (method) *method = route.method;
-    return [self.baseURL URLByAppendingResourcePath:[self resourcePathFromRoute:route forObject:object]];
+    return [RKURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
 }
 
 - (RKURL *)URLForObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForObject:object method:method];
     if (! route) return nil;
-    return [self.baseURL URLByAppendingResourcePath:[self resourcePathFromRoute:route forObject:object]];
+    return [RKURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
 }
 
 - (RKURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForRelationship:relationshipName ofClass:[object class] method:method];
-    if (! route) return nil;
-    return [self.baseURL URLByAppendingResourcePath:[self resourcePathFromRoute:route forObject:object]];
+    if (! route) return nil;    
+    return [RKURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
 }
 
-- (NSString *)resourcePathFromRoute:(RKRoute *)route forObject:(id)object
+- (NSString *)pathFromRoute:(RKRoute *)route forObject:(id)object
 {
     if (! object) return route.resourcePathPattern;
     RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:route.resourcePathPattern];
     return [pathMatcher pathFromObject:object addingEscapes:route.shouldEscapeResourcePath];
-}
-
-@end
-
-@implementation RKRouter (Deprecations)
-
-- (NSString *)resourcePathForObject:(NSObject *)object method:(RKRequestMethod)method DEPRECATED_ATTRIBUTE
-{
-    return [[self URLForObject:object method:method] resourcePath];
-}
-
-- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern DEPRECATED_ATTRIBUTE
-{
-    [self.routeSet addRoute:[RKRoute routeWithClass:objectClass resourcePathPattern:resourcePathPattern method:RKRequestMethodAny]];
-}
-
-- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern forMethod:(RKRequestMethod)method DEPRECATED_ATTRIBUTE
-{
-    [self.routeSet addRoute:[RKRoute routeWithClass:objectClass resourcePathPattern:resourcePathPattern method:method]];
-}
-
-- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes DEPRECATED_ATTRIBUTE
-{
-    RKRoute *route = [RKRoute routeWithClass:objectClass resourcePathPattern:resourcePathPattern method:method];
-    route.shouldEscapeResourcePath = addEscapes;
-    [self.routeSet addRoute:route];
 }
 
 @end
