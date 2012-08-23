@@ -235,27 +235,15 @@
     mapper.delegate = self;
     mapper.context = context;
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
-    RKMappingResult *result = [self performMappingWithMapper:mapper];    
-
-    // Log any mapping errors
-    if ([mapper.errors count] > 0) {
-        RKLogError(@"Encountered errors during mapping: %@", [[mapper.errors valueForKey:@"localizedDescription"] componentsJoinedByString:@", "]);
-    }
-
-    // The object mapper will return a nil result if mapping failed
-    if (nil == result) {
-        // TODO: Construct a composite error that wraps up all the other errors. Should probably make it performMapping:&error when we have this?
-        if (error) *error = [mapper.errors lastObject];
-        return nil;
-    }
+    RKMappingResult *result = [self performMappingWithMapper:mapper error:error];
 
     return result;
 }
 
 // Factored into a method to support RKManagedObjectLoader
-- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper 
+- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper error:(NSError **)error
 {
-    return [mapper performMapping:nil];
+    return [mapper performMapping:error];
 }
 
 - (RKMapping *)configuredObjectMapping

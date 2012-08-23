@@ -280,7 +280,7 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
 - (void)handleResponseError;
 
 // Subclass hook for RKManagedObjectLoader...
-- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper;
+- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper error:(NSError **)error;
 
 @end
 

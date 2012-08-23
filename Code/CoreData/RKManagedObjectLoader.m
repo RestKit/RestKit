@@ -146,23 +146,23 @@
 
 #pragma mark - RKObjectLoader overrides
 
-- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper
+- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper error:(NSError **)error
 {
     __block RKMappingResult *mappingResult = nil;
 
+    NSAssert(self.privateContext, @"Cannot have a nil private context");
     // Map it
     [self.privateContext performBlockAndWait:^{
-        NSError *error;
         if (self.targetObjectID) {
-            NSManagedObject *localObject = [self.privateContext existingObjectWithID:self.targetObjectID error:&error];
+            NSManagedObject *localObject = [self.privateContext existingObjectWithID:self.targetObjectID error:error];
             if (! localObject) {
                 RKLogWarning(@"Failed to retrieve existing object with ID: %@", self.targetObjectID);
-                RKLogCoreDataError(error);
+                RKLogCoreDataError(*error);
             }
 
             mapper.targetObject = localObject;
         }
-        mappingResult = [mapper performMapping:&error];
+        mappingResult = [mapper performMapping:error];
     }];
 
     // Allow any enqueued operations to execute
