@@ -20,16 +20,45 @@
 
 #import <RestKit/RestKit.h>
 
-// 200..299
-NSRange RKMakeSuccessfulStatusCodeRange(void);
+/**
+ The HTTP status code classes
+ 
+ See http://tools.ietf.org/html/rfc2616#section-10
+ */
+enum {
+    RKStatusCodeClassInformational  = 100,
+    RKStatusCodeClassSuccessful     = 200,
+    RKStatusCodeClassRedirection    = 300,
+    RKStatusCodeClassClientError    = 400,
+    RKStatusCodeClassServerError    = 500
+};
+typedef NSUInteger RKStatusCodeClass;
 
-// 400..499
-NSRange RKMakeClientErrorStatusCodeRange(void);
+/**
+ Creates a new range covering the status codes in the given class.
+ 
+ @param statusCodeClass The status code class to create a range covering.
+ @return A new range covering the status codes in the given class.
+ */
+NSRange RKStatusCodeRangeForClass(RKStatusCodeClass statusCodeClass);
+
+/**
+ Creates a new index set covering the status codes in the given class.
+ 
+ @param statusCodeClass The status code class to create an index set covering.
+ @return A new index set covering the status codes in the given class.
+ */
+NSIndexSet * RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
+
+// TODO: Implement these guys...
+//NSString * RKStringFromStatusCode(NSInteger statusCode);
+//NSInteger RKStatusCodeFromString(NSString *statusCode);
 
 /**
  An RKMappingDescriptor object describes an object mapping configuration
  that is available for a given HTTP request.
  */
+// Becomes RKResponseDescriptor
 @interface RKMappingDescriptor : NSObject
 
 @property (nonatomic, strong, readonly) RKMapping *mapping;         // required

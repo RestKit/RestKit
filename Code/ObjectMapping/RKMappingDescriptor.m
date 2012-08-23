@@ -21,14 +21,16 @@
 #import <RestKit/RKPathMatcher.h>
 #import "RKMappingDescriptor.h"
 
-NSRange RKMakeSuccessfulStatusCodeRange(void)
+NSUInteger RKStatusCodeRangeLength = 100;
+
+NSRange RKStatusCodeRangeForClass(RKStatusCodeClass statusCodeClass)
 {
-    return NSMakeRange(200, 100);
+    return NSMakeRange(statusCodeClass, RKStatusCodeRangeLength);
 }
 
-NSRange RKMakeClientErrorStatusCodeRange(void)
+NSIndexSet * RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass)
 {
-    return NSMakeRange(400, 100);
+    return [NSIndexSet indexSetWithIndexesInRange:RKStatusCodeRangeForClass(statusCodeClass)];
 }
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
