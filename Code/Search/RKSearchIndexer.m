@@ -117,7 +117,11 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     searchTokenizer.stopWords = self.stopWords;
     
     __block NSUInteger searchWordCount;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:RKSearchWordEntityName];
+    fetchRequest.fetchLimit = 1;
+    NSPredicate *predicateTemplate = [NSPredicate predicateWithFormat:@"%K == $SEARCH_WORD", RKSearchWordAttributeName];
     NSManagedObjectContext *managedObjectContext = managedObject.managedObjectContext;
+    
     [managedObjectContext performBlockAndWait:^{
         NSMutableSet *searchWords = [NSMutableSet set];
         for (NSString *searchableAttribute in searchableAttributes) {
@@ -127,9 +131,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                 NSSet *tokens = [searchTokenizer tokenize:attributeValue];
                 for (NSString *word in tokens) {
                     if (word && [word length] > 0) {
-                        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:RKSearchWordEntityName];
-                        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"%K = %@", RKSearchWordAttributeName, word];
-                        fetchRequest.fetchLimit = 1;
+                        fetchRequest.predicate = [predicateTemplate predicateWithSubstitutionVariables:@{ @"SEARCH_WORD" : word }];
                         NSError *error = nil;
                         NSArray *results = [managedObject.managedObjectContext executeFetchRequest:fetchRequest error:&error];
                         if (results) {
