@@ -182,7 +182,6 @@
 - (RKObjectMappingProviderContextEntry *)entryForResourcePathPattern:(NSString *)resourcePathPattern {
     RKOrderedDictionary *contextValue = [self valueForContext:RKObjectMappingProviderContextObjectsByResourcePathPattern];
     for (NSString *pattern in contextValue) {
-        NSLog(@"Comparing pattern %@ to resourcePathPattern %@", pattern, resourcePathPattern);
         if ([pattern isEqualToString:resourcePathPattern]) {
             return [contextValue objectForKey:pattern];
         }
