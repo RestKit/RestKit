@@ -741,6 +741,10 @@
 		25EC1B3A14F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1B3B14F84B5D00C3CF3F /* UIImage+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */; };
 		25EC1B3C14F84B5D00C3CF3F /* UIImage+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */; };
+		25F53ADC15E7B150008B54E6 /* RKRequestDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53ADA15E7B150008B54E6 /* RKRequestDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25F53ADD15E7B150008B54E6 /* RKRequestDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53ADA15E7B150008B54E6 /* RKRequestDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25F53ADE15E7B150008B54E6 /* RKRequestDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F53ADB15E7B150008B54E6 /* RKRequestDescriptor.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		25F53ADF15E7B150008B54E6 /* RKRequestDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F53ADB15E7B150008B54E6 /* RKRequestDescriptor.m */; };
 		25F53AE215E7B612008B54E6 /* RKHTTPUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25F53AE315E7B612008B54E6 /* RKHTTPUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25F53AE415E7B612008B54E6 /* RKHTTPUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */; };
@@ -1270,6 +1274,8 @@
 		25EC1B1F14F8220800C3CF3F /* RestKitResources-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RestKitResources-Info.plist"; sourceTree = "<group>"; };
 		25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+RKAdditions.h"; sourceTree = "<group>"; };
 		25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RKAdditions.m"; sourceTree = "<group>"; };
+		25F53ADA15E7B150008B54E6 /* RKRequestDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestDescriptor.h; sourceTree = "<group>"; };
+		25F53ADB15E7B150008B54E6 /* RKRequestDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestDescriptor.m; sourceTree = "<group>"; };
 		25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHTTPUtilities.h; sourceTree = "<group>"; };
 		25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHTTPUtilities.m; sourceTree = "<group>"; };
 		25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestResponseLoader.h; path = Testing/RKTestResponseLoader.h; sourceTree = "<group>"; };
@@ -1605,6 +1611,8 @@
 				258EA4A715A38BBF007E07A6 /* RKObjectMappingOperationDataSource.m */,
 				258EA4AD15A38E7D007E07A6 /* RKMappingOperationDataSource.h */,
 				25AFF8F015B4CF1F0051877F /* RKMappingErrors.h */,
+				25F53ADA15E7B150008B54E6 /* RKRequestDescriptor.h */,
+				25F53ADB15E7B150008B54E6 /* RKRequestDescriptor.m */,
 				25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */,
 				25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */,
 			);
@@ -2404,6 +2412,7 @@
 				25A763D015C71ACE00A9DF31 /* Search.h in Headers */,
 				25A763DB15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */,
 				2561872215DE8FBE006B6FBF /* RKResponseDescriptor.h in Headers */,
+				25F53ADC15E7B150008B54E6 /* RKRequestDescriptor.h in Headers */,
 				25F53AE215E7B612008B54E6 /* RKHTTPUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2535,6 +2544,7 @@
 				25A763D115C71ACE00A9DF31 /* Search.h in Headers */,
 				25A763DC15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */,
 				2561872315DE8FBE006B6FBF /* RKResponseDescriptor.h in Headers */,
+				25F53ADD15E7B150008B54E6 /* RKRequestDescriptor.h in Headers */,
 				25F53AE315E7B612008B54E6 /* RKHTTPUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2951,6 +2961,7 @@
 				25104F3D15C30F2100829135 /* RKSearchWordEntity.m in Sources */,
 				25A763DD15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */,
 				2561872415DE8FBE006B6FBF /* RKResponseDescriptor.m in Sources */,
+				25F53ADE15E7B150008B54E6 /* RKRequestDescriptor.m in Sources */,
 				25F53AE415E7B612008B54E6 /* RKHTTPUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3152,6 +3163,7 @@
 				25104F3E15C30F2100829135 /* RKSearchWordEntity.m in Sources */,
 				25A763DE15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */,
 				2561872515DE8FBE006B6FBF /* RKResponseDescriptor.m in Sources */,
+				25F53ADF15E7B150008B54E6 /* RKRequestDescriptor.m in Sources */,
 				25F53AE515E7B612008B54E6 /* RKHTTPUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
