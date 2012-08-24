@@ -21,18 +21,6 @@
 #import <RestKit/RKPathMatcher.h>
 #import "RKResponseDescriptor.h"
 
-NSUInteger RKStatusCodeRangeLength = 100;
-
-NSRange RKStatusCodeRangeForClass(RKStatusCodeClass statusCodeClass)
-{
-    return NSMakeRange(statusCodeClass, RKStatusCodeRangeLength);
-}
-
-NSIndexSet * RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass)
-{
-    return [NSIndexSet indexSetWithIndexesInRange:RKStatusCodeRangeForClass(statusCodeClass)];
-}
-
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
     NSMutableString *string = [NSMutableString string];
