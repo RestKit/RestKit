@@ -106,4 +106,9 @@
     return [NSString stringWithFormat:@"<%@: %p, results=%@>", NSStringFromClass([self class]), self, self.keyPathToMappedObjects];
 }
 
+- (NSUInteger)count
+{
+    return [[self asCollection] count];
+}
+
 @end

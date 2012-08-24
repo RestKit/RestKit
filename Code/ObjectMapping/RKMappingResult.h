@@ -32,5 +32,6 @@
 - (id)asObject;
 - (NSArray *)asCollection;
 - (NSError *)asError;
+- (NSUInteger)count;
 
 @end
