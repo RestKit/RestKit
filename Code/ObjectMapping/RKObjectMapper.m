@@ -23,7 +23,7 @@
 #import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
-#import "RKMappingDescriptor.h"
+#import "RKResponseDescriptor.h"
 
 NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
@@ -304,7 +304,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
         RKLogTrace(@"Examining keyPath '%@' for mappable content...", keyPath);
 
-        if ([keyPath isEqualToString:@""] || [keyPath isEqual:[NSNull null]]) {
+        if ([keyPath isEqual:[NSNull null]] || [keyPath isEqualToString:@""]) {
             mappableValue = self.sourceObject;
         } else {
             mappableValue = [self.sourceObject valueForKeyPath:keyPath];
@@ -356,7 +356,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
     NSMutableDictionary *results = nil;
 
     // Handle mapping selection for context
-    if (self.mappingsDictionary) {
+    if ([[self.mappingsDictionary allKeys] count] > 0) {
         results = [self performKeyPathMappingUsingMappingDictionary:self.mappingsDictionary];
         foundMappable = (results != nil);
     } else {

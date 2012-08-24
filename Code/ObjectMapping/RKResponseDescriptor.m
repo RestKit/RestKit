@@ -1,5 +1,5 @@
 //
-//  RKMappingDescriptor.m
+//  RKResponseDescriptor.m
 //  RestKit
 //
 //  Created by Blake Watters on 8/16/12.
@@ -19,7 +19,7 @@
 //
 
 #import <RestKit/RKPathMatcher.h>
-#import "RKMappingDescriptor.h"
+#import "RKResponseDescriptor.h"
 
 NSUInteger RKStatusCodeRangeLength = 100;
 
@@ -64,21 +64,21 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
     return string;
 }
 
-@interface RKMappingDescriptor ()
+@interface RKResponseDescriptor ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) NSString *pathPattern;
 @property (nonatomic, strong, readwrite) NSString *keyPath;
 @property (nonatomic, strong, readwrite) NSIndexSet *statusCodes;
 @end
 
-@implementation RKMappingDescriptor
+@implementation RKResponseDescriptor
 
-+ (RKMappingDescriptor *)mappingDescriptorWithMapping:(RKMapping *)mapping
++ (RKResponseDescriptor *)responseDescriptorWithMapping:(RKMapping *)mapping
                                           pathPattern:(NSString *)pathPattern
                                               keyPath:(NSString *)keyPath
                                           statusCodes:(NSIndexSet *)statusCodes
 {
-    RKMappingDescriptor *mappingDescriptor = [self new];
+    RKResponseDescriptor *mappingDescriptor = [self new];
     mappingDescriptor.mapping = mapping;
     mappingDescriptor.pathPattern = pathPattern;
     mappingDescriptor.keyPath = keyPath;

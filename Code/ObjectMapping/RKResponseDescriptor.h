@@ -1,5 +1,5 @@
 //
-//  RKMappingDescriptor.h
+//  RKResponseDescriptor.h
 //  RestKit
 //
 //  Created by Blake Watters on 8/16/12.
@@ -55,18 +55,17 @@ NSIndexSet * RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
 //NSInteger RKStatusCodeFromString(NSString *statusCode);
 
 /**
- An RKMappingDescriptor object describes an object mapping configuration
- that is available for a given HTTP request.
+ An RKResponseDescriptor object describes an object mapping configuration
+ that is applicable to an HTTP response.
  */
-// Becomes RKResponseDescriptor
-@interface RKMappingDescriptor : NSObject
+@interface RKResponseDescriptor : NSObject
 
 @property (nonatomic, strong, readonly) RKMapping *mapping;         // required
 @property (nonatomic, strong, readonly) NSString *pathPattern;      // can be nil
 @property (nonatomic, strong, readonly) NSString *keyPath;          // can be nil
 @property (nonatomic, strong, readonly) NSIndexSet *statusCodes;    // can be nil
 
-+ (RKMappingDescriptor *)mappingDescriptorWithMapping:(RKMapping *)mapping
++ (RKResponseDescriptor *)responseDescriptorWithMapping:(RKMapping *)mapping
                                           pathPattern:(NSString *)pathPattern
                                               keyPath:(NSString *)keyPath
                                           statusCodes:(NSIndexSet *)statusCodes;
