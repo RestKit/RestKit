@@ -54,9 +54,9 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
 
 @interface RKResponseDescriptor ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
-@property (nonatomic, strong, readwrite) NSString *pathPattern;
-@property (nonatomic, strong, readwrite) NSString *keyPath;
-@property (nonatomic, strong, readwrite) NSIndexSet *statusCodes;
+@property (nonatomic, copy, readwrite) NSString *pathPattern;
+@property (nonatomic, copy, readwrite) NSString *keyPath;
+@property (nonatomic, copy, readwrite) NSIndexSet *statusCodes;
 @end
 
 @implementation RKResponseDescriptor

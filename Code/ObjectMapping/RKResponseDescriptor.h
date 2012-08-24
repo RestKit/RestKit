@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+@class RKMapping;
 
 /**
  An RKResponseDescriptor object describes an object mapping configuration
@@ -26,9 +27,9 @@
 @interface RKResponseDescriptor : NSObject
 
 @property (nonatomic, strong, readonly) RKMapping *mapping;         // required
-@property (nonatomic, strong, readonly) NSString *pathPattern;      // can be nil
-@property (nonatomic, strong, readonly) NSString *keyPath;          // can be nil
-@property (nonatomic, strong, readonly) NSIndexSet *statusCodes;    // can be nil
+@property (nonatomic, copy, readonly) NSString *pathPattern;      // can be nil
+@property (nonatomic, copy, readonly) NSString *keyPath;          // can be nil
+@property (nonatomic, copy, readonly) NSIndexSet *statusCodes;    // can be nil
 
 + (RKResponseDescriptor *)responseDescriptorWithMapping:(RKMapping *)mapping
                                           pathPattern:(NSString *)pathPattern
