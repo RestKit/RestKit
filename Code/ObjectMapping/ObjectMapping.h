@@ -21,6 +21,8 @@
 #import "RKObjectManager.h"
 #import "RKObjectLoader.h"
 #import "RKObjectMapping.h"
+#import "RKAttributeMapping.h"
+#import "RKRelationshipMapping.h"
 #import "RKObjectSerializer.h"
 #import "RKObjectMappingProvider.h"
 #import "RKMappingResult.h"

@@ -39,10 +39,10 @@
  path within the data being mapped.
 
  @param operation The object mapping operation being performed.
- @param mapping The RKObjectAttributeMapping or RKObjectRelationshipMapping found for the key path.
+ @param mapping The RKAttributeMapping or RKRelationshipMapping found for the key path.
  @param keyPath The key path in the source object for which the mapping is to be applied.
  */
-- (void)mappingOperation:(RKMappingOperation *)operation didFindMapping:(RKAttributeMapping *)mapping forKeyPath:(NSString *)keyPath;
+- (void)mappingOperation:(RKMappingOperation *)operation didFindMapping:(RKPropertyMapping *)mapping forKeyPath:(NSString *)keyPath;
 
 /**
  Tells the delegate that no attribute or relationships mapping was found for a given key
@@ -60,9 +60,9 @@
  @param operation The object mapping operation being performed.
  @param value A new value that was set on the destination object.
  @param keyPath The key path in the destination object for which a new value has been set.
- @param mapping The RKObjectAttributeMapping or RKObjectRelationshipMapping found for the key path.
+ @param propertyMapping The RKAttributeMapping or RKRelationshipMapping found for the key path.
  */
-- (void)mappingOperation:(RKMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping;
+- (void)mappingOperation:(RKMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKPropertyMapping *)propertyMapping;
 
 /**
  Tells the delegate that the mapping operation has declined to set a value for a given
@@ -71,9 +71,9 @@
  @param operation The object mapping operation being performed.
  @param value A unchanged value for the key path in the destination object.
  @param keyPath The key path in the destination object for which a unchanged value was not set.
- @param mapping The RKObjectAttributeMapping or RKObjectRelationshipMapping found for the key path.
+ @param propertyMapping The RKAttributeMapping or RKRelationshipMapping found for the key path.
  */
-- (void)mappingOperation:(RKMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping;
+- (void)mappingOperation:(RKMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKPropertyMapping *)propertyMapping;
 
 /**
  Tells the delegate that the mapping operation has failed due to an error.

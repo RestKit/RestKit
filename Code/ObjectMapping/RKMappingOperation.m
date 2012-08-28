@@ -22,6 +22,7 @@
 #import "RKMappingOperation.h"
 #import "RKMappingErrors.h"
 #import "RKPropertyInspector.h"
+#import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
 #import "RKObjectMapper.h"
 #import "RKErrors.h"
@@ -304,12 +305,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         NSString *searchString = [NSString stringWithFormat:@"(%@)", [[_nestedAttributeSubstitution allKeys] lastObject]];
         NSString *replacementString = [[_nestedAttributeSubstitution allValues] lastObject];
         NSMutableArray *array = [NSMutableArray arrayWithCapacity:[self.objectMapping.attributeMappings count]];
-        for (RKAttributeMapping *mapping in mappings) {
-            RKAttributeMapping *nestedMapping = [mapping copy];
-            nestedMapping.sourceKeyPath = [nestedMapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
-            nestedMapping.destinationKeyPath = [nestedMapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+        for (RKPropertyMapping *mapping in mappings) {
+            NSString *sourceKeyPath = [mapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+            NSString *destinationKeyPath = [mapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+            RKPropertyMapping *nestedMapping = nil;
+            if ([mapping isKindOfClass:[RKAttributeMapping class]]) {
+                nestedMapping = [RKAttributeMapping attributeMappingFromKeyPath:sourceKeyPath toKeyPath:mapping.destinationKeyPath];
+            } else if ([mapping isKindOfClass:[RKRelationshipMapping class]]) {
+                nestedMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath
+                                                                            toKeyPath:destinationKeyPath
+                                                                          withMapping:[(RKRelationshipMapping *)mapping mapping]];
+            }
             [array addObject:nestedMapping];
-            [nestedMapping release];
         }
 
         return array;

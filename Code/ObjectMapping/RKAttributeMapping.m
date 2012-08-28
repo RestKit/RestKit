@@ -22,57 +22,24 @@
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
+@interface RKAttributeMapping ()
+@property (nonatomic, strong, readwrite) NSString *sourceKeyPath;
+@property (nonatomic, strong, readwrite) NSString *destinationKeyPath;
+@end
+
 @implementation RKAttributeMapping
 
 @synthesize sourceKeyPath = _sourceKeyPath;
 @synthesize destinationKeyPath = _destinationKeyPath;
 
-/**
- @private
- */
-- (id)initWithSourceKeyPath:(NSString *)sourceKeyPath andDestinationKeyPath:(NSString *)destinationKeyPath
++ (RKAttributeMapping *)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
 {
-    NSAssert(sourceKeyPath != nil, @"Cannot define an element mapping an element name to map from");
-    NSAssert(destinationKeyPath != nil, @"Cannot define an element mapping without a property to apply the value to");
-    self = [super init];
-    if (self) {
-        _sourceKeyPath = [sourceKeyPath retain];
-        _destinationKeyPath = [destinationKeyPath retain];
-    }
-
-    return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    RKAttributeMapping *copy = [[[self class] allocWithZone:zone] initWithSourceKeyPath:self.sourceKeyPath andDestinationKeyPath:self.destinationKeyPath];
-    return copy;
-}
-
-- (BOOL)isEqualToMapping:(RKAttributeMapping *)mapping
-{
-    return [mapping isKindOfClass:[RKAttributeMapping class]] &&
-    [_sourceKeyPath isEqual:mapping.sourceKeyPath] &&
-    [_destinationKeyPath isEqual:mapping.destinationKeyPath];
-}
-
-- (void)dealloc
-{
-    [_sourceKeyPath release];
-    [_destinationKeyPath release];
-
-    [super dealloc];
-}
-
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"<%@: %p %@ => %@>", self.class, self, self.sourceKeyPath, self.destinationKeyPath];
-}
-
-+ (RKAttributeMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
-{
-    RKAttributeMapping *mapping = [[self alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
-    return [mapping autorelease];
+    NSParameterAssert(sourceKeyPath);
+    NSParameterAssert(destinationKeyPath);
+    RKAttributeMapping *attributeMapping = [self new];
+    attributeMapping.sourceKeyPath = sourceKeyPath;
+    attributeMapping.destinationKeyPath = destinationKeyPath;
+    return attributeMapping;
 }
 
 - (BOOL)isMappingForKeyOfNestedDictionary

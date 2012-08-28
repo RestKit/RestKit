@@ -18,19 +18,14 @@
 //  limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-#import "RKAttributeMapping.h"
-#import "RKMapping.h"
+#import "RKPropertyMapping.h"
 
-@interface RKRelationshipMapping : RKAttributeMapping
+@class RKMapping;
 
-@property (nonatomic, retain) RKMapping *mapping;
-@property (nonatomic, assign) BOOL reversible;
+@interface RKRelationshipMapping : RKPropertyMapping
 
-+ (RKRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping;
+@property (nonatomic, strong, readonly) RKMapping *mapping;
 
-+ (RKRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping reversible:(BOOL)reversible;
-
-- (BOOL)isEqualToMapping:(RKRelationshipMapping *)mapping;
++ (RKRelationshipMapping *)relationshipMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)mapping;
 
 @end

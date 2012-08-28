@@ -1,5 +1,5 @@
 //
-//  RKObjectAttributeMappingTest.m
+//  RKAttributeMappingTest.m
 //  RestKit
 //
 //  Created by Blake Watters on 6/8/12.
@@ -9,11 +9,11 @@
 #import "RKTestEnvironment.h"
 #import "RKAttributeMapping.h"
 
-@interface RKObjectAttributeMappingTest : RKTestCase
+@interface RKAttributeMappingTest : RKTestCase
 
 @end
 
-@implementation RKObjectAttributeMappingTest
+@implementation RKAttributeMappingTest
 
 - (void)testThatAttributeMappingsWithTheSameSourceAndDestinationKeyPathAreConsideredEqual
 {

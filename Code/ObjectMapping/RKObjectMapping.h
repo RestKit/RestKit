@@ -18,10 +18,10 @@
 //  limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "RKMacros.h"
 #import "RKMapping.h"
-#import "RKAttributeMapping.h"
-#import "RKRelationshipMapping.h"
+
+@class RKPropertyMapping, RKAttributeMapping, RKRelationshipMapping;
 
 /**
  An object mapping defines the rules for transforming a key-value coding
@@ -60,7 +60,7 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  The aggregate collection of attribute and relationship mappings within this object mapping
  */
-@property (nonatomic, readonly) NSArray *mappings;
+@property (nonatomic, strong, readonly) NSArray *propertyMappings;
 
 /**
  The collection of attribute mappings within this object mapping
@@ -251,6 +251,8 @@ relationship. Relationships are processed using an object mapping as well.
  @param relationshipKey The name of the relationship we want to retrieve the mapping for
  */
 - (RKRelationshipMapping *)mappingForRelationship:(NSString *)relationshipKey;
+- (void)addPropertyMapping:(RKPropertyMapping *)propertyMapping;
+- (void)addPropertyMappingsFromArray:(NSArray *)arrayOfPropertyMappings;
 
 #pragma mark - Attribute & Relationship Mapping
 
@@ -278,6 +280,11 @@ relationship. Relationships are processed using an object mapping as well.
  @param keyPathToAttributeNames A dictionary keyed by source key to destination attribute name.
  */
 - (void)addAttributeMappingsFromDictionary:(NSDictionary *)keyPathToAttributeNames;
+
+/**
+ Adds attribute mappings to the rec
+ */
+- (void)addAttributeMappingsFromArray:(NSArray *)arrayOfAttributeNamesOrMappings;
 
 /**
  Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
@@ -466,6 +473,7 @@ relationship. Relationships are processed using an object mapping as well.
  @param sourceKeyPath A key-value coding key path to remove the mappings for
  */
 - (void)removeMappingForKeyPath:(NSString *)sourceKeyPath;
+- (void)removePropertyMapping:(RKPropertyMapping *)propertyMapping;
 
 #pragma mark - Inverse Mappings
 

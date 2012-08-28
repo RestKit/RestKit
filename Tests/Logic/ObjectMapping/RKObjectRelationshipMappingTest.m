@@ -1,5 +1,5 @@
 //
-//  RKObjectRelationshipMappingTest.m
+//  RKRelationshipMappingTest.m
 //  RestKit
 //
 //  Created by Blake Watters on 6/8/12.
@@ -8,11 +8,11 @@
 
 #import "RKTestEnvironment.h"
 
-@interface RKObjectRelationshipMappingTest : RKTestCase
+@interface RKRelationshipMappingTest : RKTestCase
 
 @end
 
-@implementation RKObjectRelationshipMappingTest
+@implementation RKRelationshipMappingTest
 
 - (void)testThatRelationshipMappingsWithTheSameSourceAndDestinationKeyPathAreConsideredEqual
 {
