@@ -95,20 +95,10 @@ static RKTestFactory *sharedFactory = nil;
         RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
             RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
                 objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
-                RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
-                objectManager.mappingProvider = mappingProvider;
-
-                // Force reachability determination
-                [objectManager.client.reachabilityObserver getFlags];
             });
         });
 
         return objectManager;
-    }];
-
-    [self defineFactory:RKTestFactoryDefaultNamesMappingProvider withBlock:^id {
-        RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-        return mappingProvider;
     }];
 
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
@@ -189,13 +179,6 @@ static RKTestFactory *sharedFactory = nil;
     [RKClient setSharedClient:objectManager.client];
 
     return objectManager;
-}
-
-+ (id)mappingProvider
-{
-    RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
-
-    return mappingProvider;
 }
 
 + (id)managedObjectStore

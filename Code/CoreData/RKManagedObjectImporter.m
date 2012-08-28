@@ -24,7 +24,6 @@
 
 #import "RKManagedObjectImporter.h"
 #import "RKObjectMapper.h"
-#import "RKObjectMappingProvider+CoreData.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "NSString+RKAdditions.h"
@@ -218,10 +217,8 @@
         return NSNotFound;
     }
 
-    RKObjectMappingProvider *mappingProvider = [[RKObjectMappingProvider new] autorelease];
-    [mappingProvider setMapping:mapping forKeyPath:keyPath ? keyPath : @""];
-
-    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
+    NSDictionary *mappingDictionary = @{ keyPath: mapping };
+    RKObjectMapper *mapper = [[RKObjectMapper alloc] initWithObject:parsedData mappingsDictionary:mappingDictionary];
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
     __block RKMappingResult *mappingResult;
     [self.managedObjectContext performBlockAndWait:^{

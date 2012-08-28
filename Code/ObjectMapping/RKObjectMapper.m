@@ -20,10 +20,10 @@
 
 #import "RKObjectMapper.h"
 #import "RKObjectMapper_Private.h"
-#import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
 #import "RKResponseDescriptor.h"
+#import "RKDynamicMapping.h"
 
 NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
@@ -35,30 +35,10 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
 @property (nonatomic, strong) NSMutableArray *mappingErrors;
 @property (nonatomic, strong) id sourceObject;
-@property (nonatomic, strong, readwrite) RKObjectMappingProvider *mappingProvider;
 //@property (nonatomic, strong, readwrite) NSDictionary *mappingsDictionary; // TODO: Becomes read-only
 @end
 
 @implementation RKObjectMapper
-
-+ (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider
-{
-    return [[self alloc] initWithObject:object mappingProvider:mappingProvider];
-}
-
-- (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider
-{
-    self = [super init];
-    if (self) {
-        self.sourceObject = object;
-        self.mappingProvider = mappingProvider;
-        self.mappingErrors = [NSMutableArray new];
-        self.context = RKObjectMappingProviderContextObjectsByKeyPath;
-        self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
-    }
-
-    return self;
-}
 
 - (id)initWithObject:(id)object mappingsDictionary:(NSDictionary *)mappingsDictionary;
 {
@@ -67,7 +47,6 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
         self.sourceObject = object;
         self.mappingsDictionary = mappingsDictionary;
         self.mappingErrors = [NSMutableArray new];
-        self.context = RKObjectMappingProviderContextObjectsByKeyPath;
         self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
     
@@ -343,7 +322,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 - (RKMappingResult *)performMapping:(NSError **)error
 {
     NSAssert(self.sourceObject != nil, @"Cannot perform object mapping without a source object to map from");
-    NSAssert(self.mappingProvider || self.mappingsDictionary, @"Cannot perform object mapping without an object mapping provider or dictionary of mappings");
+    NSAssert(self.mappingsDictionary, @"Cannot perform object mapping without a dictionary of mappings");
 
     RKLogDebug(@"Performing object mapping sourceObject: %@\n and targetObject: %@", self.sourceObject, self.targetObject);
 
@@ -353,33 +332,8 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
     // Perform the mapping
     BOOL foundMappable = NO;
-    NSMutableDictionary *results = nil;
-
-    // Handle mapping selection for context
-    if ([[self.mappingsDictionary allKeys] count] > 0) {
-        results = [self performKeyPathMappingUsingMappingDictionary:self.mappingsDictionary];
-        foundMappable = (results != nil);
-    } else {
-        // Legacy RKObjectMappingProvider support...
-        id mappingsForContext = [self.mappingProvider valueForContext:self.context];
-        if ([mappingsForContext isKindOfClass:[NSDictionary class]]) {
-            results = [self performKeyPathMappingUsingMappingDictionary:mappingsForContext];
-            foundMappable = (results != nil);
-        } else if ([mappingsForContext isKindOfClass:[RKMapping class]]) {
-            id mappableData = self.sourceObject;
-            if ([mappingsForContext rootKeyPath] != nil) {
-                NSString *rootKeyPath = [mappingsForContext rootKeyPath];
-                mappableData = [self.sourceObject valueForKeyPath:rootKeyPath];
-                RKLogDebug(@"Selected object mapping has rootKeyPath. Apply valueForKeyPath to mappable data: %@", rootKeyPath);
-            }
-
-            if (mappableData) {
-                id mappingResult = [self performMappingForObject:mappableData atKeyPath:@"" usingMapping:mappingsForContext];
-                foundMappable = YES;
-                results = mappingResult ? [NSDictionary dictionaryWithObject:mappingResult forKey:@""] : nil;
-            }
-        }
-    }
+    NSMutableDictionary *results = [self performKeyPathMappingUsingMappingDictionary:self.mappingsDictionary];
+    foundMappable = (results != nil);
 
     if ([self.delegate respondsToSelector:@selector(mapperDidFinishMapping:)]) {
         [self.delegate mapperDidFinishMapping:self];

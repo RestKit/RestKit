@@ -23,7 +23,6 @@
 #import "RKObjectMapping.h"
 #import "RKMappingOperation.h"
 #import "RKMappingResult.h"
-#import "RKObjectMappingProvider.h"
 #import "RKMappingOperationDataSource.h"
 #import "RKErrors.h"
 #import "Support.h"
@@ -34,15 +33,10 @@
 
 @property (nonatomic, strong, readonly) id sourceObject;
 @property (nonatomic, weak) id targetObject;
-@property (nonatomic, strong, readonly) RKObjectMappingProvider *mappingProvider;
 @property (nonatomic, strong, readwrite) NSDictionary *mappingsDictionary; // TODO: Becomes read-only...
-@property (nonatomic, assign) RKObjectMappingProviderContext context;
 @property (nonatomic, weak) id<RKObjectMapperDelegate> delegate;
 @property (nonatomic, readonly) NSArray *errors;
 @property (nonatomic, strong) id<RKMappingOperationDataSource> mappingOperationDataSource;
-
-+ (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;
-- (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 - (id)initWithObject:(id)object mappingsDictionary:(NSDictionary *)mappingsDictionary;
 

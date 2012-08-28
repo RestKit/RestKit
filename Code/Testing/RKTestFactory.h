@@ -183,14 +183,6 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 + (id)objectManager;
 
 /**
- Creates and returns an RKObjectMappingProvider instance using the factory defined
- for the name RKTestFactoryDefaultNamesMappingProvider.
-
- @return A new object mapping provider instance.
- */
-+ (id)mappingProvider;
-
-/**
  Creates and returns a RKManagedObjectStore instance using the factory defined
  for the name RKTestFactoryDefaultNamesManagedObjectStore.
 
