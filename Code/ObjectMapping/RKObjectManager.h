@@ -19,33 +19,11 @@
 //
 
 #import "Network.h"
-#import "RKObjectLoader.h"
 #import "RKRouter.h"
-#import "RKObjectMappingProvider.h"
-#import "RKConfigurationDelegate.h"
 #import "RKObjectPaginator.h"
 #import "RKMacros.h"
 
 @protocol RKParser;
-
-/** Notifications */
-
-/**
- Posted when the object manager has transitioned to the offline state
- */
-extern NSString * const RKObjectManagerDidBecomeOfflineNotification;
-
-/**
- Posted when the object manager has transitioned to the online state
- */
-extern NSString * const RKObjectManagerDidBecomeOnlineNotification;
-
-typedef enum {
-    RKObjectManagerNetworkStatusUnknown,
-    RKObjectManagerNetworkStatusOffline,
-    RKObjectManagerNetworkStatusOnline
-} RKObjectManagerNetworkStatus;
-
 @class RKManagedObjectStore;
 
 /**
@@ -116,7 +94,7 @@ typedef enum {
  When an instance of RKObjectManager is configured, the RKObjectMappingProvider
  instance configured
  */
-@interface RKObjectManager : NSObject <RKConfigurationDelegate>
+@interface RKObjectManager : NSObject
 
 /// @name Configuring the Shared Manager Instance
 
@@ -174,11 +152,6 @@ typedef enum {
 /// @name Network Integration
 
 /**
- The underlying HTTP client for this manager
- */
-@property (nonatomic, retain) RKClient *client;
-
-/**
  The base URL of the underlying RKClient instance. Object loader
  and paginator instances built through the object manager are
  relative to this URL.
@@ -188,40 +161,7 @@ typedef enum {
  */
 @property (nonatomic, readonly) RKURL *baseURL;
 
-/**
- The request cache used to store and load responses for requests sent
- through this object manager's underlying client object
- */
-@property (nonatomic, readonly) RKRequestCache *requestCache;
-
-/**
- The request queue used to dispatch asynchronous requests sent
- through this object manager's underlying client object
- */
-@property (nonatomic, readonly) RKRequestQueue *requestQueue;
-
-/**
-  Returns the current network status for this object manager as determined
-  by connectivity to the remote backend system
- */
-@property (nonatomic, readonly) RKObjectManagerNetworkStatus networkStatus;
-
-/**
- Returns YES when we are in online mode
- */
-@property (nonatomic, readonly) BOOL isOnline;
-
-/**
- Returns YES when we are in offline mode
- */
-@property (nonatomic, readonly) BOOL isOffline;
-
 /// @name Configuring Object Mapping
-
-/**
- The Mapping Provider responsible for returning mappings for various keyPaths.
- */
-@property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
 
 /**
  Router object responsible for generating URLs for
@@ -251,58 +191,7 @@ typedef enum {
 @property (nonatomic, assign) NSString *acceptMIMEType;
 
 ////////////////////////////////////////////////////////
-/// @name Building Object Loaders
-
-/**
- Returns the class of object loader instances built through the manager. When Core Data has
- been configured, instances of RKManagedObjectLoader will be emitted by the manager. Otherwise
- RKObjectLoader is used.
-
- @return RKObjectLoader OR RKManagedObjectLoader
- */
-- (Class)objectLoaderClass;
-
-/**
- Creates and returns an RKObjectLoader or RKManagedObjectLoader instance targeting the specified resourcePath.
-
- The object loader instantiated will be initialized with an RKURL built by appending the resourcePath to the baseURL of the client. The loader will then
- be configured with object mapping configuration from the manager and request configuration from the client.
-
- @param resourcePath A resource to use when building the URL to initialize the object loader instance.
- @return The newly created object loader instance.
- @see RKURL
- @see RKClient
- */
-- (id)loaderWithResourcePath:(NSString *)resourcePath;
-
-/**
- Creates and returns an RKObjectLoader or RKManagedObjectLoader instance targeting the specified URL.
-
- The object loader instantiated will be initialized with URL and will then
- be configured with object mapping configuration from the manager and request configuration from the client.
-
- @param URL The URL with which to initialize the object loader.
- @return The newly created object loader instance.
- @see RKURL
- @see RKClient
- */
-- (id)loaderWithURL:(NSURL *)URL;
-
-/**
- Creates and returns an RKObjectLoader or RKManagedObjectLoader instance for an object instance.
-
- The object loader instantiated will be initialized with a URL built by evaluating the object with the
- router to construct a resource path and then appending that resource path to the baseURL of the client.
- The loader will then be configured with object mapping configuration from the manager and request
- configuration from the client. The specified object will be the target of the object loader and will
- have any returned content mapped back onto the instance.
-
- @param object The object with which to initialize the object loader.
- @return The newly created object loader instance.
- @see RKObjectLoader
- @see RKRouter
- */
-- (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method;
+/// @name Building Object Request Operations
 
 /**
  Creates and returns an RKObjectPaginator instance targeting the specified resource path pattern.
@@ -314,151 +203,9 @@ typedef enum {
  @see RKObjectMappingProvider
  @see RKObjectPaginator
  */
-- (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern;
+//- (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern;
 
 ////////////////////////////////////////////////////////
 /// @name Registered Object Loaders
-
-/**
- These methods are suitable for loading remote payloads that encode type information into the payload. This enables
- the mapping of complex payloads spanning multiple types (i.e. a search operation returning Articles & Comments in
- one payload). Ruby on Rails JSON serialization is an example of such a conformant system.
- */
-
-/**
- Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
- with the loaded objects. Remote objects will be mapped to local objects by consulting the keyPath registrations
- set on the mapping provider.
- */
-- (void)loadObjectsAtResourcePath:(NSString *)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-////////////////////////////////////////////////////////
-/// @name Mappable Object Loaders
-
-/**
- Fetch the data for a mappable object by performing an HTTP GET.
- */
-- (void)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting objects from the payload
- */
-- (void)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting objects from the payload
- */
-- (void)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
- */
-- (void)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-////////////////////////////////////////////////////////
-/// @name Block Configured Object Loaders
-
-#if NS_BLOCKS_AVAILABLE
-
-/**
- Load the objects at the specified resource path and perform object mapping on the response payload. Prior to sending the object loader, the
- block will be invoked to allow you to configure the object loader as you see fit. This can be used to change the response type, set custom
- parameters, choose an object mapping, etc.
-
- For example:
-
-    - (void)loadObjectUsingBlockExample {
-        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" usingBlock:^(RKObjectLoader *loader) {
-            loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
-        }];
-    }
- */
-- (void)loadObjectsAtResourcePath:(NSString *)resourcePath usingBlock:(RKObjectLoaderBlock)block;
-
-// TODO: Docs....
-// Always uses a GET request...
-- (void)loadRelationship:(NSString *)relationshipName ofObject:(id)object usingBlock:(void(^)(RKObjectLoader *))block;
-
-/*
- Configure and send an object loader after yielding it to a block for configuration. This allows for very succinct on-the-fly
- configuration of the request without obtaining an object reference via objectLoaderForObject: and then sending it yourself.
-
- For example:
-
-    - (BOOL)changePassword:(NSString *)newPassword error:(NSError **)error {
-        if ([self validatePassword:newPassword error:error]) {
-            self.password = newPassword;
-            [[RKObjectManager sharedManager] sendObject:self toResourcePath:@"/some/path" usingBlock:^(RKObjectLoader *loader) {
-                loader.delegate = self;
-                loader.method = RKRequestMethodPOST;
-                loader.serializationMIMEType = RKMIMETypeJSON; // We want to send this request as JSON
-                loader.targetObject = nil;  // Map the results back onto a new object instead of self
-                // Set up a custom serialization mapping to handle this request
-                loader.serializationMapping = [RKObjectMapping serializationMappingUsingBlock:^(RKObjectMapping *mapping) {
-                    [mapping mapAttributes:@"password", nil];
-                }];
-            }];
-        }
-    }
- */
-- (void)sendObject:(id<NSObject>)object toResourcePath:(NSString *)resourcePath usingBlock:(RKObjectLoaderBlock)block;
-
-/**
- GET a remote object instance and yield the object loader to the block before sending
-
- @see sendObject:method:delegate:block
- */
-- (void)getObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
-
-/**
- POST a remote object instance and yield the object loader to the block before sending
-
- @see sendObject:method:delegate:block
- */
-- (void)postObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
-
-/**
- PUT a remote object instance and yield the object loader to the block before sending
-
- @see sendObject:method:delegate:block
- */
-- (void)putObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
-
-/**
- DELETE a remote object instance and yield the object loader to the block before sending
-
- @see sendObject:method:delegate:block
- */
-- (void)deleteObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
-
-
-- (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader *))block;
-
-#endif
-
-@end
-
-@interface RKObjectManager (Deprecations)
-
-// Deprecations
-
-+ (RKObjectManager *)objectManagerWithBaseURLString:(NSString *)baseURLString;
-+ (RKObjectManager *)objectManagerWithBaseURL:(NSURL *)baseURL;
-- (void)loadObjectsAtResourcePath:(NSString *)resourcePath objectMapping:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-- (RKObjectLoader *)objectLoaderWithResourcePath:(NSString *)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE_MESSAGE("Use loaderWithResourcePath:");
-- (RKObjectLoader *)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-
-/*
- NOTE:
-
- The mapResponseWith: family of methods have been deprecated by the support for object mapping selection
- using resourcePath's
- */
-- (void)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-- (void)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-- (void)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-- (void)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-
-@property (nonatomic, retain) RKManagedObjectStore *objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use managedObjectStore instead");
 
 @end

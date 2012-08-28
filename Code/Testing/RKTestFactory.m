@@ -166,9 +166,7 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)client
 {
-    RKClient *client = [self objectFromFactory:RKTestFactoryDefaultNamesClient];
-    [RKClient setSharedClient:client];
-
+    AFHTTPClient *client = [self objectFromFactory:RKTestFactoryDefaultNamesClient];
     return client;
 }
 
@@ -176,8 +174,6 @@ static RKTestFactory *sharedFactory = nil;
 {
     RKObjectManager *objectManager = [self objectFromFactory:RKTestFactoryDefaultNamesObjectManager];
     [RKObjectManager setSharedManager:objectManager];
-    [RKClient setSharedClient:objectManager.client];
-
     return objectManager;
 }
 
