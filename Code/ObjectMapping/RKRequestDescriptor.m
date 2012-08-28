@@ -20,6 +20,9 @@
 
 + (id)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath
 {
+    NSParameterAssert(mapping);
+    NSParameterAssert(objectClass);
+    
     RKRequestDescriptor *requestDescriptor = [self new];
     requestDescriptor.mapping = mapping;
     requestDescriptor.objectClass = objectClass;

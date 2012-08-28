@@ -66,6 +66,8 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
                                               keyPath:(NSString *)keyPath
                                           statusCodes:(NSIndexSet *)statusCodes
 {
+    NSParameterAssert(mapping);
+    
     RKResponseDescriptor *mappingDescriptor = [self new];
     mappingDescriptor.mapping = mapping;
     mappingDescriptor.pathPattern = pathPattern;
