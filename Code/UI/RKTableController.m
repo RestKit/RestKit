@@ -21,7 +21,6 @@
 #import "RKTableController.h"
 #import "RKAbstractTableController_Internals.h"
 #import "RKLog.h"
-#import "RKFormSection.h"
 #import "NSArray+RKAdditions.h"
 #import "RKMappingOperation.h"
 #import "RKMappingOperationDataSource.h"
@@ -37,7 +36,6 @@
 @implementation RKTableController
 
 @dynamic delegate;
-@synthesize form = _form;
 @synthesize sectionNameKeyPath = _sectionNameKeyPath;
 @synthesize sections = _sections;
 
@@ -63,7 +61,6 @@
 - (void)dealloc
 {
     [self removeObserver:self forKeyPath:@"sections"];
-    [_form release];
     [_sectionNameKeyPath release];
     [_sections release];
 
@@ -266,28 +263,6 @@
     RKObjectLoader *objectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
     if (block) block(objectLoader);
     [self loadTableWithObjectLoader:objectLoader];
-}
-
-#pragma mark - Forms
-
-- (void)loadForm:(RKForm *)form
-{
-    [form retain];
-    [_form release];
-    _form = form;
-
-    // The form replaces the content in the table
-    [self removeAllSections:NO];
-
-    [form willLoadInTableController:self];
-    for (RKFormSection *section in form.sections) {
-        NSUInteger sectionIndex = [form.sections indexOfObject:section];
-        section.objects = [self objectsWithHeaderAndFooters:section.objects forSection:sectionIndex];
-        [self addSection:(RKTableSection *)section];
-    }
-
-    [self didFinishLoad];
-    [form didLoadInTableController:self];
 }
 
 #pragma mark - UITableViewDataSource methods

@@ -24,7 +24,6 @@
 #import "RKTableSection.h"
 #import "RKTableViewCellMappings.h"
 #import "RKTableItem.h"
-#import "RKForm.h"
 #import "RKObjectManager.h"
 #import "RKObjectMapping.h"
 #import "RKObjectLoader.h"
@@ -91,23 +90,6 @@
 
 - (void)loadTableFromResourcePath:(NSString *)resourcePath;
 - (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *objectLoader))block;
-
-///-----------------------------------------------------------------------------
-/** @name Forms */
-///-----------------------------------------------------------------------------
-
-/**
- The form that the table has been loaded with (if any)
- */
-@property (nonatomic, retain, readonly) RKForm *form;
-
-/**
- Loads the table with the contents of the specified form object.
- Forms are used to build content entry and editing interfaces for objects.
-
- @see RKForm
- */
-- (void)loadForm:(RKForm *)form;
 
 ///-----------------------------------------------------------------------------
 /// @name Managing Sections
