@@ -21,7 +21,6 @@
 #import "RKRouter.h"
 #import "RKRouteSet.h"
 #import "RKRoute.h"
-#import "RKRequest.h"
 #import "RKURL.h"
 #import "RKPathMatcher.h"
 

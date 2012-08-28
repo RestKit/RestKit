@@ -30,7 +30,7 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
 @interface RKTestResponseLoader ()
 
 @property (nonatomic, assign, getter = isAwaitingResponse) BOOL awaitingResponse;
-@property (nonatomic, retain, readwrite) RKResponse *response;
+@property (nonatomic, retain, readwrite) NSHTTPURLResponse *response;
 @property (nonatomic, copy, readwrite) NSError *error;
 @property (nonatomic, retain, readwrite) NSArray *objects;
 
@@ -106,95 +106,67 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     return nil;
 }
 
-- (void)request:(RKRequest *)request didReceiveResponse:(RKResponse *)response
-{
-    // Implemented for expectations
-}
-
-- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)aResponse
-{
-    self.response = aResponse;
-
-    // If request is an Object Loader, then objectLoader:didLoadObjects:
-    // will be sent after didLoadResponse:
-    if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
-        _awaitingResponse = NO;
-        _successful = YES;
-    }
-}
-
-- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)anError
-{
-    // If request is an Object Loader, then objectLoader:didFailWithError:
-    // will be sent after didFailLoadWithError:
-    if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
-        [self loadError:anError];
-    }
-
-    // Ensure we get no further delegate messages
-    [request cancel];
-}
-
-- (void)requestDidCancelLoad:(RKRequest *)request
-{
-    _awaitingResponse = NO;
-    _successful = NO;
-    _cancelled = YES;
-}
-
-- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)theObjects
-{
-    RKLogTrace(@"%@ Loaded response for %@ with body: %@", self, objectLoader, [objectLoader.response bodyAsString]);
-    RKLogDebug(@"%@ Loaded objects for %@: %@", self, objectLoader, _objects);
-    self.objects = theObjects;
-    _awaitingResponse = NO;
-    _successful = YES;
-}
-
-- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)theError
-{
-    [self loadError:theError];
-}
-
-- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader *)objectLoader
-{
-    RKLogDebug(@"%@ Loaded unexpected response for: %@", self, objectLoader);
-    _successful = NO;
-    _awaitingResponse = NO;
-    _unexpectedResponse = YES;
-}
-
-- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader
-{
-    // Implemented for expectations
-}
-
-#pragma mark - OAuth delegates
-
-- (void)OAuthClient:(RKOAuthClient *)client didAcquireAccessToken:(NSString *)token
-{
-    _awaitingResponse = NO;
-    _successful = YES;
-}
-
-
-- (void)OAuthClient:(RKOAuthClient *)client didFailWithInvalidGrantError:(NSError *)error
-{
-    _awaitingResponse = NO;
-    _successful = NO;
-}
-
-#pragma mark - RKRequestQueueDelegate methods
-
-- (void)requestQueueDidFinishLoading:(RKRequestQueue *)queue
-{
-    _awaitingResponse = NO;
-    _successful = (_error == nil);
-}
-
-- (void)requestQueue:(RKRequestQueue *)queue didFailRequest:(RKRequest *)request withError:(NSError *)error
-{
-    _error = error;
-}
+//- (void)request:(RKRequest *)request didReceiveResponse:(RKResponse *)response
+//{
+//    // Implemented for expectations
+//}
+//
+//- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)aResponse
+//{
+//    self.response = aResponse;
+//
+//    // If request is an Object Loader, then objectLoader:didLoadObjects:
+//    // will be sent after didLoadResponse:
+//    if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
+//        _awaitingResponse = NO;
+//        _successful = YES;
+//    }
+//}
+//
+//- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)anError
+//{
+//    // If request is an Object Loader, then objectLoader:didFailWithError:
+//    // will be sent after didFailLoadWithError:
+//    if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
+//        [self loadError:anError];
+//    }
+//
+//    // Ensure we get no further delegate messages
+//    [request cancel];
+//}
+//
+//- (void)requestDidCancelLoad:(RKRequest *)request
+//{
+//    _awaitingResponse = NO;
+//    _successful = NO;
+//    _cancelled = YES;
+//}
+//
+//- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)theObjects
+//{
+//    RKLogTrace(@"%@ Loaded response for %@ with body: %@", self, objectLoader, [objectLoader.response bodyAsString]);
+//    RKLogDebug(@"%@ Loaded objects for %@: %@", self, objectLoader, _objects);
+//    self.objects = theObjects;
+//    _awaitingResponse = NO;
+//    _successful = YES;
+//}
+//
+//- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)theError
+//{
+//    [self loadError:theError];
+//}
+//
+//- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader *)objectLoader
+//{
+//    RKLogDebug(@"%@ Loaded unexpected response for: %@", self, objectLoader);
+//    _successful = NO;
+//    _awaitingResponse = NO;
+//    _unexpectedResponse = YES;
+//}
+//
+//- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader
+//{
+//    // Implemented for expectations
+//}
 
 @end

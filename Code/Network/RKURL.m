@@ -19,7 +19,6 @@
 //
 
 #import "RKURL.h"
-#import "RKClient.h"
 #import "NSURL+RKAdditions.h"
 #import "NSString+RKAdditions.h"
 #import "NSDictionary+RKAdditions.h"

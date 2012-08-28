@@ -6,6 +6,7 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
+#import "AFHTTPClient.h"
 #import "RKTestFactory.h"
 
 @interface RKTestFactory ()
@@ -77,13 +78,11 @@ static RKTestFactory *sharedFactory = nil;
 - (void)defineDefaultFactories
 {
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
-        __block RKClient *client;
+        __block AFHTTPClient *client;
 
         RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
             RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
-                client = [RKClient clientWithBaseURL:self.baseURL];
-                client.requestQueue.suspended = NO;
-                [client.reachabilityObserver getFlags];
+                client = [AFHTTPClient clientWithBaseURL:self.baseURL];
             });
         });
 
@@ -210,7 +209,6 @@ static RKTestFactory *sharedFactory = nil;
 + (void)setUp
 {
     [RKObjectManager setSharedManager:nil];
-    [RKClient setSharedClient:nil];
     [RKManagedObjectStore setDefaultStore:nil];
     [RKObjectManager setDefaultMappingQueue:nil];
     [RKObjectMapping setDefaultDateFormatters:nil];
@@ -229,7 +227,6 @@ static RKTestFactory *sharedFactory = nil;
 + (void)tearDown
 {
     [RKObjectManager setSharedManager:nil];
-    [RKClient setSharedClient:nil];
     [RKManagedObjectStore setDefaultStore:nil];
 
     if ([self respondsToSelector:@selector(didTearDown)]) {

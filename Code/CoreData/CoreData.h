@@ -23,7 +23,6 @@
 #import "RKManagedObjectStore.h"
 #import "RKManagedObjectImporter.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
-#import "RKManagedObjectLoader.h"
 #import "RKEntityMapping.h"
 #import "RKManagedObjectCaching.h"
 #import "RKInMemoryManagedObjectCache.h"

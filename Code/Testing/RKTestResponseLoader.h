@@ -19,7 +19,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectLoader.h"
 
 /**
  An RKTestResponseLoader object provides testing support for asynchronously loading an RKRequest or
@@ -30,12 +29,12 @@
  object under test. Once assigned as the delegate to a request and the request has been sent,
  waitForResponse: is invoked to block execution until the response is loaded.
  */
-@interface RKTestResponseLoader : NSObject <RKObjectLoaderDelegate, RKOAuthClientDelegate, RKRequestQueueDelegate>
+@interface RKTestResponseLoader : NSObject
 
 /**
  The RKResponse object loaded from the RKRequest or RKObjectLoader the receiver is acting as the delegate for.
  **/
-@property (nonatomic, retain, readonly) RKResponse *response;
+@property (nonatomic, retain, readonly) NSHTTPURLResponse *response;
 
 /**
  The collection of objects loaded from the RKObjectLoader the receiver is acting as the delegate for.

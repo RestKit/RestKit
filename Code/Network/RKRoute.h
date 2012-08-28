@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKRequest.h"
+#import "RKHTTPUtilities.h"
 
 /**
  The RKRoute class models a single routable resource path pattern in use by the application. A route

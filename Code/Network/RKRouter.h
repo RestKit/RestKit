@@ -18,7 +18,8 @@
 //  limitations under the License.
 //
 
-#import "RKRequest.h"
+#import "RKHTTPUtilities.h"
+
 @class RKURL, RKRouteSet;
 
 /**

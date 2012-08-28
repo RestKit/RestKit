@@ -9,6 +9,22 @@
 #import <Foundation/Foundation.h>
 
 /**
+ HTTP methods for requests
+ */
+typedef enum RKRequestMethod {
+    RKRequestMethodInvalid = -1,
+    RKRequestMethodGET,
+    RKRequestMethodPOST,
+    RKRequestMethodPUT,
+    RKRequestMethodDELETE,
+    RKRequestMethodHEAD,
+    RKRequestMethodPATCH
+} RKRequestMethod;
+
+NSString *RKStringFromRequestMethod(RKRequestMethod);
+RKRequestMethod RKRequestMethodFromString(NSString *);
+
+/**
  The HTTP status code classes
  
  See http://tools.ietf.org/html/rfc2616#section-10
