@@ -21,6 +21,7 @@
 #import "RKMappingTest.h"
 #import "RKEntityMapping.h"
 #import "RKObjectMappingOperationDataSource.h"
+#import "RKRelationshipMapping.h"
 
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
@@ -206,7 +207,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
                                  [self description], expectation, relationshipMapping];
             }
         } else {
-            *errorMessage = [NSString stringWithFormat:@"%@: expectation not satisfied: %@, expected an RKObjectRelationshipMapping but instead got a %@",
+            *errorMessage = [NSString stringWithFormat:@"%@: expectation not satisfied: %@, expected an RKRelationshipMapping but instead got a %@",
                                  [self description], expectation, [expectation.mapping class]];
 
             // Error message here that a relationship was not mapped!!!
