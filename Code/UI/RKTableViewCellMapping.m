@@ -150,9 +150,11 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 
 - (void)addDefaultMappings
 {
-    [self mapKeyPath:@"text" toAttribute:@"textLabel.text"];
-    [self mapKeyPath:@"detailText" toAttribute:@"detailTextLabel.text"];
-    [self mapKeyPath:@"image" toAttribute:@"imageView.image"];
+    [self addAttributeMappingsFromDictionary:@{
+     @"text":       @"textLabel.text",
+     @"detailText": @"detailTextLabel.text",
+     @"image":      @"imageView.image",
+     }];
 }
 
 - (void)dealloc
