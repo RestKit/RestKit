@@ -91,15 +91,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     return copy;
 }
 
-//- (void)dealloc
-//{
-//    [_rootKeyPath release];
-//    [_mappings release];
-//    [_dateFormatters release];
-//    [_preferredDateFormatter release];
-//    [super dealloc];
-//}
-
 - (NSArray *)propertyMappings
 {
     return [NSArray arrayWithArray:_mutablePropertyMappings];
@@ -150,7 +141,7 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@:%p objectClass=%@ propertyMapping => %@>",
+    return [NSString stringWithFormat:@"<%@:%p objectClass=%@ propertyMappings=%@>",
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass), self.propertyMappings];
 }
 
@@ -181,28 +172,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     return nil;
 }
 
-- (void)mapAttributesCollection:(id<NSFastEnumeration>)attributes
-{
-    for (NSString *attributeKeyPath in attributes) {
-        [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeKeyPath toKeyPath:attributeKeyPath]];
-    }
-}
-
-- (void)mapAttributes:(NSString *)attributeKeyPath, ...
-{
-    va_list args;
-    va_start(args, attributeKeyPath);
-    NSMutableSet *attributeKeyPaths = [NSMutableSet set];
-
-    for (NSString *keyPath = attributeKeyPath; keyPath != nil; keyPath = va_arg(args, NSString *)) {
-        [attributeKeyPaths addObject:keyPath];
-    }
-
-    va_end(args);
-
-    [self mapAttributesCollection:attributeKeyPaths];
-}
-
 - (void)addAttributeMappingsFromDictionary:(NSDictionary *)keyPathToAttributeNames
 {
     for (NSString *attributeKeyPath in keyPathToAttributeNames) {
@@ -222,49 +191,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
                         format:@"*** - [%@ %@]: Unable to attribute mapping from unsupported entry of type '%@' (%@).", NSStringFromClass([self class]), NSStringFromSelector(_cmd), NSStringFromClass([entry class]), entry];
         }
     }
-}
-
-- (void)mapAttributesFromSet:(NSSet *)set
-{
-    [self mapAttributesCollection:set];
-}
-
-- (void)mapAttributesFromArray:(NSArray *)array
-{
-    [self mapAttributesCollection:[NSSet setWithArray:array]];
-}
-
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping serialize:(BOOL)serialize
-{
-    // TODO: Reversible stuff...
-//    RKRelationshipMapping *mapping = [RKRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath withMapping:objectOrDynamicMapping reversible:serialize];
-//    [self addRelationshipMapping:mapping];
-    [self addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath withMapping:objectOrDynamicMapping]];
-}
-
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping
-{
-    [self mapKeyPath:relationshipKeyPath toRelationship:keyPath withMapping:objectOrDynamicMapping serialize:YES];
-}
-
-- (void)mapRelationship:(NSString *)relationshipKeyPath withMapping:(RKMapping *)objectOrDynamicMapping
-{
-    [self mapKeyPath:relationshipKeyPath toRelationship:relationshipKeyPath withMapping:objectOrDynamicMapping];
-}
-
-- (void)mapKeyPath:(NSString *)sourceKeyPath toAttribute:(NSString *)destinationKeyPath
-{
-    [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath]];
-}
-
-- (void)hasMany:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping
-{
-    [self addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:keyPath toKeyPath:keyPath withMapping:objectOrDynamicMapping]];
-}
-
-- (void)hasOne:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping
-{
-    [self addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:keyPath toKeyPath:keyPath withMapping:objectOrDynamicMapping]];
 }
 
 - (void)removePropertyMapping:(RKPropertyMapping *)attributeOrRelationshipMapping
@@ -301,18 +227,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 //{
 //    return [self inverseMappingAtDepth:0];
 //}
-
-- (void)mapKeyPathsToAttributes:(NSString *)firstKeyPath, ...
-{
-    va_list args;
-    va_start(args, firstKeyPath);
-    for (NSString *keyPath = firstKeyPath; keyPath != nil; keyPath = va_arg(args, NSString *)) {
-        NSString *attributeKeyPath = va_arg(args, NSString *);
-        if (! attributeKeyPath) [NSException raise:NSInvalidArgumentException format:@"Cannot map a keyPath without a destination attribute keyPath"];
-        [self mapKeyPath:keyPath toAttribute:attributeKeyPath];
-    }
-    va_end(args);
-}
 
 - (void)mapKeyOfNestedDictionaryToAttribute:(NSString *)attributeName
 {

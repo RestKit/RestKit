@@ -140,24 +140,14 @@ relationship. Relationships are processed using an object mapping as well.
 - (void)addPropertyMapping:(RKPropertyMapping *)propertyMapping;
 - (void)addPropertyMappingsFromArray:(NSArray *)arrayOfPropertyMappings;
 
-#pragma mark - Attribute & Relationship Mapping
-
 /**
- Define an attribute mapping for one or more keyPaths where the source keyPath and destination attribute property
- have the same name.
-
- For example, given the transformation from a JSON dictionary:
-
-    {"name": "My Name", "age": 28}
-
- To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
-
-    [mapping mapAttributes:@"name", @"age", nil];
-
- @param attributeKey A key-value coding key corresponding to a value in the mappable source object and an attribute
- on the destination class that have the same name.
+ Removes an instance of an attribute or relationship mapping from the object mapping
+ 
+ @param attributeOrRelationshipMapping The attribute or relationship mapping to remove
  */
-- (void)mapAttributes:(NSString *)attributeKey, ... DEPRECATED_ATTRIBUTE NS_REQUIRES_NIL_TERMINATION;
+- (void)removePropertyMapping:(RKPropertyMapping *)propertyMapping;
+
+#pragma mark - Attribute & Relationship Mapping
 
 /**
  Adds attribute mappings from a given dictionary wherein the keys represent the source key path
@@ -171,142 +161,6 @@ relationship. Relationships are processed using an object mapping as well.
  Adds attribute mappings to the rec
  */
 - (void)addAttributeMappingsFromArray:(NSArray *)arrayOfAttributeNamesOrMappings;
-
-/**
- Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
- destination attribute property have the same name.
-
- For example, given the transformation from a JSON dictionary:
-
-    {"name": "My Name", "age": 28}
-
- To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
-
-    [mapping mapAttributesFromSet:[NSSet setWithObjects:@"name", @"age", nil]];
-
- @param set A set of string attribute keyPaths to deifne mappings for
- */
-- (void)mapAttributesFromSet:(NSSet *)set DEPRECATED_ATTRIBUTE;
-
-/**
- Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
- destination attribute property have the same name.
-
- For example, given the transformation from a JSON dictionary:
-
-    {"name": "My Name", "age": 28}
-
- To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
-
-    [mapping mapAttributesFromArray:[NSArray arrayWithObjects:@"name", @"age", nil]];
-
- @param array An array of string attribute keyPaths to deifne mappings for
- */
-- (void)mapAttributesFromArray:(NSArray *)set DEPRECATED_ATTRIBUTE;
-
-/**
- Defines a relationship mapping for a key where the source keyPath and the destination relationship property
- have the same name.
-
- For example, given the transformation from a JSON dictionary:
-
- {"name": "My Name", "age": 28, "cat": { "name": "Asia" } }
-
- To a Person class with corresponding 'cat' relationship property, we could configure the mappings via:
-
-     RKObjectMapping *catMapping = [RKObjectMapping mappingForClass:[Cat class]];
-     [personMapping mapRelationship:@"cat" withObjectMapping:catMapping];
-
- @param relationshipKey A key-value coding key corresponding to a value in the mappable source object and a property
-    on the destination class that have the same name.
- @param objectOrDynamicMapping An RKObjectMapping or RKObjectDynamic mapping to apply when mapping the relationship
- */
-- (void)mapRelationship:(NSString *)relationshipKey withMapping:(RKMapping *)objectOrDynamicMapping DEPRECATED_ATTRIBUTE;
-
-/**
- Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
- targets a one-to-many relationship nested within the source data.
-
- @see mapRelationship:withObjectMapping:
- */
-- (void)hasMany:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping DEPRECATED_ATTRIBUTE;
-
-/**
- Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
- targets a one-to-one relationship nested within the source data.
-
- @see mapRelationship:withObjectMapping:
- */
-- (void)hasOne:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping DEPRECATED_ATTRIBUTE;
-
-/**
- Instantiate and add an RKAttributeMapping instance targeting a keyPath within the mappable
- source data to an attribute on the target object.
-
- Used to quickly define mappings where the source value is deeply nested in the mappable data or
- the source and destination do not have corresponding names.
-
- Examples:
-    // We want to transform the name to something Cocoa-esque
-    [mapping mapKeyPath:@"created_at" toAttribute:@"createdAt"];
-
-    // We want to extract nested data and map it to a property
-    [mapping mapKeyPath:@"results.metadata.generated_on" toAttribute:@"generationTimestamp"];
-
- @param sourceKeyPath A key-value coding keyPath to fetch the mappable value from
- @param destinationAttribute The attribute name to assign the mapped value to
- @see RKAttributeMapping
- */
-- (void)mapKeyPath:(NSString *)sourceKeyPath toAttribute:(NSString *)destinationAttribute DEPRECATED_ATTRIBUTE;
-
-/**
- Instantiate and add an RKRelationshipMapping instance targeting a keyPath within the mappable
- source data to a relationship property on the target object.
-
- Used to quickly define mappings where the source value is deeply nested in the mappable data or
- the source and destination do not have corresponding names.
-
- Examples:
-     // We want to transform the name to something Cocoa-esque
-     [mapping mapKeyPath:@"best_friend" toRelationship:@"bestFriend" withObjectMapping:friendMapping];
-
-     // We want to extract nested data and map it to a property
-     [mapping mapKeyPath:@"best_friend.favorite_cat" toRelationship:@"bestFriendsFavoriteCat" withObjectMapping:catMapping];
-
- @param sourceKeyPath A key-value coding keyPath to fetch the mappable value from
- @param destinationRelationship The relationship name to assign the mapped value to
- @param objectMapping An object mapping to use when processing the nested objects
- @see RKRelationshipMapping
- */
-- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString *)destinationRelationship withMapping:(RKMapping *)objectOrDynamicMapping DEPRECATED_ATTRIBUTE;
-
-/**
- Instantiate and add an RKRelationshipMapping instance targeting a keyPath within the mappable
- source data to a relationship property on the target object.
-
- Used to indicate whether the relationship should be included in serialization.
-
- @param sourceKeyPath A key-value coding keyPath to fetch the mappable value from
- @param destinationRelationship The relationship name to assign the mapped value to
- @param objectMapping An object mapping to use when processing the nested objects
- @param serialize A boolean value indicating whether to include this relationship in serialization
-
- @see mapKeyPath:toRelationship:withObjectMapping:
- */
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping serialize:(BOOL)serialize DEPRECATED_ATTRIBUTE;
-
-/**
- Quickly define a group of attribute mappings using alternating keyPath and attribute names. You must provide
- an equal number of keyPath and attribute pairs or an exception will be generated.
-
- For example:
-    [personMapping mapKeyPathsToAttributes:@"name", @"name", @"createdAt", @"createdAt", @"street_address", @"streetAddress", nil];
-
- @param sourceKeyPath A key-value coding key path to fetch a mappable value from
- @param ... A nil-terminated sequence of strings alternating between source key paths and destination attributes
- */
-- (void)mapKeyPathsToAttributes:(NSString *)sourceKeyPath, ... NS_REQUIRES_NIL_TERMINATION DEPRECATED_ATTRIBUTE;
-
 
 /**
  Configures a sub-key mapping for cases where JSON has been nested underneath a key named after an attribute.
@@ -340,13 +194,6 @@ relationship. Relationships are processed using an object mapping as well.
  @returns An attribute mapping for the key of a nested dictionary being mapped or nil
  */
 - (RKAttributeMapping *)attributeMappingForKeyOfNestedDictionary;
-
-/**
- Removes an instance of an attribute or relationship mapping from the object mapping
-
- @param attributeOrRelationshipMapping The attribute or relationship mapping to remove
- */
-- (void)removePropertyMapping:(RKPropertyMapping *)propertyMapping;
 
 #pragma mark - Inverse Mappings
 
