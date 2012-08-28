@@ -30,7 +30,7 @@
     self = [self init];
     if (self) {
         _run = NO;
-        _host = [hostNameOrIPAddress retain];
+        _host = hostNameOrIPAddress;
         _port = port;
 
         struct sockaddr_in sa;
@@ -60,11 +60,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_host release];
-    [super dealloc];
-}
 
 - (void)run
 {

@@ -21,7 +21,7 @@
 #define RKLogComponent lcl_cRestKitCoreDataCache
 
 @interface RKEntityByAttributeCache ()
-@property (nonatomic, retain) NSMutableDictionary *attributeValuesToObjectIDs;
+@property (nonatomic, strong) NSMutableDictionary *attributeValuesToObjectIDs;
 @end
 
 @implementation RKEntityByAttributeCache
@@ -36,9 +36,9 @@
 {
     self = [self init];
     if (self) {
-        _entity = [entity retain];
-        _attribute = [attributeName retain];
-        _managedObjectContext = [context retain];
+        _entity = entity;
+        _attribute = attributeName;
+        _managedObjectContext = context;
         _monitorsContextForChanges = YES;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -61,12 +61,7 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [_entity release];
-    [_attribute release];
-    [_managedObjectContext release];
-    [_attributeValuesToObjectIDs release];
 
-    [super dealloc];
 }
 
 - (NSUInteger)count
@@ -101,7 +96,7 @@
     @synchronized(self.attributeValuesToObjectIDs) {
         self.attributeValuesToObjectIDs = [NSMutableDictionary dictionary];
 
-        NSExpressionDescription* objectIDExpression = [[NSExpressionDescription new] autorelease];
+        NSExpressionDescription* objectIDExpression = [NSExpressionDescription new];
         objectIDExpression.name = @"objectID";
         objectIDExpression.expression = [NSExpression expressionForEvaluatedObject];
         objectIDExpression.expressionResultType = NSObjectIDAttributeType;

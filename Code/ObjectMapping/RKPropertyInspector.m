@@ -49,11 +49,6 @@ static RKPropertyInspector *sharedInspector = nil;
     return self;
 }
 
-- (void)dealloc
-{
-    [_propertyNamesToTypesCache release];
-    [super dealloc];
-}
 
 + (NSString *)propertyTypeFromAttributeString:(NSString *)attributeString
 {

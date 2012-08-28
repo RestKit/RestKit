@@ -30,9 +30,9 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
 @interface RKTestResponseLoader ()
 
 @property (nonatomic, assign, getter = isAwaitingResponse) BOOL awaitingResponse;
-@property (nonatomic, retain, readwrite) NSHTTPURLResponse *response;
+@property (nonatomic, strong, readwrite) NSHTTPURLResponse *response;
 @property (nonatomic, copy, readwrite) NSError *error;
-@property (nonatomic, retain, readwrite) NSArray *objects;
+@property (nonatomic, strong, readwrite) NSArray *objects;
 
 @end
 
@@ -49,7 +49,7 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
 
 + (RKTestResponseLoader *)responseLoader
 {
-    return [[[self alloc] init] autorelease];
+    return [[self alloc] init];
 }
 
 - (id)init
@@ -63,17 +63,6 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     return self;
 }
 
-- (void)dealloc
-{
-    [_response release];
-    _response = nil;
-    [_error release];
-    _error = nil;
-    [_objects release];
-    _objects = nil;
-
-    [super dealloc];
-}
 
 - (void)waitForResponse
 {

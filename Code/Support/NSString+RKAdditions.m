@@ -86,7 +86,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     }
     NSCharacterSet *delimiterSet = [NSCharacterSet characterSetWithCharactersInString:@"&;"];
     NSMutableDictionary *pairs = [NSMutableDictionary dictionary];
-    NSScanner *scanner = [[[NSScanner alloc] initWithString:stringToParse] autorelease];
+    NSScanner *scanner = [[NSScanner alloc] initWithString:stringToParse];
     while (![scanner isAtEnd]) {
         NSString *pairString = nil;
         [scanner scanUpToCharactersFromSet:delimiterSet intoString:&pairString];
@@ -135,7 +135,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
                                                                         legalURLCharactersToBeEscaped,
                                                                         kCFStringEncodingUTF8);
     if (encodedString) {
-        return [(NSString *)encodedString autorelease];
+        return (__bridge NSString *)encodedString;
     }
 
     // TODO: Log a warning?
@@ -155,12 +155,12 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 - (NSString *)MIMETypeForPathExtension
 {
     NSString *fileExtension = [self pathExtension];
-    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)fileExtension, NULL);
+    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
     if (uti != NULL) {
         CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
         CFRelease(uti);
         if (mime != NULL) {
-            NSString *type = [NSString stringWithString:(NSString *)mime];
+            NSString *type = [NSString stringWithString:(__bridge NSString *)mime];
             CFRelease(mime);
             return type;
         }

@@ -25,7 +25,7 @@
 /**
  A name for the benchmark. Can be nil.
  */
-@property (nonatomic, retain) NSString *name;
+@property (nonatomic, strong) NSString *name;
 
 /**
  The start time of the benchmark as an absolute time value.

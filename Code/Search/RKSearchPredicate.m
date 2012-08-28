@@ -13,14 +13,13 @@
 
 + (NSPredicate *)searchPredicateWithText:(NSString *)searchText type:(NSCompoundPredicateType)type
 {
-    return [[[self alloc] initWithSearchText:searchText type:type] autorelease];
+    return [[self alloc] initWithSearchText:searchText type:type];
 }
 
 - (id)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type
 {
     RKSearchTokenizer *tokenizer = [RKSearchTokenizer new];
     NSSet *searchWords = [tokenizer tokenize:searchText];
-    [tokenizer release];
     
     NSMutableArray *subpredicates = [NSMutableArray arrayWithCapacity:[searchWords count]];
     for (NSString *searchWord in searchWords) {

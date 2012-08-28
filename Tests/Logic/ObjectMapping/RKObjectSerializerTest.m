@@ -211,10 +211,9 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    mapping.rootKeyPath = @"stuff";
     [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
+    RKObjectSerializer *serializer = [[RKObjectSerializer alloc] initWithObject:object mapping:mapping rootKeyPath:@"stuff"];
     NSError *error = nil;
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
     NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];

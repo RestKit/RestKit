@@ -111,25 +111,25 @@
 /**
  A dictionary of mappable elements containing simple values or nested object structures.
  */
-@property (nonatomic, retain, readonly) id sourceObject;
+@property (nonatomic, strong, readonly) id sourceObject;
 
 /**
  The target object for this operation. Mappable values in elements will be applied to object
  using key-value coding.
  */
-@property (nonatomic, retain, readonly) id destinationObject;
+@property (nonatomic, strong, readonly) id destinationObject;
 
 /**
  The mapping defining how values contained in the source object should be transformed to the destination object via key-value coding.
  
  Will either be an instance of RKObjectMapping or RKDynamicMapping.
  */
-@property (nonatomic, retain, readonly) RKMapping *mapping;
+@property (nonatomic, strong, readonly) RKMapping *mapping;
 
 /**
  The delegate to inform of interesting events during the mapping operation
  */
-@property (nonatomic, assign) id<RKMappingOperationDelegate> delegate;
+@property (nonatomic, weak) id<RKMappingOperationDelegate> delegate;
 
 /**
  The data source is responsible for providing the mapping operation with an appropriate target object for
@@ -137,7 +137,7 @@
 
  @see RKMappingOperationDataSource
  */
-@property (nonatomic, assign) id<RKMappingOperationDataSource> dataSource;
+@property (nonatomic, weak) id<RKMappingOperationDataSource> dataSource;
 
 /**
  Creates and returns a new mapping operation configured to transform the object representation

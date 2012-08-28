@@ -26,7 +26,7 @@
 
  Can be nil.
  */
-@property (nonatomic, assign) id object;
+@property (nonatomic, weak) id object;
 
 /**
  The timeout interval, in seconds, to wait for the notification to be posted.

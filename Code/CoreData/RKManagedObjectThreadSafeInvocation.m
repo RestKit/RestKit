@@ -26,7 +26,7 @@
 #define RKLogComponent lcl_cRestKitCoreData
 
 @interface RKManagedObjectThreadSafeInvocation ()
-@property (nonatomic, retain) NSMutableDictionary *argumentKeyPaths;
+@property (nonatomic, strong) NSMutableDictionary *argumentKeyPaths;
 @end
 
 @implementation RKManagedObjectThreadSafeInvocation
@@ -71,7 +71,7 @@
             NSManagedObjectID *objectID = [(NSManagedObject *)value objectID];
             [self setValue:objectID forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
-            id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
+            id collection = [[[[value class] alloc] init] mutableCopy];
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObject class]]) {
                     [collection addObject:[(NSManagedObject *)subObject objectID]];
@@ -81,7 +81,6 @@
             }
             
             [self setValue:collection forKeyPathOrKey:keyPath object:argument];
-            [collection release];
         }
     }
 }
@@ -100,7 +99,7 @@
             NSAssert(managedObject, @"Expected managed object for ID %@, got nil", value);
             [self setValue:managedObject forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
-            id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
+            id collection = [[[[value class] alloc] init] mutableCopy];
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObjectID class]]) {
                     __block NSManagedObject *managedObject = nil;
@@ -117,7 +116,6 @@
             
 
             [self setValue:collection forKeyPathOrKey:keyPath object:argument];
-            [collection release];
         }
     }
 }
@@ -164,13 +162,5 @@
     }
 }
 
-- (void)dealloc
-{
-    self.mainQueueManagedObjectContext = nil;
-    self.privateQueueManagedObjectContext = nil;
-    self.argumentKeyPaths = nil;
-    
-    [super dealloc];
-}
 
 @end

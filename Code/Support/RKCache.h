@@ -23,7 +23,7 @@
     NSRecursiveLock *_cacheLock;
 }
 
-@property (nonatomic, readonly) NSString *cachePath;
+@property (weak, nonatomic, readonly) NSString *cachePath;
 
 - (id)initWithPath:(NSString *)cachePath subDirectories:(NSArray *)subDirectories;
 - (BOOL)hasEntry:(NSString *)cacheKey;

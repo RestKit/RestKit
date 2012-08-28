@@ -35,12 +35,12 @@
 #define RKLogComponent lcl_cRestKitCoreData
 
 @interface RKManagedObjectImporter ()
-@property (nonatomic, retain, readwrite) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, retain, readwrite) NSString *storePath;
-@property (nonatomic, retain, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, retain, readwrite) NSPersistentStore *persistentStore;
-@property (nonatomic, retain, readwrite) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, retain, readwrite) RKManagedObjectMappingOperationDataSource *mappingOperationDataSource;
+@property (nonatomic, strong, readwrite) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, strong, readwrite) NSString *storePath;
+@property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, strong, readwrite) NSPersistentStore *persistentStore;
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong, readwrite) RKManagedObjectMappingOperationDataSource *mappingOperationDataSource;
 @property (nonatomic, assign) BOOL hasPerformedResetIfNecessary;
 @end
 
@@ -66,16 +66,13 @@
         NSPersistentStoreCoordinator *persistentStoreCoordinator = [self createPersistentStoreCoordinator:&error];
         NSAssert(persistentStoreCoordinator, @"Importer initialization failed: Unable to create persistent store coordinator: %@", error);
         self.persistentStoreCoordinator = persistentStoreCoordinator;
-        [persistentStoreCoordinator release];
 
         NSManagedObjectContext *managedObjectContext = [self createManagedObjectContext];
         NSAssert(managedObjectContext, @"Importer initialization failed: Unable to create managed object context");
         self.managedObjectContext = managedObjectContext;
-        [managedObjectContext release];
 
         RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [self createMappingOperationDataSource];
         self.mappingOperationDataSource = mappingOperationDataSource;
-        [mappingOperationDataSource release];
 
         self.hasPerformedResetIfNecessary = NO;
         self.resetsStoreBeforeImporting = YES;
@@ -99,11 +96,9 @@
         NSManagedObjectContext *managedObjectContext = [self createManagedObjectContext];
         NSAssert(managedObjectContext, @"Importer initialization failed: Unable to create managed object store");
         self.managedObjectContext = managedObjectContext;
-        [managedObjectContext release];
 
         RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [self createMappingOperationDataSource];
         self.mappingOperationDataSource = mappingOperationDataSource;
-        [mappingOperationDataSource release];
 
         self.hasPerformedResetIfNecessary = NO;
         self.resetsStoreBeforeImporting = NO;
@@ -133,7 +128,6 @@
                                                                                             URL:storeURL
                                                                                         options:nil error:error];
     if (! persistentStore) {
-        [persistentStoreCoordinator release];
         return nil;
     }
 
@@ -160,14 +154,6 @@
     return mappingOperationDataSource;
 }
 
-- (void)dealloc
-{
-    [_managedObjectModel release];
-    [_persistentStoreCoordinator release];
-    [_managedObjectContext release];
-    [_mappingOperationDataSource release];
-    [super dealloc];
-}
 
 - (void)resetPersistentStoreIfNecessary
 {

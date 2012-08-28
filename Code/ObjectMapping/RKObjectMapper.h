@@ -32,10 +32,10 @@
 @interface RKObjectMapper : NSObject
 
 @property (nonatomic, strong, readonly) id sourceObject;
+@property (nonatomic, strong, readonly) NSDictionary *mappingsDictionary;
 @property (nonatomic, weak) id targetObject;
-@property (nonatomic, strong, readwrite) NSDictionary *mappingsDictionary; // TODO: Becomes read-only...
 @property (nonatomic, weak) id<RKObjectMapperDelegate> delegate;
-@property (nonatomic, readonly) NSArray *errors;
+@property (weak, nonatomic, readonly) NSArray *errors;
 @property (nonatomic, strong) id<RKMappingOperationDataSource> mappingOperationDataSource;
 
 - (id)initWithObject:(id)object mappingsDictionary:(NSDictionary *)mappingsDictionary;

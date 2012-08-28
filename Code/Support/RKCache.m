@@ -66,11 +66,8 @@
 
 - (void)dealloc
 {
-    [_cachePath release];
     _cachePath = nil;
-    [_cacheLock release];
     _cacheLock = nil;
-    [super dealloc];
 }
 
 - (NSString *)cachePath

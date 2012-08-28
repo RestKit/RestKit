@@ -36,7 +36,7 @@
 /**
  The hostname or IP address the receiver is checking.
  */
-@property (nonatomic, retain, readonly) NSString *host;
+@property (nonatomic, strong, readonly) NSString *host;
 
 /**
  The TCP port to check for a listening server on.

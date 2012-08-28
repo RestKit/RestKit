@@ -34,9 +34,9 @@
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @interface RKEntityMapping ()
-@property (nonatomic, assign, readwrite) Class objectClass;
-@property (nonatomic, retain, readwrite) NSEntityDescription *entity;
-@property (nonatomic, retain) NSMutableArray *mutableConnections;
+@property (nonatomic, weak, readwrite) Class objectClass;
+@property (nonatomic, strong, readwrite) NSEntityDescription *entity;
+@property (nonatomic, strong) NSMutableArray *mutableConnections;
 @end
 
 @implementation RKEntityMapping
@@ -60,7 +60,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 + (id)mappingForEntity:(NSEntityDescription *)entity
 {
-    return [[[self alloc] initWithEntity:entity] autorelease];
+    return [[self alloc] initWithEntity:entity];
 }
 
 - (id)initWithEntity:(NSEntityDescription *)entity
@@ -94,10 +94,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 {
     [self removeObserver:self forKeyPath:@"entity"];
     [self removeObserver:self forKeyPath:@"primaryKeyAttribute"];
-
-    [_entity release];
-    [_mutableConnections release];
-    [super dealloc];
 }
 
 - (RKConnectionMapping *)connectionMappingForRelationshipWithName:(NSString *)relationshipName

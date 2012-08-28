@@ -32,6 +32,6 @@
 /**
  A single search word extracted from an indexed entity.
  */
-@property (nonatomic, retain) NSString *word;
+@property (nonatomic, strong) NSString *word;
 
 @end

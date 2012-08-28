@@ -11,7 +11,7 @@
 @interface RKTestNotificationObserver ()
 @property (nonatomic, assign, getter = isObserverAdded) BOOL observerAdded;
 @property (nonatomic, assign, getter = isAwaitingNotification) BOOL awaitingNotification;
-@property (nonatomic, retain) NSDate *startDate;
+@property (nonatomic, strong) NSDate *startDate;
 @end
 
 @implementation RKTestNotificationObserver
@@ -38,7 +38,7 @@
 
 + (RKTestNotificationObserver *)notificationObserver
 {
-    return [[[self alloc] init] autorelease];
+    return [[self alloc] init];
 }
 
 + (RKTestNotificationObserver *)notificationObserverForName:(NSString *)notificationName object:(id)object
@@ -67,7 +67,6 @@
 - (void)dealloc
 {
     [self removeObserver];
-    [super dealloc];
 }
 
 - (void)addObserver

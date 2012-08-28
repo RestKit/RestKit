@@ -61,7 +61,7 @@ static NSMutableDictionary *__sharedBenchmarks = nil;
 
 + (CFTimeInterval)measureWithExecutionBlock:(void (^)(void))block
 {
-    RKBenchmark *benchmark = [[self new] autorelease];
+    RKBenchmark *benchmark = [self new];
     [benchmark run:block];
     return benchmark.elapsedTime;
 }
@@ -71,7 +71,7 @@ static NSMutableDictionary *__sharedBenchmarks = nil;
 
 + (id)benchmarkWithName:(NSString *)name
 {
-    return [[[self alloc] initWithName:name] autorelease];
+    return [[self alloc] initWithName:name];
 }
 
 - (id)initWithName:(NSString *)name

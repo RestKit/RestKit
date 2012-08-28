@@ -25,11 +25,11 @@
 #import "RKDynamicMappingMatcher.h"
 
 @interface RKConnectionMapping()
-@property (nonatomic, retain) NSString *relationshipName;
-@property (nonatomic, retain) NSString *destinationKeyPath;
-@property (nonatomic, retain) RKMapping *mapping;
-@property (nonatomic, retain) RKDynamicMappingMatcher *matcher;
-@property (nonatomic, retain) NSString *sourceKeyPath;
+@property (nonatomic, strong) NSString *relationshipName;
+@property (nonatomic, strong) NSString *destinationKeyPath;
+@property (nonatomic, strong) RKMapping *mapping;
+@property (nonatomic, strong) RKDynamicMappingMatcher *matcher;
+@property (nonatomic, strong) NSString *sourceKeyPath;
 @end
 
 @implementation RKConnectionMapping
@@ -43,13 +43,13 @@
 + (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping
 {
     RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:nil];
-    return [mapping autorelease];
+    return mapping;
 }
 
 + (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher
 {
     RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:matcher];
-    return [mapping autorelease];
+    return mapping;
 }
 
 - (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher
@@ -70,14 +70,5 @@
     return [[[self class] allocWithZone:zone] initWithRelationshipName:self.relationshipName sourceKeyPath:self.sourceKeyPath destinationKeyPath:self.destinationKeyPath mapping:self.mapping matcher:self.matcher];
 }
 
-- (void)dealloc
-{
-    self.relationshipName = nil;
-    self.destinationKeyPath = nil;
-    self.mapping = nil;
-    self.matcher = nil;
-    self.sourceKeyPath = nil;
-    [super dealloc];
-}
 
 @end

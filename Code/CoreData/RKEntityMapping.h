@@ -68,7 +68,7 @@
 /**
  The Core Data entity description used for this object mapping
  */
-@property (nonatomic, retain, readonly) NSEntityDescription *entity;
+@property (nonatomic, strong, readonly) NSEntityDescription *entity;
 
 /**
  The name of the attribute on the destination entity that acts as the primary key for instances
@@ -86,7 +86,7 @@
 
  @see [NSEntityDescription primaryKeyAttribute]
  */
-@property (nonatomic, retain) NSString *primaryKeyAttribute;
+@property (nonatomic, strong) NSString *primaryKeyAttribute;
 
 /**
  Retrieves an array of RKConnectionMapping objects for connecting the receiver's relationships
@@ -94,7 +94,7 @@
  
  @see RKConnectionMapping
  */
-@property (nonatomic, readonly) NSArray *connectionMappings;
+@property (weak, nonatomic, readonly) NSArray *connectionMappings;
 
 /**
  Adds a connection mapping to the receiver.

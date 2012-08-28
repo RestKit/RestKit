@@ -33,8 +33,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 @property (nonatomic, strong, readonly) RKAttributeMapping *mapping;
 @property (nonatomic, strong, readonly) id value;
 
-@property (nonatomic, readonly) NSString *sourceKeyPath;
-@property (nonatomic, readonly) NSString *destinationKeyPath;
+@property (weak, nonatomic, readonly) NSString *sourceKeyPath;
+@property (weak, nonatomic, readonly) NSString *destinationKeyPath;
 
 + (RKMappingTestEvent *)eventWithMapping:(RKAttributeMapping *)mapping value:(id)value;
 

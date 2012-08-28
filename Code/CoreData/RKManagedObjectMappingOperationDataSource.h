@@ -25,7 +25,7 @@
 /**
  The managed object context with which the receiver is associated.
  */
-@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 
 /**
  The managed object cache utilized by the receiver to find existing managed object instances
@@ -35,13 +35,13 @@
  @see RKFetchRequestManagedObjectCache
  @see RKInMemoryManagedObjectCache
  */
-@property (nonatomic, retain, readonly) id<RKManagedObjectCaching> managedObjectCache;
+@property (nonatomic, strong, readonly) id<RKManagedObjectCaching> managedObjectCache;
 
 /**
  The operation queue in which instances of RKRelationshipConnectionOperation will be enqueued
  to connect the relationships of mapped objects.
  */
-@property (nonatomic, retain) NSOperationQueue *operationQueue;
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 /**
  Initializes the receiver with a given managed object context and managed object cache.

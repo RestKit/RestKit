@@ -25,7 +25,7 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 @interface RKRouteSet ()
 
-@property (nonatomic, retain) NSMutableArray *routes;
+@property (nonatomic, strong) NSMutableArray *routes;
 
 @end
 
@@ -43,11 +43,6 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     return self;
 }
 
-- (void)dealloc
-{
-    self.routes = nil;
-    [super dealloc];
-}
 
 - (NSArray *)allRoutes
 {

@@ -46,7 +46,7 @@
 
 + (id)URLWithBaseURL:(NSURL *)baseURL resourcePath:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters
 {
-    return [[[self alloc] initWithBaseURL:baseURL resourcePath:resourcePath queryParameters:queryParameters] autorelease];
+    return [[self alloc] initWithBaseURL:baseURL resourcePath:resourcePath queryParameters:queryParameters];
 }
 
 + (id)URLWithBaseURLString:(NSString *)baseURLString
@@ -86,7 +86,6 @@
     NSURL *completeURL = [NSURL URLWithString:completePathWithQuery relativeToURL:theBaseURL];
     if (!completeURL) {
         RKLogError(@"Failed to build RKURL by appending resourcePath and query parameters '%@' to baseURL '%@'", theResourcePath, theBaseURL);
-        [self release];
         return nil;
     }
 
@@ -99,15 +98,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_rkBaseURL release];
-    _rkBaseURL = nil;
-    [_resourcePath release];
-    _resourcePath = nil;
-
-    [super dealloc];
-}
 
 - (NSString *)resourcePath
 {
@@ -154,7 +144,7 @@
         RKURL *URL = [self URLByInterpolatingResourcePathWithObject:object];
         [URLs addObject:URL];
     }
-    return [[URLs copy] autorelease];
+    return [URLs copy];
 }
 
 #pragma mark - NSURL Overloads

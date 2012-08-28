@@ -38,10 +38,10 @@ NSString * const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObject
 static RKManagedObjectStore *defaultStore = nil;
 
 @interface RKManagedObjectStore ()
-@property (nonatomic, retain, readwrite) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, retain, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, retain, readwrite) NSManagedObjectContext *primaryManagedObjectContext;
-@property (nonatomic, retain, readwrite) NSManagedObjectContext *mainQueueManagedObjectContext;
+@property (nonatomic, strong, readwrite) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *primaryManagedObjectContext;
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *mainQueueManagedObjectContext;
 @end
 
 @implementation RKManagedObjectStore
@@ -60,8 +60,6 @@ static RKManagedObjectStore *defaultStore = nil;
 + (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore
 {
     @synchronized(defaultStore) {
-        [managedObjectStore retain];
-        [defaultStore release];
         defaultStore = managedObjectStore;
     }
 }
@@ -101,23 +99,12 @@ static RKManagedObjectStore *defaultStore = nil;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [_managedObjectModel release];
-    _managedObjectModel = nil;
-    [_persistentStoreCoordinator release];
-    _persistentStoreCoordinator = nil;
-    [_managedObjectCache release];
-    _managedObjectCache = nil;
-    [_primaryManagedObjectContext release];
-    _primaryManagedObjectContext = nil;
-    [_mainQueueManagedObjectContext release];
-    _mainQueueManagedObjectContext = nil;
 
-    [super dealloc];
 }
 
 - (void)createPersistentStoreCoordinator
 {
-    self.persistentStoreCoordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedObjectModel] autorelease];
+    self.persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedObjectModel];
 }
 
 - (NSPersistentStore *)addInMemoryPersistentStore:(NSError **)error
@@ -180,13 +167,13 @@ static RKManagedObjectStore *defaultStore = nil;
     NSAssert(!self.mainQueueManagedObjectContext, @"Unable to create managed object contexts: A main queue managed object context already exists.");
 
     // Our primary MOC is a private queue concurrency type
-    self.primaryManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    self.primaryManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     self.primaryManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
     self.primaryManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     self.primaryManagedObjectContext.managedObjectStore = self;
     
     // Create an MOC for use on the main queue
-    self.mainQueueManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType] autorelease];
+    self.mainQueueManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     self.mainQueueManagedObjectContext.parentContext = self.primaryManagedObjectContext;
     self.mainQueueManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     self.mainQueueManagedObjectContext.managedObjectStore = self;
@@ -297,7 +284,6 @@ static RKManagedObjectStore *defaultStore = nil;
         [objects addObject:[self objectWithID:objectID]];
     }
     NSArray *objectArray = [NSArray arrayWithArray:objects];
-    [objects release];
 
     return objectArray;
 }
@@ -375,12 +361,12 @@ static RKManagedObjectStore *defaultStore = nil;
 
 + (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE
 {
-    return [[[self alloc] initWithStoreFilename:storeFilename inDirectory:nil usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel delegate:delegate] autorelease];
+    return [[self alloc] initWithStoreFilename:storeFilename inDirectory:nil usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel delegate:delegate];
 }
 
 + (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE
 {
-    return [[[self alloc] initWithStoreFilename:storeFilename inDirectory:directory usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel delegate:delegate] autorelease];
+    return [[self alloc] initWithStoreFilename:storeFilename inDirectory:directory usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel delegate:delegate];
 }
 
 - (id)initWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE
@@ -419,7 +405,7 @@ static RKManagedObjectStore *defaultStore = nil;
 
         [self createManagedObjectContexts];
 
-        self.managedObjectCache = [[[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.primaryManagedObjectContext] autorelease];
+        self.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.primaryManagedObjectContext];
     }
 
     return self;
@@ -446,7 +432,7 @@ static RKManagedObjectStore *defaultStore = nil;
 
 - (NSManagedObjectContext *)managedObjectContextForCurrentThread DEPRECATED_ATTRIBUTE
 {
-    return [[self newManagedObjectContext] autorelease];
+    return [self newManagedObjectContext];
 }
 
 @end

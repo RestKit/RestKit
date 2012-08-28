@@ -34,8 +34,6 @@ static NSBundle *fixtureBundle = nil;
 + (void)setFixtureBundle:(NSBundle *)bundle
 {
     NSAssert(bundle != nil, @"Bundle for fixture cannot be nil.");
-    [bundle retain];
-    [fixtureBundle release];
     fixtureBundle = bundle;
 }
 
@@ -44,12 +42,12 @@ static NSBundle *fixtureBundle = nil;
     return [[self fixtureBundle] pathForResource:fixtureName ofType:nil];
 }
 
-#if TARGET_OS_IPHONE
-+ (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName
-{
-    return [[self fixtureBundle] imageWithContentsOfResource:fixtureName withExtension:nil];
-}
-#endif
+//#if TARGET_OS_IPHONE
+//+ (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName
+//{
+//    return [[self fixtureBundle] imageWithContentsOfResource:fixtureName withExtension:nil];
+//}
+//#endif
 
 + (NSString *)stringWithContentsOfFixture:(NSString *)fixtureName
 {

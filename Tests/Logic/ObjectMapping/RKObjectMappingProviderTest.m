@@ -23,7 +23,6 @@
 #import "RKManagedObjectStore.h"
 #import "RKTestResponseLoader.h"
 #import "RKEntityMapping.h"
-#import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectMappingProvider.h"
 #import "RKHuman.h"
 #import "RKCat.h"

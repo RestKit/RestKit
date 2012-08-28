@@ -30,10 +30,10 @@
 NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
 
 @interface RKObjectMapping ()
-@property (nonatomic, assign, readwrite) Class objectClass;
+@property (nonatomic, weak, readwrite) Class objectClass;
 @property (nonatomic, strong) NSMutableArray *mutablePropertyMappings;
 
-@property (nonatomic, readonly) NSArray *mappedKeyPaths;
+@property (weak, nonatomic, readonly) NSArray *mappedKeyPaths;
 @end
 
 @implementation RKObjectMapping

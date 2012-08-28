@@ -32,8 +32,8 @@
 
     self = [super init];
     if (self) {
-        _data = [data retain];
-        _MIMEType = [MIMEType retain];
+        _data = data;
+        _MIMEType = MIMEType;
     }
 
     return self;
@@ -41,16 +41,9 @@
 
 + (id)serializationWithData:(NSData *)data MIMEType:(NSString *)MIMEType
 {
-    return [[[RKRequestSerialization alloc] initWithData:data MIMEType:MIMEType] autorelease];
+    return [[RKRequestSerialization alloc] initWithData:data MIMEType:MIMEType];
 }
 
-- (void)dealloc
-{
-    [_data release];
-    [_MIMEType release];
-
-    [super dealloc];
-}
 
 - (NSString *)HTTPHeaderValueForContentType
 {

@@ -39,7 +39,6 @@ void RKAlertWithTitle(NSString *message, NSString *title) {
                                               cancelButtonTitle:NSLocalizedString(@"OK", nil)
                                               otherButtonTitles:nil];
     [alertView show];
-    [alertView release];
 #elif TARGET_OS_MAC
     Class alertClass = NSClassFromString(@"NSAlert");
     if (alertClass) {

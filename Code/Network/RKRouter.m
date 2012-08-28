@@ -43,17 +43,12 @@
 {
     self = [super init];
     if (self) {
-        self.routeSet = [[RKRouteSet new] autorelease];
+        self.routeSet = [RKRouteSet new];
     }
     
     return self;
 }
 
-- (void)dealloc
-{
-    self.routeSet = nil;
-    [super dealloc];
-}
 
 - (RKURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object
 {

@@ -17,8 +17,8 @@
 #import "RKRelationshipConnectionOperation.h"
 
 @interface RKManagedObjectMappingOperationDataSource ()
-@property (nonatomic, retain, readwrite) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, retain, readwrite) id<RKManagedObjectCaching> managedObjectCache;
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong, readwrite) id<RKManagedObjectCaching> managedObjectCache;
 @end
 
 @implementation RKManagedObjectMappingOperationDataSource
@@ -40,14 +40,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_managedObjectCache release];
-    [_managedObjectContext release];
-    [_operationQueue release];
-    
-    [super dealloc];
-}
 
 - (id)objectForMappableContent:(id)mappableContent mapping:(RKObjectMapping *)mapping
 {
@@ -55,7 +47,7 @@
     NSAssert(self.managedObjectContext, @"%@ must be initialized with a managed object context.", [self class]);
     
     if (! [mapping isKindOfClass:[RKEntityMapping class]]) {
-        return [[mapping.objectClass new] autorelease];
+        return [mapping.objectClass new];
     }
     
     RKEntityMapping *entityMapping = (RKEntityMapping *)mapping;
@@ -109,8 +101,8 @@
     }
     
     if (object == nil) {
-        object = [[[NSManagedObject alloc] initWithEntity:entity
-                           insertIntoManagedObjectContext:self.managedObjectContext] autorelease];
+        object = [[NSManagedObject alloc] initWithEntity:entity
+                           insertIntoManagedObjectContext:self.managedObjectContext];
         if (primaryKeyAttribute && primaryKeyValue && ![primaryKeyValue isEqual:[NSNull null]]) {
             [object setValue:primaryKeyValue forKey:primaryKeyAttribute];
         }
@@ -155,7 +147,6 @@
             } else {
                 [operation start];
             }
-            [operation release];
         }
     }
 }

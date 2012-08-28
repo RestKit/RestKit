@@ -52,14 +52,14 @@
 
  The name is used to identify named and relationship routes and is nil for object routes.
  */
-@property (nonatomic, retain, readonly) NSString *name;
+@property (nonatomic, strong, readonly) NSString *name;
 
 /**
  The object class of the receiver.
 
  Defines the class for which the route is appropriate. Nil for named routes.
  */
-@property (nonatomic, retain, readonly) Class objectClass;
+@property (nonatomic, strong, readonly) Class objectClass;
 
 /**
  The request method of the receiver.
@@ -76,7 +76,7 @@
 
  @see SOCPattern
  */
-@property (nonatomic, retain, readonly) NSString *resourcePathPattern;
+@property (nonatomic, strong, readonly) NSString *resourcePathPattern;
 
 /**
  A Boolean value that determines if the resource path pattern should be escaped when evaluated.

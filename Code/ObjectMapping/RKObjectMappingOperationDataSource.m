@@ -13,7 +13,7 @@
 
 - (id)objectForMappableContent:(id)mappableContent mapping:(RKObjectMapping *)mapping
 {
-    return [[mapping.objectClass new] autorelease];
+    return [mapping.objectClass new];
 }
 
 @end

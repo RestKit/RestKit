@@ -60,7 +60,7 @@
  @param fixtureName The name of the fixture file.
  @return A new image object for the specified fixture, or nil if the method could not initialize the image from the specified file.
  */
-+ (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName;
+//+ (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName;
 #endif
 
 /**

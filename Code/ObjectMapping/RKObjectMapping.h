@@ -48,7 +48,7 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  The target class this object mapping is defining rules for
  */
-@property (nonatomic, assign, readonly) Class objectClass;
+@property (nonatomic, weak, readonly) Class objectClass;
 
 /**
  The aggregate collection of attribute and relationship mappings within this object mapping
@@ -58,12 +58,12 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  The collection of attribute mappings within this object mapping
  */
-@property (nonatomic, readonly) NSArray *attributeMappings;
+@property (weak, nonatomic, readonly) NSArray *attributeMappings;
 
 /**
  The collection of relationship mappings within this object mapping
  */
-@property (nonatomic, readonly) NSArray *relationshipMappings;
+@property (weak, nonatomic, readonly) NSArray *relationshipMappings;
 
 /**
  When YES, any attributes that have mappings defined but are not present within the source
@@ -109,7 +109,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see [RKObjectMapping defaultDateFormatters]
  */
-@property (nonatomic, retain) NSArray *dateFormatters;
+@property (nonatomic, strong) NSArray *dateFormatters;
 
 /**
  The NSFormatter object for your application's preferred date
@@ -122,7 +122,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see [RKObjectMapping preferredDateFormatter]
  */
-@property (nonatomic, retain) NSFormatter *preferredDateFormatter;
+@property (nonatomic, strong) NSFormatter *preferredDateFormatter;
 
 #pragma mark - Mapping Instantiation
 

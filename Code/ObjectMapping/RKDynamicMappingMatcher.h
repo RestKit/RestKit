@@ -10,14 +10,10 @@
 #import "RKObjectMapping.h"
 
 
-@interface RKDynamicMappingMatcher : NSObject {
-    NSString *_keyPath;
-    id _value;
-    BOOL (^_isMatchForDataBlock)(id data);
-}
+@interface RKDynamicMappingMatcher : NSObject
 
-@property (nonatomic, readonly) RKObjectMapping *objectMapping;
-@property (nonatomic, readonly) NSString *primaryKeyAttribute;
+@property (nonatomic, strong, readonly) RKObjectMapping *objectMapping;
+@property (nonatomic, copy, readonly) NSString *primaryKeyAttribute;
 
 - (id)initWithKey:(NSString *)key value:(id)value objectMapping:(RKObjectMapping *)objectMapping;
 - (id)initWithKey:(NSString *)key value:(id)value primaryKeyAttribute:(NSString *)primaryKeyAttribute;

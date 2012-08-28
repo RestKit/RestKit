@@ -14,13 +14,13 @@
 #import "RKDynamicMappingMatcher.h"
 
 @interface RKRelationshipConnectionOperation ()
-@property (nonatomic, retain, readwrite) NSManagedObject *managedObject;
-@property (nonatomic, retain, readwrite) RKConnectionMapping *connectionMapping;
-@property (nonatomic, retain, readwrite) id<RKManagedObjectCaching> managedObjectCache;
+@property (nonatomic, strong, readwrite) NSManagedObject *managedObject;
+@property (nonatomic, strong, readwrite) RKConnectionMapping *connectionMapping;
+@property (nonatomic, strong, readwrite) id<RKManagedObjectCaching> managedObjectCache;
 
 // Helpers
-@property (nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, readonly) RKEntityMapping *entityMapping;
+@property (weak, nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
+@property (weak, nonatomic, readonly) RKEntityMapping *entityMapping;
 
 @end
 
@@ -42,14 +42,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    self.managedObject = nil;
-    self.connectionMapping = nil;
-    self.managedObjectCache = nil;
-
-    [super dealloc];
-}
 
 - (RKEntityMapping *)entityMapping
 {

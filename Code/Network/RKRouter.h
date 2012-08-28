@@ -45,12 +45,12 @@
 /**
  The baseURL with which to construct all RKURL instance generated through the receiver.
  */
-@property (nonatomic, retain) RKURL *baseURL;
+@property (nonatomic, strong) RKURL *baseURL;
 
 /**
  A route set defining all the routes addressable through the receiver.
  */
-@property (nonatomic, retain) RKRouteSet *routeSet;
+@property (nonatomic, strong) RKRouteSet *routeSet;
 
 ///-----------------------------------------------------------------------------
 /// @name Initializing a Router

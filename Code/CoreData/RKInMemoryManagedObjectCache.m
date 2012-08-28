@@ -10,6 +10,7 @@
 #import "NSEntityDescription+RKAdditions.h"
 #import "RKEntityCache.h"
 #import "RKLog.h"
+#import "RKEntityByAttributeCache.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -18,7 +19,7 @@
 //static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = @"RKInMemoryObjectManagedObjectCacheThreadDictionaryKey";
 
 @interface RKInMemoryManagedObjectCache ()
-@property (nonatomic, retain) RKEntityCache *entityCache;
+@property (nonatomic, strong) RKEntityCache *entityCache;
 @end
 
 @implementation RKInMemoryManagedObjectCache
@@ -27,7 +28,7 @@
 {
     self = [super init];
     if (self) {
-        self.entityCache = [[[RKEntityCache alloc] initWithManagedObjectContext:managedObjectContext] autorelease];
+        self.entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
     }
     
     return self;
@@ -41,11 +42,6 @@
                                  userInfo:nil];
 }
 
-- (void)dealloc
-{
-    [_entityCache release];
-    [super dealloc];
-}
 
 - (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute

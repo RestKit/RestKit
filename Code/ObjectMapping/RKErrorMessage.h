@@ -28,6 +28,6 @@
 /**
  The error message string mapped from the response payload
  */
-@property (nonatomic, retain) NSString *errorMessage;
+@property (nonatomic, strong) NSString *errorMessage;
 
 @end

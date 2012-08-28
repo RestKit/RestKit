@@ -36,8 +36,6 @@ RKParserRegistry *gSharedRegistry;
 
 + (void)setSharedRegistry:(RKParserRegistry *)registry
 {
-    [registry retain];
-    [gSharedRegistry release];
     gSharedRegistry = registry;
 }
 
@@ -52,12 +50,6 @@ RKParserRegistry *gSharedRegistry;
     return self;
 }
 
-- (void)dealloc
-{
-    [_MIMETypeToParserClasses release];
-    [_MIMETypeToParserClassesRegularExpressions release];
-    [super dealloc];
-}
 
 - (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType
 {
@@ -97,7 +89,7 @@ RKParserRegistry *gSharedRegistry;
 {
     Class parserClass = [self parserClassForMIMEType:MIMEType];
     if (parserClass) {
-        return [[[parserClass alloc] init] autorelease];
+        return [[parserClass alloc] init];
     }
 
     return nil;

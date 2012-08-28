@@ -45,7 +45,7 @@ static char NSManagedObject_RKManagedObjectStoreAssociatedKey;
         return nil;
     }
 
-    NSFetchRequest *fetchRequest = [[NSFetchRequest new] autorelease];
+    NSFetchRequest *fetchRequest = [NSFetchRequest new];
     fetchRequest.entity = entity;
     fetchRequest.predicate = predicate;
     fetchRequest.fetchLimit = 1;

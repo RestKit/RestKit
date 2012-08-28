@@ -21,10 +21,10 @@
 #import "RKRoute.h"
 
 @interface RKRoute ()
-@property (nonatomic, retain, readwrite) NSString *name;
-@property (nonatomic, retain, readwrite) Class objectClass;
+@property (nonatomic, strong, readwrite) NSString *name;
+@property (nonatomic, strong, readwrite) Class objectClass;
 @property (nonatomic, assign, readwrite) RKRequestMethod method;
-@property (nonatomic, retain, readwrite) NSString *resourcePathPattern;
+@property (nonatomic, strong, readwrite) NSString *resourcePathPattern;
 @end
 
 @interface RKNamedRoute : RKRoute
@@ -48,7 +48,7 @@
 {
     NSParameterAssert(name);
     NSParameterAssert(resourcePathPattern);
-    RKNamedRoute *route = [[RKNamedRoute new] autorelease];
+    RKNamedRoute *route = [RKNamedRoute new];
     route.name = name;
     route.resourcePathPattern = resourcePathPattern;
     route.method = method;
@@ -59,7 +59,7 @@
 {
     NSParameterAssert(objectClass);
     NSParameterAssert(resourcePathPattern);
-    RKClassRoute *route = [[RKClassRoute new] autorelease];
+    RKClassRoute *route = [RKClassRoute new];
     route.objectClass = objectClass;
     route.resourcePathPattern = resourcePathPattern;
     route.method = method;
@@ -70,7 +70,7 @@
 {
     NSParameterAssert(relationshipName);
     NSParameterAssert(objectClass);
-    RKRelationshipRoute *route = [[RKRelationshipRoute new] autorelease];
+    RKRelationshipRoute *route = [RKRelationshipRoute new];
     route.name = relationshipName;
     route.objectClass = objectClass;
     route.resourcePathPattern = resourcePathPattern;

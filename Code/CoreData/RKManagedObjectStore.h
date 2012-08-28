@@ -204,14 +204,14 @@ extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
  
  @return The managed object model of the receiver.
  */
-@property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, strong, readonly) NSManagedObjectModel *managedObjectModel;
 
 /**
  Returns the persistent store coordinator of the receiver.
  
  @return The persistent store coordinator of the receiver.
  */
-@property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 /**
  The managed object cache associated with the receiver.
@@ -224,7 +224,7 @@ extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
  existing objects by primary key attribute value and may result in the creation of duplicate objects
  within the store.
  */
-@property (nonatomic, retain) id<RKManagedObjectCaching> managedObjectCache;
+@property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;
 
 ///-----------------------------------------------------------------------------
 /// @name Working with Managed Object Contexts
@@ -250,7 +250,7 @@ extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
  
  @see createManagedObjectContexts
  */
-@property (nonatomic, retain, readonly) NSManagedObjectContext *primaryManagedObjectContext;
+@property (nonatomic, strong, readonly) NSManagedObjectContext *primaryManagedObjectContext;
 
 /**
  The main queue managed object context of the receiver.
@@ -259,7 +259,7 @@ extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
  created with the NSMainQueueConcurrencyType and as such may be messaged directly from the main thread. The context
  is a child context of the primaryManagedObjectContext and can persist changes up to the parent via a save.
  */
-@property (nonatomic, retain, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
+@property (nonatomic, strong, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 /**
  Creates a new child managed object context of the primary managed object context with a given concurrency type.

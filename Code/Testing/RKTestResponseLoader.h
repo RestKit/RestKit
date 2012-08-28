@@ -34,12 +34,12 @@
 /**
  The RKResponse object loaded from the RKRequest or RKObjectLoader the receiver is acting as the delegate for.
  **/
-@property (nonatomic, retain, readonly) NSHTTPURLResponse *response;
+@property (nonatomic, strong, readonly) NSHTTPURLResponse *response;
 
 /**
  The collection of objects loaded from the RKObjectLoader the receiver is acting as the delegate for.
  */
-@property (nonatomic, retain, readonly) NSArray *objects;
+@property (nonatomic, strong, readonly) NSArray *objects;
 
 /**
  A Boolean value that indicates whether a response was loaded successfully.

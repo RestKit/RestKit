@@ -29,6 +29,7 @@
 #import "RKLog.h"
 #import "RKMappingOperationDataSource.h"
 #import "RKObjectMappingOperationDataSource.h"
+#import "RKDynamicMapping.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -65,12 +66,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 }
 
 @interface RKMappingOperation ()
-@property (nonatomic, retain, readwrite) RKMapping *mapping;
-@property (nonatomic, retain, readwrite) id sourceObject;
-@property (nonatomic, retain, readwrite) id destinationObject;
-@property (nonatomic, retain) NSDictionary *nestedAttributeSubstitution;
-@property (nonatomic, retain) NSError *validationError;
-@property (nonatomic, retain) RKObjectMapping *objectMapping; // The concrete mapping
+@property (nonatomic, strong, readwrite) RKMapping *mapping;
+@property (nonatomic, strong, readwrite) id sourceObject;
+@property (nonatomic, strong, readwrite) id destinationObject;
+@property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
+@property (nonatomic, strong) NSError *validationError;
+@property (nonatomic, strong) RKObjectMapping *objectMapping; // The concrete mapping
 @end
 
 @implementation RKMappingOperation
@@ -84,7 +85,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 + (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)objectOrDynamicMapping
 {
-    return [[[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectOrDynamicMapping] autorelease];
+    return [[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectOrDynamicMapping];
 }
 
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
@@ -97,22 +98,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     if (self) {
         self.sourceObject = sourceObject;
         self.destinationObject = destinationObject;
-        self.dataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+        self.dataSource = [RKObjectMappingOperationDataSource new];
         self.mapping = objectOrDynamicMapping;
     }
 
     return self;
 }
 
-- (void)dealloc
-{
-    [_sourceObject release];
-    [_destinationObject release];
-    [_mapping release];
-    [_nestedAttributeSubstitution release];
-
-    [super dealloc];
-}
 
 - (NSDate *)parseDateFromString:(NSString *)string
 {
@@ -125,7 +117,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
     NSNumber *numeric = [numberFormatter numberFromString:string];
 
-    [numberFormatter release];
 
     if (numeric) {
         date = [NSDate dateWithTimeIntervalSince1970:[numeric doubleValue]];
@@ -251,8 +242,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     BOOL success = YES;
 
     if (self.objectMapping.performKeyValueValidation && [self.destinationObject respondsToSelector:@selector(validateValue:forKeyPath:error:)]) {
-        success = [self.destinationObject validateValue:value forKeyPath:keyPath error:&_validationError];
+        NSError *validationError;
+        success = [self.destinationObject validateValue:value forKeyPath:keyPath error:&validationError];
         if (!success) {
+            _validationError = validationError;
             if (_validationError) {
                 RKLogError(@"Validation failed while mapping attribute at key path '%@' to value %@. Error: %@", keyPath, *value, [_validationError localizedDescription]);
                 RKLogValidationError(_validationError);

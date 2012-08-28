@@ -95,11 +95,11 @@ typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
 @interface RKConnectionMapping : NSObject
 
-@property (nonatomic, retain, readonly) NSString *relationshipName;
-@property (nonatomic, retain, readonly) NSString *sourceKeyPath;
-@property (nonatomic, retain, readonly) NSString *destinationKeyPath;
-@property (nonatomic, retain, readonly) RKMapping *mapping;
-@property (nonatomic, retain, readonly) RKDynamicMappingMatcher *matcher;
+@property (nonatomic, strong, readonly) NSString *relationshipName;
+@property (nonatomic, strong, readonly) NSString *sourceKeyPath;
+@property (nonatomic, strong, readonly) NSString *destinationKeyPath;
+@property (nonatomic, strong, readonly) RKMapping *mapping;
+@property (nonatomic, strong, readonly) RKDynamicMappingMatcher *matcher;
 
 /**
  Defines a mapping that is used to connect a source object relationship to

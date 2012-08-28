@@ -34,7 +34,7 @@
 
 + (RKDynamicMapping *)dynamicMapping
 {
-    return [[self new] autorelease];
+    return [self new];
 }
 
 #if NS_BLOCKS_AVAILABLE
@@ -63,18 +63,12 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_matchers release];
-    [super dealloc];
-}
 
 - (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value
 {
     RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, value, NSStringFromClass(objectMapping.objectClass));
     RKDynamicMappingMatcher *matcher = [[RKDynamicMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
     [_matchers addObject:matcher];
-    [matcher release];
 }
 
 - (RKObjectMapping *)objectMappingForDictionary:(NSDictionary *)data

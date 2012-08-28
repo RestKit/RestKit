@@ -25,7 +25,7 @@
  
  Defaults to nil.
  */
-@property (nonatomic, retain) NSSet *stopWords;
+@property (nonatomic, strong) NSSet *stopWords;
 
 ///-----------------------------------------------------------------------------
 /// @name Tokenizing a String of Text

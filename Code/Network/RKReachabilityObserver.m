@@ -48,12 +48,12 @@ NSString * const RKReachabilityFlagsUserInfoKey = @"RKReachabilityFlagsUserInfoK
 NSString * const RKReachabilityWasDeterminedNotification = @"RKReachabilityWasDeterminedNotification";
 
 static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info) {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    @autoreleasepool {
 
-    RKReachabilityObserver *observer = (RKReachabilityObserver *)info;
-    observer.reachabilityFlags = flags;
+        RKReachabilityObserver *observer = (__bridge RKReachabilityObserver *)info;
+        observer.reachabilityFlags = flags;
 
-    [pool release];
+    }
 }
 
 #pragma mark -
@@ -67,7 +67,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 + (RKReachabilityObserver *)reachabilityObserverForAddress:(const struct sockaddr *)address
 {
-    return [[[self alloc] initWithAddress:address] autorelease];
+    return [[self alloc] initWithAddress:address];
 }
 
 + (RKReachabilityObserver *)reachabilityObserverForInternetAddress:(in_addr_t)internetAddress
@@ -92,7 +92,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 + (RKReachabilityObserver *)reachabilityObserverForHost:(NSString *)hostNameOrIPAddress
 {
-    return [[[self alloc] initWithHost:hostNameOrIPAddress] autorelease];
+    return [[self alloc] initWithHost:hostNameOrIPAddress];
 }
 
 - (id)initWithAddress:(const struct sockaddr *)address
@@ -102,7 +102,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
         _reachabilityRef = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, address);
         if (_reachabilityRef == NULL) {
             RKLogWarning(@"Unable to initialize reachability reference");
-            [self release];
             self = nil;
         } else {
             // For technical details regarding link-local connections, please
@@ -157,12 +156,11 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
     // Hostname
     self = [self init];
     if (self) {
-        _host = [hostNameOrIPAddress retain];
+        _host = hostNameOrIPAddress;
         _reachabilityRef = SCNetworkReachabilityCreateWithName(CFAllocatorGetDefault(), hostNameOrIPAddressCString);
         RKLogInfo(@"Reachability observer initialized with hostname %@", hostNameOrIPAddress);
         if (_reachabilityRef == NULL) {
             RKLogWarning(@"Unable to initialize reachability reference");
-            [self release];
             self = nil;
         } else {
             [self scheduleObserver];
@@ -181,9 +179,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
     if (_reachabilityRef) {
         CFRelease(_reachabilityRef);
     }
-    [_host release];
 
-    [super dealloc];
 }
 
 - (BOOL)getFlags
@@ -353,7 +349,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 - (void)scheduleObserver
 {
-    SCNetworkReachabilityContext context = { .info = self };
+    SCNetworkReachabilityContext context = { .info = (__bridge void *)(self) };
     RKLogDebug(@"Scheduling reachability observer %@ in main dispatch queue", self);
     if (! SCNetworkReachabilitySetCallback(_reachabilityRef, ReachabilityCallback, &context)) {
         RKLogWarning(@"%@: SCNetworkReachabilitySetCallback() failed: %s", self, SCErrorString(SCError()));

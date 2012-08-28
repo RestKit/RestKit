@@ -35,7 +35,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
 @property (nonatomic, strong) NSMutableArray *mappingErrors;
 @property (nonatomic, strong) id sourceObject;
-//@property (nonatomic, strong, readwrite) NSDictionary *mappingsDictionary; // TODO: Becomes read-only
+@property (nonatomic, strong, readwrite) NSDictionary *mappingsDictionary;
 @end
 
 @implementation RKObjectMapper

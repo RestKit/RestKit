@@ -23,7 +23,7 @@
 #import "RKLog.h"
 
 @interface RKMappingResult ()
-@property (nonatomic, retain) NSDictionary *keyPathToMappedObjects;
+@property (nonatomic, strong) NSDictionary *keyPathToMappedObjects;
 @end
 
 @implementation RKMappingResult
@@ -40,15 +40,10 @@
     return self;
 }
 
-- (void)dealloc
-{
-    self.keyPathToMappedObjects = nil;
-    [super dealloc];
-}
 
 + (RKMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects
 {
-    return [[[self alloc] initWithDictionary:keyPathToMappedObjects] autorelease];
+    return [[self alloc] initWithDictionary:keyPathToMappedObjects];
 }
 
 - (NSDictionary *)asDictionary

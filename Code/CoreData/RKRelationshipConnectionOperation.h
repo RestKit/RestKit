@@ -30,18 +30,18 @@
 /**
  The managed object the receiver will attempt to connect a relationship for.
  */
-@property (nonatomic, retain, readonly) NSManagedObject *managedObject;
+@property (nonatomic, strong, readonly) NSManagedObject *managedObject;
 
 /**
  The connection mapping describing the relationship connection the receiver will attempt to connect.
  */
-@property (nonatomic, retain, readonly) RKConnectionMapping *connectionMapping;
+@property (nonatomic, strong, readonly) RKConnectionMapping *connectionMapping;
 
 /**
  The managed object cache the receiver will use to fetch a related object satisfying the connection
  mapping.
  */
-@property (nonatomic, retain, readonly) id<RKManagedObjectCaching> managedObjectCache;
+@property (nonatomic, strong, readonly) id<RKManagedObjectCaching> managedObjectCache;
 
 /**
  Initializes the receiver with a given managed object, connection mapping, and managed object cache.

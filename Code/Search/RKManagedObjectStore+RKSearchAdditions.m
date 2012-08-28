@@ -31,7 +31,6 @@ static char searchIndexerAssociationKey;
 {
     RKSearchIndexer *searchIndexer = [RKSearchIndexer new];
     self.searchIndexer = searchIndexer;
-    [searchIndexer release];
 }
 
 - (void)addSearchIndexingToEntityForName:(NSString *)entityName onAttributes:(NSArray *)attributes

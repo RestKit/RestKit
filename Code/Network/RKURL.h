@@ -149,7 +149,7 @@
  If the receiver does not conform to RFC 1808, returns nil just as
  `NSURL query` does.
  */
-@property (nonatomic, readonly) NSDictionary *queryParameters;
+@property (weak, nonatomic, readonly) NSDictionary *queryParameters;
 
 
 ///-----------------------------------------------------------------------------

@@ -22,8 +22,8 @@
 
 @interface RKManagedObjectThreadSafeInvocation : NSInvocation
 
-@property (nonatomic, retain) NSManagedObjectContext *privateQueueManagedObjectContext;
-@property (nonatomic, retain) NSManagedObjectContext *mainQueueManagedObjectContext;
+@property (nonatomic, strong) NSManagedObjectContext *privateQueueManagedObjectContext;
+@property (nonatomic, strong) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 + (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature;
 - (void)setManagedObjectKeyPaths:(NSSet *)keyPaths forArgument:(NSInteger)index;

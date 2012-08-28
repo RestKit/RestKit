@@ -51,7 +51,7 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  An optional set of stop words to be removed from the set of tokens
  used to create the search words for indexed entities.
  */
-@property (nonatomic, retain) NSSet *stopWords;
+@property (nonatomic, strong) NSSet *stopWords;
 
 ///-----------------------------------------------------------------------------
 /// @name Indexing Changes in a Managed Object Context

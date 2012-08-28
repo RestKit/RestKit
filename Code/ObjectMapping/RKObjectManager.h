@@ -159,7 +159,7 @@
  @see RKClient
  @return The baseURL of the client.
  */
-@property (nonatomic, readonly) RKURL *baseURL;
+@property (weak, nonatomic, readonly) RKURL *baseURL;
 
 /// @name Configuring Object Mapping
 
@@ -167,28 +167,28 @@
  Router object responsible for generating URLs for
  HTTP requests
  */
-@property (nonatomic, retain) RKRouter *router;
+@property (nonatomic, strong) RKRouter *router;
 
 /**
  A Core Data backed object store for persisting objects that have been fetched from the Web
  */
-@property (nonatomic, retain) RKManagedObjectStore *managedObjectStore;
+@property (nonatomic, strong) RKManagedObjectStore *managedObjectStore;
 
 /**
  The operation queue to use when performing expensive object mapping operations
  within RKObjectLoader instances created through this object manager
  */
-@property (nonatomic, retain) NSOperationQueue *mappingQueue;
+@property (nonatomic, strong) NSOperationQueue *mappingQueue;
 
 /**
  The Default MIME Type to be used in object serialization.
  */
-@property (nonatomic, retain) NSString *serializationMIMEType;
+@property (nonatomic, strong) NSString *serializationMIMEType;
 
 /**
  The value for the HTTP Accept header to specify the preferred format for retrieved data
  */
-@property (nonatomic, assign) NSString *acceptMIMEType;
+@property (nonatomic, weak) NSString *acceptMIMEType;
 
 ////////////////////////////////////////////////////////
 /// @name Building Object Request Operations

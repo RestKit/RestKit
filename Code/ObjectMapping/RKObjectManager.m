@@ -54,12 +54,10 @@ static NSOperationQueue *defaultMappingQueue = nil;
 + (void)setDefaultMappingQueue:(NSOperationQueue *)newDefaultMappingQueue
 {
     if (defaultMappingQueue) {
-        [defaultMappingQueue release];
         defaultMappingQueue = nil;
     }
 
     if (newDefaultMappingQueue) {
-        [newDefaultMappingQueue retain];
         defaultMappingQueue = newDefaultMappingQueue;
     }
 }
@@ -102,8 +100,6 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 + (void)setSharedManager:(RKObjectManager *)manager
 {
-    [manager retain];
-    [sharedManager release];
     sharedManager = manager;
 }
 
@@ -114,7 +110,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
-    RKObjectManager *manager = [[[self alloc] initWithBaseURL:[RKURL URLWithBaseURL:baseURL]] autorelease];
+    RKObjectManager *manager = [[self alloc] initWithBaseURL:[RKURL URLWithBaseURL:baseURL]];
     return manager;
 }
 
@@ -123,10 +119,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
     [self removeObserver:self forKeyPath:@"client.reachabilityObserver"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [_managedObjectStore release];
-    [_serializationMIMEType release];
 
-    [super dealloc];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

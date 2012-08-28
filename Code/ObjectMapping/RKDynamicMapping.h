@@ -50,7 +50,7 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
 
  @see RKDynamicMappingDelegate
  */
-@property (nonatomic, assign) id<RKDynamicMappingDelegate> delegate;
+@property (nonatomic, weak) id<RKDynamicMappingDelegate> delegate;
 
 #ifdef NS_BLOCKS_AVAILABLE
 /**

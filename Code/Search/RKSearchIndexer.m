@@ -28,7 +28,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     // Create a relationship from the RKSearchWordEntity to the given searchable entity
     NSEntityDescription *searchWordEntity = [[entity.managedObjectModel entitiesByName] objectForKey:RKSearchWordEntityName];
     if (! searchWordEntity) {
-        searchWordEntity = [[[RKSearchWordEntity alloc] init] autorelease];
+        searchWordEntity = [[RKSearchWordEntity alloc] init];
         
         // Add the entity to the model
         NSArray *entities = [entity.managedObjectModel entities];
@@ -81,8 +81,6 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     [relationship setInverseRelationship:inverseRelationship];
     [inverseRelationship setInverseRelationship:relationship];
     
-    [inverseRelationship release];
-    [relationship release];
 }
 
 - (void)startObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
@@ -104,62 +102,62 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 
 - (NSUInteger)indexManagedObject:(NSManagedObject *)managedObject
 {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    @autoreleasepool {
     
-    RKLogDebug(@"Indexing searchable attributes of managed object: %@", managedObject);
-    NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
-    if (! searchableAttributes) {
-        [NSException raise:NSInvalidArgumentException format:@"The given managed object %@ is for an entity (%@) that does not define any searchable attributes. Perhaps you forgot to invoke addSearchIndexingToEntity:onAttributes:?", managedObject, managedObject.entity];
-        return NSNotFound;
-    }
-    
-    RKSearchTokenizer *searchTokenizer = [RKSearchTokenizer new];
-    searchTokenizer.stopWords = self.stopWords;
-    
-    __block NSUInteger searchWordCount;
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:RKSearchWordEntityName];
-    fetchRequest.fetchLimit = 1;
-    NSPredicate *predicateTemplate = [NSPredicate predicateWithFormat:@"%K == $SEARCH_WORD", RKSearchWordAttributeName];
-    NSManagedObjectContext *managedObjectContext = managedObject.managedObjectContext;
-    
-    [managedObjectContext performBlockAndWait:^{
-        NSMutableSet *searchWords = [NSMutableSet set];
-        for (NSString *searchableAttribute in searchableAttributes) {
-            NSString *attributeValue = [managedObject valueForKey:searchableAttribute];
-            if (attributeValue) {
-                RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
-                NSSet *tokens = [searchTokenizer tokenize:attributeValue];
-                for (NSString *word in tokens) {
-                    if (word && [word length] > 0) {
-                        fetchRequest.predicate = [predicateTemplate predicateWithSubstitutionVariables:@{ @"SEARCH_WORD" : word }];
-                        NSError *error = nil;
-                        NSArray *results = [managedObject.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-                        if (results) {
-                            RKSearchWord *searchWord;
-                            if ([results count] == 0) {
-                                searchWord = [NSEntityDescription insertNewObjectForEntityForName:RKSearchWordEntityName inManagedObjectContext:managedObjectContext];
-                                searchWord.word = word;
+        RKLogDebug(@"Indexing searchable attributes of managed object: %@", managedObject);
+        NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
+        if (! searchableAttributes) {
+            [NSException raise:NSInvalidArgumentException format:@"The given managed object %@ is for an entity (%@) that does not define any searchable attributes. Perhaps you forgot to invoke addSearchIndexingToEntity:onAttributes:?", managedObject, managedObject.entity];
+            return NSNotFound;
+        }
+        
+        RKSearchTokenizer *searchTokenizer = [RKSearchTokenizer new];
+        searchTokenizer.stopWords = self.stopWords;
+        
+        __block NSUInteger searchWordCount;
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:RKSearchWordEntityName];
+        fetchRequest.fetchLimit = 1;
+        NSPredicate *predicateTemplate = [NSPredicate predicateWithFormat:@"%K == $SEARCH_WORD", RKSearchWordAttributeName];
+        NSManagedObjectContext *managedObjectContext = managedObject.managedObjectContext;
+        
+        [managedObjectContext performBlockAndWait:^{
+            NSMutableSet *searchWords = [NSMutableSet set];
+            for (NSString *searchableAttribute in searchableAttributes) {
+                NSString *attributeValue = [managedObject valueForKey:searchableAttribute];
+                if (attributeValue) {
+                    RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
+                    NSSet *tokens = [searchTokenizer tokenize:attributeValue];
+                    for (NSString *word in tokens) {
+                        if (word && [word length] > 0) {
+                            fetchRequest.predicate = [predicateTemplate predicateWithSubstitutionVariables:@{ @"SEARCH_WORD" : word }];
+                            NSError *error = nil;
+                            NSArray *results = [managedObject.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                            if (results) {
+                                RKSearchWord *searchWord;
+                                if ([results count] == 0) {
+                                    searchWord = [NSEntityDescription insertNewObjectForEntityForName:RKSearchWordEntityName inManagedObjectContext:managedObjectContext];
+                                    searchWord.word = word;
+                                } else {
+                                    searchWord = [results objectAtIndex:0];
+                                }
+                                
+                                [searchWords addObject:searchWord];
                             } else {
-                                searchWord = [results objectAtIndex:0];
+                                RKLogError(@"Failed to retrieve search word: %@", error);
                             }
-                            
-                            [searchWords addObject:searchWord];
-                        } else {
-                            RKLogError(@"Failed to retrieve search word: %@", error);
                         }
                     }
                 }
             }
-        }
+            
+            [managedObject setValue:searchWords forKey:RKSearchWordsRelationshipName];
+            RKLogTrace(@"Indexed search words: %@", [searchWords valueForKey:RKSearchWordAttributeName]);
+            searchWordCount = [searchWords count];
+        }];
         
-        [managedObject setValue:searchWords forKey:RKSearchWordsRelationshipName];
-        RKLogTrace(@"Indexed search words: %@", [searchWords valueForKey:RKSearchWordAttributeName]);
-        searchWordCount = [searchWords count];
-    }];
-    
-    [pool drain];
-    
-    return searchWordCount;
+        
+        return searchWordCount;
+    }
 }
 
 - (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext

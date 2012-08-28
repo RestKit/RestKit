@@ -40,7 +40,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 
 + (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)newTimeZone
 {
-    RKDotNetDateFormatter *formatter = [[[RKDotNetDateFormatter alloc] init] autorelease];
+    RKDotNetDateFormatter *formatter = [[RKDotNetDateFormatter alloc] init];
     if (newTimeZone)
         formatter.timeZone = newTimeZone;
     return formatter;
@@ -87,7 +87,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 {
     self = [super init];
     if (self) {
-        self.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"] autorelease];
+        self.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         self.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
         [self setDateFormat:@"ZZ"]; // GMT offset, like "-0500"
         NSString *pattern = @"\\/Date\\((-?\\d+)((?:[\\+\\-]\\d+)?)\\)\\/"; // /Date(mSecs)/ or /Date(-mSecs)/ or /Date(mSecs-0400)/
@@ -97,11 +97,6 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 }
 
 
-- (void)dealloc
-{
-    [dotNetExpression release];
-    [super dealloc];
-}
 
 
 - (NSString *)millisecondsFromString:(NSString *)string
