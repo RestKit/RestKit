@@ -113,42 +113,6 @@ typedef enum {
 - (NSDictionary *)objectMappingsByKeyPath;
 
 /**
- Registers an object mapping as being rooted at a specific keyPath. The keyPath will be registered
- and an inverse mapping for the object will be generated and used for serialization.
-
- This is a shortcut for configuring a pair of object mappings that model a simple resource the same
- way when going to and from the server.
-
- For example, if we have a simple resource called 'person' that returns JSON in the following
- format:
-
-    { "person": { "first_name": "Blake", "last_name": "Watters" } }
-
- We might configure a mapping like so:
-
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[Person class]];
-    [mapping mapAttributes:@"first_name", @"last_name", nil];
-
- If we want to parse the above JSON and serialize it such that using postObject: or putObject: use the same format,
- we can auto-generate the serialization mapping and set the whole thing up in one shot:
-
-    [[RKObjectManager sharedManager].mappingProvider registerMapping:mapping withRootKeyPath:@"person"];
-
- This will call setMapping:forKeyPath: for you, then generate a serialization mapping and set the root
- keyPath as well.
-
- If you want to manipulate the serialization mapping yourself, you can work with the mapping directly:
-
-    RKObjectMapping *serializationMappingForPerson = [personMapping inverseMapping];
-    // NOTE: Serialization mapping default to a nil root keyPath and will serialize to a flat dictionary
-    [[RKObjectManager sharedManager].mappingProvider setSerializationMapping:serializationMappingForPerson forClass:[Person class]];
-
- @param objectMapping An object mapping we wish to register on the provider
- @param keyPath The keyPath we wish to register for the mapping and use as the rootKeyPath for serialization
- */
-- (void)registerObjectMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath;
-
-/**
  Adds an object mapping to the provider for later retrieval. The mapping is not bound to a particular keyPath and
  must be explicitly set on an instance of RKObjectLoader or RKObjectMappingOperation to be applied. This is useful
  in cases where the remote system does not namespace resources in a keyPath that can be used for disambiguation.
@@ -283,7 +247,6 @@ typedef enum {
 // Method signatures being phased out
 @interface RKObjectMappingProvider (Deprecations)
 + (RKObjectMappingProvider *)objectMappingProvider;
-- (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath;
 - (void)setMapping:(RKMapping *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
 - (RKMapping *)mappingForKeyPath:(NSString *)keyPath;
 - (NSDictionary *)mappingsByKeyPath;

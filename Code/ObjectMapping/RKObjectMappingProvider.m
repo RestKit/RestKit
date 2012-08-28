@@ -49,12 +49,6 @@
         [self initializeContext:RKObjectMappingProviderContextObjectsByResourcePathPattern withValue:[RKOrderedDictionary dictionary]];
         [self initializeContext:RKObjectMappingProviderContextSerialization withValue:[NSMutableDictionary dictionary]];
         [self initializeContext:RKObjectMappingProviderContextErrors withValue:[NSNull null]];
-
-        // Setup default error message mappings
-        RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
-        errorMapping.rootKeyPath = @"errors";
-        [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
-        self.errorMapping = errorMapping;
     }
     return self;
 }
@@ -93,16 +87,6 @@
 - (NSDictionary *)objectMappingsByKeyPath
 {
     return [NSDictionary dictionaryWithDictionary:(NSDictionary *)[self valueForContext:RKObjectMappingProviderContextObjectsByKeyPath]];
-}
-
-- (void)registerObjectMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath
-{
-    // TODO: Should generate logs
-    objectMapping.rootKeyPath = keyPath;
-    [self setMapping:objectMapping forKeyPath:keyPath];
-    RKObjectMapping *inverseMapping = [objectMapping inverseMapping];
-    inverseMapping.rootKeyPath = keyPath;
-    [self setSerializationMapping:inverseMapping forClass:objectMapping.objectClass];
 }
 
 - (void)addObjectMapping:(RKObjectMapping *)objectMapping
@@ -378,11 +362,6 @@
 - (NSDictionary *)mappingsByKeyPath
 {
     return [self objectMappingsByKeyPath];
-}
-
-- (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath
-{
-    return [self registerObjectMapping:objectMapping withRootKeyPath:keyPath];
 }
 
 - (void)removeMappingForKeyPath:(NSString *)keyPath
