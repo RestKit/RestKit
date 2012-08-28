@@ -30,11 +30,11 @@
  */
 @interface RKObjectSerializer : NSObject <RKMappingOperationDelegate>
 
-@property (nonatomic, readonly) id object;
-@property (nonatomic, readonly) RKObjectMapping *mapping;
+@property (nonatomic, readonly, strong) id object;
+@property (nonatomic, readonly, strong) RKObjectMapping *mapping;
+@property (nonatomic, readonly, strong) NSString *rootKeyPath;
 
-+ (id)serializerWithObject:(id)object mapping:(RKObjectMapping *)mapping;
-- (id)initWithObject:(id)object mapping:(RKObjectMapping *)mapping;
+- (id)initWithObject:(id)object mapping:(RKObjectMapping *)mapping rootKeyPath:(NSString *)rootKeyPath;
 
 /**
  Return a serialized representation of the source object by applying an object mapping

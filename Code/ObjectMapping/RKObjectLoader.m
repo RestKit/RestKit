@@ -265,8 +265,7 @@
     RKMapping *configuredObjectMapping = [self configuredObjectMapping];
     if (configuredObjectMapping) {
         mappingProvider = [RKObjectMappingProvider mappingProvider];
-        NSString *rootKeyPath = configuredObjectMapping.rootKeyPath ? configuredObjectMapping.rootKeyPath : @"";
-        [mappingProvider setMapping:configuredObjectMapping forKeyPath:rootKeyPath];
+        [mappingProvider setMapping:configuredObjectMapping forKeyPath:@""];
 
         // Copy the error mapping from our configured mappingProvider
         mappingProvider.errorMapping = self.mappingProvider.errorMapping;
@@ -377,7 +376,7 @@
     if ((self.sourceObject && self.params == nil) && (self.method == RKRequestMethodPOST || self.method == RKRequestMethodPUT)) {
         NSAssert(self.serializationMapping, @"You must provide a serialization mapping for objects of type '%@'", NSStringFromClass([self.sourceObject class]));
         RKLogDebug(@"POST or PUT request for source object %@, serializing to MIME Type %@ for transport...", self.sourceObject, self.serializationMIMEType);
-        RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:self.sourceObject mapping:self.serializationMapping];
+        RKObjectSerializer *serializer = [[[RKObjectSerializer alloc] initWithObject:self.sourceObject mapping:self.serializationMapping rootKeyPath:nil] autorelease];
         NSError *error = nil;
         id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];
 

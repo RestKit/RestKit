@@ -26,19 +26,6 @@
 @interface RKMapping : NSObject
 
 /**
- The root key path for the receiver.
-
- Root key paths are handled differently depending on the context in which the mapping is
- being used. If the receiver is used for object mapping, the rootKeyPath specifies a nested
- root dictionary that all attribute and relationship mappings will be considered relative to. When
- the mapping is used in a serialization context, the rootKeyPath specifies that the serialized content
- should be stored in a dictionary nested with the rootKeyPath as the key.
-
- @see RKObjectSerializer
- */
-@property (nonatomic, copy) NSString *rootKeyPath;
-
-/**
  Forces the mapper to treat the mapped keyPath as a collection even if it does not
  return an array or a set of objects. This permits mapping where a dictionary identifies
  a collection of objects.

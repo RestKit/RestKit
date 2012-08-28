@@ -30,38 +30,29 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
+@interface RKObjectSerializer ()
+@property (nonatomic, readwrite, strong) id object;
+@property (nonatomic, readwrite, strong) RKObjectMapping *mapping;
+@property (nonatomic, readwrite, strong) NSString *rootKeyPath;
+@end
+
 @implementation RKObjectSerializer
 
-@synthesize object = _object;
-@synthesize mapping = _mapping;
-
-+ (id)serializerWithObject:(id)object mapping:(RKObjectMapping *)mapping
-{
-    return [[[self alloc] initWithObject:object mapping:mapping] autorelease];
-}
-
-- (id)initWithObject:(id)object mapping:(RKObjectMapping *)mapping
+- (id)initWithObject:(id)object mapping:(RKObjectMapping *)mapping rootKeyPath:(NSString *)rootKeyPath;
 {
     self = [super init];
     if (self) {
-        _object = [object retain];
-        _mapping = [mapping retain];
+        self.object = object;
+        self.mapping = mapping;
+        self.rootKeyPath = rootKeyPath;
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [_object release];
-    [_mapping release];
-
-    [super dealloc];
 }
 
 - (id)serializeObjectToDictionary:(NSError **)error
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    RKMappingOperation *operation = [RKMappingOperation mappingOperationFromObject:_object toObject:dictionary withMapping:_mapping];
+    RKMappingOperation *operation = [RKMappingOperation mappingOperationFromObject:self.object toObject:dictionary withMapping:self.mapping];
     operation.delegate = self;
     BOOL success = [operation performMapping:error];
     if (!success) {
@@ -69,12 +60,7 @@
     }
 
     // Optionally enclose the serialized object within a container...
-    if (_mapping.rootKeyPath) {
-        // TODO: Should log this...
-        dictionary = [NSMutableDictionary dictionaryWithObject:dictionary forKey:_mapping.rootKeyPath];
-    }
-
-    return dictionary;
+    return self.rootKeyPath ? [NSMutableDictionary dictionaryWithObject:dictionary forKey:self.rootKeyPath] : dictionary;
 }
 
 - (id)serializeObjectToMIMEType:(NSString *)MIMEType error:(NSError **)error
