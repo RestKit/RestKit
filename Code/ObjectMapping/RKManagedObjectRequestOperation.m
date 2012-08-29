@@ -37,9 +37,7 @@
 
 - (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-    [self willChangeValueForKey:@"managedObjectContext"];
     _managedObjectContext = managedObjectContext;
-    [self didChangeValueForKey:@"managedObjectContext"];
 
     // Create a private context
     NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
