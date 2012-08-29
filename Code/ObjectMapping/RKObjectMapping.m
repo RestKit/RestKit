@@ -48,9 +48,7 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 
 + (id)mappingForClass:(Class)objectClass
 {
-    RKObjectMapping *mapping = [self new];
-    mapping.objectClass = objectClass;
-    return mapping;
+    return [[self alloc] initWithClass:objectClass];
 }
 
 + (id)requestMapping
@@ -58,10 +56,11 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     return [self mappingForClass:[NSMutableDictionary class]];
 }
 
-- (id)init
+- (id)initWithClass:(Class)objectClass
 {
     self = [super init];
     if (self) {
+        self.objectClass = objectClass;
         self.mutablePropertyMappings = [NSMutableArray new];
         self.setDefaultValueForMissingAttributes = NO;
         self.setNilForMissingRelationships = NO;

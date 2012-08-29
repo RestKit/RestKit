@@ -131,6 +131,8 @@ relationship. Relationships are processed using an object mapping as well.
  */
 + (id)mappingForClass:(Class)objectClass;
 
+- (id)initWithClass:(Class)objectClass; // Designated initializer
+
 /**
  Returns an object mapping useful for configuring a serialization mapping. The object
  class is configured as NSMutableDictionary
