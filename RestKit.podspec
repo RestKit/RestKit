@@ -14,25 +14,12 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '5.0'
   s.osx.deployment_target = '10.7'
   
-  ### Preferred dependencies
-
-  s.preferred_dependency = 'JSON'
-
-  s.subspec 'JSON' do |js|
-    js.dependency 'RestKit/Network'
-    js.dependency 'RestKit/ObjectMapping/JSON'
-    js.dependency 'RestKit/ObjectMapping/CoreData'
-    js.dependency 'RestKit/Search'
-    js.dependency 'RestKit/Testing'
-  end
-
-  s.subspec 'XML' do |xs|
-    xs.dependency 'RestKit/Network'
-    xs.dependency 'RestKit/ObjectMapping/XML'
-    xs.dependency 'RestKit/ObjectMapping/CoreData'
-    xs.dependency 'RestKit/Search'
-    xs.dependency 'RestKit/Testing'
-  end
+  s.dependency 'RestKit/Network'
+  s.dependency 'RestKit/JSONKit'
+  s.dependency 'RestKit/ObjectMapping'
+  s.dependency 'RestKit/ObjectMapping/CoreData'
+  s.dependency 'RestKit/Search'
+  s.dependency 'RestKit/Testing'
 
   ### Subspecs
 
@@ -45,35 +32,30 @@ Pod::Spec.new do |s|
     ns.dependency       'AFNetworking', '1.0RC1'
   end
   
-  s.subspec 'Search' do |ss|
-    ss.source_files   = 'Code/Search'
-    ss.ios.frameworks = 'CoreData'
-    ss.osx.frameworks = 'CoreData'
-  end
-
-  s.subspec 'Testing' do |ts|
-    ts.source_files = 'Code/Testing'
-  end
+  s.subspec 'JSONKit' do |jos|
+    jos.source_files = 'Code/Support/Parsers/JSON/RKJSONParserJSONKit.{h,m}'
+    jos.dependency     'JSONKit', '>= 1.5pre'
+  end    
   
   s.subspec 'ObjectMapping' do |os|
     os.source_files = 'Code/ObjectMapping'
     os.dependency     'ISO8601DateFormatter', '>= 0.6'
-    os.dependency     'RestKit/Network'
-
-    os.subspec 'JSON' do |jos|
-      jos.source_files = 'Code/Support/Parsers/JSON/RKJSONParserJSONKit.{h,m}'
-      jos.dependency     'JSONKit', '>= 1.5pre'
-    end
-
-    os.subspec 'XML' do |xos|
-      xos.source_files = 'Code/Support/Parsers/XML/RKXMLParserXMLReader.{h,m}'
-      xos.libraries    = 'xml2'
-      xos.dependency     'XMLReader'
-    end
+    os.dependency     'RestKit/Network'    
 
     os.subspec 'CoreData' do |cdos|
       cdos.source_files = 'Code/CoreData'
       cdos.frameworks   = 'CoreData'
     end
-  end    
+  end
+  
+  s.subspec 'Testing' do |ts|
+    ts.source_files = 'Code/Testing'
+  end
+  
+  s.subspec 'Search' do |ss|
+    ss.source_files   = 'Code/Search'
+    ss.ios.frameworks = 'CoreData'
+    ss.osx.frameworks = 'CoreData'
+    ss.dependency 'RestKit/ObjectMapping/CoreData'
+  end
 end
