@@ -98,7 +98,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     if (self) {
         self.sourceObject = sourceObject;
         self.destinationObject = destinationObject;
-        self.dataSource = [RKObjectMappingOperationDataSource new];
         self.mapping = objectOrDynamicMapping;
     }
 
