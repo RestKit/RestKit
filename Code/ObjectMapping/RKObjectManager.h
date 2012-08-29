@@ -22,9 +22,12 @@
 #import "RKRouter.h"
 #import "RKObjectPaginator.h"
 #import "RKMacros.h"
+#import "AFNetworking.h"
+#import "RKManagedObjectRequestOperation.h"
 
 @protocol RKParser;
-@class RKManagedObjectStore;
+@class RKManagedObjectStore, RKObjectRequestOperation, RKManagedObjectRequestOperation,
+RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  The object manager is the primary interface for interacting with RESTful resources via HTTP. It is
@@ -138,7 +141,6 @@
  Create and initialize a new object manager. If this is the first instance created
  it will be set as the shared instance
  */
-+ (id)managerWithBaseURLString:(NSString *)baseURLString;
 + (id)managerWithBaseURL:(NSURL *)baseURL;
 
 /**
@@ -147,7 +149,8 @@
  @param baseURL A baseURL to initialize the underlying client instance with
  @return The newly initialized RKObjectManager object
  */
-- (id)initWithBaseURL:(RKURL *)baseURL;
+- (id)initWithClient:(AFHTTPClient *)client; // Designated initializer
+- (id)initWithBaseURL:(NSURL *)baseURL;
 
 /// @name Network Integration
 
@@ -207,5 +210,104 @@
 
 ////////////////////////////////////////////////////////
 /// @name Registered Object Loaders
+
+@property (nonatomic, strong) AFHTTPClient *HTTPClient;
+@property (nonatomic, strong, readonly) NSOperationQueue *operationQueue;
+
+/**
+ New RestKit + AFNetworking Primitives
+ */
+- (NSMutableURLRequest *)requestWithObject:(id)object
+                                    method:(RKRequestMethod)method
+                                      path:(NSString *)path
+                                parameters:(NSDictionary *)parameters;
+
+- (NSMutableURLRequest *)multipartFormRequestForObject:(id)object
+                                                method:(RKRequestMethod)method
+                                                  path:(NSString *)path
+                                            parameters:(NSDictionary *)parameters
+                             constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block;
+
+- (NSMutableURLRequest *)requestForRouteNamed:(NSString *)routeName
+                                       object:(id)object
+                                   parameters:(NSDictionary *)parameters;
+
+- (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
+                                                        success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                        failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+- (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
+                                                         managedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                                                                      success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                                      failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+// Returns an RKObjectRequestOperation or RKManagedObjectRequestOperation as appropriate for the given object
+// object must be a single object
+// TODO: Could use some guards against collections...
+- (id)objectRequestOperationWithObject:(id)object method:(RKRequestMethod)method path:(NSString *)path parameters:(NSDictionary *)parameters;
+
+- (void)getObjectsAtPath:(NSString *)path
+              parameters:(NSDictionary *)parameters
+                 success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                 failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+- (void)getObject:(id)object
+             path:(NSString *)path
+       parameters:(NSDictionary *)parameters
+          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+- (void)postObject:(id)object
+              path:(NSString *)path
+        parameters:(NSDictionary *)parameters
+           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+- (void)putObject:(id)object
+             path:(NSString *)path
+       parameters:(NSDictionary *)parameters
+          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+- (void)patchObject:(id)object
+               path:(NSString *)path
+         parameters:(NSDictionary *)parameters
+            success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+- (void)deleteObject:(id)object
+                path:(NSString *)path
+          parameters:(NSDictionary *)parameters
+             success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+- (void)getRelationship:(NSString *)relationshipName
+               ofObject:(id)object
+             parameters:(NSDictionary *)parameters
+                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+- (void)getObjectsAtRouteNamed:(NSString *)routeName
+                        object:(id)object
+                    parameters:(NSDictionary *)parameters
+                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+@property (nonatomic, readonly) NSArray *requestDescriptors;
+- (void)addRequestDescriptor:(RKRequestDescriptor *)requestDescriptor;
+- (void)addRequestDescriptorsFromArray:(NSArray *)requestDescriptors;
+- (void)removeRequestDescriptor:(RKRequestDescriptor *)requestDescriptor;
+
+/**
+ An array of RKResponseDescriptor objects describing how to perform object mapping on
+ HTTP responses loaded by requests sent via the receiver.
+ */
+@property (nonatomic, readonly) NSArray *responseDescriptors;
+- (void)addResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
+- (void)addResponseDescriptorsFromArray:(NSArray *)responseDescriptors;
+- (void)removeResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
+
+@property (nonatomic, readonly) NSArray *fetchRequestBlocks;
+- (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
 
 @end

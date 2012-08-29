@@ -1,0 +1,225 @@
+//
+//  RKManagedObjectRequestOperation.m
+//  GateGuru
+//
+//  Created by Blake Watters on 8/9/12.
+//  Copyright (c) 2012 GateGuru, Inc. All rights reserved.
+//
+
+#import "RKManagedObjectRequestOperation.h"
+#import <RestKit/RKLog.h>
+#import <RestKit/RKHTTPUtilities.h>
+#import "RKResponseMapperOperation.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
+
+@interface RKManagedObjectRequestOperation () <RKObjectMapperDelegate>
+// Core Data specific
+@property (readwrite, nonatomic, strong) NSManagedObjectContext *privateContext;
+@property (readwrite, nonatomic, copy) NSManagedObjectID *targetObjectID;
+@property (readwrite, nonatomic, strong) NSMutableDictionary *managedObjectsByKeyPath;
+@property (readwrite, nonatomic, strong) RKManagedObjectMappingOperationDataSource *dataSource;
+@property (readwrite, nonatomic, strong) NSError *error;
+@end
+
+@implementation RKManagedObjectRequestOperation
+
+- (void)setTargetObject:(id)targetObject
+{
+    [super setTargetObject:targetObject];
+
+    if ([targetObject isKindOfClass:[NSManagedObject class]]) {
+        self.targetObjectID = [targetObject objectID];
+    }
+}
+
+- (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
+    [self willChangeValueForKey:@"managedObjectContext"];
+    _managedObjectContext = managedObjectContext;
+    [self didChangeValueForKey:@"managedObjectContext"];
+
+    // Create a private context
+    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    [privateContext performBlockAndWait:^{
+        privateContext.parentContext = self.managedObjectContext;
+        privateContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
+    }];
+    self.privateContext = privateContext;
+}
+
+#pragma mark - RKObjectMapperDelegate methods
+
+- (void)mapper:(RKObjectMapper *)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMapping *)objectMapping
+{
+    if ([destinationObject isKindOfClass:[NSManagedObject class]]) {
+        [self.managedObjectsByKeyPath setObject:destinationObject forKey:keyPath];
+    }
+}
+
+#pragma mark - RKObjectRequestOperation Overrides
+
+- (RKMappingResult *)performMappingOnResponse:(NSError **)error
+{
+    self.dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.privateContext
+                                                                                                cache:self.managedObjectCache];
+    self.dataSource.operationQueue = [NSOperationQueue new];
+    [self.dataSource.operationQueue setSuspended:YES];
+    [self.dataSource.operationQueue setMaxConcurrentOperationCount:1];
+
+    // Spin up an RKObjectResponseMapperOperation
+    RKManagedObjectResponseMapperOperation *mapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.requestOperation.response
+                                                                                                                          data:self.requestOperation.responseData
+                                                                                                            responseDescriptors:self.responseDescriptors];
+    mapperOperation.targetObjectID = self.targetObjectID;
+    mapperOperation.managedObjectContext = self.privateContext;
+    mapperOperation.managedObjectCache = self.managedObjectCache;
+    mapperOperation.mappingOperationDataSource = self.dataSource;
+    [mapperOperation start];
+    [mapperOperation waitUntilFinished];
+    if (mapperOperation.error) {
+        *error = mapperOperation.error;
+        return nil;
+    }
+
+    // Allow any enqueued operations to execute
+    // TODO: This should be eliminated. The operations should be dependent on the mapper operation itself
+    RKLogDebug(@"Unsuspending data source operation queue to process the following operations: %@", self.dataSource.operationQueue.operations);
+    [self.dataSource.operationQueue setSuspended:NO];
+    [self.dataSource.operationQueue waitUntilAllOperationsAreFinished];
+
+    return mapperOperation.mappingResult;
+}
+
+- (BOOL)deleteTargetObjectIfAppropriate:(NSError **)error
+{
+    __block BOOL _blockSuccess = YES;
+
+    if (self.targetObjectID
+        && NSLocationInRange(self.requestOperation.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))
+        && [[[self.requestOperation.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]) {
+
+        // 2xx DELETE request, proceed with deletion from the MOC
+        __block NSError *_blockError = nil;
+        [self.privateContext performBlockAndWait:^{
+            NSManagedObject *backgroundThreadObject = [self.privateContext existingObjectWithID:self.targetObjectID error:&_blockError];
+            if (backgroundThreadObject) {
+                RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
+                [self.privateContext deleteObject:backgroundThreadObject];
+            } else {
+                RKLogWarning(@"Unable to delete object sent with DELETE request: Failed to retrieve object with objectID %@", self.targetObjectID);
+                RKLogCoreDataError(_blockError);
+                _blockSuccess = NO;
+            }
+        }];
+    }
+
+    return _blockSuccess;
+}
+
+- (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error
+{
+    NSMutableSet *localObjects = [NSMutableSet set];
+    NSURL *URL = [self.requestOperation.request URL];
+    __block NSError *_blockError;
+    __block NSArray *_blockObjects;
+
+    for (RKFetchRequestBlock fetchRequestBlock in self.fetchRequestBlocks) {
+        NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
+        if (fetchRequest) {
+            RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
+
+            [self.privateContext performBlockAndWait:^{
+                _blockObjects = [self.privateContext executeFetchRequest:fetchRequest error:&_blockError];
+            }];
+            RKLogTrace(@"Fetched local objects matching URL '%@' with fetch request '%@': %@", URL, fetchRequest, _blockObjects);
+            [localObjects addObjectsFromArray:_blockObjects];
+        } else {
+            RKLogDebug(@"Fetch request block %@ returned nil fetch request for URL: '%@'", fetchRequestBlock, URL);
+        }
+    }
+
+    return localObjects;
+}
+
+- (BOOL)deleteLocalObjectsMissingFromMappingResult:(RKMappingResult *)result error:(NSError **)error
+{
+    if (! [[self.requestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
+        RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
+        return YES;
+    }
+
+    NSArray *results = [result asCollection];
+    NSSet *localObjects = [self localObjectsFromFetchRequestsMatchingRequestURL:error];
+    if (! localObjects) return NO;
+    for (id object in localObjects) {
+        if (NO == [results containsObject:object]) {
+            RKLogDebug(@"Deleting orphaned object %@: not found in result set and expected at this resource path", object);
+            [self.privateContext performBlockAndWait:^{
+                [self.privateContext deleteObject:object];
+            }];
+        }
+    }
+
+    return YES;
+}
+
+- (BOOL)saveContext:(NSError **)error
+{
+    BOOL success = YES;
+    if ([self.privateContext hasChanges]) {
+        success = [self.privateContext saveToPersistentStore:error];
+        if (! success) {
+            RKLogError(@"Failed saving managed object context %@ to persistent store: ", self.privateContext);
+            RKLogCoreDataError(*error);
+        }
+    }
+
+    return success;
+}
+
+- (BOOL)obtainPermanentObjectIDsForInsertedObjects:(NSError **)error
+{
+    __block BOOL _blockSuccess = YES;
+    NSArray *insertedObjects = [self.privateContext.insertedObjects allObjects];
+    if ([insertedObjects count] > 0) {
+        RKLogDebug(@"Obtaining permanent ID's for %ld managed objects", (unsigned long) [insertedObjects count]);
+        [self.privateContext performBlockAndWait:^{
+            _blockSuccess = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:error];
+        }];
+    }
+
+    return _blockSuccess;;
+}
+
+- (void)willFinish
+{
+    BOOL success;
+    NSError *error = nil;
+
+    // Handle any cleanup
+    success = [self deleteTargetObjectIfAppropriate:&error];
+    if (! success) {
+        self.error = error;
+        return;
+    }
+
+    success = [self deleteLocalObjectsMissingFromMappingResult:self.mappingResult error:&error];
+    if (! success) {
+        self.error = error;
+        return;
+    }
+
+    // Persist our mapped objects
+    success = [self obtainPermanentObjectIDsForInsertedObjects:&error];
+    if (! success) {
+        self.error = error;
+        return;
+    }
+    success = [self saveContext:&error];
+    if (! success) self.error = error;
+}
+
+@end
