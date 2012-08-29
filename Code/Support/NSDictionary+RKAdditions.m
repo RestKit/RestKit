@@ -126,4 +126,24 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
     return [self stringWithURLEncodedEntries];
 }
 
++ (NSDictionary *)dictionaryByReverseMerging:(NSDictionary *)dictionary1 with:(NSDictionary *)dictionary2
+{
+    NSMutableDictionary *result = [dictionary1 mutableCopy];
+    [dictionary2 enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if ([dictionary1 objectForKey:key] && [obj isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *newVal = [[dictionary1 objectForKey:key] dictionaryByReverseMergingWith:(NSDictionary *)obj];
+            [result setObject:newVal forKey:key];
+        } else {
+            [result setObject:obj forKey:key];
+        }
+    }];
+    
+    return [NSDictionary dictionaryWithDictionary:result];
+}
+
+- (NSDictionary *)dictionaryByReverseMergingWith:(NSDictionary *)dictionary
+{
+    return [[self class] dictionaryByReverseMerging:self with:dictionary];
+}
+
 @end

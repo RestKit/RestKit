@@ -55,4 +55,7 @@
 - (NSString *)stringWithURLEncodedEntries;
 - (NSString *)URLEncodedString; // TODO: Deprecated..
 
++ (NSDictionary *)dictionaryByReverseMerging:(NSDictionary *)dictionary1 with:(NSDictionary *)dictionary2;
+- (NSDictionary *)dictionaryByReverseMergingWith:(NSDictionary *)dictionary;
+
 @end
