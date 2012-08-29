@@ -152,18 +152,6 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 - (id)initWithClient:(AFHTTPClient *)client; // Designated initializer
 - (id)initWithBaseURL:(NSURL *)baseURL;
 
-/// @name Network Integration
-
-/**
- The base URL of the underlying RKClient instance. Object loader
- and paginator instances built through the object manager are
- relative to this URL.
-
- @see RKClient
- @return The baseURL of the client.
- */
-@property (weak, nonatomic, readonly) RKURL *baseURL;
-
 /// @name Configuring Object Mapping
 
 /**
