@@ -146,6 +146,11 @@
 
 - (BOOL)deleteLocalObjectsMissingFromMappingResult:(RKMappingResult *)result error:(NSError **)error
 {
+    if (! self.deletesOrphanedObjects) {
+        RKLogDebug(@"Skipping deletion of orphaned objects: deletesOrphanedObjects=NO");
+        return YES;
+    }
+    
     if (! [[self.requestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
         RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
         return YES;
