@@ -57,7 +57,6 @@ extern NSString * const RKTestFactoryDefaultStoreFilename;
  */
 extern NSString * const RKTestFactoryDefaultNamesClient;
 extern NSString * const RKTestFactoryDefaultNamesObjectManager;
-extern NSString * const RKTestFactoryDefaultNamesMappingProvider;
 extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 
 /**
