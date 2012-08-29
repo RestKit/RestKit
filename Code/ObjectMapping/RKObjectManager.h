@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "Network.h"
+#import "RKNetwork.h"
 #import "RKRouter.h"
 #import "RKObjectPaginator.h"
 #import "RKMacros.h"

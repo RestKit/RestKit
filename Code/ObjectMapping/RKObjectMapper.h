@@ -25,7 +25,7 @@
 #import "RKMappingResult.h"
 #import "RKMappingOperationDataSource.h"
 #import "RKErrors.h"
-#import "Support.h"
+#import "RKSupport.h"
 
 @protocol RKObjectMapperDelegate;
 

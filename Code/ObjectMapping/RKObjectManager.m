@@ -21,7 +21,7 @@
 #import "RKObjectManager.h"
 #import "RKObjectSerializer.h"
 #import "RKManagedObjectStore.h"
-#import "Support.h"
+#import "RKSupport.h"
 
 NSString * const RKObjectManagerDidBecomeOfflineNotification = @"RKDidEnterOfflineModeNotification";
 NSString * const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnlineModeNotification";
