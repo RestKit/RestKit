@@ -68,9 +68,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     NSAssert(entity, @"Cannot initialize an RKEntityMapping without an entity. Maybe you want RKObjectMapping instead?");
     Class objectClass = NSClassFromString([entity managedObjectClassName]);
     NSAssert(objectClass, @"Cannot initialize an entity mapping for an entity with a nil managed object class: Got nil class for managed object class name '%@'. Maybe you forgot to add the class files to your target?", [entity managedObjectClassName]);
-    self = [self init];
+    self = [self initWithClass:objectClass];
     if (self) {
-        self.objectClass = objectClass;
         self.entity = entity;
 
         [self addObserver:self forKeyPath:@"entity" options:NSKeyValueObservingOptionInitial context:nil];
