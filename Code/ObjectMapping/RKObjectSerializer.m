@@ -25,6 +25,7 @@
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKParserRegistry.h"
 #import "RKLog.h"
+#import "RKObjectMappingOperationDataSource.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -51,8 +52,10 @@
 
 - (id)serializeObjectToDictionary:(NSError **)error
 {
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     RKMappingOperation *operation = [RKMappingOperation mappingOperationFromObject:self.object toObject:dictionary withMapping:self.mapping];
+    operation.dataSource = dataSource;
     operation.delegate = self;
     BOOL success = [operation performMapping:error];
     if (!success) {
