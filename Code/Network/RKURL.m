@@ -74,14 +74,14 @@
     NSMutableDictionary *mergedQueryParameters = [NSMutableDictionary dictionaryWithDictionary:[theBaseURL queryParameters]];
     [mergedQueryParameters addEntriesFromDictionary:resourcePathQueryParameters];
     [mergedQueryParameters addEntriesFromDictionary:theQueryParameters];
-
+    
     // Build the new URL path
     NSRange queryCharacterRange = [theResourcePath rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"?"]];
     NSString *resourcePathWithoutQueryString = (queryCharacterRange.location == NSNotFound) ? theResourcePath : [theResourcePath substringToIndex:queryCharacterRange.location];
     NSString *baseURLPath = [[theBaseURL path] isEqualToString:@"/"] ? @"" : [[theBaseURL path] stringByStandardizingPath];
     NSString *completePath = resourcePathWithoutQueryString ? [baseURLPath stringByAppendingString:resourcePathWithoutQueryString] : baseURLPath;
     NSString *completePathWithQuery = [completePath stringByAppendingQueryParameters:mergedQueryParameters];
-
+    
     // NOTE: You can't safely use initWithString:relativeToURL: in a NSURL subclass, see http://www.openradar.me/9729706
     // So we unfortunately convert into an NSURL before going back into an NSString -> RKURL
     NSURL *completeURL = [NSURL URLWithString:completePathWithQuery relativeToURL:theBaseURL];
@@ -90,13 +90,13 @@
         [self release];
         return nil;
     }
-
+    
     self = [self initWithString:[completeURL absoluteString]];
     if (self) {
         self.baseURL = theBaseURL;
         self.resourcePath = theResourcePath;
     }
-
+    
     return self;
 }
 
@@ -106,7 +106,7 @@
     baseURL = nil;
     [resourcePath release];
     resourcePath = nil;
-
+    
     [super dealloc];
 }
 
@@ -161,7 +161,7 @@
     if (self) {
         self.baseURL = self;
     }
-
+    
     return self;
 }
 

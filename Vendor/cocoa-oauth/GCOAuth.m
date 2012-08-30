@@ -162,11 +162,21 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
     
     // construct request url
     NSURL *URL = self.URL;
-    NSString *URLString = [NSString stringWithFormat:@"%@://%@%@",
-                           [[URL scheme] lowercaseString],
-                           [[URL hostAndPort] lowercaseString],
-                           [URL path]];
     
+    NSString *URLString;
+    if ( ![URL port] ){
+        URLString = [NSString stringWithFormat:@"%@://%@%@",
+                           [URL scheme] ,
+                           [URL host],
+                           [URL path]];
+    } else {
+        URLString = [NSString stringWithFormat:@"%@://%@:%@%@",
+                               [URL scheme],
+                               [URL host],
+                               [[URL port] stringValue],
+                               [URL path]];        
+    }
+
     // create components
     NSArray *components = [NSArray arrayWithObjects:
                            [self.HTTPMethod pcen],

@@ -145,13 +145,13 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
                                                  selector:@selector(serviceDidBecomeUnavailableNotification:)
                                                      name:RKServiceDidBecomeUnavailableNotification
                                                    object:nil];
-
+        
         // Configure observers
         [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
         [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
         [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial context:nil];
     }
-
+    
     return self;
 }
 
@@ -161,15 +161,15 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     if (self) {
         self.cachePolicy = RKRequestCachePolicyDefault;
         self.baseURL = [RKURL URLWithBaseURL:baseURL];
-
+        
         if (sharedClient == nil) {
             [RKClient setSharedClient:self];
-
+            
             // Initialize Logging as soon as a client is created
             RKLogInitialize();
         }
     }
-
+    
     return self;
 }
 
@@ -181,16 +181,16 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
+    
     // Allow KVO to fire
     self.reachabilityObserver = nil;
     self.baseURL = nil;
     self.requestQueue = nil;
-
+    
     [self removeObserver:self forKeyPath:@"reachabilityObserver"];
     [self removeObserver:self forKeyPath:@"baseURL"];
     [self removeObserver:self forKeyPath:@"requestQueue"];
-
+    
     self.username = nil;
     self.password = nil;
     self.serviceUnavailableAlertTitle = nil;
@@ -199,9 +199,9 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     self.runLoopMode = nil;
     [_HTTPHeaders release];
     [_additionalRootCertificates release];
-
+    
     if (sharedClient == self) sharedClient = nil;
-
+    
     [super dealloc];
 }
 
@@ -219,7 +219,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     if (self.reachabilityObserver) {
         isNetworkReachable = [self.reachabilityObserver isNetworkReachable];
     }
-
+    
     return isNetworkReachable;
 }
 
@@ -234,27 +234,27 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     request.queue = self.requestQueue;
     request.reachabilityObserver = self.reachabilityObserver;
     request.defaultHTTPEncoding = self.defaultHTTPEncoding;
-
+    
     request.additionalRootCertificates = self.additionalRootCertificates;
     request.disableCertificateValidation = self.disableCertificateValidation;
     request.runLoopMode = self.runLoopMode;
-
+    
     // If a timeoutInterval was set on the client, we'll pass it on to the request.
     // Otherwise, we'll let the request default to its own timeout interval.
     if (self.timeoutInterval) {
         request.timeoutInterval = self.timeoutInterval;
     }
-
+    
     if (self.cacheTimeoutInterval) {
         request.cacheTimeoutInterval = self.cacheTimeoutInterval;
     }
-
+    
     // OAuth 1 Parameters
     request.OAuth1AccessToken = self.OAuth1AccessToken;
     request.OAuth1AccessTokenSecret = self.OAuth1AccessTokenSecret;
     request.OAuth1ConsumerKey = self.OAuth1ConsumerKey;
     request.OAuth1ConsumerSecret = self.OAuth1ConsumerSecret;
-
+    
     // OAuth2 Parameters
     request.OAuth2AccessToken = self.OAuth2AccessToken;
     request.OAuth2RefreshToken = self.OAuth2RefreshToken;
@@ -274,13 +274,13 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 {
     RKReachabilityObserver *oldReachabilityObserver = [change objectForKey:NSKeyValueChangeOldKey];
     RKReachabilityObserver *newReachabilityObserver = [change objectForKey:NSKeyValueChangeNewKey];
-
+    
     if (! [oldReachabilityObserver isEqual:[NSNull null]]) {
         RKLogDebug(@"Reachability observer changed for RKClient %@, disposing of previous instance: %@", self, oldReachabilityObserver);
         // Cleanup if changed immediately after client init
         [[NSNotificationCenter defaultCenter] removeObserver:self name:RKReachabilityWasDeterminedNotification object:oldReachabilityObserver];
     }
-
+    
     if (! [newReachabilityObserver isEqual:[NSNull null]]) {
         // Suspend the queue until reachability to our new hostname is established
         if (! [newReachabilityObserver isReachabilityDetermined]) {
@@ -289,10 +289,10 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
                                                      selector:@selector(reachabilityWasDetermined:)
                                                          name:RKReachabilityWasDeterminedNotification
                                                        object:newReachabilityObserver];
-
+            
             RKLogDebug(@"Reachability observer changed for client %@, suspending queue %@ until reachability to host '%@' can be determined",
                        self, self.requestQueue, newReachabilityObserver.host);
-
+            
             // Maintain a flag for Reachability determination status. This ensures that we can do the right thing in the
             // event that the requestQueue is changed while we are in an inderminate suspension state
             _awaitingReachabilityDetermination = YES;
@@ -308,14 +308,14 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 - (void)baseURLDidChange:(NSDictionary *)change
 {
     RKURL *newBaseURL = [change objectForKey:NSKeyValueChangeNewKey];
-
+    
     // Don't crash if baseURL is nil'd out (i.e. dealloc)
     if (! [newBaseURL isEqual:[NSNull null]]) {
         // Configure a cache for the new base URL
         [_requestCache release];
         _requestCache = [[RKRequestCache alloc] initWithPath:[self cachePath]
-                                                    storagePolicy:RKRequestCacheStoragePolicyPermanently];
-
+                                               storagePolicy:RKRequestCacheStoragePolicyPermanently];
+        
         // Determine reachability strategy (if user has not already done so)
         if (self.reachabilityObserver == nil) {
             NSString *hostName = [newBaseURL host];
@@ -333,10 +333,10 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     if (! _awaitingReachabilityDetermination) {
         return;
     }
-
+    
     // If we are awaiting reachability determination, suspend the new queue
     RKRequestQueue *newQueue = [change objectForKey:NSKeyValueChangeNewKey];
-
+    
     if (! [newQueue isEqual:[NSNull null]]) {
         // The request queue has changed while we were awaiting reachability.
         // Suspend the queue until reachability is determined
@@ -360,7 +360,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     RKRequest *request = [[RKRequest alloc] initWithURL:[self.baseURL URLByAppendingResourcePath:resourcePath]];
     [self configureRequest:request];
     [request autorelease];
-
+    
     return request;
 }
 
@@ -368,7 +368,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 {
     RKRequest *request = [self requestWithResourcePath:resourcePath];
     request.delegate = delegate;
-
+    
     return request;
 }
 
@@ -391,9 +391,9 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     if (method != RKRequestMethodGET) {
         request.params = params;
     }
-
+    
     [request send];
-
+    
     return request;
 }
 
@@ -433,7 +433,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 {
     RKReachabilityObserver *observer = (RKReachabilityObserver *)[notification object];
     NSAssert(observer == self.reachabilityObserver, @"Received unexpected reachability notification from inappropriate reachability observer");
-
+    
     RKLogDebug(@"Reachability to host '%@' determined for client %@, unsuspending queue %@", observer.host, self, self.requestQueue);
     _awaitingReachabilityDetermination = NO;
     self.requestQueue.suspended = NO;
