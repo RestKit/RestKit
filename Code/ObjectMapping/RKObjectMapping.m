@@ -128,6 +128,7 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 {
     NSAssert1([[self mappedKeyPaths] containsObject:propertyMapping.destinationKeyPath] == NO,
               @"Unable to add mapping for keyPath %@, one already exists...", propertyMapping.destinationKeyPath);
+    NSAssert(self.mutablePropertyMappings, @"self.mutablePropertyMappings is nil");
     [self.mutablePropertyMappings addObject:propertyMapping];
 }
 
