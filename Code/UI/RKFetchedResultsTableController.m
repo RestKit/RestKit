@@ -246,10 +246,11 @@
 - (void)loadTable
 {
     NSFetchRequest *fetchRequest = nil;
-    if (_resourcePath) {
-        fetchRequest = [self.objectManager.mappingProvider fetchRequestForResourcePath:self.resourcePath];
-    } else {
+    if (_fetchRequest) {
         fetchRequest = _fetchRequest;
+    }
+    else if (_resourcePath) {
+        fetchRequest = [self.objectManager.mappingProvider fetchRequestForResourcePath:self.resourcePath];
     }
     NSAssert(fetchRequest != nil, @"Attempted to load RKFetchedResultsTableController with nil fetchRequest for resourcePath %@, fetchRequest %@", _resourcePath, _fetchRequest);
 
