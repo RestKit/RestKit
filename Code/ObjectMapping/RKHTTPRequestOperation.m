@@ -140,7 +140,7 @@
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
 {
-    if ([[self superclass] instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)]) {
+    if ([AFHTTPRequestOperation instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)]) {
         NSURLRequest *returnValue = [super connection:connection willSendRequest:request redirectResponse:redirectResponse];
         if (returnValue) {
             RKLogDebug(@"Following redirect request: %@", returnValue);
