@@ -75,6 +75,10 @@ typedef enum {
      */
     RKRequestCachePolicyTimeout = 1 << 4,
     /**
+     Load from the cache if a Cache-Control: max-age http header was sent and is still valid
+     */    
+    RKRequestCachePolicyControlMaxAge = 1 << 5,
+    /**
      The default cache policy is etag and timeout support
      */
     RKRequestCachePolicyDefault = RKRequestCachePolicyEtag | RKRequestCachePolicyTimeout
