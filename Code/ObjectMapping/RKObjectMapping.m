@@ -349,7 +349,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 /////////////////////////////////////////////////////////////////////////////
 
 static NSMutableArray *defaultDateFormatters = nil;
-static NSDateFormatter *preferredDateFormatter = nil;
+static NSFormatter *preferredDateFormatter = nil;
 
 @implementation RKObjectMapping (DateAndTimeFormatting)
 
@@ -404,13 +404,8 @@ static NSDateFormatter *preferredDateFormatter = nil;
 
 + (NSFormatter *)preferredDateFormatter
 {
-    if (!preferredDateFormatter) {
-        // A date formatter that matches the output of [NSDate description]
-        preferredDateFormatter = [NSDateFormatter new];
-        [preferredDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss Z"];
-        preferredDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        preferredDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    }
+    if (!preferredDateFormatter)
+        preferredDateFormatter = [[RKISO8601DateFormatter alloc] init];
 
     return preferredDateFormatter;
 }
