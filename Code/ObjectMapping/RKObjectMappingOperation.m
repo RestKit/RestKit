@@ -209,6 +209,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         if (orderedSetClass && [destinationType isSubclassOfClass:orderedSetClass]) {
             return [orderedSetClass orderedSetWithArray:value];
         }
+        // Array -> NSData
+        if ([destinationType isSubclassOfClass:[NSData class]]) {
+            return [NSKeyedArchiver archivedDataWithRootObject:value];
+        }
     } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
         // Number -> Date
         if ([destinationType isSubclassOfClass:[NSDate class]]) {
