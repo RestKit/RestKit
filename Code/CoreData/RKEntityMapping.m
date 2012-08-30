@@ -79,9 +79,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return self;
 }
 
-- (id)init
+- (id)initWithClass:(Class)objectClass
 {
-    self = [super init];
+    self = [super initWithClass:objectClass];
     if (self) {
         self.mutableConnections = [NSMutableArray array];
     }
@@ -111,6 +111,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     NSAssert(connectionMapping == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", mapping.relationshipName);
     NSAssert(mapping.mapping, @"Attempted to connect relationship '%@' without a relationship mapping defined.", mapping.relationshipName);
     NSAssert([mapping.mapping isKindOfClass:[RKEntityMapping class]], @"Can only connect RKManagedObjectMapping relationships");
+    NSAssert(self.mutableConnections, @"self.mutableConnections should not be nil");
     [self.mutableConnections addObject:mapping];
 }
 
