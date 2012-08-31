@@ -20,7 +20,7 @@
 
 #import "NSDictionary+RKAdditions.h"
 #import "NSString+RKAdditions.h"
-#import "RKFixCategoryBug.h"
+#import "RKMacros.h"
 
 RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
 

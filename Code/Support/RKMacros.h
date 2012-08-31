@@ -19,6 +19,8 @@
 //  limitations under the License.
 //
 
+#ifndef RestKit_RKMacros_h
+#define RestKit_RKMacros_h
 
 /**
  Instead of using the normal DEPRECATED_ATTRIBUTE use DEPRECATED_ATTRIBUTE_MESSAGE(message) 
@@ -26,4 +28,17 @@
  */
 #ifndef DEPRECATED_ATTRIBUTE_MESSAGE
 #define DEPRECATED_ATTRIBUTE_MESSAGE(message) __attribute__((deprecated (message)))
+#endif
+
+/*
+ Add this macro before each category implementation, so we don't have to use
+ -all_load or -force_load to load object files from static libraries that only contain
+ categories and no classes.
+ See http://developer.apple.com/library/mac/#qa/qa2006/qa1490.html for more info.
+
+ Shamelessly borrowed from Three20
+ */
+#define RK_FIX_CATEGORY_BUG(name) @interface RK_FIX_CATEGORY_BUG##name @end \
+@implementation RK_FIX_CATEGORY_BUG##name @end
+
 #endif

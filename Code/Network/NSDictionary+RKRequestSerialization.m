@@ -20,7 +20,7 @@
 
 #import "NSDictionary+RKRequestSerialization.h"
 #import "NSDictionary+RKAdditions.h"
-#import "RKFixCategoryBug.h"
+#import "RKMacros.h"
 #import "RKMIMETypes.h"
 
 RK_FIX_CATEGORY_BUG(NSDictionary_RKRequestSerialization)

@@ -30,7 +30,7 @@
 
 #import "NSString+RKAdditions.h"
 #import "NSDictionary+RKAdditions.h"
-#import "RKFixCategoryBug.h"
+#import "RKMacros.h"
 #import "RKPathMatcher.h"
 
 RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
