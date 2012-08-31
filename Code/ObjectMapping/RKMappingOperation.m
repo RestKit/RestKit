@@ -334,7 +334,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
 
     // Inspect the property type to handle any value transformations
-    Class type = [self.objectMapping classForProperty:attributeMapping.destinationKeyPath];
+    Class type = [self.objectMapping classForKeyPath:attributeMapping.destinationKeyPath];
     if (type && NO == [[value class] isSubclassOfClass:type]) {
         value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
     }
@@ -502,7 +502,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         }
 
         // Handle case where incoming content is a single object, but we want a collection
-        Class relationshipType = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
+        Class relationshipType = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
         BOOL mappingToCollection = [self isTypeACollection:relationshipType];
         if (mappingToCollection && ![self isValueACollection:value]) {
             Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
@@ -552,7 +552,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             }
 
             // Transform from NSSet <-> NSArray if necessary
-            Class type = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
+            Class type = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
             if (type && NO == [[destinationObject class] isSubclassOfClass:type]) {
                 destinationObject = [self transformValue:destinationObject atKeyPath:relationshipMapping.sourceKeyPath toType:type];
             }
@@ -565,15 +565,17 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                     RKLogTrace(@"Found a managedObject collection. About to apply value via mutable[Set|Array]ValueForKey");
                     if ([destinationObject isKindOfClass:[NSSet class]]) {
                         RKLogTrace(@"Mapped NSSet relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-                        NSMutableSet *destinationSet = [self.destinationObject mutableSetValueForKey:relationshipMapping.destinationKeyPath];
+                        NSMutableSet *destinationSet = [self.destinationObject mutableSetValueForKeyPath:relationshipMapping.destinationKeyPath];
+                        if ([relationshipMapping.destinationKeyPath isEqualToString:@"departureAirport.checkpoints"]) {
+                        }
                        [destinationSet setSet:destinationObject];
                     } else if ([destinationObject isKindOfClass:[NSArray class]]) {
                         RKLogTrace(@"Mapped NSArray relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-                        NSMutableArray *destinationArray = [self.destinationObject mutableArrayValueForKey:relationshipMapping.destinationKeyPath];
+                        NSMutableArray *destinationArray = [self.destinationObject mutableArrayValueForKeyPath:relationshipMapping.destinationKeyPath];
                         [destinationArray setArray:destinationObject];
                     } else if (nsOrderedSetClass && [destinationObject isKindOfClass:nsOrderedSetClass]) {
                         RKLogTrace(@"Mapped NSOrderedSet relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-                        [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
+                        [self.destinationObject setValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath];
                     }
                 } else {
                     RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);

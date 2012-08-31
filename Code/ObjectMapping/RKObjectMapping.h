@@ -224,7 +224,9 @@ relationship. Relationships are processed using an object mapping as well.
 
  @param propertyName The name of the property we would like to retrieve the type of
  */
+// TODO: Migrate these API's elsewhere...
 - (Class)classForProperty:(NSString *)propertyName;
+- (Class)classForKeyPath:(NSString *)keyPath;
 
 @end
 

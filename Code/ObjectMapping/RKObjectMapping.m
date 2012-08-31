@@ -270,6 +270,18 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     return [[RKPropertyInspector sharedInspector] typeForProperty:propertyName ofClass:self.objectClass];
 }
 
+- (Class)classForKeyPath:(NSString *)keyPath
+{
+    NSArray *components = [keyPath componentsSeparatedByString:@"."];
+    Class propertyClass = self.objectClass;
+    for (NSString *property in components) {
+        propertyClass = [[RKPropertyInspector sharedInspector] typeForProperty:property ofClass:propertyClass];
+        if (! propertyClass) break;
+    }
+
+    return propertyClass;
+}
+
 #pragma mark - Date and Time
 
 - (NSFormatter *)preferredDateFormatter
