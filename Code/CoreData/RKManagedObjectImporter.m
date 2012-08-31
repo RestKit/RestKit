@@ -182,6 +182,9 @@
 
 - (NSUInteger)importObjectsFromFileAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error
 {
+    NSParameterAssert(path);
+    NSParameterAssert(mapping);
+
     // Perform the reset on the first import action if requested
     [self resetPersistentStoreIfNecessary];
 
@@ -203,7 +206,7 @@
         return NSNotFound;
     }
 
-    NSDictionary *mappingDictionary = @{ keyPath: mapping };
+    NSDictionary *mappingDictionary = @{ (keyPath ?: [NSNull null]) : mapping };
     RKObjectMapper *mapper = [[RKObjectMapper alloc] initWithObject:parsedData mappingsDictionary:mappingDictionary];
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
     __block RKMappingResult *mappingResult;
