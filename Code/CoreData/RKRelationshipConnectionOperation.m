@@ -13,6 +13,10 @@
 #import "RKManagedObjectCaching.h"
 #import "RKDynamicMappingMatcher.h"
 
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
+
 @interface RKRelationshipConnectionOperation ()
 @property (nonatomic, strong, readwrite) NSManagedObject *managedObject;
 @property (nonatomic, strong, readwrite) RKConnectionMapping *connectionMapping;
@@ -20,7 +24,6 @@
 
 // Helpers
 @property (weak, nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
-@property (weak, nonatomic, readonly) RKEntityMapping *entityMapping;
 
 @end
 
@@ -42,12 +45,6 @@
     return self;
 }
 
-
-- (RKEntityMapping *)entityMapping
-{
-    return (RKEntityMapping *)self.connectionMapping.mapping;
-}
-
 - (NSManagedObjectContext *)managedObjectContext
 {
     return self.managedObject.managedObjectContext;
@@ -55,10 +52,55 @@
 
 - (NSManagedObject *)findOneConnectedWithSourceValue:(id)sourceValue
 {
-    return [self.managedObjectCache findInstanceOfEntity:self.entityMapping.entity
+    return [self.managedObjectCache findInstanceOfEntity:self.connectionMapping.relationship.destinationEntity
                                  withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
                                                    value:sourceValue
                                   inManagedObjectContext:self.managedObjectContext];
+}
+
+- (id)relationshipValueWithConnectionResult:(id)result
+{
+    // TODO: Replace with use of object mapping engine for type conversion
+
+    // NOTE: This is a nasty hack to work around the fact that NSOrderedSet does not support key-value
+    // collection operators. We try to detect and unpack a doubly wrapped collection
+    if ([self.connectionMapping.relationship isOrdered]
+        && [result conformsToProtocol:@protocol(NSFastEnumeration)]
+        && [[result lastObject] conformsToProtocol:@protocol(NSFastEnumeration)]) {
+
+        NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSet];
+        for (id<NSFastEnumeration> enumerable in result) {
+            for (id object in enumerable) {
+                [set addObject:object];
+            }
+        }
+
+        return set;
+    }
+
+    if ([self.connectionMapping.relationship isToMany]) {
+        if ([result isKindOfClass:[NSArray class]]) {
+            if ([self.connectionMapping.relationship isOrdered]) {
+                return [NSOrderedSet orderedSetWithArray:result];
+            } else {
+                return [NSSet setWithArray:result];
+            }
+        } else if ([result isKindOfClass:[NSSet class]]) {
+            if ([self.connectionMapping.relationship isOrdered]) {
+                return [NSOrderedSet orderedSetWithSet:result];
+            } else {
+                return result;
+            }
+        } else {
+            if ([self.connectionMapping.relationship isOrdered]) {
+                return [NSOrderedSet orderedSetWithObject:result];
+            } else {
+                return [NSSet setWithObject:result];
+            }
+        }
+    }
+
+    return result;
 }
 
 - (NSMutableSet *)findAllConnectedWithSourceValue:(id)sourceValue
@@ -73,7 +115,7 @@
     }
     
     for (id value in values) {
-        NSArray *objects = [self.managedObjectCache findInstancesOfEntity:self.entityMapping.entity
+        NSArray *objects = [self.managedObjectCache findInstancesOfEntity:self.connectionMapping.relationship.destinationEntity
                                                   withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
                                                                     value:value
                                                    inManagedObjectContext:self.managedObjectContext];
@@ -84,10 +126,7 @@
 
 - (BOOL)isToMany
 {
-    NSEntityDescription *entity = [self.managedObject entity];
-    NSDictionary *relationships = [entity relationshipsByName];
-    NSRelationshipDescription *relationship = [relationships objectForKey:self.connectionMapping.relationshipName];
-    return relationship.isToMany;
+    return self.connectionMapping.relationship.isToMany;
 }
 
 - (BOOL)checkMatcher
@@ -102,13 +141,26 @@
 - (id)findConnected
 {
     if ([self checkMatcher]) {
-        BOOL isToMany = [self isToMany];
-        id sourceValue = [self.managedObject valueForKey:self.connectionMapping.sourceKeyPath];
-        if (isToMany) {
-            return [self findAllConnectedWithSourceValue:sourceValue];
+        id connectionResult = nil;
+        if ([self.connectionMapping isForeignKeyConnection]) {
+            BOOL isToMany = [self isToMany];
+            id sourceValue = [self.managedObject valueForKey:self.connectionMapping.sourceKeyPath];
+            if (isToMany) {
+                connectionResult = [self findAllConnectedWithSourceValue:sourceValue];
+            } else {
+                connectionResult = [self findOneConnectedWithSourceValue:sourceValue];
+            }
+        } else if ([self.connectionMapping isKeyPathConnection]) {
+            connectionResult = [self.managedObject valueForKeyPath:self.connectionMapping.sourceKeyPath];
         } else {
-            return [self findOneConnectedWithSourceValue:sourceValue];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                           reason:[NSString stringWithFormat:@"%@ Attempted to establish a relationship using a mapping"
+                                                   "specifies neither a foreign key or a key path connection: %@",
+                                                   NSStringFromClass([self class]), self.connectionMapping]
+                                         userInfo:nil];
         }
+
+        return [self relationshipValueWithConnectionResult:connectionResult];
     } else {
         return nil;
     }
@@ -116,16 +168,15 @@
 
 - (void)connectRelationship
 {
-    RKLogTrace(@"Connecting relationship '%@'", self.connectionMapping.relationshipName);
-    
+    NSString *relationshipName = self.connectionMapping.relationship.name;
+    RKLogTrace(@"Connecting relationship '%@' with mapping: %@", relationshipName, self.connectionMapping);
     [self.managedObjectContext performBlockAndWait:^{
         id relatedObject = [self findConnected];
         if (relatedObject) {
-            [self.managedObject setValue:relatedObject forKeyPath:self.connectionMapping.relationshipName];
-            RKLogDebug(@"Connected relationship '%@' to object '%@'", self.connectionMapping.relationshipName, relatedObject);
+            [self.managedObject setValue:relatedObject forKeyPath:relationshipName];
+            RKLogDebug(@"Connected relationship '%@' to object '%@'", relationshipName, relatedObject);
         } else {
-            RKEntityMapping *objectMapping = (RKEntityMapping *)self.connectionMapping.mapping;
-            RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@'", [[objectMapping entity] name], self.connectionMapping.relationshipName);
+            RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@'", [[self.connectionMapping.relationship destinationEntity] name], relationshipName);
         }
     }];
 }

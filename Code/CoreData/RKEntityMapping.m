@@ -55,11 +55,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 + (id)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore
 {
     NSEntityDescription *entity = [[managedObjectStore.managedObjectModel entitiesByName] objectForKey:entityName];
-    return [self mappingForEntity:entity];
-}
-
-+ (id)mappingForEntity:(NSEntityDescription *)entity
-{
     return [[self alloc] initWithEntity:entity];
 }
 
@@ -98,7 +93,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 - (RKConnectionMapping *)connectionMappingForRelationshipWithName:(NSString *)relationshipName
 {
     for (RKConnectionMapping *connection in self.connectionMappings) {
-        if ([connection.relationshipName isEqualToString:relationshipName]) {
+        if ([connection.relationship.name isEqualToString:relationshipName]) {
             return connection;
         }
     }
@@ -107,10 +102,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (void)addConnectionMapping:(RKConnectionMapping *)mapping
 {
-    RKConnectionMapping *connectionMapping = [self connectionMappingForRelationshipWithName:mapping.relationshipName];
-    NSAssert(connectionMapping == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", mapping.relationshipName);
-    NSAssert(mapping.mapping, @"Attempted to connect relationship '%@' without a relationship mapping defined.", mapping.relationshipName);
-    NSAssert([mapping.mapping isKindOfClass:[RKEntityMapping class]], @"Can only connect RKManagedObjectMapping relationships");
+    NSParameterAssert(mapping);
+    RKConnectionMapping *connectionMapping = [self connectionMappingForRelationshipWithName:mapping.relationship.name];
+    NSAssert(connectionMapping == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", mapping.relationship.name);
     NSAssert(self.mutableConnections, @"self.mutableConnections should not be nil");
     [self.mutableConnections addObject:mapping];
 }
@@ -120,6 +114,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     for (RKConnectionMapping *connectionMapping in arrayOfConnectionMappings) {
         [self addConnectionMapping:connectionMapping];
     }
+}
+
+- (RKConnectionMapping *)addConnectionMappingForRelationshipForName:(NSString *)relationshipName
+                                                  fromSourceKeyPath:(NSString *)sourceKeyPath
+                                                          toKeyPath:(NSString *)destinationKeyPath
+                                                            matcher:(RKDynamicMappingMatcher *)matcher
+{
+    NSRelationshipDescription *relationship = [[self.entity propertiesByName] objectForKey:relationshipName];
+    NSAssert(relationship, @"Unable to find a relationship named '%@' in the entity: %@", relationshipName, self.entity);
+    RKConnectionMapping *connectionMapping = [[RKConnectionMapping alloc] initWithRelationship:relationship sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath matcher:matcher];
+    [self addConnectionMapping:connectionMapping];
+    return connectionMapping;
 }
 
 - (void)removeConnectionMapping:(RKConnectionMapping *)connectionMapping

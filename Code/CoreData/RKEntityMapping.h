@@ -35,14 +35,6 @@
 ///-----------------------------------------------------------------------------
 
 /**
- Creates and returns an entity mapping with a given Core Data entity description.
- 
- @param entity The entity the new mapping is for.
- @returns A new entity mapping for the given entity.
- */
-+ (id)mappingForEntity:(NSEntityDescription *)entity;
-
-/**
  Initializes the receiver with a given entity.
  
  @param entity An entity with which to initialize the receiver.
@@ -86,6 +78,7 @@
 
  @see [NSEntityDescription primaryKeyAttribute]
  */
+// TODO: Make me readonly
 @property (nonatomic, strong) NSString *primaryKeyAttribute;
 
 /**
@@ -103,6 +96,12 @@
  */
 - (void)addConnectionMapping:(RKConnectionMapping *)connectionMapping;
 - (void)addConnectionMappingsFromArray:(NSArray *)arrayOfConnectionMappings;
+
+// Convenience method.
+- (RKConnectionMapping *)addConnectionMappingForRelationshipForName:(NSString *)relationshipName
+                                                  fromSourceKeyPath:(NSString *)sourceKeyPath
+                                                          toKeyPath:(NSString *)destinationKeyPath
+                                                            matcher:(RKDynamicMappingMatcher *)matcher;
 
 /**
  Removes a connection mapping from the receiver.
