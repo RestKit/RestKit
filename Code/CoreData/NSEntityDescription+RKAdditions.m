@@ -22,7 +22,7 @@ static char primaryKeyPredicateKey;
     objc_setAssociatedObject(self,
                              &primaryKeyPredicateKey,
                              predicate,
-                             OBJC_ASSOCIATION_RETAIN);
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 #pragma mark - Public
