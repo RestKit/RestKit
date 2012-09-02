@@ -130,7 +130,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 {
     CFStringRef legalURLCharactersToBeEscaped = CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`\n\r");
     CFStringRef encodedString = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                        (CFStringRef)self,
+                                                                        (__bridge CFStringRef)self,
                                                                         NULL,
                                                                         legalURLCharactersToBeEscaped,
                                                                         kCFStringEncodingUTF8);

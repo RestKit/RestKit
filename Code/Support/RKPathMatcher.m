@@ -47,7 +47,7 @@ NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
 NSString *RKEncodeURLString(NSString *unencodedString) {
     NSString *encodedString = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
                                                                                   NULL,
-                                                                                  (CFStringRef)unencodedString,
+                                                                                  (__bridge CFStringRef)unencodedString,
                                                                                   NULL,
                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
                                                                                   kCFStringEncodingUTF8));

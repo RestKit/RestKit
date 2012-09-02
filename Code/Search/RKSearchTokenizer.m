@@ -18,7 +18,7 @@
     
     // Remove diacratics and lowercase our input text
     NSString *tokenizeText = string = [string stringByFoldingWithOptions:kCFCompareCaseInsensitive|kCFCompareDiacriticInsensitive locale:[NSLocale systemLocale]];
-    CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (CFStringRef)tokenizeText, CFRangeMake(0, CFStringGetLength((CFStringRef)tokenizeText)), kCFStringTokenizerUnitWord, locale);
+    CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (__bridge CFStringRef)tokenizeText, CFRangeMake(0, CFStringGetLength((__bridge CFStringRef)tokenizeText)), kCFStringTokenizerUnitWord, locale);
     CFStringTokenizerTokenType tokenType = kCFStringTokenizerTokenNone;
     
     while(kCFStringTokenizerTokenNone != (tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer))) {
