@@ -36,15 +36,6 @@
 ///-----------------------------------------------------------------------------
 
 /**
- Creates and returns a new test for a given object mapping and source object.
-
- @param mapping The object mapping being tested.
- @param sourceObject The source object being mapped.
- @return A new mapping test object for a mapping and sourceObject.
- */
-+ (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject;
-
-/**
  Creates and returns a new test for a given object mapping, source object and destination
  object.
 

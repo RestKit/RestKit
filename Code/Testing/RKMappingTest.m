@@ -47,7 +47,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @implementation RKMappingTestEvent
 
-
 + (RKMappingTestEvent *)eventWithMapping:(RKAttributeMapping *)mapping value:(id)value
 {
     RKMappingTestEvent *event = [RKMappingTestEvent new];
@@ -93,12 +92,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 @end
 
 @implementation RKMappingTest
-
-
-+ (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject
-{
-    return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:nil];
-}
 
 + (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
 {
