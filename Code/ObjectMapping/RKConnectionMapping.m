@@ -32,7 +32,7 @@
 @interface RKKeyPathConnectionMapping : RKConnectionMapping
 @end
 
-@interface RKConnectionMapping()
+@interface RKConnectionMapping ()
 @property (nonatomic, strong, readwrite) NSRelationshipDescription *relationship;
 @property (nonatomic, strong, readwrite) NSString *sourceKeyPath;
 @property (nonatomic, strong, readwrite) NSString *destinationKeyPath;

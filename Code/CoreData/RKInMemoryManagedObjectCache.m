@@ -70,7 +70,7 @@
         RKLogInfo(@"Caching instances of Entity '%@' by primary key attribute '%@'", entity.name, primaryKeyAttribute);
         [self.entityCache cacheObjectsForEntity:entity byAttribute:primaryKeyAttribute];
         RKEntityByAttributeCache *attributeCache = [self.entityCache attributeCacheForEntity:entity attribute:primaryKeyAttribute];
-        RKLogTrace(@"Cached %ld objects", (long) [attributeCache count]);
+        RKLogTrace(@"Cached %ld objects", (long)[attributeCache count]);
     }
 
     return [self.entityCache objectsForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue inContext:managedObjectContext];

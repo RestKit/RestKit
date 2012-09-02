@@ -27,7 +27,8 @@
      @"last_name": @"lastName",
      @"email_adddress": @"emailAddress",
      @"phone_number": @"phoneNumber",
-     @"notes": @"notes" }];        
+     @"notes": @"notes"
+     }];
     
     // Configure search indexing
     [managedObjectStore addSearchIndexingToEntityForName:@"Contact"

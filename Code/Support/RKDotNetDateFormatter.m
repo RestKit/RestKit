@@ -75,11 +75,11 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
     return (date != nil);
 }
 
-- (NSString *) stringForObjectValue:(id)value
+- (NSString *)stringForObjectValue:(id)value
 {
     NSParameterAssert([value isKindOfClass:[NSDate class]]);
     NSString *timeZoneOffset = [super stringForObjectValue:value];
-    NSTimeInterval milliseconds = millisecondsFromSeconds([(NSDate*)value timeIntervalSince1970]);
+    NSTimeInterval milliseconds = millisecondsFromSeconds([(NSDate *)value timeIntervalSince1970]);
     return [NSString stringWithFormat:@"/Date(%1.0lf%@)/", milliseconds, timeZoneOffset];
 }
 

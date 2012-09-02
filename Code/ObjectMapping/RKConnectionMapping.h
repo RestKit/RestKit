@@ -25,7 +25,7 @@
 @class RKConnectionMapping, RKDynamicMappingMatcher;
 @protocol RKManagedObjectCaching;
 
-typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
+typedef id (^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
 // Defines the rules for connecting relationsips
 /**

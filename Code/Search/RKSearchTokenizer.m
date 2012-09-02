@@ -21,7 +21,7 @@
     CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (__bridge CFStringRef)tokenizeText, CFRangeMake(0, CFStringGetLength((__bridge CFStringRef)tokenizeText)), kCFStringTokenizerUnitWord, locale);
     CFStringTokenizerTokenType tokenType = kCFStringTokenizerTokenNone;
 
-    while(kCFStringTokenizerTokenNone != (tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer))) {
+    while (kCFStringTokenizerTokenNone != (tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer))) {
         CFRange tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
 
         NSRange range = NSMakeRange(tokenRange.location, tokenRange.length);
