@@ -26,11 +26,6 @@
 
 @implementation RKEntityByAttributeCache
 
-@synthesize entity = _entity;
-@synthesize attribute = _attribute;
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize attributeValuesToObjectIDs = _attributeValuesToObjectIDs;
-@synthesize monitorsContextForChanges = _monitorsContextForChanges;
 
 - (id)initWithEntity:(NSEntityDescription *)entity attribute:(NSString *)attributeName managedObjectContext:(NSManagedObjectContext *)context
 {

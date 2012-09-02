@@ -41,9 +41,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @implementation RKEntityMapping
 
-@synthesize mutableConnections = _mutableConnections;
-@synthesize entity = _entity;
-@synthesize primaryKeyAttribute = _primaryKeyAttribute;
 
 + (id)mappingForClass:(Class)objectClass
 {

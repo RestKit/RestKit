@@ -46,9 +46,6 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 @implementation RKObjectManager
 
-@synthesize managedObjectStore = _managedObjectStore;
-@synthesize serializationMIMEType = _serializationMIMEType;
-@synthesize mappingQueue = _mappingQueue;
 
 + (NSOperationQueue *)defaultMappingQueue
 {

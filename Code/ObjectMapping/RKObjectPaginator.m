@@ -36,20 +36,7 @@
 //
 //@implementation RKObjectPaginator
 //
-//@synthesize patternURL = _patternURL;
-//@synthesize currentPage = _currentPage;
-//@synthesize perPage = _perPage;
-//@synthesize loaded = _loaded;
-//@synthesize pageCount = _pageCount;
-//@synthesize objectCount = _objectCount;
-//@synthesize mappingProvider = _mappingProvider;
-//@synthesize delegate = _delegate;
-//@synthesize managedObjectStore = _managedObjectStore;
-//@synthesize objectLoader = _objectLoader;
-//@synthesize configurationDelegate = _configurationDelegate;
-//@synthesize onDidLoadObjectsForPage = _onDidLoadObjectsForPage;
-//@synthesize onDidFailWithError = _onDidFailWithError;
-//
+////////////////////////////
 //+ (id)paginatorWithPatternURL:(RKURL *)aPatternURL mappingProvider:(RKObjectMappingProvider *)aMappingProvider
 //{
 //    return [[[self alloc] initWithPatternURL:aPatternURL mappingProvider:aMappingProvider] autorelease];

@@ -38,11 +38,6 @@
 
 @implementation RKRoute
 
-@synthesize name = _name;
-@synthesize objectClass = _objectClass;
-@synthesize method = _method;
-@synthesize resourcePathPattern = _resourcePathPattern;
-@synthesize shouldEscapeResourcePath = _shouldEscapeResourcePath;
 
 + (id)routeWithName:(NSString *)name resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method
 {

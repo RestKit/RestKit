@@ -26,9 +26,6 @@ static RKTestFactory *sharedFactory = nil;
 
 @implementation RKTestFactory
 
-@synthesize baseURL = _baseURL;
-@synthesize managedObjectStoreFilename = _managedObjectStoreFilename;
-@synthesize factoryBlocks = _factoryBlocks;
 
 + (void)initialize
 {

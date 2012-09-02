@@ -22,8 +22,6 @@
 
 @implementation RKRequestSerialization
 
-@synthesize data = _data;
-@synthesize MIMEType = _MIMEType;
 
 - (id)initWithData:(NSData *)data MIMEType:(NSString *)MIMEType
 {

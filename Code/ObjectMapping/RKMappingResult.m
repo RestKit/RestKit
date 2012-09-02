@@ -28,7 +28,6 @@
 
 @implementation RKMappingResult
 
-@synthesize keyPathToMappedObjects = _keyPathToMappedObjects;
 
 - (id)initWithDictionary:(id)dictionary
 {

@@ -31,7 +31,6 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 @implementation RKRouteSet
 
-@synthesize routes = _routes;
 
 - (id)init
 {

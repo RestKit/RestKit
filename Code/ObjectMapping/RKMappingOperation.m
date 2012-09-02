@@ -76,12 +76,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 @implementation RKMappingOperation
 
-@synthesize sourceObject = _sourceObject;
-@synthesize destinationObject = _destinationObject;
-@synthesize mapping = _mapping;
-@synthesize delegate = _delegate;
-@synthesize nestedAttributeSubstitution = _nestedAttributeSubstitution;
-@synthesize validationError = _validationError;
 
 + (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)objectOrDynamicMapping
 {

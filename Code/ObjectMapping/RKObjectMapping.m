@@ -38,13 +38,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 
 @implementation RKObjectMapping
 
-@synthesize objectClass = _objectClass;
-@synthesize dateFormatters = _dateFormatters;
-@synthesize preferredDateFormatter = _preferredDateFormatter;
-@synthesize setDefaultValueForMissingAttributes = _setDefaultValueForMissingAttributes;
-@synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
-@synthesize performKeyValueValidation = _performKeyValueValidation;
-@synthesize ignoreUnknownKeyPaths = _ignoreUnknownKeyPaths;
 
 + (id)mappingForClass:(Class)objectClass
 {

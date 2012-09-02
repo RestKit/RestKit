@@ -62,10 +62,6 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 @end
 
 @implementation RKPathMatcher
-@synthesize socPattern = socPattern_;
-@synthesize sourcePath = sourcePath_;
-@synthesize rootPath = rootPath_;
-@synthesize queryParameters = queryParameters_;
 
 - (id)copyWithZone:(NSZone *)zone
 {

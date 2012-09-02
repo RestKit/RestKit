@@ -16,12 +16,6 @@
 
 @implementation RKTestNotificationObserver
 
-@synthesize object = _object;
-@synthesize name = _name;
-@synthesize timeout = _timeout;
-@synthesize awaitingNotification = _awaitingNotification;
-@synthesize observerAdded = _observerAdded;
-@synthesize startDate = _startDate;
 
 + (void)waitForNotificationWithName:(NSString *)name object:(id)object usingBlock:(void(^)())block
 {

@@ -26,8 +26,6 @@
 
 @implementation RKRouter
 
-@synthesize baseURL = _baseURL;
-@synthesize routeSet = _routeSet;
 
 - (id)initWithBaseURL:(RKURL *)baseURL
 {

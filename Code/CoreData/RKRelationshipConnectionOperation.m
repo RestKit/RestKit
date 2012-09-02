@@ -29,9 +29,6 @@
 
 @implementation RKRelationshipConnectionOperation
 
-@synthesize managedObject = _managedObject;
-@synthesize connectionMapping = _connectionMapping;
-@synthesize managedObjectCache = _managedObjectCache;
 
 - (id)initWithManagedObject:(NSManagedObject *)managedObject connectionMapping:(RKConnectionMapping *)connectionMapping managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache
 {

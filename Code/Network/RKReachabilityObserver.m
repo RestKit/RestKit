@@ -60,10 +60,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 @implementation RKReachabilityObserver
 
-@synthesize host = _host;
-@synthesize reachabilityFlags = _reachabilityFlags;
-@synthesize reachabilityDetermined = _reachabilityDetermined;
-@synthesize monitoringLocalWiFi = _monitoringLocalWiFi;
 
 + (RKReachabilityObserver *)reachabilityObserverForAddress:(const struct sockaddr *)address
 {

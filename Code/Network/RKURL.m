@@ -32,7 +32,6 @@
 @implementation RKURL
 
 @synthesize baseURL = _rkBaseURL;
-@synthesize resourcePath = _resourcePath;
 
 + (id)URLWithBaseURL:(NSURL *)baseURL
 {

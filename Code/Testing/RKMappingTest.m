@@ -47,8 +47,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @implementation RKMappingTestEvent
 
-@synthesize value = _value;
-@synthesize mapping = _mapping;
 
 + (RKMappingTestEvent *)eventWithMapping:(RKAttributeMapping *)mapping value:(id)value
 {
@@ -96,15 +94,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @implementation RKMappingTest
 
-@synthesize sourceObject = _sourceObject;
-@synthesize destinationObject = _destinationObject;
-@synthesize mapping = _mapping;
-@synthesize rootKeyPath = _rootKeyPath;
-@synthesize expectations = _expectations;
-@synthesize events = _events;
-@synthesize verifiesOnExpect = _verifiesOnExpect;
-@synthesize performedMapping = _performedMapping;
-@synthesize mappingOperationDataSource = _mappingOperationDataSource;
 
 + (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject
 {

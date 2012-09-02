@@ -38,14 +38,6 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
 
 @implementation RKTestResponseLoader
 
-@synthesize response = _response;
-@synthesize objects = _objects;
-@synthesize error = _error;
-@synthesize successful = _successful;
-@synthesize timeout = _timeout;
-@synthesize cancelled = _cancelled;
-@synthesize unexpectedResponse = _unexpectedResponse;
-@synthesize awaitingResponse = _awaitingResponse;
 
 + (RKTestResponseLoader *)responseLoader
 {

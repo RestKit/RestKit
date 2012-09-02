@@ -29,8 +29,6 @@
 
 @implementation RKDynamicMapping
 
-@synthesize delegate = _delegate;
-@synthesize objectMappingForDataBlock = _objectMappingForDataBlock;
 
 + (RKDynamicMapping *)dynamicMapping
 {

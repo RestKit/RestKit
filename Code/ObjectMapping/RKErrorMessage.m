@@ -23,7 +23,6 @@
 
 @implementation RKErrorMessage
 
-@synthesize errorMessage = _errorMessage;
 
 
 - (NSString *)description

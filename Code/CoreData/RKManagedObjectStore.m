@@ -46,11 +46,6 @@ static RKManagedObjectStore *defaultStore = nil;
 
 @implementation RKManagedObjectStore
 
-@synthesize managedObjectModel = _managedObjectModel;
-@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-@synthesize managedObjectCache = _managedObjectCache;
-@synthesize primaryManagedObjectContext = _primaryManagedObjectContext;
-@synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
 
 + (RKManagedObjectStore *)defaultStore
 {

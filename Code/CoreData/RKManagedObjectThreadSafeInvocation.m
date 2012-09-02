@@ -31,9 +31,6 @@
 
 @implementation RKManagedObjectThreadSafeInvocation
 
-@synthesize privateQueueManagedObjectContext = _privateQueueManagedObjectContext;
-@synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
-@synthesize argumentKeyPaths = _argumentKeyPaths;
 
 + (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature
 {

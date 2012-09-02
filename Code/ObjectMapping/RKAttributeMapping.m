@@ -29,8 +29,6 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 @implementation RKAttributeMapping
 
-@synthesize sourceKeyPath = _sourceKeyPath;
-@synthesize destinationKeyPath = _destinationKeyPath;
 
 + (RKAttributeMapping *)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
 {

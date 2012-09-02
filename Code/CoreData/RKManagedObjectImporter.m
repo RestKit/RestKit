@@ -46,11 +46,6 @@
 
 @implementation RKManagedObjectImporter
 
-@synthesize managedObjectModel = _managedObjectModel;
-@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-@synthesize persistentStore = _persistentStore;
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize mappingOperationDataSource = _mappingOperationDataSource;
 
 - (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel storePath:(NSString *)storePath
 {

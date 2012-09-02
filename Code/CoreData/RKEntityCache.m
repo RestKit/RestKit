@@ -15,8 +15,6 @@
 
 @implementation RKEntityCache
 
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize attributeCaches = _attributeCaches;
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)context
 {

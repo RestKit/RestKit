@@ -20,11 +20,6 @@
 
 @implementation RKMappingTestExpectation
 
-@synthesize sourceKeyPath = _sourceKeyPath;
-@synthesize destinationKeyPath = _destinationKeyPath;
-@synthesize value = _value;
-@synthesize evaluationBlock = _evaluationBlock;
-@synthesize mapping = _mapping;
 
 + (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
 {

@@ -23,9 +23,6 @@
 
 @implementation RKManagedObjectMappingOperationDataSource
 
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize managedObjectCache = _managedObjectCache;
-@synthesize operationQueue = _operationQueue;
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
 {
