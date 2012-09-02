@@ -426,7 +426,14 @@ RKMappingTest *mappingTest = [[RKMappingTest alloc] initWithMapping:mapping sour
 
 ## Requirements
 
-RestKit requires [iOS 5.0](http://developer.apple.com/library/ios/#releasenotes/General/WhatsNewIniPhoneOS/Articles/iOS5.html#//apple_ref/doc/uid/TP30915195-SW1) and above or [Mac OS X 10.7](http://developer.apple.com/library/mac/#releasenotes/MacOSX/WhatsNewInOSX/Articles/MacOSX10_7.html#//apple_ref/doc/uid/TP40010355-SW5) and above. It is dependent on [AFNetworking](https://github.com/AFNetworking/AFNetworking) version 0.10.0 above for networking support.
+RestKit requires [iOS 5.0](http://developer.apple.com/library/ios/#releasenotes/General/WhatsNewIniPhoneOS/Articles/iOS5.html#//apple_ref/doc/uid/TP30915195-SW1) and above or [Mac OS X 10.7](http://developer.apple.com/library/mac/#releasenotes/MacOSX/WhatsNewInOSX/Articles/MacOSX10_7.html#//apple_ref/doc/uid/TP40010355-SW5) and above.
+
+Several third-party open source libraries are used within RestKit, including:
+
+1. [AFNetworking](https://github.com/AFNetworking/AFNetworking) - Networking Support
+2. [LibComponentLogging](http://0xc0.de/LibComponentLogging) - Logging Support
+3. [SOCKit](https://github.com/jverkoey/sockit) - String <-> Object Coding
+4. [iso8601parser](http://boredzo.org/iso8601parser/) - Support for parsing and generating ISO-8601 dates
 
 The following Cocoa frameworks must be linked into the application target for proper compilation:
 
