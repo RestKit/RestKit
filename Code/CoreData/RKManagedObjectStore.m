@@ -105,20 +105,20 @@ static RKManagedObjectStore *defaultStore = nil;
 - (NSPersistentStore *)addInMemoryPersistentStore:(NSError **)error
 {
     if (! self.persistentStoreCoordinator) [self createPersistentStoreCoordinator];
-    
+
     return [self.persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:error];
 }
 
 - (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error
 {
     if (! self.persistentStoreCoordinator) [self createPersistentStoreCoordinator];
-    
+
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     if (seedPath) {
         BOOL success = [self copySeedDatabaseIfNecessaryFromPath:seedPath toPath:storePath error:error];
         if (! success) return nil;
     }
-    
+
     // Allow inferred migration from the original version of the application.
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
                              (seedPath ? seedPath : [NSNull null]), RKSQLitePersistentStoreSeedDatabasePathOption,
@@ -152,7 +152,7 @@ static RKManagedObjectStore *defaultStore = nil;
         managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
         managedObjectContext.managedObjectStore = self;
     }];
-    
+
     return managedObjectContext;
 }
 
@@ -166,13 +166,13 @@ static RKManagedObjectStore *defaultStore = nil;
     self.primaryManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
     self.primaryManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     self.primaryManagedObjectContext.managedObjectStore = self;
-    
+
     // Create an MOC for use on the main queue
     self.mainQueueManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     self.mainQueueManagedObjectContext.parentContext = self.primaryManagedObjectContext;
     self.mainQueueManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     self.mainQueueManagedObjectContext.managedObjectStore = self;
-    
+
     // Merge changes from a primary MOC back into the main queue when complete
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handlePrimaryManagedObjectContextDidSaveNotification:)
@@ -183,7 +183,7 @@ static RKManagedObjectStore *defaultStore = nil;
 - (void)recreateManagedObjectContexts
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:self.primaryManagedObjectContext];
-    
+
     self.primaryManagedObjectContext = nil;
     self.mainQueueManagedObjectContext = nil;
     [self createManagedObjectContexts];

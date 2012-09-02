@@ -33,7 +33,7 @@
     if (self) {
         self.baseURL = baseURL;
     }
-    
+
     return self;
 }
 
@@ -43,7 +43,7 @@
     if (self) {
         self.routeSet = [RKRouteSet new];
     }
-    
+
     return self;
 }
 
@@ -66,7 +66,7 @@
 - (RKURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForRelationship:relationshipName ofClass:[object class] method:method];
-    if (! route) return nil;    
+    if (! route) return nil;
     return [RKURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
 }
 

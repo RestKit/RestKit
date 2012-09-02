@@ -22,7 +22,7 @@
 {
     NSParameterAssert(mapping);
     NSParameterAssert(objectClass);
-    
+
     RKRequestDescriptor *requestDescriptor = [self new];
     requestDescriptor.mapping = mapping;
     requestDescriptor.objectClass = objectClass;

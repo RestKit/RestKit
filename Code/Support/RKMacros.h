@@ -23,7 +23,7 @@
 #define RestKit_RKMacros_h
 
 /**
- Instead of using the normal DEPRECATED_ATTRIBUTE use DEPRECATED_ATTRIBUTE_MESSAGE(message) 
+ Instead of using the normal DEPRECATED_ATTRIBUTE use DEPRECATED_ATTRIBUTE_MESSAGE(message)
  to display a helpful recommendation message along with the deprecation message.
  */
 #ifndef DEPRECATED_ATTRIBUTE_MESSAGE

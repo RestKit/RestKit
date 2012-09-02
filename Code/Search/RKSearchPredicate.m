@@ -20,12 +20,12 @@
 {
     RKSearchTokenizer *tokenizer = [RKSearchTokenizer new];
     NSSet *searchWords = [tokenizer tokenize:searchText];
-    
+
     NSMutableArray *subpredicates = [NSMutableArray arrayWithCapacity:[searchWords count]];
     for (NSString *searchWord in searchWords) {
         [subpredicates addObject:[NSPredicate predicateWithFormat:@"(ANY searchWords.word beginswith %@)", searchWord]];
     }
-    
+
     return [super initWithType:type subpredicates:subpredicates];
 }
 

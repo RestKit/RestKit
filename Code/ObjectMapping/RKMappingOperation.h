@@ -85,13 +85,13 @@
 
 /**
  Tells the delegate that the mapping operation has selected a concrete object mapping with which to map the source object.
- 
+
  Only sent if the receiver was initialized with an instance of RKDynamicMapping as the mapping.
- 
+
  @param operation The mapping operation.
  @param objectMapping The concrete object mapping with which to perform the mapping.
  @param dynamicMapping The dynamic source mapping from which the object mapping was determined.
- 
+
  @since 0.11.0
  */
 - (void)mappingOperation:(RKMappingOperation *)operation didSelectObjectMapping:(RKObjectMapping *)objectMapping forDynamicMapping:(RKDynamicMapping *)dynamicMapping;
@@ -121,7 +121,7 @@
 
 /**
  The mapping defining how values contained in the source object should be transformed to the destination object via key-value coding.
- 
+
  Will either be an instance of RKObjectMapping or RKDynamicMapping.
  */
 @property (nonatomic, strong, readonly) RKMapping *mapping;

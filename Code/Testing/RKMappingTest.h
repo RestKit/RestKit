@@ -157,7 +157,7 @@
 
 /**
  A data source for the mapping operation.
- 
+
  Defaults to an instance of RKObjectMappingOperationDataSource.
  */
 @property (nonatomic, strong) id<RKMappingOperationDataSource> mappingOperationDataSource;

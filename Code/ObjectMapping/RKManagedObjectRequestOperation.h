@@ -38,7 +38,7 @@ typedef NSFetchRequest * (^RKFetchRequestBlock)(NSURL *URL);
 /**
  A Boolean value that determines if the receiver will delete orphaned objects upon
  completion of the operation.
- 
+
  **Default**: NO
  */
 @property (nonatomic, assign) BOOL deletesOrphanedObjects;

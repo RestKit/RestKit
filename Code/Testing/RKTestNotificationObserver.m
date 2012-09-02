@@ -95,7 +95,7 @@
             self.awaitingNotification = NO;
         }
     }
-    
+
     [self removeObserver];
 }
 

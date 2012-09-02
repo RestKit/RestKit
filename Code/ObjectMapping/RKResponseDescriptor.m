@@ -24,7 +24,7 @@
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
     NSMutableString *string = [NSMutableString string];
-    
+
     NSRange range = NSMakeRange([indexSet firstIndex], 1);
     while (range.location != NSNotFound) {
         NSUInteger nextIndex = [indexSet indexGreaterThanIndex:range.location];
@@ -32,11 +32,11 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
             range.length++;
             nextIndex = [indexSet indexGreaterThanIndex:nextIndex];
         }
-        
+
         if (string.length) {
             [string appendString:@","];
         }
-        
+
         if (range.length == 1) {
             [string appendFormat:@"%u", range.location];
         } else {
@@ -44,11 +44,11 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
             NSUInteger lastIndex = firstIndex + range.length - 1;
             [string appendFormat:@"%u-%u", firstIndex, lastIndex];
         }
-        
+
         range.location = nextIndex;
         range.length = 1;
     }
-    
+
     return string;
 }
 
@@ -67,13 +67,13 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
                                           statusCodes:(NSIndexSet *)statusCodes
 {
     NSParameterAssert(mapping);
-    
+
     RKResponseDescriptor *mappingDescriptor = [self new];
     mappingDescriptor.mapping = mapping;
     mappingDescriptor.pathPattern = pathPattern;
     mappingDescriptor.keyPath = keyPath;
     mappingDescriptor.statusCodes = statusCodes;
-    
+
     return mappingDescriptor;
 }
 

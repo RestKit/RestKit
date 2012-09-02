@@ -49,7 +49,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
         self.mappingErrors = [NSMutableArray new];
         self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
-    
+
     return self;
 }
 
@@ -238,7 +238,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 {
     NSAssert([mapping isKindOfClass:[RKMapping class]], @"Expected an RKMapping object");
     NSAssert(self.mappingOperationDataSource, @"Cannot find or instantiate objects without a data source");
-    
+
     RKObjectMapping *objectMapping = nil;
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
         objectMapping = [(RKDynamicMapping *)mapping objectMappingForDictionary:mappableData];

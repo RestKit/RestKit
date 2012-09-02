@@ -38,7 +38,7 @@
         self.connectionMapping = connectionMapping;
         self.managedObjectCache = managedObjectCache;
     }
-    
+
     return self;
 }
 
@@ -103,14 +103,14 @@
 - (NSMutableSet *)findAllConnectedWithSourceValue:(id)sourceValue
 {
     NSMutableSet *result = [NSMutableSet set];
-    
+
     id values = nil;
     if ([sourceValue conformsToProtocol:@protocol(NSFastEnumeration)]) {
         values = sourceValue;
     } else {
         values = [NSArray arrayWithObject:sourceValue];
     }
-    
+
     for (id value in values) {
         NSArray *objects = [self.managedObjectCache findInstancesOfEntity:self.connectionMapping.relationship.destinationEntity
                                                   withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath

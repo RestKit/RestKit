@@ -144,7 +144,7 @@ relationship. Relationships are processed using an object mapping as well.
 
 /**
  Removes an instance of an attribute or relationship mapping from the object mapping
- 
+
  @param attributeOrRelationshipMapping The attribute or relationship mapping to remove
  */
 - (void)removePropertyMapping:(RKPropertyMapping *)propertyMapping;
@@ -154,7 +154,7 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  Adds attribute mappings from a given dictionary wherein the keys represent the source key path
  and the values represent the names of the target attributes on the destination object.
- 
+
  @param keyPathToAttributeNames A dictionary keyed by source key to destination attribute name.
  */
 - (void)addAttributeMappingsFromDictionary:(NSDictionary *)keyPathToAttributeNames;

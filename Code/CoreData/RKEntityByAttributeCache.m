@@ -40,7 +40,7 @@
                                                  selector:@selector(managedObjectContextDidChange:)
                                                      name:NSManagedObjectContextObjectsDidChangeNotification
                                                    object:context];
-        
+
 #if TARGET_OS_IPHONE
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(didReceiveMemoryWarning:)
@@ -153,10 +153,10 @@
         if (error) {
             RKLogError(@"Failed to retrieve managed object with ID %@. Error %@\n%@", objectID, [error localizedDescription], [error userInfo]);
         }
-        
+
         return nil;
     }
-    
+
     return object;
 }
 

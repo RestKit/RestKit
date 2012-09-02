@@ -76,7 +76,7 @@
                     [collection addObject:subObject];
                 }
             }
-            
+
             [self setValue:collection forKeyPathOrKey:keyPath object:argument];
         }
     }
@@ -110,7 +110,7 @@
                     [collection addObject:subObject];
                 }
             }
-            
+
 
             [self setValue:collection forKeyPathOrKey:keyPath object:argument];
         }

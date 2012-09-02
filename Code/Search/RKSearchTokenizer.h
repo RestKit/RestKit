@@ -34,7 +34,7 @@
 
 /**
  The set of stop words that are to be removed from the token set.
- 
+
  Defaults to nil.
  */
 @property (nonatomic, strong) NSSet *stopWords;
@@ -47,7 +47,7 @@
  Tokenizes the given string by folding it case and diacritic insensitively and then
  splitting it apart using the the word unit delimiters for the current locale. If a set
  of stop words has been provided, the resulting token set will have the stop words subtracted.
- 
+
  @param string A string of text you wish to tokenize.
  @returns A set of searchable text tokens extracted from the given string.
  */

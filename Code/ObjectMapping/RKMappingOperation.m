@@ -643,12 +643,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 {
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
-    
+
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([self.mapping isKindOfClass:[RKDynamicMapping class]]) {
         self.objectMapping = [(RKDynamicMapping *)self.mapping objectMappingForDictionary:self.sourceObject];
         RKLogDebug(@"RKObjectMappingOperation was initialized with a dynamic mapping. Determined concrete mapping = %@", self.objectMapping);
-        
+
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSelectObjectMapping:forDynamicMapping:)]) {
             [self.delegate mappingOperation:self didSelectObjectMapping:self.objectMapping forDynamicMapping:(RKDynamicMapping *)self.mapping];
         }
@@ -662,7 +662,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     BOOL mappedRelationships = [self applyRelationshipMappings];
     if ((mappedAttributes || mappedRelationships) && _validationError == nil) {
         RKLogDebug(@"Finished mapping operation successfully...");
-        
+
         if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:)]) {
             [self.dataSource commitChangesForMappingOperation:self];
         }

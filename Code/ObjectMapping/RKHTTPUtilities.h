@@ -26,7 +26,7 @@ RKRequestMethod RKRequestMethodFromString(NSString *);
 
 /**
  The HTTP status code classes
- 
+
  See http://tools.ietf.org/html/rfc2616#section-10
  */
 enum {
@@ -40,7 +40,7 @@ typedef NSUInteger RKStatusCodeClass;
 
 /**
  Creates a new range covering the status codes in the given class.
- 
+
  @param statusCodeClass The status code class to create a range covering.
  @return A new range covering the status codes in the given class.
  */
@@ -48,7 +48,7 @@ NSRange RKStatusCodeRangeForClass(RKStatusCodeClass statusCodeClass);
 
 /**
  Creates a new index set covering the status codes in the given class.
- 
+
  @param statusCodeClass The status code class to create an index set covering.
  @return A new index set covering the status codes in the given class.
  */

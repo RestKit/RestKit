@@ -26,31 +26,31 @@ NSString *RKStringFromRequestMethod(RKRequestMethod method)
         case RKRequestMethodGET:
             return @"GET";
             break;
-            
+
         case RKRequestMethodPOST:
             return @"POST";
             break;
-            
+
         case RKRequestMethodPUT:
             return @"PUT";
             break;
-            
+
         case RKRequestMethodPATCH:
             return @"PATCH";
             break;
-            
+
         case RKRequestMethodDELETE:
             return @"DELETE";
             break;
-            
+
         case RKRequestMethodHEAD:
             return @"HEAD";
             break;
-            
+
         default:
             break;
     }
-    
+
     return nil;
 }
 
@@ -69,6 +69,6 @@ RKRequestMethod RKRequestMethodFromString(NSString *methodName)
     } else if ([methodName isEqualToString:@"PATCH"]) {
         return RKRequestMethodPATCH;
     }
-    
+
     return RKRequestMethodInvalid;
 }

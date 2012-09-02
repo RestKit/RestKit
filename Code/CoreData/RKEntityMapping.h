@@ -36,7 +36,7 @@
 
 /**
  Initializes the receiver with a given entity.
- 
+
  @param entity An entity with which to initialize the receiver.
  @returns The receiver, initialized with the given entity.
  */
@@ -45,12 +45,12 @@
 /**
  A convenience initializer that creates and returns an entity mapping for the entity with the given name in
  the managed object model of the given managed object store.
- 
+
  This method is functionally equivalent to the following example code:
- 
+
      NSEntityDescription *entity = [[managedObjectStore.managedObjectModel entitiesByName] objectForKey:entityName];
      return [RKEntityMapping mappingForEntity:entity];
- 
+
  @param entityName The name of the entity in the managed object model for which an entity mapping is to be created.
  @param managedObjectStore A managed object store containing the managed object model in which an entity with the given name is defined.
  @return A new entity mapping for the entity with the given name in the managed object model of the given managed object store.
@@ -84,14 +84,14 @@
 /**
  Retrieves an array of RKConnectionMapping objects for connecting the receiver's relationships
  by primary key.
- 
+
  @see RKConnectionMapping
  */
 @property (weak, nonatomic, readonly) NSArray *connectionMappings;
 
 /**
  Adds a connection mapping to the receiver.
- 
+
  @param connectionMapping The connection mapping to be added.
  */
 - (void)addConnectionMapping:(RKConnectionMapping *)connectionMapping;
@@ -105,7 +105,7 @@
 
 /**
  Removes a connection mapping from the receiver.
- 
+
  @param connectionMapping The connection mapping to be added.
  */
 - (void)removeConnectionMapping:(RKConnectionMapping *)connectionMapping;

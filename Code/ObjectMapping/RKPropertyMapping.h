@@ -41,11 +41,11 @@
 
 /**
  Compares the receiving property mapping to another property mapping.
- 
+
  Two property mappings are equal if they are of the same type (i.e. an attribute or a
- relationship mapping) and specify a mapping from the same source key path to the 
+ relationship mapping) and specify a mapping from the same source key path to the
  same destination key path.
- 
+
  @param otherMapping The property mapping object with which to compare the receiver.
  @return YES if otherMapping specifies the same mapping as the receiver, otherwise NO.
  */

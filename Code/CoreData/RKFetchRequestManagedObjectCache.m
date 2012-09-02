@@ -64,7 +64,7 @@
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSArray *objects = [self findInstancesOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:managedObjectContext];
-    
+
     NSManagedObject *object = nil;
     if ([objects count] > 0) {
         object = [objects objectAtIndex:0];

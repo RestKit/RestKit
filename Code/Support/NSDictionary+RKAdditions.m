@@ -137,7 +137,7 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
             [result setObject:obj forKey:key];
         }
     }];
-    
+
     return [NSDictionary dictionaryWithDictionary:result];
 }
 

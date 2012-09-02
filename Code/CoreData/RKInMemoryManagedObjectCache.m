@@ -30,7 +30,7 @@
     if (self) {
         self.entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
     }
-    
+
     return self;
 }
 
@@ -65,7 +65,7 @@
                     inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSAssert(self.entityCache, @"Entity cache cannot be nil.");
-    
+
     if (! [self.entityCache isEntity:entity cachedByAttribute:primaryKeyAttribute]) {
         RKLogInfo(@"Caching instances of Entity '%@' by primary key attribute '%@'", entity.name, primaryKeyAttribute);
         [self.entityCache cacheObjectsForEntity:entity byAttribute:primaryKeyAttribute];

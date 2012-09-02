@@ -75,14 +75,14 @@ static NSOperationQueue *defaultMappingQueue = nil;
     if (self) {
         self.HTTPClient = client;
         [self.HTTPClient registerHTTPOperationClass:[RKHTTPRequestOperation class]];
-        
+
         self.router = [[RKRouter alloc] initWithBaseURL:client.baseURL];
         self.acceptMIMEType = RKMIMETypeJSON;
         self.operationQueue = [NSOperationQueue new];
         self.mutableRequestDescriptors = [NSMutableArray new];
         self.mutableResponseDescriptors = [NSMutableArray new];
         self.mutableFetchRequestBlocks = [NSMutableArray new];
-        
+
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
         self.mappingQueue = [RKObjectManager defaultMappingQueue];
 
@@ -234,7 +234,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
     } else {
         requestParameters = parameters;
     }
-    
+
     return [self.HTTPClient requestWithMethod:stringMethod path:requestPath parameters:requestParameters];
 }
 
@@ -257,7 +257,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
     } else {
         requestParameters = parameters;
     }
-    
+
     return [self.HTTPClient multipartFormRequestWithMethod:stringMethod path:requestPath parameters:requestParameters constructingBodyWithBlock:block];
 }
 
@@ -300,7 +300,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
  TODO: Test cases...
  1) Managed object
  2) Non managed object, request descriptors with entity
- 
+
  Does it make sense to assume the main queue MOC here?
  */
 - (id)objectRequestOperationWithObject:(id)object method:(RKRequestMethod)method path:(NSString *)path parameters:(NSDictionary *)parameters
@@ -314,7 +314,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
             RKLogInfo(@"Asked to perform object request with NSManagedObject with temporary object ID: Obtaining permanent ID before proceeding.");
             __block BOOL _blockSuccess;
             __block NSError *_blockError;
-            
+
             [[object managedObjectContext] performBlockAndWait:^{
                 _blockSuccess = [[object managedObjectContext] obtainPermanentIDsForObjects:@[object] error:&_blockError];
             }];

@@ -150,7 +150,7 @@
 /**
  Returns the collection of objects with a matching value for the cache key attribute
  in a given managed object context.
- 
+
  @param attributeValue A value for the cache key attribute.
  @return An array of objects with the value of attribute matching attributeValue or
     an empty array.

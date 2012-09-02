@@ -27,13 +27,13 @@
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
 {
     NSParameterAssert(managedObjectContext);
-    
+
     self = [self init];
     if (self) {
         self.managedObjectContext = managedObjectContext;
         self.managedObjectCache = managedObjectCache;
     }
-    
+
     return self;
 }
 
@@ -42,19 +42,19 @@
 {
     NSAssert(mappableContent, @"Mappable data cannot be nil");
     NSAssert(self.managedObjectContext, @"%@ must be initialized with a managed object context.", [self class]);
-    
+
     if (! [mapping isKindOfClass:[RKEntityMapping class]]) {
         return [mapping.objectClass new];
     }
-    
+
     RKEntityMapping *entityMapping = (RKEntityMapping *)mapping;
     id object = nil;
     id primaryKeyValue = nil;
     NSString *primaryKeyAttribute;
-    
+
     NSEntityDescription *entity = [entityMapping entity];
     RKAttributeMapping *primaryKeyAttributeMapping = nil;
-    
+
     primaryKeyAttribute = [entityMapping primaryKeyAttribute];
     if (primaryKeyAttribute) {
         // If a primary key has been set on the object mapping, find the attribute mapping
@@ -65,7 +65,7 @@
                 break;
             }
         }
-        
+
         // Get the primary key value out of the mappable data (if any)
         if ([primaryKeyAttributeMapping isMappingForKeyOfNestedDictionary]) {
             RKLogDebug(@"Detected use of nested dictionary key as primaryKey attribute...");
@@ -79,7 +79,7 @@
             }
         }
     }
-    
+
     if (! self.managedObjectCache) {
         RKLogWarning(@"Performing managed object mapping with a nil managed object cache:\n"
                       "Unable to update existing object instances by primary key. Duplicate objects may be created.");
@@ -90,29 +90,29 @@
         object = [self.managedObjectCache findInstanceOfEntity:entity
                                        withPrimaryKeyAttribute:primaryKeyAttribute
                                                          value:primaryKeyValue
-                                        inManagedObjectContext:self.managedObjectContext];                
-        
+                                        inManagedObjectContext:self.managedObjectContext];
+
         if (object && [self.managedObjectCache respondsToSelector:@selector(didFetchObject:)]) {
             [self.managedObjectCache didFetchObject:object];
         }
     }
-    
+
     if (object == nil) {
         object = [[NSManagedObject alloc] initWithEntity:entity
                            insertIntoManagedObjectContext:self.managedObjectContext];
         if (primaryKeyAttribute && primaryKeyValue && ![primaryKeyValue isEqual:[NSNull null]]) {
             [object setValue:primaryKeyValue forKey:primaryKeyAttribute];
         }
-        
+
         if ([self.managedObjectCache respondsToSelector:@selector(didCreateObject:)]) {
             [self.managedObjectCache didCreateObject:object];
         }
     }
-    
+
     return object;
 }
 
-/* 
+/*
  Mapping operations should be executed against managed object contexts with NSPrivateQueueConcurrencyType
  */
 - (BOOL)executingConnectionOperationsWouldDeadlock
@@ -134,7 +134,7 @@
 {
     if ([mappingOperation.mapping isKindOfClass:[RKEntityMapping class]]) {
         [self emitDeadlockWarningIfNecessary];
-        
+
         for (RKConnectionMapping *connectionMapping in [(RKEntityMapping *)mappingOperation.mapping connectionMappings]) {
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
                                                                                                           connectionMapping:connectionMapping
