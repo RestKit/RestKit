@@ -21,13 +21,12 @@
 #import "RKRouter.h"
 #import "RKRouteSet.h"
 #import "RKRoute.h"
-#import "RKURL.h"
 #import "RKPathMatcher.h"
 
 @implementation RKRouter
 
 
-- (id)initWithBaseURL:(RKURL *)baseURL
+- (id)initWithBaseURL:(NSURL *)baseURL
 {
     self = [self init];
     if (self) {
@@ -47,27 +46,26 @@
     return self;
 }
 
-
-- (RKURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object
+- (NSURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object
 {
     RKRoute *route = [self.routeSet routeForName:routeName];
     if (! route) return nil;
     if (method) *method = route.method;
-    return [RKURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
+    return [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
 }
 
-- (RKURL *)URLForObject:(id)object method:(RKRequestMethod)method
+- (NSURL *)URLForObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForObject:object method:method];
     if (! route) return nil;
-    return [RKURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
+    return [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
 }
 
-- (RKURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method
+- (NSURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForRelationship:relationshipName ofClass:[object class] method:method];
     if (! route) return nil;
-    return [RKURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
+    return [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
 }
 
 - (NSString *)pathFromRoute:(RKRoute *)route forObject:(id)object

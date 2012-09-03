@@ -20,7 +20,7 @@
 
 #import "RKHTTPUtilities.h"
 
-@class RKURL, RKRouteSet;
+@class RKRouteSet;
 
 /**
  An RKRouter instance is responsible for generating RKURL objects with a given
@@ -43,9 +43,9 @@
 @interface RKRouter : NSObject
 
 /**
- The baseURL with which to construct all RKURL instance generated through the receiver.
+ The base URL that all URLs constructed by the receiver are relative to.
  */
-@property (nonatomic, strong) RKURL *baseURL;
+@property (nonatomic, strong) NSURL *baseURL;
 
 /**
  A route set defining all the routes addressable through the receiver.
@@ -62,7 +62,7 @@
  @param baseURL The base URL with which to initialize the receiver.
  @return The receiver, initialized with the given base URL.
  */
-- (id)initWithBaseURL:(RKURL *)baseURL;
+- (id)initWithBaseURL:(NSURL *)baseURL;
 
 ///-----------------------------------------------------------------------------
 /// @name Generating URLs
@@ -84,7 +84,7 @@
     receiver and interpolating against a given object; or nil if no route was found with the given
     name.
  */
-- (RKURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object;
+- (NSURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object;
 
 /**
  Generates a URL for a given object with a given HTTP method.
@@ -102,7 +102,7 @@
  HTTP method to the baseURL of the receiver, interpolated against the routed object; or nil if no route was found
  for the given object and HTTP method.
  */
-- (RKURL *)URLForObject:(id)object method:(RKRequestMethod)method;
+- (NSURL *)URLForObject:(id)object method:(RKRequestMethod)method;
 
 /**
  Generates a URL for a relationship of a given object with a given HTTP method.
@@ -118,6 +118,6 @@
  relationship and HTTP method to the baseURL of the receiver, interpolated against the routed object; or nil if no
  route was found for the given relationship, object and HTTP method.
  */
-- (RKURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method;
+- (NSURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method;
 
 @end

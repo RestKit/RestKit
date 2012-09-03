@@ -86,14 +86,14 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 
  @return The base URL for the factory.
  */
-+ (RKURL *)baseURL;
++ (NSURL *)baseURL;
 
 /**
  Sets the base URL for the factory.
 
  @param URL The new base URL.
  */
-+ (void)setBaseURL:(RKURL *)URL;
++ (void)setBaseURL:(NSURL *)URL;
 
 /**
  Returns the base URL as a string value.

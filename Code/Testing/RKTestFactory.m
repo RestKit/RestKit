@@ -11,7 +11,7 @@
 
 @interface RKTestFactory ()
 
-@property (nonatomic, strong) RKURL *baseURL;
+@property (nonatomic, strong) NSURL *baseURL;
 @property (nonatomic, strong) NSString *managedObjectStoreFilename;
 @property (nonatomic, strong) NSMutableDictionary *factoryBlocks;
 
@@ -50,7 +50,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     self = [super init];
     if (self) {
-        self.baseURL = [RKURL URLWithString:@"http://127.0.0.1:4567"];
+        self.baseURL = [NSURL URLWithString:@"http://127.0.0.1:4567"];
         self.managedObjectStoreFilename = RKTestFactoryDefaultStoreFilename;
         self.factoryBlocks = [NSMutableDictionary new];
         [self defineDefaultFactories];
@@ -116,12 +116,12 @@ static RKTestFactory *sharedFactory = nil;
 
 #pragma mark - Public Static Interface
 
-+ (RKURL *)baseURL
++ (NSURL *)baseURL
 {
     return [RKTestFactory sharedFactory].baseURL;
 }
 
-+ (void)setBaseURL:(RKURL *)URL
++ (void)setBaseURL:(NSURL *)URL
 {
     [RKTestFactory sharedFactory].baseURL = URL;
 }
@@ -133,7 +133,7 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)setBaseURLString:(NSString *)baseURLString
 {
-    [[RKTestFactory sharedFactory] setBaseURL:[RKURL URLWithString:baseURLString]];
+    [[RKTestFactory sharedFactory] setBaseURL:[NSURL URLWithString:baseURLString]];
 }
 
 + (NSString *)managedObjectStoreFilename

@@ -100,7 +100,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
     return self;
 }
 
-- (id)initWithBaseURL:(RKURL *)baseURL
+- (id)initWithBaseURL:(NSURL *)baseURL
 {
     return [self initWithClient:[AFHTTPClient clientWithBaseURL:baseURL]];
 }
@@ -117,7 +117,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
-    RKObjectManager *manager = [[self alloc] initWithBaseURL:[RKURL URLWithBaseURL:baseURL]];
+    RKObjectManager *manager = [[self alloc] initWithBaseURL:baseURL];
     return manager;
 }
 

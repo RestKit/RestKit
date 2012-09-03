@@ -19,7 +19,6 @@
 //
 
 #import "RKManagedObjectStore.h"
-#import "RKURL.h"
 
 //@protocol RKObjectPaginatorDelegate;
 //
