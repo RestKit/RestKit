@@ -22,5 +22,4 @@
 #import "RKRoute.h"
 #import "RKRouteSet.h"
 #import "RKRouter.h"
-#import "RKRequestSerializable.h"
 #import "RKReachabilityObserver.h"

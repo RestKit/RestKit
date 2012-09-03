@@ -30,7 +30,9 @@ typedef enum {
     RKRequestBaseURLOfflineError                =   2,
     RKRequestUnexpectedResponseError            =   3,
     RKObjectLoaderUnexpectedResponseError       =   4,
-    RKRequestConnectionTimeoutError             =   5
+    RKRequestConnectionTimeoutError             =   5,
+    RKParserRegistryMissingParserError          =   6,
+    RKParserRegistryEmptyDataError              =   7
 } RKRestKitError;
 
 /** @name Error Constants */

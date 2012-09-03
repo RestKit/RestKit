@@ -26,33 +26,76 @@
  that handle parsing/serializing for content by MIME Type. Registration
  is configured via exact string matches (i.e. application/json) or via regular
  expression.
-*/
+ */
 @interface RKParserRegistry : NSObject {
     NSMutableDictionary *_MIMETypeToParserClasses;
     NSMutableArray *_MIMETypeToParserClassesRegularExpressions;
+    NSData *_whitespaceData;
 }
 
 /**
  Return the global shared singleton registry for MIME Type to Parsers
-
+ 
  @return The global shared RKParserRegistry instance.
  */
 + (RKParserRegistry *)sharedRegistry;
 
 /**
  Sets the global shared registry singleton to a new instance of RKParserRegistry
-
+ 
  @param registry A new parser registry object to configure as the shared instance.
  */
 + (void)setSharedRegistry:(RKParserRegistry *)registry;
 
 /**
+ Returns the parsed data by delegating to a registered parser for the specified
+ MIME type.
+ 
+ If the data cannot be handled directly by the parser, it is first converted to
+ a string and subsequently passed to the parser.
+ 
+ @param data The data to be parsed.
+ @param MIMEType The MIME Type of the content to be parsed.
+ @param encoding The NSStringEncoding to use when converting the data to string.
+ @param error A pointer to an NSError object.
+ @return The parsed object or nil if an error occurred during parsing.
+ */
+- (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType encoding:(NSStringEncoding)encoding error:(NSError **)error;
+
+/**
+ Returns the parsed data by delegating to a registered parser for the specified
+ MIME type.
+ 
+ This simply invokes parseData:withMIMEType:encoding:error: with a NSUTF8StringEncoding.
+ 
+ @param data The data to be parsed.
+ @param MIMEType The MIME Type of the content to be parsed.
+ @param error A pointer to an NSError object.
+ @return The parsed object or nil if an error occurred during parsing.
+ */
+- (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType error:(NSError **)error;
+
+/**
+ Returns the serialized data by delegating to a registered parser for the specified
+ MIME type.
+ 
+ If the parser is only able to serialize to string, the serialized string will
+ be converted to NSData.
+ 
+ @param object The object to be serialized.
+ @param MIMEType The desired MIME Type for the serialized output.
+ @param error A pointer to an NSError object.
+ @return The serialized object or nil if an error occurred during serialization.
+ */
+- (NSData *)serializeObject:(id)object forMIMEType:(NSString *)MIMEType error:(NSError **)error;
+
+/**
  Returns an instance of the RKParser conformant class registered to handle content
  with the given MIME Type.
-
+ 
  MIME Types are searched in the order in which they are registered and exact
  string matches are favored over regular expressions.
-
+ 
  @param MIMEType The MIME Type of the content to be parsed/serialized.
  @return An instance of the RKParser conformant class registered to handle the given MIME Type.
  */
@@ -61,10 +104,10 @@
 /**
  Returns an instance of the RKParser conformant class registered to handle content
  with the given MIME Type.
-
+ 
  MIME Types are searched in the order in which they are registered and exact
  string matches are favored over regular expressions.
-
+ 
  @param MIMEType The MIME Type of the content to be parsed/serialized.
  @return The RKParser conformant class registered to handle the given MIME Type.
  */
@@ -73,7 +116,7 @@
 /**
  Registers an RKParser conformant class as the handler for MIME Types exactly matching the
  specified MIME Type string.
-
+ 
  @param parserClass The RKParser conformant class to instantiate when parsing/serializing MIME Types matching MIMETypeExpression.
  @param MIMEType A MIME Type string for which instances of parserClass should be used for parsing/serialization.
  */
@@ -84,13 +127,21 @@
 /**
  Registers an RKParser conformant class as the handler for MIME Types matching the
  specified regular expression.
-
+ 
  @param parserClass The RKParser conformant class to instantiate when parsing/serializing MIME Types matching MIMETypeExpression.
  @param MIMETypeRegex A regular expression that matches MIME Types that should be handled by instances of parserClass.
  */
 - (void)setParserClass:(Class<RKParser>)parserClass forMIMETypeRegularExpression:(NSRegularExpression *)MIMETypeRegex;
 
 #endif
+
+/**
+ Returns wether the registry has a registered parser for that MIME type.
+ 
+ @param MIMEType The MIME type to test if it is parsable.
+ @return YES if a registered parser for that MIME type is registered, NO otherwise.
+ */
+- (BOOL)canParseMIMEType:(NSString*)MIMEType;
 
 /**
  Automatically configure the registry via run-time reflection of the RKParser classes

@@ -1,5 +1,5 @@
 //
-//  RKObjectSerializer.m
+//  RKObjectParameters.m
 //  RestKit
 //
 //  Created by Blake Watters on 5/2/11.
@@ -18,39 +18,64 @@
 //  limitations under the License.
 //
 
-#import "RKRequestSerialization.h"
 #import "RKMIMETypes.h"
 #import "RKParser.h"
-#import "RKObjectSerializer.h"
-#import "NSDictionary+RKRequestSerialization.h"
+#import "RKObjectParameters.h"
 #import "RKParserRegistry.h"
 #import "RKLog.h"
 #import "RKObjectMappingOperationDataSource.h"
+
+#import "RKObjectMapping.h"
+#import "RKMappingOperation.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
-@interface RKObjectSerializer ()
-@property (nonatomic, readwrite, strong) id object;
-@property (nonatomic, readwrite, strong) RKObjectMapping *mapping;
-@property (nonatomic, readwrite, strong) NSString *rootKeyPath;
+@interface RKObjectParameters () <RKMappingOperationDelegate>
+@property (nonatomic, strong) id object;
+@property (nonatomic, strong) RKRequestDescriptor *requestDescriptor;
+
+- (id)initWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor;
+- (NSDictionary *)mapObjectToParameters:(NSError **)error;
+
+// Convenience methods
+@property (nonatomic, readonly) RKObjectMapping *mapping;
+@property (nonatomic, readonly) NSString *rootKeyPath;
 @end
 
-@implementation RKObjectSerializer
+@implementation RKObjectParameters
 
-- (id)initWithObject:(id)object mapping:(RKObjectMapping *)mapping rootKeyPath:(NSString *)rootKeyPath;
++ (NSDictionary *)parametersWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor error:(NSError **)error
 {
+    RKObjectParameters *objectParameters = [[self alloc] initWithObject:object requestDescriptor:requestDescriptor];
+    return [objectParameters mapObjectToParameters:error];
+}
+
+- (id)initWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor
+{
+    NSParameterAssert(object);
+    NSParameterAssert(requestDescriptor);
+    
     self = [super init];
     if (self) {
         self.object = object;
-        self.mapping = mapping;
-        self.rootKeyPath = rootKeyPath;
+        self.requestDescriptor = requestDescriptor;
     }
     return self;
 }
 
-- (id)serializeObjectToDictionary:(NSError **)error
+- (RKMapping *)mapping
+{
+    return self.requestDescriptor.mapping;
+}
+
+- (NSString *)rootKeyPath
+{
+    return self.requestDescriptor.rootKeyPath;
+}
+
+- (NSDictionary *)mapObjectToParameters:(NSError **)error
 {
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
@@ -66,46 +91,11 @@
     return self.rootKeyPath ? [NSMutableDictionary dictionaryWithObject:dictionary forKey:self.rootKeyPath] : dictionary;
 }
 
-- (id)serializeObjectToMIMEType:(NSString *)MIMEType error:(NSError **)error
-{
-    // TODO: This will fail for form encoded...
-    id serializedObject = [self serializeObjectToDictionary:error];
-    if (serializedObject) {
-        id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-        NSString *string = [parser stringFromObject:serializedObject error:error];
-        if (string == nil) {
-            return nil;
-        }
-
-        return string;
-    }
-
-    return nil;
-}
-
-- (id<RKRequestSerializable>)serializationForMIMEType:(NSString *)MIMEType error:(NSError **)error
-{
-    if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
-        // Dictionaries are natively RKRequestSerializable as Form Encoded
-        return [self serializeObjectToDictionary:error];
-    } else {
-        NSString *string = [self serializeObjectToMIMEType:MIMEType error:error];
-        if (string) {
-            NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
-            return [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
-        }
-    }
-
-    return nil;
-}
-
 #pragma mark - RKObjectMappingOperationDelegate
 
 - (void)mappingOperation:(RKMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping
 {
     id transformedValue = nil;
-    Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
-
     if ([value isKindOfClass:[NSDate class]]) {
         // Date's are not natively serializable, must be encoded as a string
         @synchronized(self.mapping.preferredDateFormatter) {
@@ -114,7 +104,7 @@
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits
         transformedValue = [(NSDecimalNumber *)value stringValue];
-    } else if ([value isKindOfClass:orderedSetClass]) {
+    } else if ([value isKindOfClass:[NSOrderedSet class]]) {
         // NSOrderedSets are not natively serializable, so let's just turn it into an NSArray
         transformedValue = [value array];
     }

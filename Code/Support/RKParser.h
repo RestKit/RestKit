@@ -20,31 +20,30 @@
 
 /**
  The RKParser protocol declares two methods that a class must implement
- so that it can provide support for parsing and serializing object
- representations to the RestKit framework. Parsers are required to transform
- data to and from string representations and are configured via the
+ so that it can provide support for parsing and serializing objects
+ to and from data representations and are configured via the
  RKParserRegistry shared instance.
  */
-@protocol RKParser
+@protocol RKParser <NSObject>
 
 /**
- Returns an object representation of the source string encoded in the
+ Returns an object representation of the source data encoded in the
  format provided by the parser (i.e. JSON, XML, etc).
-
- @param string The string representation of the object to be parsed.
+ 
+ @param data The data representation of the object to be parsed encoded in UTF-8.
  @param error A pointer to an NSError object.
  @return The parsed object or nil if an error occurred during parsing.
  */
-- (id)objectFromString:(NSString *)string error:(NSError **)error;
+- (id)objectFromData:(NSData *)data error:(NSError **)error;
 
 /**
- Returns a string representation encoded in the format
+ Returns a data representation encoded in the format
  provided by the parser (i.e. JSON, XML, etc) for the given object.
-
+ 
  @param object The object to be serialized.
  @param A pointer to an NSError object.
- @return A string representation of the serialized object or nil if an error occurred.
+ @return A data representation of the serialized object encoded in UTF-8 or nil if an error occurred.
  */
-- (NSString *)stringFromObject:(id)object error:(NSError **)error;
+- (NSData *)dataFromObject:(id)object error:(NSError **)error;
 
 @end

@@ -19,40 +19,80 @@
 //
 
 #import "RKParserRegistry.h"
+#import "RKErrors.h"
 
 RKParserRegistry *gSharedRegistry;
 
 @implementation RKParserRegistry
 
-+ (RKParserRegistry *)sharedRegistry
-{
++ (RKParserRegistry *)sharedRegistry {
     if (gSharedRegistry == nil) {
         gSharedRegistry = [RKParserRegistry new];
         [gSharedRegistry autoconfigure];
     }
-
+    
     return gSharedRegistry;
 }
 
-+ (void)setSharedRegistry:(RKParserRegistry *)registry
-{
++ (void)setSharedRegistry:(RKParserRegistry *)registry {
     gSharedRegistry = registry;
 }
 
-- (id)init
-{
+- (id)init {
     self = [super init];
     if (self) {
         _MIMETypeToParserClasses = [[NSMutableDictionary alloc] init];
         _MIMETypeToParserClassesRegularExpressions = [[NSMutableArray alloc] init];
+        _whitespaceData = [[NSData alloc] initWithBytes:" " length:1];
     }
-
+    
     return self;
 }
 
+- (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType encoding:(NSStringEncoding)encoding error:(NSError **)error {
+    // Handle empty data and data containing a single whitespace character:
+    NSUInteger length = [data length];
+    if (length == 0 || (length == 1 && [data isEqualToData:_whitespaceData])) {
+        if (error) {
+            NSString* errorMessage = [NSString stringWithFormat:@"Attemped to parse empty data for MIME Type '%@'", MIMEType];
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:errorMessage, NSLocalizedDescriptionKey, nil];
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKParserRegistryEmptyDataError userInfo:userInfo];
+        }
+        return nil;
+    }
+    
+    id<RKParser> parser = [self parserForMIMEType:MIMEType];
+    if (!parser) {
+        if (error) {
+            NSString* errorMessage = [NSString stringWithFormat:@"Cannot parse data without a parser for MIME Type '%@'", MIMEType];
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:errorMessage, NSLocalizedDescriptionKey, nil];
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKParserRegistryMissingParserError userInfo:userInfo];
+        }
+        return nil;
+    }
+    
+    return [parser objectFromData:data error:error];
+}
 
-- (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType
-{
+- (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType error:(NSError **)error {
+    return [self parseData:data withMIMEType:MIMEType encoding:NSUTF8StringEncoding error:error];
+}
+
+- (NSData *)serializeObject:(id)object forMIMEType:(NSString *)MIMEType error:(NSError **)error {
+    id<RKParser> parser = [self parserForMIMEType:MIMEType];
+    if (!parser) {
+        if (error) {
+            NSString* errorMessage = [NSString stringWithFormat:@"Cannot serialize object without a parser for MIME Type '%@'", MIMEType];
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:errorMessage, NSLocalizedDescriptionKey, nil];
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKParserRegistryMissingParserError userInfo:userInfo];
+        }
+        return nil;
+    }
+    
+    return [parser dataFromObject:object error:error];
+}
+
+- (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType {
     id parserClass = [_MIMETypeToParserClasses objectForKey:MIMEType];
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
     if (!parserClass)
@@ -70,35 +110,35 @@ RKParserRegistry *gSharedRegistry;
     return parserClass;
 }
 
-- (void)setParserClass:(Class<RKParser>)parserClass forMIMEType:(NSString *)MIMEType
-{
+- (void)setParserClass:(Class<RKParser>)parserClass forMIMEType:(NSString *)MIMEType {
     [_MIMETypeToParserClasses setObject:parserClass forKey:MIMEType];
 }
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
 
-- (void)setParserClass:(Class<RKParser>)parserClass forMIMETypeRegularExpression:(NSRegularExpression *)MIMETypeRegex
-{
+- (void)setParserClass:(Class<RKParser>)parserClass forMIMETypeRegularExpression:(NSRegularExpression *)MIMETypeRegex {
     NSArray *expressionAndClass = [NSArray arrayWithObjects:MIMETypeRegex, parserClass, nil];
     [_MIMETypeToParserClassesRegularExpressions addObject:expressionAndClass];
 }
 
 #endif
 
-- (id<RKParser>)parserForMIMEType:(NSString *)MIMEType
-{
+- (id<RKParser>)parserForMIMEType:(NSString *)MIMEType {
     Class parserClass = [self parserClassForMIMEType:MIMEType];
     if (parserClass) {
         return [[parserClass alloc] init];
     }
-
+    
     return nil;
 }
 
-- (void)autoconfigure
-{
-    Class parserClass = nil;
+- (BOOL)canParseMIMEType:(NSString*)MIMEType {
+    return [self parserClassForMIMEType:MIMEType] != nil;
+}
 
+- (void)autoconfigure {
+    Class parserClass = nil;
+    
     // JSON
     NSSet *JSONParserClassNames = [NSSet setWithObjects:@"RKJSONParserJSONKit", @"RKJSONParserYAJL", @"RKJSONParserSBJSON", @"RKJSONParserNXJSON", nil];
     for (NSString *parserClassName in JSONParserClassNames) {
@@ -108,7 +148,7 @@ RKParserRegistry *gSharedRegistry;
             break;
         }
     }
-
+    
     // XML
     parserClass = NSClassFromString(@"RKXMLParserXMLReader");
     if (parserClass) {

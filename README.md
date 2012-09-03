@@ -77,11 +77,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
   <tr>
     <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectMappingOperation.html">RKObjectMappingOperation</a></td>
     <td>An <tt>NSOperation</tt> that performs a mapping between object representations using an <tt>RKObjectMapping</tt>.</td>
-  </tr>
-  <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectSerializer.html">RKObjectSerializer</a></td>
-    <td>Performs serialization of a given object into an <tt>NSDictionary</tt> represenation suitable for use as the parameters of an HTTP request.</td>
-  </tr>
+  </tr>  
   <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/Network/README.md">Networking</a></th></tr>
   <tr>
     <td><a href="http://restkit.org/api/0.20.0/Classes/RKRequestDescriptor.html">RKRequestDescriptor</a></td>
@@ -90,6 +86,10 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
   <tr>
     <td><a href="http://restkit.org/api/0.20.0/Classes/RKResponseDescriptor.html">RKResponseDescriptor</a></td>
     <td>Describes an object mappable response that may be returned from a remote web application in terms of an object mapping, a key path, a <a href="">SOCKit pattern</a> for matching the URL, and a set of status codes that define the circumstances in which the mapping is appropriate for a given response.</td>
+  </tr>
+  <tr>
+    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectParameters.html">RKObjectParameters</a></td>
+    <td>Performs serialization of a given object into an <tt>NSDictionary</tt> represenation suitable for use as the parameters of an HTTP request.</td>
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectRequestOperation.html">RKObjectRequestOperation</a></td>

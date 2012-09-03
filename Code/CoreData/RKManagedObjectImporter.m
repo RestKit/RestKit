@@ -184,7 +184,7 @@
     [self resetPersistentStoreIfNecessary];
 
     NSError *localError = nil;
-    NSString *payload = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&localError];
+    NSData *payload = [NSData dataWithContentsOfFile:path options:0 error:&localError];
     if (! payload) {
         RKLogError(@"Failed to read file at path '%@': %@", path, [localError localizedDescription]);
         if (error) *error = localError;
@@ -192,10 +192,11 @@
     }
 
     NSString *MIMEType = [path MIMETypeForPathExtension];
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-    // TODO: Return error RKParserNotRegisteredForMIMETypeError
-    NSAssert1(parser, @"Could not find a parser for the MIME Type '%@'", MIMEType);
-    id parsedData = [parser objectFromString:payload error:&localError];
+    id parsedData = [[RKParserRegistry sharedRegistry] parseData:payload withMIMEType:MIMEType error:&localError];
+    if (!parsedData) {
+        RKLogError(@"Failed to parse file at path '%@': %@", path, [localError localizedDescription]);
+    }
+    
     if (! parsedData) {
         if (error) *error = localError;
         return NSNotFound;

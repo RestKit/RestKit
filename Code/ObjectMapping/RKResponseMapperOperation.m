@@ -78,9 +78,7 @@ static NSString * RKUnsupportedMIMETypeErrorKey = @"MIME Type";
         return nil;
     }
 
-    // TODO: Pull in the NSData parser support...
-    NSString *string = [[NSString alloc] initWithData:self.data encoding:NSUTF8StringEncoding];
-    return [parser objectFromString:string error:error];
+    return [parser objectFromData:self.data error:error];
 }
 
 - (BOOL)responseMatchesMappingDescriptor:(RKResponseDescriptor *)mappingDescriptor

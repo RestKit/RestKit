@@ -19,7 +19,7 @@
 //
 
 #import "RKObjectManager.h"
-#import "RKObjectSerializer.h"
+#import "RKObjectParameters.h"
 #import "RKManagedObjectStore.h"
 #import "RKSupport.h"
 #import "RKRequestDescriptor.h"
@@ -226,9 +226,8 @@ static NSOperationQueue *defaultMappingQueue = nil;
     NSDictionary *requestParameters = nil;
     RKRequestDescriptor *requestDescriptor = [self requestDescriptorForObject:object];
     if (requestDescriptor) {
-        RKObjectSerializer *serializer = [[RKObjectSerializer alloc] initWithObject:object mapping:(RKObjectMapping *)requestDescriptor.mapping rootKeyPath:requestDescriptor.rootKeyPath];
-        NSError *error;
-        NSMutableDictionary *mergedParameters = [[serializer serializeObjectToDictionary:&error] mutableCopy];
+        NSError *error = nil;
+        NSMutableDictionary *mergedParameters = [[RKObjectParameters parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
         if (parameters) [mergedParameters reverseMergeWith:parameters];
         requestParameters = mergedParameters;
     } else {
@@ -249,9 +248,8 @@ static NSOperationQueue *defaultMappingQueue = nil;
     NSDictionary *requestParameters = nil;
     RKRequestDescriptor *requestDescriptor = [self requestDescriptorForObject:object];
     if (requestDescriptor) {
-        RKObjectSerializer *serializer = [[RKObjectSerializer alloc] initWithObject:object mapping:(RKObjectMapping *)requestDescriptor.mapping rootKeyPath:requestDescriptor.rootKeyPath];
-        NSError *error;
-        NSMutableDictionary *mergedParameters = [[serializer serializeObjectToDictionary:&error] mutableCopy];
+        NSError *error = nil;
+        NSMutableDictionary *mergedParameters = [[RKObjectParameters parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
         if (parameters) [mergedParameters reverseMergeWith:parameters];
         requestParameters = mergedParameters;
     } else {
