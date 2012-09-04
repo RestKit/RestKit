@@ -451,7 +451,7 @@ If you are including the RestKit sources directly into a project that does not y
 
 ### Serialization Formats
 
-RestKit provides a pluggable interface for handling arbitrary serialization formats via the `[RKSerialization](http://restkit.org/api/0.20.0/Classes/RKSerialization.html)` protocol and the `[RKMIMETypeSerialization](http://restkit.org/api/0.20.0/Classes/RKMIMETypeSerialization.html)` class. Out of the box, RestKit supports handling the [JSON](http://www.json.org/) format for serializing and deserializing object representations via the [`NSJSONSerialization`](http://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html) class.
+RestKit provides a pluggable interface for handling arbitrary serialization formats via the [`RKSerialization`](http://restkit.org/api/0.20.0/Classes/RKSerialization.html) protocol and the [`RKMIMETypeSerialization`](http://restkit.org/api/0.20.0/Classes/RKMIMETypeSerialization.html) class. Out of the box, RestKit supports handling the [JSON](http://www.json.org/) format for serializing and deserializing object representations via the [`NSJSONSerialization`](http://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html) class.
 
 #### Additional Serializations
 
