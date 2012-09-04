@@ -98,7 +98,7 @@
     [mapping mapAttributes:@"boolString", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
 
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id<RKSerialization> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"boolString\":true}" error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
@@ -114,7 +114,7 @@
     [mapping mapAttributes:@"boolNumber", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
 
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id<RKSerialization> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"boolNumber\":true}" error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
@@ -130,7 +130,7 @@
     [mapping mapAttributes:@"boolNumber", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
 
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id<RKSerialization> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"boolNumber\":false}" error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
@@ -146,7 +146,7 @@
     [mapping mapKeyPath:@"number" toAttribute:@"boolString"];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
 
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id<RKSerialization> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"number\":123}" error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
@@ -162,7 +162,7 @@
     [mapping mapKeyPath:@"numbers" toAttribute:@"orderedSet"];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
 
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id<RKSerialization> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"numbers\":[1, 2, 3]}" error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];

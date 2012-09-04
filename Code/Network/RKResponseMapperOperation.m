@@ -17,13 +17,6 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
-// TODO: migrate into a better error home
-enum {
-    RKUnsupportedMIMETypeError  =   1000
-};
-
-static NSString * RKUnsupportedMIMETypeErrorKey = @"MIME Type";
-
 @interface RKResponseMapperOperation ()
 @property (nonatomic, strong, readwrite) NSHTTPURLResponse *response;
 @property (nonatomic, strong, readwrite) NSData *data;
@@ -58,27 +51,21 @@ static NSString * RKUnsupportedMIMETypeErrorKey = @"MIME Type";
 - (id)parseResponseData:(NSError **)error
 {
     NSString *MIMEType = [self.response MIMEType];
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-    if (! parser) {
-        NSMutableDictionary *rkUserInfo = [NSMutableDictionary dictionary];
-        [rkUserInfo setValue:MIMEType forKey:RKUnsupportedMIMETypeErrorKey];
-        [rkUserInfo setValue:[NSString stringWithFormat:@"Attempted to parse response with unsupported MIME Type %@", MIMEType] forKey:NSLocalizedDescriptionKey];
-        [rkUserInfo setValue:NSLocalizedString(@"Attempted to parse response with unsupported MIME Type", nil) forKey:NSLocalizedFailureReasonErrorKey];
-        NSError *restKitError = [[NSError alloc] initWithDomain:RKErrorDomain code:RKUnsupportedMIMETypeError userInfo:rkUserInfo];
-
+    NSError *underlyingError;
+    id object = [RKMIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
+    if (! object) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
         [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable response (%ld) with content type '%@'", (long) self.response.statusCode, MIMEType]
                     forKey:NSLocalizedDescriptionKey];
         [userInfo setValue:[self.response URL] forKey:NSURLErrorFailingURLErrorKey];
-        [userInfo setValue:restKitError forKey:NSUnderlyingErrorKey];
-        NSError *HTTPError = [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
+        [userInfo setValue:underlyingError forKey:NSUnderlyingErrorKey];
+        NSError *HTTPError = [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorCannotParseResponse userInfo:userInfo];
 
         if (error) *error = HTTPError;
 
         return nil;
     }
-
-    return [parser objectFromData:self.data error:error];
+    return object;
 }
 
 - (BOOL)responseMatchesMappingDescriptor:(RKResponseDescriptor *)mappingDescriptor

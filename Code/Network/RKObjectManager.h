@@ -25,7 +25,7 @@
 #import "AFNetworking.h"
 #import "RKManagedObjectRequestOperation.h"
 
-@protocol RKParser;
+@protocol RKSerialization;
 @class RKManagedObjectStore, RKObjectRequestOperation, RKManagedObjectRequestOperation,
 RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 

@@ -1,5 +1,5 @@
 //
-//  RKObjectParameters.h
+//  RKObjectParameterization.h
 //  RestKit
 //
 //  Created by Blake Watters on 5/2/11.
@@ -25,7 +25,7 @@
  object into an NSDictionary representation suitable for use as the parameters of an
  HTTP request.
  */
-@interface RKObjectParameters : NSObject
+@interface RKObjectParameterization : NSObject
 
 /**
  Returns a dictionary representation of the given object by performing object mapping using the mapping 

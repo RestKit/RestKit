@@ -15,7 +15,6 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.7'
   
   s.dependency 'RestKit/Network'
-  s.dependency 'RestKit/JSONKit'
   s.dependency 'RestKit/ObjectMapping'
   s.dependency 'RestKit/ObjectMapping/CoreData'
   s.dependency 'RestKit/Search'
@@ -30,11 +29,6 @@ Pod::Spec.new do |s|
     ns.dependency       'LibComponentLogging-NSLog', '>= 1.0.4'
     ns.dependency       'SOCKit'
     ns.dependency       'AFNetworking', '1.0RC1'
-  end
-  
-  s.subspec 'JSONKit' do |jos|
-    jos.source_files = 'Code/Support/Parsers/JSON/RKJSONParserJSONKit.{h,m}'
-    jos.dependency     'JSONKit', '>= 1.5pre'
   end    
   
   s.subspec 'ObjectMapping' do |os|

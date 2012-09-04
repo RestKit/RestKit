@@ -42,7 +42,7 @@
 {
     RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
-    id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
+    id<RKSerialization> parser = [registry parserForMIMEType:RKMIMETypeJSON];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 
@@ -50,7 +50,7 @@
 {
     RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
     [registry autoconfigure];
-    id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
+    id<RKSerialization> parser = [registry parserForMIMEType:RKMIMETypeJSON];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
     parser = [registry parserForMIMEType:RKMIMETypeXML];
     assertThat(parser, is(instanceOf([RKXMLParserXMLReader class])));
@@ -60,7 +60,7 @@
 {
     RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
-    id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
+    id<RKSerialization> parser = [registry parserForMIMEType:RKMIMETypeJSON];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 
@@ -70,7 +70,7 @@
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:&error];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMETypeRegularExpression:regex];
-    id<RKParser> parser = [registry parserForMIMEType:@"application/xml+whatever"];
+    id<RKSerialization> parser = [registry parserForMIMEType:@"application/xml+whatever"];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 
@@ -83,11 +83,11 @@
     [registry setParserClass:[RKXMLParserXMLReader class] forMIMEType:@"application/xml+whatever"];
 
     // Exact match
-    id<RKParser> exactParser = [registry parserForMIMEType:@"application/xml+whatever"];
+    id<RKSerialization> exactParser = [registry parserForMIMEType:@"application/xml+whatever"];
     assertThat(exactParser, is(instanceOf([RKXMLParserXMLReader class])));
 
     // Fallback to regex
-    id<RKParser> regexParser = [registry parserForMIMEType:@"application/xml+different"];
+    id<RKSerialization> regexParser = [registry parserForMIMEType:@"application/xml+different"];
     assertThat(regexParser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 

@@ -31,9 +31,10 @@ typedef enum {
     RKRequestUnexpectedResponseError            =   3,
     RKObjectLoaderUnexpectedResponseError       =   4,
     RKRequestConnectionTimeoutError             =   5,
-    RKParserRegistryMissingParserError          =   6,
+    RKUnsupportedMIMETypeError                  =   6,
     RKParserRegistryEmptyDataError              =   7
 } RKRestKitError;
+
 
 /** @name Error Constants */
 
@@ -55,3 +56,5 @@ extern NSString * const RKErrorNotificationErrorKey;
 extern NSString * const RKObjectMapperErrorObjectsKey;
 
 extern NSString * const RKDetailedErrorsKey; // When multiple errors occur, they are stored in a composite error
+
+extern NSString * const RKMIMETypeErrorKey;

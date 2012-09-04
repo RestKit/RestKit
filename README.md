@@ -88,8 +88,8 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
     <td>Describes an object mappable response that may be returned from a remote web application in terms of an object mapping, a key path, a <a href="">SOCKit pattern</a> for matching the URL, and a set of status codes that define the circumstances in which the mapping is appropriate for a given response.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectParameters.html">RKObjectParameters</a></td>
-    <td>Performs serialization of a given object into an <tt>NSDictionary</tt> represenation suitable for use as the parameters of an HTTP request.</td>
+    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectParameterization.html">RKObjectParameterization</a></td>
+    <td>Performs mapping of a given object into an <tt>NSDictionary</tt> represenation suitable for use as the parameters of an HTTP request.</td>
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectRequestOperation.html">RKObjectRequestOperation</a></td>
@@ -449,13 +449,13 @@ As of [version 0.20.0](https://github.com/RestKit/RestKit/wiki/Restkit-0.20.0), 
 
 If you are including the RestKit sources directly into a project that does not yet use [Automatic Reference Counting](http://clang.llvm.org/docs/AutomaticReferenceCounting.html), you will need to set the `-fobjc-arc` compiler flag on all of the RestKit source files. To do this in Xcode, go to your active target and select the "Build Phases" tab. Now select all RestKit source files, press Enter, insert `-fobjc-arc` and then "Done" to enable ARC for RestKit.
 
-### Document Coders
+### Serialization Formats
 
-RestKit provides a pluggable interface for handling arbitrary document formats via the `[RKCoding](http://restkit.org/api/0.20.0/Classes/RKCoding.html)` protocol and the `[RKCoder](http://restkit.org/api/0.20.0/Classes/RKCoder.html)` class. Out of the box, RestKit supports handling the [JSON](http://www.json.org/) format for serializing and deserializing object representations via the [`NSJSONSerialization`](http://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html) class.
+RestKit provides a pluggable interface for handling arbitrary serialization formats via the `[RKSerialization](http://restkit.org/api/0.20.0/Classes/RKSerialization.html)` protocol and the `[RKMIMETypeSerialization](http://restkit.org/api/0.20.0/Classes/RKMIMETypeSerialization.html)` class. Out of the box, RestKit supports handling the [JSON](http://www.json.org/) format for serializing and deserializing object representations via the [`NSJSONSerialization`](http://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html) class.
 
-#### Additional Coders
+#### Additional Serializations
 
-Support for additional formats and alternate coding backends is provided via external modules that can be added to the project. Currently the following coders are available for use:
+Support for additional formats and alternate serialization backends is provided via external modules that can be added to the project. Currently the following serialization implementations are available for use:
 
 * JSONKit
 * SBJSON

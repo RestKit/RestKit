@@ -1,5 +1,5 @@
 //
-//  RKObjectParameters.m
+//  RKObjectParameterization.m
 //  RestKit
 //
 //  Created by Blake Watters on 5/2/11.
@@ -19,9 +19,9 @@
 //
 
 #import "RKMIMETypes.h"
-#import "RKParser.h"
-#import "RKObjectParameters.h"
-#import "RKParserRegistry.h"
+#import "RKSerialization.h"
+#import "RKObjectParameterization.h"
+#import "RKMIMETypeSerialization.h"
 #import "RKLog.h"
 #import "RKObjectMappingOperationDataSource.h"
 
@@ -32,7 +32,7 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
-@interface RKObjectParameters () <RKMappingOperationDelegate>
+@interface RKObjectParameterization () <RKMappingOperationDelegate>
 @property (nonatomic, strong) id object;
 @property (nonatomic, strong) RKRequestDescriptor *requestDescriptor;
 
@@ -44,11 +44,11 @@
 @property (nonatomic, readonly) NSString *rootKeyPath;
 @end
 
-@implementation RKObjectParameters
+@implementation RKObjectParameterization
 
 + (NSDictionary *)parametersWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor error:(NSError **)error
 {
-    RKObjectParameters *objectParameters = [[self alloc] initWithObject:object requestDescriptor:requestDescriptor];
+    RKObjectParameterization *objectParameters = [[self alloc] initWithObject:object requestDescriptor:requestDescriptor];
     return [objectParameters mapObjectToParameters:error];
 }
 

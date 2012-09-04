@@ -21,8 +21,8 @@
 #import "NSBundle+RKAdditions.h"
 #import "NSString+RKAdditions.h"
 #import "RKLog.h"
-#import "RKParser.h"
-#import "RKParserRegistry.h"
+#import "RKSerialization.h"
+#import "RKMIMETypeSerialization.h"
 
 @implementation NSBundle (RKAdditions)
 
@@ -67,10 +67,10 @@
 - (id)parsedObjectWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension
 {
     NSError *error = nil;
-    NSData* resourceContents = [self dataWithContentsOfResource:name withExtension:extension];
+    NSData *resourceContents = [self dataWithContentsOfResource:name withExtension:extension];
     NSString *MIMEType = [self MIMETypeForResource:name withExtension:extension];
 
-    id object = [[RKParserRegistry sharedRegistry] parseData:resourceContents withMIMEType:MIMEType error:&error];    
+    id object = [RKMIMETypeSerialization objectFromData:resourceContents MIMEType:MIMEType error:&error];
     if (object == nil) {
         RKLogCritical(@"%@ Failed to parse resource with name '%@' and extension '%@'. Error: %@", self, name, extension, [error localizedDescription]);
         return nil;

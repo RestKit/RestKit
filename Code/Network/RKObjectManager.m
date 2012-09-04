@@ -19,7 +19,7 @@
 //
 
 #import "RKObjectManager.h"
-#import "RKObjectParameters.h"
+#import "RKObjectParameterization.h"
 #import "RKManagedObjectStore.h"
 #import "RKSupport.h"
 #import "RKRequestDescriptor.h"
@@ -227,7 +227,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
     RKRequestDescriptor *requestDescriptor = [self requestDescriptorForObject:object];
     if (requestDescriptor) {
         NSError *error = nil;
-        NSMutableDictionary *mergedParameters = [[RKObjectParameters parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
+        NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
         if (parameters) [mergedParameters reverseMergeWith:parameters];
         requestParameters = mergedParameters;
     } else {
@@ -249,7 +249,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
     RKRequestDescriptor *requestDescriptor = [self requestDescriptorForObject:object];
     if (requestDescriptor) {
         NSError *error = nil;
-        NSMutableDictionary *mergedParameters = [[RKObjectParameters parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
+        NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
         if (parameters) [mergedParameters reverseMergeWith:parameters];
         requestParameters = mergedParameters;
     } else {
