@@ -21,6 +21,7 @@
 - (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
            withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
                              value:(id)primaryKeyValue
+                     forConnection:(BOOL)isForConnection
             inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSAssert(entity, @"Cannot find existing managed object without a target class");
@@ -60,10 +61,11 @@
 - (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
                                     value:(id)primaryKeyValue
+                            forConnection:(BOOL)isForConnection
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-    NSArray *objects = [self findInstancesOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:managedObjectContext];
-
+    NSArray *objects = [self findInstancesOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute value:primaryKeyValue forConnection:isForConnection inManagedObjectContext:managedObjectContext];
+    
     NSManagedObject *object = nil;
     if ([objects count] > 0) {
         object = [objects objectAtIndex:0];

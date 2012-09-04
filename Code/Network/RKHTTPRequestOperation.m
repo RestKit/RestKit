@@ -161,18 +161,29 @@ static NSString *RKLogTruncateString(NSString *string)
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
 {
-    if ([AFHTTPRequestOperation instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)]) {
-        NSURLRequest *returnValue = [super connection:connection willSendRequest:request redirectResponse:redirectResponse];
-        if (returnValue) {
-            if (redirectResponse) RKLogDebug(@"Following redirect request: %@", returnValue);
-            return returnValue;
-        } else {
-            RKLogDebug(@"Not following redirect to %@", request);
-            return nil;
+    if ([AFHTTPRequestOperation instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)])
+        request = [super connection:connection willSendRequest:request redirectResponse:redirectResponse];
+
+    if (request) {
+        AFHTTPClient *client = [RKObjectManager sharedManager].HTTPClient;
+        if (redirectResponse) {
+            // Was a redirection.  Add HTTP headers back to this new request.
+            NSString *urlString = [request.URL absoluteString];
+            NSString *baseURLString = [client.baseURL absoluteString];
+            if ([urlString hasPrefix:baseURLString]) {
+                NSString *path = [urlString substringFromIndex:[baseURLString length]];
+                request = [client requestWithMethod:request.HTTPMethod path:path parameters:nil];
+            } else {
+                RKLogDebug(@"Not adding headers to request, it is not on our baseURL: %@", urlString);
+            }
+
+            RKLogDebug(@"Following redirect request: %@", request);
         }
-    } else {
-        if (redirectResponse) RKLogDebug(@"Following redirect request: %@", request);
+
         return request;
+    } else {
+        RKLogDebug(@"Not following redirect to %@", request);
+        return nil;
     }
 }
 

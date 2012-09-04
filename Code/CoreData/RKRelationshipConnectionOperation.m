@@ -70,6 +70,7 @@
     return [self.managedObjectCache findInstanceOfEntity:self.connectionMapping.relationship.destinationEntity
                                  withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
                                                    value:sourceValue
+                                           forConnection:YES
                                   inManagedObjectContext:self.managedObjectContext];
 }
 
@@ -134,6 +135,7 @@
         NSArray *objects = [self.managedObjectCache findInstancesOfEntity:self.connectionMapping.relationship.destinationEntity
                                                   withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
                                                                     value:value
+                                                            forConnection:YES
                                                    inManagedObjectContext:self.managedObjectContext];
         [result addObjectsFromArray:objects];
     }
