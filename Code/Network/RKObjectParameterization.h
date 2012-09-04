@@ -21,7 +21,7 @@
 #import "RKRequestDescriptor.h"
 
 /**
- The RKObjectParameters class provides an interface for serializing a local domain
+ The RKObjectParameterization class provides an interface for mapping a local domain
  object into an NSDictionary representation suitable for use as the parameters of an
  HTTP request.
  */
