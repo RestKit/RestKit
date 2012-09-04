@@ -25,4 +25,3 @@
 #import "RKObjectParameterization.h"
 #import "RKMappingResult.h"
 #import "RKObjectMapper.h"
-#import "RKMIMETypeSerialization.h"
