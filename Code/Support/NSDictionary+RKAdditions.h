@@ -26,12 +26,6 @@
 @interface NSDictionary (RKAdditions)
 
 /**
- Creates and initializes a dictionary with key value pairs, with the keys specified
- first instead of the objects.
- */
-+ (id)dictionaryWithKeysAndObjects:(id)firstKey, ... NS_REQUIRES_NIL_TERMINATION;
-
-/**
  Return a new dictionary by stripping out any percent escapes (such as %20)
  from the receiving dictionary's key and values.
 
