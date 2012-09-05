@@ -188,7 +188,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 /////////////////////////////////////////////////////////////
 #pragma mark - Object Collection Loaders
 
-//- (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern
+//- (RKObjectPaginator *)paginatorWithPathPattern:(NSString *)pathPattern
 //{
 //    RKURL *patternURL = [[self baseURL] URLByAppendingResourcePath:resourcePathPattern];
 //    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL

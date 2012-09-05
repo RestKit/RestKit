@@ -1,5 +1,5 @@
 //
-//  RKCoding.h
+//  RKSerialization.h
 //  RestKit
 //
 //  Created by Blake Watters on 10/1/10.

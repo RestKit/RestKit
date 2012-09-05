@@ -196,16 +196,4 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     return nil;
 }
 
-- (NSArray *)routesWithResourcePathPattern:(NSString *)resourcePathPattern
-{
-    NSMutableArray *routes = [NSMutableArray array];
-    for (RKRoute *route in self.routes) {
-        if ([route.resourcePathPattern isEqualToString:resourcePathPattern]) {
-            [routes addObject:route];
-        }
-    }
-
-    return [NSArray arrayWithArray:routes];
-}
-
 @end

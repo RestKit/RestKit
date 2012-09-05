@@ -118,7 +118,7 @@
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setObjectMapping:humanMapping
-                             forResourcePathPattern:@"/JSON/humans/all.json"
+                             forpathPattern:@"/JSON/humans/all.json"
                               withFetchRequestBlock:^ (NSString *resourcePath) {
                                   return fetchRequest;
                               }];
@@ -183,7 +183,7 @@
     assertThatInteger(count, is(equalToInteger(2)));
 
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/coredata/etag" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
+    [objectManager.mappingProvider setObjectMapping:humanMapping forpathPattern:@"/coredata/etag" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
         return fetchRequest;
     }];
 

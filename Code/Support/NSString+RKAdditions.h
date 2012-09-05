@@ -27,17 +27,16 @@
 @interface NSString (RKAdditions)
 
 /**
- Returns a resource path from a dictionary of query parameters URL encoded and appended
- This is a convenience method for constructing a new resource path that includes a query. For example,
- when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
+ Returns a new path from a dictionary of query parameters URL encoded and appended
+ This is a convenience method for constructing a new path that includes a query. For example,
+ when given a path of /contacts and a dictionary of parameters containing foo=bar and color=red,
  will return /contacts?foo=bar&amp;color=red
 
- *NOTE *- Assumes that the resource path does not already contain any query parameters.
- @param queryParameters A dictionary of query parameters to be URL encoded and appended to the resource path
- @return A new resource path with the query parameters appended
+ *NOTE *- Assumes that the path does not already contain any query parameters.
+ @param queryParameters A dictionary of query parameters to be URL encoded and appended to the path
+ @return A new path with the query parameters appended.
  */
 - (NSString *)stringByAppendingQueryParameters:(NSDictionary *)queryParameters;
-- (NSString *)appendQueryParams:(NSDictionary *)queryParams DEPRECATED_ATTRIBUTE;
 
 /**
  Convenience method for generating a path against the properties of an object. Takes
@@ -46,7 +45,7 @@
 
  For example, given an 'article' object with an 'articleID' property of 12345
  [@"articles/:articleID" interpolateWithObject:article] would generate @"articles/12345"
- This functionality is the basis for resource path generation in the Router.
+ This functionality is the basis for path generation in the Router.
 
  @param object The object to interpolate the properties against
  @see RKMakePathWithObject

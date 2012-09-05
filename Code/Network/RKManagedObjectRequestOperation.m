@@ -159,7 +159,7 @@
     if (! localObjects) return NO;
     for (id object in localObjects) {
         if (NO == [results containsObject:object]) {
-            RKLogDebug(@"Deleting orphaned object %@: not found in result set and expected at this resource path", object);
+            RKLogDebug(@"Deleting orphaned object %@: not found in result set and expected at this URL", object);
             [self.privateContext performBlockAndWait:^{
                 [self.privateContext deleteObject:object];
             }];

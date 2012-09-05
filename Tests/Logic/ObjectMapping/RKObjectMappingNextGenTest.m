@@ -1581,8 +1581,8 @@
 //    [mapping mapAttributes:@"name", @"website", nil];
 //    [mapping mapKeyPath:@"id" toAttribute:@"userID"];
 //
-//    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] resourcePathPattern:@"/humans/:userID" method:RKRequestMethodAny]];
-//    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] resourcePathPattern:@"/humans" method:RKRequestMethodPOST]];
+//    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/humans/:userID" method:RKRequestMethodAny]];
+//    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
 //    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
 //
 //    RKTestUser *user = [RKTestUser new];

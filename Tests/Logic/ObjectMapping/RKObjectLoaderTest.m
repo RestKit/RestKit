@@ -295,7 +295,7 @@
     RKObjectMapping *serializationMapping = [mapping inverseMapping];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] resourcePathPattern:@"/204"method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] pathPattern:@"/204"method:RKRequestMethodAny]];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
     RKTestComplexUser *user = [[RKTestComplexUser new] autorelease];
@@ -320,7 +320,7 @@
     RKObjectMapping *serializationMapping = [mapping inverseMapping];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] resourcePathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] pathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
     RKTestComplexUser *user = [[RKTestComplexUser new] autorelease];
@@ -349,7 +349,7 @@
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [[RKParserRegistry sharedRegistry] setParserClass:[RKJSONParserJSONKit class] forMIMEType:@"text/html"];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] resourcePathPattern:@"/noMIME" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] pathPattern:@"/noMIME" method:RKRequestMethodAny]];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
     RKTestComplexUser *user = [[RKTestComplexUser new] autorelease];
@@ -377,7 +377,7 @@
     [targetMapping mapAttributes:@"ID", nil];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] resourcePathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] pathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
     RKTestComplexUser *user = [[RKTestComplexUser new] autorelease];
@@ -414,9 +414,9 @@
     [targetMapping mapAttributes:@"ID", nil];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] resourcePathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] pathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
-    [objectManager.mappingProvider setObjectMapping:targetMapping forResourcePathPattern:@"/notNestedUser"];
+    [objectManager.mappingProvider setObjectMapping:targetMapping forpathPattern:@"/notNestedUser"];
 
     RKTestComplexUser *user = [[RKTestComplexUser new] autorelease];
     user.firstname = @"Blake";
@@ -449,7 +449,7 @@
     RKObjectMapping *serializationMapping = [mapping inverseMapping];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] resourcePathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] pathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
     RKTestComplexUser *user = [[RKTestComplexUser new] autorelease];
@@ -500,7 +500,7 @@
     RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-    [mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/JSON/ComplexNestedUser.json"];
+    [mappingProvider setObjectMapping:userMapping forpathPattern:@"/JSON/ComplexNestedUser.json"];
 
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/ComplexNestedUser.json"];
     RKObjectLoader *objectLoader = [RKObjectLoader loaderWithURL:URL mappingProvider:mappingProvider];
@@ -526,7 +526,7 @@
     RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-    [mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/JSON/:name\\.json"];
+    [mappingProvider setObjectMapping:userMapping forpathPattern:@"/JSON/:name\\.json"];
 
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/ComplexNestedUser.json"];
     RKObjectLoader *objectLoader = [RKObjectLoader loaderWithURL:URL mappingProvider:mappingProvider];
@@ -653,7 +653,7 @@
     [objectManager.mappingQueue setSuspended:YES];
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-    [objectManager.mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/humans/1"];
+    [objectManager.mappingProvider setObjectMapping:userMapping forpathPattern:@"/humans/1"];
     [objectManager loadObjectsAtResourcePath:@"/humans/1" delegate:nil];
     [objectManager.client get:@"/empty/string" delegate:responseLoader];
     [responseLoader waitForResponse];

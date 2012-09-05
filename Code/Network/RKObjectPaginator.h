@@ -60,19 +60,19 @@
 //- (id)initWithPatternURL:(RKURL *)patternURL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 //
 ///**
-// A RKURL with a resource path pattern for building a complete URL from
+// A RKURL with a path pattern for building a complete URL from
 // which to load the paginated resource collection. The patterned resource
 // path will be evaluated against the state of the paginator object itself.
 //
-// For example, given a paginated collection of data at the /articles resource path,
-// the patterned resource path may look like:
+// For example, given a paginated collection of data at the /articles path,
+// the path pattern may look like:
 //
 // /articles?per_page=:perPage&page_number=:currentPage
 //
 // When the pattern is evaluated against the state of the paginator, this will
-// yield a complete resource path that can be used to load the specified page. Given
+// yield a complete path that can be used to load the specified page. Given
 // a paginator configured with 100 objects per page and a current page number of 3,
-// the resource path of the pagination URL would become:
+// the path portion of the pagination URL would become:
 //
 // /articles?per_page=100&page_number=3
 //

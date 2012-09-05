@@ -159,12 +159,4 @@ extern RKRequestMethod const RKRequestMethodAny;
  */
 - (RKRoute *)routeForObject:(id)object method:(RKRequestMethod)method;
 
-/**
- Retrieves all routes with a given resource path pattern.
-
- @param resourcePathPattern The resource path pattern of the routes to be retrieved.
- @return An array containing all routes with a resource path pattern equal to the given value.
- */
-- (NSArray *)routesWithResourcePathPattern:(NSString *)resourcePathPattern;
-
 @end

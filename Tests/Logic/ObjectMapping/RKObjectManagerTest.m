@@ -77,7 +77,7 @@
     [humanSerialization addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [provider setSerializationMapping:humanSerialization forClass:[RKHuman class]];
     _objectManager.mappingProvider = provider;
-    [_objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class] resourcePathPattern:@"/humans" method:RKRequestMethodPOST]];
+    [_objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
 }
 
 - (void)tearDown
@@ -186,7 +186,7 @@
 - (void)testShouldPOSTAnObject
 {
     RKObjectManager *manager = [RKTestFactory objectManager];
-    [manager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] resourcePathPattern:@"/humans" method:RKRequestMethodPOST]];
+    [manager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     mapping.rootKeyPath = @"human";
@@ -210,7 +210,7 @@
 - (void)testShouldNotSetAContentBodyOnAGET
 {
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] resourcePathPattern:@"/humans/1" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/1" method:RKRequestMethodAny]];
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
@@ -233,7 +233,7 @@
 - (void)testShouldNotSetAContentBodyOnADELETE
 {
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] resourcePathPattern:@"/humans/1" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/1" method:RKRequestMethodAny]];
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
@@ -275,7 +275,7 @@
 - (void)testShouldAllowYouToOverrideTheRoutedResourcePath
 {
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] resourcePathPattern:@"/humans/2" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/2" method:RKRequestMethodAny]];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
@@ -373,7 +373,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     mapping.rootKeyPath = @"human";
     [objectManager.mappingProvider registerObjectMapping:mapping withRootKeyPath:@"human"];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] resourcePathPattern:@"/human/1" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/human/1" method:RKRequestMethodAny]];
     objectManager.serializationMIMEType = RKMIMETypeJSON;
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
 

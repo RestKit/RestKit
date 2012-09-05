@@ -45,12 +45,6 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     return [NSString stringWithString:self];
 }
 
-// Deprecated
-- (NSString *)appendQueryParams:(NSDictionary *)queryParams
-{
-    return [self stringByAppendingQueryParameters:queryParams];
-}
-
 - (NSString *)interpolateWithObject:(id)object addingEscapes:(BOOL)addEscapes
 {
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");

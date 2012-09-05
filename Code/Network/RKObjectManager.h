@@ -85,7 +85,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
  <h4>Configuring Routes</h4>
 
- Routing is the process of transforming objects and actions (as defined by HTTP verbs) into resource paths. RestKit ships
+ Routing is the process of transforming objects and actions (as defined by HTTP verbs) into paths. RestKit ships
 
  <h4>Initializing a Core Data Object Store</h4>
  <h3>Loading Remote Objects</h3>
@@ -185,16 +185,16 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /// @name Building Object Request Operations
 
 /**
- Creates and returns an RKObjectPaginator instance targeting the specified resource path pattern.
+ Creates and returns an RKObjectPaginator instance targeting the specified path pattern.
 
- The paginator instantiated will be initialized with an RKURL built by appending the resourcePathPattern to the
+ The paginator instantiated will be initialized with a URL built by appending the pathPattern to the
  baseURL of the client.
 
  @return The newly created paginator instance.
  @see RKObjectMappingProvider
  @see RKObjectPaginator
  */
-//- (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern;
+//- (RKObjectPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
 
 ////////////////////////////////////////////////////////
 /// @name Registered Object Loaders
@@ -295,6 +295,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 - (void)addResponseDescriptorsFromArray:(NSArray *)responseDescriptors;
 - (void)removeResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
 
+// Moves to RKObjectManager+CoreData
 @property (nonatomic, readonly) NSArray *fetchRequestBlocks;
 - (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
 

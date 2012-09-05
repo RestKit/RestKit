@@ -22,10 +22,10 @@
 @class SOCPattern;
 
 /**
- This class performs pattern matching and parameter parsing of strings, usually resource paths.
- It provides much of the necessary tools to map a given resource path to local objects (the inverse
+ This class performs pattern matching and parameter parsing of strings, typically paths.
+ It provides much of the necessary tools to map a given path to local objects (the inverse
  of RKRouter's function).  This makes it easier to implement RKManagedObjectCache, and generate fetched
- requests from a given resource path.  There are two means of instantiating and using a matcher object
+ requests from a given path.  There are two means of instantiating and using a matcher object
  in order to provide more flexibility in implementations, and to improve efficiency by eliminating
  repetitive and costly pattern initializations.
 
@@ -38,7 +38,7 @@
 @property (copy, readonly) NSDictionary *queryParameters;
 
 /**
- Creates an RKPathMatcher starting from a resource path string.  This method should be followed by
+ Creates an RKPathMatcher starting from a path string.  This method should be followed by
  matchesPattern:tokenizeQueryStrings:parsedArguments:
 
  @param pathString The string to evaluate and parse, such as /districts/tx/upper/?apikey=GC5512354
@@ -90,7 +90,7 @@
 + (RKPathMatcher *)matcherWithPattern:(NSString *)patternString;
 
 /**
- Determines if the provided resource path string matches a pattern, and yields a dictionary with the resulting
+ Determines if the given path string matches a pattern, and yields a dictionary with the resulting
  matched key/value pairs.  Use of this method should be preceded by matcherWithPattern:
 
  @param pathString The string to evaluate and parse, such as /districts/tx/upper/?apikey=GC5512354
@@ -101,16 +101,16 @@
 - (BOOL)matchesPath:(NSString *)pathString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments;
 
 /**
- This generates a resource path by interpolating the properties of the 'object' argument, assuming the existence
+ Generates a new path by interpolating the properties of the 'object' argument, assuming the existence
  of a previously specified pattern established via matcherWithPattern:.  Otherwise, this method is identical in
  function to RKMakePathWithObject (in fact it is a shortcut for this method).
 
  For example, given an 'article' object with an 'articleID' property value of 12345 ...
 
    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID"];
-   NSString *resourcePath = [matcher pathFromObject:article];
+   NSString *path = [matcher pathFromObject:article];
 
- ... will produce a 'resourcePath' containing the string "/articles/12345"
+ ... will produce a 'path' containing the string "/articles/12345"
 
  @param object The object containing the properties to interpolate.
  @return A string with the object's interpolated property values inserted into the receiver's established pattern.
@@ -120,16 +120,16 @@
 - (NSString *)pathFromObject:(id)object;
 
 /**
- This generates a resource path by interpolating the properties of the 'object' argument, assuming the existence
+ Generates a path by interpolating the properties of the 'object' argument, assuming the existence
  of a previously specified pattern established via matcherWithPattern:.  Otherwise, this method is identical in
  function to RKMakePathWithObject (in fact it is a shortcut for this method).
 
  For example, given an 'article' object with an 'articleID' property value of 12345 and a code of "This/That"...
 
  RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID/:code"];
- NSString *resourcePath = [matcher pathFromObject:article addingEscapes:YES];
+ NSString *path = [matcher pathFromObject:article addingEscapes:YES];
 
- ... will produce a 'resourcePath' containing the string "/articles/12345/This%2FThat"
+ ... will produce a 'path' containing the string "/articles/12345/This%2FThat"
 
  @param object The object containing the properties to interpolate.
  @param addEscapes Conditionally add percent escapes to the interpolated property values
