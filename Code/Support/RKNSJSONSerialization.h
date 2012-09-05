@@ -8,5 +8,11 @@
 
 #import "RKSerialization.h"
 
+/**
+ An RKSerialization implementation providing serialization and 
+ deserialization of the JSON format using the Apple provided
+ NSJSONSerialization class. This is the default JSON implementation
+ for RestKit.
+ */
 @interface RKNSJSONSerialization : NSObject <RKSerialization>
 @end
