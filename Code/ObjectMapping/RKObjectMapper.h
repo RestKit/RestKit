@@ -20,12 +20,12 @@
 
 #import <CoreData/CoreData.h>
 #import <Foundation/Foundation.h>
+#import <RestKit/Support.h>
 #import "RKObjectMapping.h"
 #import "RKMappingOperation.h"
 #import "RKMappingResult.h"
 #import "RKMappingOperationDataSource.h"
 #import "RKErrors.h"
-#import "RKSupport.h"
 
 @protocol RKObjectMapperDelegate;
 

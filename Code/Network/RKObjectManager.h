@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKNetwork.h"
+#import <RestKit/Network.h>
 #import "RKRouter.h"
 #import "RKObjectPaginator.h"
 #import "RKMacros.h"
@@ -298,5 +298,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 // Moves to RKObjectManager+CoreData
 @property (nonatomic, readonly) NSArray *fetchRequestBlocks;
 - (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
+
+// Provided for subclasses...
+- (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation;
 
 @end

@@ -7,8 +7,8 @@
 //
 
 #import "RKManagedObjectRequestOperation.h"
-#import <RestKit/RKLog.h>
-#import <RestKit/RKHTTPUtilities.h>
+#import "RKLog.h"
+#import "RKHTTPUtilities.h"
 #import "RKResponseMapperOperation.h"
 
 // Set Logging Component

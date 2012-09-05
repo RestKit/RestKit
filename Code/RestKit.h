@@ -18,10 +18,10 @@
 //  limitations under the License.
 //
 
-#import "RKNetwork.h"
-#import "RKSupport.h"
 #import "ObjectMapping.h"
-#import "RKCoreData.h"
+#import "Network.h"
+#import "Support.h"
+#import "CoreData.h"
 
 /**
  Set the App logging component. This header

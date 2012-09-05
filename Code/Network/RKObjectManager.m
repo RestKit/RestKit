@@ -21,10 +21,11 @@
 #import "RKObjectManager.h"
 #import "RKObjectParameterization.h"
 #import "RKManagedObjectStore.h"
-#import "RKSupport.h"
 #import "RKRequestDescriptor.h"
 #import "RKResponseDescriptor.h"
 #import "NSMutableDictionary+RKAdditions.h"
+#import "RKMIMETypes.h"
+#import "RKLog.h"
 
 NSString * const RKObjectManagerDidBecomeOfflineNotification = @"RKDidEnterOfflineModeNotification";
 NSString * const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnlineModeNotification";
@@ -359,7 +360,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
     // This will enable graceful selection of the appropriate managed vs. unmanaged object request operation
     NSURLRequest *request = [self.HTTPClient requestWithMethod:@"GET" path:path parameters:parameters];
     id operation = [self managedObjectRequestOperationWithRequest:request managedObjectContext:self.managedObjectStore.mainQueueManagedObjectContext success:success failure:failure];
-    [self.operationQueue addOperation:operation];
+    [self enqueueObjectRequestOperation:operation];
 }
 
 - (void)getObject:(id)object
@@ -370,7 +371,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 {
     RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodGET path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
-    [self.operationQueue addOperation:operation];
+    [self enqueueObjectRequestOperation:operation];
 }
 
 - (void)postObject:(id)object
@@ -381,7 +382,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 {
     RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodPOST path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
-    [self.operationQueue addOperation:operation];
+    [self enqueueObjectRequestOperation:operation];
 }
 
 - (void)putObject:(id)object
@@ -392,7 +393,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 {
     RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodPUT path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
-    [self.operationQueue addOperation:operation];
+    [self enqueueObjectRequestOperation:operation];
 }
 
 - (void)patchObject:(id)object
@@ -403,7 +404,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 {
     RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodPATCH path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
-    [self.operationQueue addOperation:operation];
+    [self enqueueObjectRequestOperation:operation];
 }
 
 - (void)deleteObject:(id)object
@@ -414,7 +415,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 {
     RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodDELETE path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
-    [self.operationQueue addOperation:operation];
+    [self enqueueObjectRequestOperation:operation];
 }
 
 - (NSArray *)requestDescriptors
@@ -478,6 +479,11 @@ static NSOperationQueue *defaultMappingQueue = nil;
 {
     NSParameterAssert(block);
     [self.mutableFetchRequestBlocks addObject:block];
+}
+
+- (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation
+{
+    [self.operationQueue addOperation:objectRequestOperation];
 }
 
 @end

@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
-#import <RestKit/RKMappingOperationDataSource.h>
+#import "RKMappingOperationDataSource.h"
 
 @interface RKObjectMappingOperationDataSource : NSObject <RKMappingOperationDataSource>
 @end
