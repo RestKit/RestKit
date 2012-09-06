@@ -214,6 +214,8 @@
 
 - (void)setObjectID:(NSManagedObjectID *)objectID forAttributeValue:(id)attributeValue
 {
+    NSAssert(!objectID.isTemporaryID, @"ObjectID should be permanent: %@", objectID);
+
     @synchronized(self.attributeValuesToObjectIDs) {
         attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
         if (attributeValue) {
@@ -257,7 +259,10 @@
     __block id attributeValue;
     __block NSManagedObjectID *objectID;
     [self.managedObjectContext performBlockAndWait:^{
-        entity = object.entity;
+        NSError *error = nil;
+        if (object.objectID.isTemporaryID)
+            if (![self.managedObjectContext obtainPermanentIDsForObjects:@[object] error:&error])
+                RKLogError(@"Unable to obtain permanent ID for object: %@", object);        entity = object.entity;
         objectID = [object objectID];
         attributeValue = [object valueForKey:self.attribute];
     }];
@@ -271,7 +276,7 @@
     __block NSEntityDescription *entity;
     __block id attributeValue;
     __block NSManagedObjectID *objectID;
-    [object.managedObjectContext performBlockAndWait:^{
+    [self.managedObjectContext performBlockAndWait:^{
         entity = object.entity;
         objectID = [object objectID];
         attributeValue = [object valueForKey:self.attribute];
