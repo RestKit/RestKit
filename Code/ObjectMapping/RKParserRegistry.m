@@ -123,6 +123,12 @@ RKParserRegistry *gSharedRegistry;
         [self setParserClass:parserClass forMIMEType:RKMIMETypeXML];
         [self setParserClass:parserClass forMIMEType:RKMIMETypeTextXML];
     }
+
+    // URLEncode
+    parserClass = NSClassFromString(@"RKURLEncodeParser");
+    if(parserClass) {
+        [self setParserClass:parserClass forMIMEType:RKMIMETypeFormURLEncoded];
+    }
 }
 
 @end
