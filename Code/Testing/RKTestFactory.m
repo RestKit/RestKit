@@ -186,7 +186,6 @@ static RKTestFactory *sharedFactory = nil;
 {
     [RKObjectManager setSharedManager:nil];
     [RKManagedObjectStore setDefaultStore:nil];
-    [RKObjectManager setDefaultMappingQueue:nil];
     [RKObjectMapping setDefaultDateFormatters:nil];
 
     // Delete the store if it exists

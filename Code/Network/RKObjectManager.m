@@ -31,44 +31,20 @@ NSString * const RKObjectManagerDidBecomeOfflineNotification = @"RKDidEnterOffli
 NSString * const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnlineModeNotification";
 
 //////////////////////////////////
-// Shared Instances
+// Shared Instance
 
 static RKObjectManager  *sharedManager = nil;
-static NSOperationQueue *defaultMappingQueue = nil;
 
 ///////////////////////////////////
 
 @interface RKObjectManager ()
-@property (nonatomic, strong, readwrite) NSOperationQueue *operationQueue;
+@property (nonatomic, strong, readwrite) AFHTTPClient *HTTPClient;
 @property (nonatomic, strong) NSMutableArray *mutableRequestDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableResponseDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableFetchRequestBlocks;
 @end
 
 @implementation RKObjectManager
-
-
-+ (NSOperationQueue *)defaultMappingQueue
-{
-    if (! defaultMappingQueue) {
-        defaultMappingQueue = [NSOperationQueue new];
-        defaultMappingQueue.name = @"org.restkit.ObjectMapping";
-        defaultMappingQueue.maxConcurrentOperationCount = 1;
-    }
-
-    return defaultMappingQueue;
-}
-
-+ (void)setDefaultMappingQueue:(NSOperationQueue *)newDefaultMappingQueue
-{
-    if (defaultMappingQueue) {
-        defaultMappingQueue = nil;
-    }
-
-    if (newDefaultMappingQueue) {
-        defaultMappingQueue = newDefaultMappingQueue;
-    }
-}
 
 - (id)initWithClient:(AFHTTPClient *)client
 {
@@ -85,7 +61,6 @@ static NSOperationQueue *defaultMappingQueue = nil;
         self.mutableFetchRequestBlocks = [NSMutableArray new];
 
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
-        self.mappingQueue = [RKObjectManager defaultMappingQueue];
 
 //        [self addObserver:self
 //               forKeyPath:@"client.reachabilityObserver"

@@ -30,76 +30,22 @@
 RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
- The object manager is the primary interface for interacting with RESTful resources via HTTP. It is
- responsible for retrieving remote object representations via HTTP and transforming them into local
- domain objects via the RKObjectMapper. It is also capable of serializing local objects and sending them
- to a remote system for processing. The object manager strives to hide the developer from the details of
- configuring an RKRequest, processing an RKResponse, parsing any data returned by the remote system, and
- running the parsed data through the object mapper.
-
- <h3>Shared Manager Instance</h3>
-
- Multiple instances of RKObjectManager may be used in parallel, but the first instance initialized
- is automatically configured as the sharedManager instance. The shared instance can be changed at runtime
- if so desired. See sharedManager and setSharedManager for details.
-
- <h3>Configuring the Object Manager</h3>
-
- The object mapper must be configured before object can be loaded from or transmitted to your remote backend
- system. Configuration consists of specifying the desired MIME types to be used during loads and serialization,
- registering object mappings to use for mapping and serialization, registering routes, and optionally configuring
- an instance of the managed object store (for Core Data).
-
- <h4>MIME Types</h4>
-
- MIME Types are used for two purposes within RestKit:
-
- 1. Content Negotiation. RestKit leverages the HTTP Accept header to specify the desired representation of content
- when contacting a remote web service. You can specify the MIME Type to use via the acceptMIMEType method. The default
- MIME Type is RKMIMETypeJSON (application/json). If the remote web service responds with content in a different MIME Type
- than specified, RestKit will attempt to parse it by consulting the [parser registry][RKParserRegistry parserForMIMEType:].
- Failure to find a parser for the returned content will result in an unexpected response invocation of
- [RKObjectLoaderDelegate objectLoaderDidLoadUnexpectedResponse].
- 1. Serialization. RestKit can be used to transport local object representation back to the remote web server for processing
- by serializing them into an RKRequestSerializable representation. The desired serialization format is configured by setting
- the serializationMIMEType property. RestKit currently supports serialization to RKMIMETypeFormURLEncoded and RKMIMETypeJSON.
- The serialization rules themselves are expressed via an instance of RKObjectMapping.
-
- <h4>The Mapping Provider</h4>
-
- RestKit determines how to map and serialize objects by consulting the mappingProvider. The mapping provider is responsible
- for providing instances of RKObjectMapper with object mappings that should be used for transforming mappable data into object
- representations. When you ask the object manager to load or send objects for you, the mappingProvider instance will be used
- for the object mapping operations constructed for you. In this way, the mappingProvider is the central registry for the knowledge
- about how objects in your application are mapped.
-
- Mappings are registered by constructing instances of RKObjectMapping and registering them with the provider:
- `
-    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:myBaseURL];
-    RKObjectMapping *articleMapping = [RKObjectMapping mappingForClass:[Article class]];
-    [mapping mapAttributes:@"title", @"body", @"publishedAt", nil];
-    [manager.mappingProvider setObjectMapping:articleMapping forKeyPath:@"article"];
-
-    // Generate an inverse mapping for transforming Article -> NSMutableDictionary.
-    [manager.mappingProvider setSerializationMapping:[articleMapping inverseMapping] forClass:[Article class]];`
-
- <h4>Configuring Routes</h4>
-
- Routing is the process of transforming objects and actions (as defined by HTTP verbs) into paths. RestKit ships
-
- <h4>Initializing a Core Data Object Store</h4>
- <h3>Loading Remote Objects</h3>
-
- <h3>Routing &amp; Object Serialization</h3>
-
- <h3>Default Error Mapping</h3>
-
- When an instance of RKObjectManager is configured, the RKObjectMappingProvider
- instance configured
+ The `RKObjectManager` class provides a centralized interface for performing object mapping
+ based HTTP request and response operations. It encapsulates common configuration such as
+ request/response descriptors and routing, provides for the creation of NSURLRequest and RKObjectRequestOperation objects,
+ and one-line methods to enqueue object request operations for the basic HTTP request methods (GET, POST, PUT, DELETE, etc).
+ 
+ ## Request and Response Descriptors
+ 
+ ## Routing
+ 
+ ## Core Data
  */
 @interface RKObjectManager : NSObject
 
+///----------------------------------------------
 /// @name Configuring the Shared Manager Instance
+///----------------------------------------------
 
 /**
  Return the shared instance of the object manager
@@ -111,32 +57,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 + (void)setSharedManager:(RKObjectManager *)manager;
 
-/** @name Object Mapping Dispatch Queue */
-
-/**
- Returns the global default operation queue queue used for object mapping
- operations executed by RKObjectLoaders.
-
- All object loaders perform their loading within an operation queue.
- This provides control over the number of loaders that are performing
- expensive operations such as JSON parsing, object mapping, and accessing Core
- Data concurrently. The defaultMappingQueue is configured as the mappingQueue
- for all RKObjectManager's created by RestKit, but can be overridden on a per
- manager and per object loader basis.
-
- By default, the defaultMappingQueue is configured with a maximumConcurrentOperationCount
- of 1.
- */
-+ (NSOperationQueue *)defaultMappingQueue;
-
-/**
- Sets a new global default operation queue for use in object mapping
- operations executed by RKObjectLoaders.
- */
-+ (void)setDefaultMappingQueue:(NSOperationQueue *)defaultMappingQueue;
-
+///-------------------------------------
 /// @name Initializing an Object Manager
-
+///-------------------------------------
 /**
  Create and initialize a new object manager. If this is the first instance created
  it will be set as the shared instance
@@ -144,32 +67,36 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 + (id)managerWithBaseURL:(NSURL *)baseURL;
 
 /**
- Initializes a newly created object manager with a specified baseURL.
+ Initializes the receiver with a given AFNetworking HTTP client.
+ 
+ This is the designated initializer.
 
- @param baseURL A baseURL to initialize the underlying client instance with
- @return The newly initialized RKObjectManager object
+ @param client The AFNetworking HTTP client with which to initialize the receiver.
+ @return The receiver, initialized with the given client.
  */
-- (id)initWithClient:(AFHTTPClient *)client; // Designated initializer
-- (id)initWithBaseURL:(NSURL *)baseURL;
+- (id)initWithClient:(AFHTTPClient *)client;
 
-/// @name Configuring Object Mapping
+///------------------------------------------
+/// @name Accessing Object Manager Properties
+///------------------------------------------
 
 /**
- Router object responsible for generating URLs for
- HTTP requests
+ The AFNetworking HTTP client with which the receiver makes requests.
+ */
+@property (nonatomic, strong, readonly) AFHTTPClient *HTTPClient;
+
+/**
+ The operation queue which manages operations enqueued by the object manager.
+ */
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
+
+/**
+ The router used to generate URL objects for routable requests created by the manager.
+ 
+ @see RKRouter
+ @see RKRoute
  */
 @property (nonatomic, strong) RKRouter *router;
-
-/**
- A Core Data backed object store for persisting objects that have been fetched from the Web
- */
-@property (nonatomic, strong) RKManagedObjectStore *managedObjectStore;
-
-/**
- The operation queue to use when performing expensive object mapping operations
- within RKObjectLoader instances created through this object manager
- */
-@property (nonatomic, strong) NSOperationQueue *mappingQueue;
 
 /**
  The Default MIME Type to be used in object serialization.
@@ -181,125 +108,280 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 @property (nonatomic, weak) NSString *acceptMIMEType;
 
-////////////////////////////////////////////////////////
-/// @name Building Object Request Operations
+///-------------------------------
+/// @name Creating Request Objects
+///-------------------------------
 
 /**
- Creates and returns an RKObjectPaginator instance targeting the specified path pattern.
-
- The paginator instantiated will be initialized with a URL built by appending the pathPattern to the
- baseURL of the client.
-
- @return The newly created paginator instance.
- @see RKObjectMappingProvider
- @see RKObjectPaginator
- */
-//- (RKObjectPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
-
-////////////////////////////////////////////////////////
-/// @name Registered Object Loaders
-
-@property (nonatomic, strong) AFHTTPClient *HTTPClient;
-@property (nonatomic, strong, readonly) NSOperationQueue *operationQueue;
-
-/**
- New RestKit + AFNetworking Primitives
+ Creates and returns an `NSMutableURLRequest` object with a given object, method, path, and parameters.
  */
 - (NSMutableURLRequest *)requestWithObject:(id)object
                                     method:(RKRequestMethod)method
                                       path:(NSString *)path
                                 parameters:(NSDictionary *)parameters;
 
+/**
+ Creates and returns an `NSMutableURLRequest` object with a given object, method, path, and parameters. The body
+ of the request is built using the given block.
+ */
 - (NSMutableURLRequest *)multipartFormRequestWithObject:(id)object
                                                 method:(RKRequestMethod)method
                                                   path:(NSString *)path
                                             parameters:(NSDictionary *)parameters
                              constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block;
 
+/**
+ Creates an `NSMutableURLRequest` object with the `NSURL` returned by the router for the given route
+ name and object and the given parameters.
+ */
 - (NSMutableURLRequest *)requestForRouteNamed:(NSString *)routeName
                                        object:(id)object
-                                   parameters:(NSDictionary *)parameters;
+                                   parameters:(NSDictionary *)parameters;   // TODO: requestWithURLForRouteNamed:??
 
+///-----------------------------------------
+/// @name Creating Object Request Operations
+///-----------------------------------------
+
+/**
+ Creates an `RKObjectRequestOperation` operation with the given request and sets the completion block with the given
+ success and failure blocks.
+ 
+ @warning Instances of `RKObjectRequestOperation` are not capable of mapping the loaded `NSHTTPURLResponse` into a
+ Core Data entity. Use an instance of `RKManagedObjectRequestOperation` if the response is to be mapped using an 
+ `RKEntityMapping`.
+ */
 - (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
                                                         success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                         failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+/**
+ Creates an `RKManagedObjectRequestOperation` operation with the given request and managed object context, and sets 
+ the completion block with the given success and failure blocks.
+ 
+ The given managed object context given will be used as the parent context of the private managed context in which the response
+ is mapped and will be used to fetch the results upon invocation of the success completion block.
+ 
+ @see RKManagedObjectRequestOperation
+ */
 - (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
                                                          managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
-// Returns an RKObjectRequestOperation or RKManagedObjectRequestOperation as appropriate for the given object
-// object must be a single object
-// TODO: Could use some guards against collections...
+/**
+ Creates and returns an object request operation for the given object, request method, path, and parameters.
+ 
+ The type of object request operation created is determined by evaluating the type of the object given and examining
+ the list of `RKResponseDescriptor` objects added to the manager. If the given object inherits from `NSManagedObject`
+ or the list of response descriptors matching the URL of the request created contains an `RKEntityMapping` object, then
+ an `RKManagedObjectRequestOperation` is returned; otherwise an `RKObjectRequestOperation` is returned.
+ 
+ @warning The given object must be a single object instance. Collections are not yet supported.
+ */
 - (id)objectRequestOperationWithObject:(id)object method:(RKRequestMethod)method path:(NSString *)path parameters:(NSDictionary *)parameters;
 
+///--------------------------------------------------
+/// @name Managing Enqueued Object Request Operations
+///--------------------------------------------------
+
+/**
+ Enqueues an `RKObjectRequestOperation` to the object manager's operation queue.
+ 
+ @param objectRequestOperation The object request operation to be enqueued.
+ */
+- (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation;
+// TODO: Need a cancel...
+
+///-----------------------------
+/// @name Making Object Requests
+///-----------------------------
+
+/**
+ Creates an `RKObjectRequestOperation` with a `GET` request with a URL for the given path, and enqueues it to the manager's operation queue.
+ */
 - (void)getObjectsAtPath:(NSString *)path
               parameters:(NSDictionary *)parameters
                  success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                  failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+/**
+ Creates an `RKObjectRequestOperation` with a `GET` request for the given object, and enqueues it to the manager's operation queue.
+ */
 - (void)getObject:(id)object
              path:(NSString *)path
        parameters:(NSDictionary *)parameters
           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+/**
+ Creates an `RKObjectRequestOperation` with a `POST` request for the given object, and enqueues it to the manager's operation queue.
+ */
 - (void)postObject:(id)object
               path:(NSString *)path
         parameters:(NSDictionary *)parameters
            success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+/**
+ Creates an `RKObjectRequestOperation` with a `PUT` request for the given object, and enqueues it to the manager's operation queue.
+ */
 - (void)putObject:(id)object
              path:(NSString *)path
        parameters:(NSDictionary *)parameters
           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+/**
+ Creates an `RKObjectRequestOperation` with a `PATCH` request for the given object, and enqueues it to the manager's operation queue.
+ */
 - (void)patchObject:(id)object
                path:(NSString *)path
          parameters:(NSDictionary *)parameters
             success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+/**
+ Creates an `RKObjectRequestOperation` with a `DELETE` request for the given object, and enqueues it to the manager's operation queue.
+ */
 - (void)deleteObject:(id)object
                 path:(NSString *)path
           parameters:(NSDictionary *)parameters
              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+/**
+ Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, 
+ and enqueues it to the manager's operation queue.
+ */
 - (void)getRelationship:(NSString *)relationshipName
                ofObject:(id)object
              parameters:(NSDictionary *)parameters
                 success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                 failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+/**
+ Creates an `RKObjectRequestOperation` with a `GET` request for the URL returned by the router for the given route name, 
+ and enqueues it to the manager's operation queue.
+ */
 - (void)getObjectsAtRouteNamed:(NSString *)routeName
                         object:(id)object
                     parameters:(NSDictionary *)parameters
                        success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                        failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+///------------------------------------------------
+/// @name Managing Request and Response Descriptors
+///------------------------------------------------
+
+/**
+ Returns an array containing the `RKRequestDescriptor` objects added to the manager.
+ 
+ The request descriptors describe how `NSURLRequest` objects constructed by the manager will be built
+ by specifying how the attributes and relationships for a given class will be object mapped to construct
+ request parameters and what, if any, root key path the parameters will be nested under.
+ 
+ @return An array containing the request descriptors of the receiver. The elements of the array
+ are instances of `RKRequestDescriptor`.
+ 
+ @see RKRequestDescriptor
+ */
 @property (nonatomic, readonly) NSArray *requestDescriptors;
+
+/**
+ Adds a request descriptor to the manager.
+ 
+ @param requestDescriptor The request descriptor object to the be added to the manager.
+ */
 - (void)addRequestDescriptor:(RKRequestDescriptor *)requestDescriptor;
+
+/**
+ Adds the `RKRequestDescriptor` objects contained in a given array to the manager.
+ 
+ @param requestDescriptors An array of `RKRequestDescriptor` objects to be added to the manager. 
+ @exception NSInvalidArgumentException Raised if any element of the given array is not an `RKRequestDescriptor` object.
+ */
 - (void)addRequestDescriptorsFromArray:(NSArray *)requestDescriptors;
+
+/**
+ Removes a given request descriptor from the manager.
+ 
+ @param requestDescriptor An `RKRequestDescriptor` object to be removed from the manager.
+ */
 - (void)removeRequestDescriptor:(RKRequestDescriptor *)requestDescriptor;
 
 /**
- An array of RKResponseDescriptor objects describing how to perform object mapping on
- HTTP responses loaded by requests sent via the receiver.
+ Returns an array containing the `RKResponseDescriptor` objects added to the manager.
+ 
+ The response descriptors describe how `NSHTTPURLResponse` objects loaded by object request operations
+ sent by the manager are to be object mapped into local domain objects. Response descriptors are matched
+ against a given response via URL path matching, parsed content key path matching, or both. The `RKMapping`
+ object associated from a matched `RKResponseDescriptor` is given to an instance of `RKObjectMapper` with the
+ parsed response body to perform object mapping on the response.
+ 
+ @return An array containing the request descriptors of the receiver. The elements of the array
+ are instances of `RKRequestDescriptor`.
+ 
+ @see RKResponseDescriptor
  */
 @property (nonatomic, readonly) NSArray *responseDescriptors;
+
+/**
+ Adds a response descriptor to the manager.
+ 
+ @param responseDescriptor The response descriptor object to the be added to the manager.
+ */
 - (void)addResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
+
+/**
+ Adds the `RKResponseDescriptor` objects contained in a given array to the manager.
+ 
+ @param responseDescriptors An array of `RKResponseDescriptor` objects to be added to the manager.
+ @exception NSInvalidArgumentException Raised if any element of the given array is not an `RKResponseDescriptor` object.
+ */
 - (void)addResponseDescriptorsFromArray:(NSArray *)responseDescriptors;
+
+/**
+ Removes a given response descriptor from the manager.
+ 
+ @param responseDescriptor An `RKResponseDescriptor` object to be removed from the manager.
+ */
 - (void)removeResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
 
+///----------------------------------------
+/// @name Configuring Core Data Integration
+///----------------------------------------
+
 // Moves to RKObjectManager+CoreData
+
+/**
+ A Core Data backed object store for persisting objects that have been fetched from the Web
+ */
+@property (nonatomic, strong) RKManagedObjectStore *managedObjectStore;
+
+/**
+ An array of `RKFetchRequestBlock` blocks used to map `NSURL` objects into corresponding `NSFetchRequest`
+ objects.
+ */
 @property (nonatomic, readonly) NSArray *fetchRequestBlocks;
+
+/**
+ Adds the given `RKFetchRequestBlock` block to the manager.
+ */
 - (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
 
-// Provided for subclasses...
-- (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation;
+///---------------------------------
+/// @name Creating Paginator Objects
+///---------------------------------
+
+/**
+ Creates and returns an RKObjectPaginator instance targeting the specified path pattern.
+ 
+ The paginator instantiated will be initialized with a URL built by appending the pathPattern to the
+ baseURL of the client.
+ 
+ @return The newly created paginator instance.
+ @see RKObjectPaginator
+ */
+//- (RKObjectPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
 
 @end
