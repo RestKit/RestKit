@@ -210,7 +210,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
                                       path:(NSString *)path
                                 parameters:(NSDictionary *)parameters;
 
-- (NSMutableURLRequest *)multipartFormRequestForObject:(id)object
+- (NSMutableURLRequest *)multipartFormRequestWithObject:(id)object
                                                 method:(RKRequestMethod)method
                                                   path:(NSString *)path
                                             parameters:(NSDictionary *)parameters

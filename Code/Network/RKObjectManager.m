@@ -238,7 +238,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
     return [self.HTTPClient requestWithMethod:stringMethod path:requestPath parameters:requestParameters];
 }
 
-- (NSMutableURLRequest *)multipartFormRequestForObject:(id)object
+- (NSMutableURLRequest *)multipartFormRequestWithObject:(id)object
                                                 method:(RKRequestMethod)method
                                                   path:(NSString *)path
                                             parameters:(NSDictionary *)parameters
