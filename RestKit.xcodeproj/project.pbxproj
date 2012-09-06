@@ -742,6 +742,8 @@
 		73D3907714CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
 		73D3907914CA1DD40093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
+		B99758DD15F8AA8E00480D29 /* RKURLEncodeParser.h in Headers */ = {isa = PBXBuildFile; fileRef = B99758DB15F8AA8E00480D29 /* RKURLEncodeParser.h */; };
+		B99758DE15F8AA8E00480D29 /* RKURLEncodeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B99758DC15F8AA8E00480D29 /* RKURLEncodeParser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1228,6 +1230,8 @@
 		73DA8E1B14D1BA960054DD73 /* RKObjectMappingProvider+CoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKObjectMappingProvider+CoreData.m"; sourceTree = "<group>"; };
 		73DA8E2014D1C3870054DD73 /* RKObjectMappingProviderContextEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingProviderContextEntry.h; sourceTree = "<group>"; };
 		73DA8E2114D1C3870054DD73 /* RKObjectMappingProviderContextEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingProviderContextEntry.m; sourceTree = "<group>"; };
+		B99758DB15F8AA8E00480D29 /* RKURLEncodeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKURLEncodeParser.h; path = URLEncode/RKURLEncodeParser.h; sourceTree = "<group>"; };
+		B99758DC15F8AA8E00480D29 /* RKURLEncodeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKURLEncodeParser.m; path = URLEncode/RKURLEncodeParser.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1562,6 +1566,7 @@
 		25160DAE145650490060A5C5 /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
+				B99758D915F8AA6100480D29 /* URLEncode */,
 				25160DAF145650490060A5C5 /* JSON */,
 				25160DB8145650490060A5C5 /* XML */,
 			);
@@ -2132,6 +2137,15 @@
 			name = iso8601parser;
 			sourceTree = "<group>";
 		};
+		B99758D915F8AA6100480D29 /* URLEncode */ = {
+			isa = PBXGroup;
+			children = (
+				B99758DB15F8AA8E00480D29 /* RKURLEncodeParser.h */,
+				B99758DC15F8AA8E00480D29 /* RKURLEncodeParser.m */,
+			);
+			name = URLEncode;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2273,6 +2287,7 @@
 				259D985E155218E5008C90F5 /* RKEntityCache.h in Headers */,
 				25545959155F0527007D7625 /* RKBenchmark.h in Headers */,
 				25E4DAB4156DA97F00A5C84B /* RKTableControllerTestDelegate.h in Headers */,
+				B99758DD15F8AA8E00480D29 /* RKURLEncodeParser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2807,6 +2822,7 @@
 				259D9860155218E5008C90F5 /* RKEntityCache.m in Sources */,
 				2554595B155F0527007D7625 /* RKBenchmark.m in Sources */,
 				25E4DAB6156DA97F00A5C84B /* RKTableControllerTestDelegate.m in Sources */,
+				B99758DE15F8AA8E00480D29 /* RKURLEncodeParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
