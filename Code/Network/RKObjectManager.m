@@ -27,9 +27,6 @@
 #import "RKMIMETypes.h"
 #import "RKLog.h"
 
-NSString * const RKObjectManagerDidBecomeOfflineNotification = @"RKDidEnterOfflineModeNotification";
-NSString * const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnlineModeNotification";
-
 //////////////////////////////////
 // Shared Instance
 
@@ -46,7 +43,7 @@ static RKObjectManager  *sharedManager = nil;
 
 @implementation RKObjectManager
 
-- (id)initWithClient:(AFHTTPClient *)client
+- (id)initWithHTTPClient:(AFHTTPClient *)client
 {
     self = [super init];
     if (self) {
@@ -74,11 +71,6 @@ static RKObjectManager  *sharedManager = nil;
     }
 
     return self;
-}
-
-- (id)initWithBaseURL:(NSURL *)baseURL
-{
-    return [self initWithClient:[AFHTTPClient clientWithBaseURL:baseURL]];
 }
 
 + (RKObjectManager *)sharedManager
@@ -301,22 +293,22 @@ static RKObjectManager  *sharedManager = nil;
     return operation;
 }
 
-- (void)getRelationship:(NSString *)relationshipName
-               ofObject:(id)object
-             parameters:(NSDictionary *)parameters
-                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+- (void)getObjectsAtPathForRelationship:(NSString *)relationshipName
+                               ofObject:(id)object
+                             parameters:(NSDictionary *)parameters
+                                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     NSURL *URL = [self.router URLForRelationship:relationshipName ofObject:object method:RKRequestMethodGET];
     NSAssert(URL, @"Failed to generate URL for relationship named '%@' for object: %@", relationshipName, object);
     return [self getObjectsAtPath:[URL relativeString] parameters:parameters success:success failure:failure];
 }
 
-- (void)getObjectsAtRouteNamed:(NSString *)routeName
-                        object:(id)object
-                    parameters:(NSDictionary *)parameters
-                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+- (void)getObjectsAtPathForRouteNamed:(NSString *)routeName
+                               object:(id)object
+                           parameters:(NSDictionary *)parameters
+                              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     RKRequestMethod method;
     NSURL *URL = [self.router URLForRouteNamed:routeName method:&method object:object];

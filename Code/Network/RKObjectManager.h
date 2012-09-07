@@ -37,6 +37,72 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  ## Request and Response Descriptors
  
+ RestKit centralizes configuration for object mapping configurations into the object manager through
+ `RKRequestDescriptor` and `RKResponseDescriptor` objects. A collection of each of these object types are 
+ maintained by the manager and used to initialize all `RKObjectRequestOperation` objects created by the 
+ manager.
+ 
+ Request descriptors describe how `NSURLRequest` objects constructed by the manager will be built
+ by specifying how the attributes and relationships for a given class will be object mapped to construct
+ request parameters and what, if any, root key path the parameters will be nested under. Request 
+ descriptor objects can also be used with the `RKObjectParameterization` class to map an object into an
+ `NSDictionary` representation that is suitable for use as the parameters of a request.
+ 
+ Response descriptors describe how `NSHTTPURLResponse` objects loaded by object request operations
+ sent by the manager are to be object mapped into local domain objects. Response descriptors are matched
+ against a given response via URL path matching, parsed content key path matching, or both. The `RKMapping`
+ object associated from a matched `RKResponseDescriptor` is given to an instance of `RKObjectMapper` with the
+ parsed response body to perform object mapping on the response.
+ 
+ To better illustrate these concepts, consider the following example for an imaginary Wiki client application:
+ 
+    @interface RKWikiPage : NSObject
+    @property (nonatomic, copy) NSString *title;
+    @property (nonatomic, copy) NSString *body;
+    @end     
+ 
+    // Construct a request mapping for our class
+    RKObjectMapping *requestMapping = [RKObjectMapping requestMapping];
+    [requestMapping addAttributeMappingsFromDictionary:@{ @"title": @"title", @"body": @"body" }];
+    
+    // We wish to generate parameters of the format: 
+    // @{ @"page": @{ @"title": @"An Example Page", @"body": @"Some example content" } }
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
+                                                                                   objectClass:[RKWikiPage class]
+                                                                                   rootKeyPath:@"page"];
+ 
+    // Construct an object mapping for the response
+    // We are expecting JSON in the format:
+    // {"page": {"title": "<title value>", "body": "<body value>"}
+    RKObjectMapping *responseMapping = [RKObjectMapping mappingForClass:[RKWikiPage class]];
+    [responseMapping addAttributeMappingsFromArray:@[ @"title", @"body" ]];
+ 
+    // Construct a response descriptor that matches any URL (the pathPattern is nil), when the response payload
+    // contains content nested under the `@"page"` key path, if the response status code is 200 (OK)
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:responseMapping
+                                                                                       pathPattern:nil
+                                                                                           keyPath:@"page"
+                                                                                       statusCodes:[NSIndexSet indexSetWithIndex:200]];
+ 
+    // Register our descriptors with a manager
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org/"]];
+    [manager addRequestDescriptor:requestDescriptor];
+    [manager addResponseDescriptor:responseDescriptor];
+ 
+    // Work with the object
+    RKWikiPage *page = [RKWikiPage new];
+    page.title = @"An Example Page";
+    page.body  = @"Some example content";
+ 
+    // POST the parameterized representation of the `page` object to `/posts` and map the response
+    [manager postObject:page path:@"/pages" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
+        NSLog(@"We object mapped the response with the following result: %@", result);
+    } failure:nil];
+ 
+ In the above example, request and response mapping configurations were described for a simple data model and then used to perform
+ a basic POST operation and map the results. An arbitrary number of request and response descriptors may be added to the manager to
+ accommodate your application's needs.
+ 
  ## Routing
  
  ## Core Data
@@ -49,32 +115,49 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  Return the shared instance of the object manager
+ 
+ @return The shared manager instance.
  */
 + (RKObjectManager *)sharedManager;
 
 /**
  Set the shared instance of the object manager
+ 
+ @param manager The new shared manager instance.
  */
 + (void)setSharedManager:(RKObjectManager *)manager;
 
 ///-------------------------------------
 /// @name Initializing an Object Manager
 ///-------------------------------------
+
 /**
- Create and initialize a new object manager. If this is the first instance created
- it will be set as the shared instance
+ Creates and returns a new `RKObjectManager` object initialized with a new `AFHTTPClient`
+ object that was in turn initialized with the given base URL.
+ 
+ This is a convenience interface for initializing an `RKObjectManager` and its underlying
+ `AFHTTPClient` object with a single message. It is functionally equivalent to the following
+ example code:
+ 
+    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:baseURL];
+    RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
+ 
+ @param baseURL The base URL with which to initialize the `AFHTTPClient` object
+ @return A new `RKObjectManager` initialized with an `AFHTTPClient` that was initialized
+    with the given baseURL.
  */
 + (id)managerWithBaseURL:(NSURL *)baseURL;
 
 /**
- Initializes the receiver with a given AFNetworking HTTP client.
+ Initializes the receiver with the given AFNetworking HTTP client object.
  
- This is the designated initializer.
+ This is the designated initializer. If the sharedManager instance is nil,
+ the receiver will be set as the sharedManager.
 
  @param client The AFNetworking HTTP client with which to initialize the receiver.
  @return The receiver, initialized with the given client.
  */
-- (id)initWithClient:(AFHTTPClient *)client;
+- (id)initWithHTTPClient:(AFHTTPClient *)client;
 
 ///------------------------------------------
 /// @name Accessing Object Manager Properties
@@ -114,6 +197,16 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  Creates and returns an `NSMutableURLRequest` object with a given object, method, path, and parameters.
+ 
+ The manager is searched for an `RKRequestDescriptor` object with an objectClass that matches
+ the class of the given object. If found, the matching request descriptor and object are used to build
+ a parameterization of the object's attributes using the `RKObjectParameterization` class.
+ 
+ @param object The object
+ @param method The HTTP 
+ 
+ @see RKObjectParameterization
+ @see RKRouter
  */
 - (NSMutableURLRequest *)requestWithObject:(id)object
                                     method:(RKRequestMethod)method
@@ -198,6 +291,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request with a URL for the given path, and enqueues it to the manager's operation queue.
+ 
+ @param path The path to be appended to the HTTP client's base URL and used as the request URL.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL. 
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
  */
 - (void)getObjectsAtPath:(NSString *)path
               parameters:(NSDictionary *)parameters
@@ -206,6 +304,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request for the given object, and enqueues it to the manager's operation queue.
+ 
+ If nil, the request URL
+ will be obtained by consulting the router for a route registered for the given object's class and the request method
  */
 - (void)getObject:(id)object
              path:(NSString *)path
@@ -252,22 +353,46 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, 
  and enqueues it to the manager's operation queue.
+ 
+ @param relationshipName The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router
+    for the given object's class and the relationship name. Cannot be nil.
+ @param object The object for which related objects are being loaded. Evaluated against the `RKRoute` for the relationship
+    for the object's class with the given name to compute the path. Cannot be nil.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ 
+ @raises NSInvalidArgumentException Raised if no route is configured for a relationship of the given object's class
+    with the given name.
+ @see RKRouter
  */
-- (void)getRelationship:(NSString *)relationshipName
-               ofObject:(id)object
-             parameters:(NSDictionary *)parameters
-                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)getObjectsAtPathForRelationship:(NSString *)relationshipName
+                               ofObject:(id)object
+                             parameters:(NSDictionary *)parameters
+                                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request for the URL returned by the router for the given route name, 
  and enqueues it to the manager's operation queue.
+ 
+ @param routeName The name of the route being loaded. Used to retrieve the `RKRoute` object from the router
+    with the given name. Cannot be nil.
+ @param object The object to be interpolated against the path pattern of the `RKRoute` object retrieved with the given
+    name. Used to compute the path to be appended to the HTTP client's base URL and used as the request URL. May be nil.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ 
+ @raises NSInvalidArgumentException Raised if no route is configured with the given name or the route returned specifies
+    an HTTP method other than `GET`.
+ @see RKRouter
  */
-- (void)getObjectsAtRouteNamed:(NSString *)routeName
-                        object:(id)object
-                    parameters:(NSDictionary *)parameters
-                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)getObjectsAtPathForRouteNamed:(NSString *)routeName
+                               object:(id)object
+                           parameters:(NSDictionary *)parameters
+                              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 ///------------------------------------------------
 /// @name Managing Request and Response Descriptors
@@ -275,10 +400,6 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  Returns an array containing the `RKRequestDescriptor` objects added to the manager.
- 
- The request descriptors describe how `NSURLRequest` objects constructed by the manager will be built
- by specifying how the attributes and relationships for a given class will be object mapped to construct
- request parameters and what, if any, root key path the parameters will be nested under.
  
  @return An array containing the request descriptors of the receiver. The elements of the array
  are instances of `RKRequestDescriptor`.
@@ -311,12 +432,6 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  Returns an array containing the `RKResponseDescriptor` objects added to the manager.
- 
- The response descriptors describe how `NSHTTPURLResponse` objects loaded by object request operations
- sent by the manager are to be object mapped into local domain objects. Response descriptors are matched
- against a given response via URL path matching, parsed content key path matching, or both. The `RKMapping`
- object associated from a matched `RKResponseDescriptor` is given to an instance of `RKObjectMapper` with the
- parsed response body to perform object mapping on the response.
  
  @return An array containing the request descriptors of the receiver. The elements of the array
  are instances of `RKRequestDescriptor`.
