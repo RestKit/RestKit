@@ -174,9 +174,9 @@ static RKObjectManager  *sharedManager = nil;
     return nil;
 }
 
-- (NSMutableURLRequest *)requestForRouteNamed:(NSString *)routeName
-                                       object:(id)object
-                                   parameters:(NSDictionary *)parameters
+- (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName
+                                               object:(id)object
+                                           parameters:(NSDictionary *)parameters
 {
     RKRequestMethod method;
     NSURL *URL = [self.router URLForRouteNamed:routeName method:&method object:object];

@@ -227,9 +227,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  Creates an `NSMutableURLRequest` object with the `NSURL` returned by the router for the given route
  name and object and the given parameters.
  */
-- (NSMutableURLRequest *)requestForRouteNamed:(NSString *)routeName
-                                       object:(id)object
-                                   parameters:(NSDictionary *)parameters;   // TODO: requestWithURLForRouteNamed:??
+- (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName
+                                               object:(id)object
+                                           parameters:(NSDictionary *)parameters;
 
 ///-----------------------------------------
 /// @name Creating Object Request Operations
@@ -293,7 +293,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  Creates an `RKObjectRequestOperation` with a `GET` request with a URL for the given path, and enqueues it to the manager's operation queue.
  
  @param path The path to be appended to the HTTP client's base URL and used as the request URL.
- @param parameters The parameters to be encoded and appended as the query string for the request URL. 
+ @param parameters The parameters to be encoded and appended as the query string for the request URL.
  @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
  @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
  */
