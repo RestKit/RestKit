@@ -1235,33 +1235,14 @@
 		25160D45145650490060A5C5 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				7394DF3814CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.h */,
-				7394DF3914CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.m */,
-				7394DF3C14CF19F200CE7BCE /* RKInMemoryManagedObjectCache.h */,
-				7394DF3D14CF19F200CE7BCE /* RKInMemoryManagedObjectCache.m */,
-				25160D4C145650490060A5C5 /* RKEntityMapping.h */,
-				25160D4D145650490060A5C5 /* RKEntityMapping.m */,
-				7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */,
-				25160D50145650490060A5C5 /* RKManagedObjectImporter.h */,
-				25160D51145650490060A5C5 /* RKManagedObjectImporter.m */,
+				E4081DFC15FB89DF00364948 /* ManagedObjectCaching */,
+				E4081E0715FB8FC400364948 /* Importing */,
+				E4081DFE15FB8A1D00364948 /* Additions */,
+				E4081E0915FB8FD800364948 /* Mapping */,
 				25160D52145650490060A5C5 /* RKManagedObjectStore.h */,
 				25160D53145650490060A5C5 /* RKManagedObjectStore.m */,
 				25160D54145650490060A5C5 /* RKManagedObjectThreadSafeInvocation.h */,
 				25160D55145650490060A5C5 /* RKManagedObjectThreadSafeInvocation.m */,
-				25160D56145650490060A5C5 /* RKPropertyInspector+CoreData.h */,
-				25160D57145650490060A5C5 /* RKObjectPropertyInspector+CoreData.m */,
-				257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */,
-				257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */,
-				257ABAB41511371C00CCAA76 /* NSManagedObject+RKAdditions.h */,
-				257ABAB51511371D00CCAA76 /* NSManagedObject+RKAdditions.m */,
-				25079C6D151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h */,
-				25079C6E151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m */,
-				259D98521550C69A008C90F5 /* RKEntityByAttributeCache.h */,
-				259D98531550C69A008C90F5 /* RKEntityByAttributeCache.m */,
-				259D985C155218E4008C90F5 /* RKEntityCache.h */,
-				259D985D155218E4008C90F5 /* RKEntityCache.m */,
-				258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */,
-				25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */,
 				2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */,
 				2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */,
 			);
@@ -1271,16 +1252,12 @@
 		25160D58145650490060A5C5 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				254372D415F54CE3006E8424 /* RKManagedObjectRequestOperation.h */,
-				254372D515F54CE3006E8424 /* RKManagedObjectRequestOperation.m */,
-				254372AA15F54C3F006E8424 /* RKHTTPRequestOperation.h */,
-				254372AB15F54C3F006E8424 /* RKHTTPRequestOperation.m */,
+				E4081E0015FB8B5900364948 /* Routing */,
+				E4081DFF15FB8B4000364948 /* ObjectRequestOperations */,
 				254372AC15F54C3F006E8424 /* RKObjectManager.h */,
 				254372AD15F54C3F006E8424 /* RKObjectManager.m */,
 				254372AE15F54C3F006E8424 /* RKObjectPaginator.h */,
 				254372AF15F54C3F006E8424 /* RKObjectPaginator.m */,
-				254372B015F54C3F006E8424 /* RKObjectRequestOperation.h */,
-				254372B115F54C3F006E8424 /* RKObjectRequestOperation.m */,
 				254372B215F54C3F006E8424 /* RKRequestDescriptor.h */,
 				254372B315F54C3F006E8424 /* RKRequestDescriptor.m */,
 				254372B415F54C3F006E8424 /* RKResponseDescriptor.h */,
@@ -1289,12 +1266,6 @@
 				254372B715F54C3F006E8424 /* RKResponseMapperOperation.m */,
 				254372A615F54995006E8424 /* RKObjectParameterization.h */,
 				254372A715F54995006E8424 /* RKObjectParameterization.m */,
-				252028FA1577AE0B00076FB4 /* RKRouteSet.h */,
-				252028FB1577AE0B00076FB4 /* RKRouteSet.m */,
-				252029011577AE1800076FB4 /* RKRoute.h */,
-				252029021577AE1800076FB4 /* RKRoute.m */,
-				25FBB850159272DD00955D27 /* RKRouter.h */,
-				25FBB851159272DD00955D27 /* RKRouter.m */,
 				25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */,
 				25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */,
 			);
@@ -1320,6 +1291,7 @@
 				25160D8D145650490060A5C5 /* RKObjectMapping.h */,
 				25160D8E145650490060A5C5 /* RKObjectMapping.m */,
 				25160D8F145650490060A5C5 /* RKMapping.h */,
+				25CA7A8E14EC570100888FF8 /* RKMapping.m */,
 				25160D90145650490060A5C5 /* RKMappingOperation.h */,
 				25160D91145650490060A5C5 /* RKMappingOperation.m */,
 				25160D94145650490060A5C5 /* RKMappingResult.h */,
@@ -1328,7 +1300,6 @@
 				25160D97145650490060A5C5 /* RKPropertyInspector.m */,
 				25160D98145650490060A5C5 /* RKRelationshipMapping.h */,
 				25160D99145650490060A5C5 /* RKRelationshipMapping.m */,
-				25CA7A8E14EC570100888FF8 /* RKMapping.m */,
 				258EA4A615A38BBF007E07A6 /* RKObjectMappingOperationDataSource.h */,
 				258EA4A715A38BBF007E07A6 /* RKObjectMappingOperationDataSource.m */,
 				258EA4AD15A38E7D007E07A6 /* RKMappingOperationDataSource.h */,
@@ -1882,6 +1853,83 @@
 				49D2759C14C9EF1E0090845D /* README.txt */,
 			);
 			name = iso8601parser;
+			sourceTree = "<group>";
+		};
+		E4081DFC15FB89DF00364948 /* ManagedObjectCaching */ = {
+			isa = PBXGroup;
+			children = (
+				7394DF3814CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.h */,
+				7394DF3914CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.m */,
+				7394DF3C14CF19F200CE7BCE /* RKInMemoryManagedObjectCache.h */,
+				7394DF3D14CF19F200CE7BCE /* RKInMemoryManagedObjectCache.m */,
+				7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */,
+				259D98521550C69A008C90F5 /* RKEntityByAttributeCache.h */,
+				259D98531550C69A008C90F5 /* RKEntityByAttributeCache.m */,
+				259D985C155218E4008C90F5 /* RKEntityCache.h */,
+				259D985D155218E4008C90F5 /* RKEntityCache.m */,
+			);
+			name = ManagedObjectCaching;
+			sourceTree = "<group>";
+		};
+		E4081DFE15FB8A1D00364948 /* Additions */ = {
+			isa = PBXGroup;
+			children = (
+				25160D56145650490060A5C5 /* RKPropertyInspector+CoreData.h */,
+				25160D57145650490060A5C5 /* RKObjectPropertyInspector+CoreData.m */,
+				257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */,
+				257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */,
+				257ABAB41511371C00CCAA76 /* NSManagedObject+RKAdditions.h */,
+				257ABAB51511371D00CCAA76 /* NSManagedObject+RKAdditions.m */,
+				25079C6D151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h */,
+				25079C6E151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m */,
+			);
+			name = Additions;
+			sourceTree = "<group>";
+		};
+		E4081DFF15FB8B4000364948 /* ObjectRequestOperations */ = {
+			isa = PBXGroup;
+			children = (
+				254372D415F54CE3006E8424 /* RKManagedObjectRequestOperation.h */,
+				254372D515F54CE3006E8424 /* RKManagedObjectRequestOperation.m */,
+				254372AA15F54C3F006E8424 /* RKHTTPRequestOperation.h */,
+				254372AB15F54C3F006E8424 /* RKHTTPRequestOperation.m */,
+				254372B015F54C3F006E8424 /* RKObjectRequestOperation.h */,
+				254372B115F54C3F006E8424 /* RKObjectRequestOperation.m */,
+			);
+			name = ObjectRequestOperations;
+			sourceTree = "<group>";
+		};
+		E4081E0015FB8B5900364948 /* Routing */ = {
+			isa = PBXGroup;
+			children = (
+				252028FA1577AE0B00076FB4 /* RKRouteSet.h */,
+				252028FB1577AE0B00076FB4 /* RKRouteSet.m */,
+				252029011577AE1800076FB4 /* RKRoute.h */,
+				252029021577AE1800076FB4 /* RKRoute.m */,
+				25FBB850159272DD00955D27 /* RKRouter.h */,
+				25FBB851159272DD00955D27 /* RKRouter.m */,
+			);
+			name = Routing;
+			sourceTree = "<group>";
+		};
+		E4081E0715FB8FC400364948 /* Importing */ = {
+			isa = PBXGroup;
+			children = (
+				25160D50145650490060A5C5 /* RKManagedObjectImporter.h */,
+				25160D51145650490060A5C5 /* RKManagedObjectImporter.m */,
+			);
+			name = Importing;
+			sourceTree = "<group>";
+		};
+		E4081E0915FB8FD800364948 /* Mapping */ = {
+			isa = PBXGroup;
+			children = (
+				25160D4C145650490060A5C5 /* RKEntityMapping.h */,
+				25160D4D145650490060A5C5 /* RKEntityMapping.m */,
+				258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */,
+				25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */,
+			);
+			name = Mapping;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
