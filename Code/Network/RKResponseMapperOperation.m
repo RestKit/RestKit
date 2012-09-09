@@ -36,6 +36,9 @@
 
 - (id)initWithResponse:(NSHTTPURLResponse *)response data:(NSData *)data responseDescriptors:(NSArray *)responseDescriptors
 {
+    NSParameterAssert(response);
+    NSParameterAssert(responseDescriptors);
+    
     self = [super init];
     if (self) {
         self.response = response;
