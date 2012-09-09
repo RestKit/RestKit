@@ -86,7 +86,7 @@
         }
     } else {
         if ((_lcl_component_level[(__lcl_log_symbol(lcl_cRestKitNetwork))]) >= (__lcl_log_symbol(lcl_vTrace))) {
-            RKLogTrace(@"%@ '%@' (%ld): %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], operation.responseString);
+            RKLogTrace(@"%@ '%@' (%ld): %@ %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], [operation.response allHeaderFields], operation.responseString);
         } else {
             RKLogInfo(@"%@ '%@' (%ld)", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode]);
         }
@@ -129,13 +129,6 @@
     [super connection:connection didReceiveAuthenticationChallenge:challenge];
 
     RKLogDebug(@"Received authentication challenge");
-}
-
-- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)space
-{
-    RKLogDebug(@"Asked if canAuthenticateAgainstProtectionSpace: with authenticationMethod = %@", [space authenticationMethod]);
-
-    return [super connection:connection canAuthenticateAgainstProtectionSpace:space];
 }
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
