@@ -69,7 +69,7 @@
     }
 
     if ((_lcl_component_level[(__lcl_log_symbol(lcl_cRestKitNetwork))]) >= (__lcl_log_symbol(lcl_vTrace))) {
-        RKLogTrace(@"%@ '%@': %@ %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
+        RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
     } else {
         RKLogInfo(@"%@ '%@'", [operation.request HTTPMethod], [[operation.request URL] absoluteString]);
     }
@@ -80,13 +80,13 @@
     RKHTTPRequestOperation *operation = [notification object];
     if (operation.error) {
         if ((_lcl_component_level[(__lcl_log_symbol(lcl_cRestKitNetwork))]) >= (__lcl_log_symbol(lcl_vTrace))) {
-            RKLogError(@"%@ '%@' (%ld): %@ %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], operation.error, operation.responseString);
+            RKLogError(@"%@ '%@' (%ld):\nerror=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], operation.error, operation.responseString);
         } else {
           RKLogError(@"%@ '%@' (%ld): %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], operation.error);
         }
     } else {
         if ((_lcl_component_level[(__lcl_log_symbol(lcl_cRestKitNetwork))]) >= (__lcl_log_symbol(lcl_vTrace))) {
-            RKLogTrace(@"%@ '%@' (%ld): %@ %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], [operation.response allHeaderFields], operation.responseString);
+            RKLogTrace(@"%@ '%@' (%ld):\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], [operation.response allHeaderFields], operation.responseString);
         } else {
             RKLogInfo(@"%@ '%@' (%ld)", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode]);
         }
