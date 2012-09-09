@@ -19,9 +19,20 @@ typedef enum RKRequestMethod {
     RKRequestMethodDELETE,
     RKRequestMethodHEAD,
     RKRequestMethodPATCH
-} RKRequestMethod;
+} RKRequestMethod;  // RKHTTPMethod? RKStringFromHTTPMethod... RKHTTPMethodFromString
 
-NSString *RKStringFromRequestMethod(RKRequestMethod);
+/**
+ Returns the corresponding string for value for a given HTTP request method.
+ 
+ For example, given `RKRequestMethodGET` would return `@"GET"`.
+ */
+NSString * RKStringFromRequestMethod(RKRequestMethod);
+
+/**
+ Returns the corresponding request method value for a given string.
+ 
+ For example, given `@"PUT"` would return `@"RKRequestMethodPUT"`
+ */
 RKRequestMethod RKRequestMethodFromString(NSString *);
 
 /**
@@ -57,3 +68,9 @@ NSIndexSet * RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
 // TODO: Implement these guys...
 //NSString * RKStringFromStatusCode(NSInteger statusCode);
 //NSInteger RKStatusCodeFromString(NSString *statusCode);
+
+/*
+ * Parse HTTP Date: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
+ */
+NSDate * RKDateFromHTTPDateString(NSString *);
+NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *headers, NSInteger statusCode);
