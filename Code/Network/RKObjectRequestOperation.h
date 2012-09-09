@@ -6,19 +6,36 @@
 //  Copyright (c) 2012 GateGuru, Inc. All rights reserved.
 //
 
-#import "AFNetworking.h"
 #import "RKHTTPRequestOperation.h"
 #import "RKMappingResult.h"
 
+// Add docs about cacheing behaviors...
 @interface RKObjectRequestOperation : NSOperation
 
-- (id)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors;
+- (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors;
 
 @property (nonatomic, strong) id targetObject;
-@property (readonly, nonatomic, strong) NSArray *responseDescriptors;
-@property (readonly, nonatomic, strong) RKHTTPRequestOperation *requestOperation;
-@property (readonly, nonatomic, strong) RKMappingResult *mappingResult;
-@property (readonly, nonatomic, strong) NSError *error;
+
+@property (nonatomic, strong, readonly) NSArray *responseDescriptors;
+@property (nonatomic, strong, readonly) RKMappingResult *mappingResult;
+
+@property (nonatomic, strong, readonly) NSError *error;
+@property (nonatomic, strong, readonly) NSURLRequest *request;
+@property (nonatomic, readonly) NSHTTPURLResponse *response;
+@property (nonatomic, readonly) NSData *responseData;
+
+/**
+ When `YES`, network access is avoided entirely if a valid, non-expired cache entry is available for the request being loaded. No conditional GET request is sent to the server and the cache entry is assumed to be fresh. This optimization enables the object mapping to begin immediately using the cached response data. In high latency environments, this can result in an improved user experience as the operation does not wait for a 304 (Not Modified) response to be returned before proceeding with mapping.
+ 
+ This optimization has even greater impact when the object request operation is an instance of `RKManagedObjectRequestOperation` as object mapping can skipped entirely and the objects loaded directly from Core Data.
+ 
+ **Default**: `YES`
+ */
+@property (nonatomic, assign) BOOL avoidsNetworkAccess;
+
+/**
+ */
+@property (nonatomic, readonly) BOOL isResponseFromCache;
 
 /**
  The callback dispatch queue on success. If `NULL` (default), the main queue is used.
@@ -30,9 +47,11 @@
  */
 @property (nonatomic) dispatch_queue_t failureCallbackQueue;
 
-///-----------------------------------------------------------------------------
+// TODO: Add a Boolean to enable the network if possible
+
+///-----------------------------------
 /// @name Setting the Completion Block
-///-----------------------------------------------------------------------------
+///-----------------------------------
 
 - (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;

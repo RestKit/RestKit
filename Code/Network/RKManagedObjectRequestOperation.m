@@ -61,6 +61,12 @@
 
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
+    if (self.isResponseFromCache) {
+        RKLogDebug(@"Managed object mapping requested for cached response: skipping mapping...");
+        // TODO: This is unexpectedly returning an empty result set... need to be able to retrieve the appropriate objects...
+        return [RKMappingResult mappingResultWithDictionary:@{}];
+    }
+    
     self.dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.privateContext
                                                                                                 cache:self.managedObjectCache];
     self.dataSource.operationQueue = [NSOperationQueue new];
@@ -68,8 +74,8 @@
     [self.dataSource.operationQueue setMaxConcurrentOperationCount:1];
 
     // Spin up an RKObjectResponseMapperOperation
-    RKManagedObjectResponseMapperOperation *mapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.requestOperation.response
-                                                                                                                          data:self.requestOperation.responseData
+    RKManagedObjectResponseMapperOperation *mapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.response
+                                                                                                                          data:self.responseData
                                                                                                             responseDescriptors:self.responseDescriptors];
     mapperOperation.targetObjectID = self.targetObjectID;
     mapperOperation.managedObjectContext = self.privateContext;
@@ -96,8 +102,8 @@
     __block BOOL _blockSuccess = YES;
 
     if (self.targetObjectID
-        && NSLocationInRange(self.requestOperation.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))
-        && [[[self.requestOperation.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]) {
+        && NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))
+        && [[[self.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]) {
 
         // 2xx DELETE request, proceed with deletion from the MOC
         __block NSError *_blockError = nil;
@@ -120,7 +126,7 @@
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error
 {
     NSMutableSet *localObjects = [NSMutableSet set];
-    NSURL *URL = [self.requestOperation.request URL];
+    NSURL *URL = [self.request URL];
     __block NSError *_blockError;
     __block NSArray *_blockObjects;
 
@@ -149,7 +155,7 @@
         return YES;
     }
 
-    if (! [[self.requestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
+    if (! [[self.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
         RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
         return YES;
     }

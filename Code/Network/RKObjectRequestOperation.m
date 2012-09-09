@@ -9,24 +9,42 @@
 #import "RKObjectRequestOperation.h"
 #import "RKResponseMapperOperation.h"
 
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
+
+static inline NSString * RKDescriptionForRequest(NSURLRequest *request)
+{
+    return [NSString stringWithFormat:@"%@ '%@'", request.HTTPMethod, [request.URL absoluteString]];
+}
+
 @interface RKObjectRequestOperation ()
-@property (readwrite, nonatomic, strong) RKHTTPRequestOperation *requestOperation;
-@property (readwrite, nonatomic, strong) NSArray *responseDescriptors;
-@property (readwrite, nonatomic, strong) RKMappingResult *mappingResult;
-@property (readwrite, nonatomic, strong) NSError *error;
+@property (nonatomic, strong, readwrite) RKHTTPRequestOperation *requestOperation;
+@property (nonatomic, strong, readwrite) NSArray *responseDescriptors;
+@property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
+@property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong, readwrite) NSURLRequest *request;
+@property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
 @end
 
 @implementation RKObjectRequestOperation
 
-- (id)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors
+- (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
 {
-    self = [super init];
+    NSParameterAssert(request);
+    NSParameterAssert(responseDescriptors);
+    
+    self = [self init];
     if (self) {
-        self.requestOperation = requestOperation;
+        self.request = request;
         self.responseDescriptors = responseDescriptors;
+        self.requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+        self.avoidsNetworkAccess = YES;
+        // TODO: set acceptable MIME Types based on available serializations?
     }
-
+    
     return self;
+    RKHTTPRequestOperation *operation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
 }
 
 - (void)setSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue
@@ -84,11 +102,26 @@
     };
 }
 
+- (BOOL)isResponseFromCache
+{
+    return self.cachedResponse != nil;
+}
+
+- (NSHTTPURLResponse *)response
+{
+    return (NSHTTPURLResponse *) (self.isResponseFromCache ? self.cachedResponse.response : self.requestOperation.response);
+}
+
+- (NSData *)responseData
+{
+    return self.isResponseFromCache ? self.cachedResponse.data : self.requestOperation.responseData;
+}
+
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
     // Spin up an RKObjectResponseMapperOperation
-    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithResponse:self.requestOperation.response
-                                                                                                            data:self.requestOperation.responseData
+    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithResponse:self.response
+                                                                                                            data:self.responseData
                                                                                               responseDescriptors:self.responseDescriptors];
     mapperOperation.targetObject = self.targetObject;
     [mapperOperation start];
@@ -102,12 +135,43 @@
     // Default implementation does nothing
 }
 
+- (NSCachedURLResponse *)validCachedResponseForRequest:(NSURLRequest *)request
+{
+    if (! self.avoidsNetworkAccess) {
+        RKLogDebug(@"avoidsNetworkAccess=NO: Skipping network access optimization.");
+        return nil;
+    }
+    
+    NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
+    if (cachedResponse) {
+        // Verify that the entry is valid
+        NSHTTPURLResponse *response = (NSHTTPURLResponse *) [cachedResponse response];
+        NSDate *cacheExpirationDate = RKHTTPCacheExpirationDateFromHeadersWithStatusCode([response allHeaderFields], response.statusCode);
+        RKLogDebug(@"Found cached response for request %@ with expiration date: %@", RKDescriptionForRequest(self.request), cacheExpirationDate);
+        if ([(NSDate *)[NSDate date] compare:cacheExpirationDate] == NSOrderedAscending) {
+            return cachedResponse;
+        }
+    } else {
+        RKLogDebug(@"No cached response available for request: %@", RKDescriptionForRequest(request));
+    }
+    
+    return nil;
+}
+
 - (void)main
 {
-    // Send the request
-    [self.requestOperation start];
-    [self.requestOperation waitUntilFinished];
     if (self.isCancelled) return;
+    
+    // See if we can satisfy the request without hitting the network
+    self.cachedResponse = [self validCachedResponseForRequest:self.request];
+    
+    // Send the request
+    if (!self.cachedResponse) {
+        [self.requestOperation start];
+        [self.requestOperation waitUntilFinished];
+    } else {
+        RKLogDebug(@"Skipping networking access: Found valid cached response for request: %@", self.request);
+    }
 
     if (self.requestOperation.error) {
         RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", self.requestOperation.error);

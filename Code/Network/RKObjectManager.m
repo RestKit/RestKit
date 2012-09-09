@@ -172,8 +172,7 @@ static RKObjectManager  *sharedManager = nil;
                                                         success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                         failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKHTTPRequestOperation *HTTPRequestOperation = (RKHTTPRequestOperation *) [self.HTTPClient HTTPRequestOperationWithRequest:request success:nil failure:nil];
-    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     return operation;
 }
@@ -183,8 +182,7 @@ static RKObjectManager  *sharedManager = nil;
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKHTTPRequestOperation *HTTPRequestOperation = (RKHTTPRequestOperation *) [self.HTTPClient HTTPRequestOperationWithRequest:request success:nil failure:nil];
-    RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];
+    RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     operation.managedObjectContext = managedObjectContext;
     operation.managedObjectCache = self.managedObjectStore.managedObjectCache;
