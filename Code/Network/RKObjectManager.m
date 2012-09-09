@@ -59,11 +59,6 @@ static RKObjectManager  *sharedManager = nil;
 
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
 
-//        [self addObserver:self
-//               forKeyPath:@"client.reachabilityObserver"
-//                  options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial
-//                  context:nil];
-
         // Set shared manager if nil
         if (nil == sharedManager) {
             [RKObjectManager setSharedManager:self];
@@ -87,60 +82,6 @@ static RKObjectManager  *sharedManager = nil;
 {
     RKObjectManager *manager = [[self alloc] initWithBaseURL:baseURL];
     return manager;
-}
-
-- (void)dealloc
-{
-//    [self removeObserver:self forKeyPath:@"client.reachabilityObserver"];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-//    if ([keyPath isEqualToString:@"client.reachabilityObserver"]) {
-//        [self reachabilityObserverDidChange:change];
-//    }
-}
-
-- (void)reachabilityObserverDidChange:(NSDictionary *)change
-{
-//    RKReachabilityObserver *oldReachabilityObserver = [change objectForKey:NSKeyValueChangeOldKey];
-//    RKReachabilityObserver *newReachabilityObserver = [change objectForKey:NSKeyValueChangeNewKey];
-//
-//    if (! [oldReachabilityObserver isEqual:[NSNull null]]) {
-//        RKLogDebug(@"Reachability observer changed for RKClient %@ of RKObjectManager %@, stopping observing reachability changes", self.client, self);
-//        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKReachabilityDidChangeNotification object:oldReachabilityObserver];
-//    }
-//
-//    if (! [newReachabilityObserver isEqual:[NSNull null]]) {
-//        [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                 selector:@selector(reachabilityChanged:)
-//                                                     name:RKReachabilityDidChangeNotification
-//                                                   object:newReachabilityObserver];
-//
-//        RKLogDebug(@"Reachability observer changed for client %@ of object manager %@, starting observing reachability changes", self.client, self);
-//    }
-//
-//    // Initialize current Network Status
-//    if ([self.client.reachabilityObserver isReachabilityDetermined]) {
-//        BOOL isNetworkReachable = [self.client.reachabilityObserver isNetworkReachable];
-//        self.networkStatus = isNetworkReachable ? RKObjectManagerNetworkStatusOnline : RKObjectManagerNetworkStatusOffline;
-//    } else {
-//        self.networkStatus = RKObjectManagerNetworkStatusUnknown;
-//    }
-}
-
-- (void)reachabilityChanged:(NSNotification *)notification
-{
-//    BOOL isHostReachable = [self.client.reachabilityObserver isNetworkReachable];
-//
-//    _networkStatus = isHostReachable ? RKObjectManagerNetworkStatusOnline : RKObjectManagerNetworkStatusOffline;
-//
-//    if (isHostReachable) {
-//        [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOnlineNotification object:self];
-//    } else {
-//        [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOfflineNotification object:self];
-//    }
 }
 
 - (void)setAcceptMIMEType:(NSString *)MIMEType
