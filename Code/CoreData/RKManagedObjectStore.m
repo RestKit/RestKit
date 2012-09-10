@@ -64,6 +64,7 @@ static RKManagedObjectStore *defaultStore = nil;
     self = [super init];
     if (self) {
         self.managedObjectModel = managedObjectModel;
+        self.managedObjectCache = [RKFetchRequestManagedObjectCache new];
 
         // Hydrate the defaultStore
         if (! defaultStore) {

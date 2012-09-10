@@ -218,6 +218,8 @@ extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
 
  The managed object cache is used to accelerate intensive Core Data operations by
  caching managed objects by their primary key value.
+ 
+ **Default**: An instance of `RKFetchRequestManagedObjectCache`.
 
  @see RKManagedObjectCaching
  @warning A nil managed object cache will result in a store that is unable to uniquely identify
