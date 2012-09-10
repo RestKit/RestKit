@@ -315,16 +315,29 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
+
 /**
- Creates and returns an object request operation for the given object, request method, path, and parameters.
+ Creates and returns an object request operation of the appropriate type for the given object, request method, path, and parameters.
  
- The type of object request operation created is determined by evaluating the type of the object given and examining the list of `RKResponseDescriptor` objects added to the manager. If the given object inherits from `NSManagedObject` or the list of response descriptors matching the URL of the request created contains an `RKEntityMapping` object, then an `RKManagedObjectRequestOperation` is returned; otherwise an `RKObjectRequestOperation` is returned.
+ The type of object request operation created is determined by evaluating the type of the object given and examining the list of `RKResponseDescriptor` objects added to the manager. 
+ 
+ If the given object is non-nil and inherits from `NSManagedObject`, then an instance of `RKManagedObjectRequestOperation` is returned.
+ 
+ If the given object is nil, then the `RKResponseDescriptor` objects added to the manager are evaluated to determine the type of operation created. In this case, the path of the operation is used to filter the set of `RKResponseDescriptor` objects to those that may be used to map the response. If the path is nil, the router is consulted to determine an appropriate path with which to perform the matching. If the filtered array of matching response descriptors defines a mapping configuration with an `RKEntityMapping` object, then an `RKManagedObjectRequestOperation` is returned; otherwise an `RKObjectRequestOperation` is returned.
+ 
+ @param object The object with which to construct the object request operation. May be nil.
+ @param method The request method for the request.
+ @param path The path to be appended to the HTTP client's baseURL and set as the URL of the request. If nil, the router is consulted.
+ @param parameters The parameters to be either set as a query string for `GET` requests, or reverse merged with the parameterization of the object and set as the request HTTP body.
  
  @warning The given object must be a single object instance. Collections are not yet supported.
  
  @see `requestWithObject:method:path:parameters`
  */
-- (id)objectRequestOperationWithObject:(id)object method:(RKRequestMethod)method path:(NSString *)path parameters:(NSDictionary *)parameters;
+- (id)appropriateObjectRequestOperationWithObject:(id)object
+                                           method:(RKRequestMethod)method
+                                             path:(NSString *)path
+                                       parameters:(NSDictionary *)parameters;
 
 ///--------------------------------------------------
 /// @name Managing Enqueued Object Request Operations

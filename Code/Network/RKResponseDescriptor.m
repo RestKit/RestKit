@@ -83,4 +83,12 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
             NSStringFromClass([self class]), self, self.pathPattern, self.keyPath, RKStringFromIndexSet(self.statusCodes), self.mapping];
 }
 
+- (BOOL)matchesPath:(NSString *)path
+{
+    if (!self.pathPattern || !path) return YES;
+    
+    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:self.pathPattern];
+    return [pathMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
+}
+
 @end

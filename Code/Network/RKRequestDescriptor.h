@@ -69,4 +69,15 @@
  */
 @property (nonatomic, copy, readonly) NSString *rootKeyPath;
 
+///--------------------------------
+/// @name Using Request Descriptors
+///--------------------------------
+
+/**
+ Returns `YES` if the given object is instance of objectClass or any class that inherits from objectClass, else `NO`.
+ 
+ @return `YES` if the given object matches objectClass, else `NO`.
+ */
+- (BOOL)matchesObject:(id)object;
+
 @end

@@ -76,4 +76,17 @@
  */
 @property (nonatomic, copy, readonly) NSIndexSet *statusCodes;
 
+///---------------------------------
+/// @name Using Response Descriptors
+///---------------------------------
+
+/**
+ Returns `YES` if the receiver's path pattern matches the given path.
+ 
+ Path matching is performed using an `RKPathMatcher` object. If the receiver has a nil path pattern or the given path is nil, YES is returned.
+ 
+ @see `RKPathMatcher`
+ */
+- (BOOL)matchesPath:(NSString *)path;
+
 @end

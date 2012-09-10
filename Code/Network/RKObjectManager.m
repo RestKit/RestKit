@@ -32,6 +32,56 @@
 
 static RKObjectManager  *sharedManager = nil;
 
+//////////////////////////////////
+// Utility Functions
+
+/**
+ Returns the subset of the given array of `RKResponseDescriptor` objects that match the given path.
+ 
+ @param responseDescriptors An array of `RKResponseDescriptor` objects.
+ @param path The path for which to select matching response descriptors.
+ @return An `NSArray` object whose elements are `RKResponseDescriptor` objects matching the given path.
+ */
+static NSArray * RKFilteredArrayOfResponseDescriptorsMatchingPath(NSArray *responseDescriptors, NSString *path)
+{
+    NSIndexSet *indexSet = [responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
+        return [responseDescriptor matchesPath:path];
+    }];
+    return [responseDescriptors objectsAtIndexes:indexSet];
+}
+
+/**
+ Returns the first `RKRequestDescriptor` object from the given array that matches the given object.
+ 
+ @param requestDescriptors An array of `RKRequestDescriptor` objects.
+ @param object The object to find a matching request descriptor for.
+ @return An `RKRequestDescriptor` object matching the given object, or `nil` if none could be found.
+ */
+static RKRequestDescriptor * RKRequestDescriptorFromArrayMatchingObject(NSArray *requestDescriptors, id object)
+{
+    for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
+        if ([requestDescriptor matchesObject:object]) return requestDescriptor;
+    }
+    return nil;
+}
+
+/**
+ Returns `YES` if the given array of `RKResponseDescriptor` objects contains an `RKEntityMapping`.
+ 
+ @param responseDescriptor An array of `RKResponseDescriptor` objects.
+ @return `YES` if the `mapping` property of any of the response descriptor objects in the given array is an instance of `RKEntityMapping`, else `NO`.
+ */
+static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *responseDescriptors)
+{
+    for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+        if ([responseDescriptor.mapping isKindOfClass:[RKEntityMapping class]]) {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
 ///////////////////////////////////
 
 @interface RKObjectManager ()
@@ -106,15 +156,6 @@ static RKObjectManager  *sharedManager = nil;
 //    return paginator;
 //}
 
-// TODO: Private, move down...
-- (RKRequestDescriptor *)requestDescriptorForObject:(id)object
-{
-    for (RKRequestDescriptor *requestDescriptor in self.requestDescriptors) {
-        if ([object isKindOfClass:requestDescriptor.objectClass]) return requestDescriptor;
-    }
-    return nil;
-}
-
 - (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName
                                                object:(id)object
                                            parameters:(NSDictionary *)parameters
@@ -133,7 +174,7 @@ static RKObjectManager  *sharedManager = nil;
     NSString *requestPath = (path) ? path : [[self.router URLForObject:object method:method] relativeString];
     NSString *stringMethod = RKStringFromRequestMethod(method);
     NSDictionary *requestParameters = nil;
-    RKRequestDescriptor *requestDescriptor = [self requestDescriptorForObject:object];
+    RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, object);
     if (requestDescriptor) {
         NSError *error = nil;
         NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
@@ -155,7 +196,7 @@ static RKObjectManager  *sharedManager = nil;
     NSString *requestPath = (path) ? path : [[self.router URLForObject:object method:method] relativeString];
     NSString *stringMethod = RKStringFromRequestMethod(method);
     NSDictionary *requestParameters = nil;
-    RKRequestDescriptor *requestDescriptor = [self requestDescriptorForObject:object];
+    RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, object);
     if (requestDescriptor) {
         NSError *error = nil;
         NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
@@ -190,44 +231,43 @@ static RKObjectManager  *sharedManager = nil;
     return operation;
 }
 
-- (BOOL)responseDescriptorsContainsEntityMappings
+// TODO: Unit test me!
+// non-managed object, nil path
+// managed object, given path
+// nil object, path contains response descriptor with entity mapping
+// nil object, path does not 
+- (id)appropriateObjectRequestOperationWithObject:(id)object
+                                           method:(RKRequestMethod)method
+                                             path:(NSString *)path
+                                       parameters:(NSDictionary *)parameters
 {
-    return [self.responseDescriptors indexOfObjectPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
-        if ([responseDescriptor.mapping isKindOfClass:[RKEntityMapping class]]) {
-            *stop = YES;
-            return YES;
-        }
-        return NO;
-    }] != NSNotFound;
-}
-
-/**
- TODO: Test cases...
- 1) Managed object
- 2) Non managed object, request descriptors with entity
-
- Does it make sense to assume the main queue MOC here?
- */
-- (id)objectRequestOperationWithObject:(id)object method:(RKRequestMethod)method path:(NSString *)path parameters:(NSDictionary *)parameters
-{
-    NSURLRequest *request = [self requestWithObject:object method:method path:path parameters:parameters];
     RKObjectRequestOperation *operation = nil;
-    if ([object isKindOfClass:[NSManagedObject class]] || [self responseDescriptorsContainsEntityMappings]) {
+    NSURLRequest *request = [self requestWithObject:object method:method path:path parameters:parameters];
+    NSString *requestPath = (path) ? path : [[self.router URLForObject:object method:method] relativeString];
+    NSArray *matchingDescriptors = RKFilteredArrayOfResponseDescriptorsMatchingPath(self.responseDescriptors, requestPath);
+    BOOL containsEntityMapping = RKDoesArrayOfResponseDescriptorsContainEntityMapping(matchingDescriptors);
+    BOOL isManagedObjectRequestOperation = (containsEntityMapping || [object isKindOfClass:[NSManagedObject class]]);
+    
+    if (isManagedObjectRequestOperation && !self.managedObjectStore) RKLogWarning(@"Asked to create an `RKManagedObjectRequestOperation` object, but managedObjectStore is nil.");
+    if ((containsEntityMapping) && self.managedObjectStore) {
+        // Construct a Core Data operation
         NSManagedObjectContext *managedObjectContext = [object respondsToSelector:@selector(managedObjectContext)] ? [object managedObjectContext] : self.managedObjectStore.mainQueueManagedObjectContext;
         operation = [self managedObjectRequestOperationWithRequest:request managedObjectContext:managedObjectContext success:nil failure:nil];
         if ([object isKindOfClass:[NSManagedObject class]] && [[object objectID] isTemporaryID]) {
             RKLogInfo(@"Asked to perform object request with NSManagedObject with temporary object ID: Obtaining permanent ID before proceeding.");
             __block BOOL _blockSuccess;
             __block NSError *_blockError;
-
+            
             [[object managedObjectContext] performBlockAndWait:^{
                 _blockSuccess = [[object managedObjectContext] obtainPermanentIDsForObjects:@[object] error:&_blockError];
             }];
             if (! _blockSuccess) RKLogWarning(@"Failed to obtain permanent ID for object %@: %@", object, _blockError);
-        }
+        }                
     } else {
+        // Non-Core Data operation
         operation = [self objectRequestOperationWithRequest:request success:nil failure:nil];
     }
+    
     operation.targetObject = object;
     return operation;
 }
@@ -262,10 +302,8 @@ static RKObjectManager  *sharedManager = nil;
                  success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                  failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    // TODO: Add support for asking the object request operation class if it can handle the response descriptors matching the URL
-    // This will enable graceful selection of the appropriate managed vs. unmanaged object request operation
-    NSURLRequest *request = [self.HTTPClient requestWithMethod:@"GET" path:path parameters:parameters];
-    id operation = [self managedObjectRequestOperationWithRequest:request managedObjectContext:self.managedObjectStore.mainQueueManagedObjectContext success:success failure:failure];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:path parameters:parameters];
+    [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -275,7 +313,7 @@ static RKObjectManager  *sharedManager = nil;
           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodGET path:path parameters:parameters];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodGET path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
@@ -286,7 +324,7 @@ static RKObjectManager  *sharedManager = nil;
            success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodPOST path:path parameters:parameters];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPOST path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
@@ -297,7 +335,7 @@ static RKObjectManager  *sharedManager = nil;
           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodPUT path:path parameters:parameters];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPUT path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
@@ -308,7 +346,7 @@ static RKObjectManager  *sharedManager = nil;
             success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodPATCH path:path parameters:parameters];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPATCH path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
@@ -319,7 +357,7 @@ static RKObjectManager  *sharedManager = nil;
              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKObjectRequestOperation *operation = [self objectRequestOperationWithObject:object method:RKRequestMethodDELETE path:path parameters:parameters];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodDELETE path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }

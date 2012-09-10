@@ -51,4 +51,9 @@
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
 }
 
+- (BOOL)matchesObject:(id)object
+{
+    return [object isKindOfClass:self.objectClass];
+}
+
 @end
