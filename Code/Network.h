@@ -21,5 +21,7 @@
 #import "RKRoute.h"
 #import "RKRouteSet.h"
 #import "RKRouter.h"
+#import "RKRequestDescriptor.h"
+#import "RKResponseDescriptor.h"
 #import "RKObjectManager.h"
 #import "RKHTTPUtilities.h"
