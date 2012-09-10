@@ -147,7 +147,7 @@ static inline NSString * RKDescriptionForRequest(NSURLRequest *request)
         // Verify that the entry is valid
         NSHTTPURLResponse *response = (NSHTTPURLResponse *) [cachedResponse response];
         NSDate *cacheExpirationDate = RKHTTPCacheExpirationDateFromHeadersWithStatusCode([response allHeaderFields], response.statusCode);
-        RKLogDebug(@"Found cached response for request %@ with expiration date: %@", RKDescriptionForRequest(self.request), cacheExpirationDate);
+        RKLogTrace(@"Found cached response for request %@ with expiration date: %@ (cachedResponse.headers=%@)", RKDescriptionForRequest(self.request), cacheExpirationDate, [response allHeaderFields]);
         if ([(NSDate *)[NSDate date] compare:cacheExpirationDate] == NSOrderedAscending) {
             return cachedResponse;
         }
