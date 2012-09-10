@@ -50,7 +50,6 @@ static inline NSString * RKDescriptionForRequest(NSURLRequest *request)
     }
     
     return self;
-    RKHTTPRequestOperation *operation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
 }
 
 - (void)setSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue
