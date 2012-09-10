@@ -9,7 +9,12 @@
 #import "RKHTTPRequestOperation.h"
 #import "RKMappingResult.h"
 
-// Add docs about cacheing behaviors...
+/** Executes the request operation and performs object mapping
+ 
+ TODO
+  - cancellation of the RKHTTPRequestOperation
+  - add docs about cacheing behaviors...
+ */
 @interface RKObjectRequestOperation : NSOperation
 
 - (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors;
@@ -29,7 +34,8 @@
  
  This optimization has even greater impact when the object request operation is an instance of `RKManagedObjectRequestOperation` as object mapping can skipped entirely and the objects loaded directly from Core Data.
  
- **Default**: `YES`
+ The value is depending on the cachePolicy used in the NSURLRequest.
+ It defaults to `YES`, unless the NSURLRequest specifies NSURLRequestReloadIgnoringLocalCacheData or NSURLRequestReloadIgnoringLocalAndRemoteCacheData
  */
 @property (nonatomic, assign) BOOL avoidsNetworkAccess;
 

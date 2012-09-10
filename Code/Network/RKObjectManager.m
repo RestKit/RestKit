@@ -210,6 +210,7 @@ static RKObjectManager  *sharedManager = nil;
  */
 - (id)objectRequestOperationWithObject:(id)object method:(RKRequestMethod)method path:(NSString *)path parameters:(NSDictionary *)parameters
 {
+    NSParameterAssert(object);
     NSURLRequest *request = [self requestWithObject:object method:method path:path parameters:parameters];
     RKObjectRequestOperation *operation = nil;
     if ([object isKindOfClass:[NSManagedObject class]] || [self responseDescriptorsContainsEntityMappings]) {

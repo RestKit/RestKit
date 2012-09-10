@@ -43,9 +43,19 @@ static inline NSString * RKDescriptionForRequest(NSURLRequest *request)
     self = [self init];
     if (self) {
         self.request = request;
+
+        switch(self.request.cachePolicy) {
+          case NSURLRequestReloadIgnoringLocalCacheData:
+          case NSURLRequestReloadIgnoringLocalAndRemoteCacheData:
+            self.avoidsNetworkAccess = NO;
+            break;
+          default:
+            self.avoidsNetworkAccess = YES;
+            break;
+        };
+
         self.responseDescriptors = responseDescriptors;
         self.requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-        self.avoidsNetworkAccess = YES;
         // TODO: set acceptable MIME Types based on available serializations?
     }
     
