@@ -47,7 +47,6 @@
  @returns A UTF-8 encoded string representation of the keys/values in the dictionary
  */
 - (NSString *)stringWithURLEncodedEntries;
-- (NSString *)URLEncodedString; // TODO: Deprecated..
 
 + (NSDictionary *)dictionaryByReverseMerging:(NSDictionary *)dictionary1 with:(NSDictionary *)dictionary2;
 - (NSDictionary *)dictionaryByReverseMergingWith:(NSDictionary *)dictionary;

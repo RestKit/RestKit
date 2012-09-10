@@ -105,11 +105,6 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
     return [parts componentsJoinedByString:@"&"];
 }
 
-- (NSString *)URLEncodedString
-{
-    return [self stringWithURLEncodedEntries];
-}
-
 + (NSDictionary *)dictionaryByReverseMerging:(NSDictionary *)dictionary1 with:(NSDictionary *)dictionary2
 {
     NSMutableDictionary *result = [dictionary1 mutableCopy];
