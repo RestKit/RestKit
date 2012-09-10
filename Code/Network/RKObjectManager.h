@@ -289,6 +289,26 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 - (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName
                                                object:(id)object
                                            parameters:(NSDictionary *)parameters;
+/**
+ Creates an `NSMutableURLRequest` object with the `NSURL` returned by the router for the relationship of the given object and the given parameters.
+ 
+ The implementation invokes `requestWithObject:method:path:parameters:` after constructing the path with the given route.
+ 
+ Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
+ 
+ @param relationshipName The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
+ @param object The object for which related objects are being loaded. Evaluated against the `RKRoute` for the relationship for the object's class with the given name to compute the path. Cannot be nil.
+ @param method The HTTP method for the request.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL, or parameterized and set as the request body. May be nil.
+ @return An `NSMutableURLRequest` object for the specified relationship.
+ 
+ @raises NSInvalidArgumentException Raised if no route is configured for a relationship of the given object's class with the given name.
+ @see `requestWithObject:method:path:parameters`
+ */
+- (NSMutableURLRequest *)requestWithPathForRelationship:(NSString *)relationship
+                                               ofObject:(id)object
+                                                 method:(RKRequestMethod)method
+                                             parameters:(NSDictionary *)parameters;
 
 ///-----------------------------------------
 /// @name Creating Object Request Operations

@@ -166,6 +166,16 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     return [self.HTTPClient requestWithMethod:RKStringFromRequestMethod(method) path:[URL relativeString] parameters:parameters];
 }
 
+- (NSMutableURLRequest *)requestWithPathForRelationship:(NSString *)relationship
+                                               ofObject:(id)object
+                                                 method:(RKRequestMethod)method
+                                             parameters:(NSDictionary *)parameters
+{
+    NSURL *URL = [self.router URLForRelationship:relationship ofObject:object method:method];
+    NSAssert(URL, @"No relationship route found for the '%@' class with the name '%@'", NSStringFromClass([object class]), relationship);
+    return [self.HTTPClient requestWithMethod:RKStringFromRequestMethod(method) path:[URL relativeString] parameters:parameters];
+}
+
 - (NSMutableURLRequest *)requestWithObject:(id)object
                                     method:(RKRequestMethod)method
                                       path:(NSString *)path
