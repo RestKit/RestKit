@@ -130,7 +130,7 @@
     __block NSError *_blockError;
     __block NSArray *_blockObjects;
 
-    for (RKFetchRequestBlock fetchRequestBlock in self.fetchRequestBlocks) {
+    for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
         NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
         if (fetchRequest) {
             RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
