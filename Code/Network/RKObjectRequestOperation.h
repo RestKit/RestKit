@@ -39,11 +39,15 @@
 
 /**
  The callback dispatch queue on success. If `NULL` (default), the main queue is used.
+ 
+ The queue is retained while this operation is living
  */
 @property (nonatomic) dispatch_queue_t successCallbackQueue;
 
 /**
  The callback dispatch queue on failure. If `NULL` (default), the main queue is used.
+ 
+ The queue is retained while this operation is living
  */
 @property (nonatomic) dispatch_queue_t failureCallbackQueue;
 

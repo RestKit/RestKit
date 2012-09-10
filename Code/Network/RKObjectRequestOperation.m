@@ -29,6 +29,12 @@ static inline NSString * RKDescriptionForRequest(NSURLRequest *request)
 
 @implementation RKObjectRequestOperation
 
+- (void)dealloc
+{
+    if(_failureCallbackQueue) dispatch_release(_failureCallbackQueue);
+    if(_successCallbackQueue) dispatch_release(_successCallbackQueue);
+}
+
 - (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
 {
     NSParameterAssert(request);
