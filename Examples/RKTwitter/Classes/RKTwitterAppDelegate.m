@@ -27,15 +27,14 @@
     //let AFNetworking manage the activity indicator
     [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
   
-    // Initialize RestKit
+    // Initialize HTTPClient
     NSURL *baseURL = [NSURL URLWithString:@"http://twitter.com"];
     AFHTTPClient* client = [[AFHTTPClient alloc] initWithBaseURL:baseURL];
+    //we want to work with JSON-Data
+    [client setDefaultHeader:@"Accept" value:RKMIMETypeJSON];
+  
+    // Initialize RestKit
     RKObjectManager *objectManager = [[RKObjectManager alloc] initWithHTTPClient:client];
-
-    objectManager.acceptMIMEType = RKMIMETypeJSON;
-    // Uncomment these lines to use XML, comment it to use JSON
-    //    objectManager.acceptMIMEType = RKMIMETypeXML;
-    //    statusMapping.rootKeyPath = @"statuses.status";
 
   
     // Setup our object mappings
