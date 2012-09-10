@@ -163,6 +163,9 @@
         if ([self.connectionMapping isForeignKeyConnection]) {
             BOOL isToMany = [self isToMany];
             id sourceValue = [self.managedObject valueForKey:self.connectionMapping.sourceKeyPath];
+            if (!sourceValue)
+                return nil;
+
             if (isToMany) {
                 connectionResult = [self findAllConnectedWithSourceValue:sourceValue];
             } else {
