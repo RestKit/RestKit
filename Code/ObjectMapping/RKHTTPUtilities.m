@@ -356,7 +356,15 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
     {
         NSRange foundRange = [cacheControl rangeOfString:@"no-store"];
         if (foundRange.length > 0) {
-            // Can't be cached
+            // If no-store, the content cannot be cached at all
+            // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.2
+            return nil;
+        }
+        
+        foundRange = [cacheControl rangeOfString:@"no-cache"];
+        if (foundRange.length > 0) {
+            // If no-cache, we must revalidate with the origin server
+            // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1
             return nil;
         }
         
