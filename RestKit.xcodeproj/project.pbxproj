@@ -340,8 +340,8 @@
 		253477FA15FFBD2E002C0E4E /* NSBundle+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 253477F615FFBD2E002C0E4E /* NSBundle+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2534781615FFD4A6002C0E4E /* RKURLEncodedSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */; };
 		2534781715FFD4A6002C0E4E /* RKURLEncodedSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */; };
-		2534781815FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */; };
-		2534781915FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */; };
+		2534781815FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2534781915FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253B495214E35D1A00B0483F /* RKTestFixture.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB2014D9B35D004863C8 /* RKTestFixture.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253B495F14E35EC300B0483F /* RKTestFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB2114D9B35D004863C8 /* RKTestFixture.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		254372A815F54995006E8424 /* RKObjectParameterization.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372A615F54995006E8424 /* RKObjectParameterization.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -397,11 +397,11 @@
 		258EFF7A15C0CE1400EE4E0D /* RKManagedObjectSeederTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EFF7915C0CE1400EE4E0D /* RKManagedObjectSeederTest.m */; };
 		258EFF7B15C0CE1400EE4E0D /* RKManagedObjectSeederTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EFF7915C0CE1400EE4E0D /* RKManagedObjectSeederTest.m */; };
 		2595B46F15F670530087A59B /* RKMIMETypeSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2595B46B15F670530087A59B /* RKMIMETypeSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2595B47015F670530087A59B /* RKMIMETypeSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2595B46B15F670530087A59B /* RKMIMETypeSerialization.h */; };
+		2595B47015F670530087A59B /* RKMIMETypeSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2595B46B15F670530087A59B /* RKMIMETypeSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2595B47115F670530087A59B /* RKMIMETypeSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2595B46C15F670530087A59B /* RKMIMETypeSerialization.m */; };
 		2595B47215F670530087A59B /* RKMIMETypeSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2595B46C15F670530087A59B /* RKMIMETypeSerialization.m */; };
 		2595B47315F670530087A59B /* RKNSJSONSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2595B46D15F670530087A59B /* RKNSJSONSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2595B47415F670530087A59B /* RKNSJSONSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2595B46D15F670530087A59B /* RKNSJSONSerialization.h */; };
+		2595B47415F670530087A59B /* RKNSJSONSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2595B46D15F670530087A59B /* RKNSJSONSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2595B47515F670530087A59B /* RKNSJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2595B46E15F670530087A59B /* RKNSJSONSerialization.m */; };
 		2595B47615F670530087A59B /* RKNSJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2595B46E15F670530087A59B /* RKNSJSONSerialization.m */; };
 		2597F99C15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1301,8 +1301,8 @@
 		25160DA2145650490060A5C5 /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */,
 				2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */,
+				2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */,
 				2595B46B15F670530087A59B /* RKMIMETypeSerialization.h */,
 				2595B46C15F670530087A59B /* RKMIMETypeSerialization.m */,
 				2595B46D15F670530087A59B /* RKNSJSONSerialization.h */,

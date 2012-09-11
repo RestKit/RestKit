@@ -22,6 +22,7 @@
 #import "RKErrors.h"
 #import "RKSerialization.h"
 #import "RKLog.h"
+#import "RKURLEncodedSerialization.h"
 
 // Define logging component
 #undef RKLogComponent
@@ -99,13 +100,17 @@
 - (void)addRegistrationsForKnownSerializations {
     Class serializationClass = nil;
     
+    // URL Encoded
+    [self.registrations addObject:[[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:RKMIMETypeFormURLEncoded
+                                                                             serializationClass:[RKURLEncodedSerialization class]]];
     // JSON
     NSArray *JSONSerializationClassNames = @[ @"RKNSJSONSerialization", @"RKJSONKitSerialization" ];
     for (NSString *serializationClassName in JSONSerializationClassNames) {
         serializationClass = NSClassFromString(serializationClassName);
         if (serializationClass) {
             RKLogInfo(@"JSON Serialization class '%@' detected: Registering for MIME Type '%@", serializationClassName, RKMIMETypeJSON);
-            [self.registrations addObject:[[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:RKMIMETypeJSON serializationClass:serializationClass]];
+            [self.registrations addObject:[[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:RKMIMETypeJSON
+                                                                                     serializationClass:serializationClass]];
         }
     }
     
