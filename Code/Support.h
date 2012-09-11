@@ -26,6 +26,6 @@
 #import "RKDotNetDateFormatter.h"
 #import "RKPathUtilities.h"
 #import "RKDictionaryUtilities.h"
-#import "RKFormURLSerialization.h"
+#import "RKURLEncodedSerialization.h"
 #import "RKNSJSONSerialization.h"
 #import "RKMIMETypeSerialization.h"

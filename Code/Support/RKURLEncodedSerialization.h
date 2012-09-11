@@ -1,5 +1,5 @@
 //
-//  RKFormURLSerialization.h
+//  RKURLEncodedSerialization.h
 //  RestKit
 //
 //  Created by Blake Watters on 9/4/12.
@@ -21,12 +21,12 @@
 #import "RKSerialization.h"
 
 /**
- The `RKFormURLSerialization` class conforms to the `RKSerialization` protocol and provides support for the serialization and deserialization of URL encoded data. URL encoding is used to replace certain characters in a string with equivalent percent escape sequences. The list of characters replaced by the implementation are designed as illegal URL characters by RFC 3986. URL encoded data is used for the submission of HTML forms with the MIME Type `application/x-www-form-urlencoded`.
+ The `RKURLEncodedSerialization` class conforms to the `RKSerialization` protocol and provides support for the serialization and deserialization of URL encoded data. URL encoding is used to replace certain characters in a string with equivalent percent escape sequences. The list of characters replaced by the implementation are designed as illegal URL characters by RFC 3986. URL encoded data is used for the submission of HTML forms with the MIME Type `application/x-www-form-urlencoded`.
  
  @see http://www.w3.org/TR/html401/interact/forms.html
  @see http://www.ietf.org/rfc/rfc3986.txt
  */
-@interface RKFormURLSerialization : NSObject <RKSerialization>
+@interface RKURLEncodedSerialization : NSObject <RKSerialization>
 
 @end
 

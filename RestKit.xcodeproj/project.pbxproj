@@ -338,10 +338,10 @@
 		253477F815FFBD2E002C0E4E /* NSBundle+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 253477F515FFBD2E002C0E4E /* NSBundle+RKAdditions.m */; };
 		253477F915FFBD2E002C0E4E /* NSBundle+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 253477F615FFBD2E002C0E4E /* NSBundle+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253477FA15FFBD2E002C0E4E /* NSBundle+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 253477F615FFBD2E002C0E4E /* NSBundle+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2534781615FFD4A6002C0E4E /* RKFormURLSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2534781415FFD4A6002C0E4E /* RKFormURLSerialization.m */; };
-		2534781715FFD4A6002C0E4E /* RKFormURLSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2534781415FFD4A6002C0E4E /* RKFormURLSerialization.m */; };
-		2534781815FFD4A6002C0E4E /* RKFormURLSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKFormURLSerialization.h */; };
-		2534781915FFD4A6002C0E4E /* RKFormURLSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKFormURLSerialization.h */; };
+		2534781615FFD4A6002C0E4E /* RKURLEncodedSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */; };
+		2534781715FFD4A6002C0E4E /* RKURLEncodedSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */; };
+		2534781815FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */; };
+		2534781915FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */; };
 		253B495214E35D1A00B0483F /* RKTestFixture.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB2014D9B35D004863C8 /* RKTestFixture.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253B495F14E35EC300B0483F /* RKTestFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB2114D9B35D004863C8 /* RKTestFixture.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		254372A815F54995006E8424 /* RKObjectParameterization.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372A615F54995006E8424 /* RKObjectParameterization.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -868,8 +868,8 @@
 		253477F015FFBC60002C0E4E /* RKDictionaryUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilities.m; sourceTree = "<group>"; };
 		253477F515FFBD2E002C0E4E /* NSBundle+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSBundle+RKAdditions.m"; path = "Testing/NSBundle+RKAdditions.m"; sourceTree = "<group>"; };
 		253477F615FFBD2E002C0E4E /* NSBundle+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSBundle+RKAdditions.h"; path = "Testing/NSBundle+RKAdditions.h"; sourceTree = "<group>"; };
-		2534781415FFD4A6002C0E4E /* RKFormURLSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFormURLSerialization.m; sourceTree = "<group>"; };
-		2534781515FFD4A6002C0E4E /* RKFormURLSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKFormURLSerialization.h; sourceTree = "<group>"; };
+		2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURLEncodedSerialization.m; sourceTree = "<group>"; };
+		2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKURLEncodedSerialization.h; sourceTree = "<group>"; };
 		254372A615F54995006E8424 /* RKObjectParameterization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectParameterization.h; sourceTree = "<group>"; };
 		254372A715F54995006E8424 /* RKObjectParameterization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectParameterization.m; sourceTree = "<group>"; };
 		254372AA15F54C3F006E8424 /* RKHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -1301,8 +1301,8 @@
 		25160DA2145650490060A5C5 /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				2534781415FFD4A6002C0E4E /* RKFormURLSerialization.m */,
-				2534781515FFD4A6002C0E4E /* RKFormURLSerialization.h */,
+				2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */,
+				2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */,
 				2595B46B15F670530087A59B /* RKMIMETypeSerialization.h */,
 				2595B46C15F670530087A59B /* RKMIMETypeSerialization.m */,
 				2595B46D15F670530087A59B /* RKNSJSONSerialization.h */,
@@ -2022,7 +2022,7 @@
 				2502C8F715F79CF70060FD75 /* Testing.h in Headers */,
 				253477F115FFBC61002C0E4E /* RKDictionaryUtilities.h in Headers */,
 				253477F915FFBD2E002C0E4E /* NSBundle+RKAdditions.h in Headers */,
-				2534781815FFD4A6002C0E4E /* RKFormURLSerialization.h in Headers */,
+				2534781815FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2126,7 +2126,7 @@
 				2502C8F815F79CF70060FD75 /* Testing.h in Headers */,
 				253477F215FFBC61002C0E4E /* RKDictionaryUtilities.h in Headers */,
 				253477FA15FFBD2E002C0E4E /* NSBundle+RKAdditions.h in Headers */,
-				2534781915FFD4A6002C0E4E /* RKFormURLSerialization.h in Headers */,
+				2534781915FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2505,7 +2505,7 @@
 				2595B47515F670530087A59B /* RKNSJSONSerialization.m in Sources */,
 				253477F315FFBC61002C0E4E /* RKDictionaryUtilities.m in Sources */,
 				253477F715FFBD2E002C0E4E /* NSBundle+RKAdditions.m in Sources */,
-				2534781615FFD4A6002C0E4E /* RKFormURLSerialization.m in Sources */,
+				2534781615FFD4A6002C0E4E /* RKURLEncodedSerialization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2667,7 +2667,7 @@
 				2595B47615F670530087A59B /* RKNSJSONSerialization.m in Sources */,
 				253477F415FFBC61002C0E4E /* RKDictionaryUtilities.m in Sources */,
 				253477F815FFBD2E002C0E4E /* NSBundle+RKAdditions.m in Sources */,
-				2534781715FFD4A6002C0E4E /* RKFormURLSerialization.m in Sources */,
+				2534781715FFD4A6002C0E4E /* RKURLEncodedSerialization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

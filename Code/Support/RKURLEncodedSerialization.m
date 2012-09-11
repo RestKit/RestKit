@@ -1,5 +1,5 @@
 //
-//  RKFormURLSerialization.m
+//  RKURLEncodedSerialization.m
 //  RestKit
 //
 //  Created by Blake Watters on 9/4/12.
@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "RKFormURLSerialization.h"
+#import "RKURLEncodedSerialization.h"
 
-@implementation RKFormURLSerialization
+@implementation RKURLEncodedSerialization
 
 + (id)objectFromData:(NSData *)data error:(NSError **)error
 {
