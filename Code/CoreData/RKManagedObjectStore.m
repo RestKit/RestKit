@@ -22,7 +22,7 @@
 #import "RKLog.h"
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
-#import "RKDirectoryUtilities.h"
+#import "RKPathUtilities.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKFetchRequestManagedObjectCache.h"
 #import "NSBundle+RKAdditions.h"

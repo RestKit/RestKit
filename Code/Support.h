@@ -25,10 +25,7 @@
 #import "RKPathMatcher.h"
 #import "RKDotNetDateFormatter.h"
 #import "RKPathUtilities.h"
+#import "RKDictionaryUtilities.h"
 #import "RKFormURLSerialization.h"
 #import "RKNSJSONSerialization.h"
 #import "RKMIMETypeSerialization.h"
-
-// Load our categories
-#import "NSDictionary+RKAdditions.h"
-#import "NSString+RKAdditions.h"

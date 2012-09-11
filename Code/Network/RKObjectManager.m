@@ -23,7 +23,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKRequestDescriptor.h"
 #import "RKResponseDescriptor.h"
-#import "NSMutableDictionary+RKAdditions.h"
+#import "RKDictionaryUtilities.h"
 #import "RKMIMETypes.h"
 #import "RKLog.h"
 
@@ -188,7 +188,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     if (requestDescriptor) {
         NSError *error = nil;
         NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
-        if (parameters) [mergedParameters reverseMergeWith:parameters];
+        if (parameters) RKDictionaryByReverseMergingDictionaryWithDictionary(mergedParameters, parameters);
         requestParameters = mergedParameters;
     } else {
         requestParameters = parameters;
@@ -210,7 +210,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     if (requestDescriptor) {
         NSError *error = nil;
         NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
-        if (parameters) [mergedParameters reverseMergeWith:parameters];
+        if (parameters) RKDictionaryByReverseMergingDictionaryWithDictionary(mergedParameters, parameters);
         requestParameters = mergedParameters;
     } else {
         requestParameters = parameters;
