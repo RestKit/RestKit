@@ -24,11 +24,11 @@
 #import "RKLog.h"
 #import "RKPathMatcher.h"
 #import "RKDotNetDateFormatter.h"
-#import "RKDirectoryUtilities.h"
+#import "RKPathUtilities.h"
+#import "RKFormURLSerialization.h"
 #import "RKNSJSONSerialization.h"
 #import "RKMIMETypeSerialization.h"
 
 // Load our categories
 #import "NSDictionary+RKAdditions.h"
 #import "NSString+RKAdditions.h"
-#import "NSBundle+RKAdditions.h"

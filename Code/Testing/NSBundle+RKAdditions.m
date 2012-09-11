@@ -19,7 +19,7 @@
 //
 
 #import "NSBundle+RKAdditions.h"
-#import "NSString+RKAdditions.h"
+#import "RKPathUtilities.h"
 #import "RKLog.h"
 #import "RKSerialization.h"
 #import "RKMIMETypeSerialization.h"
@@ -30,7 +30,7 @@
 {
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (resourcePath) {
-        return [resourcePath MIMETypeForPathExtension];
+        return RKMIMETypeFromPathExtension(resourcePath);
     }
 
     return nil;

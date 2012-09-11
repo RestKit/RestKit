@@ -1,14 +1,19 @@
 //
-//  RKDirectoryUtilities.m
+//  RKPathUtilities.m
 //  RestKit
 //
 //  Created by Blake Watters on 12/9/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import "RKDirectoryUtilities.h"
-#import "NSBundle+RKAdditions.h"
+#if TARGET_OS_IPHONE
+#import <MobileCoreServices/UTType.h>
+#else
+#import <CoreServices/CoreServices.h>
+#endif
+#import "RKPathUtilities.h"
 #import "RKLog.h"
+#import "RKPathMatcher.h"
 
 NSString * RKExecutableName(void);
 
@@ -83,4 +88,34 @@ BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error)
     }
 
     return YES;
+}
+
+NSString * RKPathFromPatternWithObject(NSString *pathPattern, id object)
+{
+    NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:pathPattern];
+    return [matcher pathFromObject:object addingEscapes:NO];
+}
+
+static NSDictionary *RKDictionaryOfFileExtensionsToMIMETypes()
+{
+    return @{ @"json": @"application/json" };
+}
+
+NSString * RKMIMETypeFromPathExtension(NSString *path)
+{
+    NSString *pathExtension = [path pathExtension];
+    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)pathExtension, NULL);
+    if (uti != NULL) {
+        CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
+        CFRelease(uti);
+        if (mime != NULL) {
+            NSString *type = [NSString stringWithString:(__bridge NSString *)mime];
+            CFRelease(mime);
+            return type;
+        }
+    }
+    
+    // Consult our internal dictionary of mappings if not found
+    return [RKDictionaryOfFileExtensionsToMIMETypes() valueForKey:pathExtension];
 }
