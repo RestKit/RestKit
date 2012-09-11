@@ -31,9 +31,24 @@
 @end
 
 /**
+ Creates and returns a new `NSDictionary` object from the given URL-encoded string, using the specified encoding.
+ 
+ The dictionary is constructed by splitting the string into components using the `&` character as the delimiter. The results array of strings is then split again using the `=` character as the delimiter. Each resulting key and value delimited by the `=` character is then URL decoded and added a resulting dictionary. The process is across the entire string. Any extraneous `=` characters not delimiting a key and value are ignored. The corresponding values for any keys that appear multiple times within the string be coalesced into an `NSArray` of values.
+ 
+ @param URLEncodedString A URL-encoded string that is to be parsed into an `NSDictionary`.
+ @param encoding The encoding to use when URL-decoding the components of the given string. If you are uncertain of the correct encoding, you should use UTF-8 (NSUTF8StringEncoding), which is the encoding designated by RFC 3986 as the correct encoding for use in URLs.
+ @return An `NSDictionary` object containing the keys and values deserialized from the URL-encoded string.
  */
 NSDictionary *RKDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncodedString, NSStringEncoding encoding);
 
 /**
+ Returns a URL-encoded `NSString` object containing the entries in the given `NSDictionary` object.
+ 
+ The dictionary is created by collecting each key-value pair, URL-encoding a string representation of the key-value pair, and then joining the components with "&". 
+ 
+ @param dictionary The dictionary from to construct the URL-encoded string.
+ @param encoding The encoding to use in constructing the URL-encoded string. If you are uncertain of the correct encoding, you should use UTF-8 (NSUTF8StringEncoding), which is the encoding designated by RFC 3986 as the correct encoding for use in URLs.
+ @return A new `NSString` object in the given encoding containing a URL-encoded serialization of the entries in the given dictionary.
+ @see `AFQueryStringFromParametersWithEncoding`
  */
 NSString *RKURLEncodedStringFromDictionaryWithEncoding(NSDictionary *dictionary, NSStringEncoding encoding);
