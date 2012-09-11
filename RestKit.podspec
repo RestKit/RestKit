@@ -15,20 +15,21 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '5.0'
   s.osx.deployment_target = '10.7'
   
-  s.dependency 'RestKit/ObjectMapping'
-  s.dependency 'RestKit/Network'  
-  s.dependency 'RestKit/CoreData'
-  s.dependency 'RestKit/Search'
-  s.dependency 'RestKit/Testing'
-  s.dependency 'RestKit/Support'
+  # Exclude optional Search and Testing modules
+  s.preferred_dependency = 'Core'
 
   ### Subspecs
+  
+  s.subspec 'Core' do |cs|
+    cs.dependency 'RestKit/ObjectMapping'
+    cs.dependency 'RestKit/Network'
+    cs.dependency 'RestKit/CoreData'
+  end
   
   s.subspec 'ObjectMapping' do |os|
     os.header_dir     = 'RestKit/ObjectMapping'
     os.source_files   = 'Code/ObjectMapping'
     os.dependency     'ISO8601DateFormatter', '>= 0.6'
-    os.dependency     'RestKit/Network'
   end
   
   s.subspec 'Network' do |ns|
@@ -39,6 +40,8 @@ Pod::Spec.new do |s|
     ns.dependency       'LibComponentLogging-NSLog', '>= 1.0.4'
     ns.dependency       'SOCKit'
     ns.dependency       'AFNetworking', '1.0RC1'
+    ns.dependency       'RestKit/ObjectMapping'
+    ns.dependency       'RestKit/Support'
   end    
   
   s.subspec 'CoreData' do |cdos|
@@ -55,14 +58,11 @@ Pod::Spec.new do |s|
   s.subspec 'Search' do |ss|
     ss.header_dir     = 'RestKit/Search'
     ss.source_files   = 'Code/Search'
-    ss.ios.frameworks = 'CoreData'
-    ss.osx.frameworks = 'CoreData'
     ss.dependency 'RestKit/CoreData'
   end
   
   s.subspec 'Support' do |ss|
     ss.header_dir     = 'RestKit/Support'
     ss.source_files   = 'Code/Support'
-    ss.dependency 'RestKit/CoreData'
   end
 end
