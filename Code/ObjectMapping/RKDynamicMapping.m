@@ -26,6 +26,9 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
+@interface RKDynamicMapping ()
+@property (nonatomic, strong) NSMutableArray *matchers;
+@end
 
 @implementation RKDynamicMapping
 
@@ -55,7 +58,7 @@
 {
     self = [super init];
     if (self) {
-        _matchers = [NSMutableArray new];
+        self.matchers = [NSMutableArray new];
     }
 
     return self;
@@ -84,15 +87,7 @@
         }
     }
 
-    // Otherwise consult the delegates
-    if (self.delegate) {
-        mapping = [self.delegate objectMappingForData:data];
-        if (mapping) {
-            RKLogTrace(@"Found dynamic delegate match. Delegate = %@", self.delegate);
-            return mapping;
-        }
-    }
-
+    // Otherwise consult the block
     if (self.objectMappingForDataBlock) {
         mapping = self.objectMappingForDataBlock(data);
         if (mapping) {

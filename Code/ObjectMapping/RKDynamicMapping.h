@@ -21,16 +21,6 @@
 #import "RKMapping.h"
 #import "RKObjectMapping.h"
 
-/**
- Return the appropriate object mapping given a mappable data
- */
-@protocol RKDynamicMappingDelegate <NSObject>
-
-@required
-- (RKObjectMapping *)objectMappingForData:(id)data;
-
-@end
-
 #ifdef NS_BLOCKS_AVAILABLE
 typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
 #endif
@@ -40,17 +30,7 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
  object mapping to apply at mapping time. This allows you to map very similar payloads
  differently depending on the type of data contained therein.
  */
-@interface RKDynamicMapping : RKMapping {
-    NSMutableArray *_matchers;
-}
-
-/**
- A delegate to call back to determine the appropriate concrete object mapping
- to apply to the mappable data.
-
- @see RKDynamicMappingDelegate
- */
-@property (nonatomic, weak) id<RKDynamicMappingDelegate> delegate;
+@interface RKDynamicMapping : RKMapping
 
 #ifdef NS_BLOCKS_AVAILABLE
 /**
