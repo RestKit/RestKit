@@ -25,22 +25,12 @@
 #import "RKLog.h"
 
 BOOL RKPathUsesParentheticalParameters(NSString *path);
-NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern);
 NSString *RKEncodeURLString(NSString *unencodedString);
 
 BOOL RKPathUsesParentheticalParameters(NSString *path) {
     NSCharacterSet *parens = [NSCharacterSet characterSetWithCharactersInString:@"()"];
     NSArray *parenComponents = [path componentsSeparatedByCharactersInSet:parens];
     return (parenComponents != NULL && [parenComponents count] > 1);
-}
-
-NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
-    if (RKPathUsesParentheticalParameters(pattern)) {
-        RKLogWarning(@"Use of encapsulating parentheses for pattern parameters is deprecated.  Use a single colon instead. For example, instead of /group/(role)/(user) you should use /group/:role/:user");
-        NSString *noTrailingParen = [pattern stringByReplacingOccurrencesOfString:@")" withString:@""];
-        pattern = [noTrailingParen stringByReplacingOccurrencesOfString:@"(" withString:@":"];
-    }
-    return pattern;
 }
 
 // NSString's stringByAddingPercentEscapes doesn't do a complete job (it ignores "/?&", among others)
@@ -78,7 +68,6 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 + (RKPathMatcher *)matcherWithPattern:(NSString *)patternString
 {
     NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform pattern matching.");
-    patternString = RKPathPatternFindAndReplaceParensWithColons(patternString);
     RKPathMatcher *matcher = [[RKPathMatcher alloc] init];
     matcher.socPattern = [SOCPattern patternWithString:patternString];
     return matcher;
@@ -133,7 +122,6 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 - (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments
 {
     NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform patterm matching.");
-    patternString = RKPathPatternFindAndReplaceParensWithColons(patternString);
     self.socPattern = [SOCPattern patternWithString:patternString];
     return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
 }
@@ -149,7 +137,6 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 {
     return [self pathFromObject:object addingEscapes:YES];
 }
-
 
 - (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes
 {
