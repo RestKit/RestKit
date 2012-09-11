@@ -5,10 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     =  'http://www.restkit.org'
   s.author       =  { 'Blake Watters' => 'blakewatters@gmail.com' }
   s.source       =  { :git => 'https://github.com/RestKit/RestKit.git', :branch => 'feature/reboot-networking-layer' }
-  s.license      =  'Apache License, Version 2.0'
-
-  s.source_files =  'Code/*.h'
-  s.header_dir   =  'RestKit'
+  s.license      =  'Apache License, Version 2.0'  
   
   # Platform setup
   s.requires_arc = true
@@ -21,6 +18,9 @@ Pod::Spec.new do |s|
   ### Subspecs
   
   s.subspec 'Core' do |cs|
+    cs.source_files =  'Code/*.h'
+    cs.header_dir   =  'RestKit'
+    
     cs.dependency 'RestKit/ObjectMapping'
     cs.dependency 'RestKit/Network'
     cs.dependency 'RestKit/CoreData'
