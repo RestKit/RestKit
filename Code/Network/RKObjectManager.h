@@ -132,7 +132,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  Routes can also be explicitly used to construct `NSMutableURLRequest` objects and are referenced explicitly in a few object request operation methods:
  
  1. `requestWithObject:method:path:parameters:` - Consults routing when path is nil.
- 1. `multipartFormRequestWithObject:method:path:parameters:` - Consults routing when path is nil.
+ 1. `multipartFormRequestWithObject:method:path:parameters:constructingBodyWithBlock:` - Consults routing when path is nil.
  1. `requestWithPathForRouteNamed:object:parameters:` - Explicitly retrieves the route with the given name.
  1. `getObjectsAtPathForRelationship:ofObject:parameters:success:failure:` - Explicitly retrieves the route for the given
     name and object class.
@@ -391,9 +391,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 - (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation;
 // TODO: Need a cancel...
 
-///-----------------------------
-/// @name Making Object Requests
-///-----------------------------
+///-------------------------------------
+/// @name Making Object Requests by Path
+///-------------------------------------
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request with a URL for the given path, and enqueues it to the manager's operation queue.
@@ -404,11 +404,59 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param parameters The parameters to be encoded and appended as the query string for the request URL.
  @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
  @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ 
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
 - (void)getObjectsAtPath:(NSString *)path
               parameters:(NSDictionary *)parameters
                  success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                  failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+/**
+ Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
+ 
+ The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
+ 
+ @param relationshipName The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
+ @param object The object for which related objects are being loaded. Evaluated against the `RKRoute` for the relationship for the object's class with the given name to compute the path. Cannot be nil.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ 
+ @raises NSInvalidArgumentException Raised if no route is configured for a relationship of the given object's class with the given name.
+ @see [RKRouter URLForRelationship:ofObject:method:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)getObjectsAtPathForRelationship:(NSString *)relationshipName
+                               ofObject:(id)object
+                             parameters:(NSDictionary *)parameters
+                                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+/**
+ Creates an `RKObjectRequestOperation` with a `GET` request for the URL returned by the router for the given route name, and enqueues it to the manager's operation queue.
+ 
+ The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
+ 
+ @param routeName The name of the route being loaded. Used to retrieve the `RKRoute` object from the router with the given name. Cannot be nil.
+ @param object The object to be interpolated against the path pattern of the `RKRoute` object retrieved with the given name. Used to compute the path to be appended to the HTTP client's base URL and used as the request URL. May be nil.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ 
+ @raises NSInvalidArgumentException Raised if no route is configured with the given name or the route returned specifies an HTTP method other than `GET`.
+ @see [RKRouter URLForRouteNamed:method:object:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)getObjectsAtPathForRouteNamed:(NSString *)routeName
+                               object:(id)object
+                           parameters:(NSDictionary *)parameters
+                              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+///-------------------------------------------
+/// @name Making Object Requests for an Object
+///-------------------------------------------
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request for the given object, and enqueues it to the manager's operation queue.
@@ -422,7 +470,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
  
  @see [RKRouter URLForObject:method:]
- @see `[RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]`
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
 - (void)getObject:(id)object
              path:(NSString *)path
@@ -440,7 +488,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
  
  @see [RKRouter URLForObject:method:]
- @see `[RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]`
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
 - (void)postObject:(id)object
               path:(NSString *)path
@@ -458,7 +506,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
  
  @see [RKRouter URLForObject:method:]
- @see `[RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]`
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
 - (void)putObject:(id)object
              path:(NSString *)path
@@ -476,7 +524,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
  
  @see [RKRouter URLForObject:method:]
- @see `[RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]`
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
 - (void)patchObject:(id)object
                path:(NSString *)path
@@ -496,50 +544,13 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
  
  @see [RKRouter URLForObject:method:]
- @see `[RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]`
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
 - (void)deleteObject:(id)object
                 path:(NSString *)path
           parameters:(NSDictionary *)parameters
              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
-
-/**
- Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
- 
- @param relationshipName The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
- @param object The object for which related objects are being loaded. Evaluated against the `RKRoute` for the relationship for the object's class with the given name to compute the path. Cannot be nil.
- @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
- @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
- @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
- 
- @raises NSInvalidArgumentException Raised if no route is configured for a relationship of the given object's class
-    with the given name.
- @see RKRouter
- */
-- (void)getObjectsAtPathForRelationship:(NSString *)relationshipName
-                               ofObject:(id)object
-                             parameters:(NSDictionary *)parameters
-                                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
-
-/**
- Creates an `RKObjectRequestOperation` with a `GET` request for the URL returned by the router for the given route name, and enqueues it to the manager's operation queue.
- 
- @param routeName The name of the route being loaded. Used to retrieve the `RKRoute` object from the router with the given name. Cannot be nil.
- @param object The object to be interpolated against the path pattern of the `RKRoute` object retrieved with the given name. Used to compute the path to be appended to the HTTP client's base URL and used as the request URL. May be nil.
- @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
- @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
- @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
- 
- @raises NSInvalidArgumentException Raised if no route is configured with the given name or the route returned specifies an HTTP method other than `GET`.
- @see RKRouter
- */
-- (void)getObjectsAtPathForRouteNamed:(NSString *)routeName
-                               object:(id)object
-                           parameters:(NSDictionary *)parameters
-                              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 ///------------------------------------------------
 /// @name Managing Request and Response Descriptors
