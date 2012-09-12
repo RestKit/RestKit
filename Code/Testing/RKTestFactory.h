@@ -145,14 +145,27 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 + (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
 
 /**
- Creates and returns a new instance of an object using the factory with the given
- name.
+ Creates and returns a new instance of an object using the factory with the given name.
 
  @param factoryName The name of the factory to use when building the requested object.
  @raises NSInvalidArgumentException Raised if a factory with the given name is not defined.
+ @param properties An `NSDictionary` of properties to be set on the created object.
  @return An object built using the factory registered for the given name.
  */
++ (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties;
 + (id)objectFromFactory:(NSString *)factoryName;
+
+/**
+ Inserts a new managed object for the `NSEntityDescription` with the given name into the specified  managed object context and sets properties on the instance from the given dictionary. A permanent managed object ID is obtained for the object so that it can be referenced across threads without any further work.
+ 
+ @param entityName The name of the entity to insert a new managed object for.
+ @param managedObjectContext The managed object context to insert the new object into. If nil, then the managed object context returned by invoking `[RKTestFactory managedObjectStore].mainQueueManagedObjectContext]` is used.
+ @param properties A dictionary of properties to be set on the new managed object instance.
+ @return A new object inheriting from `NSManagedObject`.
+ */
++ (id)insertManagedObjectForEntityForName:(NSString *)entityName
+                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                           withProperties:(NSDictionary *)properties;
 
 /**
  Returns a set of names for all defined factories.

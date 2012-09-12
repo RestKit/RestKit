@@ -17,7 +17,7 @@
 
 + (RKTestFactory *)sharedFactory;
 - (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
-- (id)objectFromFactory:(NSString *)factoryName;
+- (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties;
 - (void)defineDefaultFactories;
 
 @end
@@ -64,12 +64,14 @@ static RKTestFactory *sharedFactory = nil;
     [self.factoryBlocks setObject:[block copy] forKey:factoryName];
 }
 
-- (id)objectFromFactory:(NSString *)factoryName
+- (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties
 {
     id (^block)() = [self.factoryBlocks objectForKey:factoryName];
     NSAssert(block, @"No factory is defined with the name '%@'", factoryName);
 
-    return block();
+    id object = block();
+    [object setValuesForKeysWithDictionary:properties];
+    return object;
 }
 
 - (void)defineDefaultFactories
@@ -151,9 +153,35 @@ static RKTestFactory *sharedFactory = nil;
     [[RKTestFactory sharedFactory] defineFactory:factoryName withBlock:block];
 }
 
++ (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties
+{
+    return [[RKTestFactory sharedFactory] objectFromFactory:factoryName properties:properties];
+}
+
 + (id)objectFromFactory:(NSString *)factoryName
 {
-    return [[RKTestFactory sharedFactory] objectFromFactory:factoryName];
+    return [[RKTestFactory sharedFactory] objectFromFactory:factoryName properties:nil];
+}
+
++ (id)insertManagedObjectForEntityForName:(NSString *)entityName
+                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                           withProperties:(NSDictionary *)properties
+{
+    __block id managedObject;
+    __block NSError *error;
+    __block BOOL success;
+    __block NSManagedObjectID *objectID;
+    if (! managedObjectContext) managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
+    [managedObjectContext performBlockAndWait:^{
+        managedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:managedObjectContext];
+        success = [managedObjectContext obtainPermanentIDsForObjects:@[managedObject] error:&error];
+        if (! success) {
+            RKLogWarning(@"Failed to obtain permanent objectID for managed object: %@", managedObject);
+            RKLogCoreDataError(error);
+        }
+        [managedObject setValuesForKeysWithDictionary:properties];
+    }];
+    return managedObject;
 }
 
 + (NSSet *)factoryNames
@@ -163,20 +191,20 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)client
 {
-    AFHTTPClient *client = [self objectFromFactory:RKTestFactoryDefaultNamesClient];
+    AFHTTPClient *client = [self objectFromFactory:RKTestFactoryDefaultNamesClient properties:nil];
     return client;
 }
 
 + (id)objectManager
 {
-    RKObjectManager *objectManager = [self objectFromFactory:RKTestFactoryDefaultNamesObjectManager];
+    RKObjectManager *objectManager = [self objectFromFactory:RKTestFactoryDefaultNamesObjectManager properties:nil];
     [RKObjectManager setSharedManager:objectManager];
     return objectManager;
 }
 
 + (id)managedObjectStore
 {
-    RKManagedObjectStore *managedObjectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
+    RKManagedObjectStore *managedObjectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore properties:nil];
     [RKManagedObjectStore setDefaultStore:managedObjectStore];
 
     return managedObjectStore;
