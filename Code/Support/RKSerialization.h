@@ -29,6 +29,10 @@
  */
 @protocol RKSerialization <NSObject>
 
+///------------------------------
+/// @name Deserializing an Object
+///------------------------------
+
 /**
  Deserializes and returns the given data in the format supported by the receiver
  (i.e. JSON, XML, etc) as a Foundation object representation.
@@ -38,6 +42,10 @@
  @return A Foundation object from the serialized data in data, or nil if an error occurs.
  */
 + (id)objectFromData:(NSData *)data error:(NSError **)error;
+
+///----------------------------
+/// @name Serializing an Object
+///----------------------------
 
 /**
  Serializes and returns a UTF-8 encoded data representation of the given Foundation
