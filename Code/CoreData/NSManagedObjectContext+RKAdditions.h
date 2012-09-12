@@ -15,6 +15,10 @@
  */
 @interface NSManagedObjectContext (RKAdditions)
 
+///---------------------------------
+/// @name Inserting a Managed Object
+///---------------------------------
+
 /**
  Inserts a new managed object for the entity for the given name.
 
@@ -27,6 +31,10 @@
     The instance has its entity description set and is inserted into the receiver.
  */
 - (id)insertNewObjectForEntityForName:(NSString *)entityName;
+
+///-------------------------------
+/// @name Counting Managed Objects
+///-------------------------------
 
 /**
  Convenience method for performing a count of the number of instances of an entity with the given name.
@@ -45,6 +53,10 @@
     would have returned if it had been passed to executeFetchRequest:error:, or NSNotFound if an error occurs.
  */
 - (NSUInteger)countForEntityForName:(NSString *)entityName predicate:(NSPredicate *)predicate error:(NSError **)error;
+
+///----------------------------------------------
+/// @name Fetching Managed Objects by Primary Key
+///----------------------------------------------
 
 /**
  Fetches a single managed object for the given entity with the given value for the primary key attribute
@@ -65,6 +77,10 @@
  @return The managed object with the primary key attribute equal to the given value or nil if none was found.
  */
 - (id)fetchObjectForEntityForName:(NSString *)entityName withValueForPrimaryKeyAttribute:(id)primaryKeyValue;
+
+///-------------------------------------------------
+/// @name Saving the Context to the Persistent Store
+///-------------------------------------------------
 
 /**
  Saves the receiver and then traverses up the parent context chain until a parent managed object context

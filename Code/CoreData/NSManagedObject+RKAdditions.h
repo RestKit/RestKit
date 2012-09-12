@@ -15,6 +15,10 @@
  */
 @interface NSManagedObject (RKAdditions)
 
+///--------------------------------------
+/// @name Inspecting Managed Object State
+///--------------------------------------
+
 /**
  Determines if the receiver has been deleted from the persistent store
  and removed from the object graph.
