@@ -14,11 +14,6 @@
 
 @implementation NSManagedObject (RKAdditions)
 
-- (RKManagedObjectStore *)managedObjectStore
-{
-    return self.managedObjectContext.managedObjectStore;
-}
-
 - (BOOL)hasBeenDeleted
 {
     NSManagedObject *managedObjectClone = [[self managedObjectContext] existingObjectWithID:[self objectID] error:nil];

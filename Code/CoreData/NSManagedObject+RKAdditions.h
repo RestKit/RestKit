@@ -16,11 +16,6 @@
 @interface NSManagedObject (RKAdditions)
 
 /**
- The receiver's managed object store.
- */
-- (RKManagedObjectStore *)managedObjectStore;
-
-/**
  Determines if the receiver has been deleted from the persistent store
  and removed from the object graph.
 

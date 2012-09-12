@@ -151,7 +151,6 @@ static RKManagedObjectStore *defaultStore = nil;
     [managedObjectContext performBlockAndWait:^{
         managedObjectContext.parentContext = self.primaryManagedObjectContext;
         managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
-        managedObjectContext.managedObjectStore = self;
     }];
 
     return managedObjectContext;
@@ -166,13 +165,11 @@ static RKManagedObjectStore *defaultStore = nil;
     self.primaryManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     self.primaryManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
     self.primaryManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
-    self.primaryManagedObjectContext.managedObjectStore = self;
 
     // Create an MOC for use on the main queue
     self.mainQueueManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     self.mainQueueManagedObjectContext.parentContext = self.primaryManagedObjectContext;
     self.mainQueueManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
-    self.mainQueueManagedObjectContext.managedObjectStore = self;
 
     // Merge changes from a primary MOC back into the main queue when complete
     [[NSNotificationCenter defaultCenter] addObserver:self

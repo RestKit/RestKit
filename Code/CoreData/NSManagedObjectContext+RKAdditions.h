@@ -16,11 +16,6 @@
 @interface NSManagedObjectContext (RKAdditions)
 
 /**
- The receiver's managed object store.
- */
-@property (nonatomic, assign) RKManagedObjectStore *managedObjectStore;
-
-/**
  Inserts a new managed object for the entity for the given name.
 
  This method is functionally equivalent to the follow code example.
