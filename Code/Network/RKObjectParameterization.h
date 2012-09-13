@@ -21,19 +21,22 @@
 #import "RKRequestDescriptor.h"
 
 /**
- The RKObjectParameterization class provides an interface for mapping a local domain
- object into an NSDictionary representation suitable for use as the parameters of an
- HTTP request.
+ The `RKObjectParameterization` class provides an interface for mapping a local domain object into an `NSDictionary` representation suitable for use as the parameters of an HTTP request.
  */
 @interface RKObjectParameterization : NSObject
+
+///-------------------------------
+/// @name Parameterizing an Object
+///-------------------------------
 
 /**
  Returns a dictionary representation of the given object by performing object mapping using the mapping 
  from the given request descriptor. If the request descriptor specifies a root key path, the mapped parameters 
  will be nested within the dictionary under the specified root key path.
  
- @param error If there is a problem mapping the parameters, upon return contains a
- pointer to an instance of NSError that describes the problem.
+ @param object The object to be parameterized.
+ @param requestDescriptor The request descriptor describing how the object is to be mapped into an `NSDictionary` of parameters.
+ @param error If there is a problem mapping the parameters, upon return contains a pointer to an instance of `NSError` that describes the problem.
  @return A new dictionary containing the mapped parameters or nil if an error has occurred.
  */
 + (NSDictionary *)parametersWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor error:(NSError **)error;
