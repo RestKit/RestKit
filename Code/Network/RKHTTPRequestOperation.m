@@ -22,6 +22,7 @@
 #import "RKLog.h"
 #import "lcl.h"
 #import "RKHTTPUtilities.h"
+#import "RKMIMETypes.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -112,26 +113,14 @@
 
 @implementation RKHTTPRequestOperation
 
-// RestKit will attempt to parse information about failed client errors from the payload
-+ (NSIndexSet *)acceptableStatusCodes
+- (BOOL)hasAcceptableStatusCode
 {
-    NSMutableIndexSet *statusCodes = [NSMutableIndexSet new];
-    [statusCodes addIndexesInRange:RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful)];
-    [statusCodes addIndexesInRange:RKStatusCodeRangeForClass(RKStatusCodeClassClientError)];
-    return statusCodes;
-}
-
-+ (NSSet *)acceptableContentTypes
-{
-    return [NSSet setWithObject:@"application/json"];
-}
-
-- (BOOL)hasAcceptableStatusCode {
     return self.acceptableStatusCodes ? [self.acceptableStatusCodes containsIndex:[self.response statusCode]] : [super hasAcceptableStatusCode];
 }
 
-- (BOOL)hasAcceptableContentType {
-    return self.acceptableContentTypes ? [self.acceptableContentTypes containsObject:[self.response MIMEType]] : [super hasAcceptableContentType];
+- (BOOL)hasAcceptableContentType
+{
+    return self.acceptableContentTypes ? RKMIMETypeInSet([self.response MIMEType], self.acceptableContentTypes) : [super hasAcceptableContentType];
 }
 
 #pragma mark - NSURLConnectionDelegate methods

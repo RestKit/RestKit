@@ -24,3 +24,21 @@ NSString * const RKMIMETypeJSON = @"application/json";
 NSString * const RKMIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";
 NSString * const RKMIMETypeXML = @"application/xml";
 NSString * const RKMIMETypeTextXML = @"text/xml";
+
+BOOL RKMIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes)
+{
+    for (id MIMETypeStringOrRegularExpression in MIMETypes) {
+        if ([MIMETypeStringOrRegularExpression isKindOfClass:[NSString class]]) {
+            return [[MIMEType lowercaseString] isEqualToString:[MIMEType lowercaseString]];
+        } else if ([MIMETypeStringOrRegularExpression isKindOfClass:[NSRegularExpression class]]) {
+            NSRegularExpression *regex = (NSRegularExpression *) MIMETypeStringOrRegularExpression;
+            NSUInteger numberOfMatches = [regex numberOfMatchesInString:[MIMEType lowercaseString] options:0 range:NSMakeRange(0, [MIMEType length])];
+            return numberOfMatches > 0;
+        } else {
+            NSString *reason = [NSString stringWithFormat:@"Unable to evaluate match for MIME Type '%@': expected an `NSString` or `NSRegularExpression`, got a `%@`", MIMEType, NSStringFromClass([MIMEType class])];
+            @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
+        }
+    }
+    
+    return NO;
+}

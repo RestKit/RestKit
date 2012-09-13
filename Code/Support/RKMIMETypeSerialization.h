@@ -70,6 +70,13 @@
  */
 + (Class<RKSerialization>)serializationClassForMIMEType:(NSString *)MIMEType;
 
+/**
+ Returns a set containing the string values for all MIME Types for which a serialization implementation has been registered.
+ 
+ @return An `NSSet` object whose elements are `NSString` values enumerating the registered MIME Types.
+ */
++ (NSSet *)registeredMIMETypes;
+
 ///-----------------------------------------------------------------------------
 /// @name Serializing and Deserializing Content by MIME Type
 ///-----------------------------------------------------------------------------

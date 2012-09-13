@@ -21,17 +21,34 @@
 #import "AFNetworking.h"
 #import "AFHTTPRequestOperation.h"
 
-// TODO: AFNetworking should expose the default headers dictionary...
+// Expose the default headers from AFNetworking's AFHTTPClient
 @interface AFHTTPClient ()
 @property (readonly, nonatomic) NSDictionary *defaultHeaders;
 @end
 
-// NOTE: Accepts 2xx and 4xx status codes, application/json only.
-// TODO: May want to factor this down into another more specific operation subclass to generalize the behavior
+/**
+ The `RKHTTPRequestOperation` class is a subclass of `AFHTTPRequestOperation` for HTTP or HTTPS requests made by RestKit. It provides per-instance configuration of the acceptable status codes and content types and integrates with the `RKLog` system to provide detailed requested and response logging. Instances of `RKHTTPRequest` are created by `RKObjectRequestOperation` and its subclasses to HTTP requests that will be object mapped. When used to make standalone HTTP requests, `RKHTTPRequestOperation` instance behave identically to `AFHTTPRequestOperation` with the exception of emitting logging information.
+ */
 @interface RKHTTPRequestOperation : AFHTTPRequestOperation
 
-// We allow override of status codes and content types on a per-request basis
-@property (nonatomic, strong) NSIndexSet *acceptableStatusCodes; // Default nil: means defer to class level
-@property (nonatomic, strong) NSSet *acceptableContentTypes;     // Default nil: means defer to class level
+///------------------------------------------------------------
+/// @name Configuring Acceptable Status Codes and Content Types
+///------------------------------------------------------------
+
+/**
+ The set of status codes which the operation considers successful.
+ 
+ **Default**: nil
+ */
+@property (nonatomic, strong) NSIndexSet *acceptableStatusCodes;
+
+/**
+ The set of content types which the operation considers successful.
+ 
+ The set may contain `NSString` or `NSRegularExpression` objects.
+ 
+ **Default**: nil
+ */
+@property (nonatomic, strong) NSSet *acceptableContentTypes;
 
 @end

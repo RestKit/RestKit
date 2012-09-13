@@ -20,14 +20,26 @@
 
 #import "RKObjectRequestOperation.h"
 #import "RKResponseMapperOperation.h"
+#import "RKMIMETypeSerialization.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
-static inline NSString * RKDescriptionForRequest(NSURLRequest *request)
+static inline NSString *RKDescriptionForRequest(NSURLRequest *request)
 {
     return [NSString stringWithFormat:@"%@ '%@'", request.HTTPMethod, [request.URL absoluteString]];
+}
+
+static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
+{
+    static NSMutableIndexSet *statusCodes = nil;
+    if (! statusCodes) {
+        statusCodes = [NSMutableIndexSet indexSet];
+        [statusCodes addIndexesInRange:RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful)];
+        [statusCodes addIndexesInRange:RKStatusCodeRangeForClass(RKStatusCodeClassClientError)];
+    }
+    return statusCodes;
 }
 
 @interface RKObjectRequestOperation ()
@@ -57,6 +69,8 @@ static inline NSString * RKDescriptionForRequest(NSURLRequest *request)
         self.request = request;
         self.responseDescriptors = responseDescriptors;
         self.requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+        self.requestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
+        self.requestOperation.acceptableStatusCodes = RKObjectRequestOperationAcceptableMIMETypes();
         
         // Initialize avoidsNetworkAccess based on caching preferences
         switch(self.request.cachePolicy) {
@@ -69,7 +83,6 @@ static inline NSString * RKDescriptionForRequest(NSURLRequest *request)
                 self.avoidsNetworkAccess = YES;
                 break;
         };
-        // TODO: set acceptable MIME Types based on available serializations?
     }
     
     return self;

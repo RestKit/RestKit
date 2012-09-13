@@ -58,15 +58,7 @@
 
 - (BOOL)matchesMIMEType:(NSString *)MIMEType
 {
-    if ([self.MIMETypeStringOrRegularExpression isKindOfClass:[NSString class]]) {
-        return [[MIMEType lowercaseString] isEqualToString:[self.MIMETypeStringOrRegularExpression lowercaseString]];
-    } else if ([self.MIMETypeStringOrRegularExpression isKindOfClass:[NSRegularExpression class]]) {
-        NSRegularExpression *regex = (NSRegularExpression *) self.MIMETypeStringOrRegularExpression;
-        NSUInteger numberOfMatches = [regex numberOfMatchesInString:[MIMEType lowercaseString] options:0 range:NSMakeRange(0, [MIMEType length])];
-        return numberOfMatches > 0;
-    } else {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Unable to evaluate match for MIME Type '%@': expected an NSSt" userInfo:nil];
-    }
+    return RKMIMETypeInSet(MIMEType, [NSSet setWithObject:self.MIMETypeStringOrRegularExpression]);
 }
 
 @end
@@ -148,6 +140,11 @@
             [[self sharedSerialization].registrations removeObject:registration];
         }
     }
+}
+
++ (NSSet *)registeredMIMETypes
+{
+    return [NSSet setWithArray:[[self sharedSerialization].registrations valueForKey:@"MIMETypeStringOrRegularExpression"]];
 }
 
 + (id)objectFromData:(NSData *)data MIMEType:(NSString *)MIMEType error:(NSError **)error
