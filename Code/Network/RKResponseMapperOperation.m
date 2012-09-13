@@ -151,7 +151,7 @@
     // If we are successful and empty, we may optionally consider the response mappable (i.e. 204 response or 201 with no body)
     if ([self hasEmptyResponse] && self.treatsEmptyResponseAsSuccess) {
         if (self.targetObject) {
-            self.mappingResult = [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
+            self.mappingResult = [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:[NSNull null]]];
         } else {
             self.mappingResult = [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
         }
@@ -209,8 +209,7 @@
         RKObjectMapper *mapper = [[RKObjectMapper alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
         mapper.delegate = self.mapperDelegate;
         mapper.mappingOperationDataSource = self.mappingOperationDataSource;
-
-        // TODO: if ([self.response isSuccessful] -- Encapsulate HTTP response helpers in category on NSHTTPURLResponse
+        
         if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
             mapper.targetObject = self.targetObject;
 
