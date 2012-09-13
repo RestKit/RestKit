@@ -29,7 +29,7 @@
  @param entity The Core Data entity for the type of object to be retrieved from the cache.
  @param primaryKeyAttribute The name of the attribute that acts as the primary key for the entity.
  @param primaryKeyValue The value for the primary key attribute of the object to be retrieved from the cache.
- @param mmanagedObjectContext The managed object context to be searched for a matching instance.
+ @param managedObjectContext The managed object context to be searched for a matching instance.
  @return A managed object that is an instance of the given entity with a primary key and value matching
  the specified parameters, or nil if no object was found.
  */
@@ -45,7 +45,7 @@
  @param entity The Core Data entity for the type of object to be retrieved from the cache.
  @param primaryKeyAttribute The name of the attribute that acts as the primary key for the entity.
  @param primaryKeyValue The value for the primary key attribute of the object to be retrieved from the cache.
- @param mmanagedObjectContext The managed object context to be searched for a matching instance.
+ @param managedObjectContext The managed object context to be searched for a matching instance.
  @return An array of managed objects that are instances of the given entity with a primary key and value matching
  the specified parameters, or nil if no object was found.
  */
