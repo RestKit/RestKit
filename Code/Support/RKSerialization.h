@@ -53,6 +53,7 @@
  
  @param object The object to be serialized.
  @param A pointer to an NSError object.
+ @param error A pointer to an NSError object.
  @return A data representation of the given object in UTF-8 encoding, or nil if an error occurred.
  */
 + (NSData *)dataFromObject:(id)object error:(NSError **)error;

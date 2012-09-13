@@ -35,7 +35,9 @@
  */
 @interface RKPathMatcher : NSObject <NSCopying>
 
-@property (copy, readonly) NSDictionary *queryParameters;
+///---------------------------------
+/// @name Matching Paths to Patterns
+///---------------------------------
 
 /**
  Creates an RKPathMatcher starting from a path string.  This method should be followed by
@@ -69,6 +71,10 @@
  */
 - (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments;
 
+///---------------------------------
+/// @name Matching Patterns to Paths
+///---------------------------------
+
 /**
  Creates an RKPathMatcher starting from a pattern string.  This method should be followed by
  matchesPath:tokenizeQueryStrings:parsedArguments:  Patterns should include encoded parameter keys,
@@ -100,6 +106,10 @@
  */
 - (BOOL)matchesPath:(NSString *)pathString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments;
 
+///----------------------------------
+/// @name Creating Paths from Objects
+///----------------------------------
+
 /**
  Generates a new path by interpolating the properties of the 'object' argument, assuming the existence
  of a previously specified pattern established via matcherWithPattern:.  Otherwise, this method is identical in
@@ -117,7 +127,7 @@
  @see RKMakePathWithObject
  @see RKRouter
  */
-- (NSString *)pathFromObject:(id)object;
+- (NSString *)pathFromObject:(id)object DEPRECATED_ATTRIBUTE;
 
 /**
  Generates a path by interpolating the properties of the 'object' argument, assuming the existence
@@ -138,5 +148,11 @@
  @see RKRouter
  */
 - (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes;
+
+///-------------------------------------------
+/// @name Accessing Tokenized Query Parameters
+///-------------------------------------------
+
+@property (copy, readonly) NSDictionary *queryParameters;
 
 @end

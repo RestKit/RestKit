@@ -27,7 +27,7 @@
 extern NSString * const RKSearchableAttributeNamesUserInfoKey;
 
 /**
- The RKSearchIndexer class provides support for adding full text searching
+ The `RKSearchIndexer` class provides support for adding full text searching
  to Core Data entities and managing the indexing of managed object instances
  of searchable entities.
  */

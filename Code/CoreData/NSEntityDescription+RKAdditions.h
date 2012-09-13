@@ -94,6 +94,7 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
  appropriate. This behavior is a convenience to avoid annoying issues related to Core Data's
  handling of predicates for NSString and NSNumber types that were not appropriately casted.
 
+ @param value The primary key value with which to create the predicate.
  @return A predicate speciying that the value of the primary key attribute is equal to a given value.
  */
 - (NSPredicate *)predicateForPrimaryKeyAttributeWithValue:(id)value;
@@ -102,6 +103,7 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
  Coerces the given value into the class representing the primary key. Currently support NSString
  and NSNumber coercsions.
 
+ @param primaryKeyValue The value of the primary that is to be coerced.
  @bug **NOTE** This API is temporary and will be deprecated and replaced.
  @since 0.10.1
  */

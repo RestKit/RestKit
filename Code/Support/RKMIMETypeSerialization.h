@@ -30,9 +30,9 @@
  */
 @interface RKMIMETypeSerialization : NSObject
 
-///-----------------------------------------------------------------------------
+///---------------------------------------
 /// @name Managing MIME Type Registrations
-///-----------------------------------------------------------------------------
+///---------------------------------------
 
 /**
  Registers the given serialization class to handle content for the given MIME Type identifier.
@@ -77,9 +77,9 @@
  */
 + (NSSet *)registeredMIMETypes;
 
-///-----------------------------------------------------------------------------
+///---------------------------------------------------------
 /// @name Serializing and Deserializing Content by MIME Type
-///-----------------------------------------------------------------------------
+///---------------------------------------------------------
 
 /**
  Deserializes and returns a Foundation object representation of the given UTF-8 encoded data in 
