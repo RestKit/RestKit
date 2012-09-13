@@ -170,7 +170,6 @@ static RKTestFactory *sharedFactory = nil;
     __block id managedObject;
     __block NSError *error;
     __block BOOL success;
-    __block NSManagedObjectID *objectID;
     if (! managedObjectContext) managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     [managedObjectContext performBlockAndWait:^{
         managedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:managedObjectContext];
