@@ -63,7 +63,7 @@
 /**
  Creates and returns a new relationship route object with the given relationship name, object class, path pattern and method.
 
- @param relationshipName The name of the relationship represented by the route.
+ @param name The name of the relationship represented by the route.
  @param objectClass The class containing the relationship represented by the route.
  @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
  @param method The request method of the route.

@@ -36,7 +36,7 @@
 
  @param entity The Core Data entity description for the managed objects being cached.
  @param attributeName The name of an attribute within the cached entity that acts as the cache key.
- @param managedObjectContext The managed object context the cache retrieves the cached
+ @param context The managed object context the cache retrieves the cached
     objects from
  @return The receiver, initialized with the given entity, attribute, and managed object
     context.
@@ -143,6 +143,7 @@
  in a given managed object context.
 
  @param attributeValue A value for the cache key attribute.
+ @param context The managed object context to retrieve the object from.
  @return An object with the value of attribute matching attributeValue or nil.
  */
 - (NSManagedObject *)objectWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context;
@@ -152,6 +153,7 @@
  in a given managed object context.
 
  @param attributeValue A value for the cache key attribute.
+ @param context The managed object context to retrieve the objects from.
  @return An array of objects with the value of attribute matching attributeValue or
     an empty array.
  */

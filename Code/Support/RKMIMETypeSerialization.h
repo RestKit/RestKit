@@ -106,7 +106,7 @@
  no serialization implementation is found to handle the given MIME Type, nil is returned and the given
  error pointer will be set to an NSError object with the `RKMissingSerializationForMIMETypeError` code.
  
- @param data The UTF-8 encoded data representation of the object to be deserialized.
+ @param object The Foundation object to serialized.
  @param MIMEType The MIME Type of the serialization format the data is in.
  @param error A pointer to an NSError object.
  @return A Foundation object from the serialized data in data, or nil if an error occurs.

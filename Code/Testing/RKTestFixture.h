@@ -93,7 +93,7 @@
 
  @param fixtureName The name of the resource file.
  @return A new image object for the specified file, or nil if the method could not initialize the image from the specified file.
- @see RKParserRegistry
+ @see `RKMIMETypeSerialization`
  */
 + (id)parsedObjectWithContentsOfFixture:(NSString *)fixtureName;
 
