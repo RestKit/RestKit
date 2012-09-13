@@ -109,7 +109,7 @@
     for (NSString *possibleClassName in _routes) {
         Class possibleClass = NSClassFromString(possibleClassName);
         if ([object isMemberOfClass:possibleClass]) {
-            classRoutes = [_routes objectForKey:possibleClass];
+            classRoutes = [_routes objectForKey:possibleClassName];
             break;
         }
     }
@@ -119,7 +119,7 @@
         for (NSString *possibleClassName in _routes) {
             Class possibleClass = NSClassFromString(possibleClassName);
             if ([object isKindOfClass:possibleClass]) {
-                classRoutes = [_routes objectForKey:possibleClass];
+                classRoutes = [_routes objectForKey:possibleClassName];
                 break;
             }
         }
