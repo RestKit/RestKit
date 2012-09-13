@@ -35,7 +35,7 @@ RK_FIX_CATEGORY_BUG(RKObjectPropertyInspector_CoreData)
 
 - (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription *)entity
 {
-    NSMutableDictionary *propertyNamesAndTypes = [_cachedPropertyNamesAndTypes objectForKey:[entity name]];
+    NSMutableDictionary *propertyNamesAndTypes = [_propertyNamesToTypesCache objectForKey:[entity name]];
     if (propertyNamesAndTypes) {
         return propertyNamesAndTypes;
     }
@@ -76,7 +76,7 @@ RK_FIX_CATEGORY_BUG(RKObjectPropertyInspector_CoreData)
         }
     }
 
-    [_cachedPropertyNamesAndTypes setObject:propertyNamesAndTypes forKey:[entity name]];
+    [_propertyNamesToTypesCache setObject:propertyNamesAndTypes forKey:[entity name]];
     RKLogDebug(@"Cached property names and types for Entity '%@': %@", entity, propertyNamesAndTypes);
     return propertyNamesAndTypes;
 }
