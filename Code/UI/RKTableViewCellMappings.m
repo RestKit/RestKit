@@ -45,17 +45,18 @@
                                      userInfo:nil];
     }
 
-    [_cellMappings setObject:cellMapping forKey:(id<NSCopying>)objectClass];
+    [_cellMappings setObject:cellMapping forKey:NSStringFromClass(objectClass)];
 }
 
 - (RKTableViewCellMapping *)cellMappingForClass:(Class)objectClass
 {
     // Exact match
-    RKTableViewCellMapping *cellMapping = [_cellMappings objectForKey:objectClass];
+    RKTableViewCellMapping *cellMapping = [_cellMappings objectForKey:NSStringFromClass(objectClass)];
     if (cellMapping) return cellMapping;
 
     // Subclass match
-    for (Class cellClass in _cellMappings) {
+    for (NSString *cellClassName in _cellMappings) {
+        Class cellClass = NSClassFromString(cellClassName);
         if ([objectClass isSubclassOfClass:cellClass]) {
             return [_cellMappings objectForKey:cellClass];
         }
