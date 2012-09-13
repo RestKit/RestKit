@@ -26,15 +26,15 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
-static RKPropertyInspector *sharedInspector = nil;
-
 @implementation RKPropertyInspector
 
 + (RKPropertyInspector *)sharedInspector
 {
-    if (sharedInspector == nil) {
+    static RKPropertyInspector *sharedInspector = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         sharedInspector = [RKPropertyInspector new];
-    }
+    });
 
     return sharedInspector;
 }
