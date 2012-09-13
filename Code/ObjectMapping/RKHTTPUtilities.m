@@ -27,7 +27,7 @@ NSRange RKStatusCodeRangeForClass(RKStatusCodeClass statusCodeClass)
     return NSMakeRange(statusCodeClass, RKStatusCodeRangeLength);
 }
 
-NSIndexSet * RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass)
+NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass)
 {
     return [NSIndexSet indexSetWithIndexesInRange:RKStatusCodeRangeForClass(statusCodeClass)];
 }

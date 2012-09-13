@@ -75,7 +75,7 @@ NSRange RKStatusCodeRangeForClass(RKStatusCodeClass statusCodeClass);
  @param statusCodeClass The status code class to create an index set covering.
  @return A new index set covering the status codes in the given class.
  */
-NSIndexSet * RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
+NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
 
 // TODO: Implement these guys...
 //NSString * RKStringFromStatusCode(NSInteger statusCode);
@@ -84,5 +84,5 @@ NSIndexSet * RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
 /*
  * Parse HTTP Date: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
  */
-NSDate * RKDateFromHTTPDateString(NSString *);
-NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *headers, NSInteger statusCode);
+NSDate *RKDateFromHTTPDateString(NSString *);
+NSDate *RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *headers, NSInteger statusCode);
