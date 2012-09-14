@@ -267,7 +267,7 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  Adds a date formatter instance to the default collection
 
- @param dateFormatter An NSFormatter object to append to the end of the default formatters collection
+ @param dateFormatter An NSFormatter object to prepend to the default formatters collection
  @see defaultDateFormatters
  */
 + (void)addDefaultDateFormatter:(NSFormatter *)dateFormatter;
@@ -278,7 +278,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @param dateFormatString The dateFormat string to assign to the newly constructed NSDateFormatter instance
  @param nilOrTimeZone The NSTimeZone object to configure on the NSDateFormatter instance. Defaults to UTC time.
- @result A new NSDateFormatter will be appended to the defaultDateFormatters with the specified date format and time zone
+ @result A new NSDateFormatter will be prepended to the defaultDateFormatters with the specified date format and time zone
  @see NSDateFormatter
  */
 + (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone;
