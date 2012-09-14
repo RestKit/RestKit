@@ -323,7 +323,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
 {
     // TODO: Migrate into load/initialize...
     if (!defaultDateFormatters) {
-        defaultDateFormatters = [[NSMutableArray alloc] initWithCapacity:2];
+        defaultDateFormatters = [[NSMutableArray alloc] init];
 
         // Setup the default formatters
         ISO8601DateFormatter *isoFormatter = [[ISO8601DateFormatter alloc] init];
