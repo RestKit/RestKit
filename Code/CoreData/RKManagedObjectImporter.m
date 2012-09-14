@@ -27,6 +27,7 @@
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKMIMETypeSerialization.h"
+#import "RKPathUtilities.h"
 #import "RKLog.h"
 
 // Set Logging Component
