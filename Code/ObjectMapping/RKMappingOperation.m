@@ -105,15 +105,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
     NSDate *date = nil;
 
-    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-    numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-
-    NSNumber *numeric = [numberFormatter numberFromString:string];
-
-
-    if (numeric) {
-        date = [NSDate dateWithTimeIntervalSince1970:[numeric doubleValue]];
-    } else if (![string isEqualToString:@""]) {
+    if (![string isEqualToString:@""]) {
         for (NSFormatter *dateFormatter in self.objectMapping.dateFormatters) {
             BOOL success;
             @synchronized(dateFormatter) {

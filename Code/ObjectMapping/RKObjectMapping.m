@@ -326,6 +326,12 @@ static NSDateFormatter *preferredDateFormatter = nil;
         defaultDateFormatters = [[NSMutableArray alloc] init];
 
         // Setup the default formatters
+
+        //NSNumberFormatter which creates dates from Unix timestamps
+        NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+        numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+        [self addDefaultDateFormatter:numberFormatter];
+
         ISO8601DateFormatter *isoFormatter = [[ISO8601DateFormatter alloc] init];
         [self addDefaultDateFormatter:isoFormatter];
 
