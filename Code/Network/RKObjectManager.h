@@ -183,8 +183,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
  
  @param baseURL The base URL with which to initialize the `AFHTTPClient` object
- @return A new `RKObjectManager` initialized with an `AFHTTPClient` that was initialized
-    with the given baseURL.
+ @return A new `RKObjectManager` initialized with an `AFHTTPClient` that was initialized with the given baseURL.
  */
 + (id)managerWithBaseURL:(NSURL *)baseURL;
 
