@@ -70,10 +70,12 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 - (NSArray *)relationshipRoutes
 {
-    NSIndexSet *indexes = [self.routes indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        return [(RKRoute *)obj isRelationshipRoute];
-    }];
-    return [self.routes objectsAtIndexes:indexes];
+    NSMutableArray *routes = [NSMutableArray array];
+    for (RKRoute *route in self.routes) {
+        if ([route isRelationshipRoute]) [routes addObject:route];
+    }
+
+    return [NSArray arrayWithArray:routes];
 }
 
 - (void)addRoute:(RKRoute *)route
