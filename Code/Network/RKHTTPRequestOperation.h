@@ -38,6 +38,8 @@
 /**
  The set of status codes which the operation considers successful.
  
+ When `nil`, the acceptability of status codes is deferred to the superclass implementation.
+ 
  **Default**: nil
  */
 @property (nonatomic, strong) NSIndexSet *acceptableStatusCodes;
@@ -45,7 +47,7 @@
 /**
  The set of content types which the operation considers successful.
  
- The set may contain `NSString` or `NSRegularExpression` objects.
+ The set may contain `NSString` or `NSRegularExpression` objects. When `nil`, the acceptability of content types is deferred to the superclass implementation.
  
  **Default**: nil
  */
