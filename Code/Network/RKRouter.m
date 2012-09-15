@@ -23,14 +23,22 @@
 #import "RKRoute.h"
 #import "RKPathMatcher.h"
 
-@implementation RKRouter
 
+@interface RKRouter ()
+@property (nonatomic, strong, readwrite) NSURL *baseURL;
+@property (nonatomic, strong, readwrite) RKRouteSet *routeSet;
+@end
+
+
+@implementation RKRouter
 
 - (id)initWithBaseURL:(NSURL *)baseURL
 {
-    self = [self init];
+    self = [super init];
     if (self) {
+        NSParameterAssert(baseURL);
         self.baseURL = baseURL;
+        self.routeSet = [[RKRouteSet alloc] init];
     }
 
     return self;
@@ -38,12 +46,9 @@
 
 - (id)init
 {
-    self = [super init];
-    if (self) {
-        self.routeSet = [RKRouteSet new];
-    }
-
-    return self;
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"%@ Failed to call designated initializer. Invoke initWithBaseURL: instead.", NSStringFromClass([self class])]
+                                 userInfo:nil];
 }
 
 - (NSURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object

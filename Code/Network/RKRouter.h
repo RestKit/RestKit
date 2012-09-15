@@ -110,11 +110,11 @@
 /**
  The base URL that all URLs constructed by the receiver are relative to.
  */
-@property (nonatomic, strong) NSURL *baseURL;
+@property (nonatomic, strong, readonly) NSURL *baseURL;
 
 /**
  A route set defining all the routes addressable through the receiver.
  */
-@property (nonatomic, strong) RKRouteSet *routeSet;
+@property (nonatomic, strong, readonly) RKRouteSet *routeSet;
 
 @end
