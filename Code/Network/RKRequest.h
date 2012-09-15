@@ -116,7 +116,9 @@ typedef enum RKRequestBackgroundPolicy {
  */
 typedef enum {
     /**
-     Disable the use of authentication
+     Disable the use of authentication.
+     
+     If the credentials property is not `nil`, those credentials are used to authenticate the connection.
      */
     RKRequestAuthenticationTypeNone = 0,
     /**
@@ -498,6 +500,21 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  @see authenticationType
  */
 @property (nonatomic, retain) NSString *OAuth2RefreshToken;
+
+
+///-----------------------------------------------------------------------------
+/// @name SSL Client Authentication secrets
+///-----------------------------------------------------------------------------
+
+/**
+ A predetermined NSURLCredentials instance for use in authenticating a connection.
+ 
+ This property is meant to be used when simple user/password authentication
+ challenges aren't enough to customize the behavior of the authentication process.
+ Typically it will be used when interacting with a server that requires the use
+ of SSL client certificate authentication.
+ */
+@property (nonatomic, retain) NSURLCredential *credentials;
 
 
 ///-----------------------------------------------------------------------------

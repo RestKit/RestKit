@@ -146,6 +146,7 @@ return __VA_ARGS__;                                                             
     RKResponseIgnoreDelegateIfCancelled();
     RKLogDebug(@"Received authentication challenge");
 
+    // Server trust authentication
     if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         SecTrustRef trust = [[challenge protectionSpace] serverTrust];
         if ([self isServerTrusted:trust]) {
@@ -155,15 +156,31 @@ return __VA_ARGS__;                                                             
         }
         return;
     }
-
+    
+    // Attempt the first challenge
     if ([challenge previousFailureCount] == 0) {
-        NSURLCredential *newCredential;
-        newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
-                                                   password:[NSString stringWithFormat:@"%@", _request.password]
-                                                persistence:NSURLCredentialPersistenceNone];
+        NSURLCredential *newCredential = self.request.credentials;
+        if (!newCredential && (_request.username || _request.password)) {
+            newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
+                                                       password:[NSString stringWithFormat:@"%@", _request.password]
+                                                    persistence:NSURLCredentialPersistenceNone];
+        }
+        
         [[challenge sender] useCredential:newCredential
                forAuthenticationChallenge:challenge];
-    } else {
+    }
+    
+    // If we've failed once and we're using client certificates, the first
+    // failure was probably due to a bad client certificate; continue and
+    // see if the server will accept unauthenticated SSL connections.
+    else if ([challenge previousFailureCount] == 1 &&
+             [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate])
+    {
+        [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
+    }
+    
+    // Otherwise cancel the request
+    else {
         RKLogWarning(@"Failed authentication challenge after %ld failures", (long)[challenge previousFailureCount]);
         [[challenge sender] cancelAuthenticationChallenge:challenge];
     }
@@ -181,6 +198,15 @@ return __VA_ARGS__;                                                             
         } else {
             return NO;
         }
+    }
+
+    else if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+//        if (_request.credentials.identity && _request.authenticationType == RKRequestAuthenticationTypeNone) {
+//            return YES;
+//        } else {
+//            return NO;
+//        }
+        return YES;
     }
 
     // Handle non-SSL challenges
