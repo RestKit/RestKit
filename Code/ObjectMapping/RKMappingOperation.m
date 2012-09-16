@@ -24,7 +24,6 @@
 #import "RKPropertyInspector.h"
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
-#import "RKObjectMapper.h"
 #import "RKErrors.h"
 #import "RKLog.h"
 #import "RKMappingOperationDataSource.h"
