@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
     ns.dependency       'LibComponentLogging-NSLog', '>= 1.0.4'
     ns.dependency       'SOCKit'
-    ns.dependency       'AFNetworking', '1.0RC1'
+    ns.dependency       'AFNetworking', '1.0RC2'
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
   end    
