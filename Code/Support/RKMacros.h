@@ -3,7 +3,6 @@
 //  RestKit
 //
 //  Created by Jawwad Ahmad on 7/18/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");

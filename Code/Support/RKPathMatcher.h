@@ -24,9 +24,9 @@
 /**
  The `RKPathMatcher` class performs pattern matching and parameter parsing of strings, typically representing the path portion of an `NSURL` object. It provides much of the necessary tools to map a given path to local objects (the inverse of RKRouter's function).  This makes it easier to implement the `RKManagedObjectCaching` protocol and generate `NSFetchRequest` objects from a given path.  There are two means of instantiating and using a matcher object in order to provide more flexibility in implementations, and to improve efficiency by eliminating repetitive and costly pattern initializations.
 
- @see RKManagedObjectCaching
- @see RKMakePathWithObject
- @see RKRouter
+ @see `RKManagedObjectCaching`
+ @see `RKPathFromPatternWithObject`
+ @see `RKRouter`
  */
 @interface RKPathMatcher : NSObject <NSCopying>
 
@@ -35,34 +35,28 @@
 ///---------------------------------
 
 /**
- Creates an RKPathMatcher starting from a path string.  This method should be followed by
- matchesPattern:tokenizeQueryStrings:parsedArguments:
+ Creates a path match object starting from a path string.  This method should be followed by `matchesPattern:tokenizeQueryStrings:parsedArguments:`
 
- @param pathString The string to evaluate and parse, such as /districts/tx/upper/?apikey=GC5512354
- @return An instantiated RKPathMatcher without an established pattern.
+ @param pathString The string to evaluate and parse, such as `/districts/tx/upper/?apikey=GC5512354`
+ @return An instantiated `RKPathMatcher` without an established pattern.
  */
 + (RKPathMatcher *)matcherWithPath:(NSString *)pathString;
 
 /**
- Determines if the path string matches the provided pattern, and yields a dictionary with the resulting
- matched key/value pairs.  Use of this method should be preceded by matcherWithPath:
- Pattern strings should include encoded parameter keys, delimited by a single colon at the
- beginning of the key name.
+ Determines if the path string matches the provided pattern, and yields a dictionary with the resulting matched key/value pairs.  Use of this method should be preceded by `matcherWithPath:` Pattern strings should include encoded parameter keys, delimited by a single colon at the beginning of the key name.
 
- *NOTE 1 *- Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be
- separated by at least one unmapped character.  For instance, /:key1:key2:key3/ is invalid, whereas
- /:key1/:key2/:key3/ is acceptable.
+ *NOTE 1 *- Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be separated by at least one unmapped character.  For instance, `/:key1:key2:key3/` is invalid, whereas `/:key1/:key2/:key3/` is acceptable.
 
- *NOTE 2 *- The pattern matcher supports KVM, so :key1.otherKey normally resolves as it would in any other KVM
+ *NOTE 2 *- The pattern matcher supports KVM, so `:key1.otherKey` normally resolves as it would in any other KVM
  situation, ... otherKey is a sub-key on a the object represented by key1.  This presents problems in circumstances where
  you might want to build a pattern like /:filename.json, where the dot isn't intended as a sub-key on the filename, but rather
  part of the json static string.  In these instances, you need to escape the dot with two backslashes, like so:
  /:filename\\.json
 
- @param patternString The pattern to use for evaluating, such as /:entityName/:stateID/:chamber/
+ @param patternString The pattern to use for evaluating, such as `/:entityName/:stateID/:chamber/`
  @param shouldTokenize If YES, any query parameters will be tokenized and inserted into the parsed argument dictionary.
  @param arguments A pointer to a dictionary that contains the key/values from the pattern (and parameter) matching.
- @return A boolean indicating if the path string successfully matched the pattern.
+ @return A boolean value indicating if the path string successfully matched the pattern.
  */
 - (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments;
 
@@ -71,33 +65,24 @@
 ///---------------------------------
 
 /**
- Creates an RKPathMatcher starting from a pattern string.  This method should be followed by
- matchesPath:tokenizeQueryStrings:parsedArguments:  Patterns should include encoded parameter keys,
- delimited by a single colon at the beginning of the key name.
+ Creates a path matcher object starting from a pattern string.  This method should be followed by `matchesPath:tokenizeQueryStrings:parsedArguments:`.  Patterns should include encoded parameter keys, delimited by a single colon at the beginning of the key name.
 
- *NOTE 1 *- Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be
- separated by at least one unmapped character.  For instance, /:key1:key2:key3/ is invalid, whereas
- /:key1/:key2/:key3/ is acceptable.
+ *NOTE 1 *- Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be separated by at least one unmapped character.  For instance, `/:key1:key2:key3/` is invalid, whereas `/:key1/:key2/:key3/` is acceptable.
 
- *NOTE 2 *- The pattern matcher supports KVM, so :key1.otherKey normally resolves as it would in any other KVM
- situation, ... otherKey is a sub-key on a the object represented by key1.  This presents problems in circumstances where
- you might want to build a pattern like /:filename.json, where the dot isn't intended as a sub-key on the filename, but rather
- part of the json static string.  In these instances, you need to escape the dot with two backslashes, like so:
- /:filename\\.json
+ *NOTE 2 *- The pattern matcher supports KVM, so `:key1.otherKey` normally resolves as it would in any other KVM situation, ... otherKey is a sub-key on a the object represented by key1.  This presents problems in circumstances where you might want to build a pattern like `/:filename.json`, where the dot isn't intended as a sub-key on the filename, but rather part of the json static string.  In these instances, you need to escape the dot with two backslashes, like so: `/:filename\\.json`
 
- @param patternString The pattern to use for evaluating, such as /:entityName/:stateID/:chamber/
- @return An instantiated RKPathMatcher with an established pattern.
+ @param patternString The pattern to use for evaluating, such as `/:entityName/:stateID/:chamber/`
+ @return An instantiated `RKPathMatcher` with an established pattern.
  */
 + (RKPathMatcher *)matcherWithPattern:(NSString *)patternString;
 
 /**
- Determines if the given path string matches a pattern, and yields a dictionary with the resulting
- matched key/value pairs.  Use of this method should be preceded by matcherWithPattern:
+ Determines if the given path string matches a pattern, and yields a dictionary with the resulting matched key/value pairs.  Use of this method should be preceded by `matcherWithPattern:`.
 
- @param pathString The string to evaluate and parse, such as /districts/tx/upper/?apikey=GC5512354
+ @param pathString The string to evaluate and parse, such as `/districts/tx/upper/?apikey=GC5512354`
  @param shouldTokenize If YES, any query parameters will be tokenized and inserted into the parsed argument dictionary.
  @param arguments A pointer to a dictionary that contains the key/values from the pattern (and parameter) matching.
- @return A boolean indicating if the path string successfully matched the pattern.
+ @return A boolean value indicating if the path string successfully matched the pattern.
  */
 - (BOOL)matchesPath:(NSString *)pathString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments;
 
@@ -106,9 +91,7 @@
 ///----------------------------------
 
 /**
- Generates a new path by interpolating the properties of the 'object' argument, assuming the existence
- of a previously specified pattern established via matcherWithPattern:.  Otherwise, this method is identical in
- function to RKMakePathWithObject (in fact it is a shortcut for this method).
+ Generates a new path by interpolating the properties of the 'object' argument, assuming the existence of a previously specified pattern established via `matcherWithPattern:`.  Otherwise, this method is identical in function to `RKPathFromPatternWithObject` (in fact it is a shortcut for this method).
 
  For example, given an 'article' object with an 'articleID' property value of 12345 ...
 
@@ -119,28 +102,25 @@
 
  @param object The object containing the properties to interpolate.
  @return A string with the object's interpolated property values inserted into the receiver's established pattern.
- @see RKMakePathWithObject
- @see RKRouter
+ @see `RKPathFromPatternWithObject`
+ @see `RKRouter`
  */
 - (NSString *)pathFromObject:(id)object DEPRECATED_ATTRIBUTE;
 
 /**
- Generates a path by interpolating the properties of the 'object' argument, assuming the existence
- of a previously specified pattern established via matcherWithPattern:.  Otherwise, this method is identical in
- function to RKMakePathWithObject (in fact it is a shortcut for this method).
+ Generates a path by interpolating the properties of the 'object' argument, assuming the existence of a previously specified pattern established via `matcherWithPattern:`.  Otherwise, this method is identical in function to `RKPathFromPatternWithObject` (in fact it is a shortcut for this method).
 
  For example, given an 'article' object with an 'articleID' property value of 12345 and a code of "This/That"...
 
- RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID/:code"];
- NSString *path = [matcher pathFromObject:article addingEscapes:YES];
+     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID/:code"];
+     NSString *path = [matcher pathFromObject:article addingEscapes:YES];
 
- ... will produce a 'path' containing the string "/articles/12345/This%2FThat"
+ ... will produce a 'path' containing the string `@"/articles/12345/This%2FThat"`
 
  @param object The object containing the properties to interpolate.
  @param addEscapes Conditionally add percent escapes to the interpolated property values
  @return A string with the object's interpolated property values inserted into the receiver's established pattern.
- @see RKMakePathWithObjectAddingEscapes
- @see RKRouter
+ @see `RKRouter`
  */
 - (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes;
 

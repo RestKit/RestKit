@@ -9,18 +9,18 @@
 #import <Foundation/Foundation.h>
 
 /**
- Returns the path to the Application Data directory for the executing application. On iOS, this is a sandboxed path specific for the executing application. On OS X, this is an application specific path under NSApplicationSupportDirectory (i.e. ~/Application Support).
+ Returns the path to the Application Data directory for the executing application. On iOS, this is a sandboxed path specific for the executing application. On OS X, this is an application specific path under `NSApplicationSupportDirectory` (i.e. ~/Application Support).
 
  @return The full path to the application data directory.
  */
-NSString * RKApplicationDataDirectory(void);
+NSString *RKApplicationDataDirectory(void);
 
 /**
  Returns a path to the root caches directory used by RestKit for storage. On iOS, this is a sanboxed path specific for the executing application. On OS X, this is an application specific path under NSCachesDirectory (i.e. ~/Library/Caches).
 
  @return The full path to the Caches directory.
  */
-NSString * RKCachesDirectory(void);
+NSString *RKCachesDirectory(void);
 
 /**
  Ensures that a directory exists at a given path by checking for the existence of the directory and creating it if it does not exist.
@@ -41,10 +41,10 @@ BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error);
  @param pathPattern An `SOCPattern` string containing zero or more colon-prefixed property names.
  @param object The object to interpolate the properties against
  @return A new `NSString` object with the values of the given object interpolated for the colon-prefixed properties name in the given pattern string.
- @see RKPathMatcher
- @see SOCPattern
+ @see `RKPathMatcher`
+ @see `SOCPattern`
  */
-NSString * RKPathFromPatternWithObject(NSString *pathPattern, id object);
+NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object);
 
 /**
  Returns a MIME Type for a given path by using the Core Services framework.
@@ -53,4 +53,4 @@ NSString * RKPathFromPatternWithObject(NSString *pathPattern, id object);
  
  @return The expected MIME Type of the resource identified by the path or nil if unknown.
  */
-NSString * RKMIMETypeFromPathExtension(NSString *path);
+NSString *RKMIMETypeFromPathExtension(NSString *path);

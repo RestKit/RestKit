@@ -19,13 +19,9 @@
 //
 
 /**
- The RKSerialization protocol declares two methods that a class must implement
- so that it can provide support for serializing objects to and deserializing objects
- from UTF-8 encoded data representations of a serialization format such as JSON
- or XML. Serialization implementations typically handle data in a given MIME Type 
- (i.e. application/json) and may be registered with the RKMIMETypeSerialization class.
+ The `RKSerialization` protocol declares two methods that a class must implement so that it can provide support for serializing objects to and deserializing objects from UTF-8 encoded data representations of a serialization format such as JSON or XML. Serialization implementations typically handle data in a given MIME Type (i.e. `application/json`) and may be registered with the `RKMIMETypeSerialization` class.
  
- @see RKMIMETypeSerialization
+ @see `RKMIMETypeSerialization`
  */
 @protocol RKSerialization <NSObject>
 
@@ -34,11 +30,10 @@
 ///------------------------------
 
 /**
- Deserializes and returns the given data in the format supported by the receiver
- (i.e. JSON, XML, etc) as a Foundation object representation.
+ Deserializes and returns the given data in the format supported by the receiver (i.e. JSON, XML, etc) as a Foundation object representation.
  
  @param data The UTF-8 encoded data representation of the object to be deserialized.
- @param error A pointer to an NSError object.
+ @param error A pointer to an `NSError` object.
  @return A Foundation object from the serialized data in data, or nil if an error occurs.
  */
 + (id)objectFromData:(NSData *)data error:(NSError **)error;
@@ -48,11 +43,10 @@
 ///----------------------------
 
 /**
- Serializes and returns a UTF-8 encoded data representation of the given Foundation
- object in the format supported by the receiver (i.e. JSON, XML, etc).
+ Serializes and returns a UTF-8 encoded data representation of the given Foundation object in the format supported by the receiver (i.e. JSON, XML, etc).
  
  @param object The object to be serialized.
- @param A pointer to an NSError object.
+ @param A pointer to an `NSError` object.
  @param error A pointer to an NSError object.
  @return A data representation of the given object in UTF-8 encoding, or nil if an error occurred.
  */

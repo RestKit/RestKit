@@ -21,28 +21,22 @@
 #import "RKDotNetDateFormatter.h"
 #import "RestKit.h"
 
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
-
-BOOL isValidRange(NSRange rangeOfMatch);
-NSTimeInterval secondsFromMilliseconds(NSTimeInterval millisecs);
-NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
+static BOOL RKDotNetDateFormatterIsValidRange(NSRange rangeOfMatch);
+static NSTimeInterval RKDotNetDateFormatterSecondsFromMilliseconds(NSTimeInterval millisecs);
+static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterval seconds);
 
 @interface RKDotNetDateFormatter ()
+@property (nonatomic, strong) NSRegularExpression *dotNetExpression;
+
 - (NSString *)millisecondsFromString:(NSString *)string;
 @end
 
 @implementation RKDotNetDateFormatter
 
-+ (RKDotNetDateFormatter *)dotNetDateFormatter
-{
-    return [RKDotNetDateFormatter dotNetDateFormatterWithTimeZone:nil];
-}
-
 + (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)newTimeZone
 {
     RKDotNetDateFormatter *formatter = [[RKDotNetDateFormatter alloc] init];
-    if (newTimeZone)
-        formatter.timeZone = newTimeZone;
+    if (newTimeZone) formatter.timeZone = newTimeZone;
     return formatter;
 }
 
@@ -53,7 +47,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
         RKLogError(@"Attempted to interpret an invalid .NET date string: %@", string);
         return nil;
     }
-    NSTimeInterval seconds = secondsFromMilliseconds([milliseconds doubleValue]);
+    NSTimeInterval seconds = RKDotNetDateFormatterSecondsFromMilliseconds([milliseconds doubleValue]);
     return [NSDate dateWithTimeIntervalSince1970:seconds];
 }
 
@@ -79,7 +73,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 {
     NSParameterAssert([value isKindOfClass:[NSDate class]]);
     NSString *timeZoneOffset = [super stringForObjectValue:value];
-    NSTimeInterval milliseconds = millisecondsFromSeconds([(NSDate *)value timeIntervalSince1970]);
+    NSTimeInterval milliseconds = RKDotNetDateFormatterMillisecondsFromSeconds([(NSDate *)value timeIntervalSince1970]);
     return [NSString stringWithFormat:@"/Date(%1.0lf%@)/", milliseconds, timeZoneOffset];
 }
 
@@ -91,7 +85,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
         self.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
         [self setDateFormat:@"ZZ"]; // GMT offset, like "-0500"
         NSString *pattern = @"\\/Date\\((-?\\d+)((?:[\\+\\-]\\d+)?)\\)\\/"; // /Date(mSecs)/ or /Date(-mSecs)/ or /Date(mSecs-0400)/
-        dotNetExpression = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
+        self.dotNetExpression = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
     }
     return self;
 }
@@ -101,33 +95,30 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 
 - (NSString *)millisecondsFromString:(NSString *)string
 {
-    if (!string)
-        return nil;
-    NSTextCheckingResult *match = [dotNetExpression firstMatchInString:string options:NSMatchingCompleted range:NSMakeRange(0, [string length])];
-    if (!match)
-        return nil;
+    if (!string) return nil;
+    NSTextCheckingResult *match = [self.dotNetExpression firstMatchInString:string options:NSMatchingCompleted range:NSMakeRange(0, [string length])];
+    if (!match) return nil;
     NSRange millisecRange = [match rangeAtIndex:1];
-    if (!isValidRange(millisecRange))
-        return nil;
-    //NSRange timeZoneRange = [match rangeAtIndex:2];
+    if (!RKDotNetDateFormatterIsValidRange(millisecRange)) return nil;
     NSString *milliseconds = [string substringWithRange:millisecRange];
     return milliseconds;
 }
 @end
 
 
-BOOL isValidRange(NSRange rangeOfMatch) {
+static BOOL RKDotNetDateFormatterIsValidRange(NSRange rangeOfMatch)
+{
     return (!NSEqualRanges(rangeOfMatch, NSMakeRange(NSNotFound, 0)));
 }
 
 
-NSTimeInterval secondsFromMilliseconds(NSTimeInterval millisecs) {
+static NSTimeInterval RKDotNetDateFormatterSecondsFromMilliseconds(NSTimeInterval millisecs)
+{
     return millisecs / 1000.f;
 }
 
 
-NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds) {
+static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterval seconds)
+{
     return seconds *1000.f;
 }
-
-#endif
