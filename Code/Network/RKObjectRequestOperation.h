@@ -36,7 +36,9 @@
  
  ## Caching
  
- TBD
+ Instances of `RKObjectRequestOperation` support all the HTTP caching facilities available via the `NSURLConnection` family of API's. For caching to be enabled, the remote web server that the application is communicating with must emit the appropriate `Cache-Control`, `Expires`, and/or `ETag` headers. When the response headers include the appropriate caching information, the shared `NSURLCache` instance will manage responses and transparently add conditional GET support to cachable requests. HTTP caching is a deep topic explored in depth across the web and detailed in RFC 2616: http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html
+
+ The `RKObjectRequestOperation` class also provides support for utilizing the `NSURLCache` to satisfy requests without hitting the network. This support enables applications to display views presenting data retrieved via a cachable `GET` request without revalidating with the server and incurring any overhead. The optimization is controlled via `avoidsNetworkAccess` property. When enabled, the operation will skip the network transport portion of the object request operation and proceed directly to object mapping the cached response data. When the object request operation is an instance of `RKManagedObjectRequestOperation`, the deserialization and mapping portion of the process can be skipped entirely and the operation will fetch the appropriate object directly from Core Data, falling back to network transport once the cache entry has expired. Please refer to the documentation accompanying `RKManagedObjectRequestOperation` for more details.
  
  ## Core Data
  
@@ -64,9 +66,9 @@
  */
 - (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors;
 
-///------------------------------------------------------------
+///---------------------------------
 /// @name Configuring Object Mapping
-///------------------------------------------------------------
+///---------------------------------
 
 /**
  The array of `RKResponseDescriptor` objects that specify how the deserialized `responseData` is to be object mapped.
@@ -122,16 +124,33 @@
 /**
  When `YES`, network access is avoided entirely if a valid, non-expired cache entry is available for the request being loaded. No conditional GET request is sent to the server and the cache entry is assumed to be fresh. This optimization enables the object mapping to begin immediately using the cached response data. In high latency environments, this can result in an improved user experience as the operation does not wait for a 304 (Not Modified) response to be returned before proceeding with mapping.
  
- This optimization has even greater impact when the object request operation is an instance of `RKManagedObjectRequestOperation` as object mapping can skipped entirely and the objects loaded directly from Core Data.
+ This optimization has even greater impact when the object request operation is an instance of `RKManagedObjectRequestOperation` as object mapping can skipped entirely and the objects loaded directly from Core Data. Please refer to the documentation accompanying `RKManagedObjectRequestOperation`.
  
  **Default**: Dependent on the `cachePolicy` of the `NSURLRequest` used to initialize the operation. `YES` unless the request has a `cachePolicy` value equal to `NSURLRequestReloadIgnoringLocalCacheData` or `NSURLRequestReloadIgnoringLocalAndRemoteCacheData`.
+
+ @see `RKManagedObjectRequestOperation`
  */
 @property (nonatomic, assign) BOOL avoidsNetworkAccess;
 
 /**
- Returns `YES` if the value of the `response` and `responseData` was loaded by `NSURLCache`, else `NO`.
+ Returns `YES` if the value of the `response` and `responseData` was loaded from `NSURLCache`, else `NO`.
  */
 @property (nonatomic, readonly) BOOL isResponseFromCache;
+
+///-------------------------------------------------------
+/// @name Setting the Completion Block and Callback Queues
+///-------------------------------------------------------
+
+/**
+ Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the request on completion. If `error` returns a value, which can be caused by an unacceptable status code or content type, then `failure` is executed. Otherwise, `success` is executed.
+
+ @param success The block to be executed on the completion of a successful operation. This block has no return value and takes two arguments: the receiver operation and the mapping result from object mapping the response data of the request.
+ @param failure The block to be executed on the completion of an unsuccessful operation. This block has no return value and takes two arguments: the receiver operation and the error that occurred during the execution of the operation.
+
+ @discussion This method should be overridden in subclasses in order to specify the response object passed into the success block.
+ */
+- (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 /**
  The callback dispatch queue on success. If `NULL` (default), the main queue is used.
@@ -147,40 +166,10 @@
  */
 @property (nonatomic, assign) dispatch_queue_t failureCallbackQueue;
 
-// TODO: Add a Boolean to enable the network if possible
-
-///-----------------------------------
-/// @name Setting the Completion Block
-///-----------------------------------
-
-/**
- Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the request on completion. If `error` returns a value, which can be caused by an unacceptable status code or content type, then `failure` is executed. Otherwise, `success` is executed.
- 
- @param success The block to be executed on the completion of a successful operation. This block has no return value and takes two arguments: the receiver operation and the mapping result from object mapping the response data of the request.
- @param failure The block to be executed on the completion of an unsuccessful operation. This block has no return value and takes two arguments: the receiver operation and the error that occurred during the execution of the operation.
- 
- @discussion This method should be overridden in subclasses in order to specify the response object passed into the success block.
- */
-- (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
-
-///-----------------------------------
-/// @name Setting the Completion Block
-///-----------------------------------
-
 // Things to consider:
 //  - (void)willMapObject:(id* inout)object | willMapResponseObject:
 // mapperDelegate
-
+// TODO: Add a Boolean to enable the network if possible
 // TODO: Need tests for: success, request failure, request timeout, parsing failure, no matching mapping descriptors, parsing an error out of the payload,
 // no mappable content found, unable to parse the MIME type returned, handling a 204 response, getting back a 200 with 'blank' content (i.e. render :nothing => true)
-@end
-
-// Move to RKObjectRequestOperationSubclass.h
-@interface RKObjectRequestOperation (ForSubclassEyesOnly)
-
-// Subclass Overrides
-- (RKMappingResult *)performMappingOnResponse:(NSError **)error;
-- (void)willFinish;
-
 @end
