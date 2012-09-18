@@ -213,7 +213,6 @@ static RKTestFactory *sharedFactory = nil;
 {
     [RKObjectManager setSharedManager:nil];
     [RKManagedObjectStore setDefaultStore:nil];
-    [RKObjectMapping setDefaultDateFormatters:nil];
 
     // Delete the store if it exists
     NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
