@@ -123,10 +123,10 @@
         [self.privateContext performBlockAndWait:^{
             NSManagedObject *backgroundThreadObject = [self.privateContext existingObjectWithID:self.targetObjectID error:&_blockError];
             if (backgroundThreadObject) {
-                RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
+                RKLogInfo(@"Deleting local object %@ due to `DELETE` request", backgroundThreadObject);
                 [self.privateContext deleteObject:backgroundThreadObject];
             } else {
-                RKLogWarning(@"Unable to delete object sent with DELETE request: Failed to retrieve object with objectID %@", self.targetObjectID);
+                RKLogWarning(@"Unable to delete object sent with `DELETE` request: Failed to retrieve object with objectID %@", self.targetObjectID);
                 RKLogCoreDataError(_blockError);
                 _blockSuccess = NO;
             }
