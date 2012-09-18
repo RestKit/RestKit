@@ -7,6 +7,9 @@ Pod::Spec.new do |s|
   s.source       =  { :git => 'https://github.com/RestKit/RestKit.git', :branch => 'feature/reboot-networking-layer' }
   s.license      =  'Apache License, Version 2.0'  
   
+  # Add System Configuration to prefix to enable reachability in AFNetworking
+  s.prefix_header_contents = "#import <SystemConfiguration/SystemConfiguration.h>"
+  
   # Platform setup
   s.requires_arc = true
   s.ios.deployment_target = '5.0'
