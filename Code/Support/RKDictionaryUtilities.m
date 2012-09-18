@@ -11,8 +11,8 @@
 NSDictionary * RKDictionaryByReverseMergingDictionaryWithDictionary(NSDictionary *dictionary, NSDictionary *anotherDictionary)
 {
     NSMutableDictionary *mergedDictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
-    [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        if ([mergedDictionary objectForKey:key] && [obj isKindOfClass:[NSDictionary class]]) {
+    [anotherDictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if ([[mergedDictionary objectForKey:key] isKindOfClass:[NSDictionary class]] && [obj isKindOfClass:[NSDictionary class]]) {
             NSDictionary *newVal = RKDictionaryByReverseMergingDictionaryWithDictionary([mergedDictionary objectForKey:key], obj);
             [mergedDictionary setObject:newVal forKey:key];
         } else {

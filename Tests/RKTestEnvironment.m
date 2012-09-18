@@ -20,7 +20,6 @@
 
 #include <objc/runtime.h>
 #import "RKTestEnvironment.h"
-#import "RKParserRegistry.h"
 
 @implementation RKTestCase
 
