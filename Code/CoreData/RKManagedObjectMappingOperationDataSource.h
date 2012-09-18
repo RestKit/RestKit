@@ -12,13 +12,10 @@
 @protocol RKManagedObjectCaching;
 
 /**
- The RKManagedObjectMappingOperationDataSource provides support for performing object mapping
- operations where the mapped objects exist within a Core Data managed object context. The class
- is responsible for finding exist managed object instances by primary key, instantiating new managed
- objects, and connecting relationships for mapped objects.
+ The `RKManagedObjectMappingOperationDataSource` class provides support for performing object mapping operations where the mapped objects exist within a Core Data managed object context. The class is responsible for finding exist managed object instances by primary key, instantiating new managed objects, and connecting relationships for mapped objects.
 
- @see RKMappingOperationDataSource
- @see RKConnectionMapping
+ @see `RKMappingOperationDataSource`
+ @see `RKConnectionMapping`
  */
 @interface RKManagedObjectMappingOperationDataSource : NSObject <RKMappingOperationDataSource>
 
@@ -28,18 +25,15 @@
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 
 /**
- The managed object cache utilized by the receiver to find existing managed object instances
- by primary key. A nil managed object cache will result in the insertion of new managed objects for
- all mapped content.
+ The managed object cache utilized by the receiver to find existing managed object instances by primary key. A nil managed object cache will result in the insertion of new managed objects for all mapped content.
 
- @see RKFetchRequestManagedObjectCache
- @see RKInMemoryManagedObjectCache
+ @see `RKFetchRequestManagedObjectCache`
+ @see `RKInMemoryManagedObjectCache`
  */
 @property (nonatomic, strong, readonly) id<RKManagedObjectCaching> managedObjectCache;
 
 /**
- The operation queue in which instances of RKRelationshipConnectionOperation will be enqueued
- to connect the relationships of mapped objects.
+ The operation queue in which instances of RKRelationshipConnectionOperation will be enqueued to connect the relationships of mapped objects.
  */
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 

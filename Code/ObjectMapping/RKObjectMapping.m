@@ -279,12 +279,12 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 
 - (NSFormatter *)preferredDateFormatter
 {
-    return _preferredDateFormatter ? _preferredDateFormatter : [RKObjectMapping preferredDateFormatter];
+    return _preferredDateFormatter ?: [RKObjectMapping preferredDateFormatter];
 }
 
 - (NSArray *)dateFormatters
 {
-    return _dateFormatters ? _dateFormatters : [RKObjectMapping defaultDateFormatters];
+    return _dateFormatters ?: [RKObjectMapping defaultDateFormatters];
 }
 
 - (BOOL)isEqualToMapping:(RKObjectMapping *)otherMapping
