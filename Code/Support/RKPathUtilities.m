@@ -15,9 +15,9 @@
 #import "RKLog.h"
 #import "RKPathMatcher.h"
 
-NSString * RKExecutableName(void);
+NSString *RKExecutableName(void);
 
-NSString * RKApplicationDataDirectory(void)
+NSString *RKApplicationDataDirectory(void)
 {
 #if TARGET_OS_IPHONE
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -43,7 +43,7 @@ NSString * RKApplicationDataDirectory(void)
 #endif
 }
 
-NSString * RKExecutableName(void)
+NSString *RKExecutableName(void)
 {
     NSString *executableName = [[[NSBundle mainBundle] executablePath] lastPathComponent];
     if (nil == executableName) {
@@ -54,7 +54,7 @@ NSString * RKExecutableName(void)
     return executableName;
 }
 
-NSString * RKCachesDirectory(void)
+NSString *RKCachesDirectory(void)
 {
 #if TARGET_OS_IPHONE
     return [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
@@ -90,7 +90,7 @@ BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error)
     return YES;
 }
 
-NSString * RKPathFromPatternWithObject(NSString *pathPattern, id object)
+NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
 {
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:pathPattern];
@@ -102,7 +102,7 @@ static NSDictionary *RKDictionaryOfFileExtensionsToMIMETypes()
     return @{ @"json": @"application/json" };
 }
 
-NSString * RKMIMETypeFromPathExtension(NSString *path)
+NSString *RKMIMETypeFromPathExtension(NSString *path)
 {
     NSString *pathExtension = [path pathExtension];
     CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)pathExtension, NULL);

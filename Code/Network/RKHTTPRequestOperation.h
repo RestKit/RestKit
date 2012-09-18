@@ -40,7 +40,7 @@
  
  When `nil`, the acceptability of status codes is deferred to the superclass implementation.
  
- **Default**: nil
+ **Default**: `nil`
  */
 @property (nonatomic, strong) NSIndexSet *acceptableStatusCodes;
 
@@ -49,7 +49,7 @@
  
  The set may contain `NSString` or `NSRegularExpression` objects. When `nil`, the acceptability of content types is deferred to the superclass implementation.
  
- **Default**: nil
+ **Default**: `nil`
  */
 @property (nonatomic, strong) NSSet *acceptableContentTypes;
 
