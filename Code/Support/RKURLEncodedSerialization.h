@@ -52,3 +52,12 @@ NSDictionary *RKDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncodedS
  @see `AFQueryStringFromParametersWithEncoding`
  */
 NSString *RKURLEncodedStringFromDictionaryWithEncoding(NSDictionary *dictionary, NSStringEncoding encoding);
+
+/**
+ Returns a copy of the given string with the characters that are unsafe for use in a URL query string replaced with the equivalent percent escape sequences.
+
+ @param string The string to be escaped.
+ @param encoding The encoding to use in constructing the URL-encoded string. If you are uncertain of the correct encoding, you should use UTF-8 (NSUTF8StringEncoding), which is the encoding designated by RFC 3986 as the correct encoding for use in URLs.
+ @return A new `NSString` object in the given encoding with the query string unsafe characters replaced with percent escape sequences.
+ */
+NSString *RKPercentEscapedQueryStringFromStringWithEncoding(NSString *string, NSStringEncoding encoding);
