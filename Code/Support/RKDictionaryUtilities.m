@@ -8,12 +8,12 @@
 
 #import "RKDictionaryUtilities.h"
 
-NSDictionary * RKDictionaryByReverseMergingDictionaryWithDictionary(NSDictionary *dictionary, NSDictionary *anotherDictionary)
+NSDictionary * RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dictionary, NSDictionary *anotherDictionary)
 {
     NSMutableDictionary *mergedDictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
     [anotherDictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         if ([[mergedDictionary objectForKey:key] isKindOfClass:[NSDictionary class]] && [obj isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *newVal = RKDictionaryByReverseMergingDictionaryWithDictionary([mergedDictionary objectForKey:key], obj);
+            NSDictionary *newVal = RKDictionaryByMergingDictionaryWithDictionary([mergedDictionary objectForKey:key], obj);
             [mergedDictionary setObject:newVal forKey:key];
         } else {
             [mergedDictionary setObject:obj forKey:key];

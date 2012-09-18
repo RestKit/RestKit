@@ -27,7 +27,7 @@
  @param anotherDictionary A secondary dictionary to perform the reverse merging with.
  @return A new `NSDicionary` object that is the product of the reverse merge.
  */
-NSDictionary *RKDictionaryByReverseMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2);
+NSDictionary *RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2);
 
 /**
  Return a new dictionary by stripping out any percent escapes (such as %20) from the given dictionary's key and values.

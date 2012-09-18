@@ -50,7 +50,7 @@
         }
     };
 
-    NSDictionary *actualMergedDict = RKDictionaryByReverseMergingDictionaryWithDictionary(dict1, dict2);
+    NSDictionary *actualMergedDict = RKDictionaryByMergingDictionaryWithDictionary(dict1, dict2);
     assertThat(actualMergedDict, equalTo(expectedMergedDict));
 }
 
@@ -76,7 +76,7 @@
         }
     };
 
-    NSDictionary *actualMergedDict = RKDictionaryByReverseMergingDictionaryWithDictionary(dict1, dict2);
+    NSDictionary *actualMergedDict = RKDictionaryByMergingDictionaryWithDictionary(dict1, dict2);
     assertThat(actualMergedDict, equalTo(expectedMergedDict));
 }
 
@@ -103,7 +103,7 @@
         @"email" : @"blake@restkit.org"
     };
 
-    NSDictionary *actualMergedDict = RKDictionaryByReverseMergingDictionaryWithDictionary(dict1, dict2);
+    NSDictionary *actualMergedDict = RKDictionaryByMergingDictionaryWithDictionary(dict1, dict2);
     assertThat(actualMergedDict, equalTo(expectedMergedDict));
 }
 
@@ -137,7 +137,7 @@
         }
     };
 
-    NSDictionary *actualMergedDict = RKDictionaryByReverseMergingDictionaryWithDictionary(dict1, dict2);
+    NSDictionary *actualMergedDict = RKDictionaryByMergingDictionaryWithDictionary(dict1, dict2);
     assertThat(actualMergedDict, equalTo(expectedMergedDict));
 }
 
@@ -168,7 +168,7 @@
         @"email" : @"blake@restkit.org",
     };
 
-    NSDictionary *actualMergedDict = RKDictionaryByReverseMergingDictionaryWithDictionary(dict1, dict2);
+    NSDictionary *actualMergedDict = RKDictionaryByMergingDictionaryWithDictionary(dict1, dict2);
     assertThat(actualMergedDict, equalTo(expectedMergedDict));
 }
 

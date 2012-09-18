@@ -188,7 +188,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     if (requestDescriptor) {
         NSError *error = nil;
         NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
-        if (parameters) RKDictionaryByReverseMergingDictionaryWithDictionary(mergedParameters, parameters);
+        if (parameters) RKDictionaryByMergingDictionaryWithDictionary(mergedParameters, parameters);
         requestParameters = mergedParameters;
     } else {
         requestParameters = parameters;
@@ -210,7 +210,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     if (requestDescriptor) {
         NSError *error = nil;
         NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
-        if (parameters) RKDictionaryByReverseMergingDictionaryWithDictionary(mergedParameters, parameters);
+        if (parameters) RKDictionaryByMergingDictionaryWithDictionary(mergedParameters, parameters);
         requestParameters = mergedParameters;
     } else {
         requestParameters = parameters;
