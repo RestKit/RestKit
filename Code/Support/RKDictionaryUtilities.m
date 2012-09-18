@@ -8,15 +8,17 @@
 
 #import "RKDictionaryUtilities.h"
 
-NSDictionary * RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dictionary, NSDictionary *anotherDictionary)
+NSDictionary * RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2)
 {
-    NSMutableDictionary *mergedDictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
-    [anotherDictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        if ([[mergedDictionary objectForKey:key] isKindOfClass:[NSDictionary class]] && [obj isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *newVal = RKDictionaryByMergingDictionaryWithDictionary([mergedDictionary objectForKey:key], obj);
-            [mergedDictionary setObject:newVal forKey:key];
+    NSMutableDictionary *mergedDictionary = [dict1 mutableCopy];
+
+    [dict2 enumerateKeysAndObjectsUsingBlock:^(id key2, id obj2, BOOL *stop) {
+        id obj1 = dict1[key2];
+        if ([obj1 isKindOfClass:[NSDictionary class]] && [obj2 isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *mergedSubdict = RKDictionaryByMergingDictionaryWithDictionary(obj1, obj2);
+            mergedDictionary[key2] = mergedSubdict;
         } else {
-            [mergedDictionary setObject:obj forKey:key];
+            mergedDictionary[key2] = obj2;
         }
     }];
     
