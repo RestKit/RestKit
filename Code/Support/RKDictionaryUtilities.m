@@ -22,7 +22,7 @@ NSDictionary * RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1
         }
     }];
     
-    return mergedDictionary;
+    return [mergedDictionary copy];
 }
 
 NSDictionary * RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(NSDictionary *dictionary)

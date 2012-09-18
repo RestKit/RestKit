@@ -187,9 +187,10 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, object);
     if (requestDescriptor) {
         NSError *error = nil;
-        NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
-        if (parameters) RKDictionaryByMergingDictionaryWithDictionary(mergedParameters, parameters);
-        requestParameters = mergedParameters;
+        requestParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
+        if (parameters) {
+            requestParameters = RKDictionaryByMergingDictionaryWithDictionary(requestParameters, parameters);
+        }
     } else {
         requestParameters = parameters;
     }
@@ -209,9 +210,10 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, object);
     if (requestDescriptor) {
         NSError *error = nil;
-        NSMutableDictionary *mergedParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
-        if (parameters) RKDictionaryByMergingDictionaryWithDictionary(mergedParameters, parameters);
-        requestParameters = mergedParameters;
+        requestParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
+        if (parameters) {
+            requestParameters = RKDictionaryByMergingDictionaryWithDictionary(requestParameters, parameters);
+        }
     } else {
         requestParameters = parameters;
     }
