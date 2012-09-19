@@ -190,23 +190,17 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)client
 {
-    AFHTTPClient *client = [self objectFromFactory:RKTestFactoryDefaultNamesClient properties:nil];
-    return client;
+    return [self objectFromFactory:RKTestFactoryDefaultNamesClient properties:nil];
 }
 
 + (id)objectManager
 {
-    RKObjectManager *objectManager = [self objectFromFactory:RKTestFactoryDefaultNamesObjectManager properties:nil];
-    [RKObjectManager setSharedManager:objectManager];
-    return objectManager;
+    return [self objectFromFactory:RKTestFactoryDefaultNamesObjectManager properties:nil];
 }
 
 + (id)managedObjectStore
 {
-    RKManagedObjectStore *managedObjectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore properties:nil];
-    [RKManagedObjectStore setDefaultStore:managedObjectStore];
-
-    return managedObjectStore;
+    return [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore properties:nil];
 }
 
 + (void)setUp
