@@ -30,7 +30,8 @@ typedef enum RKRequestMethod {
     RKRequestMethodPUT,
     RKRequestMethodDELETE,
     RKRequestMethodHEAD,
-    RKRequestMethodPATCH
+    RKRequestMethodPATCH,
+    RKRequestMethodOPTIONS
 } RKRequestMethod;  // RKHTTPMethod? RKStringFromHTTPMethod... RKHTTPMethodFromString
 
 /**

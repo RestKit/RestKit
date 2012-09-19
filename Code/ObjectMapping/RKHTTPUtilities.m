@@ -35,26 +35,28 @@ NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass)
 NSString *RKStringFromRequestMethod(RKRequestMethod method)
 {
     switch (method) {
-        case RKRequestMethodGET:    return @"GET";
-        case RKRequestMethodPOST:   return @"POST";
-        case RKRequestMethodPUT:    return @"PUT";
-        case RKRequestMethodPATCH:  return @"PATCH";
-        case RKRequestMethodDELETE: return @"DELETE";
-        case RKRequestMethodHEAD:   return @"HEAD";
-        default:                    break;
+        case RKRequestMethodGET:     return @"GET";
+        case RKRequestMethodPOST:    return @"POST";
+        case RKRequestMethodPUT:     return @"PUT";
+        case RKRequestMethodPATCH:   return @"PATCH";
+        case RKRequestMethodDELETE:  return @"DELETE";
+        case RKRequestMethodHEAD:    return @"HEAD";
+        case RKRequestMethodOPTIONS: return @"OPTIONS";
+        default:                     break;
     }
     return nil;
 }
 
 RKRequestMethod RKRequestMethodFromString(NSString *methodName)
 {
-    if      ([methodName isEqualToString:@"GET"])    return RKRequestMethodGET;
-    else if ([methodName isEqualToString:@"POST"])   return RKRequestMethodPOST;
-    else if ([methodName isEqualToString:@"PUT"])    return RKRequestMethodPUT;
-    else if ([methodName isEqualToString:@"DELETE"]) return RKRequestMethodDELETE;
-    else if ([methodName isEqualToString:@"HEAD"])   return RKRequestMethodHEAD;
-    else if ([methodName isEqualToString:@"PATCH"])  return RKRequestMethodPATCH;
-    else                                             return RKRequestMethodInvalid;
+    if      ([methodName isEqualToString:@"GET"])     return RKRequestMethodGET;
+    else if ([methodName isEqualToString:@"POST"])    return RKRequestMethodPOST;
+    else if ([methodName isEqualToString:@"PUT"])     return RKRequestMethodPUT;
+    else if ([methodName isEqualToString:@"DELETE"])  return RKRequestMethodDELETE;
+    else if ([methodName isEqualToString:@"HEAD"])    return RKRequestMethodHEAD;
+    else if ([methodName isEqualToString:@"PATCH"])   return RKRequestMethodPATCH;
+    else if ([methodName isEqualToString:@"OPTIONS"]) return RKRequestMethodOPTIONS;
+    else                                              return RKRequestMethodInvalid;
 }
 
 /**
