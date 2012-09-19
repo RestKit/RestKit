@@ -107,7 +107,7 @@ return __VA_ARGS__;                                                             
 
 - (BOOL)hasCredentials
 {
-    return _request.username && _request.password;
+    return (_request.username && _request.password) || _request.credentials;
 }
 
 - (BOOL)isServerTrusted:(SecTrustRef)trust
@@ -159,15 +159,18 @@ return __VA_ARGS__;                                                             
     
     // Attempt the first challenge
     if ([challenge previousFailureCount] == 0) {
-        NSURLCredential *newCredential = self.request.credentials;
+        NSURLCredential *newCredential = _request.credentials;
         if (!newCredential && (_request.username || _request.password)) {
             newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
                                                        password:[NSString stringWithFormat:@"%@", _request.password]
                                                     persistence:NSURLCredentialPersistenceNone];
         }
         
-        [[challenge sender] useCredential:newCredential
-               forAuthenticationChallenge:challenge];
+        if (newCredential) {
+            [[challenge sender] useCredential:newCredential forAuthenticationChallenge:challenge];
+        } else {
+            [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
+        }
     }
     
     // If we've failed once and we're using client certificates, the first
@@ -201,11 +204,6 @@ return __VA_ARGS__;                                                             
     }
 
     else if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
-//        if (_request.credentials.identity && _request.authenticationType == RKRequestAuthenticationTypeNone) {
-//            return YES;
-//        } else {
-//            return NO;
-//        }
         return YES;
     }
 

@@ -231,6 +231,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     request.authenticationType = self.authenticationType;
     request.username = self.username;
     request.password = self.password;
+    request.credentials = self.credentials;
     request.cachePolicy = self.cachePolicy;
     request.cache = self.requestCache;
     request.queue = self.requestQueue;
