@@ -443,3 +443,15 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 }
 
 @end
+
+NSString *RKStringFromNetworkReachabilityStatus(AFNetworkReachabilityStatus networkReachabilityStatus)
+{
+    switch (networkReachabilityStatus) {
+        case AFNetworkReachabilityStatusNotReachable:     return @"Not Reachable";
+        case AFNetworkReachabilityStatusReachableViaWiFi: return @"Reachable via WiFi";
+        case AFNetworkReachabilityStatusReachableViaWWAN: return @"Reachable via WWAN";
+        case AFNetworkReachabilityStatusUnknown:          return @"Reachability Unknown";
+        default:                                          break;
+    }
+    return nil;
+}

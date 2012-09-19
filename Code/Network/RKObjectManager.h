@@ -657,3 +657,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 //- (RKObjectPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
 
 @end
+
+/**
+ Returns a string description of the given network status.
+
+ @param networkReachabilityStatus The network reachability status.
+ @return A string describing the reachability status.
+ */
+NSString *RKStringFromNetworkReachabilityStatus(AFNetworkReachabilityStatus networkReachabilityStatus);
