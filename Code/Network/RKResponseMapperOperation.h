@@ -18,7 +18,10 @@
 //  limitations under the License.
 //
 
-#import "RestKit.h"
+#import "RKMappingOperationDataSource.h"
+#import "RKObjectMapper.h"
+#import "RKManagedObjectCaching.h"
+#import "RKMappingResult.h"
 
 /**
  `RKResponseMapperOperation` is an `NSOperation` that provides support for performing object mapping on an `NSHTTPURLResponse` and its associated response data.
@@ -185,3 +188,19 @@
 @property (nonatomic, copy) NSManagedObjectID *targetObjectID;
 
 @end
+
+///----------------
+/// @name Functions
+///----------------
+
+/**
+ Returns a representation of a mapping result as an `NSError` value.
+ 
+ The returned `NSError` object is in the `RKErrorDomain` domain and has the `RKMappingErrorFromMappingResult` code. The value for the `NSLocalizedDescriptionKey` is computed by retrieving the objects in the mapping result as an array, evaluating `valueForKeyPath:@"errorMessage"` against the array, and joining the returned error messages by comma to form a single string value. The source error objects are returned with the `NSError` in the `userInfo` dictionary under the `RKObjectMapperErrorObjectsKey` key.
+ 
+ The `errorMessage` property is significant as it is an informal protocol that must be adopted by objects wishing to representing response errors.
+ 
+ @return An error object representing the objects contained in the mapping result.
+ @see `RKErrorMessage`
+ */
+NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult);

@@ -23,6 +23,8 @@
 #import "RKHTTPUtilities.h"
 #import "RKResponseMapperOperation.h"
 #import "RKRequestOperationSubclass.h"
+#import "RKManagedObjectMappingOperationDataSource.h"
+#import "NSManagedObjectContext+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
