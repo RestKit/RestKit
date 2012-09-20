@@ -21,33 +21,35 @@
 #import <Foundation/Foundation.h>
 
 /**
- RKPropertyMapping is an abstract class for describing the properties being mapped
- within an object or entity mapping. It defines the common interface for its concrete
- subclasses RKAttributeMapping and RKRelationshipMapping.
+ `RKPropertyMapping` is an abstract class for describing the properties being mapped within an `RKObjectMapping` or `RKEntityMapping` object. It defines the common interface for its concrete subclasses `RKAttributeMapping` and `RKRelationshipMapping`. Each property mapping defines a single transformation from a source key path (often in the deserialized representation of a JSON or XML document) to a destination key path (typically on a target object).
  */
 @interface RKPropertyMapping : NSObject <NSCopying>
 
+///-----------------------------------------------------
+/// @name Accessing the Source and Destination Key Paths
+///-----------------------------------------------------
+
 /**
- A key path on the source object from which to get information that is to be mapped onto
- the destination object.
+ A key path on the source object from which to get information that is to be mapped onto the destination object.
  */
 @property (nonatomic, strong, readonly) NSString *sourceKeyPath;
 
 /**
- A key path on the destination object on which to set information that has been mapped from
- the source object.
+ A key path on the destination object on which to set information that has been mapped from the source object.
  */
 @property (nonatomic, strong, readonly) NSString *destinationKeyPath;
+
+///----------------------------------
+/// @name Comparing Property Mappings
+///----------------------------------
 
 /**
  Compares the receiving property mapping to another property mapping.
 
- Two property mappings are equal if they are of the same type (i.e. an attribute or a
- relationship mapping) and specify a mapping from the same source key path to the
- same destination key path.
+ Two property mappings are equal if they are of the same type (i.e. an `RKAttributeMapping` or an `RKRelatiobshipMapping` object) and specify a mapping from the same source key path to the same destination key path.
 
  @param otherMapping The property mapping object with which to compare the receiver.
- @return YES if otherMapping specifies the same mapping as the receiver, otherwise NO.
+ @return `YES` if `otherMapping` specifies the same mapping as the receiver, otherwise `NO`.
  */
 - (BOOL)isEqualToMapping:(RKPropertyMapping *)otherMapping;
 
