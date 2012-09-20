@@ -211,7 +211,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
         if (nil == self.destinationObject) {
-            self.destinationObject = [self.mappingOperationDataSource objectForMappableContent:self.sourceObject mapping:self.mapping];
+            self.destinationObject = [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:self.sourceObject withMapping:self.mapping];
         }
         RKMappingOperation *mappingOperation = [RKMappingOperation mappingOperationFromObject:sourceObject toObject:self.destinationObject withMapping:self.mapping];
         mappingOperation.dataSource = self.mappingOperationDataSource;

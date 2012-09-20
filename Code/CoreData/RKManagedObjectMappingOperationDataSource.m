@@ -38,9 +38,9 @@
 }
 
 
-- (id)objectForMappableContent:(id)mappableContent mapping:(RKObjectMapping *)mapping
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping
 {
-    NSAssert(mappableContent, @"Mappable data cannot be nil");
+    NSAssert(representation, @"Mappable data cannot be nil");
     NSAssert(self.managedObjectContext, @"%@ must be initialized with a managed object context.", [self class]);
 
     if (! [mapping isKindOfClass:[RKEntityMapping class]]) {
@@ -69,11 +69,11 @@
         // Get the primary key value out of the mappable data (if any)
         if ([primaryKeyAttributeMapping isMappingForKeyOfNestedDictionary]) {
             RKLogDebug(@"Detected use of nested dictionary key as primaryKey attribute...");
-            primaryKeyValue = [[mappableContent allKeys] lastObject];
+            primaryKeyValue = [[representation allKeys] lastObject];
         } else {
             NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
             if (keyPathForPrimaryKeyElement) {
-                primaryKeyValue = [mappableContent valueForKeyPath:keyPathForPrimaryKeyElement];
+                primaryKeyValue = [representation valueForKeyPath:keyPathForPrimaryKeyElement];
             } else {
                 RKLogWarning(@"Unable to find source attribute for primaryKeyAttribute '%@': unable to find existing object instances by primary key.", primaryKeyAttribute);
             }

@@ -252,8 +252,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
     }
 
     if (objectMapping) {
-        id object = [self.mappingOperationDataSource objectForMappableContent:mappableData mapping:objectMapping];
-        return object;
+        return [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:mappableData withMapping:objectMapping];
     }
 
     return nil;
