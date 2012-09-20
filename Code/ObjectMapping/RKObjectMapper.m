@@ -211,9 +211,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
     NSError *error = nil;
 
-    RKMappingOperation *mappingOperation = [RKMappingOperation mappingOperationFromObject:mappableObject
-                                                                                 toObject:destinationObject
-                                                                              withMapping:mapping];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject mapping:mapping];
     mappingOperation.dataSource = self.mappingOperationDataSource;
     if ([self.delegate respondsToSelector:@selector(mapper:willPerformMappingOperation:)]) {
         [self.delegate mapper:self willPerformMappingOperation:mappingOperation];

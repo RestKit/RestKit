@@ -75,12 +75,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 @implementation RKMappingOperation
 
-
-+ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)objectOrDynamicMapping
-{
-    return [[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectOrDynamicMapping];
-}
-
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
 {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
@@ -426,7 +420,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSError *error = nil;
 
     RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
-    RKMappingOperation *subOperation = [RKMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withMapping:relationshipMapping.mapping];
+    RKMappingOperation *subOperation = [[RKMappingOperation alloc] initWithSourceObject:anObject destinationObject:anotherObject mapping:relationshipMapping.mapping];
     subOperation.dataSource = self.dataSource;
     subOperation.delegate = self.delegate;
     if (NO == [subOperation performMapping:&error]) {

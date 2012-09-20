@@ -213,7 +213,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         if (nil == self.destinationObject) {
             self.destinationObject = [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:self.sourceObject withMapping:self.mapping];
         }
-        RKMappingOperation *mappingOperation = [RKMappingOperation mappingOperationFromObject:sourceObject toObject:self.destinationObject withMapping:self.mapping];
+        RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:self.destinationObject mapping:self.mapping];
         mappingOperation.dataSource = self.mappingOperationDataSource;
         NSError *error = nil;
         mappingOperation.delegate = self;
