@@ -77,7 +77,7 @@
     if (self.isResponseFromCache) {
         RKLogDebug(@"Managed object mapping requested for cached response: skipping mapping...");
         // TODO: This is unexpectedly returning an empty result set... need to be able to retrieve the appropriate objects...
-        return [RKMappingResult mappingResultWithDictionary:@{}];
+        return [[RKMappingResult alloc] initWithDictionary:@{}];
     }
     
     self.dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.privateContext
@@ -173,7 +173,7 @@
         return YES;
     }
 
-    NSArray *results = [result asCollection];
+    NSArray *results = [result array];
     NSSet *localObjects = [self localObjectsFromFetchRequestsMatchingRequestURL:error];
     if (! localObjects) return NO;
     for (id object in localObjects) {

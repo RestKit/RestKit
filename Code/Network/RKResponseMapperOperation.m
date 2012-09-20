@@ -24,10 +24,34 @@
 #import "RKPathMatcher.h"
 #import "RKHTTPUtilities.h"
 #import "RKResponseMapperOperation.h"
+#import "RKMappingErrors.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
+
+/**
+ Returns a representation of a mapping result as an `NSError` value.
+
+ The returned `NSError` object is in the `RKErrorDomain` domain and has the `RKMappingErrorFromMappingResult` code. The value for the `NSLocalizedDescriptionKey` is computed by retrieving the objects in the mapping result as an array, evaluating `valueForKeyPath:@"description"` against the array, and joining the descriptions by comma to form a single string value. This error construction
+
+ @return An error object representing the objects contained in the mapping result.
+ */
+static NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
+{
+    NSArray *collection = [mappingResult array];
+    NSString *description = nil;
+    if ([collection count] > 0) {
+        description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
+    } else {
+        RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
+    }
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
+                              description, NSLocalizedDescriptionKey, nil];
+
+    NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorFromMappingResult userInfo:userInfo];
+    return error;
+}
 
 @interface RKResponseMapperOperation ()
 @property (nonatomic, strong, readwrite) NSHTTPURLResponse *response;
@@ -151,9 +175,9 @@
     // If we are successful and empty, we may optionally consider the response mappable (i.e. 204 response or 201 with no body)
     if ([self hasEmptyResponse] && self.treatsEmptyResponseAsSuccess) {
         if (self.targetObject) {
-            self.mappingResult = [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:[NSNull null]]];
+            self.mappingResult = [[RKMappingResult alloc] initWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:[NSNull null]]];
         } else {
-            self.mappingResult = [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
+            self.mappingResult = [[RKMappingResult alloc] initWithDictionary:[NSDictionary dictionary]];
         }
 
         return;
@@ -178,7 +202,7 @@
     }
 
     // If the response is a client error and we mapped the payload, return it to the caller as the error
-    if (isClientError) self.error = [self.mappingResult asError];
+    if (isClientError) self.error = RKErrorFromMappingResult(self.mappingResult);
 }
 
 @end

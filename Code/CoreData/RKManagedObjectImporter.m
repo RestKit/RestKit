@@ -215,7 +215,7 @@
         return NSNotFound;
     }
 
-    NSUInteger objectCount = [[mappingResult asCollection] count];
+    NSUInteger objectCount = [mappingResult count];
     RKLogInfo(@"Imported %lu objects from file at path '%@'", (unsigned long)objectCount, path);
     return objectCount;
 }

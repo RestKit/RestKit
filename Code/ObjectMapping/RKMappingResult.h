@@ -20,18 +20,78 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ The `RKMappingResult` class represents the aggregate object mapping results returned by an `RKObjectMapper` object. The mapping result provides a thin interface on top of an `NSDictionary` and provides convenient interfaces for accessing the mapping results in various representations.
+ */
 @interface RKMappingResult : NSObject
 
-- (id)initWithDictionary:(id)dictionary;
-+ (RKMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects;
+///----------------------------------------
+/// @name Creating a Mapping Result
+///----------------------------------------
 
 /**
- Return the mapping result as a dictionary
+ Initializes the receiver with a dictionary of mapped key paths and object values.
+
+ @param dictionary A dictionary wherein the keys represent mapped key paths and the values represent the objects mapped at those key paths. Cannot be nil.
+ @return The receiver, initialized with the given dictionary.
  */
-- (NSDictionary *)asDictionary;
-- (id)asObject;
-- (NSArray *)asCollection;
-- (NSError *)asError;
+- (id)initWithDictionary:(NSDictionary *)dictionary;
+
+///----------------------------------------
+/// @name Retrieving Result Representations
+///----------------------------------------
+
+/**
+ Returns a representation of the mapping result as a dictionary.
+
+ The keys of the returned dictionary will correspond to the mapped key paths in the source object representation and the values will be the mapped objects. The returned value is a copy of the dictionary that was used to initialize the mapping result.
+
+ @return A dictionary containing the mapping results.
+ */
+- (NSDictionary *)dictionary;
+
+/**
+ Returns a representation of the mapping result as a single object by returning the first mapped value from the aggregate array of mapped objects.
+
+ The mapping result is coerced into a single object by retrieving all mapped objects and returning the first object. If the mapping result is empty, `nil` is returned.
+
+ @return The first object contained in the mapping result.
+ */
+- (id)firstObject;
+
+/**
+ Returns a representation of the mapping result as an array of objects.
+
+ The array returned is a flattened collection of all mapped object values contained in the underlying dictionary result representation. No guarantee is made as to the ordering of objects within the returned collection when more than one key path was mapped, as `NSDictionary` objects are unordered,
+
+ @return An array containing the objects contained in the mapping result.
+ */
+- (NSArray *)array;
+
+/**
+ Returns a representation of the mapping result as a set of objects.
+
+ The set returned is a flattened collection of all mapped object values contained in the underlying dictionary result representation.
+
+ @return A set containing the objects contained in the mapping result.
+ */
+- (NSSet *)set;
+
+///----------------------------------------
+/// @name Counting Entries
+///----------------------------------------
+
+/**
+ Returns a count of the number of objects contained in the mapping result. This is an aggregate count of all objects across all mapped key paths in the result.
+
+ @return A count of the number of mapped objects in the mapping result.
+ */
 - (NSUInteger)count;
 
+/**
+ TODO: Consider alternate names...
+ - array | arrayValue
+ - dictionary | dictionaryValue
+ - object | firstObject
+ */
 @end

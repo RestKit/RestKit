@@ -19,8 +19,6 @@
 //
 
 #import "RKMappingResult.h"
-#import "RKMappingErrors.h"
-#import "RKLog.h"
 
 @interface RKMappingResult ()
 @property (nonatomic, strong) NSDictionary *keyPathToMappedObjects;
@@ -28,9 +26,9 @@
 
 @implementation RKMappingResult
 
-
 - (id)initWithDictionary:(id)dictionary
 {
+    NSParameterAssert(dictionary);
     self = [self init];
     if (self) {
         self.keyPathToMappedObjects = dictionary;
@@ -39,24 +37,17 @@
     return self;
 }
 
-
-+ (RKMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects
+- (NSDictionary *)dictionary
 {
-    return [[self alloc] initWithDictionary:keyPathToMappedObjects];
+    return [self.keyPathToMappedObjects copy];
 }
 
-- (NSDictionary *)asDictionary
-{
-    return _keyPathToMappedObjects;
-}
-
-- (NSArray *)asCollection
+- (NSArray *)array
 {
     // Flatten results down into a single array
     NSMutableArray *collection = [NSMutableArray array];
     for (id object in [_keyPathToMappedObjects allValues]) {
         // We don't want to strip the keys off of a mapped dictionary result
-
         if (NO == [object isKindOfClass:[NSDictionary class]] && [object respondsToSelector:@selector(allObjects)]) {
             [collection addObjectsFromArray:[object allObjects]];
         } else {
@@ -67,32 +58,20 @@
     return collection;
 }
 
-- (id)asObject
+- (NSSet *)set
 {
-    NSArray *collection = [self asCollection];
+    return [NSSet setWithArray:[self array]];
+}
+
+- (id)firstObject
+{
+    NSArray *collection = [self array];
     NSUInteger count = [collection count];
     if (count == 0) {
         return nil;
     }
 
-    if (count > 1) RKLogWarning(@"Coerced object mapping result containing %lu objects into singular result.", (unsigned long)count);
     return [collection objectAtIndex:0];
-}
-
-- (NSError *)asError
-{
-    NSArray *collection = [self asCollection];
-    NSString *description = nil;
-    if ([collection count] > 0) {
-        description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
-    } else {
-        RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
-    }
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
-                              description, NSLocalizedDescriptionKey, nil];
-
-    NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorFromMappingResult userInfo:userInfo];
-    return error;
 }
 
 - (NSString *)description
@@ -102,7 +81,7 @@
 
 - (NSUInteger)count
 {
-    return [[self asCollection] count];
+    return [[self array] count];
 }
 
 @end

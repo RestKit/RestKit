@@ -354,7 +354,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
     RKLogDebug(@"Finished performing object mapping. Results: %@", results);
 
-    return [RKMappingResult mappingResultWithDictionary:results];
+    return [[RKMappingResult alloc] initWithDictionary:results];
 }
 
 @end
