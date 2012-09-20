@@ -20,14 +20,12 @@
 
 #import "RKErrorMessage.h"
 
-
 @implementation RKErrorMessage
-
-
 
 - (NSString *)description
 {
-    return _errorMessage;
+    return [NSString stringWithFormat:@"<%@:%p error message = \"%@\" userInfo = %@>",
+            NSStringFromClass([self class]), self, self.errorMessage, self.userInfo];
 }
 
 @end
