@@ -21,9 +21,9 @@
 #import <CoreData/CoreData.h>
 
 /*
- RKSearchWord implements a managed object subclass for representing search words contained in designated string attributes of entities indexed by an instance of RKSearchIndexer.
+ `RKSearchWord` implements a managed object subclass for representing search words contained in designated string attributes of entities indexed by an instance of `RKSearchIndexer`.
 
- @see RKSearchIndexer
+ @see `RKSearchIndexer`
  */
 @interface RKSearchWord : NSManagedObject
 
