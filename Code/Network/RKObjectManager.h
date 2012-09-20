@@ -19,6 +19,7 @@
 //
 
 #import <RestKit/Network.h>
+#import <SystemConfiguration/SystemConfiguration.h>
 #import "RKRouter.h"
 #import "RKObjectPaginator.h"
 #import "RKMacros.h"
