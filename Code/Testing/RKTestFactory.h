@@ -6,8 +6,6 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import "RestKit.h"
-
 /**
  The default filename used for managed object stores created via the factory.
 

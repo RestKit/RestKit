@@ -8,6 +8,9 @@
 
 #import "AFHTTPClient.h"
 #import "RKTestFactory.h"
+#import "RKLog.h"
+#import "RKObjectManager.h"
+#import "RKPathUtilities.h"
 
 @interface RKTestFactory ()
 

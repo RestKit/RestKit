@@ -19,7 +19,7 @@
 //
 
 #import "RKDotNetDateFormatter.h"
-#import "RestKit.h"
+#import "RKLog.h"
 
 static BOOL RKDotNetDateFormatterIsValidRange(NSRange rangeOfMatch);
 static NSTimeInterval RKDotNetDateFormatterSecondsFromMilliseconds(NSTimeInterval millisecs);
