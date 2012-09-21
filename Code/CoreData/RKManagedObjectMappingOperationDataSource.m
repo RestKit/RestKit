@@ -16,13 +16,14 @@
 #import "RKManagedObjectCaching.h"
 #import "RKRelationshipConnectionOperation.h"
 
+extern NSString * const RKObjectMappingNestingAttributeKeyName;
+
 @interface RKManagedObjectMappingOperationDataSource ()
 @property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readwrite) id<RKManagedObjectCaching> managedObjectCache;
 @end
 
 @implementation RKManagedObjectMappingOperationDataSource
-
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
 {
@@ -36,7 +37,6 @@
 
     return self;
 }
-
 
 - (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping
 {
@@ -67,7 +67,7 @@
         }
 
         // Get the primary key value out of the mappable data (if any)
-        if ([primaryKeyAttributeMapping isMappingForKeyOfNestedDictionary]) {
+        if ([primaryKeyAttributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
             RKLogDebug(@"Detected use of nested dictionary key as primaryKey attribute...");
             primaryKeyValue = [[representation allKeys] lastObject];
         } else {
@@ -112,9 +112,7 @@
     return object;
 }
 
-/*
- Mapping operations should be executed against managed object contexts with NSPrivateQueueConcurrencyType
- */
+// Mapping operations should be executed against managed object contexts with the `NSPrivateQueueConcurrencyType` concurrency type
 - (BOOL)executingConnectionOperationsWouldDeadlock
 {
     return [NSThread isMainThread] && [self.managedObjectContext concurrencyType] == NSMainQueueConcurrencyType && self.operationQueue;

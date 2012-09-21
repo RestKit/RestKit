@@ -9,7 +9,7 @@
 #import "RKDynamicMappingMatcher.h"
 
 
-// Implemented in RKObjectMappingOperation
+// Implemented in RKMappingOperation
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

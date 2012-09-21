@@ -83,9 +83,9 @@
 		25160E0C145650490060A5C5 /* RKErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D7F145650490060A5C5 /* RKErrorMessage.m */; };
 		25160E0F145650490060A5C5 /* RKAttributeMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D82145650490060A5C5 /* RKAttributeMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E10145650490060A5C5 /* RKAttributeMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D83145650490060A5C5 /* RKAttributeMapping.m */; };
-		25160E16145650490060A5C5 /* RKObjectMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D89145650490060A5C5 /* RKObjectMapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160E17145650490060A5C5 /* RKObjectMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D8A145650490060A5C5 /* RKObjectMapper.m */; };
-		25160E18145650490060A5C5 /* RKObjectMapper_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D8B145650490060A5C5 /* RKObjectMapper_Private.h */; settings = {ATTRIBUTES = (); }; };
+		25160E16145650490060A5C5 /* RKMapperOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D89145650490060A5C5 /* RKMapperOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25160E17145650490060A5C5 /* RKMapperOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D8A145650490060A5C5 /* RKMapperOperation.m */; };
+		25160E18145650490060A5C5 /* RKMapperOperation_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D8B145650490060A5C5 /* RKMapperOperation_Private.h */; settings = {ATTRIBUTES = (); }; };
 		25160E1A145650490060A5C5 /* RKObjectMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D8D145650490060A5C5 /* RKObjectMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E1B145650490060A5C5 /* RKObjectMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D8E145650490060A5C5 /* RKObjectMapping.m */; };
 		25160E1C145650490060A5C5 /* RKMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D8F145650490060A5C5 /* RKMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -139,9 +139,9 @@
 		25160F47145655C60060A5C5 /* RKErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D7F145650490060A5C5 /* RKErrorMessage.m */; };
 		25160F4A145655C60060A5C5 /* RKAttributeMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D82145650490060A5C5 /* RKAttributeMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F4B145655C60060A5C5 /* RKAttributeMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D83145650490060A5C5 /* RKAttributeMapping.m */; };
-		25160F51145655C60060A5C5 /* RKObjectMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D89145650490060A5C5 /* RKObjectMapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160F52145655C60060A5C5 /* RKObjectMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D8A145650490060A5C5 /* RKObjectMapper.m */; };
-		25160F53145655C60060A5C5 /* RKObjectMapper_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D8B145650490060A5C5 /* RKObjectMapper_Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25160F51145655C60060A5C5 /* RKMapperOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D89145650490060A5C5 /* RKMapperOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25160F52145655C60060A5C5 /* RKMapperOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D8A145650490060A5C5 /* RKMapperOperation.m */; };
+		25160F53145655C60060A5C5 /* RKMapperOperation_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D8B145650490060A5C5 /* RKMapperOperation_Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F55145655C60060A5C5 /* RKObjectMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D8D145650490060A5C5 /* RKObjectMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F56145655C60060A5C5 /* RKObjectMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D8E145650490060A5C5 /* RKObjectMapping.m */; };
 		25160F57145655C60060A5C5 /* RKMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D8F145650490060A5C5 /* RKMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -695,9 +695,9 @@
 		25160D7F145650490060A5C5 /* RKErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKErrorMessage.m; sourceTree = "<group>"; };
 		25160D82145650490060A5C5 /* RKAttributeMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKAttributeMapping.h; sourceTree = "<group>"; };
 		25160D83145650490060A5C5 /* RKAttributeMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKAttributeMapping.m; sourceTree = "<group>"; };
-		25160D89145650490060A5C5 /* RKObjectMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapper.h; sourceTree = "<group>"; };
-		25160D8A145650490060A5C5 /* RKObjectMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapper.m; sourceTree = "<group>"; };
-		25160D8B145650490060A5C5 /* RKObjectMapper_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapper_Private.h; sourceTree = "<group>"; };
+		25160D89145650490060A5C5 /* RKMapperOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMapperOperation.h; sourceTree = "<group>"; };
+		25160D8A145650490060A5C5 /* RKMapperOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMapperOperation.m; sourceTree = "<group>"; };
+		25160D8B145650490060A5C5 /* RKMapperOperation_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMapperOperation_Private.h; sourceTree = "<group>"; };
 		25160D8D145650490060A5C5 /* RKObjectMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapping.h; sourceTree = "<group>"; };
 		25160D8E145650490060A5C5 /* RKObjectMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapping.m; sourceTree = "<group>"; };
 		25160D8F145650490060A5C5 /* RKMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMapping.h; sourceTree = "<group>"; };
@@ -1264,9 +1264,9 @@
 				25160D7F145650490060A5C5 /* RKErrorMessage.m */,
 				25160D82145650490060A5C5 /* RKAttributeMapping.h */,
 				25160D83145650490060A5C5 /* RKAttributeMapping.m */,
-				25160D89145650490060A5C5 /* RKObjectMapper.h */,
-				25160D8A145650490060A5C5 /* RKObjectMapper.m */,
-				25160D8B145650490060A5C5 /* RKObjectMapper_Private.h */,
+				25160D89145650490060A5C5 /* RKMapperOperation.h */,
+				25160D8A145650490060A5C5 /* RKMapperOperation.m */,
+				25160D8B145650490060A5C5 /* RKMapperOperation_Private.h */,
 				25160D8D145650490060A5C5 /* RKObjectMapping.h */,
 				25160D8E145650490060A5C5 /* RKObjectMapping.m */,
 				25160D8F145650490060A5C5 /* RKMapping.h */,
@@ -1911,8 +1911,8 @@
 				25160E09145650490060A5C5 /* RKDynamicMapping.h in Headers */,
 				25160E0B145650490060A5C5 /* RKErrorMessage.h in Headers */,
 				25160E0F145650490060A5C5 /* RKAttributeMapping.h in Headers */,
-				25160E16145650490060A5C5 /* RKObjectMapper.h in Headers */,
-				25160E18145650490060A5C5 /* RKObjectMapper_Private.h in Headers */,
+				25160E16145650490060A5C5 /* RKMapperOperation.h in Headers */,
+				25160E18145650490060A5C5 /* RKMapperOperation_Private.h in Headers */,
 				25160E1A145650490060A5C5 /* RKObjectMapping.h in Headers */,
 				25160E1C145650490060A5C5 /* RKMapping.h in Headers */,
 				25160E1D145650490060A5C5 /* RKMappingOperation.h in Headers */,
@@ -2017,8 +2017,8 @@
 				25160F44145655C60060A5C5 /* RKDynamicMapping.h in Headers */,
 				25160F46145655C60060A5C5 /* RKErrorMessage.h in Headers */,
 				25160F4A145655C60060A5C5 /* RKAttributeMapping.h in Headers */,
-				25160F51145655C60060A5C5 /* RKObjectMapper.h in Headers */,
-				25160F53145655C60060A5C5 /* RKObjectMapper_Private.h in Headers */,
+				25160F51145655C60060A5C5 /* RKMapperOperation.h in Headers */,
+				25160F53145655C60060A5C5 /* RKMapperOperation_Private.h in Headers */,
 				25160F55145655C60060A5C5 /* RKObjectMapping.h in Headers */,
 				25160F57145655C60060A5C5 /* RKMapping.h in Headers */,
 				25160F58145655C60060A5C5 /* RKMappingOperation.h in Headers */,
@@ -2411,7 +2411,7 @@
 				25160E0A145650490060A5C5 /* RKDynamicMapping.m in Sources */,
 				25160E0C145650490060A5C5 /* RKErrorMessage.m in Sources */,
 				25160E10145650490060A5C5 /* RKAttributeMapping.m in Sources */,
-				25160E17145650490060A5C5 /* RKObjectMapper.m in Sources */,
+				25160E17145650490060A5C5 /* RKMapperOperation.m in Sources */,
 				25160E1B145650490060A5C5 /* RKObjectMapping.m in Sources */,
 				25160E1E145650490060A5C5 /* RKMappingOperation.m in Sources */,
 				25160E22145650490060A5C5 /* RKMappingResult.m in Sources */,
@@ -2571,7 +2571,7 @@
 				25160F45145655C60060A5C5 /* RKDynamicMapping.m in Sources */,
 				25160F47145655C60060A5C5 /* RKErrorMessage.m in Sources */,
 				25160F4B145655C60060A5C5 /* RKAttributeMapping.m in Sources */,
-				25160F52145655C60060A5C5 /* RKObjectMapper.m in Sources */,
+				25160F52145655C60060A5C5 /* RKMapperOperation.m in Sources */,
 				25160F56145655C60060A5C5 /* RKObjectMapping.m in Sources */,
 				25160F59145655C60060A5C5 /* RKMappingOperation.m in Sources */,
 				25160F5D145655C60060A5C5 /* RKMappingResult.m in Sources */,

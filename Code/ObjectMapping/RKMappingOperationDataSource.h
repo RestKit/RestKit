@@ -23,7 +23,7 @@
 @class RKObjectMapping, RKMappingOperation;
 
 /**
- An object that adopts the `RKMappingOperationDataSource` protocol is responsible for the retrieval or creation of target objects within an `RKObjectMapper` or `RKMappingOperation`. A data source is responsible for meeting the requirements of the underlying data store implementation and must return a key-value coding compliant object instance that can be used as the target object of a mapping operation. It is also responsible for commiting any changes necessary to the underlying data store once a mapping operation has completed its work.
+ An object that adopts the `RKMappingOperationDataSource` protocol is responsible for the retrieval or creation of target objects within an `RKMapperOperation` or `RKMappingOperation`. A data source is responsible for meeting the requirements of the underlying data store implementation and must return a key-value coding compliant object instance that can be used as the target object of a mapping operation. It is also responsible for commiting any changes necessary to the underlying data store once a mapping operation has completed its work.
 
  At a minimum, a data source must implement the `mappingOperation:targetObjectForRepresentation:withMapping:` method. This method is responsible for finding an existing object instance to be updated or creating a new object if no existing object could be found or the underlying data store does not support persistence. Object mapping operations which target `NSObject` derived classes will always result in mapping to new transient objects, while persistent data stores such as Core Data can be queried to retrieve existing objects for update.
 

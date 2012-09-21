@@ -39,10 +39,10 @@
     }];
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
     [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
-    RKObjectMapping *mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
-    mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
+    mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
@@ -58,10 +58,10 @@
     }];
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"numeric_type" isEqualTo:[NSNumber numberWithInt:0]];
     [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"numeric_type" isEqualTo:[NSNumber numberWithInt:1]];
-    RKObjectMapping *mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
-    mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
+    mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
@@ -70,10 +70,10 @@
 {
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping dynamicMapping];
     dynamicMapping.delegate = self;
-    RKObjectMapping *mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
-    mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
+    mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
@@ -94,10 +94,10 @@
 
         return nil;
     };
-    RKObjectMapping *mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
-    mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
+    mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
@@ -107,7 +107,7 @@
     NSException *exception = nil;
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping dynamicMapping];
     @try {
-        [dynamicMapping objectMappingForDictionary:(NSDictionary *)[NSArray array]];
+        [dynamicMapping objectMappingForRepresentation:(NSDictionary *)[NSArray array]];
     }
     @catch (NSException *e) {
         exception = e;

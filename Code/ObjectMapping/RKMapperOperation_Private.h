@@ -1,5 +1,5 @@
 //
-//  RKObjectMapper_Private.h
+//  RKMapperOperation_Private.h
 //  RestKit
 //
 //  Created by Blake Watters on 5/9/11.
@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-@interface RKObjectMapper (Private)
+@interface RKMapperOperation (Private)
 
 - (id)mapObject:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
 - (NSArray *)mapCollection:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;

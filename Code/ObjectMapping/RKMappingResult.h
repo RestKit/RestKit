@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- The `RKMappingResult` class represents the aggregate object mapping results returned by an `RKObjectMapper` object. The mapping result provides a thin interface on top of an `NSDictionary` and provides convenient interfaces for accessing the mapping results in various representations.
+ The `RKMappingResult` class represents the aggregate object mapping results returned by an `RKMapperOperation` object. The mapping result provides a thin interface on top of an `NSDictionary` and provides convenient interfaces for accessing the mapping results in various representations.
  */
 @interface RKMappingResult : NSObject
 

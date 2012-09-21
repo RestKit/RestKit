@@ -22,6 +22,7 @@
 #import "RKResponseMapperOperation.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKHTTPUtilities.h"
+#import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent

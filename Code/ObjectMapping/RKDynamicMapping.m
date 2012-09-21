@@ -28,31 +28,10 @@
 
 @interface RKDynamicMapping ()
 @property (nonatomic, strong) NSMutableArray *matchers;
+@property (nonatomic, copy) RKDynamicMappingDelegateBlock objectMappingForDataBlock;
 @end
 
 @implementation RKDynamicMapping
-
-
-+ (RKDynamicMapping *)dynamicMapping
-{
-    return [self new];
-}
-
-#if NS_BLOCKS_AVAILABLE
-
-+ (RKDynamicMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicMapping *))block
-{
-    RKDynamicMapping *mapping = [self dynamicMapping];
-    block(mapping);
-    return mapping;
-}
-
-+ (RKDynamicMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicMapping *))block
-{
-    return [self dynamicMappingUsingBlock:block];
-}
-
-#endif
 
 - (id)init
 {
@@ -64,7 +43,6 @@
     return self;
 }
 
-
 - (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value
 {
     RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, value, NSStringFromClass(objectMapping.objectClass));
@@ -72,7 +50,7 @@
     [_matchers addObject:matcher];
 }
 
-- (RKObjectMapping *)objectMappingForDictionary:(NSDictionary *)data
+- (RKObjectMapping *)objectMappingForRepresentation:(NSDictionary *)data
 {
     NSAssert([data isKindOfClass:[NSDictionary class]], @"Dynamic object mapping can only be performed on NSDictionary mappables, got %@", NSStringFromClass([data class]));
     RKObjectMapping *mapping = nil;
@@ -104,8 +82,4 @@
     return NO;
 }
 
-@end
-
-// Compatibility alias...
-@implementation RKObjectDynamicMapping
 @end

@@ -21,56 +21,49 @@
 #import "RKMapping.h"
 #import "RKObjectMapping.h"
 
-#ifdef NS_BLOCKS_AVAILABLE
 typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
-#endif
 
 /**
- Defines a dynamic object mapping that determines the appropriate concrete
- object mapping to apply at mapping time. This allows you to map very similar payloads
- differently depending on the type of data contained therein.
+ Defines a dynamic object mapping that determines the appropriate concrete object mapping to apply at mapping time. This allows you to map very similar payloads differently depending on the type of data contained therein.
  */
 @interface RKDynamicMapping : RKMapping
 
-#ifdef NS_BLOCKS_AVAILABLE
+///------------------------------------
+/// @name Configuring Mapping Selection
+///------------------------------------
+
 /**
- A block to invoke to determine the appropriate concrete object mapping
- to apply to the mappable data.
+ A block to invoke to determine the appropriate concrete object mapping to apply to the mappable data.
+
+ @param block The block object to invoke to select the object mapping with which to map the given object representation.
  */
-@property (nonatomic, copy) RKDynamicMappingDelegateBlock objectMappingForDataBlock;
-#endif
+- (void)setObjectMappingForDataBlock:(RKDynamicMappingDelegateBlock)block;
 
 /**
- Return a new auto-released dynamic object mapping
- */
-+ (RKDynamicMapping *)dynamicMapping;
+ Defines a dynamic mapping rule stating that when the value of the key property matches the specified value, the given mapping should be used to map the representation.
 
-/**
- Defines a dynamic mapping rule stating that when the value of the key property matches the specified
- value, the objectMapping should be used.
+ For example, suppose that we have a JSON fragment for a person that we want to map differently based on the gender of the person. When the gender is 'male', we want to use the Boy class and when then the gender is 'female' we want to use the Girl class. We might define our dynamic mapping like so:
 
- For example, suppose that we have a JSON fragment for a person that we want to map differently based on
- the gender of the person. When the gender is 'male', we want to use the Boy class and when then the gender
- is 'female' we want to use the Girl class. We might define our dynamic mapping like so:
-
-    RKDynamicMapping *mapping = [RKDynamicMapping dynamicMapping];
+    RKDynamicMapping *mapping = [RKDynamicMapping new];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"male"];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"female"];
+
+ @param objectMapping The mapping to be used when the value at the given key path is equal to the given value.
+ @param keyPath The key path to retrieve the comparison value from in the object representation being mapped.
+ @param value The value to be compared with the value at `keyPath`. If they are equal, the `objectMapping` will be used to map the representation.
  */
 - (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
 
-/**
- Invoked by the RKObjectMapper and RKObjectMappingOperation to determine the appropriate RKObjectMapping to use
- when mapping the specified dictionary of mappable data.
- */
-- (RKObjectMapping *)objectMappingForDictionary:(NSDictionary *)dictionary;
-
-@end
+///-----------------------------------------------------------------
+/// @name Retrieving the Object Mapping for an Object Representation
+///-----------------------------------------------------------------
 
 /**
- Define an alias for the old class name for compatibility
+ Invoked by the `RKMapperOperation` and `RKMappingOperation` to determine the appropriate `RKObjectMapping` to use when mapping the specified dictionary of mappable data.
 
- @deprecated
+ @param representation A dictionary representation of the object that is being mapped.
+ @return The object mapping to be used to map the given object representation.
  */
-@interface RKObjectDynamicMapping : RKDynamicMapping
+- (RKObjectMapping *)objectMappingForRepresentation:(NSDictionary *)representation;
+
 @end

@@ -20,15 +20,12 @@
 
 #import "RKAttributeMapping.h"
 
-extern NSString * const RKObjectMappingNestingAttributeKeyName;
-
 @interface RKAttributeMapping ()
 @property (nonatomic, strong, readwrite) NSString *sourceKeyPath;
 @property (nonatomic, strong, readwrite) NSString *destinationKeyPath;
 @end
 
 @implementation RKAttributeMapping
-
 
 + (RKAttributeMapping *)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
 {
@@ -38,11 +35,6 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     attributeMapping.sourceKeyPath = sourceKeyPath;
     attributeMapping.destinationKeyPath = destinationKeyPath;
     return attributeMapping;
-}
-
-- (BOOL)isMappingForKeyOfNestedDictionary
-{
-    return ([self.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]);
 }
 
 @end

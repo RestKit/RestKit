@@ -24,7 +24,7 @@
 @class RKPropertyMapping, RKAttributeMapping, RKRelationshipMapping;
 
 /**
- An `RKObjectMapping` object describes a transformation between object represenations using key-value coding and run-time type introspection. The mapping is defined in terms of a source object class and a collection of `RKPropertyMapping` objects describing how key paths in the source representation should be transformed into attributes and relationships on the target object. Object mappings are provided to instances of `RKObjectMapper` and `RKObjectMappingOperation` to perform the transformations they describe.
+ An `RKObjectMapping` object describes a transformation between object represenations using key-value coding and run-time type introspection. The mapping is defined in terms of a source object class and a collection of `RKPropertyMapping` objects describing how key paths in the source representation should be transformed into attributes and relationships on the target object. Object mappings are provided to instances of `RKMapperOperation` and `RKMappingOperation` to perform the transformations they describe.
 
  Object mappings are containers of property mappings that describe the actual key path transformations. There are two types of property mappings:
 
@@ -36,7 +36,7 @@
  @see `RKAttributeMapping`
  @see `RKRelationshipMapping`
  @see `RKConnectionMapping`
- @see `RKObjectMappingOperation`
+ @see `RKMappingOperation`
  @see `RKPropertyInspector`
  */
 @interface RKObjectMapping : RKMapping <NSCopying>

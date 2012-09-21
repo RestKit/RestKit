@@ -21,8 +21,7 @@
 #import "RKPropertyMapping.h"
 
 /**
- Instances of RKAttributeMapping define a transformation of data between an attribute value on
- a source object and an attribute value on a destination object within a RestKit mapping.
+ Instances of `RKAttributeMapping` define a transformation of data between an attribute value on source object and an attribute value on a destination object within an object mapping.
  */
 @interface RKAttributeMapping : RKPropertyMapping
 
@@ -33,7 +32,7 @@
  Attribute mappings define transformation between key paths in the source and destination object beings mapped. In the simplest
  case, an attribute mapping may simply specify that data from one object is to be copied to another. A common example of this
  type of transformation is copying the `name` key from a JSON payload onto a local object. In this case, the source and
- destination key paths are identical, as are the source and destination types (NSString), so a simple get and set operation
+ destination key paths are identical, as are the source and destination types (`NSString`), so a simple get and set operation
  has been defined.
 
  The next most common use-case is the transformation of identical data between two different key paths in the
@@ -50,24 +49,12 @@
  key path of `created_on` and a destination key path of `createdOn`. On the destination object, the `createdOn` property would be defined
  as `@property (nonatomic, strong) NSDate *createdOn;`. At mapping time, the mapping operation inspects the type of the content being
  mapped and attempts to transform the source content into the type of the desination property specified by the mapping. In this case,
- an NSDateFormatter object would be used to process the inbound NSString into an outbound NSDate object.
+ an NSDateFormatter object would be used to process the inbound `NSString` into an outbound `NSDate` object.
 
  @param sourceKeyPath The key path on the source object from which to read the data being mapped.
  @param destinationKeyPath The key path on the destination object on which to set the mapped data.
  @return A newly created attribute mapping object that is ready to be added to an object mapping.
  */
 + (RKAttributeMapping *)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
-
-/**
- Returns YES if this attribute mapping targets the key of a nested dictionary.
-
- When an object mapping is configured to target mapping of nested content via [RKObjectMapping mapKeyOfNestedDictionaryToAttribute:], a special attribute mapping is defined that targets
- the key of the nested dictionary rather than a value within in. This method will return YES if
- this attribute mapping is configured in such a way.
-
- @see [RKObjectMapping mapKeyOfNestedDictionaryToAttribute:]
- @return YES if this attribute mapping targets a nesting key path
- */
-- (BOOL)isMappingForKeyOfNestedDictionary;
 
 @end

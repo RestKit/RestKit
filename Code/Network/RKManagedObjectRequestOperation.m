@@ -30,7 +30,7 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
 
-@interface RKManagedObjectRequestOperation () <RKObjectMapperDelegate>
+@interface RKManagedObjectRequestOperation () <RKMapperOperationDelegate>
 // Core Data specific
 @property (readwrite, nonatomic, strong) NSManagedObjectContext *privateContext;
 @property (readwrite, nonatomic, copy) NSManagedObjectID *targetObjectID;
@@ -63,12 +63,12 @@
     self.privateContext = privateContext;
 }
 
-#pragma mark - RKObjectMapperDelegate methods
+#pragma mark - RKMapperOperationDelegate methods
 
-- (void)mapper:(RKObjectMapper *)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMapping *)objectMapping
+- (void)mapper:(RKMapperOperation *)mapper didFinishMappingOperation:(RKMappingOperation *)mappingOperation forKeyPath:(NSString *)keyPath
 {
-    if ([destinationObject isKindOfClass:[NSManagedObject class]]) {
-        [self.managedObjectsByKeyPath setObject:destinationObject forKey:keyPath];
+    if ([mappingOperation.destinationObject isKindOfClass:[NSManagedObject class]]) {
+        [self.managedObjectsByKeyPath setObject:mappingOperation.destinationObject forKey:keyPath];
     }
 }
 

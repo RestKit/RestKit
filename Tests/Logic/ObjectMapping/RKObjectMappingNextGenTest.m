@@ -26,7 +26,7 @@
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
 #import "RKLog.h"
-#import "RKObjectMapper.h"
+#import "RKMapperOperation.h"
 #import "RKObjectMapper_Private.h"
 #import "RKMappingErrors.h"
 #import "RKDynamicMappingModels.h"
@@ -245,7 +245,7 @@
     RKAttributeMapping *nameMapping = [RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
 
-    RKObjectMapper *mapper = [RKObjectMapper new];
+    RKMapperOperation *mapper = [RKMapperOperation new];
     mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
@@ -264,7 +264,7 @@
     RKAttributeMapping *nameMapping = [RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
 
-    RKObjectMapper *mapper = [RKObjectMapper new];
+    RKMapperOperation *mapper = [RKMapperOperation new];
     mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
     NSArray *users = [mapper mapCollection:userInfo atKeyPath:@"" usingMapping:mapping];

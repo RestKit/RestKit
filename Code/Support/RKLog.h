@@ -41,7 +41,7 @@
  The logging macros. These macros will log to the currently active logging component
  at the log level identified in the name of the macro.
 
- For example, in the RKObjectMappingOperation class we would redefine the RKLogComponent:
+ For example, in the `RKMappingOperation` class we would redefine the RKLogComponent:
 
     #undef RKLogComponent
     #define RKLogComponent lcl_cRestKitObjectMapping

@@ -30,7 +30,7 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
 
-// Implemented in RKObjectMappingOperation
+// Implemented in RKMappingOperation
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @interface RKEntityMapping ()

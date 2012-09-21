@@ -23,7 +23,7 @@
 #endif
 
 #import "RKManagedObjectImporter.h"
-#import "RKObjectMapper.h"
+#import "RKMapperOperation.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKMIMETypeSerialization.h"
@@ -183,7 +183,7 @@
     // Perform the reset on the first import action if requested
     [self resetPersistentStoreIfNecessary];
 
-    NSError *localError = nil;
+    __block NSError *localError = nil;
     NSData *payload = [NSData dataWithContentsOfFile:path options:0 error:&localError];
     if (! payload) {
         RKLogError(@"Failed to read file at path '%@': %@", path, [localError localizedDescription]);
@@ -203,15 +203,17 @@
     }
 
     NSDictionary *mappingDictionary = @{ (keyPath ?: [NSNull null]) : mapping };
-    RKObjectMapper *mapper = [[RKObjectMapper alloc] initWithObject:parsedData mappingsDictionary:mappingDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:parsedData mappingsDictionary:mappingDictionary];
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
     __block RKMappingResult *mappingResult;
     [self.managedObjectContext performBlockAndWait:^{
-        mappingResult = [mapper performMapping:error];
+        [mapper start];
+        mappingResult = mapper.mappingResult;
+        localError = mapper.error;
     }];
     if (mappingResult == nil) {
         // TODO: Return error
-        RKLogError(@"Importing file at path '%@' failed with mapping errors: %@", path, mapper.errors);
+        RKLogError(@"Importing file at path '%@' failed with error: %@", path, mapper.error);
         return NSNotFound;
     }
 

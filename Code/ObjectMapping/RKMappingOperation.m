@@ -64,6 +64,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return ComparisonSender(sourceValue, comparisonSelector, destinationValue);
 }
 
+extern NSString * const RKObjectMappingNestingAttributeKeyName;
+
 @interface RKMappingOperation ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
@@ -345,7 +347,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     }
 
     for (RKAttributeMapping *attributeMapping in [self attributeMappings]) {
-        if ([attributeMapping isMappingForKeyOfNestedDictionary]) {
+        if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
             RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", attributeMapping.sourceKeyPath);
             continue;
         }
@@ -514,7 +516,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 RKMapping *mapping = relationshipMapping.mapping;
                 RKObjectMapping *objectMapping = nil;
                 if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-                    objectMapping = [(RKDynamicMapping *)mapping objectMappingForDictionary:nestedObject];
+                    objectMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:nestedObject];
                     if (! objectMapping) {
                         RKLogDebug(@"Mapping %@ declined mapping for data %@: returned nil objectMapping", mapping, nestedObject);
                         continue;
@@ -572,7 +574,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             RKMapping *mapping = relationshipMapping.mapping;
             RKObjectMapping *objectMapping = nil;
             if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-                objectMapping = [(RKDynamicMapping *)mapping objectMappingForDictionary:value];
+                objectMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:value];
             } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
                 objectMapping = (RKObjectMapping *)mapping;
             }
@@ -631,7 +633,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([self.mapping isKindOfClass:[RKDynamicMapping class]]) {
-        self.objectMapping = [(RKDynamicMapping *)self.mapping objectMappingForDictionary:self.sourceObject];
+        self.objectMapping = [(RKDynamicMapping *)self.mapping objectMappingForRepresentation:self.sourceObject];
         RKLogDebug(@"RKObjectMappingOperation was initialized with a dynamic mapping. Determined concrete mapping = %@", self.objectMapping);
 
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSelectObjectMapping:forDynamicMapping:)]) {

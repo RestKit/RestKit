@@ -25,6 +25,7 @@
 #import "RKHTTPUtilities.h"
 #import "RKResponseMapperOperation.h"
 #import "RKMappingErrors.h"
+#import "RKMIMETypeSerialization.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -205,9 +206,11 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
 {
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
-    RKObjectMapper *mapper = [[RKObjectMapper alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     mapper.mappingOperationDataSource = dataSource;
-    return [mapper performMapping:error];
+    [mapper start];
+    *error = mapper.error;
+    return mapper.mappingResult;
 }
 
 @end
@@ -223,7 +226,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     __block RKMappingResult *mappingResult;
     [self.managedObjectContext performBlockAndWait:^{
         // Configure the mapper
-        RKObjectMapper *mapper = [[RKObjectMapper alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
+        RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
         mapper.delegate = self.mapperDelegate;
         mapper.mappingOperationDataSource = self.mappingOperationDataSource;
         
@@ -243,7 +246,9 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
             RKLogInfo(@"Non-successful state code encountered: performing mapping with nil target object.");
         }
 
-        mappingResult = [mapper performMapping:&blockError];
+        [mapper start];
+        blockError = mapper.error;
+        mappingResult = mapper.mappingResult;
     }];
 
     if (! mappingResult) {
