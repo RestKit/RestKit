@@ -234,6 +234,9 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)clearCacheDirectory
 {
+    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
+    [NSURLCache setSharedURLCache:sharedCache];
+
     NSError *error = nil;
     NSString *cachePath = RKCachesDirectory();
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
