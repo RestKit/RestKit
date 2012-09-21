@@ -5,10 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     =  'http://www.restkit.org'
   s.author       =  { 'Blake Watters' => 'blakewatters@gmail.com' }
   s.source       =  { :git => 'https://github.com/RestKit/RestKit.git', :branch => 'feature/reboot-networking-layer' }
-  s.license      =  'Apache License, Version 2.0'  
-  
-  # Add System Configuration to prefix to enable reachability in AFNetworking
-  s.prefix_header_contents = "#import <SystemConfiguration/SystemConfiguration.h>"
+  s.license      =  'Apache License, Version 2.0'
   
   # Platform setup
   s.requires_arc = true
