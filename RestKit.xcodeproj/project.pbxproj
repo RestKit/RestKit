@@ -1667,8 +1667,8 @@
 		252EFB1F14D9A8D4004863C8 /* Testing */ = {
 			isa = PBXGroup;
 			children = (
-				253477F515FFBD2E002C0E4E /* NSBundle+RKAdditions.m */,
 				253477F615FFBD2E002C0E4E /* NSBundle+RKAdditions.h */,
+				253477F515FFBD2E002C0E4E /* NSBundle+RKAdditions.m */,
 				25055B8214EEF32A00B9C4DD /* RKTestFactory.h */,
 				25055B8314EEF32A00B9C4DD /* RKTestFactory.m */,
 				25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */,

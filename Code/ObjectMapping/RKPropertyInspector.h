@@ -65,6 +65,7 @@
 ///------------------------------------------------------
 /// @name Retrieving the Properties and Types for a Class
 ///------------------------------------------------------
+
 /**
  Returns the name of a property when provided the name of a property obtained via the `property_getAttributes` reflection API.
 

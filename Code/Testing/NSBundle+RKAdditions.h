@@ -21,8 +21,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- Provides convenience methods for accessing data in resources
- within an NSBundle.
+ Provides convenience methods for accessing data in resources within an `NSBundle`.
  */
 @interface NSBundle (RKAdditions)
 

@@ -88,10 +88,4 @@
  */
 - (NSUInteger)count;
 
-/**
- TODO: Consider alternate names...
- - array | arrayValue
- - dictionary | dictionaryValue
- - object | firstObject
- */
 @end

@@ -85,14 +85,14 @@
 /**
  The target object for the object mapping operation performed on the deserialized response data. May be nil.
  
- When object mapping is being performed against a known object, the targetObject is set to ensure that the mapping is applied to the appropriate object reference. When nil, the mapping operation will result in the fetching or creation of new objects as necessary to satisfy the mapping configuration.
+ When object mapping is being performed against a known object, the targetObject is set to ensure that the mapping is applied to the appropriate object reference. When `nil`, the mapping operation will result in the fetching or creation of new objects as necessary to satisfy the mapping configuration.
  */
 @property (nonatomic, strong) id targetObject;
 
 /**
  The data source for the `RKMappingOperation` instances created by the operation to perform the mapping work.
  
- May be nil depending on the subclass implementation requirements.
+ May be `nil` depending on the subclass implementation requirements.
  
  @see `RKMappingOperationDataSource`
  */
@@ -106,17 +106,13 @@
 @property (nonatomic, weak) id<RKMapperOperationDelegate> mapperDelegate;
 
 /**
- A Boolean value that indicates if the receiver should consider empty
- responses as being successfully mapped even though no mapping is actually performed.
+ A Boolean value that indicates if the receiver should consider empty responses as being successfully mapped even though no mapping is actually performed.
 
- When YES and the response data is empty (see below), a mapping result will be returned containing the
- target object (if any). Otherwise, the response data will be pass through to the parser which may generate
- an error.
+ When YES and the response data is empty (see below), a mapping result will be returned containing the target object (if any). Otherwise, the response data will be pass through to the parser which may generate an error.
 
  **Default:** YES
 
- @warning To support the Ruby on Rails behavior of rendering a single space character on invocation of
- `render :nothing => true`, a response body's containing only a single space is treated as empty.
+ @warning To support the Ruby on Rails behavior of rendering a single space character on invocation of `render :nothing => true`, a response body's containing only a single space is treated as empty.
  */
 @property (nonatomic, assign) BOOL treatsEmptyResponseAsSuccess;
 
