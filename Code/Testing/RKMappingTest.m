@@ -23,7 +23,7 @@
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKRelationshipMapping.h"
 
-BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
+BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
 
 ///-----------------------------------------------------------------------------
 ///-----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         }
     } else if (expectation.value) {
         // Use RestKit comparison magic to match values
-        success = RKObjectIsValueEqualToValue(event.value, expectation.value);
+        success = RKValueIsEqualToValue(event.value, expectation.value);
 
         if (! success) {
             *errorMessage = [NSString stringWithFormat:@"%@: expectation not satisfied: %@, but instead got %@ '%@'",

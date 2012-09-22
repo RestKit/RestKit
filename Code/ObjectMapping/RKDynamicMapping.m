@@ -43,10 +43,10 @@
     return self;
 }
 
-- (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value
+- (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)expectedValue
 {
-    RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, value, NSStringFromClass(objectMapping.objectClass));
-    RKDynamicMappingMatcher *matcher = [[RKDynamicMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
+    RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, expectedValue, NSStringFromClass(objectMapping.objectClass));
+    RKDynamicMappingMatcher *matcher = [[RKDynamicMappingMatcher alloc] initWithKeyPath:keyPath expectedValue:expectedValue objectMapping:objectMapping];
     [_matchers addObject:matcher];
 }
 
@@ -59,8 +59,8 @@
 
     // Consult the declarative matchers first
     for (RKDynamicMappingMatcher *matcher in _matchers) {
-        if ([matcher isMatchForData:data]) {
-            RKLogTrace(@"Found declarative match for data: %@.", [matcher matchDescription]);
+        if ([matcher matches:data]) {
+            RKLogTrace(@"Found declarative match for matcher: %@.", matcher);
             return matcher.objectMapping;
         }
     }

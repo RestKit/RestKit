@@ -31,7 +31,7 @@
 #define RKLogComponent lcl_cRestKitCoreData
 
 // Implemented in RKMappingOperation
-BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
+BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
 
 @interface RKEntityMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;

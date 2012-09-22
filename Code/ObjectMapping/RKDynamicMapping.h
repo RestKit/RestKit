@@ -33,7 +33,7 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
 ///------------------------------------
 
 /**
- A block to invoke to determine the appropriate concrete object mapping to apply to the mappable data.
+ Sets a block to be invoked to determine the appropriate concrete object mapping with which to map an object representation.
 
  @param block The block object to invoke to select the object mapping with which to map the given object representation.
  */

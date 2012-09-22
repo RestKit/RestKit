@@ -131,7 +131,7 @@
     if (!self.connectionMapping.matcher) {
         return YES;
     } else {
-        return [self.connectionMapping.matcher isMatchForData:self.managedObject];
+        return [self.connectionMapping.matcher matches:self.managedObject];
     }
 }
 

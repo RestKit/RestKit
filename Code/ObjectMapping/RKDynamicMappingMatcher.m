@@ -8,70 +8,39 @@
 
 #import "RKDynamicMappingMatcher.h"
 
-
 // Implemented in RKMappingOperation
-BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
+BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface RKDynamicMappingMatcher ()
 @property (nonatomic, copy) NSString *keyPath;
-@property (nonatomic, strong) id value;
-@property (nonatomic, copy) BOOL (^isMatchForDataBlock)(id data);
+@property (nonatomic, strong, readwrite) id expectedValue;
 @property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping;
-@property (nonatomic, copy, readwrite) NSString *primaryKeyAttribute;
 @end
 
 @implementation RKDynamicMappingMatcher
 
-- (id)initWithKey:(NSString *)key value:(id)value objectMapping:(RKObjectMapping *)objectMapping
+- (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
     self = [super init];
     if (self) {
-        self.keyPath = key;
-        self.value = value;
+        self.keyPath = keyPath;
+        self.expectedValue = expectedValue;
         self.objectMapping = objectMapping;
     }
 
     return self;
 }
 
-- (id)initWithKey:(NSString *)key value:(id)value primaryKeyAttribute:(NSString *)primaryKeyAttribute
+- (BOOL)matches:(id)object
 {
-    self = [super init];
-    if (self) {
-        self.keyPath = key;
-        self.value = value;
-        self.primaryKeyAttribute = primaryKeyAttribute;
-    }
-
-    return self;
+    return RKValueIsEqualToValue([object valueForKeyPath:self.keyPath], self.expectedValue);
 }
 
-- (id)initWithPrimaryKeyAttribute:(NSString *)primaryKeyAttribute evaluationBlock:(BOOL (^)(id data))block
+- (NSString *)description
 {
-    self = [super init];
-    if (self) {
-        self.primaryKeyAttribute = primaryKeyAttribute;
-        self.isMatchForDataBlock = block;
-    }
-    return self;
-}
-
-- (BOOL)isMatchForData:(id)data
-{
-    if (self.isMatchForDataBlock) {
-        return self.isMatchForDataBlock(data);
-    }
-    return RKObjectIsValueEqualToValue([data valueForKeyPath:_keyPath], _value);
-}
-
-- (NSString *)matchDescription
-{
-    if (self.isMatchForDataBlock) {
-        return @"No description available. Using block to perform match.";
-    }
-    return [NSString stringWithFormat:@"%@ == %@", _keyPath, _value];
+    return [NSString stringWithFormat:@"<%@: %p when `%@` == '%@' objectMapping: %@>", NSStringFromClass([self class]), self, self.keyPath, self.expectedValue, self.objectMapping];
 }
 
 @end
