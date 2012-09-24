@@ -48,7 +48,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Request descriptors describe how `NSURLRequest` objects constructed by the manager will be built by specifying how the attributes and relationships for a given class will be object mapped to construct request parameters and what, if any, root key path the parameters will be nested under. Request descriptor objects can also be used with the `RKObjectParameterization` class to map an object into an `NSDictionary` representation that is suitable for use as the parameters of a request.
  
- Response descriptors describe how `NSHTTPURLResponse` objects loaded by object request operations sent by the manager are to be object mapped into local domain objects. Response descriptors are matched against a given response via URL path matching, parsed content key path matching, or both. The `RKMapping` object associated from a matched `RKResponseDescriptor` is given to an instance of `RKObjectMapper` with the parsed response body to perform object mapping on the response.
+ Response descriptors describe how `NSHTTPURLResponse` objects loaded by object request operations sent by the manager are to be object mapped into local domain objects. Response descriptors are matched against a given response via URL path matching, parsed content key path matching, or both. The `RKMapping` object associated from a matched `RKResponseDescriptor` is given to an instance of `RKMapperOperation` with the parsed response body to perform object mapping on the response.
  
  To better illustrate these concepts, consider the following example for an imaginary Wiki client application:
  
@@ -149,7 +149,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  Fetch Request Blocks ->> TODO
  Need to cover DELETE impacts...
  
- Please see the documentation for `RKManagedObjectStore` and `RKEntityMapping` for in depth information about Core Data in RestKit.
+ Please see the documentation for `RKManagedObjectStore`, `RKEntityMapping`, and `RKManagedObjectRequestOperation` for in depth information about Core Data in RestKit.
  */
 @interface RKObjectManager : NSObject
 
@@ -215,8 +215,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  The router used to generate URL objects for routable requests created by the manager.
  
- @see RKRouter
- @see RKRoute
+ @see `RKRouter`
+ @see `RKRoute`
  */
 @property (nonatomic, strong) RKRouter *router;
 

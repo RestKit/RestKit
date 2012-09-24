@@ -44,9 +44,9 @@
  */
 @interface RKManagedObjectStore : NSObject
 
-///-----------------------------------------------------------------------------
+///-----------------------------------------
 /// @name Accessing the Default Object Store
-///-----------------------------------------------------------------------------
+///-----------------------------------------
 
 /**
  Returns the default managed object store for the application.
@@ -62,9 +62,9 @@
  */
 + (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore;
 
-///-----------------------------------------------------------------------------
+///-----------------------------------
 /// @name Initializing an Object Store
-///-----------------------------------------------------------------------------
+///-----------------------------------
 
 /**
  Initializes the receiver with a given managed object model. This is the designated initializer for `RKManagedObjectStore`.
@@ -145,9 +145,9 @@
  */
 - (BOOL)resetPersistentStores:(NSError **)error;
 
-///-----------------------------------------------------------------------------
+///-----------------------------------------
 /// @name Retrieving Details about the Store
-///-----------------------------------------------------------------------------
+///-----------------------------------------
 
 /**
  Returns the managed object model of the receiver.
@@ -175,9 +175,9 @@
  */
 @property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;
 
-///-----------------------------------------------------------------------------
+///-------------------------------------------
 /// @name Working with Managed Object Contexts
-///-----------------------------------------------------------------------------
+///-------------------------------------------
 
 /**
  Creates the primary and main queue managed object contexts for the receiver.

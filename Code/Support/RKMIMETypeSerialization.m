@@ -69,7 +69,8 @@
 
 @implementation RKMIMETypeSerialization
 
-+ (RKMIMETypeSerialization *)sharedSerialization {
++ (RKMIMETypeSerialization *)sharedSerialization
+{
     static RKMIMETypeSerialization *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -80,7 +81,8 @@
 
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         self.registrations = [NSMutableArray new];
@@ -89,7 +91,8 @@
     return self;
 }
 
-- (void)addRegistrationsForKnownSerializations {
+- (void)addRegistrationsForKnownSerializations
+{
     Class serializationClass = nil;
     
     // URL Encoded

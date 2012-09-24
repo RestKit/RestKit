@@ -76,7 +76,7 @@
  nil primaryKeyAttribute, then the primaryKeyAttribute will be set on the entity as well for
  convenience and backwards compatibility. This may change in the future.
 
- @see [NSEntityDescription primaryKeyAttribute]
+ @see `[NSEntityDescription primaryKeyAttribute]`
  */
 // TODO: Make me readonly
 @property (nonatomic, strong) NSString *primaryKeyAttribute;
@@ -85,7 +85,7 @@
  Retrieves an array of RKConnectionMapping objects for connecting the receiver's relationships
  by primary key.
 
- @see RKConnectionMapping
+ @see `RKConnectionMapping`
  */
 @property (weak, nonatomic, readonly) NSArray *connectionMappings;
 

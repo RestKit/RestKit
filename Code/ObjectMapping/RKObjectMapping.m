@@ -38,7 +38,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 
 @implementation RKObjectMapping
 
-
 + (id)mappingForClass:(Class)objectClass
 {
     return [[self alloc] initWithClass:objectClass];
