@@ -25,7 +25,6 @@
 #import "RKPathUtilities.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKFetchRequestManagedObjectCache.h"
-#import "NSBundle+RKAdditions.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 
 // Set Logging Component
