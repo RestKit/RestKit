@@ -480,7 +480,7 @@ Edit your Podfile and add RestKit:
 
 ``` bash
 $ edit Podfile
-platform :ios
+platform :ios, '5.0'
 dependency 'RestKit', '0.20.0'
 ```
 
