@@ -334,11 +334,6 @@ static NSUInteger RKObjectMappingMaximumInverseMappingRecursionDepth = 100;
 static NSMutableArray *defaultDateFormatters = nil;
 static NSDateFormatter *preferredDateFormatter = nil;
 
-static NSArray *RKDefaultDateFormattersArray()
-{
-    
-}
-
 @implementation RKObjectMapping (DateAndTimeFormatting)
 
 + (NSArray *)defaultDateFormatters
