@@ -104,4 +104,38 @@
     assertThat(regexMatch, is(equalTo([RKNSJSONSerialization class])));
 }
 
+- (void)testSearchAcrossAllEntries
+{
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"this/that"];
+    [RKMIMETypeSerialization registerClass:[RKTestSerialization class] forMIMEType:@"application/xml+whatever"];
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"whatever"];
+    
+    Class exactMatch = [RKMIMETypeSerialization serializationClassForMIMEType:@"application/xml+whatever"];
+    assertThat(exactMatch, is(equalTo([RKTestSerialization class])));
+}
+
+#pragma mark - RKMIMETypeInSet
+
+- (void)testMIMETypeInSetWithStringMatch
+{
+    NSSet *acceptableMIMETypes = [NSSet setWithObjects:@"this/that", @"another/valid", @"woo", nil];
+    assertThatBool(RKMIMETypeInSet(@"another/valid", acceptableMIMETypes), is(equalToBool(YES)));
+    assertThatBool(RKMIMETypeInSet(@"this/that", acceptableMIMETypes), is(equalToBool(YES)));
+    assertThatBool(RKMIMETypeInSet(@"woo", acceptableMIMETypes), is(equalToBool(YES)));
+}
+
+- (void)testMIMETypeInSetWithRegularExpressionMatch
+{
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:nil];
+    NSSet *acceptableMIMETypes = [NSSet setWithObjects:@"this/that", @"another/valid", regex, @"woo", nil];
+    assertThatBool(RKMIMETypeInSet(@"application/xml+whatever", acceptableMIMETypes), is(equalToBool(YES)));
+}
+
+- (void)testMIMETypeInSetReturnsNoForMissingMIMEType
+{
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:nil];
+    NSSet *acceptableMIMETypes = [NSSet setWithObjects:@"this/that", @"another/valid", regex, @"woo", nil];
+    assertThatBool(RKMIMETypeInSet(@"invalid", acceptableMIMETypes), is(equalToBool(NO)));
+}
+
 @end
