@@ -80,14 +80,6 @@
     assertThat(arguments, hasEntry(@"apikey", @"GC12d0c6af"));
 }
 
-- (void)testShouldMatchPathsWithDeprecatedParentheses
-{
-    NSDictionary *arguments = nil;
-    RKPathMatcher *patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/(username)"];
-    BOOL isMatchingPattern = [patternMatcher matchesPath:@"github.com/jverkoey" tokenizeQueryStrings:NO parsedArguments:&arguments];
-    assertThatBool(isMatchingPattern, is(equalToBool(YES)));
-}
-
 - (void)testShouldCreatePathsFromInterpolatedObjects
 {
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:

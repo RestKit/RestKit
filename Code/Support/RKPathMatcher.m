@@ -40,7 +40,7 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
 
 static NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding encoding)
 {
-    BOOL shouldUseArrays = YES; // TODO: Why would you not want arrays?
+    BOOL shouldUseArrays = NO; // NOTE: This flag causes all parameters to be boxed into arrays. Unsure of utility.
     NSRange chopRange = [string rangeOfString:@"?"];
     if (chopRange.length > 0) {
         chopRange.location += 1; // we want inclusive chopping up *through *"?"
