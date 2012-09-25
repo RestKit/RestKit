@@ -61,6 +61,15 @@
     return RKMIMETypeInSet(MIMEType, [NSSet setWithObject:self.MIMETypeStringOrRegularExpression]);
 }
 
+- (NSString *)description
+{
+    NSString *mimeTypeDescription = [self.MIMETypeStringOrRegularExpression isKindOfClass:[NSRegularExpression class]] ?
+    [NSString stringWithFormat:@"MIME Type =~ \"%@\"", self.MIMETypeStringOrRegularExpression] :
+    [NSString stringWithFormat:@"MIME Type == \"%@\"", self.MIMETypeStringOrRegularExpression];
+    return [NSString stringWithFormat:@"<%@: %p, %@, serializationClass=%@>",
+            NSStringFromClass([self class]), self, mimeTypeDescription, NSStringFromClass(self.serializationClass)];
+}
+
 @end
 
 @interface RKMIMETypeSerialization ()

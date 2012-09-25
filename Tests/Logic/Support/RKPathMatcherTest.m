@@ -99,17 +99,6 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
-- (void)testShouldCreatePathsFromInterpolatedObjectsWithDeprecatedParentheses
-{
-    NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
-    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/(name)/(age)"];
-    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES];
-    assertThat(interpolatedPath, isNot(equalTo(nil)));
-    NSString *expectedPath = @"/people/CuddleGuts/6";
-    assertThat(interpolatedPath, is(equalTo(expectedPath)));
-}
-
 - (void)testShouldCreatePathsFromInterpolatedObjectsWithAddedEscapes
 {
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:

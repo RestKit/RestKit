@@ -29,7 +29,7 @@ BOOL RKMIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes)
 {
     for (id MIMETypeStringOrRegularExpression in MIMETypes) {
         if ([MIMETypeStringOrRegularExpression isKindOfClass:[NSString class]]) {
-            return [[MIMEType lowercaseString] isEqualToString:[MIMEType lowercaseString]];
+            return [[MIMETypeStringOrRegularExpression lowercaseString] isEqualToString:[MIMEType lowercaseString]];
         } else if ([MIMETypeStringOrRegularExpression isKindOfClass:[NSRegularExpression class]]) {
             NSRegularExpression *regex = (NSRegularExpression *) MIMETypeStringOrRegularExpression;
             NSUInteger numberOfMatches = [regex numberOfMatchesInString:[MIMEType lowercaseString] options:0 range:NSMakeRange(0, [MIMEType length])];

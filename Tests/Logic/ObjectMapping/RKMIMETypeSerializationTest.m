@@ -29,7 +29,7 @@
 - (void)addRegistrationsForKnownSerializations;
 @end
 
-@interface RKParserRegistryTest : RKTestCase
+@interface RKMIMETypeSerializationTest : RKTestCase
 @end
 
 @interface RKTestSerialization : NSObject <RKSerialization>
@@ -49,7 +49,7 @@
 
 @end
 
-@implementation RKParserRegistryTest
+@implementation RKMIMETypeSerializationTest
 
 - (void)setUp
 {
