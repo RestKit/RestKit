@@ -46,7 +46,7 @@
 {
     // Flatten results down into a single array
     NSMutableArray *collection = [NSMutableArray array];
-    for (id object in [_keyPathToMappedObjects allValues]) {
+    for (id object in [self.keyPathToMappedObjects allValues]) {
         // We don't want to strip the keys off of a mapped dictionary result
         if (NO == [object isKindOfClass:[NSDictionary class]] && [object respondsToSelector:@selector(allObjects)]) {
             [collection addObjectsFromArray:[object allObjects]];

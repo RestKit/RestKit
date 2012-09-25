@@ -650,7 +650,7 @@
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
-    [[mockDelegate expect] mapper:mapper didFindRespresentation:OCMOCK_ANY atKeyPath:nil];
+    [[mockDelegate expect] mapper:mapper didFindRepresentationOrArrayOfRepresentations:OCMOCK_ANY atKeyPath:nil];
     mapper.delegate = mockDelegate;
     [mapper start];
     [mockDelegate verify];
@@ -665,7 +665,7 @@
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
-    [[mockDelegate expect] mapper:mapper didNotFindReprsentationAtKeyPath:@"users"];
+    [[mockDelegate expect] mapper:mapper didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:@"users"];
     mapper.delegate = mockDelegate;
     [mapper start];
     [mockDelegate verify];

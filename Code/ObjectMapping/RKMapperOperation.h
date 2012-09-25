@@ -77,7 +77,7 @@
 
  @param object An `NSDictionary` or `NSArray` of `NSDictionary` object representations to be mapped into local domain objects.
  @param mappingsDictionary An `NSDictionary` wherein the keys are mappable key paths in `object` and the values are `RKMapping` objects specifying how the representations at its key path are to be mapped.
- @return The receiver, initialized with the given object
+ @return The receiver, initialized with the given object and and dictionary of key paths to mappings.
  */
 - (id)initWithObject:(id)object mappingsDictionary:(NSDictionary *)mappingsDictionary;
 
@@ -91,7 +91,7 @@
 @property (nonatomic, strong, readonly) NSError *error;
 
 /**
- The result of the mapping process.
+ The result of the mapping process. A `nil` value indicates that no mappable object representations were found and no mapping was performed.
  */
 @property (nonatomic, strong, readonly) RKMappingResult *mappingResult;
 
@@ -166,21 +166,21 @@
 ///-------------------------------
 
 /**
- Tells the delegate that the mapper has found a mappable object representation at a key path specified in the `mappingsDictionary` and is about to map it using a mapping.
+ Tells the delegate that the mapper has found one or more mappable object representations at a key path specified in the `mappingsDictionary`.
 
  @param mapper The mapper operation performing the mapping.
  @param dictionaryOrArrayOfDictionaries The `NSDictictionary` or `NSArray` of `NSDictionary` object representations that was found at the `keyPath`.
  @param keyPath The key path that the representation was read from in the `sourceObject`. If the `keyPath` was `[NSNull null]` in the `mappingsDictionary`, it will be given as `nil` to the delegate.
  */
-- (void)mapper:(RKMapperOperation *)mapper didFindRespresentation:(id)dictionaryOrArrayOfDictionaries atKeyPath:(NSString *)keyPath;
+- (void)mapper:(RKMapperOperation *)mapper didFindRepresentationOrArrayOfRepresentations:(id)dictionaryOrArrayOfDictionaries atKeyPath:(NSString *)keyPath;
 
 /**
- Tells the delegate that the mapper failed to find a mappable object at a key path specified in the `mappingsDictionary`.
+ Tells the delegate that the mapper failed to find any mappable object representations at a key path specified in the `mappingsDictionary`.
 
  @param mapper The mapper operation performing the mapping.
  @param keyPath The key path that was searched for a mappable object representation. 
  */
-- (void)mapper:(RKMapperOperation *)mapper didNotFindReprsentationAtKeyPath:(NSString *)keyPath;
+- (void)mapper:(RKMapperOperation *)mapper didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:(NSString *)keyPath;
 
 ///----------------------------------------------
 /// @name Tracking Child Mapping Operation Status

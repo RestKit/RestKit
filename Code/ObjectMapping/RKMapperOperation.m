@@ -291,8 +291,8 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
         if (mappableValue == nil || mappableValue == [NSNull null] || [self isNullCollection:mappableValue]) {
             RKLogDebug(@"Found unmappable value at keyPath: %@", keyPath);
 
-            if ([self.delegate respondsToSelector:@selector(mapper:didNotFindReprsentationAtKeyPath:)]) {
-                [self.delegate mapper:self didNotFindReprsentationAtKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
+            if ([self.delegate respondsToSelector:@selector(mapper:didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:)]) {
+                [self.delegate mapper:self didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:keyPath];
             }
 
             continue;
@@ -301,8 +301,8 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
         // Found something to map
         foundMappable = YES;
         RKMapping *mapping = [mappingsByKeyPath objectForKey:keyPath];
-        if ([self.delegate respondsToSelector:@selector(mapper:didFindRespresentation:atKeyPath:)]) {
-            [self.delegate mapper:self didFindRespresentation:mappableValue atKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
+        if ([self.delegate respondsToSelector:@selector(mapper:didFindRepresentationOrArrayOfRepresentations:atKeyPath:)]) {
+            [self.delegate mapper:self didFindRepresentationOrArrayOfRepresentations:mappableValue atKeyPath:keyPath];
         }
 
         mappingResult = [self performMappingForObject:mappableValue atKeyPath:keyPath usingMapping:mapping];
@@ -353,7 +353,7 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
 
     RKLogDebug(@"Finished performing object mapping. Results: %@", results);
 
-    self.mappingResult = [[RKMappingResult alloc] initWithDictionary:results];
+    if (results) self.mappingResult = [[RKMappingResult alloc] initWithDictionary:results];
 }
 
 @end
