@@ -19,76 +19,89 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKParserRegistry.h"
-#import "RKJSONParserJSONKit.h"
-#import "RKXMLParserXMLReader.h"
+#import "RKMIMETypeSerialization.h"
+#import "RKNSJSONSerialization.h"
 
-@interface RKParserRegistryTest : RKTestCase {
+@interface RKMIMETypeSerialization ()
+@property (nonatomic, strong) NSMutableArray *registrations;
+
++ (RKMIMETypeSerialization *)sharedSerialization;
+- (void)addRegistrationsForKnownSerializations;
+@end
+
+@interface RKParserRegistryTest : RKTestCase
+@end
+
+@interface RKTestSerialization : NSObject <RKSerialization>
+@end
+
+@implementation RKTestSerialization
+
++ (id)objectFromData:(NSData *)data error:(NSError **)error
+{
+    return nil;
+}
+
++ (NSData *)dataFromObject:(id)object error:(NSError **)error
+{
+    return nil;
 }
 
 @end
 
 @implementation RKParserRegistryTest
 
-- (void)testShouldEnableRegistrationFromMIMETypeToParserClasses
+- (void)setUp
 {
-    RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
-    [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
-    Class parserClass = [registry parserClassForMIMEType:RKMIMETypeJSON];
-    assertThat(NSStringFromClass(parserClass), is(equalTo(@"RKJSONParserJSONKit")));
+    [RKMIMETypeSerialization sharedSerialization].registrations = [NSMutableArray array];
 }
 
-- (void)testShouldInstantiateParserObjects
+- (void)testShouldEnableRegistrationFromMIMETypeToParserClasses
 {
-    RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
-    [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
-    id<RKSerialization> parser = [registry parserForMIMEType:RKMIMETypeJSON];
-    assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:RKMIMETypeJSON];
+    Class parserClass = [RKMIMETypeSerialization serializationClassForMIMEType:RKMIMETypeJSON];
+    assertThat(NSStringFromClass(parserClass), is(equalTo(@"RKNSJSONSerialization")));
 }
 
 - (void)testShouldAutoconfigureBasedOnReflection
 {
-    RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
-    [registry autoconfigure];
-    id<RKSerialization> parser = [registry parserForMIMEType:RKMIMETypeJSON];
-    assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
-    parser = [registry parserForMIMEType:RKMIMETypeXML];
-    assertThat(parser, is(instanceOf([RKXMLParserXMLReader class])));
+    [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
+    Class parserClass = [RKMIMETypeSerialization serializationClassForMIMEType:RKMIMETypeJSON];
+    assertThat(NSStringFromClass(parserClass), is(equalTo(@"RKNSJSONSerialization")));
 }
 
 - (void)testRetrievalOfExactStringMatchForMIMEType
 {
-    RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
-    [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
-    id<RKSerialization> parser = [registry parserForMIMEType:RKMIMETypeJSON];
-    assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:RKMIMETypeJSON];
+    Class parserClass = [RKMIMETypeSerialization serializationClassForMIMEType:RKMIMETypeJSON];
+    assertThat(NSStringFromClass(parserClass), is(equalTo(@"RKNSJSONSerialization")));
 }
 
 - (void)testRetrievalOfRegularExpressionMatchForMIMEType
 {
-    RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:&error];
-    [registry setParserClass:[RKJSONParserJSONKit class] forMIMETypeRegularExpression:regex];
-    id<RKSerialization> parser = [registry parserForMIMEType:@"application/xml+whatever"];
-    assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
+    
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:regex];
+    Class serializationClass = [RKMIMETypeSerialization serializationClassForMIMEType:@"application/xml+whatever"];
+    assertThat(NSStringFromClass(serializationClass), is(equalTo(@"RKNSJSONSerialization")));
 }
 
 - (void)testRetrievalOfExactStringMatchIsFavoredOverRegularExpression
 {
-    RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:&error];
-    [registry setParserClass:[RKJSONParserJSONKit class] forMIMETypeRegularExpression:regex];
-    [registry setParserClass:[RKXMLParserXMLReader class] forMIMEType:@"application/xml+whatever"];
+    
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:regex];
+    [RKMIMETypeSerialization registerClass:[RKTestSerialization class] forMIMEType:@"application/xml+whatever"];
 
     // Exact match
-    id<RKSerialization> exactParser = [registry parserForMIMEType:@"application/xml+whatever"];
-    assertThat(exactParser, is(instanceOf([RKXMLParserXMLReader class])));
+    Class exactMatch = [RKMIMETypeSerialization serializationClassForMIMEType:@"application/xml+whatever"];
+    assertThat(exactMatch, is(equalTo([RKTestSerialization class])));
 
     // Fallback to regex
-    id<RKSerialization> regexParser = [registry parserForMIMEType:@"application/xml+different"];
-    assertThat(regexParser, is(instanceOf([RKJSONParserJSONKit class])));
+    Class regexMatch = [RKMIMETypeSerialization serializationClassForMIMEType:@"application/xml+different"];
+    assertThat(regexMatch, is(equalTo([RKNSJSONSerialization class])));
 }
 
 @end

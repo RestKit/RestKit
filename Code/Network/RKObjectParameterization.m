@@ -82,8 +82,8 @@
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:self.object destinationObject:dictionary mapping:self.mapping];
     operation.dataSource = dataSource;
     operation.delegate = self;
-    BOOL success = [operation performMapping:error];
-    if (!success) {
+    [operation start];
+    if (operation.error) {
         return nil;
     }
 

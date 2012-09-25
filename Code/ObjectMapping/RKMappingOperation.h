@@ -55,7 +55,7 @@
  @param operation The object mapping operation being performed.
  @param value A new value that was set on the destination object.
  @param keyPath The key path in the destination object for which a new value has been set.
- @param propertyMapping The RKAttributeMapping or RKRelationshipMapping found for the key path.
+ @param propertyMapping The `RKAttributeMapping` or `RKRelationshipMapping` found for the key path.
  */
 - (void)mappingOperation:(RKMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKPropertyMapping *)propertyMapping;
 
@@ -65,7 +65,7 @@
  @param operation The object mapping operation being performed.
  @param value A unchanged value for the key path in the destination object.
  @param keyPath The key path in the destination object for which a unchanged value was not set.
- @param propertyMapping The RKAttributeMapping or RKRelationshipMapping found for the key path.
+ @param propertyMapping The `RKAttributeMapping` or `RKRelationshipMapping` found for the key path.
  */
 - (void)mappingOperation:(RKMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKPropertyMapping *)propertyMapping;
 
@@ -80,7 +80,7 @@
 /**
  Tells the delegate that the mapping operation has selected a concrete object mapping with which to map the source object.
 
- Only sent if the receiver was initialized with an instance of RKDynamicMapping as the mapping.
+ Only sent if the receiver was initialized with an instance of `RKDynamicMapping` as the mapping.
 
  @param operation The mapping operation.
  @param objectMapping The concrete object mapping with which to perform the mapping.
@@ -93,7 +93,7 @@
 /**
  Instances of `RKMappingOperation` perform transformation between object representations according to the rules expressed in `RKObjectMapping` objects. Mapping operations provide the foundation for the RestKit object mapping engine and perform the work of inspecting the attributes and relationships of a source object and determining how to map them into new representations on a destination object.
  */
-@interface RKMappingOperation : NSObject
+@interface RKMappingOperation : NSOperation
 
 ///---------------------------------------
 /// @name Initializing a Mapping Operation
@@ -145,6 +145,11 @@
  @see `RKMappingOperationDataSource`
  */
 @property (nonatomic, weak) id<RKMappingOperationDataSource> dataSource;
+
+/**
+ The error, if any, that occurred during the execution of the mapping operation.
+ */
+@property (nonatomic, strong, readonly) NSError *error;
 
 ///-------------------------
 /// @name Performing Mapping

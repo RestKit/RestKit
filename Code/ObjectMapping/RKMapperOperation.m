@@ -32,6 +32,11 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
+static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
+{
+    return ([keyPath isEqual:[NSNull null]]) ? nil : keyPath;
+}
+
 @interface RKMapperOperation ()
 
 @property (nonatomic, strong, readwrite) NSError *error;
@@ -80,6 +85,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
     [userInfo addEntriesFromDictionary:otherInfo];
     NSError *error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];
     [self addError:error];
+    self.error = error;
 }
 
 - (void)addErrorForUnmappableKeyPath:(NSString *)keyPath
@@ -204,27 +210,27 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
     NSAssert(mapping != nil, @"Cannot map without an mapping");
 
     RKLogDebug(@"Asked to map source object %@ with mapping %@", mappableObject, mapping);
-    NSError *error = nil;
 
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject mapping:mapping];
     mappingOperation.dataSource = self.mappingOperationDataSource;
-    if ([self.delegate respondsToSelector:@selector(mapper:willStartMappingOperation:)]) {
-        [self.delegate mapper:self willStartMappingOperation:mappingOperation forKeyPath:keyPath];
+    if ([self.delegate respondsToSelector:@selector(mapper:willStartMappingOperation:forKeyPath:)]) {
+        [self.delegate mapper:self willStartMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
     }
-    BOOL success = [mappingOperation performMapping:&error];
-    if (success) {
-        if ([self.delegate respondsToSelector:@selector(mapper:didFinishMappingOperation:)]) {
-            [self.delegate mapper:self didFinishMappingOperation:mappingOperation forKeyPath:keyPath];
+    [mappingOperation start];
+    if (mappingOperation.error) {
+        if ([self.delegate respondsToSelector:@selector(mapper:didFailMappingOperation:forKeyPath:withError:)]) {
+            [self.delegate mapper:self didFailMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath) withError:mappingOperation.error];
         }
-    } else if (error) {
-        if ([self.delegate respondsToSelector:@selector(mapper:didFailMappingOperation:withError:)]) {
-            [self.delegate mapper:self didFailMappingOperation:mappingOperation forKeyPath:keyPath withError:error];
+        [self addError:mappingOperation.error];
+     
+        return NO;
+    } else {
+        if ([self.delegate respondsToSelector:@selector(mapper:didFinishMappingOperation:forKeyPath:)]) {
+            [self.delegate mapper:self didFinishMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
         }
-        [self addError:error];
+        
+        return YES;
     }
-
-
-    return success;
 }
 
 - (id)objectWithMapping:(RKMapping *)mapping andData:(id)mappableData
@@ -286,7 +292,7 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
             RKLogDebug(@"Found unmappable value at keyPath: %@", keyPath);
 
             if ([self.delegate respondsToSelector:@selector(mapper:didNotFindReprsentationAtKeyPath:)]) {
-                [self.delegate mapper:self didNotFindReprsentationAtKeyPath:keyPath];
+                [self.delegate mapper:self didNotFindReprsentationAtKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
             }
 
             continue;
@@ -295,8 +301,8 @@ NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
         // Found something to map
         foundMappable = YES;
         RKMapping *mapping = [mappingsByKeyPath objectForKey:keyPath];
-        if ([self.delegate respondsToSelector:@selector(mapper:didFindMappableObject:atKeyPath:)]) {
-            [self.delegate mapper:self didFindRespresentation:mappableValue atKeyPath:keyPath];
+        if ([self.delegate respondsToSelector:@selector(mapper:didFindRespresentation:atKeyPath:)]) {
+            [self.delegate mapper:self didFindRespresentation:mappableValue atKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
         }
 
         mappingResult = [self performMappingForObject:mappableValue atKeyPath:keyPath usingMapping:mapping];

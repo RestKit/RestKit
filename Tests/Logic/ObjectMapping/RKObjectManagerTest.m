@@ -45,36 +45,36 @@
     NSError *error;
     [_objectManager.managedObjectStore resetPersistentStores:&error];
 
-    RKObjectMappingProvider *provider = [[RKObjectMappingProvider new] autorelease];
+    NSMutableDictionary *mappingDictionary = [NSMutableDictionary dictionary];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:_objectManager.managedObjectStore];
     humanMapping.rootKeyPath = @"human";
-    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
-    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
-    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
-    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
-    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"age" toKeyPath:@"age"]];
-    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
-    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
-    [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"age" toKeyPath:@"age"]];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:_objectManager.managedObjectStore];
-    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
-    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
-    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
-    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
-    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"age" toKeyPath:@"age"]];
-    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
-    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
-    [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"age" toKeyPath:@"age"]];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
 
-    [catMapping addRelationshipMapping:[RKRelationshipMapping mappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
+    [catMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
 
-    [provider setMapping:humanMapping forKeyPath:@"human"];
-    [provider setMapping:humanMapping forKeyPath:@"humans"];
+    [mappingsDictionary setObject:humanMapping forKey:@"human"];
+    [mappingsDictionary setObject:humanMapping forKey:@"humans"];
 
     RKObjectMapping *humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [humanSerialization addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [humanSerialization addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [provider setSerializationMapping:humanSerialization forClass:[RKHuman class]];
     _objectManager.mappingProvider = provider;
     [_objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
@@ -111,7 +111,7 @@
     RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [mapping mapAttributes:@"name", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     NSString *resourcePath = @"/humans/fail";
@@ -131,7 +131,7 @@
     RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [mapping mapAttributes:@"name", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name"]];
 
     // Save it to suppress deletion
     [_objectManager.managedObjectStore.primaryManagedObjectContext save:nil];
@@ -190,7 +190,7 @@
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     mapping.rootKeyPath = @"human";
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     [manager.mappingProvider setMapping:mapping forKeyPath:@"human"];
     [manager.mappingProvider setSerializationMapping:mapping forClass:[RKObjectMapperTestModel class]];
 
@@ -213,7 +213,7 @@
     [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/1" method:RKRequestMethodAny]];
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
@@ -236,7 +236,7 @@
     [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/1" method:RKRequestMethodAny]];
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
@@ -259,7 +259,7 @@
 {
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
 
     RKTestResponseLoader *responseLoader = [[RKTestResponseLoader responseLoader] retain];
@@ -277,7 +277,7 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/2" method:RKRequestMethodAny]];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
@@ -297,7 +297,7 @@
 {
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
@@ -318,7 +318,7 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     mapping.rootKeyPath = @"human";
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
@@ -339,7 +339,7 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     mapping.rootKeyPath = @"human";
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];

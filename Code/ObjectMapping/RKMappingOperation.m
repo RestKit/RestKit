@@ -72,6 +72,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 @property (nonatomic, strong, readwrite) id destinationObject;
 @property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
 @property (nonatomic, strong) NSError *validationError;
+@property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong) RKObjectMapping *objectMapping; // The concrete mapping
 @end
 
@@ -425,7 +426,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     RKMappingOperation *subOperation = [[RKMappingOperation alloc] initWithSourceObject:anObject destinationObject:anotherObject mapping:relationshipMapping.mapping];
     subOperation.dataSource = self.dataSource;
     subOperation.delegate = self.delegate;
-    if (NO == [subOperation performMapping:&error]) {
+    [subOperation start];
+    
+    if (subOperation.error) {
         RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
     }
 
@@ -626,7 +629,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
 }
 
-- (BOOL)performMapping:(NSError **)error
+- (void)start
 {
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
@@ -653,23 +656,29 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:)]) {
             [self.dataSource commitChangesForMappingOperation:self];
         }
-        return YES;
+        return;
     }
 
-    if (_validationError) {
+    if (self.validationError) {
         // We failed out due to validation
-        if (error) *error = _validationError;
+        self.error = _validationError;
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didFailWithError:)]) {
-            [self.delegate mappingOperation:self didFailWithError:_validationError];
+            [self.delegate mappingOperation:self didFailWithError:self.error];
         }
 
-        RKLogError(@"Failed mapping operation: %@", [_validationError localizedDescription]);
+        RKLogError(@"Failed mapping operation: %@", [self.error localizedDescription]);
     } else {
         // We did not find anything to do
         RKLogDebug(@"Mapping operation did not find any mappable content");
+        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableContent userInfo:nil];
     }
+}
 
-    return NO;
+- (BOOL)performMapping:(NSError **)error
+{
+    [self start];
+    if (error) *error = self.error;
+    return self.error == nil;
 }
 
 - (NSString *)description

@@ -82,6 +82,20 @@
 @property (nonatomic, strong, readonly) NSArray *propertyMappings;
 
 /**
+ Returns the property mappings of the receiver in a dictionary, where the keys are the source key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
+ 
+ @return The property mappings of the receiver in a dictionary, where the keys are the source key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
+ */
+@property (nonatomic, readonly) NSDictionary *propertyMappingsBySourceKeyPath;
+
+/**
+ Returns the property mappings of the receiver in a dictionary, where the keys are the destination key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
+ 
+ @return The property mappings of the receiver in a dictionary, where the keys are the destination key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
+ */
+@property (nonatomic, readonly) NSDictionary *propertyMappingsByDestinationKeyPath;
+
+/**
  The collection of attribute mappings within this object mapping.
  */
 @property (nonatomic, readonly) NSArray *attributeMappings;
@@ -156,6 +170,7 @@
 
  */
 - (void)mapKeyOfNestedDictionaryToAttribute:(NSString *)attributeName;
+// TODO: Can we eliminate this API???
 
 /**
  Returns the attribute mapping targeting the key of a nested dictionary in the source JSON.
@@ -239,7 +254,7 @@
  quickly generate a corresponding serialization mapping from a configured object mapping. The inverse
  mapping will have the source and destination keyPaths swapped for all attribute and relationship mappings.
  */
-//- (RKObjectMapping *)inverseMapping;
+- (RKObjectMapping *)inverseMapping;
 // TODO: Keep or kill inverse???
 
 ///---------------------------------------------------

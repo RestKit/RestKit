@@ -20,7 +20,7 @@
 
 #import "RKTestEnvironment.h"
 #import "RKHuman.h"
-#import "RKDirectoryUtilities.h"
+#import "RKPathUtilities.h"
 
 @interface RKManagedObjectStoreTest : RKTestCase
 
@@ -47,13 +47,6 @@
 - (void)tearDown
 {
     [RKTestFactory tearDown];
-}
-
-- (void)testInstantiationOfNewManagedObjectContextAssociatesWithObjectStore
-{
-    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSManagedObjectContext *context = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType];
-    assertThat([context managedObjectStore], is(equalTo(managedObjectStore)));
 }
 
 - (void)testAdditionOfSQLiteStoreRetainsPathOfSeedDatabase

@@ -19,7 +19,8 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKObjectSerializer.h"
+#import "RKObjectParameterization.h"
+#import "RKMIMETypeSerialization.h"
 #import "RKMappableObject.h"
 
 @interface RKObjectSerializerTest : RKTestCase {
@@ -33,32 +34,31 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
     NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    
+    // URL Encode
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"key2-form-name=value2&key1-form-name=value1")));
+    assertThat(string, is(equalTo(@"key2-form-name=value2&key1-form-name=value1")));
 }
 
 - (void)testShouldSerializeADateToFormEncodedData
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
-
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
+    
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
     assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"key1-form-name=value1&date-form-name=1970-01-01 00:00:00 +0000")));
+    assertThat(parameters[@"date-form-name"], is(equalTo(@"key1-form-name=value1&date-form-name=1970-01-01 00:00:00 +0000")));
 }
 
 - (void)testShouldSerializeADateToAStringUsingThePreferredDateFormatter
@@ -69,53 +69,53 @@
     dateFormatter.dateFormat = @"MM/dd/yyyy";
     dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
     mapping.preferredDateFormatter = dateFormatter;
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
-
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
+    
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"key1-form-name=value1&date-form-name=01/01/1970")));
+    assertThat(string, is(equalTo(@"key1-form-name=value1&date-form-name=01/01/1970")));
 }
 
 - (void)testShouldSerializeADateToJSON
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
 
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
-
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"{\"key1-form-name\":\"value1\",\"date-form-name\":\"1970-01-01 00:00:00 +0000\"}")));
+    assertThat(string, is(equalTo(@"{\"key1-form-name\":\"value1\",\"date-form-name\":\"1970-01-01 00:00:00 +0000\"}")));
 }
 
 - (void)testShouldSerializeNSDecimalNumberAttributesToJSON
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDecimalNumber decimalNumberWithString:@"18274191731731.4557723623"], @"number", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"number" toKeyPath:@"number-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
-
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
-
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"number" toKeyPath:@"number-form-name"]];
+        
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"{\"key1-form-name\":\"value1\",\"number-form-name\":\"18274191731731.4557723623\"}")));
+    assertThat(string, is(equalTo(@"{\"key1-form-name\":\"value1\",\"number-form-name\":\"18274191731731.4557723623\"}")));
 }
 
 - (void)testShouldSerializeRelationshipsToo
@@ -128,22 +128,23 @@
                             nil];
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"relationship1.relatioship1Key1" toKeyPath:@"relationship1-form-name[r1k1]"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"relationship2.subKey1" toKeyPath:@"relationship2-form-name[subKey1]"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"relationship1.relatioship1Key1" toKeyPath:@"relationship1-form-name[r1k1]"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"relationship2.subKey1" toKeyPath:@"relationship2-form-name[subKey1]"]];
 
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     assertThat(error, is(nilValue()));
     #if TARGET_OS_IPHONE
-    assertThat(data, is(equalTo(@"key1-form-name=value1&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&relationship2-form-name[subKey1]=subValue1")));
+    assertThat(string, is(equalTo(@"key1-form-name=value1&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&relationship2-form-name[subKey1]=subValue1")));
     #else
-    assertThat(data, is(equalTo(@"relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1")));
+    assertThat(string, is(equalTo(@"relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1")));
     #endif
 }
 
@@ -151,28 +152,31 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
+    
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"{\"key2-form-name\":\"value2\",\"key1-form-name\":\"value1\"}")));
+    assertThat(string, is(equalTo(@"{\"key2-form-name\":\"value2\",\"key1-form-name\":\"value1\"}")));
 }
 
 - (void)testShouldSetReturnNilIfItDoesNotFindAnythingToSerialize
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
+    
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
 
-    assertThat(serialization, is(nilValue()));
+    assertThat(parameters, is(nilValue()));
 }
 
 - (void)testShouldSerializeNestedObjectsContainingDatesToJSON
@@ -185,25 +189,23 @@
 
     // Setup object mappings
     RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [objectMapping mapAttributes:@"stringTest", nil];
+    [objectMapping addAttributeMappingsFromArray:@[ @"stringTest" ]];
     RKObjectMapping *relationshipMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [relationshipMapping mapAttributes:@"date", nil];
-    [objectMapping mapRelationship:@"hasOne" withMapping:relationshipMapping];
-
-    // Serialize
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:objectMapping];
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
-    assertThat(error, is(nilValue()));
-
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [relationshipMapping addAttributeMappingsFromArray:@[ @"date" ]];
+    [objectMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"hasOne" toKeyPath:@"hasOne" withMapping:relationshipMapping]];
+    
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:objectMapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     // Encodes differently on iOS / OS X
     #if TARGET_OS_IPHONE
-    assertThat(data, is(equalTo(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"}}")));
+    assertThat(string, is(equalTo(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"}}")));
     #else
-    assertThat(data, is(equalTo(@"{\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"},\"stringTest\":\"The string\"}")));
+    assertThat(string, is(equalTo(@"{\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"},\"stringTest\":\"The string\"}")));
     #endif
 }
 
@@ -211,16 +213,15 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
-    RKObjectSerializer *serializer = [[RKObjectSerializer alloc] initWithObject:object mapping:mapping rootKeyPath:@"stuff"];
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
-    assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"stuff[key2-form-name]=value2&stuff[key1-form-name]=value1")));
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
+    
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:@"stuff"];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    assertThat(parameters[@"stuff"][@"key2-form-name"], is(equalTo(@"value2")));
+    assertThat(parameters[@"stuff"][@"key1-form-name"], is(equalTo(@"value1")));
 }
 
 - (void)testShouldSerializeToManyRelationships
@@ -233,38 +234,36 @@
 
     // Setup object mappings
     RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [objectMapping mapAttributes:@"stringTest", nil];
+    [objectMapping addAttributeMappingsFromArray:@[@"stringTest"]];
     RKObjectMapping *relationshipMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [relationshipMapping mapAttributes:@"date", nil];
-    [objectMapping mapRelationship:@"hasMany" withMapping:relationshipMapping];
+    [relationshipMapping addAttributeMappingsFromArray:@[@"date"]];
+    [objectMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"hasMany" toKeyPath:@"hasMany" withMapping:relationshipMapping]];
 
     // Serialize
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:objectMapping];
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
-    assertThat(error, is(nilValue()));
-
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    assertThat(data, is(equalTo(@"{\"hasMany\":[{\"date\":\"1970-01-01 00:00:00 +0000\"}],\"stringTest\":\"The string\"}")));
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:objectMapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    assertThat(string, is(equalTo(@"{\"hasMany\":[{\"date\":\"1970-01-01 00:00:00 +0000\"}],\"stringTest\":\"The string\"}")));
 }
 
 - (void)testShouldSerializeAnNSNumberContainingABooleanToTrueFalseIfRequested
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSNumber numberWithBool:YES], @"boolean", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    RKAttributeMapping *attributeMapping = [RKAttributeMapping mappingFromKeyPath:@"boolean" toKeyPath:@"boolean-value"];
-    [mapping addAttributeMapping:attributeMapping];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
-
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
-
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"boolean" toKeyPath:@"boolean-value"];
+    [mapping addPropertyMapping:attributeMapping];    
+    
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"{\"boolean-value\":true}")));
+    assertThat(string, is(equalTo(@"{\"boolean-value\":true}")));
 }
 
 - (void)testShouldSerializeANSOrderedSetToJSON
@@ -273,18 +272,17 @@
                             [NSOrderedSet orderedSetWithObjects:@"setElementOne", @"setElementTwo", @"setElementThree", nil], @"set",
                             nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
-    [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"set" toKeyPath:@"set-form-name"]];
-    RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
-
-    NSError *error = nil;
-    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
-
-    NSString *data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
-    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"set" toKeyPath:@"set-form-name"]];
+    
+    NSError *error;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     assertThat(error, is(nilValue()));
-    assertThat(data, is(equalTo(@"{\"key1-form-name\":\"value1\",\"set-form-name\":[\"setElementOne\",\"setElementTwo\",\"setElementThree\"]}")));
+    assertThat(string, is(equalTo(@"{\"key1-form-name\":\"value1\",\"set-form-name\":[\"setElementOne\",\"setElementTwo\",\"setElementThree\"]}")));
 }
 
 @end

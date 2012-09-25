@@ -68,10 +68,10 @@
     objectManager.managedObjectStore = managedObjectStore;
 
     RKObjectMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
-    [humanMapping mapAttributes:@"name", nil];
+    [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     RKObjectMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
-    [catMapping mapAttributes:@"name", nil];
-    [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withMapping:catMapping];
+    [catMapping addAttributeMappingsFromArray:@[@"name"]];
+    [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favorite_cat" toKeyPath:@"favoriteCat" withMapping:catMapping]];;
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/humans/with_to_one_relationship.json"];
@@ -94,8 +94,8 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman"
                                                                        inManagedObjectStore:managedObjectStore];
-    [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
-    [humanMapping mapAttributes:@"name", nil];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     humanMapping.primaryKeyAttribute = @"railsID";
     humanMapping.rootKeyPath = @"human";
 
@@ -165,8 +165,8 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     objectManager.managedObjectStore = managedObjectStore;
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
-    [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
-    [humanMapping mapAttributes:@"name", nil];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     humanMapping.primaryKeyAttribute = @"railsID";
     humanMapping.rootKeyPath = @"human";
 
@@ -269,7 +269,7 @@
     RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
     objectLoader.serializationMapping = [RKObjectMapping serializationMapping];
-    [objectLoader.serializationMapping mapAttributes:@"name", nil];
+    [objectLoader.serializationMapping addAttributeMappingsFromArray:@[@"name"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     assertThatBool([human.objectID isTemporaryID], is(equalToBool(YES)));

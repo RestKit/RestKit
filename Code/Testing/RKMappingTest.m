@@ -217,8 +217,8 @@ BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
         mappingOperation.dataSource = self.mappingOperationDataSource;
         NSError *error = nil;
         mappingOperation.delegate = self;
-        BOOL success = [mappingOperation performMapping:&error];
-        if (! success) {
+        [mappingOperation start];
+        if (mappingOperation.error) {
             [NSException raise:NSInternalInconsistencyException format:@"%p: failed with error: %@\n%@ during mapping from %@ to %@ with mapping %@",
              self, error, [self description], self.sourceObject, self.destinationObject, self.mapping];
         }

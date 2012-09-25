@@ -19,7 +19,6 @@
 //
 
 #import "RKMappableObject.h"
-#import "NSDictionary+RKAdditions.h"
 
 @implementation RKMappableObject
 

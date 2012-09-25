@@ -51,7 +51,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     assertThat(humanMapping, isNot(equalTo(nil)));
-    [humanMapping mapAttributes:@"name", nil];
+    [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     [_objectManager.mappingProvider addObjectMapping:humanMapping];
     RKMapping *returnedMapping = [_objectManager.mappingProvider objectMappingForClass:[RKHuman class]];
     assertThat(returnedMapping, isNot(equalTo(nil)));
@@ -63,7 +63,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
-    [catMapping mapAttributes:@"name", nil];
+    [catMapping addAttributeMappingsFromArray:@[@"name"]];
     [_objectManager.mappingProvider setMapping:catMapping forKeyPath:@"cat"];
     RKMapping *returnedMapping = [_objectManager.mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, isNot(equalTo(nil)));
@@ -76,7 +76,7 @@
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
-    [catMapping mapAttributes:@"name", nil];
+    [catMapping addAttributeMappingsFromArray:@[@"name"]];
     [mappingProvider setMapping:catMapping forKeyPath:@"cat"];
     RKMapping *returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, isNot(equalTo(nil)));

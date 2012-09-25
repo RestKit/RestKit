@@ -61,10 +61,10 @@
     mapping.forceCollectionMapping = YES;
     mapping.primaryKeyAttribute = @"name";
     [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
-    RKAttributeMapping *idMapping = [RKAttributeMapping mappingFromKeyPath:@"(name).id" toKeyPath:@"railsID"];
-    [mapping addAttributeMapping:idMapping];
-    RKObjectMappingProvider *provider = [[RKObjectMappingProvider new] autorelease];
-    [provider setMapping:mapping forKeyPath:@"users"];
+    RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"(name).id" toKeyPath:@"railsID"];
+    [mapping addPropertyMapping:idMapping];
+    NSMutableDictionary *mappingDictionary = [NSMutableDictionary dictionary];
+    [mappingsDictionary setObject:mapping forKey:@"users"];
 
     id mockCacheStrategy = [OCMockObject partialMockForObject:managedObjectStore.managedObjectCache];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:OCMOCK_ANY
@@ -76,7 +76,7 @@
                                                                         value:@"rachit"
                                                        inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeys.json"];
-    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     mapper.mappingOperationDataSource = dataSource;
@@ -87,14 +87,14 @@
 - (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKDynamicMapping *dynamicMapping = [RKDynamicMapping dynamicMapping];
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"RKChild" inManagedObjectStore:managedObjectStore];
     childMapping.primaryKeyAttribute = @"railsID";
-    [childMapping mapAttributes:@"name", nil];
+    [childMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"RKParent" inManagedObjectStore:managedObjectStore];
     parentMapping.primaryKeyAttribute = @"railsID";
-    [parentMapping mapAttributes:@"name", @"age", nil];
+    [parentMapping addAttributeMappingsFromArray:@[@"name", @"age"]];
 
     [dynamicMapping setObjectMapping:parentMapping whenValueOfKeyPath:@"type" isEqualTo:@"Parent"];
     [dynamicMapping setObjectMapping:childMapping whenValueOfKeyPath:@"type" isEqualTo:@"Child"];

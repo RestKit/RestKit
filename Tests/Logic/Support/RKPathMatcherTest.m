@@ -93,7 +93,7 @@
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:name/:age"];
-    NSString *interpolatedPath = [matcher pathFromObject:person];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES];
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/people/CuddleGuts/6";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
@@ -104,7 +104,7 @@
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/(name)/(age)"];
-    NSString *interpolatedPath = [matcher pathFromObject:person];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES];
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/people/CuddleGuts/6";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
@@ -115,7 +115,7 @@
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:group/:name?password=:password"];
-    NSString *interpolatedPath = [matcher pathFromObject:person];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES];
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/people/15/Joe%20Bob%20Briggs?password=JUICE%7CBOX%26121";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
@@ -136,11 +136,10 @@
 {
     NSDictionary *arguments = [NSDictionary dictionaryWithObjectsAndKeys:@"Resources", @"filename", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/directory/:filename\\.json"];
-    NSString *interpolatedPath = [matcher pathFromObject:arguments];
+    NSString *interpolatedPath = [matcher pathFromObject:arguments addingEscapes:YES];
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/directory/Resources.json";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
-
 
 @end

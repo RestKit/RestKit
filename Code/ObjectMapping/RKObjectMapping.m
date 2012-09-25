@@ -28,6 +28,7 @@
 
 // Constants
 NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
+static NSUInteger RKObjectMappingMaximumInverseMappingRecursionDepth = 100;
 
 @interface RKObjectMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
@@ -85,6 +86,26 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 - (NSArray *)propertyMappings
 {
     return [NSArray arrayWithArray:_mutablePropertyMappings];
+}
+
+- (NSDictionary *)propertyMappingsBySourceKeyPath
+{
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[self.propertyMappings count]];
+    for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
+        [dictionary setObject:propertyMapping forKey:propertyMapping.sourceKeyPath];
+    }
+    
+    return dictionary;
+}
+
+- (NSDictionary *)propertyMappingsByDestinationKeyPath
+{
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[self.propertyMappings count]];
+    for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
+        [dictionary setObject:propertyMapping forKey:propertyMapping.destinationKeyPath];
+    }
+    
+    return dictionary;
 }
 
 - (NSArray *)mappedKeyPaths
@@ -190,35 +211,32 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     [self.mutablePropertyMappings removeObject:attributeOrRelationshipMapping];
 }
 
-#ifndef MAX_INVERSE_MAPPING_RECURSION_DEPTH
-#define MAX_INVERSE_MAPPING_RECURSION_DEPTH (100)
-#endif
-//- (RKObjectMapping *)inverseMappingAtDepth:(NSInteger)depth
-//{
-//    NSAssert(depth < MAX_INVERSE_MAPPING_RECURSION_DEPTH, @"Exceeded max recursion level in inverseMapping. This is likely due to a loop in the serialization graph. To break this loop, specify one-way relationships by setting serialize to NO in mapKeyPath:toRelationship:withObjectMapping:serialize:");
-//    RKObjectMapping *inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-//    for (RKAttributeMapping *attributeMapping in self.attributeMappings) {
-//        [inverseMapping mapKeyPath:attributeMapping.destinationKeyPath toAttribute:attributeMapping.sourceKeyPath];
-//    }
-//
-//    for (RKRelationshipMapping *relationshipMapping in self.relationshipMappings) {
+- (RKObjectMapping *)inverseMappingAtDepth:(NSInteger)depth
+{
+    NSAssert(depth < RKObjectMappingMaximumInverseMappingRecursionDepth, @"Exceeded max recursion level in inverseMapping. This is likely due to a loop in the serialization graph. To break this loop, specify one-way relationships by setting serialize to NO in mapKeyPath:toRelationship:withObjectMapping:serialize:");
+    RKObjectMapping *inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    for (RKAttributeMapping *attributeMapping in self.attributeMappings) {
+        [inverseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeMapping.destinationKeyPath toKeyPath:attributeMapping.sourceKeyPath]];
+    }
+
+    for (RKRelationshipMapping *relationshipMapping in self.relationshipMappings) {
 //        if (relationshipMapping.reversible) {
-//            RKMapping *mapping = relationshipMapping.mapping;
-//            if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
-//                RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", relationshipMapping.sourceKeyPath, NSStringFromClass([mapping class]));
-//                continue;
-//            }
-//            [inverseMapping mapKeyPath:relationshipMapping.destinationKeyPath toRelationship:relationshipMapping.sourceKeyPath withMapping:[(RKObjectMapping *)mapping inverseMappingAtDepth:depth+1]];
+        RKMapping *mapping = relationshipMapping.mapping;
+        if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
+            RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", relationshipMapping.sourceKeyPath, NSStringFromClass([mapping class]));
+            continue;
+        }
+        [inverseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withMapping:[(RKObjectMapping *)mapping inverseMappingAtDepth:depth+1]]];
 //        }
-//    }
-//
-//    return inverseMapping;
-//}
-//
-//- (RKObjectMapping *)inverseMapping
-//{
-//    return [self inverseMappingAtDepth:0];
-//}
+    }
+
+    return inverseMapping;
+}
+
+- (RKObjectMapping *)inverseMapping
+{
+    return [self inverseMappingAtDepth:0];
+}
 
 - (void)mapKeyOfNestedDictionaryToAttribute:(NSString *)attributeName
 {
@@ -316,29 +334,34 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 static NSMutableArray *defaultDateFormatters = nil;
 static NSDateFormatter *preferredDateFormatter = nil;
 
+static NSArray *RKDefaultDateFormattersArray()
+{
+    
+}
+
 @implementation RKObjectMapping (DateAndTimeFormatting)
 
 + (NSArray *)defaultDateFormatters
 {
-    // TODO: Migrate into load/initialize...
-    if (!defaultDateFormatters) {
-        defaultDateFormatters = [[NSMutableArray alloc] init];
-
-        // Setup the default formatters
-
-        //NSNumberFormatter which creates dates from Unix timestamps
-        NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-        numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-        [self addDefaultDateFormatter:numberFormatter];
-
-        ISO8601DateFormatter *isoFormatter = [[ISO8601DateFormatter alloc] init];
-        [self addDefaultDateFormatter:isoFormatter];
-
-        [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];
-        [self addDefaultDateFormatterForString:@"yyyy-MM-dd'T'HH:mm:ss'Z'" inTimeZone:nil];
-    }
+    if (!defaultDateFormatters) [self resetDefaultDateFormatters];
 
     return defaultDateFormatters;
+}
+
++ (void)resetDefaultDateFormatters
+{    
+    defaultDateFormatters = [[NSMutableArray alloc] init];
+    
+    //NSNumberFormatter which creates dates from Unix timestamps
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+    [self addDefaultDateFormatter:numberFormatter];
+    
+    ISO8601DateFormatter *isoFormatter = [[ISO8601DateFormatter alloc] init];
+    [self addDefaultDateFormatter:isoFormatter];
+    
+    [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];
+    [self addDefaultDateFormatterForString:@"yyyy-MM-dd'T'HH:mm:ss'Z'" inTimeZone:nil];
 }
 
 + (void)setDefaultDateFormatters:(NSArray *)dateFormatters

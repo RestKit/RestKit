@@ -170,7 +170,7 @@
 
  @param mapper The mapper operation performing the mapping.
  @param dictionaryOrArrayOfDictionaries The `NSDictictionary` or `NSArray` of `NSDictionary` object representations that was found at the `keyPath`.
- @param keyPath The key path that the representation was read from in the `sourceObject`.
+ @param keyPath The key path that the representation was read from in the `sourceObject`. If the `keyPath` was `[NSNull null]` in the `mappingsDictionary`, it will be given as `nil` to the delegate.
  */
 - (void)mapper:(RKMapperOperation *)mapper didFindRespresentation:(id)dictionaryOrArrayOfDictionaries atKeyPath:(NSString *)keyPath;
 
@@ -178,7 +178,7 @@
  Tells the delegate that the mapper failed to find a mappable object at a key path specified in the `mappingsDictionary`.
 
  @param mapper The mapper operation performing the mapping.
- @param keyPath The key path that was searched for a mappable object representation.
+ @param keyPath The key path that was searched for a mappable object representation. 
  */
 - (void)mapper:(RKMapperOperation *)mapper didNotFindReprsentationAtKeyPath:(NSString *)keyPath;
 
@@ -191,7 +191,7 @@
 
  @param mapper The mapper operation performing the mapping.
  @param mappingOperation The mapping operation that is about to be started.
- @param keyPath The key path that was mapped.
+ @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `sourceObject`.
  */
 - (void)mapper:(RKMapperOperation *)mapper willStartMappingOperation:(RKMappingOperation *)mappingOperation forKeyPath:(NSString *)keyPath;
 
@@ -200,7 +200,7 @@
 
  @param mapper The mapper operation performing the mapping.
  @param mappingOperation The mapping operation that has finished.
- @param keyPath The key path that was mapped.
+ @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `sourceObject`.
  */
 - (void)mapper:(RKMapperOperation *)mapper didFinishMappingOperation:(RKMappingOperation *)mappingOperation forKeyPath:(NSString *)keyPath;
 
@@ -209,7 +209,7 @@
 
  @param mapper The mapper operation performing the mapping.
  @param mappingOperation The mapping operation that has failed.
- @param keyPath The key path that was mapped.
+ @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `sourceObject`.
  @param error The error that occurred during the execution of the mapping operation.
  */
 - (void)mapper:(RKMapperOperation *)mapper didFailMappingOperation:(RKMappingOperation *)mappingOperation forKeyPath:(NSString *)keyPath withError:(NSError *)error;

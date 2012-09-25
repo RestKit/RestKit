@@ -17,12 +17,11 @@
 
 - (void)testShouldInstantiateAFormatterWithDefaultGMTTimeZone
 {
-    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter new];
     NSTimeZone *timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     assertThat(formatter, isNot(equalTo(nil)));
     assertThat(formatter.timeZone, is(equalTo(timeZone)));
 }
-
 
 - (void)testShouldInstantiateAFormatterWithATimeZone
 {
@@ -35,7 +34,7 @@
 - (void)testShouldCreateADateFromDotNetThatWithAnOffset
 {
     NSString *dotNetString = @"/Date(1000212360000-0400)/";
-    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter new];
     NSDate *date = [formatter dateFromString:dotNetString];
     assertThat([date description], is(equalTo(@"2001-09-11 12:46:00 +0000")));
 }
@@ -43,7 +42,7 @@
 - (void)testShouldCreateADateFromDotNetWithoutAnOffset
 {
     NSString *dotNetString = @"/Date(1112715000000)/";
-    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter new];
     NSDate *date = [formatter dateFromString:dotNetString];
     assertThat([date description], is(equalTo(@"2005-04-05 15:30:00 +0000")));
 }
@@ -51,14 +50,14 @@
 - (void)testShouldCreateADateFromDotNetBefore1970WithoutAnOffset
 {
     NSString *dotNetString = @"/Date(-864000000000)/";
-    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter new];
     NSDate *date = [formatter dateFromString:dotNetString];
     assertThat([date description], is(equalTo(@"1942-08-16 00:00:00 +0000")));
 }
 
 - (void)testShouldFailToCreateADateFromInvalidStrings
 {
-    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter new];
     NSDate *date = [formatter dateFromString:nil];
     assertThat(date, is(equalTo(nil)));
     date = [formatter dateFromString:@"(null)"];
@@ -79,7 +78,7 @@
 
 - (void)testShouldCreateADotNetStringFromADateBefore1970WithoutAnOffset
 {
-    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter new];
     NSDate *referenceDate = [NSDate dateWithTimeIntervalSince1970:-1000212360];
     NSString *string = [formatter stringFromDate:referenceDate];
     assertThat(string, is(equalTo(@"/Date(-1000212360000+0000)/")));
@@ -87,7 +86,7 @@
 
 - (void)testShouldCreateADateWithGetObjectValueForString
 {
-    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter new];
     NSString *dotNetString = @"/Date(1000212360000-0400)/";
 
     NSDate *date = nil;
@@ -108,7 +107,7 @@
 }
 
 - (void)testShouldCreateADotNetStringWithStringForObjectValueFromADateBefore1970WithoutAnOffset {
-    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter new];
     NSDate *referenceDate = [NSDate dateWithTimeIntervalSince1970:-1000212360];
     NSString *string = [formatter stringForObjectValue:referenceDate];
     assertThat(string, is(equalTo(@"/Date(-1000212360000+0000)/")));

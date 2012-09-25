@@ -38,6 +38,7 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
  @param block The block object to invoke to select the object mapping with which to map the given object representation.
  */
 - (void)setObjectMappingForDataBlock:(RKDynamicMappingDelegateBlock)block;
+// TODO: Better method signature...
 
 /**
  Defines a dynamic mapping rule stating that when the value of the key property matches the specified value, the given mapping should be used to map the representation.
