@@ -441,7 +441,11 @@ The following Cocoa frameworks must be linked into the application target for pr
 1. **CoreData.framework**
 1. **Security.framework**
 1. **MobileCoreServices.framework** on iOS or **CoreServices.framework** on OS X
-1. **CoreData.framework** (if using Core Data)
+
+And the following linker flags must be set:
+
+1. **-ObjC**
+1. **-all_load**
 
 ### ARC
 
