@@ -1,5 +1,5 @@
 //
-//  NSDictionary+RKRequestSerializationTest.m
+//  RKURLEncodedSerializationTest.m
 //  RestKit
 //
 //  Created by Blake Watters on 2/24/10.
@@ -21,44 +21,46 @@
 #import "RKTestEnvironment.h"
 #import "RKURLEncodedSerialization.h"
 
-@interface NSDictionary_RKRequestSerializationTest : RKTestCase {
-}
+@interface RKURLEncodedSerializationTest : RKTestCase
 
 @end
 
-// TODO: Moves to RKURLEncodedSerializationTest.m
-@implementation NSDictionary_RKRequestSerializationTest
+@implementation RKURLEncodedSerializationTest
 
 - (void)testShouldEncodeUnicodeStrings
 {
     NSString *unicode = [NSString stringWithFormat:@"%CNo ser ni%Co, ser b%Cfalo%C%C", (unichar)0x00A1, (unichar)0x00F1, (unichar)0x00FA, (unichar)0x2026, (unichar)0x0021];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:unicode forKey:@"utf8"];
-    NSString *validUnicode = @"utf8=%C2%A1No%20ser%20ni%C3%B1o%2C%20ser%20b%C3%BAfalo%E2%80%A6%21";
-    assertThat(RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding), is(equalTo(validUnicode)));
+    NSString *validUnicode = @"utf8=%C2%A1No%20ser%20ni%C3%B1o,%20ser%20b%C3%BAfalo%E2%80%A6%21";
+    NSString *encodedString = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);    
+    assertThat(encodedString, is(equalTo(validUnicode)));
 }
 
 - (void)testShouldEncodeURLStrings
 {
     NSString *url = @"http://some.server.com/path/action?subject=\"That thing I sent\"&email=\"me@me.com\"";
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:url forKey:@"url"];
-    NSString *validURL = @"url=http%3A%2F%2Fsome.server.com%2Fpath%2Faction%3Fsubject%3D%22That%20thing%20I%20sent%22%26email%3D%22me%40me.com%22";
-    assertThat(RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding), is(equalTo(validURL)));
+    NSString *expectedURL = @"url=http%3A%2F%2Fsome%2Eserver%2Ecom%2Fpath%2Faction%3Fsubject%3D%22That%20thing%20I%20sent%22%26email%3D%22me%40me%2Ecom%22";
+    NSString *actualURL = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
+    assertThat(actualURL, is(equalTo(expectedURL)));
 }
 
 - (void)testShouldEncodeArrays
 {
     NSArray *array = [NSArray arrayWithObjects:@"item1", @"item2", nil];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:array forKey:@"anArray"];
-    NSString *validArray = @"anArray[]=item1&anArray[]=item2";
-    assertThat(RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding), is(equalTo(validArray)));
+    NSString *expected = @"anArray%5B%5D=item1&anArray%5B%5D=item2";
+    NSString *actual = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
+    assertThat(actual, is(equalTo(expected)));
 }
 
 - (void)testShouldEncodeDictionaries
 {
     NSDictionary *subDictionary = [NSDictionary dictionaryWithObject:@"value1" forKey:@"key1"];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:subDictionary forKey:@"aDictionary"];
-    NSString *validDictionary = @"aDictionary[key1]=value1";
-    assertThat(RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding), is(equalTo(validDictionary)));
+    NSString *expected = @"aDictionary%5Bkey1%5D=value1";
+    NSString *actual = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
+    assertThat(actual, is(equalTo(expected)));
 }
 
 - (void)testShouldEncodeArrayOfDictionaries
@@ -69,8 +71,9 @@
     NSArray *array = [NSArray arrayWithObjects:dictA, dictB, nil];
     NSDictionary *dictRoot = @{@"root" : array};
 
-    NSString *validString = @"root[][a]=x&root[][b]=y&root[][a]=1&root[][b]=2";
-    assertThat(RKURLEncodedStringFromDictionaryWithEncoding(dictRoot, NSUTF8StringEncoding), is(equalTo(validString)));
+    NSString *expected = @"root%5B%5D%5Ba%5D=x&root%5B%5D%5Bb%5D=y&root%5B%5D%5Ba%5D=1&root%5B%5D%5Bb%5D=2";
+    NSString *actual = RKURLEncodedStringFromDictionaryWithEncoding(dictRoot, NSUTF8StringEncoding);
+    assertThat(actual, is(equalTo(expected)));
 }
 
 - (void)testShouldEncodeRecursiveArrays
@@ -79,8 +82,18 @@
     NSArray *recursiveArray2 = [NSArray arrayWithObject:recursiveArray3];
     NSArray *recursiveArray1 = [NSArray arrayWithObject:recursiveArray2];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:recursiveArray1 forKey:@"recursiveArray"];
-    NSString *validRecursion = @"recursiveArray[]=%28%0A%20%20%20%20%20%20%20%20%28%0A%20%20%20%20%20%20%20%20item1%2C%0A%20%20%20%20%20%20%20%20item2%0A%20%20%20%20%29%0A%29";
-    assertThat(RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding), is(equalTo(validRecursion)));
+    NSString *expected = @"recursiveArray%5B%5D%5B%5D%5B%5D=item1&recursiveArray%5B%5D%5B%5D%5B%5D=item2";
+    NSString *actual = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
+    assertThat(actual, is(equalTo(expected)));
+}
+
+- (void)testShouldParseQueryParameters
+{
+    NSString *resourcePath = @"/views/thing/?keyA=valA&keyB=valB";
+    NSDictionary *queryParameters = RKQueryParametersFromStringWithEncoding(resourcePath, NSUTF8StringEncoding);
+    assertThat(queryParameters, isNot(empty()));
+    assertThat(queryParameters, hasCountOf(2));
+    assertThat(queryParameters, hasEntries(@"keyA", @"valA", @"keyB", @"valB", nil));
 }
 
 @end
