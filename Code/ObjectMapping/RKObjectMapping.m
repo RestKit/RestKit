@@ -353,6 +353,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
     [self addDefaultDateFormatter:numberFormatter];
     
     ISO8601DateFormatter *isoFormatter = [[ISO8601DateFormatter alloc] init];
+    isoFormatter.parsesStrictly = YES;
     [self addDefaultDateFormatter:isoFormatter];
     
     [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];

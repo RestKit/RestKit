@@ -613,7 +613,7 @@ static BOOL is_leap_year(NSUInteger year);
 		*outTimeZone = timeZone;
 	}
     
-	return components;
+	return isValidDate ? components : nil;
 }
 
 - (NSDate *) dateFromString:(NSString *)string {
@@ -625,6 +625,7 @@ static BOOL is_leap_year(NSUInteger year);
 - (NSDate *)dateFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone range:(out NSRange *)outRange {
 	NSTimeZone *timeZone = nil;
 	NSDateComponents *components = [self dateComponentsFromString:string timeZone:&timeZone range:outRange];
+    if (! components) return nil;
 	if (outTimeZone)
 		*outTimeZone = timeZone;
 	parsingCalendar.timeZone = timeZone;

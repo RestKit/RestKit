@@ -116,6 +116,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
                 if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
                     RKLogTrace(@"Successfully parsed string '%@' with format string '%@' and time zone '%@' and turned into date '%@'",
                                 string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone], date);
+                } else if ([dateFormatter isKindOfClass:[NSNumberFormatter class]]) {
+                    NSNumber *formattedNumber = (NSNumber *)date;
+                    date = [NSDate dateWithTimeIntervalSince1970:[formattedNumber doubleValue]];
                 }
 
                 break;
