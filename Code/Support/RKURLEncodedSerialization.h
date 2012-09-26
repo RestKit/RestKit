@@ -61,3 +61,14 @@ NSString *RKURLEncodedStringFromDictionaryWithEncoding(NSDictionary *dictionary,
  @return A new `NSString` object in the given encoding with the query string unsafe characters replaced with percent escape sequences.
  */
 NSString *RKPercentEscapedQueryStringFromStringWithEncoding(NSString *string, NSStringEncoding encoding);
+
+/**
+ Creates and returns a new `NSDictionary` object containing the keys and values in the query string of the given string.
+ 
+ The given string is searched for a `?` character denoting the beginning of the query parameters. If none is found, the entire string is treated as a URL encoded query string. The parameters are extracted from the query string by invoking `RKDictionaryFromURLEncodedStringWithEncoding()` with the query string.
+ 
+ @param string A string containing a query string that is to be tokenized into a dictionary of parameters.
+ @param encoding The encoding to use in constructing the URL-encoded string. If you are uncertain of the correct encoding, you should use UTF-8 (NSUTF8StringEncoding), which is the encoding designated by RFC 3986 as the correct encoding for use in URLs.
+ @return An `NSDictionary` object containing the keys and values contained in the query string of the given string.
+ */
+NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding encoding);

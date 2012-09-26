@@ -283,8 +283,8 @@
 		251611091456F2340060A5C5 /* timeout.rb in Resources */ = {isa = PBXBuildFile; fileRef = 2516104E1456F2330060A5C5 /* timeout.rb */; };
 		2516110B1456F2340060A5C5 /* restkit.rb in Resources */ = {isa = PBXBuildFile; fileRef = 2516104F1456F2330060A5C5 /* restkit.rb */; };
 		2516110D1456F2340060A5C5 /* server.rb in Resources */ = {isa = PBXBuildFile; fileRef = 251610501456F2330060A5C5 /* server.rb */; };
-		2516110E1456F2340060A5C5 /* NSDictionary+RKRequestSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610521456F2330060A5C5 /* NSDictionary+RKRequestSerializationTest.m */; };
-		2516110F1456F2340060A5C5 /* NSDictionary+RKRequestSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610521456F2330060A5C5 /* NSDictionary+RKRequestSerializationTest.m */; };
+		2516110E1456F2340060A5C5 /* RKURLEncodedSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610521456F2330060A5C5 /* RKURLEncodedSerializationTest.m */; };
+		2516110F1456F2340060A5C5 /* RKURLEncodedSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610521456F2330060A5C5 /* RKURLEncodedSerializationTest.m */; };
 		251611101456F2340060A5C5 /* NSStringRestKitTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610531456F2330060A5C5 /* NSStringRestKitTest.m */; };
 		251611111456F2340060A5C5 /* NSStringRestKitTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610531456F2330060A5C5 /* NSStringRestKitTest.m */; };
 		251611121456F2340060A5C5 /* RKDotNetDateFormatterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610541456F2330060A5C5 /* RKDotNetDateFormatterTest.m */; };
@@ -812,7 +812,7 @@
 		2516104E1456F2330060A5C5 /* timeout.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = timeout.rb; sourceTree = "<group>"; };
 		2516104F1456F2330060A5C5 /* restkit.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = restkit.rb; sourceTree = "<group>"; };
 		251610501456F2330060A5C5 /* server.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = server.rb; sourceTree = "<group>"; };
-		251610521456F2330060A5C5 /* NSDictionary+RKRequestSerializationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+RKRequestSerializationTest.m"; sourceTree = "<group>"; };
+		251610521456F2330060A5C5 /* RKURLEncodedSerializationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURLEncodedSerializationTest.m; sourceTree = "<group>"; };
 		251610531456F2330060A5C5 /* NSStringRestKitTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringRestKitTest.m; sourceTree = "<group>"; };
 		251610541456F2330060A5C5 /* RKDotNetDateFormatterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDotNetDateFormatterTest.m; sourceTree = "<group>"; };
 		251610561456F2330060A5C5 /* RKPathMatcherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcherTest.m; sourceTree = "<group>"; };
@@ -1622,7 +1622,7 @@
 			isa = PBXGroup;
 			children = (
 				5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */,
-				251610521456F2330060A5C5 /* NSDictionary+RKRequestSerializationTest.m */,
+				251610521456F2330060A5C5 /* RKURLEncodedSerializationTest.m */,
 				251610531456F2330060A5C5 /* NSStringRestKitTest.m */,
 				251610541456F2330060A5C5 /* RKDotNetDateFormatterTest.m */,
 				251610561456F2330060A5C5 /* RKPathMatcherTest.m */,
@@ -2475,7 +2475,7 @@
 				251610E21456F2330060A5C5 /* RKObjectMappingResultTest.m in Sources */,
 				251610E81456F2330060A5C5 /* RKMIMETypeSerializationTest.m in Sources */,
 				251610F01456F2340060A5C5 /* RKTestEnvironment.m in Sources */,
-				2516110E1456F2340060A5C5 /* NSDictionary+RKRequestSerializationTest.m in Sources */,
+				2516110E1456F2340060A5C5 /* RKURLEncodedSerializationTest.m in Sources */,
 				251611101456F2340060A5C5 /* NSStringRestKitTest.m in Sources */,
 				251611121456F2340060A5C5 /* RKDotNetDateFormatterTest.m in Sources */,
 				251611161456F2340060A5C5 /* RKPathMatcherTest.m in Sources */,
@@ -2634,7 +2634,7 @@
 				251610E71456F2330060A5C5 /* RKObjectParameterizationTest.m in Sources */,
 				251610E91456F2330060A5C5 /* RKMIMETypeSerializationTest.m in Sources */,
 				251610F11456F2340060A5C5 /* RKTestEnvironment.m in Sources */,
-				2516110F1456F2340060A5C5 /* NSDictionary+RKRequestSerializationTest.m in Sources */,
+				2516110F1456F2340060A5C5 /* RKURLEncodedSerializationTest.m in Sources */,
 				251611111456F2340060A5C5 /* NSStringRestKitTest.m in Sources */,
 				251611131456F2340060A5C5 /* RKDotNetDateFormatterTest.m in Sources */,
 				251611171456F2340060A5C5 /* RKPathMatcherTest.m in Sources */,

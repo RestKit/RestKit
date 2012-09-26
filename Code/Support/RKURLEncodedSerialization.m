@@ -77,3 +77,13 @@ NSString *RKPercentEscapedQueryStringFromStringWithEncoding(NSString *string, NS
 
 	return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, NULL, (__bridge CFStringRef)kAFLegalCharactersToBeEscaped, CFStringConvertNSStringEncodingToEncoding(encoding));
 }
+
+NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding encoding)
+{
+    NSRange chopRange = [string rangeOfString:@"?"];
+    if (chopRange.length > 0) {
+        chopRange.location += 1; // we want inclusive chopping up *through *"?"
+        if (chopRange.location < [string length]) string = [string substringFromIndex:chopRange.location];
+    }
+    return RKDictionaryFromURLEncodedStringWithEncoding(string, encoding);
+}

@@ -40,27 +40,6 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
-- (void)testShouldInterpolateObjectsWithDeprecatedParentheses
-{
-    RKObjectMapperTestModel *person = [[[RKObjectMapperTestModel alloc] init] autorelease];
-    person.name = @"CuddleGuts";
-    person.age  = [NSNumber numberWithInt:6];
-    NSString *interpolatedPath = RKPathFromPatternWithObject(@"/people/(name)/(age)", person);
-    assertThat(interpolatedPath, isNot(equalTo(nil)));
-    NSString *expectedPath = @"/people/CuddleGuts/6";
-    assertThat(interpolatedPath, is(equalTo(expectedPath)));
-}
-
-// TODO: Moves to RKURLEncodedSerializationTest.m
-- (void)testShouldParseQueryParameters
-{
-    NSString *resourcePath = @"/views/thing/?keyA=valA&keyB=valB";
-    NSDictionary *queryParameters = RKDictionaryFromURLEncodedStringWithEncoding(resourcePath, NSUTF8StringEncoding);
-    assertThat(queryParameters, isNot(empty()));
-    assertThat(queryParameters, hasCountOf(2));
-    assertThat(queryParameters, hasEntries(@"keyA", @"valA", @"keyB", @"valB", nil));
-}
-
 - (void)testReturningTheMIMETypeForAPathWithXMLExtension
 {
     NSString *MIMEType = RKMIMETypeFromPathExtension(@"/path/to/file.xml");

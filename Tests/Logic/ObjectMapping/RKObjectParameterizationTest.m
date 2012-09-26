@@ -23,10 +23,23 @@
 #import "RKMIMETypeSerialization.h"
 #import "RKMappableObject.h"
 
+@interface RKMIMETypeSerialization ()
+@property (nonatomic, strong) NSMutableArray *registrations;
+
++ (RKMIMETypeSerialization *)sharedSerialization;
+- (void)addRegistrationsForKnownSerializations;
+@end
+
 @interface RKObjectParameterizationTest : RKTestCase
 @end
 
 @implementation RKObjectParameterizationTest
+
+- (void)setUp
+{
+    [RKMIMETypeSerialization sharedSerialization].registrations = [NSMutableArray array];
+    [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
+}
 
 - (void)testShouldSerializeToFormEncodedData
 {

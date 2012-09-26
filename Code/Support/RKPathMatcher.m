@@ -24,7 +24,7 @@
 #import "RKDictionaryUtilities.h"
 
 static NSString *RKEncodeURLString(NSString *unencodedString);
-static NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding stringEncoding);
+extern NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding stringEncoding);
 
 // NSString's stringByAddingPercentEscapes doesn't do a complete job (it ignores "/?&", among others)
 static NSString *RKEncodeURLString(NSString *unencodedString)
@@ -36,55 +36,6 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
                                                                                   kCFStringEncodingUTF8));
     return encodedString;
-}
-
-static NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding encoding)
-{
-    BOOL shouldUseArrays = NO; // NOTE: This flag causes all parameters to be boxed into arrays. Unsure of utility.
-    NSRange chopRange = [string rangeOfString:@"?"];
-    if (chopRange.length > 0) {
-        chopRange.location += 1; // we want inclusive chopping up *through *"?"
-        if (chopRange.location < [string length]) string = [string substringFromIndex:chopRange.location];
-    }
-    NSCharacterSet *delimiterSet = [NSCharacterSet characterSetWithCharactersInString:@"&;"];
-    NSMutableDictionary *pairs = [NSMutableDictionary dictionary];
-    NSScanner *scanner = [[NSScanner alloc] initWithString:string];
-    while (![scanner isAtEnd]) {
-        NSString *pairString = nil;
-        [scanner scanUpToCharactersFromSet:delimiterSet intoString:&pairString];
-        [scanner scanCharactersFromSet:delimiterSet intoString:NULL];
-        NSArray *kvPair = [pairString componentsSeparatedByString:@"="];
-        
-        if (!shouldUseArrays) {
-            if (kvPair.count == 2) {
-                NSString *key = [[kvPair objectAtIndex:0]
-                                 stringByReplacingPercentEscapesUsingEncoding:encoding];
-                NSString *value = [[kvPair objectAtIndex:1]
-                                   stringByReplacingPercentEscapesUsingEncoding:encoding];
-                [pairs setObject:value forKey:key];
-            }
-        }
-        else {
-            if (kvPair.count == 1 || kvPair.count == 2) {
-                NSString *key = [[kvPair objectAtIndex:0]
-                                 stringByReplacingPercentEscapesUsingEncoding:encoding];
-                NSMutableArray *values = [pairs objectForKey:key];
-                if (nil == values) {
-                    values = [NSMutableArray array];
-                    [pairs setObject:values forKey:key];
-                }
-                if (kvPair.count == 1) {
-                    [values addObject:[NSNull null]];
-                    
-                } else if (kvPair.count == 2) {
-                    NSString *value = [[kvPair objectAtIndex:1]
-                                       stringByReplacingPercentEscapesUsingEncoding:encoding];
-                    [values addObject:value];
-                }
-            }
-        }
-    }
-    return [NSDictionary dictionaryWithDictionary:pairs];
 }
 
 @interface RKPathMatcher ()
