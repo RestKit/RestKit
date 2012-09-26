@@ -38,11 +38,11 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
         }
 
         if (range.length == 1) {
-            [string appendFormat:@"%u", range.location];
+            [string appendFormat:@"%lu", (unsigned long) range.location];
         } else {
             NSUInteger firstIndex = range.location;
             NSUInteger lastIndex = firstIndex + range.length - 1;
-            [string appendFormat:@"%u-%u", firstIndex, lastIndex];
+            [string appendFormat:@"%lu-%lu", (unsigned long) firstIndex, (unsigned long) lastIndex];
         }
 
         range.location = nextIndex;

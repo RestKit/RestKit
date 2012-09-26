@@ -50,7 +50,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                                          userInfo:nil];
         }
 
-        NSAssert(attribute.attributeType == NSStringAttributeType, @"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, got %d.", attribute.attributeType);
+        NSAssert(attribute.attributeType == NSStringAttributeType, @"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, got %ld.", (unsigned long) attribute.attributeType);
         [attributeNames addObject:attribute.name];
     }
 
@@ -164,12 +164,12 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 {
     NSArray *candidateObjects = [[[NSSet setWithSet:managedObjectContext.insertedObjects] setByAddingObjectsFromSet:managedObjectContext.updatedObjects] allObjects];
     NSUInteger totalObjects = [candidateObjects count];
-    RKLogInfo(@"Indexing %d changed objects in managed object context: %@", totalObjects, managedObjectContext);
+    RKLogInfo(@"Indexing %ld changed objects in managed object context: %@", (unsigned long) totalObjects, managedObjectContext);
 
     for (NSManagedObject *managedObject in candidateObjects) {
         NSUInteger index = [candidateObjects indexOfObject:managedObject];
         double percentage = (((float)index + 1) / (float)totalObjects) * 100;
-        if ((index + 1) % 250 == 0) RKLogInfo(@"Indexed %d of %d (%.2f%% complete)", index + 1, totalObjects, percentage);
+        if ((index + 1) % 250 == 0) RKLogInfo(@"Indexed %ld of %ld (%.2f%% complete)", (unsigned long) index + 1, (unsigned long) totalObjects, percentage);
         NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
         if (! searchableAttributes) {
             RKLogTrace(@"Skipping indexing for managed object for entity '%@': no searchable attributes found.", managedObject.entity.name);
