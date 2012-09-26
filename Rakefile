@@ -64,35 +64,19 @@ namespace :test do
   task :all do
     Rake.application.invoke_task("test:logic")
     unit_status = $?.exitstatus
-    Rake.application.invoke_task("test:application")
+    puts "\033[0;33m!! Warning: RestKit application tests are disabled!!"
+    # Rake.application.invoke_task("test:application")
     integration_status = $?.exitstatus
     puts "\033[0;31m!! Unit Tests failed with exit status of #{unit_status}" if unit_status != 0
     puts "\033[0;31m!! Integration Tests failed with exit status of #{integration_status}" if integration_status != 0
     puts "\033[0;32m** All Tests executed successfully" if unit_status == 0 && integration_status == 0
-  end
-  
-  task :check_mongodb do
-    port_check = RestKit::Server::PortCheck.new('127.0.0.1', 27017)
-    port_check.run
-    if port_check.closed?
-      puts "\033[0;33m!! Warning: MongoDB was not found running on port 27017"
-      puts "MongoDB is required for the execution of the OAuth tests. Tests in RKOAuthClientTest will NOT be executed"
-      `which mongo`
-      if $?.exitstatus == 0
-        puts "Execute MongoDB via `mongod run --config /usr/local/etc/mongod.conf`"
-      else
-        puts "Install mongodb with Homebrew via `brew install mongodb`"
-      end
-      puts "\033[0m"
-      sleep(5)
-    end
   end
 end
 
 desc 'Run all the RestKit tests'
 task :test => "test:all"
 
-task :default => ["test:check_mongodb", "server:autostart", "test:all", "server:autostop"]
+task :default => ["server:autostart", "test:all", "server:autostop"]
 
 def restkit_version
   @restkit_version ||= ENV['VERSION'] || File.read("VERSION").chomp
