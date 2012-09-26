@@ -34,7 +34,7 @@
 - (void)testFetchObjectForEntityForNameWithValueForPrimaryKeyAttribute
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSManagedObjectContext *context = [[[RKTestFactory managedObjectStore] newChildManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *context = [[RKTestFactory managedObjectStore] newChildManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     entity.primaryKeyAttributeName = @"railsID";
 

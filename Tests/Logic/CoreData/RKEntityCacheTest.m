@@ -13,9 +13,9 @@
 #import "RKHuman.h"
 
 @interface RKEntityCacheTest : RKTestCase
-@property (nonatomic, retain) RKManagedObjectStore *managedObjectStore;
-@property (nonatomic, retain) RKEntityCache *cache;
-@property (nonatomic, retain) NSEntityDescription *entity;
+@property (nonatomic, strong) RKManagedObjectStore *managedObjectStore;
+@property (nonatomic, strong) RKEntityCache *cache;
+@property (nonatomic, strong) NSEntityDescription *entity;
 @end
 
 @implementation RKEntityCacheTest
@@ -76,7 +76,7 @@
     [self.managedObjectStore.primaryManagedObjectContext save:&error];
 
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
     NSManagedObject *fetchedObject = [self.cache objectForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
     assertThat(fetchedObject, is(notNilValue()));
@@ -92,7 +92,7 @@
     [self.managedObjectStore.primaryManagedObjectContext save:&error];
 
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
     NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
     assertThat(objects, hasCountOf(2));
@@ -112,7 +112,7 @@
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
     
-    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
 
     NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
@@ -152,7 +152,7 @@
     [_cache addObject:human1];
     [_cache addObject:human2];
     
-    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
 
     NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
@@ -186,7 +186,7 @@
     [_cache addObject:human1];
     [_cache addObject:human2];
     
-    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
 
     NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];

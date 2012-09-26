@@ -31,7 +31,7 @@
 
 - (void)testShouldInterpolateObjects
 {
-    RKObjectMapperTestModel *person = [[[RKObjectMapperTestModel alloc] init] autorelease];
+    RKObjectMapperTestModel *person = [[RKObjectMapperTestModel alloc] init];
     person.name = @"CuddleGuts";
     person.age  = [NSNumber numberWithInt:6];
     NSString *interpolatedPath = RKPathFromPatternWithObject(@"/people/:name/:age", person);

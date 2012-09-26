@@ -25,7 +25,7 @@
     NSDate *_date;
 }
 
-@property (nonatomic, retain) NSString *testString;
-@property (nonatomic, retain) NSDate *date;
+@property (nonatomic, strong) NSString *testString;
+@property (nonatomic, strong) NSDate *date;
 
 @end

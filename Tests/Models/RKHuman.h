@@ -24,22 +24,22 @@
 
 @interface RKHuman : NSManagedObject
 
-@property (nonatomic, retain) NSNumber *railsID;
-@property (nonatomic, retain) NSString *name;
-@property (nonatomic, retain) NSString *nickName;
-@property (nonatomic, retain) NSDate *birthday;
-@property (nonatomic, retain) NSString *sex;
-@property (nonatomic, retain) NSNumber *age;
-@property (nonatomic, retain) NSDate *createdAt;
-@property (nonatomic, retain) NSDate *updatedAt;
-@property (nonatomic, retain) NSArray *favoriteColors;
+@property (nonatomic, strong) NSNumber *railsID;
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *nickName;
+@property (nonatomic, strong) NSDate *birthday;
+@property (nonatomic, strong) NSString *sex;
+@property (nonatomic, strong) NSNumber *age;
+@property (nonatomic, strong) NSDate *createdAt;
+@property (nonatomic, strong) NSDate *updatedAt;
+@property (nonatomic, strong) NSArray *favoriteColors;
 
-@property (nonatomic, retain) NSSet *cats;
-@property (nonatomic, retain) NSNumber *favoriteCatID;
-@property (nonatomic, retain) RKCat *favoriteCat;
+@property (nonatomic, strong) NSSet *cats;
+@property (nonatomic, strong) NSNumber *favoriteCatID;
+@property (nonatomic, strong) RKCat *favoriteCat;
 
-@property (nonatomic, retain) NSArray *catIDs;
-@property (nonatomic, retain) NSOrderedSet *catsInOrderByAge;
+@property (nonatomic, strong) NSArray *catIDs;
+@property (nonatomic, strong) NSOrderedSet *catsInOrderByAge;
 
 @end
 

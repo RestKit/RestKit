@@ -181,9 +181,6 @@
                is(equalTo([NSSet setWithArray:@[ @"this", @"my", @"name" ]])));
     
     [indexer stopObservingManagedObjectContext:managedObjectContext];
-    [indexer release];
-    [managedObjectContext release];
-    [persistentStoreCoordinator release];
 }
 
 - (void)testIndexingChangesInManagedObjectContextWithoutSave
@@ -210,9 +207,6 @@
     assertThat([searchWords valueForKey:@"word"],
                is(equalTo([NSSet setWithArray:@[ @"this", @"my", @"name" ]])));
     
-    [indexer release];
-    [managedObjectContext release];
-    [persistentStoreCoordinator release];
 }
 
 @end

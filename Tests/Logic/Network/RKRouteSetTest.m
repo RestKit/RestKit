@@ -272,7 +272,7 @@
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID" method:RKRequestMethodPOST]];
     [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] pathPattern:@"/users/:userID" method:RKRequestMethodGET]];
 
-    RKTestSubclassedObject *subclassed = [[RKTestSubclassedObject new] autorelease];
+    RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     NSArray *routes = [router routesForObject:subclassed];
     assertThat(routes, hasCountOf(3));
 }
@@ -284,7 +284,7 @@
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/2" method:RKRequestMethodPOST]];
     [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] pathPattern:@"/users/:userID/3" method:RKRequestMethodGET]];
 
-    RKTestSubclassedObject *subclassed = [[RKTestSubclassedObject new] autorelease];
+    RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKRequestMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestSubclassedObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
@@ -298,7 +298,7 @@
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/2" method:RKRequestMethodPOST]];
     [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] pathPattern:@"/users/:userID/3" method:RKRequestMethodAny]];
 
-    RKTestSubclassedObject *subclassed = [[RKTestSubclassedObject new] autorelease];
+    RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKRequestMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestSubclassedObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodAny)));
@@ -311,7 +311,7 @@
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/1" method:RKRequestMethodGET]];
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/2" method:RKRequestMethodAny]];
 
-    RKTestSubclassedObject *subclassed = [[RKTestSubclassedObject new] autorelease];
+    RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKRequestMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
@@ -324,7 +324,7 @@
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/1" method:RKRequestMethodGET]];
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/2" method:RKRequestMethodAny]];
 
-    RKTestSubclassedObject *subclassed = [[RKTestSubclassedObject new] autorelease];
+    RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKRequestMethodPOST];
     assertThat(route.objectClass, is(equalTo([RKTestObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodAny)));

@@ -30,11 +30,11 @@
     NSSet *_hasMany;
 }
 
-@property (nonatomic, retain) NSDate *dateTest;
-@property (nonatomic, retain) NSNumber *numberTest;
-@property (nonatomic, retain) NSString *stringTest;
-@property (nonatomic, retain) NSURL *urlTest;
-@property (nonatomic, retain) RKMappableAssociation *hasOne;
-@property (nonatomic, retain) NSSet *hasMany;
+@property (nonatomic, strong) NSDate *dateTest;
+@property (nonatomic, strong) NSNumber *numberTest;
+@property (nonatomic, strong) NSString *stringTest;
+@property (nonatomic, strong) NSURL *urlTest;
+@property (nonatomic, strong) RKMappableAssociation *hasOne;
+@property (nonatomic, strong) NSSet *hasMany;
 
 @end

@@ -76,7 +76,7 @@
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.dateFormat = @"MM/dd/yyyy";
     dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
     mapping.preferredDateFormatter = dateFormatter;
@@ -192,9 +192,9 @@
 
 - (void)testShouldSerializeNestedObjectsContainingDatesToJSON
 {
-    RKMappableObject *object = [[RKMappableObject new] autorelease];
+    RKMappableObject *object = [RKMappableObject new];
     object.stringTest = @"The string";
-    RKMappableAssociation *association = [[RKMappableAssociation new] autorelease];
+    RKMappableAssociation *association = [RKMappableAssociation new];
     association.date = [NSDate dateWithTimeIntervalSince1970:0];
     object.hasOne = association;
 
@@ -237,9 +237,9 @@
 
 - (void)testShouldSerializeToManyRelationships
 {
-    RKMappableObject *object = [[RKMappableObject new] autorelease];
+    RKMappableObject *object = [RKMappableObject new];
     object.stringTest = @"The string";
-    RKMappableAssociation *association = [[RKMappableAssociation new] autorelease];
+    RKMappableAssociation *association = [RKMappableAssociation new];
     association.date = [NSDate dateWithTimeIntervalSince1970:0];
     object.hasMany = [NSSet setWithObject:association];
 

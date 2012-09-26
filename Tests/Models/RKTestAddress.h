@@ -15,10 +15,10 @@
     NSString *_country;
 }
 
-@property (nonatomic, retain) NSNumber *addressID;
-@property (nonatomic, retain) NSString *city;
-@property (nonatomic, retain) NSString *state;
-@property (nonatomic, retain) NSString *country;
+@property (nonatomic, strong) NSNumber *addressID;
+@property (nonatomic, strong) NSString *city;
+@property (nonatomic, strong) NSString *state;
+@property (nonatomic, strong) NSString *country;
 
 + (RKTestAddress *)address;
 

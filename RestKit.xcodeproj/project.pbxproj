@@ -267,7 +267,7 @@
 		251610D21456F2330060A5C5 /* RKDynamicObjectMappingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2516101C1456F2330060A5C5 /* RKDynamicObjectMappingTest.m */; };
 		251610D31456F2330060A5C5 /* RKDynamicObjectMappingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2516101C1456F2330060A5C5 /* RKDynamicObjectMappingTest.m */; };
 		251610DC1456F2330060A5C5 /* RKObjectMappingNextGenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610211456F2330060A5C5 /* RKObjectMappingNextGenTest.m */; };
-		251610DD1456F2330060A5C5 /* RKObjectMappingNextGenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610211456F2330060A5C5 /* RKObjectMappingNextGenTest.m */; };
+		251610DD1456F2330060A5C5 /* RKObjectMappingNextGenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610211456F2330060A5C5 /* RKObjectMappingNextGenTest.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		251610DE1456F2330060A5C5 /* RKObjectMappingOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610221456F2330060A5C5 /* RKObjectMappingOperationTest.m */; };
 		251610DF1456F2330060A5C5 /* RKObjectMappingOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610221456F2330060A5C5 /* RKObjectMappingOperationTest.m */; };
 		251610E21456F2330060A5C5 /* RKObjectMappingResultTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610241456F2330060A5C5 /* RKObjectMappingResultTest.m */; };
@@ -473,10 +473,10 @@
 		25AA23D115AF2920006EF62D /* RKManagedObjectMappingOperationDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */; };
 		25AA23D815AF5085006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */; };
 		25AA23D915AF5086006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */; };
-		25AE61C615ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */; };
-		25AE61C715ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */; };
-		25AE61C815ADE9E500B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */; };
-		25AE61C915ADE9E500B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */; };
+		25AE61C615ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25AE61C715ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25AE61C815ADE9E500B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25AE61C915ADE9E500B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		25AE61CA15ADEBD000B319C8 /* RKConnectionMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC044C81576CE72003DCDD6 /* RKConnectionMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25AE61DE15ADEF5800B319C8 /* RKConnectionMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BC044C91576CE72003DCDD6 /* RKConnectionMapping.m */; };
 		25AFF8F115B4CF1F0051877F /* RKMappingErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 25AFF8F015B4CF1F0051877F /* RKMappingErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -495,50 +495,50 @@
 		25B6E95F14CF7E3C00B1E881 /* RKDynamicMappingMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E95B14CF7E3C00B1E881 /* RKDynamicMappingMatcher.m */; };
 		25B6E9A414CF829400B1E881 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E97B14CF829400B1E881 /* InfoPlist.strings */; };
 		25B6E9A514CF829400B1E881 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E97B14CF829400B1E881 /* InfoPlist.strings */; };
-		25B6E9A614CF829400B1E881 /* NSInvocation+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */; };
-		25B6E9A714CF829400B1E881 /* NSInvocation+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */; };
-		25B6E9A814CF829400B1E881 /* NSMethodSignature+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98014CF829400B1E881 /* NSMethodSignature+OCMAdditions.m */; };
-		25B6E9A914CF829400B1E881 /* NSMethodSignature+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98014CF829400B1E881 /* NSMethodSignature+OCMAdditions.m */; };
-		25B6E9AA14CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98114CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m */; };
-		25B6E9AB14CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98114CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m */; };
-		25B6E9AC14CF829400B1E881 /* OCClassMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98314CF829400B1E881 /* OCClassMockObject.m */; };
-		25B6E9AD14CF829400B1E881 /* OCClassMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98314CF829400B1E881 /* OCClassMockObject.m */; };
-		25B6E9AE14CF829400B1E881 /* OCMArg.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98414CF829400B1E881 /* OCMArg.m */; };
-		25B6E9AF14CF829400B1E881 /* OCMArg.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98414CF829400B1E881 /* OCMArg.m */; };
-		25B6E9B014CF829400B1E881 /* OCMBlockCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98614CF829400B1E881 /* OCMBlockCaller.m */; };
-		25B6E9B114CF829400B1E881 /* OCMBlockCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98614CF829400B1E881 /* OCMBlockCaller.m */; };
-		25B6E9B214CF829400B1E881 /* OCMBoxedReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98814CF829400B1E881 /* OCMBoxedReturnValueProvider.m */; };
-		25B6E9B314CF829400B1E881 /* OCMBoxedReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98814CF829400B1E881 /* OCMBoxedReturnValueProvider.m */; };
-		25B6E9B414CF829400B1E881 /* OCMConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98914CF829400B1E881 /* OCMConstraint.m */; };
-		25B6E9B514CF829400B1E881 /* OCMConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98914CF829400B1E881 /* OCMConstraint.m */; };
-		25B6E9B614CF829400B1E881 /* OCMExceptionReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98B14CF829400B1E881 /* OCMExceptionReturnValueProvider.m */; };
-		25B6E9B714CF829400B1E881 /* OCMExceptionReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98B14CF829400B1E881 /* OCMExceptionReturnValueProvider.m */; };
-		25B6E9B814CF829400B1E881 /* OCMIndirectReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98D14CF829400B1E881 /* OCMIndirectReturnValueProvider.m */; };
-		25B6E9B914CF829400B1E881 /* OCMIndirectReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98D14CF829400B1E881 /* OCMIndirectReturnValueProvider.m */; };
-		25B6E9BA14CF829400B1E881 /* OCMNotificationPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98F14CF829400B1E881 /* OCMNotificationPoster.m */; };
-		25B6E9BB14CF829400B1E881 /* OCMNotificationPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98F14CF829400B1E881 /* OCMNotificationPoster.m */; };
-		25B6E9BC14CF829400B1E881 /* OCMObserverRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99114CF829400B1E881 /* OCMObserverRecorder.m */; };
-		25B6E9BD14CF829400B1E881 /* OCMObserverRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99114CF829400B1E881 /* OCMObserverRecorder.m */; };
+		25B6E9A614CF829400B1E881 /* NSInvocation+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9A714CF829400B1E881 /* NSInvocation+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9A814CF829400B1E881 /* NSMethodSignature+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98014CF829400B1E881 /* NSMethodSignature+OCMAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9A914CF829400B1E881 /* NSMethodSignature+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98014CF829400B1E881 /* NSMethodSignature+OCMAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9AA14CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98114CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9AB14CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98114CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9AC14CF829400B1E881 /* OCClassMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98314CF829400B1E881 /* OCClassMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9AD14CF829400B1E881 /* OCClassMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98314CF829400B1E881 /* OCClassMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9AE14CF829400B1E881 /* OCMArg.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98414CF829400B1E881 /* OCMArg.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9AF14CF829400B1E881 /* OCMArg.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98414CF829400B1E881 /* OCMArg.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B014CF829400B1E881 /* OCMBlockCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98614CF829400B1E881 /* OCMBlockCaller.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B114CF829400B1E881 /* OCMBlockCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98614CF829400B1E881 /* OCMBlockCaller.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B214CF829400B1E881 /* OCMBoxedReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98814CF829400B1E881 /* OCMBoxedReturnValueProvider.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B314CF829400B1E881 /* OCMBoxedReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98814CF829400B1E881 /* OCMBoxedReturnValueProvider.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B414CF829400B1E881 /* OCMConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98914CF829400B1E881 /* OCMConstraint.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B514CF829400B1E881 /* OCMConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98914CF829400B1E881 /* OCMConstraint.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B614CF829400B1E881 /* OCMExceptionReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98B14CF829400B1E881 /* OCMExceptionReturnValueProvider.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B714CF829400B1E881 /* OCMExceptionReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98B14CF829400B1E881 /* OCMExceptionReturnValueProvider.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B814CF829400B1E881 /* OCMIndirectReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98D14CF829400B1E881 /* OCMIndirectReturnValueProvider.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9B914CF829400B1E881 /* OCMIndirectReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98D14CF829400B1E881 /* OCMIndirectReturnValueProvider.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9BA14CF829400B1E881 /* OCMNotificationPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98F14CF829400B1E881 /* OCMNotificationPoster.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9BB14CF829400B1E881 /* OCMNotificationPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98F14CF829400B1E881 /* OCMNotificationPoster.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9BC14CF829400B1E881 /* OCMObserverRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99114CF829400B1E881 /* OCMObserverRecorder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9BD14CF829400B1E881 /* OCMObserverRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99114CF829400B1E881 /* OCMObserverRecorder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		25B6E9BE14CF829400B1E881 /* OCMock-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E99214CF829400B1E881 /* OCMock-Info.plist */; };
 		25B6E9BF14CF829400B1E881 /* OCMock-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E99214CF829400B1E881 /* OCMock-Info.plist */; };
-		25B6E9C014CF829400B1E881 /* OCMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99414CF829400B1E881 /* OCMockObject.m */; };
-		25B6E9C114CF829400B1E881 /* OCMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99414CF829400B1E881 /* OCMockObject.m */; };
-		25B6E9C214CF829400B1E881 /* OCMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99514CF829400B1E881 /* OCMockRecorder.m */; };
-		25B6E9C314CF829400B1E881 /* OCMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99514CF829400B1E881 /* OCMockRecorder.m */; };
-		25B6E9C414CF829400B1E881 /* OCMPassByRefSetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99714CF829400B1E881 /* OCMPassByRefSetter.m */; };
-		25B6E9C514CF829400B1E881 /* OCMPassByRefSetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99714CF829400B1E881 /* OCMPassByRefSetter.m */; };
-		25B6E9C614CF829400B1E881 /* OCMRealObjectForwarder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99914CF829400B1E881 /* OCMRealObjectForwarder.m */; };
-		25B6E9C714CF829400B1E881 /* OCMRealObjectForwarder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99914CF829400B1E881 /* OCMRealObjectForwarder.m */; };
-		25B6E9C814CF829400B1E881 /* OCMReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99B14CF829400B1E881 /* OCMReturnValueProvider.m */; };
-		25B6E9C914CF829400B1E881 /* OCMReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99B14CF829400B1E881 /* OCMReturnValueProvider.m */; };
-		25B6E9CA14CF829400B1E881 /* OCObserverMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99D14CF829400B1E881 /* OCObserverMockObject.m */; };
-		25B6E9CB14CF829400B1E881 /* OCObserverMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99D14CF829400B1E881 /* OCObserverMockObject.m */; };
-		25B6E9CC14CF829400B1E881 /* OCPartialMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99F14CF829400B1E881 /* OCPartialMockObject.m */; };
-		25B6E9CD14CF829400B1E881 /* OCPartialMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99F14CF829400B1E881 /* OCPartialMockObject.m */; };
-		25B6E9CE14CF829400B1E881 /* OCPartialMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A114CF829400B1E881 /* OCPartialMockRecorder.m */; };
-		25B6E9CF14CF829400B1E881 /* OCPartialMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A114CF829400B1E881 /* OCPartialMockRecorder.m */; };
-		25B6E9D014CF829400B1E881 /* OCProtocolMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A314CF829400B1E881 /* OCProtocolMockObject.m */; };
-		25B6E9D114CF829400B1E881 /* OCProtocolMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A314CF829400B1E881 /* OCProtocolMockObject.m */; };
+		25B6E9C014CF829400B1E881 /* OCMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99414CF829400B1E881 /* OCMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C114CF829400B1E881 /* OCMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99414CF829400B1E881 /* OCMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C214CF829400B1E881 /* OCMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99514CF829400B1E881 /* OCMockRecorder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C314CF829400B1E881 /* OCMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99514CF829400B1E881 /* OCMockRecorder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C414CF829400B1E881 /* OCMPassByRefSetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99714CF829400B1E881 /* OCMPassByRefSetter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C514CF829400B1E881 /* OCMPassByRefSetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99714CF829400B1E881 /* OCMPassByRefSetter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C614CF829400B1E881 /* OCMRealObjectForwarder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99914CF829400B1E881 /* OCMRealObjectForwarder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C714CF829400B1E881 /* OCMRealObjectForwarder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99914CF829400B1E881 /* OCMRealObjectForwarder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C814CF829400B1E881 /* OCMReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99B14CF829400B1E881 /* OCMReturnValueProvider.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9C914CF829400B1E881 /* OCMReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99B14CF829400B1E881 /* OCMReturnValueProvider.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9CA14CF829400B1E881 /* OCObserverMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99D14CF829400B1E881 /* OCObserverMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9CB14CF829400B1E881 /* OCObserverMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99D14CF829400B1E881 /* OCObserverMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9CC14CF829400B1E881 /* OCPartialMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99F14CF829400B1E881 /* OCPartialMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9CD14CF829400B1E881 /* OCPartialMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99F14CF829400B1E881 /* OCPartialMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9CE14CF829400B1E881 /* OCPartialMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A114CF829400B1E881 /* OCPartialMockRecorder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9CF14CF829400B1E881 /* OCPartialMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A114CF829400B1E881 /* OCPartialMockRecorder.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9D014CF829400B1E881 /* OCProtocolMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A314CF829400B1E881 /* OCProtocolMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25B6E9D114CF829400B1E881 /* OCProtocolMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A314CF829400B1E881 /* OCProtocolMockObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		25B6E9DB14CF912500B1E881 /* RKSearchable.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9D614CF912500B1E881 /* RKSearchable.m */; };
 		25B6E9DC14CF912500B1E881 /* RKSearchable.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9D614CF912500B1E881 /* RKSearchable.m */; };
 		25B6E9DD14CF912500B1E881 /* RKTestAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9D814CF912500B1E881 /* RKTestAddress.m */; };
@@ -2724,6 +2724,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2747,6 +2748,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -2796,6 +2798,7 @@
 		25160D3E14564E820060A5C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_OBJCPP_ARC_ABI = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
@@ -2819,6 +2822,7 @@
 		25160D3F14564E820060A5C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_OBJCPP_ARC_ABI = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
@@ -2899,6 +2903,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
@@ -2927,6 +2932,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (

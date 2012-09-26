@@ -13,9 +13,9 @@
 #import "RKChild.h"
 
 @interface RKEntityByAttributeCacheTest : RKTestCase
-@property (nonatomic, retain) RKManagedObjectStore *managedObjectStore;
-@property (nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, retain) RKEntityByAttributeCache *cache;
+@property (nonatomic, strong) RKManagedObjectStore *managedObjectStore;
+@property (weak, nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong) RKEntityByAttributeCache *cache;
 @end
 
 @implementation RKEntityByAttributeCacheTest
@@ -123,7 +123,7 @@
     [self.managedObjectStore.primaryManagedObjectContext save:nil];
     [self.cache load];
 
-    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectContext;
     NSManagedObject *object = [self.cache objectWithAttributeValue:[NSNumber numberWithInteger:12345] inContext:childContext];
     assertThat(object.objectID, is(equalTo(human.objectID)));
@@ -136,7 +136,7 @@
     [self.managedObjectStore.primaryManagedObjectContext save:nil];
     [self.cache load];
 
-    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectContext;
     NSManagedObject *object = [self.cache objectWithAttributeValue:@"12345" inContext:childContext];
     assertThat(object, is(notNilValue()));
@@ -154,7 +154,7 @@
     [self.cache addObject:human1];
     [self.cache addObject:human2];
 
-    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectContext;
     NSArray *objects = [self.cache objectsWithAttributeValue:[NSNumber numberWithInt:12345] inContext:childContext];
     assertThat(objects, hasCountOf(2));

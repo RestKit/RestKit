@@ -62,7 +62,7 @@
 
 + (RKExampleGroupWithUserArray *)group
 {
-    return [[self new] autorelease];
+    return [self new];
 }
 
 // isEqual: is consulted by the mapping operation
@@ -95,7 +95,7 @@
 
 + (RKExampleGroupWithUserSet *)group
 {
-    return [[self new] autorelease];
+    return [self new];
 }
 
 // isEqual: is consulted by the mapping operation
@@ -225,11 +225,10 @@
     [mapping addPropertyMapping:nameMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:mapping];
-    [mapper release];
     assertThatBool(success, is(equalToBool(YES)));
     assertThatInt([user.userID intValue], is(equalToInt(31337)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
@@ -244,13 +243,12 @@
     [mapping addPropertyMapping:nameMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
     NSArray *users = [mapper mapCollection:userInfo atKeyPath:@"" usingMapping:mapping];
     assertThatUnsignedInteger([users count], is(equalToInt(3)));
     RKTestUser *blake = [users objectAtIndex:0];
     assertThat(blake.name, is(equalTo(@"Blake Watters")));
-    [mapper release];
 }
 
 // TODO: This doesn't really test anything anymore...
@@ -503,7 +501,7 @@
     assertThat(group.name, is(equalTo(@"restkit")));
 
 
-    NSSortDescriptor *sortByName = [[[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES] autorelease];
+    NSSortDescriptor *sortByName = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
     NSArray *descriptors = [NSArray arrayWithObject:sortByName];;
     NSArray *users = [group.users sortedArrayUsingDescriptors:descriptors];
     RKTestUser *user = [users objectAtIndex:0];
@@ -704,9 +702,9 @@
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
-    RKTestUser *exampleUser = [[RKTestUser new] autorelease];
+    RKTestUser *exampleUser = [RKTestUser new];
     id mockObject = [OCMockObject partialMockForObject:exampleUser];
-    [[[mockObject expect] andCall:@selector(fakeValidateValue:forKeyPath:error:) onObject:self] validateValue:[OCMArg anyPointer] forKeyPath:OCMOCK_ANY error:[OCMArg anyPointer]];
+    [[[mockObject expect] andCall:@selector(fakeValidateValue:forKeyPath:error:) onObject:self] validateValue:(id __autoreleasing *)[OCMArg anyPointer] forKeyPath:OCMOCK_ANY error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
     mapper.targetObject = mockObject;
     [[mockDelegate expect] mapper:mapper didFailMappingOperation:OCMOCK_ANY forKeyPath:nil withError:OCMOCK_ANY];
     mapper.delegate = mockDelegate;
@@ -734,7 +732,6 @@
     [operation start];
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThatInt([user.userID intValue], is(equalToInt(123)));
-    [operation release];
 }
 
 - (void)testShouldConsiderADictionaryContainingOnlyNullValuesForKeysMappable
@@ -754,7 +751,6 @@
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(nilValue()));
-    [operation release];
 }
 
 - (void)testShouldBeAbleToMapAUserToADictionary
@@ -777,7 +773,6 @@
     assertThatBool(success, is(equalToBool(YES)));
     assertThat([dictionary valueForKey:@"name"], is(equalTo(@"Blake Watters")));
     assertThatInt([[dictionary valueForKey:@"id"] intValue], is(equalToInt(123)));
-    [operation release];
 }
 
 - (void)testShouldReturnNoWithoutErrorWhenGivenASourceObjectThatContainsNoMappableKeys
@@ -834,7 +829,7 @@
     NSMutableDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"FAILURE", @"id", nil];
     RKTestUser *user = [RKTestUser user];
     id mockObject = [OCMockObject partialMockForObject:user];
-    [[[mockObject expect] andCall:@selector(fakeValidateValue:forKeyPath:error:) onObject:self] validateValue:[OCMArg anyPointer] forKeyPath:OCMOCK_ANY error:[OCMArg anyPointer]];
+    [[[mockObject expect] andCall:@selector(fakeValidateValue:forKeyPath:error:) onObject:self] validateValue:(id __autoreleasing *)[OCMArg anyPointer] forKeyPath:OCMOCK_ANY error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockObject mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -842,7 +837,6 @@
     NSError *error = nil;
     [operation performMapping:&error];
     assertThat(error, isNot(nilValue()));
-    [operation release];
 }
 
 #pragma mark - Attribute Mapping
@@ -863,7 +857,7 @@
     NSError *error = nil;
     [operation performMapping:&error];
 
-    NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     [dateFormatter setDateFormat:@"MM/dd/yyyy"];
     assertThat([dateFormatter stringFromDate:user.birthDate], is(equalTo(@"11/27/1982")));
@@ -1051,7 +1045,7 @@
 
 - (void)testShouldMapANumberToADate
 {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
     [dateFormatter setDateFormat:@"MM/dd/yyyy"];
     NSDate *date = [dateFormatter dateFromString:@"11/27/1982"];
 
@@ -1138,7 +1132,7 @@
     RKTestUser *user = [RKTestUser user];
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
-    [[mockUser reject] setName:OCMOCK_ANY];
+    [(RKTestUser *)[mockUser reject] setName:OCMOCK_ANY];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -1157,7 +1151,7 @@
     RKTestUser *user = [RKTestUser user];
     user.name = nil;
     id mockUser = [OCMockObject partialMockForObject:user];
-    [[mockUser reject] setName:OCMOCK_ANY];
+    [(RKTestUser *)[mockUser reject] setName:OCMOCK_ANY];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -1176,7 +1170,7 @@
     RKTestUser *user = [RKTestUser user];
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
-    [[mockUser expect] setName:nil];
+    [(RKTestUser *)[mockUser expect] setName:nil];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -1240,7 +1234,7 @@
     RKTestUser *user = [RKTestUser user];
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
-    [[mockUser expect] setName:nil];
+    [(RKTestUser *)[mockUser expect] setName:nil];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -1263,7 +1257,7 @@
     RKTestUser *user = [RKTestUser user];
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
-    [[mockUser reject] setName:nil];
+    [(RKTestUser *)[mockUser reject] setName:nil];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -1290,11 +1284,10 @@
     [userMapping addPropertyMapping:hasOneMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
-    [mapper release];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.address, isNot(nilValue()));
@@ -1313,11 +1306,10 @@
     [userMapping addPropertyMapping:hasOneMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
-    [mapper release];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friends, isNot(nilValue()));
@@ -1337,11 +1329,10 @@
     [userMapping addPropertyMapping:hasOneMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
-    [mapper release];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsOrderedSet, isNot(nilValue()));
@@ -1358,11 +1349,10 @@
     [userMapping addPropertyMapping:hasManyMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
-    [mapper release];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friends, isNot(nilValue()));
@@ -1381,11 +1371,10 @@
     [userMapping addPropertyMapping:hasManyMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
-    [mapper release];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsSet, isNot(nilValue()));
@@ -1405,11 +1394,10 @@
     [userMapping addPropertyMapping:hasManyMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
-    [mapper release];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsOrderedSet, isNot(nilValue()));
@@ -1439,10 +1427,9 @@
     [userMapping addPropertyMapping:hasOneMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
-    [mapper release];
 }
 
 - (void)testSkippingOfIdenticalObjectsInformsDelegate
@@ -1487,7 +1474,7 @@
     [userMapping addPropertyMapping:hasManyMapping];
 
     RKMapperOperation *mapper = [RKMapperOperation new];
-    mapper.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
 
@@ -1503,7 +1490,6 @@
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser reject] setFriends:OCMOCK_ANY];
     [mapper mapFromObject:userInfo toObject:mockUser atKeyPath:@"" usingMapping:userMapping];
-    [mapper release];
     [mockUser verify];
 }
 
@@ -1760,7 +1746,7 @@
     [mappingsDictionary setObject:dynamicMapping forKey:@""];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"];
-    Boy *blake = [[Boy new] autorelease];
+    Boy *blake = [Boy new];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
     mapper.targetObject = blake;
     [mapper start];
@@ -1782,7 +1768,7 @@
     [mappingsDictionary setObject:dynamicMapping forKey:@""];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"];
-    Boy *blake = [[Boy new] autorelease];
+    Boy *blake = [Boy new];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
     mapper.targetObject = blake;
     [mapper start];
@@ -1808,7 +1794,7 @@
     [mappingsDictionary setObject:dynamicMapping forKey:@""];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"];
-    Boy *blake = [[Boy new] autorelease];
+    Boy *blake = [Boy new];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
     mapper.targetObject = blake;
     [mapper start];
@@ -1851,7 +1837,7 @@
 - (void)testShouldAllowNewlyAddedDateFormatterToRunFirst
 {
     [RKObjectMapping setDefaultDateFormatters:nil];
-    NSDateFormatter *newDateFormatter = [[NSDateFormatter new] autorelease];
+    NSDateFormatter *newDateFormatter = [NSDateFormatter new];
     [newDateFormatter setDateFormat:@"dd/MM/yyyy"];
     [RKObjectMapping addDefaultDateFormatter:newDateFormatter];
 
@@ -1867,7 +1853,7 @@
     operation.dataSource = dataSource;
     [operation performMapping:&error];
 
-    NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     [dateFormatter setDateFormat:@"MM/dd/yyyy"];
 
@@ -1902,7 +1888,6 @@
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:mutableDictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
-    [mutableDictionary release];
     NSError *error = nil;
     [operation performMapping:&error];
 

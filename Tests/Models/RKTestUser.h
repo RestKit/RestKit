@@ -27,22 +27,22 @@
     NSArray *_friends;
 }
 
-@property (nonatomic, retain) NSNumber *userID;
-@property (nonatomic, retain) NSString *name;
-@property (nonatomic, retain) NSDate *birthDate;
-@property (nonatomic, retain) NSDate *favoriteDate;
-@property (nonatomic, retain) NSArray *favoriteColors;
-@property (nonatomic, retain) NSDictionary *addressDictionary;
-@property (nonatomic, retain) NSURL *website;
-@property (nonatomic, retain) NSNumber *isDeveloper;
-@property (nonatomic, retain) NSNumber *luckyNumber;
-@property (nonatomic, retain) NSDecimalNumber *weight;
-@property (nonatomic, retain) NSArray *interests;
-@property (nonatomic, retain) NSString *country;
-@property (nonatomic, retain) RKTestAddress *address;
-@property (nonatomic, retain) NSArray *friends;
-@property (nonatomic, retain) NSSet *friendsSet;
-@property (nonatomic, retain) NSOrderedSet *friendsOrderedSet;
+@property (nonatomic, strong) NSNumber *userID;
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSDate *birthDate;
+@property (nonatomic, strong) NSDate *favoriteDate;
+@property (nonatomic, strong) NSArray *favoriteColors;
+@property (nonatomic, strong) NSDictionary *addressDictionary;
+@property (nonatomic, strong) NSURL *website;
+@property (nonatomic, strong) NSNumber *isDeveloper;
+@property (nonatomic, strong) NSNumber *luckyNumber;
+@property (nonatomic, strong) NSDecimalNumber *weight;
+@property (nonatomic, strong) NSArray *interests;
+@property (nonatomic, strong) NSString *country;
+@property (nonatomic, strong) RKTestAddress *address;
+@property (nonatomic, strong) NSArray *friends;
+@property (nonatomic, strong) NSSet *friendsSet;
+@property (nonatomic, strong) NSOrderedSet *friendsOrderedSet;
 
 + (RKTestUser *)user;
 

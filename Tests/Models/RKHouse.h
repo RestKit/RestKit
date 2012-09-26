@@ -25,13 +25,13 @@
 
 }
 
-@property (nonatomic, retain) NSString *city;
-@property (nonatomic, retain) NSDate *createdAt;
-@property (nonatomic, retain) NSNumber *ownerId;
-@property (nonatomic, retain) NSNumber *railsID;
-@property (nonatomic, retain) NSString *state;
-@property (nonatomic, retain) NSString *street;
-@property (nonatomic, retain) NSDate *updatedAt;
-@property (nonatomic, retain) NSString *zip;
+@property (nonatomic, strong) NSString *city;
+@property (nonatomic, strong) NSDate *createdAt;
+@property (nonatomic, strong) NSNumber *ownerId;
+@property (nonatomic, strong) NSNumber *railsID;
+@property (nonatomic, strong) NSString *state;
+@property (nonatomic, strong) NSString *street;
+@property (nonatomic, strong) NSDate *updatedAt;
+@property (nonatomic, strong) NSString *zip;
 
 @end
