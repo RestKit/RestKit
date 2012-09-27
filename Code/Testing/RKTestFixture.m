@@ -66,7 +66,9 @@ static NSBundle *fixtureBundle = nil;
 
 + (id)parsedObjectWithContentsOfFixture:(NSString *)fixtureName
 {
-    return [[self fixtureBundle] parsedObjectWithContentsOfResource:fixtureName withExtension:nil];
+    id fixtureObject = [[self fixtureBundle] parsedObjectWithContentsOfResource:fixtureName withExtension:nil];
+    NSAssert(fixtureObject, @"Failed to parse contents of fixture at path '%@'", fixtureName);
+    return fixtureObject;
 }
 
 @end
