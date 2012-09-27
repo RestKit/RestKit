@@ -73,18 +73,6 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
         self.requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
         self.requestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
         self.requestOperation.acceptableStatusCodes = RKObjectRequestOperationAcceptableMIMETypes();
-        
-        // Initialize avoidsNetworkAccess based on caching preferences
-        switch(self.request.cachePolicy) {
-            case NSURLRequestReloadIgnoringLocalCacheData:
-            case NSURLRequestReloadIgnoringLocalAndRemoteCacheData:
-                self.avoidsNetworkAccess = NO;
-                break;
-                
-            default:
-                self.avoidsNetworkAccess = YES;
-                break;
-        };
     }
     
     return self;

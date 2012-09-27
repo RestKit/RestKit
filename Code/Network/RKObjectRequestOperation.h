@@ -126,7 +126,7 @@
  
  This optimization has even greater impact when the object request operation is an instance of `RKManagedObjectRequestOperation` as object mapping can skipped entirely and the objects loaded directly from Core Data. Please refer to the documentation accompanying `RKManagedObjectRequestOperation`.
  
- **Default**: Dependent on the `cachePolicy` of the `NSURLRequest` used to initialize the operation. `YES` unless the request has a `cachePolicy` value equal to `NSURLRequestReloadIgnoringLocalCacheData` or `NSURLRequestReloadIgnoringLocalAndRemoteCacheData`.
+ **Default**: `NO`
 
  @see `RKManagedObjectRequestOperation`
  */
