@@ -30,7 +30,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitNetwork
+#define RKLogComponent RKlcl_cRestKitNetwork
 
 @interface RKObjectParameterization () <RKMappingOperationDelegate>
 @property (nonatomic, strong) id object;

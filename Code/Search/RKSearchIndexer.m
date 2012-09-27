@@ -14,7 +14,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitSearch
+#define RKLogComponent RKlcl_cRestKitSearch
 
 NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttributes";
 

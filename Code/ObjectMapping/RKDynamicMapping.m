@@ -24,7 +24,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitObjectMapping
+#define RKLogComponent RKlcl_cRestKitObjectMapping
 
 @interface RKDynamicMapping ()
 @property (nonatomic, strong) NSMutableArray *matchers;

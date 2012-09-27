@@ -28,7 +28,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitCoreData
+#define RKLogComponent RKlcl_cRestKitCoreData
 
 @interface RKManagedObjectRequestOperation () <RKMapperOperationDelegate>
 // Core Data specific

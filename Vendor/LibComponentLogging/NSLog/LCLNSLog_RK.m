@@ -1,6 +1,6 @@
 //
 //
-// LCLNSLog.m
+// LCLNSLog_RK.m
 //
 //
 // Copyright (c) 2008-2009 Arne Harren <ah@0xc0.de>

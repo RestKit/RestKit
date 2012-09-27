@@ -449,7 +449,7 @@
     [relationshipMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"title" toKeyPath:@"testString"]];
     [objectMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"mediaGroups.contents" toKeyPath:@"hasMany" withMapping:relationshipMapping]];;
     RKMappableObject *targetObject = [RKMappableObject new];
-    RKLogToComponentWithLevelWhileExecutingBlock(lcl_cRestKitObjectMapping, RKLogLevelDebug, ^ {
+    RKLogToComponentWithLevelWhileExecutingBlock(RKlcl_cRestKitObjectMapping, RKLogLevelDebug, ^ {
         RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data
                                                                                    destinationObject:targetObject mapping:objectMapping];
         RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];

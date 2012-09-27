@@ -18,7 +18,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitCoreDataCache
+#define RKLogComponent RKlcl_cRestKitCoreDataCache
 
 @interface RKEntityByAttributeCache ()
 @property (nonatomic, strong) NSMutableDictionary *attributeValuesToObjectIDs;
