@@ -117,7 +117,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     return object;
 }
 
-- (BOOL)responseMatchesMappingDescriptor:(RKResponseDescriptor *)mappingDescriptor
+- (BOOL)responseMatchesResponseDescriptor:(RKResponseDescriptor *)mappingDescriptor
 {
     if (mappingDescriptor.pathPattern) {
         RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:mappingDescriptor.pathPattern];
@@ -138,10 +138,10 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 - (NSDictionary *)buildResponseMappingsDictionary
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    for (RKResponseDescriptor *mappingDescriptor in self.responseDescriptors) {
-        if ([self responseMatchesMappingDescriptor:mappingDescriptor]) {
-            id key = mappingDescriptor.keyPath ? mappingDescriptor.keyPath : [NSNull null];
-            [dictionary setObject:mappingDescriptor.mapping forKey:key];
+    for (RKResponseDescriptor *responseDescriptor in self.responseDescriptors) {
+        if ([self responseMatchesResponseDescriptor:responseDescriptor]) {
+            id key = responseDescriptor.keyPath ? responseDescriptor.keyPath : [NSNull null];
+            [dictionary setObject:responseDescriptor.mapping forKey:key];
         }
     }
 
