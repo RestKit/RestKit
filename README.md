@@ -19,7 +19,8 @@ RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTweet class]];
 RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:nil statusCodes:nil];
 NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1/statuses/public_timeline.json"];
 NSURLRequest *request = [NSURLRequest requestWithURL:url];
-RKObjectRequestOperation *operation = [RKObjectRequestOperation objectRequestOperationWithRequest:request responseDescriptors:@[responseDescriptor] success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
+RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]]; 
+[operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
     NSLog(@"The public timeline Tweets: %@", [result array]);
 } failure:nil];
 [operation start];
