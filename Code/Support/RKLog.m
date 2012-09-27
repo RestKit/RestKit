@@ -19,7 +19,6 @@
 //
 
 #import "RKLog.h"
-#import "lcl.h"
 
 int RKLogLevelForString(NSString *, NSString *);
 
