@@ -49,7 +49,7 @@ static RKObjectManager  *sharedManager = nil;
  @param path The path for which to select matching response descriptors.
  @return An `NSArray` object whose elements are `RKResponseDescriptor` objects matching the given path.
  */
-static NSArray * RKFilteredArrayOfResponseDescriptorsMatchingPath(NSArray *responseDescriptors, NSString *path)
+static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPath(NSArray *responseDescriptors, NSString *path)
 {
     NSIndexSet *indexSet = [responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
         return [responseDescriptor matchesPath:path];
@@ -64,7 +64,7 @@ static NSArray * RKFilteredArrayOfResponseDescriptorsMatchingPath(NSArray *respo
  @param object The object to find a matching request descriptor for.
  @return An `RKRequestDescriptor` object matching the given object, or `nil` if none could be found.
  */
-static RKRequestDescriptor * RKRequestDescriptorFromArrayMatchingObject(NSArray *requestDescriptors, id object)
+static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObject(NSArray *requestDescriptors, id object)
 {
     for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
         if ([requestDescriptor matchesObject:object]) return requestDescriptor;
@@ -96,6 +96,8 @@ static char kRKBaseURLAssociatedObjectKey;
 
 void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL)
 {
+    NSCAssert(baseURL, @"baseURL cannot be nil");
+    NSCAssert(URL, @"URL cannot be nil");
     objc_setAssociatedObject(URL,
                              &kRKBaseURLAssociatedObjectKey,
                              baseURL,
@@ -104,6 +106,7 @@ void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL)
 
 NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
 {
+    NSCAssert(URL, @"URL cannot be nil");
     return objc_getAssociatedObject(URL, &kRKBaseURLAssociatedObjectKey);
 }
 
@@ -194,7 +197,7 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
     /**
      Associate our baseURL with the URL of the `NSURLRequest` object. This enables us to match response descriptors by path.
      */
-    RKAssociateBaseURLWithURL(request.URL, self.HTTPClient.baseURL);
+    RKAssociateBaseURLWithURL(self.HTTPClient.baseURL, request.URL);
 
     if (parameters) {
         if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"]) {

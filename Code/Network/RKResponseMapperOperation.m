@@ -78,18 +78,23 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
         self.response = response;
         self.data = data;
         self.responseDescriptors = responseDescriptors;
+        self.relativeResponsePath = [self buildRelativeResponsePath];
         self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
         self.treatsEmptyResponseAsSuccess = YES;
-        self.relativeResponsePath = [self buildRelativeResponsePath];
     }
 
     return self;
 }
 
+/**
+ NOTE: Because NSURLRequest clobbers the `baseURL` of the NSURL with which it is initialized, we leverage an associated object reference set by `RKObjectManager` (if available). This enables us to accurately path match when the baseURL includes a relative path.
+ */
 - (NSString *)buildRelativeResponsePath
 {
     NSURL *baseURL = RKBaseURLAssociatedWithURL(self.response.URL);
-    return [[self.response.URL absoluteString] substringFromIndex:[[baseURL absoluteString] length]];
+    NSString *relativePath = baseURL ? [[self.response.URL absoluteString] substringFromIndex:[[baseURL absoluteString] length]] : [self.response.URL relativePath];
+    RKLogTrace(@"Built relative response path '%@' from response.URL <NSURL:%p '%@' (baseURL='%@')>", relativePath, self.response.URL, self.response.URL, baseURL);
+    return relativePath;
 }
 
 - (id)parseResponseData:(NSError **)error
