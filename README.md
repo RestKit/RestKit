@@ -20,7 +20,7 @@ RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescrip
 NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1/statuses/public_timeline.json"];
 NSURLRequest *request = [NSURLRequest requestWithURL:url];
 RKObjectRequestOperation *operation = [RKObjectRequestOperation objectRequestOperationWithRequest:request responseDescriptors:@[responseDescriptor] success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
-    NSLog(@"The public timeline Tweets: %@", [result asCollection]);
+    NSLog(@"The public timeline Tweets: %@", [result array]);
 } failure:nil];
 [operation start];
 ```
@@ -185,7 +185,7 @@ RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescrip
 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://restkit.org/articles/1234.json"]];
 RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
 [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
-    Article *article = [result asObject];
+    Article *article = [result firstObject];
 	NSLog(@"Mapped the article: %@", article);
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	NSLog(@"Failed with error: %@", [error localizedDescription]);
@@ -215,7 +215,7 @@ NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http
 RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
 operation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
 [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
-    Article *article = [result asObject];
+  Article *article = [result firstObject];
 	NSLog(@"Mapped the article: %@", article);
 	NSLog(@"Mapped the category: %@", category);
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
