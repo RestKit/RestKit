@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   ### Subspecs
   
   s.subspec 'Core' do |cs|
-    cs.source_files =  'Code/*.h'
+    cs.source_files =  'Code/*.h', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'
     cs.header_dir   =  'RestKit'
     
     cs.dependency 'RestKit/ObjectMapping'
@@ -37,7 +37,6 @@ Pod::Spec.new do |s|
     ns.source_files   = 'Code/Network'
     ns.ios.frameworks = 'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration'
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
-    ns.dependency       'LibComponentLogging-NSLog', '>= 1.0.4'
     ns.dependency       'SOCKit'
     ns.dependency       'AFNetworking', :head # '1.0'
     ns.dependency       'RestKit/ObjectMapping'
