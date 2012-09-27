@@ -3,7 +3,7 @@
 // lcl_config_logger.h
 //
 //
-// Copyright (c) 2008-2011 Arne Harren <ah@0xc0.de>
+// Copyright (c) 2008-2012 Arne Harren <ah@0xc0.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -53,15 +53,15 @@
 #   endif
 #endif
 #if _lcl_logger_autoreleasepool_arc
-#define _lcl_logger_autoreleasepool_begin                                      \
-    @autoreleasepool {
-#define _lcl_logger_autoreleasepool_end                                        \
-    }
+#   define _lcl_logger_autoreleasepool_begin                                   \
+        @autoreleasepool {
+#   define _lcl_logger_autoreleasepool_end                                     \
+        }
 #else
-#define _lcl_logger_autoreleasepool_begin                                      \
-    NSAutoreleasePool *_lcl_logger_autoreleasepool = [[NSAutoreleasePool alloc] init];
-#define _lcl_logger_autoreleasepool_end                                        \
-    [_lcl_logger_autoreleasepool release];
+#   define _lcl_logger_autoreleasepool_begin                                   \
+        NSAutoreleasePool *_lcl_logger_autoreleasepool = [[NSAutoreleasePool alloc] init];
+#   define _lcl_logger_autoreleasepool_end                                     \
+        [_lcl_logger_autoreleasepool release];
 #endif
 
 

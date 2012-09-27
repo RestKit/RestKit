@@ -3,7 +3,7 @@
 // lcl.h -- LibComponentLogging
 //
 //
-// Copyright (c) 2008-2011 Arne Harren <ah@0xc0.de>
+// Copyright (c) 2008-2012 Arne Harren <ah@0xc0.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@
 #define __LCL_H__
 
 #define _LCL_VERSION_MAJOR  1
-#define _LCL_VERSION_MINOR  1
-#define _LCL_VERSION_BUILD  6
+#define _LCL_VERSION_MINOR  3
+#define _LCL_VERSION_BUILD  1
 #define _LCL_VERSION_SUFFIX ""
 
 //
@@ -101,7 +101,7 @@ extern "C" {
 
 
 // Log levels, prefixed with 'lcl_v'.
-enum {
+enum _lcl_enum_level_t {
     lcl_vOff = 0,
 
     lcl_vCritical,              // critical situation
@@ -127,7 +127,7 @@ typedef uint8_t  _lcl_level_narrow_t;
 
 
 // Log components, prefixed with 'lcl_c'.
-enum {
+enum _lcl_enum_component_t {
 #   define  _lcl_component(_identifier, _header, _name)                        \
     lcl_c##_identifier,                                                        \
   __lcl_log_symbol_lcl_c##_identifier = lcl_c##_identifier,
@@ -147,6 +147,15 @@ typedef uint32_t _lcl_component_t;
 // Functions and macros.
 //
 
+#ifndef _LCL_NO_IGNORE_WARNINGS
+#   ifdef __clang__
+    // Ignore some warnings about variadic macros when using '-Weverything'.
+#   pragma clang diagnostic push
+#   pragma clang diagnostic ignored "-Wunknown-pragmas"
+#   pragma clang diagnostic ignored "-Wvariadic-macros"
+#   pragma clang diagnostic ignored "-Wpedantic"
+#   endif
+#endif
 
 // lcl_log(<component>, <level>, <format>[, <arg1>[, <arg2>[, ...]]])
 //
@@ -164,18 +173,62 @@ typedef uint32_t _lcl_component_t;
 #ifdef _LCL_NO_LOGGING
 #   define lcl_log(_component, _level, _format, ...)                           \
         do {                                                                   \
-        } while (false)
+        } while (0)
 #else
 #   define lcl_log(_component, _level, _format, ...)                           \
         do {                                                                   \
-            if ((_lcl_component_level[(__lcl_log_symbol(_component))]) >=      \
-                (__lcl_log_symbol(_level))) {                                  \
+            if (((_lcl_component_level[(__lcl_log_symbol(_component))]) >=     \
+                  (__lcl_log_symbol(_level)))                                  \
+               ) {                                                             \
                     _lcl_logger(_component,                                    \
                                 _level,                                        \
                                 _format,                                       \
                                 ##__VA_ARGS__);                                \
             }                                                                  \
-        } while (false)
+        } while (0)
+#endif
+
+// lcl_log_if(<component>, <level>, <predicate>, <format>[, <arg1>[, ...]])
+//
+// <component>: a log component with prefix 'lcl_c'
+// <level>    : a log level with prefix 'lcl_v'
+// <predicate>: a predicate for conditional logging
+// <format>   : a format string of type NSString (may include %@)
+// <arg..>    : optional arguments required by the format string
+//
+// Logs a message for the given log component at the given log level if the
+// log level is active for the log component and if the predicate evaluates
+// to true.
+//
+// The predicate is only evaluated if the given log level is active.
+//
+// The actual logging is done by _lcl_logger which must be defined by a concrete
+// logging back-end. _lcl_logger has the same signature as lcl_log.
+//
+#ifdef _LCL_NO_LOGGING
+#   define lcl_log_if(_component, _level, _predicate, _format, ...)            \
+        do {                                                                   \
+        } while (0)
+#else
+#   define lcl_log_if(_component, _level, _predicate, _format, ...)            \
+        do {                                                                   \
+            if (((_lcl_component_level[(__lcl_log_symbol(_component))]) >=     \
+                  (__lcl_log_symbol(_level)))                                  \
+                &&                                                             \
+                (_predicate)                                                   \
+               ) {                                                             \
+                    _lcl_logger(_component,                                    \
+                                _level,                                        \
+                                _format,                                       \
+                                ##__VA_ARGS__);                                \
+            }                                                                  \
+        } while (0)
+#endif
+
+#ifndef _LCL_NO_IGNORE_WARNINGS
+#   ifdef __clang__
+#   pragma clang diagnostic pop
+#   endif
 #endif
 
 // lcl_configure_by_component(<component>, <level>)
@@ -270,6 +323,62 @@ enum {
 
 // Include logging back-end and definition of _lcl_logger.
 #import "lcl_config_logger.h"
+
+
+// For simple configurations where 'lcl_config_logger.h' is empty, define a
+// default NSLog()-based _lcl_logger here.
+#ifndef _lcl_logger
+
+// ARC/non-ARC autorelease pool
+#define _lcl_logger_autoreleasepool_arc 0
+#if defined(__has_feature)
+#   if __has_feature(objc_arc)
+#   undef  _lcl_logger_autoreleasepool_arc
+#   define _lcl_logger_autoreleasepool_arc 1
+#   endif
+#endif
+#if _lcl_logger_autoreleasepool_arc
+#   define _lcl_logger_autoreleasepool_begin                                   \
+        @autoreleasepool {
+#   define _lcl_logger_autoreleasepool_end                                     \
+        }
+#else
+#   define _lcl_logger_autoreleasepool_begin                                   \
+        NSAutoreleasePool *_lcl_logger_autoreleasepool = [[NSAutoreleasePool alloc] init];
+#   define _lcl_logger_autoreleasepool_end                                     \
+        [_lcl_logger_autoreleasepool release];
+#endif
+
+#ifndef _LCL_NO_IGNORE_WARNINGS
+#   ifdef __clang__
+    // Ignore some warnings about variadic macros when using '-Weverything'.
+#   pragma clang diagnostic push
+#   pragma clang diagnostic ignored "-Wunknown-pragmas"
+#   pragma clang diagnostic ignored "-Wvariadic-macros"
+#   pragma clang diagnostic ignored "-Wpedantic"
+#   endif
+#endif
+
+// A simple default logger, which redirects to NSLog().
+#define _lcl_logger(_component, _level, _format, ...) {                        \
+    _lcl_logger_autoreleasepool_begin                                          \
+    NSLog(@"%s %s:%@:%d " _format,                                             \
+          _lcl_level_header_1[_level],                                         \
+          _lcl_component_header[_component],                                   \
+          [@__FILE__ lastPathComponent],                                       \
+          __LINE__,                                                            \
+          ## __VA_ARGS__);                                                     \
+    _lcl_logger_autoreleasepool_end                                            \
+}
+
+#ifndef _LCL_NO_IGNORE_WARNINGS
+#   ifdef __clang__
+#   pragma clang diagnostic pop
+#   endif
+#endif
+
+#endif
+
 
 // Include extensions.
 #import "lcl_config_extensions.h"
