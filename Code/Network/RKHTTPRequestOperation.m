@@ -20,13 +20,13 @@
 
 #import "RKHTTPRequestOperation.h"
 #import "RKLog.h"
-#import "lcl.h"
+#import "lcl_RK.h"
 #import "RKHTTPUtilities.h"
 #import "RKMIMETypes.h"
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitNetwork
+#define RKLogComponent RKlcl_cRestKitNetwork
 
 @interface RKHTTPRequestOperationLogger : NSObject
 
@@ -81,7 +81,7 @@
         body = [NSString stringWithUTF8String:[[operation.request HTTPBody] bytes]];
     }
 
-    if ((_lcl_component_level[(__lcl_log_symbol(lcl_cRestKitNetwork))]) >= (__lcl_log_symbol(lcl_vTrace))) {
+    if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
         RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
     } else {
         RKLogInfo(@"%@ '%@'", [operation.request HTTPMethod], [[operation.request URL] absoluteString]);
@@ -92,13 +92,13 @@
 {
     RKHTTPRequestOperation *operation = [notification object];
     if (operation.error) {
-        if ((_lcl_component_level[(__lcl_log_symbol(lcl_cRestKitNetwork))]) >= (__lcl_log_symbol(lcl_vTrace))) {
+        if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
             RKLogError(@"%@ '%@' (%ld):\nerror=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], operation.error, operation.responseString);
         } else {
           RKLogError(@"%@ '%@' (%ld): %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], operation.error);
         }
     } else {
-        if ((_lcl_component_level[(__lcl_log_symbol(lcl_cRestKitNetwork))]) >= (__lcl_log_symbol(lcl_vTrace))) {
+        if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
             RKLogTrace(@"%@ '%@' (%ld):\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], [operation.response allHeaderFields], operation.responseString);
         } else {
             RKLogInfo(@"%@ '%@' (%ld)", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode]);

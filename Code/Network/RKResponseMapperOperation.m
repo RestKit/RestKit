@@ -29,7 +29,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitNetwork
+#define RKLogComponent RKlcl_cRestKitNetwork
 
 // Defined in RKObjectManager.h
 NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);

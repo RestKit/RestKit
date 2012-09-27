@@ -31,4 +31,4 @@
  to use RKLog() in their own app.
  */
 #undef RKLogComponent
-#define RKLogComponent lcl_cApp
+#define RKLogComponent RKlcl_cApp

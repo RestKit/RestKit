@@ -32,7 +32,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitCoreData
+#define RKLogComponent RKlcl_cRestKitCoreData
 
 @interface RKManagedObjectImporter ()
 @property (nonatomic, strong, readwrite) NSManagedObjectModel *managedObjectModel;
