@@ -28,6 +28,11 @@
 #import "RKLog.h"
 #import "RKMIMETypeSerialization.h"
 
+#if !__has_feature(objc_arc)
+#error RestKit must be built with ARC.
+// You can turn on ARC for only RestKit files by adding "-fobjc-arc" to the build phase for each of its files.
+#endif
+
 //////////////////////////////////
 // Shared Instance
 
