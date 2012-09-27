@@ -220,20 +220,29 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 @property (nonatomic, strong) RKRouter *router;
 
-/**
- The Default MIME Type to be used in object serialization.
- */
-@property (nonatomic, strong) NSString *serializationMIMEType;
-// parameterSerializationMIMEType;
-// requestParameterMIMEType;
-// responseAcceptMIMEType;
+///--------------------------------------------------
+/// @name Configuring Request and Response MIME Types
+///--------------------------------------------------
 
 /**
- The value for the HTTP Accept header to specify the preferred format for retrieved data
+ The MIME Type to serialize request parameters into when constructing request objects.
+
+ The value of the `requestSerializationMIMEType` is used to obtain an appropriate `RKSerialization` conforming class from the `RKMIMESerialization` interface. Parameterized objects and dictionaries of parameters are then serialized for transport using the class registered for the MIME Type. By default, the value is `RKMIMETypeFormURLEncoded` which means that the request body of all `POST`, `PUT`, and `PATCH` requests will be sent in the URL encoded format. This is analagous to submitting an HTML form via a web browser. Other common formats include `RKMIMETypeJSON`, which will cause request bodies to be encoded as JSON.
+
+ The value given for the `requestSerializationMIMEType` must correspond to a MIME Type registered via `[RKMIMETypeSerialization registerClass:forMIMEType:]`. Implementations are provided by default for `RKMIMETypeFormURLEncoded` and `RKMIMETypeJSON`.
+
+ **Default**: `RKMIMETypeFormURLEncoded`
  */
-// TODO: Should we just remove this??
-//- (void)setAcceptHeaderWithMIMEType:(NSString *)MIMEType;
-@property (nonatomic, weak) NSString *acceptMIMEType;
+@property (nonatomic, strong) NSString *requestSerializationMIMEType;
+
+/**
+ The value for the HTTP "Accept" header to specify the preferred serialization format for retrieved data.
+
+ The default value is `RKMIMETypeJSON`, which is equal to the string `@"application/json"`. A value of `nil` will prevent the object manager from explicitly setting a value for the "Accept" header.
+
+ @param MIMEType The MIME Type to set as the value for the HTTP "Accept" header.
+ */
+- (void)setAcceptHeaderWithMIMEType:(NSString *)MIMEType;
 
 ///-------------------------------
 /// @name Creating Request Objects

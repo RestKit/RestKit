@@ -26,6 +26,7 @@
 #import "RKDictionaryUtilities.h"
 #import "RKMIMETypes.h"
 #import "RKLog.h"
+#import "RKMIMETypeSerialization.h"
 
 //////////////////////////////////
 // Shared Instance
@@ -89,6 +90,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 @property (nonatomic, strong) NSMutableArray *mutableRequestDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableResponseDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableFetchRequestBlocks;
+@property (nonatomic, strong) NSString *acceptHeaderValue;
 @end
 
 @implementation RKObjectManager
@@ -98,16 +100,15 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     self = [super init];
     if (self) {
         self.HTTPClient = client;
-        [self.HTTPClient registerHTTPOperationClass:[RKHTTPRequestOperation class]];
 
         self.router = [[RKRouter alloc] initWithBaseURL:client.baseURL];
-        self.acceptMIMEType = RKMIMETypeJSON;
+        self.acceptHeaderValue = RKMIMETypeJSON;
         self.operationQueue = [NSOperationQueue new];
         self.mutableRequestDescriptors = [NSMutableArray new];
         self.mutableResponseDescriptors = [NSMutableArray new];
         self.mutableFetchRequestBlocks = [NSMutableArray new];
 
-        self.serializationMIMEType = RKMIMETypeFormURLEncoded;
+        self.requestSerializationMIMEType = RKMIMETypeFormURLEncoded;
 
         // Set shared manager if nil
         if (nil == sharedManager) {
@@ -134,14 +135,11 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     return manager;
 }
 
-- (void)setAcceptMIMEType:(NSString *)MIMEType
+// NOTE: This implementation could just use the default headers on AFHTTPClient, but this
+// feels less intrusive.
+- (void)setAcceptHeaderWithMIMEType:(NSString *)MIMEType;
 {
-//    [self.client setValue:MIMEType forHTTPHeaderField:@"Accept"];
-}
-
-- (NSString *)acceptMIMEType
-{
-//    return [self.client.HTTPHeaders valueForKey:@"Accept"];
+    self.acceptHeaderValue = MIMEType;
 }
 
 /////////////////////////////////////////////////////////////
@@ -156,6 +154,34 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 //    return paginator;
 //}
 
+/**
+ This method is the `RKObjectManager` analog for the method of the same name on `AFHTTPClient`.
+ */
+- (NSMutableURLRequest *)requestWithMethod:(NSString *)method
+                                      path:(NSString *)path
+                                parameters:(NSDictionary *)parameters
+{
+    NSURL *url = [NSURL URLWithString:path relativeToURL:self.HTTPClient.baseURL];
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+    [request setHTTPMethod:method];
+    [request setAllHTTPHeaderFields:self.HTTPClient.defaultHeaders];
+    if (self.acceptHeaderValue) [request setValue:self.acceptHeaderValue forHTTPHeaderField:@"Accept"];
+
+    if (parameters) {
+        if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"]) {
+            url = [NSURL URLWithString:[[url absoluteString] stringByAppendingFormat:[path rangeOfString:@"?"].location == NSNotFound ? @"?%@" : @"&%@", AFQueryStringFromParametersWithEncoding(parameters, self.HTTPClient.stringEncoding)]];
+            [request setURL:url];
+        } else {
+            NSError *error = nil;
+            NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(self.HTTPClient.stringEncoding));
+            [request setValue:[NSString stringWithFormat:@"%@; charset=%@", self.requestSerializationMIMEType, charset] forHTTPHeaderField:@"Content-Type"];
+            NSData *requestBody = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:self.requestSerializationMIMEType error:&error];
+            [request setHTTPBody:requestBody];
+        }
+    }
+
+	return request;
+}
 - (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName
                                                object:(id)object
                                            parameters:(NSDictionary *)parameters
@@ -163,7 +189,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     RKRequestMethod method;
     NSURL *URL = [self.router URLForRouteNamed:routeName method:&method object:object];
     NSAssert(URL, @"No route found named '%@'", routeName);
-    return [self.HTTPClient requestWithMethod:RKStringFromRequestMethod(method) path:[URL relativeString] parameters:parameters];
+    return [self requestWithMethod:RKStringFromRequestMethod(method) path:[URL relativeString] parameters:parameters];
 }
 
 - (NSMutableURLRequest *)requestWithPathForRelationship:(NSString *)relationship
@@ -173,7 +199,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 {
     NSURL *URL = [self.router URLForRelationship:relationship ofObject:object method:method];
     NSAssert(URL, @"No relationship route found for the '%@' class with the name '%@'", NSStringFromClass([object class]), relationship);
-    return [self.HTTPClient requestWithMethod:RKStringFromRequestMethod(method) path:[URL relativeString] parameters:parameters];
+    return [self requestWithMethod:RKStringFromRequestMethod(method) path:[URL relativeString] parameters:parameters];
 }
 
 - (NSMutableURLRequest *)requestWithObject:(id)object
@@ -195,7 +221,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
         requestParameters = parameters;
     }
 
-    return [self.HTTPClient requestWithMethod:stringMethod path:requestPath parameters:requestParameters];
+    return [self requestWithMethod:stringMethod path:requestPath parameters:requestParameters];
 }
 
 - (NSMutableURLRequest *)multipartFormRequestWithObject:(id)object
