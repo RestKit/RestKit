@@ -1,6 +1,6 @@
 //
 //
-// LCLNSLog.h
+// LCLNSLog_RK.h
 //
 //
 // Copyright (c) 2008-2011 Arne Harren <ah@0xc0.de>
@@ -25,7 +25,7 @@
 
 
 //
-// LCLNSLog
+// RKLCLNSLog
 //
 // This file provides a simple LibComponentLogging logger implementation which
 // redirects logging to NSLog.
@@ -52,49 +52,49 @@
 
 
 // ARC/non-ARC autorelease pool
-#define _lcl_logger_autoreleasepool_arc 0
+#define _RKlcl_logger_autoreleasepool_arc 0
 #if defined(__has_feature)
 #   if __has_feature(objc_arc)
-#   undef  _lcl_logger_autoreleasepool_arc
-#   define _lcl_logger_autoreleasepool_arc 1
+#   undef  _RKlcl_logger_autoreleasepool_arc
+#   define _RKlcl_logger_autoreleasepool_arc 1
 #   endif
 #endif
-#if _lcl_logger_autoreleasepool_arc
-#define _lcl_logger_autoreleasepool_begin                                      \
+#if _RKlcl_logger_autoreleasepool_arc
+#define _RKlcl_logger_autoreleasepool_begin                                      \
     @autoreleasepool {
-#define _lcl_logger_autoreleasepool_end                                        \
+#define _RKlcl_logger_autoreleasepool_end                                        \
     }
 #else
-#define _lcl_logger_autoreleasepool_begin                                      \
-    NSAutoreleasePool *_lcl_logger_autoreleasepool = [[NSAutoreleasePool alloc] init];
-#define _lcl_logger_autoreleasepool_end                                        \
-    [_lcl_logger_autoreleasepool release];
+#define _RKlcl_logger_autoreleasepool_begin                                      \
+    NSAutoreleasePool *_RKlcl_logger_autoreleasepool = [[NSAutoreleasePool alloc] init];
+#define _RKlcl_logger_autoreleasepool_end                                        \
+    [_RKlcl_logger_autoreleasepool release];
 #endif
 
 
 // A very simple logger, which redirects to NSLog().
 #if 0
-#define _lcl_logger(_component, _level, _format, ...) {                        \
-    _lcl_logger_autoreleasepool_begin                                          \
+#define _RKlcl_logger(_component, _level, _format, ...) {                        \
+    _RKlcl_logger_autoreleasepool_begin                                          \
     NSLog(@"%s %s:%@:%d:%s " _format,                                          \
-          _lcl_level_header_1[_level],                                         \
-          _lcl_component_header[_component],                                   \
+          _RKlcl_level_header_1[_level],                                         \
+          _RKlcl_component_header[_component],                                   \
           [@__FILE__ lastPathComponent],                                       \
           __LINE__,                                                            \
           __PRETTY_FUNCTION__,                                                 \
           ## __VA_ARGS__);                                                     \
-    _lcl_logger_autoreleasepool_end                                            \
+    _RKlcl_logger_autoreleasepool_end                                            \
 }
 #else
-#define _lcl_logger(_component, _level, _format, ...) {                        \
-    _lcl_logger_autoreleasepool_begin                                          \
+#define _RKlcl_logger(_component, _level, _format, ...) {                        \
+    _RKlcl_logger_autoreleasepool_begin                                          \
     NSLog(@"%s %s:%@:%d " _format,                                             \
-          _lcl_level_header_1[_level],                                         \
-          _lcl_component_header[_component],                                   \
+          _RKlcl_level_header_1[_level],                                         \
+          _RKlcl_component_header[_component],                                   \
           [@__FILE__ lastPathComponent],                                       \
           __LINE__,                                                            \
           ## __VA_ARGS__);                                                     \
-    _lcl_logger_autoreleasepool_end                                            \
+    _RKlcl_logger_autoreleasepool_end                                            \
 }
 #endif
 

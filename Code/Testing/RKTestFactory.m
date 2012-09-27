@@ -82,8 +82,8 @@ static RKTestFactory *sharedFactory = nil;
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
         __block AFHTTPClient *client;
 
-        RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
-            RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
+        RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitNetworkReachability, ^{
+            RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
                 client = [AFHTTPClient clientWithBaseURL:self.baseURL];
             });
         });
@@ -94,8 +94,8 @@ static RKTestFactory *sharedFactory = nil;
     [self defineFactory:RKTestFactoryDefaultNamesObjectManager withBlock:^id {
         __block RKObjectManager *objectManager;
 
-        RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
-            RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
+        RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitNetworkReachability, ^{
+            RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
                 objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
             });
         });

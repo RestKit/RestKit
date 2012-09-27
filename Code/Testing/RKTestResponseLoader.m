@@ -23,7 +23,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitTesting
+#define RKLogComponent RKlcl_cRestKitTesting
 
 NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTimeoutException";
 

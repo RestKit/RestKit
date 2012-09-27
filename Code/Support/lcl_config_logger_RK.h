@@ -1,5 +1,5 @@
 //
-//  lcl_config_extensions.h
+//  lcl_config_logger_RK.h
 //  RestKit
 //
 //  Created by Blake Watters on 6/8/11.
@@ -18,3 +18,5 @@
 //  limitations under the License.
 //
 
+// NSLog
+#import "LCLNSLog_RK.h"

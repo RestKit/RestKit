@@ -26,7 +26,7 @@
 
 // Define logging component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitSupport
+#define RKLogComponent RKlcl_cRestKitSupport
 
 @interface RKMIMETypeSerializationRegistration : NSObject
 
