@@ -31,6 +31,9 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
+// Defined in RKObjectManager.h
+NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
+
 NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 {
     NSArray *collection = [mappingResult array];
@@ -54,6 +57,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) NSDictionary *responseMappingsDictionary;
+@property (nonatomic, strong) NSString *relativeResponsePath;
 @end
 
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
@@ -76,9 +80,16 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
         self.responseDescriptors = responseDescriptors;
         self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
         self.treatsEmptyResponseAsSuccess = YES;
+        self.relativeResponsePath = [self buildRelativeResponsePath];
     }
 
     return self;
+}
+
+- (NSString *)buildRelativeResponsePath
+{
+    NSURL *baseURL = RKBaseURLAssociatedWithURL(self.response.URL);
+    return [[self.response.URL absoluteString] substringFromIndex:[[baseURL absoluteString] length]];
 }
 
 - (id)parseResponseData:(NSError **)error
@@ -105,7 +116,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 {
     if (mappingDescriptor.pathPattern) {
         RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:mappingDescriptor.pathPattern];
-        if (! [pathMatcher matchesPath:[self.response.URL relativePath] tokenizeQueryStrings:NO parsedArguments:nil]) {
+        if (! [pathMatcher matchesPath:self.relativeResponsePath tokenizeQueryStrings:NO parsedArguments:nil]) {
             return NO;
         }
     }

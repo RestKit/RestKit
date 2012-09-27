@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#import <objc/runtime.h>
 #import "RKObjectManager.h"
 #import "RKObjectParameterization.h"
 #import "RKManagedObjectStore.h"
@@ -86,6 +87,24 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     }
     
     return NO;
+}
+
+void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL);
+NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
+
+static char kRKBaseURLAssociatedObjectKey;
+
+void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL)
+{
+    objc_setAssociatedObject(URL,
+                             &kRKBaseURLAssociatedObjectKey,
+                             baseURL,
+                             OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
+{
+    return objc_getAssociatedObject(URL, &kRKBaseURLAssociatedObjectKey);
 }
 
 ///////////////////////////////////
@@ -171,6 +190,11 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     [request setHTTPMethod:method];
     [request setAllHTTPHeaderFields:self.HTTPClient.defaultHeaders];
     if (self.acceptHeaderValue) [request setValue:self.acceptHeaderValue forHTTPHeaderField:@"Accept"];
+    
+    /**
+     Associate our baseURL with the URL of the `NSURLRequest` object. This enables us to match response descriptors by path.
+     */
+    RKAssociateBaseURLWithURL(request.URL, self.HTTPClient.baseURL);
 
     if (parameters) {
         if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"]) {
