@@ -99,7 +99,7 @@
     [mapperOperation start];
     [mapperOperation waitUntilFinished];
     if (mapperOperation.error) {
-        *error = mapperOperation.error;
+        if (error) *error = mapperOperation.error;
         return nil;
     }
 

@@ -169,7 +169,10 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     mapperOperation.targetObject = self.targetObject;
     [mapperOperation start];
     [mapperOperation waitUntilFinished];
-    if (mapperOperation.error) *error = mapperOperation.error;
+    if (mapperOperation.error) {
+        if (error) *error = mapperOperation.error;
+        return nil;
+    }
     return mapperOperation.mappingResult;
 }
 

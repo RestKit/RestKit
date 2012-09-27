@@ -225,7 +225,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     mapper.mappingOperationDataSource = dataSource;
     [mapper start];
-    *error = mapper.error;
+    if (error) *error = mapper.error;
     return mapper.mappingResult;
 }
 
