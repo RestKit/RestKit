@@ -225,10 +225,10 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 }
 
 - (NSMutableURLRequest *)multipartFormRequestWithObject:(id)object
-                                                method:(RKRequestMethod)method
-                                                  path:(NSString *)path
-                                            parameters:(NSDictionary *)parameters
-                             constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
+                                                 method:(RKRequestMethod)method
+                                                   path:(NSString *)path
+                                             parameters:(NSDictionary *)parameters
+                              constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
 {
     NSString *requestPath = (path) ? path : [[self.router URLForObject:object method:method] relativeString];
     NSString *stringMethod = RKStringFromRequestMethod(method);

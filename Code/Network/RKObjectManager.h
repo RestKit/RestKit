@@ -135,10 +135,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  1. `requestWithObject:method:path:parameters:` - Consults routing when path is nil.
  1. `multipartFormRequestWithObject:method:path:parameters:constructingBodyWithBlock:` - Consults routing when path is nil.
  1. `requestWithPathForRouteNamed:object:parameters:` - Explicitly retrieves the route with the given name.
- 1. `getObjectsAtPathForRelationship:ofObject:parameters:success:failure:` - Explicitly retrieves the route for the given
-    name and object class.
- 1. `getObjectsAtPathForRouteNamed:object:parameters:success:failure:` - Explicitly retrieves the route for the given
-    name.
+ 1. `getObjectsAtPathForRelationship:ofObject:parameters:success:failure:` - Explicitly retrieves the route for the given name and object class.
+ 1. `getObjectsAtPathForRouteNamed:object:parameters:success:failure:` - Explicitly retrieves the route for the given name.
  
  Please see the documentation for `RKRouter`, `RKRouteSet`, and `RKRoute` for more details about the routing classes.
  
@@ -284,10 +282,10 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see [AFHTTPClient multipartFormRequestWithMethod:path:parameters:constructingBodyWithBlock]
  */
 - (NSMutableURLRequest *)multipartFormRequestWithObject:(id)object
-                                                method:(RKRequestMethod)method
-                                                  path:(NSString *)path
-                                            parameters:(NSDictionary *)parameters
-                             constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block;
+                                                 method:(RKRequestMethod)method
+                                                   path:(NSString *)path
+                                             parameters:(NSDictionary *)parameters
+                              constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block;
 
 /**
  Creates an `NSMutableURLRequest` object with the `NSURL` returned by the router for the given route name and object and the given parameters.
