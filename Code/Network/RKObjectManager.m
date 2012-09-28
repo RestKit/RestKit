@@ -214,8 +214,6 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
     /**
      Associate our baseURL with the URL of the `NSURLRequest` object. This enables us to match response descriptors by path.
      */
-    RKAssociateBaseURLWithURL(self.HTTPClient.baseURL, request.URL);
-
     if (parameters) {
         if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"]) {
             url = [NSURL URLWithString:[[url absoluteString] stringByAppendingFormat:[path rangeOfString:@"?"].location == NSNotFound ? @"?%@" : @"&%@", AFQueryStringFromParametersWithEncoding(parameters, self.HTTPClient.stringEncoding)]];
@@ -228,6 +226,8 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
             [request setHTTPBody:requestBody];
         }
     }
+
+    RKAssociateBaseURLWithURL(self.HTTPClient.baseURL, request.URL);
 
 	return request;
 }
