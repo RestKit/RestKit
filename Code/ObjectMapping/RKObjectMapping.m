@@ -30,6 +30,9 @@
 NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
 static NSUInteger RKObjectMappingMaximumInverseMappingRecursionDepth = 100;
 
+// Private declaration
+NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
+
 @interface RKObjectMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
 @property (nonatomic, strong) NSMutableArray *mutablePropertyMappings;
@@ -404,3 +407,44 @@ static NSDateFormatter *preferredDateFormatter = nil;
 }
 
 @end
+
+#pragma mark - Functions
+
+NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters)
+{
+    NSDate *date = nil;
+    for (NSFormatter *dateFormatter in formatters) {
+        BOOL success;
+        @synchronized(dateFormatter) {
+            if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
+                RKLogTrace(@"Attempting to parse string '%@' with format string '%@' and time zone '%@'", dateString, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone]);
+            }
+            NSString *errorDescription = nil;
+            success = [dateFormatter getObjectValue:&date forString:dateString errorDescription:&errorDescription];
+        }
+
+        if (success && date) {
+            if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
+                RKLogTrace(@"Successfully parsed string '%@' with format string '%@' and time zone '%@' and turned into date '%@'",
+                           dateString, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone], date);
+            } else if ([dateFormatter isKindOfClass:[NSNumberFormatter class]]) {
+                NSNumber *formattedNumber = (NSNumber *)date;
+                date = [NSDate dateWithTimeIntervalSince1970:[formattedNumber doubleValue]];
+            }
+
+            break;
+        }
+    }
+
+    return date;
+}
+
+NSDate *RKDateFromString(NSString *dateString)
+{
+    return RKDateFromStringWithFormatters(dateString, [RKObjectMapping defaultDateFormatters]);
+}
+
+NSString *RKStringFromDate(NSDate *date)
+{
+    return [[RKObjectMapping preferredDateFormatter] stringForObjectValue:date];
+}

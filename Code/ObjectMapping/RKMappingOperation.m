@@ -76,6 +76,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 @property (nonatomic, strong) RKObjectMapping *objectMapping; // The concrete mapping
 @end
 
+// Defined in RKObjectMapping.h
+NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
+
 @implementation RKMappingOperation
 
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
@@ -98,35 +101,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 - (NSDate *)parseDateFromString:(NSString *)string
 {
     RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
-
-    NSDate *date = nil;
-
-    if (![string isEqualToString:@""]) {
-        for (NSFormatter *dateFormatter in self.objectMapping.dateFormatters) {
-            BOOL success;
-            @synchronized(dateFormatter) {
-                if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
-                    RKLogTrace(@"Attempting to parse string '%@' with format string '%@' and time zone '%@'", string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone]);
-                }
-                NSString *errorDescription = nil;
-                success = [dateFormatter getObjectValue:&date forString:string errorDescription:&errorDescription];
-            }
-
-            if (success && date) {
-                if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
-                    RKLogTrace(@"Successfully parsed string '%@' with format string '%@' and time zone '%@' and turned into date '%@'",
-                                string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone], date);
-                } else if ([dateFormatter isKindOfClass:[NSNumberFormatter class]]) {
-                    NSNumber *formattedNumber = (NSNumber *)date;
-                    date = [NSDate dateWithTimeIntervalSince1970:[formattedNumber doubleValue]];
-                }
-
-                break;
-            }
-        }
-    }
-
-    return date;
+    return RKDateFromStringWithFormatters(string, self.objectMapping.dateFormatters);
 }
 
 - (id)transformValue:(id)value atKeyPath:(NSString *)keyPath toType:(Class)destinationType
