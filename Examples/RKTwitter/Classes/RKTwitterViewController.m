@@ -23,7 +23,7 @@
     [objectManager getObjectsAtPath:@"/status/user_timeline/RestKit"
                          parameters:nil
                             success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-                              NSArray* statuses = [mappingResult asCollection];
+                              NSArray* statuses = [mappingResult array];
                               NSLog(@"Loaded statuses: %@", statuses);
                               [_statuses release];
                               _statuses = [statuses retain];
