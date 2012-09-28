@@ -50,7 +50,6 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) NSURLRequest *request;
-@property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
 @end
 
 @implementation RKObjectRequestOperation
@@ -133,19 +132,14 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     };
 }
 
-- (BOOL)isResponseFromCache
-{
-    return self.cachedResponse != nil;
-}
-
 - (NSHTTPURLResponse *)response
 {
-    return (NSHTTPURLResponse *) (self.isResponseFromCache ? self.cachedResponse.response : self.requestOperation.response);
+    return (NSHTTPURLResponse *)self.requestOperation.response;
 }
 
 - (NSData *)responseData
 {
-    return self.isResponseFromCache ? self.cachedResponse.data : self.requestOperation.responseData;
+    return self.requestOperation.responseData;
 }
 
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
@@ -169,29 +163,6 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     // Default implementation does nothing
 }
 
-- (NSCachedURLResponse *)validCachedResponseForRequest:(NSURLRequest *)request
-{
-    if (! self.avoidsNetworkAccess) {
-        RKLogDebug(@"avoidsNetworkAccess=NO: Skipping network access optimization.");
-        return nil;
-    }
-    
-    NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
-    if (cachedResponse) {
-        // Verify that the entry is valid
-        NSHTTPURLResponse *response = (NSHTTPURLResponse *) [cachedResponse response];
-        NSDate *cacheExpirationDate = RKHTTPCacheExpirationDateFromHeadersWithStatusCode([response allHeaderFields], response.statusCode);
-        RKLogTrace(@"Found cached response for request %@ with expiration date: %@ (cachedResponse.headers=%@)", RKDescriptionForRequest(self.request), cacheExpirationDate, [response allHeaderFields]);
-        if ([(NSDate *)[NSDate date] compare:cacheExpirationDate] == NSOrderedAscending) {
-            return cachedResponse;
-        }
-    } else {
-        RKLogDebug(@"No cached response available for request: %@", RKDescriptionForRequest(request));
-    }
-    
-    return nil;
-}
-
 - (void)cancel
 {
     [super cancel];
@@ -202,16 +173,9 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 {
     if (self.isCancelled) return;
     
-    // See if we can satisfy the request without hitting the network
-    self.cachedResponse = [self validCachedResponseForRequest:self.request];
-    
     // Send the request
-    if (!self.cachedResponse) {
-        [self.requestOperation start];
-        [self.requestOperation waitUntilFinished];
-    } else {
-        RKLogDebug(@"Skipping networking access: Found valid cached response for request: %@", self.request);
-    }
+    [self.requestOperation start];
+    [self.requestOperation waitUntilFinished];
 
     if (self.requestOperation.error) {
         RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", self.requestOperation.error);

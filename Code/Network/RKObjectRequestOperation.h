@@ -121,22 +121,6 @@
  */
 @property (nonatomic, readonly) NSData *responseData;
 
-/**
- When `YES`, network access is avoided entirely if a valid, non-expired cache entry is available for the request being loaded. No conditional GET request is sent to the server and the cache entry is assumed to be fresh. This optimization enables the object mapping to begin immediately using the cached response data. In high latency environments, this can result in an improved user experience as the operation does not wait for a 304 (Not Modified) response to be returned before proceeding with mapping.
- 
- This optimization has even greater impact when the object request operation is an instance of `RKManagedObjectRequestOperation` as object mapping can skipped entirely and the objects loaded directly from Core Data. Please refer to the documentation accompanying `RKManagedObjectRequestOperation`.
- 
- **Default**: `NO`
-
- @see `RKManagedObjectRequestOperation`
- */
-@property (nonatomic, assign) BOOL avoidsNetworkAccess;
-
-/**
- Returns `YES` if the value of the `response` and `responseData` was loaded from `NSURLCache`, else `NO`.
- */
-@property (nonatomic, readonly) BOOL isResponseFromCache;
-
 ///-------------------------------------------------------
 /// @name Setting the Completion Block and Callback Queues
 ///-------------------------------------------------------

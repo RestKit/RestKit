@@ -37,9 +37,12 @@
 @property (readwrite, nonatomic, strong) NSMutableDictionary *managedObjectsByKeyPath;
 @property (readwrite, nonatomic, strong) RKManagedObjectMappingOperationDataSource *dataSource;
 @property (readwrite, nonatomic, strong) NSError *error;
+@property (readonly, nonatomic) RKHTTPRequestOperation *requestOperation;
 @end
 
 @implementation RKManagedObjectRequestOperation
+
+@dynamic requestOperation;
 
 - (void)setTargetObject:(id)targetObject
 {
@@ -76,7 +79,7 @@
 
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
-    if (self.isResponseFromCache) {
+    if (self.requestOperation.wasNotModified) {
         RKLogDebug(@"Managed object mapping requested for cached response: skipping mapping...");
         // TODO: This is unexpectedly returning an empty result set... need to be able to retrieve the appropriate objects...
         return [[RKMappingResult alloc] initWithDictionary:@{}];
