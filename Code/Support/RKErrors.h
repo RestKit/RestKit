@@ -20,7 +20,9 @@
 
 #import <Foundation/Foundation.h>
 
-/** @name Error Domain & Codes */
+///---------------------------
+/// @name Error Domain & Codes
+///---------------------------
 
 // The error domain for RestKit generated errors
 extern NSString * const RKErrorDomain;
@@ -36,7 +38,9 @@ typedef enum {
 } RKRestKitError;
 
 
-/** @name Error Constants */
+///--------------------------------------
+/// @name Error User Info Dictionary Keys
+///--------------------------------------
 
 /**
  The key RestKit generated errors will appear at within an NSNotification
