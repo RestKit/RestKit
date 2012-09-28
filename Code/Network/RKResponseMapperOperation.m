@@ -120,7 +120,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 - (BOOL)responseMatchesResponseDescriptor:(RKResponseDescriptor *)mappingDescriptor
 {
     if (mappingDescriptor.pathPattern) {
-        RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:mappingDescriptor.pathPattern];
+        RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:mappingDescriptor.pathPattern];
         if (! [pathMatcher matchesPath:self.relativeResponsePath tokenizeQueryStrings:NO parsedArguments:nil]) {
             return NO;
         }

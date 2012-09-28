@@ -76,7 +76,7 @@
 - (NSString *)pathFromRoute:(RKRoute *)route forObject:(id)object
 {
     if (! object) return route.pathPattern;
-    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:route.pathPattern];
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:route.pathPattern];
     return [pathMatcher pathFromObject:object addingEscapes:route.shouldEscapePath];
 }
 

@@ -87,7 +87,7 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
 {
     if (!self.pathPattern || !path) return YES;
     
-    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:self.pathPattern];
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:self.pathPattern];
     return [pathMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
 }
 

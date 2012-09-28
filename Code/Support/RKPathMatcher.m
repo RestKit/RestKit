@@ -59,7 +59,7 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
 }
 
 
-+ (RKPathMatcher *)matcherWithPattern:(NSString *)patternString
++ (RKPathMatcher *)pathMatcherWithPattern:(NSString *)patternString
 {
     NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform pattern matching.");
     RKPathMatcher *matcher = [[RKPathMatcher alloc] init];
@@ -67,7 +67,7 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     return matcher;
 }
 
-+ (RKPathMatcher *)matcherWithPath:(NSString *)pathString
++ (RKPathMatcher *)pathMatcherWithPath:(NSString *)pathString
 {
     RKPathMatcher *matcher = [[RKPathMatcher alloc] init];
     matcher.sourcePath = pathString;
