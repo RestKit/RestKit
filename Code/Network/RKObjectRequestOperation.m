@@ -192,6 +192,12 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     return nil;
 }
 
+- (void)cancel
+{
+    [super cancel];
+    [self.requestOperation cancel];
+}
+
 - (void)main
 {
     if (self.isCancelled) return;
@@ -212,6 +218,8 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
         self.error = self.requestOperation.error;
         return;
     }
+    
+    if (self.isCancelled) return;
 
     // Map the response
     NSError *error;

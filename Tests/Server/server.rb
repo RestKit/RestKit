@@ -252,6 +252,16 @@ class RestKitTestServer < Sinatra::Base
       render_fixture '/JSON/humans/all.json'
     end
   end
+  
+  get '/object_manager/cancel' do
+    sleep 0.05
+    status 204
+  end
+  
+  get '/object_manager/:objectID/cancel' do
+    sleep 0.05
+    status 204
+  end
 
   # start the server if ruby file executed directly
   run! if app_file == $0

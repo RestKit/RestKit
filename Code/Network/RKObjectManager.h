@@ -144,9 +144,6 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  RestKit features deep integration with Apple's Core Data persistence framework. The object manager provides access to this integration by creating `RKManagedObjectRequestOperation` objects when an attempt is made to interact with a resource that has been mapped using an `RKEntityMapping`. To utilize the Core Data integration, the object manager must be provided with a fully configured `RKManagedObjectStore` object. The `RKManagedObjectStore` provides access to the `NSManagedObjectModel` and `NSManagedObjectContext` objects required to peform object mapping that targets a Core Data entity.
  
- Fetch Request Blocks ->> TODO
- Need to cover DELETE impacts...
- 
  Please see the documentation for `RKManagedObjectStore`, `RKEntityMapping`, and `RKManagedObjectRequestOperation` for in depth information about Core Data in RestKit.
  */
 @interface RKObjectManager : NSObject
@@ -396,7 +393,18 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param objectRequestOperation The object request operation to be enqueued.
  */
 - (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation;
-// TODO: Need a cancel...
+
+/**
+ Cancels all operations in the object manager's operation queue whose requests match the specified HTTP method and path pattern.
+ 
+ Paths are matches against the `path` of the `NSURL` of the `NSURLRequest` of each `RKObjectRequestOperation` contained in the receiver's operation queue using a `RKPathMatcher` object.
+ 
+ @param method The HTTP method to match for the cancelled requests, such as `RKRequestMethodGET`, `RKRequestMethodPOST`, `RKRequestMethodPUT`, `RKRequestMethodPatch`, or `RKRequestMethodDELETE`. If `RKRequestMethodAny`, all object request operations with URLs matching the given path pattern will be cancelled.
+ @param pathPattern The pattern to match against the path of the request URL for executing object request operations considered for cancellation.
+ 
+ @see `RKPathMatcher`
+ */
+- (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
 
 ///-------------------------------------
 /// @name Making Object Requests by Path

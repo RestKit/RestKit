@@ -567,6 +567,8 @@
 		25EC1A4014F72B3300C3CF3F /* RKInMemoryManagedObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 7394DF3D14CF19F200CE7BCE /* RKInMemoryManagedObjectCache.m */; };
 		25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1A6514F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25EDFCE3161538F6008BAA1D /* RKObjectManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2516101F1456F2330060A5C5 /* RKObjectManagerTest.m */; };
+		25EDFCE5161538F8008BAA1D /* RKObjectManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2516101F1456F2330060A5C5 /* RKObjectManagerTest.m */; };
 		25F53AE215E7B612008B54E6 /* RKHTTPUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25F53AE315E7B612008B54E6 /* RKHTTPUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25F53AE415E7B612008B54E6 /* RKHTTPUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */; };
@@ -2503,6 +2505,7 @@
 				25C246A415C83B090032212E /* RKSearchTest.m in Sources */,
 				5C927E141608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */,
 				25E9C8F01612523400647F84 /* RKObjectParameterizationTest.m in Sources */,
+				25EDFCE3161538F6008BAA1D /* RKObjectManagerTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2662,6 +2665,7 @@
 				25A763E615C7424500A9DF31 /* RKSearchIndexerTest.m in Sources */,
 				25C246A515C83B090032212E /* RKSearchTest.m in Sources */,
 				5C927E151608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */,
+				25EDFCE5161538F8008BAA1D /* RKObjectManagerTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

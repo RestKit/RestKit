@@ -28,6 +28,7 @@
 #import "RKMIMETypes.h"
 #import "RKLog.h"
 #import "RKMIMETypeSerialization.h"
+#import "RKPathMatcher.h"
 
 #if !__has_feature(objc_arc)
 #error RestKit must be built with ARC.
@@ -514,6 +515,22 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
 - (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation
 {
     [self.operationQueue addOperation:objectRequestOperation];
+}
+
+- (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern
+{
+    NSString *methodName = RKStringFromRequestMethod(method);
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
+    for (NSOperation *operation in [self.operationQueue operations]) {
+        if (![operation isKindOfClass:[RKObjectRequestOperation class]]) {
+            continue;
+        }
+        
+        NSURLRequest *request = [(RKObjectRequestOperation *)operation request];
+        if ((!methodName || [methodName isEqualToString:[request HTTPMethod]]) && [pathMatcher matchesPath:[[request URL] path] tokenizeQueryStrings:NO parsedArguments:nil]) {
+            [operation cancel];
+        }
+    }
 }
 
 @end

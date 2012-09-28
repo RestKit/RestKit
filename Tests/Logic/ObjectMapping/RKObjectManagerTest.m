@@ -21,15 +21,17 @@
 #import "RKTestEnvironment.h"
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
-#import "RKTestResponseLoader.h"
 #import "RKEntityMapping.h"
 #import "RKHuman.h"
 #import "RKCat.h"
 #import "RKObjectMapperTestModel.h"
 
-@interface RKObjectManagerTest : RKTestCase {
-    RKObjectManager *_objectManager;
-}
+void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL);
+NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
+
+@interface RKObjectManagerTest : RKTestCase
+
+@property (nonatomic, strong) RKObjectManager *objectManager;
 
 @end
 
@@ -38,17 +40,14 @@
 - (void)setUp
 {
     [RKTestFactory setUp];
-
-    _objectManager = [RKTestFactory objectManager];
-    _objectManager.managedObjectStore = [RKTestFactory managedObjectStore];
-    [RKObjectManager setSharedManager:_objectManager];
+    
+    self.objectManager = [RKTestFactory objectManager];
+    self.objectManager.managedObjectStore = [RKTestFactory managedObjectStore];
+    [RKObjectManager setSharedManager:self.objectManager];
     NSError *error;
-    [_objectManager.managedObjectStore resetPersistentStores:&error];
-
-    NSMutableDictionary *mappingDictionary = [NSMutableDictionary dictionary];
-
+    [self.objectManager.managedObjectStore resetPersistentStores:&error];
+    
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:_objectManager.managedObjectStore];
-    humanMapping.rootKeyPath = @"human";
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
@@ -57,7 +56,7 @@
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
-
+    
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:_objectManager.managedObjectStore];
     [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
@@ -67,27 +66,23 @@
     [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
     [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
     [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
-
+    
     [catMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
-
-    [mappingsDictionary setObject:humanMapping forKey:@"human"];
-    [mappingsDictionary setObject:humanMapping forKey:@"humans"];
-
+    
+    [self.objectManager addResponseDescriptorsFromArray:@[
+     [RKResponseDescriptor responseDescriptorWithMapping:humanMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)],
+     [RKResponseDescriptor responseDescriptorWithMapping:humanMapping pathPattern:nil keyPath:@"humans" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]
+     ]];
+    
     RKObjectMapping *humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [humanSerialization addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
-    [provider setSerializationMapping:humanSerialization forClass:[RKHuman class]];
-    _objectManager.mappingProvider = provider;
-    [_objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
+    [self.objectManager addRequestDescriptor:[RKRequestDescriptor requestDescriptorWithMapping:humanSerialization objectClass:[RKHuman class] rootKeyPath:@"human"]];
+    [self.objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
 }
 
 - (void)tearDown
 {
     [RKTestFactory tearDown];
-}
-
-- (void)testShouldSetTheAcceptHeaderAppropriatelyForTheFormat
-{
-    assertThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"], is(equalTo(@"application/json")));
 }
 
 // TODO: Move to Core Data specific spec file...
@@ -96,12 +91,12 @@
     RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     temporaryHuman.name = @"My Name";
     
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
-    [_objectManager postObject:temporaryHuman delegate:loader];
-    [loader waitForResponse];
-
-    assertThat(loader.objects, isNot(empty()));
-    RKHuman *human = (RKHuman *)[loader.objects objectAtIndex:0];
+    RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
+    [operation start];
+    [operation waitUntilFinished];
+    
+    assertThat([operation.mappingResult array], isNot(empty()));
+    RKHuman *human = (RKHuman *)[[operation.mappingResult array] objectAtIndex:0];
     assertThat(human.objectID, is(equalTo(temporaryHuman.objectID)));
     assertThat(human.railsID, is(equalToInt(1)));
 }
@@ -112,17 +107,11 @@
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
-
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
-    NSString *resourcePath = @"/humans/fail";
-    RKObjectLoader *objectLoader = [_objectManager loaderWithResourcePath:resourcePath];
-    objectLoader.delegate = loader;
-    objectLoader.method = RKRequestMethodPOST;
-    objectLoader.targetObject = temporaryHuman;
-    objectLoader.serializationMapping = mapping;
-    [objectLoader send];
-    [loader waitForResponse];
-
+    
+    RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:@"/humans/fail" parameters:nil];
+    [operation start];
+    [operation waitUntilFinished];
+    
     assertThatBool([temporaryHuman isNew], is(equalToBool(YES)));
 }
 
@@ -132,290 +121,367 @@
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
-
+    
     // Save it to suppress deletion
-    [_objectManager.managedObjectStore.primaryManagedObjectContext save:nil];
-
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
-    NSString *resourcePath = @"/humans/fail";
-    RKObjectLoader *objectLoader = [_objectManager loaderWithResourcePath:resourcePath];
-    objectLoader.delegate = loader;
-    objectLoader.method = RKRequestMethodPOST;
-    objectLoader.targetObject = temporaryHuman;
-    objectLoader.serializationMapping = mapping;
-    [objectLoader send];
-    [loader waitForResponse];
-
+    [self.objectManager.managedObjectStore.primaryManagedObjectContext save:nil];
+    
+    RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:@"/humans/fail" parameters:nil];
+    [operation start];
+    [operation waitUntilFinished];
+    
     assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.managedObjectStore.primaryManagedObjectContext)));
 }
 
+- (void)testCancellationByExactMethodAndPath
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/cancel"];
+    assertThatBool([operation isCancelled], is(equalToBool(YES)));
+}
+
+- (void)testCancellationByPathMatch
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/1234/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/:objectID/cancel"];
+    assertThatBool([operation isCancelled], is(equalToBool(YES)));
+}
+
+- (void)testCancellationFailsForMismatchedMethod
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodPOST matchingPathPattern:@"/object_manager/cancel"];
+    assertThatBool([operation isCancelled], is(equalToBool(NO)));
+}
+
+- (void)testCancellationFailsForMismatchedPath
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"];
+    assertThatBool([operation isCancelled], is(equalToBool(NO)));
+}
+
 // TODO: Move to Core Data specific spec file...
-- (void)testShouldLoadAHuman
+//- (void)testShouldLoadAHuman
+//{
+//
+//    __block RKObjectRequestOperation *requestOperation = nil;
+//    [self.objectManager getObjectsAtPath:@"/JSON/humans/1.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+//        requestOperation = operation;
+//    } failure:nil];
+//    [self.objectManager.operationQueue waitUntilAllOperationsAreFinished];
+//
+//    assertThat(loader.error, is(nilValue()));
+//    assertThat(loader.objects, isNot(empty()));
+//    RKHuman *blake = (RKHuman *)[loader.objects objectAtIndex:0];
+//    assertThat(blake.name, is(equalTo(@"Blake Watters")));
+//}
+//
+//- (void)testShouldLoadAllHumans
+//{
+//    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+//    [_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:loader];
+//    [loader waitForResponse];
+//    NSArray *humans = (NSArray *)loader.objects;
+//    assertThatUnsignedInteger([humans count], is(equalToInt(2)));
+//    assertThat([humans objectAtIndex:0], is(instanceOf([RKHuman class])));
+//}
+//
+//- (void)testShouldHandleConnectionFailures
+//{
+//    NSString *localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
+//    RKObjectManager *modelManager = [RKObjectManager managerWithBaseURLString:localBaseURL];
+//    modelManager.client.requestQueue.suspended = NO;
+//    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+//    [modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:loader];
+//    [loader waitForResponse];
+//    assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
+//}
+//
+//- (void)testShouldPOSTAnObject
+//{
+//    RKObjectManager *manager = [RKTestFactory objectManager];
+//    [manager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
+//
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    mapping.rootKeyPath = @"human";
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
+//    [manager.mappingProvider setMapping:mapping forKeyPath:@"human"];
+//    [manager.mappingProvider setSerializationMapping:mapping forClass:[RKObjectMapperTestModel class]];
+//
+//    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
+//    human.name = @"Blake Watters";
+//    human.age = [NSNumber numberWithInt:28];
+//
+//    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+//    [manager postObject:human delegate:loader];
+//    [loader waitForResponse];
+//
+//    // NOTE: The /humans endpoint returns a canned response, we are testing the plumbing
+//    // of the object manager here.
+//    assertThat(human.name, is(equalTo(@"My Name")));
+//}
+//
+//- (void)testShouldNotSetAContentBodyOnAGET
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/1" method:RKRequestMethodAny]];
+//
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
+//    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+//
+//    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+//    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
+//    human.name = @"Blake Watters";
+//    human.age = [NSNumber numberWithInt:28];
+//    __block RKObjectLoader *objectLoader = nil;
+//    [objectManager getObject:human usingBlock:^(RKObjectLoader *loader) {
+//        loader.delegate = responseLoader;
+//        objectLoader = loader;
+//    }];
+//    [responseLoader waitForResponse];
+//    RKLogCritical(@"%@", [objectLoader.URLRequest allHTTPHeaderFields]);
+//    assertThat([objectLoader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+//}
+//
+//- (void)testShouldNotSetAContentBodyOnADELETE
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/1" method:RKRequestMethodAny]];
+//
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
+//    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+//
+//    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+//    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
+//    human.name = @"Blake Watters";
+//    human.age = [NSNumber numberWithInt:28];
+//    __block RKObjectLoader *objectLoader = nil;
+//    [objectManager deleteObject:human usingBlock:^(RKObjectLoader *loader) {
+//        loader.delegate = responseLoader;
+//        objectLoader = loader;
+//    }];
+//    [responseLoader waitForResponse];
+//    RKLogCritical(@"%@", [objectLoader.URLRequest allHTTPHeaderFields]);
+//    assertThat([objectLoader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+//}
+//
+//#pragma mark - Block Helpers
+//
+//- (void)testShouldLetYouLoadObjectsWithABlock
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
+//    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+//
+//    RKTestResponseLoader *responseLoader = [[RKTestResponseLoader responseLoader] retain];
+//    [objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" usingBlock:^(RKObjectLoader *loader) {
+//        loader.delegate = responseLoader;
+//        loader.objectMapping = mapping;
+//    }];
+//    [responseLoader waitForResponse];
+//    assertThatBool(responseLoader.wasSuccessful, is(equalToBool(YES)));
+//    assertThat(responseLoader.objects, hasCountOf(1));
+//}
+//
+//- (void)testShouldAllowYouToOverrideTheRoutedResourcePath
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/2" method:RKRequestMethodAny]];
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
+//    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+//
+//    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+//    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
+//    human.name = @"Blake Watters";
+//    human.age = [NSNumber numberWithInt:28];
+//    [objectManager deleteObject:human usingBlock:^(RKObjectLoader *loader) {
+//        loader.delegate = responseLoader;
+//        loader.resourcePath = @"/humans/1";
+//    }];
+//    responseLoader.timeout = 50;
+//    [responseLoader waitForResponse];
+//    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
+//}
+//
+//- (void)testShouldAllowYouToUseObjectHelpersWithoutRouting
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
+//    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+//
+//    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+//    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
+//    human.name = @"Blake Watters";
+//    human.age = [NSNumber numberWithInt:28];
+//    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
+//        loader.method = RKRequestMethodDELETE;
+//        loader.delegate = responseLoader;
+//        loader.resourcePath = @"/humans/1";
+//    }];
+//    [responseLoader waitForResponse];
+//    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
+//}
+//
+//- (void)testShouldAllowYouToSkipTheMappingProvider
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    mapping.rootKeyPath = @"human";
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
+//
+//    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+//    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
+//    human.name = @"Blake Watters";
+//    human.age = [NSNumber numberWithInt:28];
+//    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
+//        loader.method = RKRequestMethodDELETE;
+//        loader.delegate = responseLoader;
+//        loader.objectMapping = mapping;
+//    }];
+//    [responseLoader waitForResponse];
+//    assertThatBool(responseLoader.wasSuccessful, is(equalToBool(YES)));
+//    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
+//}
+//
+//- (void)testShouldLetYouOverloadTheParamsOnAnObjectLoaderRequest
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    mapping.rootKeyPath = @"human";
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
+//
+//    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+//    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
+//    human.name = @"Blake Watters";
+//    human.age = [NSNumber numberWithInt:28];
+//    NSDictionary *myParams = [NSDictionary dictionaryWithObject:@"bar" forKey:@"foo"];
+//    __block RKObjectLoader *objectLoader = nil;
+//    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
+//        loader.delegate = responseLoader;
+//        loader.method = RKRequestMethodPOST;
+//        loader.objectMapping = mapping;
+//        loader.params = myParams;
+//        objectLoader = loader;
+//    }];
+//    [responseLoader waitForResponse];
+//    assertThat(objectLoader.params, is(equalTo(myParams)));
+//}
+//
+//- (void)testInitializationOfObjectLoaderViaManagerConfiguresSerializationMIMEType
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    objectManager.serializationMIMEType = RKMIMETypeJSON;
+//    RKObjectLoader *loader = [objectManager loaderWithResourcePath:@"/test"];
+//    assertThat(loader.serializationMIMEType, isNot(nilValue()));
+//    assertThat(loader.serializationMIMEType, is(equalTo(RKMIMETypeJSON)));
+//}
+//
+//- (void)testInitializationOfRoutedPathViaSendObjectMethodUsingBlock
+//{
+//    RKObjectManager *objectManager = [RKTestFactory objectManager];
+//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+//    mapping.rootKeyPath = @"human";
+//    [objectManager.mappingProvider registerObjectMapping:mapping withRootKeyPath:@"human"];
+//    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/human/1" method:RKRequestMethodAny]];
+//    objectManager.serializationMIMEType = RKMIMETypeJSON;
+//    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+//
+//    RKObjectMapperTestModel *object = [RKObjectMapperTestModel new];
+//    [objectManager putObject:object usingBlock:^(RKObjectLoader *loader) {
+//        loader.delegate = responseLoader;sss
+//    }];
+//    [responseLoader waitForResponse];
+//}
+//
+//- (void)testThatInitializationOfObjectManagerInitializesNetworkStatusFromClient
+//{
+//    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
+//    id mockObserver = [OCMockObject partialMockForObject:observer];
+//    BOOL yes = YES;
+//    [[[mockObserver stub] andReturnValue:OCMOCK_VALUE(yes)] isReachabilityDetermined];
+//    [[[mockObserver stub] andReturnValue:OCMOCK_VALUE(yes)] isNetworkReachable];
+//    RKClient *client = [RKTestFactory client];
+//    client.reachabilityObserver = mockObserver;
+//    RKObjectManager *manager = [[RKObjectManager alloc] init];
+//    manager.client = client;
+//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
+//}
+//
+//- (void)testThatMutationOfUnderlyingClientReachabilityObserverUpdatesManager
+//{
+//    RKObjectManager *manager = [RKTestFactory objectManager];
+//    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
+//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
+//    manager.client.reachabilityObserver = observer;
+//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
+//
+//
+//- (void)testThatReplacementOfUnderlyingClientUpdatesManagerReachabilityObserver
+//{
+//    RKObjectManager *manager = [RKTestFactory objectManager];
+//    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
+//    RKClient *client = [RKTestFactory client];
+//    client.reachabilityObserver = observer;
+//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
+//    manager.client = client;
+//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
+//}
+
+- (void)testAssociationAndExtractionOfBaseURL
 {
-    assertThatBool([RKClient sharedClient].isNetworkReachable, is(equalToBool(YES)));
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
-    [_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
-    [loader waitForResponse];
-    assertThat(loader.error, is(nilValue()));
-    assertThat(loader.objects, isNot(empty()));
-    RKHuman *blake = (RKHuman *)[loader.objects objectAtIndex:0];
-    assertThat(blake.name, is(equalTo(@"Blake Watters")));
+    NSURL *baseURL = [NSURL URLWithString:@"http://domain.com/api/v1/"];
+    NSURL *relativeURL = [NSURL URLWithString:@"itemtype" relativeToURL:baseURL];
+    assertThat([relativeURL relativePath], is(equalTo(@"itemtype")));
+    NSURLRequest *request = [NSURLRequest requestWithURL:relativeURL];
+    RKAssociateBaseURLWithURL(baseURL, request.URL);
+    
+    NSURL *associatedBaseURL = RKBaseURLAssociatedWithURL(request.URL);
+    assertThat(associatedBaseURL, is(notNilValue()));
+    NSString *relativePathFromAssociation = [[request.URL absoluteString] substringFromIndex:[[associatedBaseURL absoluteString] length]];
+    assertThat(relativePathFromAssociation, is(equalTo(@"itemtype")));
 }
 
-- (void)testShouldLoadAllHumans
+- (void)testBaseURLandRelativePathRoundTripping
 {
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
-    [_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:loader];
-    [loader waitForResponse];
-    NSArray *humans = (NSArray *)loader.objects;
-    assertThatUnsignedInteger([humans count], is(equalToInt(2)));
-    assertThat([humans objectAtIndex:0], is(instanceOf([RKHuman class])));
-}
-
-- (void)testShouldHandleConnectionFailures
-{
-    NSString *localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
-    RKObjectManager *modelManager = [RKObjectManager managerWithBaseURLString:localBaseURL];
-    modelManager.client.requestQueue.suspended = NO;
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
-    [modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:loader];
-    [loader waitForResponse];
-    assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
-}
-
-- (void)testShouldPOSTAnObject
-{
-    RKObjectManager *manager = [RKTestFactory objectManager];
-    [manager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
-
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    mapping.rootKeyPath = @"human";
-    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-    [manager.mappingProvider setMapping:mapping forKeyPath:@"human"];
-    [manager.mappingProvider setSerializationMapping:mapping forClass:[RKObjectMapperTestModel class]];
-
-    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
-    human.name = @"Blake Watters";
-    human.age = [NSNumber numberWithInt:28];
-
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
-    [manager postObject:human delegate:loader];
-    [loader waitForResponse];
-
-    // NOTE: The /humans endpoint returns a canned response, we are testing the plumbing
-    // of the object manager here.
-    assertThat(human.name, is(equalTo(@"My Name")));
-}
-
-- (void)testShouldNotSetAContentBodyOnAGET
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/1" method:RKRequestMethodAny]];
-
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
-
-    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
-    human.name = @"Blake Watters";
-    human.age = [NSNumber numberWithInt:28];
-    __block RKObjectLoader *objectLoader = nil;
-    [objectManager getObject:human usingBlock:^(RKObjectLoader *loader) {
-        loader.delegate = responseLoader;
-        objectLoader = loader;
-    }];
-    [responseLoader waitForResponse];
-    RKLogCritical(@"%@", [objectLoader.URLRequest allHTTPHeaderFields]);
-    assertThat([objectLoader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
-}
-
-- (void)testShouldNotSetAContentBodyOnADELETE
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/1" method:RKRequestMethodAny]];
-
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
-
-    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
-    human.name = @"Blake Watters";
-    human.age = [NSNumber numberWithInt:28];
-    __block RKObjectLoader *objectLoader = nil;
-    [objectManager deleteObject:human usingBlock:^(RKObjectLoader *loader) {
-        loader.delegate = responseLoader;
-        objectLoader = loader;
-    }];
-    [responseLoader waitForResponse];
-    RKLogCritical(@"%@", [objectLoader.URLRequest allHTTPHeaderFields]);
-    assertThat([objectLoader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
-}
-
-#pragma mark - Block Helpers
-
-- (void)testShouldLetYouLoadObjectsWithABlock
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
-
-    RKTestResponseLoader *responseLoader = [[RKTestResponseLoader responseLoader] retain];
-    [objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" usingBlock:^(RKObjectLoader *loader) {
-        loader.delegate = responseLoader;
-        loader.objectMapping = mapping;
-    }];
-    [responseLoader waitForResponse];
-    assertThatBool(responseLoader.wasSuccessful, is(equalToBool(YES)));
-    assertThat(responseLoader.objects, hasCountOf(1));
-}
-
-- (void)testShouldAllowYouToOverrideTheRoutedResourcePath
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/humans/2" method:RKRequestMethodAny]];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
-
-    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
-    human.name = @"Blake Watters";
-    human.age = [NSNumber numberWithInt:28];
-    [objectManager deleteObject:human usingBlock:^(RKObjectLoader *loader) {
-        loader.delegate = responseLoader;
-        loader.resourcePath = @"/humans/1";
-    }];
-    responseLoader.timeout = 50;
-    [responseLoader waitForResponse];
-    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
-}
-
-- (void)testShouldAllowYouToUseObjectHelpersWithoutRouting
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
-
-    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
-    human.name = @"Blake Watters";
-    human.age = [NSNumber numberWithInt:28];
-    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
-        loader.method = RKRequestMethodDELETE;
-        loader.delegate = responseLoader;
-        loader.resourcePath = @"/humans/1";
-    }];
-    [responseLoader waitForResponse];
-    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
-}
-
-- (void)testShouldAllowYouToSkipTheMappingProvider
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    mapping.rootKeyPath = @"human";
-    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-
-    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
-    human.name = @"Blake Watters";
-    human.age = [NSNumber numberWithInt:28];
-    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
-        loader.method = RKRequestMethodDELETE;
-        loader.delegate = responseLoader;
-        loader.objectMapping = mapping;
-    }];
-    [responseLoader waitForResponse];
-    assertThatBool(responseLoader.wasSuccessful, is(equalToBool(YES)));
-    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
-}
-
-- (void)testShouldLetYouOverloadTheParamsOnAnObjectLoaderRequest
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    mapping.rootKeyPath = @"human";
-    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-
-    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectMapperTestModel *human = [[RKObjectMapperTestModel new] autorelease];
-    human.name = @"Blake Watters";
-    human.age = [NSNumber numberWithInt:28];
-    NSDictionary *myParams = [NSDictionary dictionaryWithObject:@"bar" forKey:@"foo"];
-    __block RKObjectLoader *objectLoader = nil;
-    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
-        loader.delegate = responseLoader;
-        loader.method = RKRequestMethodPOST;
-        loader.objectMapping = mapping;
-        loader.params = myParams;
-        objectLoader = loader;
-    }];
-    [responseLoader waitForResponse];
-    assertThat(objectLoader.params, is(equalTo(myParams)));
-}
-
-- (void)testInitializationOfObjectLoaderViaManagerConfiguresSerializationMIMEType
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    objectManager.serializationMIMEType = RKMIMETypeJSON;
-    RKObjectLoader *loader = [objectManager loaderWithResourcePath:@"/test"];
-    assertThat(loader.serializationMIMEType, isNot(nilValue()));
-    assertThat(loader.serializationMIMEType, is(equalTo(RKMIMETypeJSON)));
-}
-
-- (void)testInitializationOfRoutedPathViaSendObjectMethodUsingBlock
-{
-    RKObjectManager *objectManager = [RKTestFactory objectManager];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    mapping.rootKeyPath = @"human";
-    [objectManager.mappingProvider registerObjectMapping:mapping withRootKeyPath:@"human"];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKObjectMapperTestModel class] pathPattern:@"/human/1" method:RKRequestMethodAny]];
-    objectManager.serializationMIMEType = RKMIMETypeJSON;
-    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-
-    RKObjectMapperTestModel *object = [RKObjectMapperTestModel new];
-    [objectManager putObject:object usingBlock:^(RKObjectLoader *loader) {
-        loader.delegate = responseLoader;
-    }];
-    [responseLoader waitForResponse];
-}
-
-- (void)testThatInitializationOfObjectManagerInitializesNetworkStatusFromClient
-{
-    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
-    id mockObserver = [OCMockObject partialMockForObject:observer];
-    BOOL yes = YES;
-    [[[mockObserver stub] andReturnValue:OCMOCK_VALUE(yes)] isReachabilityDetermined];
-    [[[mockObserver stub] andReturnValue:OCMOCK_VALUE(yes)] isNetworkReachable];
-    RKClient *client = [RKTestFactory client];
-    client.reachabilityObserver = mockObserver;
-    RKObjectManager *manager = [[RKObjectManager alloc] init];
-    manager.client = client;
-    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
-}
-
-- (void)testThatMutationOfUnderlyingClientReachabilityObserverUpdatesManager
-{
-    RKObjectManager *manager = [RKTestFactory objectManager];
-    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
-    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
-    manager.client.reachabilityObserver = observer;
-    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
-}
-
-- (void)testThatReplacementOfUnderlyingClientUpdatesManagerReachabilityObserver
-{
-    RKObjectManager *manager = [RKTestFactory objectManager];
-    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
-    RKClient *client = [RKTestFactory client];
-    client.reachabilityObserver = observer;
-    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
-    manager.client = client;
-    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
+    NSURL *baseURL = [NSURL URLWithString:@"http://domain.com/api/v1/"];
+    NSURL *relativeURL = [NSURL URLWithString:@"itemtype" relativeToURL:baseURL];
+    assertThat([relativeURL baseURL], is(equalTo(baseURL)));
+    assertThat([relativeURL relativePath], is(equalTo(@"itemtype")));
+    assertThat([relativeURL relativeString], is(equalTo(@"itemtype")));
+    
+    // NSURLRequest clobbers the URL
+    NSURLRequest *request = [NSURLRequest requestWithURL:relativeURL];
+    assertThat([request.URL baseURL], isNot(equalTo(baseURL)));
+    assertThat([request.URL relativePath], isNot(equalTo(@"itemtype")));
+    assertThat([request.URL relativeString], isNot(equalTo(@"itemtype")));
+    
+    // Verify use of associated object support to workaround URL issues. We associate with the request URL after init, which is retained by the NSHTTPURLResponse
+    RKAssociateBaseURLWithURL(baseURL, request.URL);
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:request.URL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:nil];
+    assertThat([response.URL baseURL], is(equalTo(nil)));
+    NSURL *associatedBaseURL = RKBaseURLAssociatedWithURL(response.URL);
+    assertThat(associatedBaseURL, is(equalTo(baseURL)));
+    
+    // These are wrong -- we want the relative 'itemtype' path
+    assertThat([response.URL relativePath], is(equalTo(@"/api/v1/itemtype")));
+    assertThat([response.URL relativeString], is(equalTo(@"http://domain.com/api/v1/itemtype")));
+    
+    // Build our own relative path and verify it works
+    NSString *relativePathFromAssociation = [[request.URL absoluteString] substringFromIndex:[[associatedBaseURL absoluteString] length]];
+    assertThat(relativePathFromAssociation, is(equalTo(@"itemtype")));
 }
 
 @end
