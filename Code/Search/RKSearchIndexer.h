@@ -55,6 +55,11 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  */
 @property (nonatomic, strong) NSSet *stopWords;
 
+/**
+ An optional NSManagedObjectContext to use when performing search indexing
+ */
+@property (nonatomic, strong) NSManagedObjectContext *indexingContext;
+
 ///---------------------------------------------------
 /// @name Indexing Changes in a Managed Object Context
 ///---------------------------------------------------
