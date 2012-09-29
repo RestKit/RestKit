@@ -25,7 +25,7 @@
 @property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
 @property (nonatomic, copy, readwrite) NSString *destinationKeyPath;
 @property (nonatomic, strong, readwrite) id value;
-@property (nonatomic, copy, readwrite) BOOL (^evaluationBlock)(RKPropertyMapping *mapping, id value);
+@property (nonatomic, copy, readwrite) RKMappingTestExpectationEvaluationBlock evaluationBlock;
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @end
 
@@ -50,7 +50,7 @@
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKPropertyMapping *mapping, id value))evaluationBlock
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock
 {
     RKMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
@@ -72,19 +72,19 @@
 
 - (NSString *)mappingDescription
 {
-    return [NSString stringWithFormat:@"expected '%@' to map to '%@'", self.sourceKeyPath, self.destinationKeyPath];
+    return [NSString stringWithFormat:@"map '%@' to '%@'", self.sourceKeyPath, self.destinationKeyPath];
 }
 
 - (NSString *)description
 {
     if (self.value) {
-        return [NSString stringWithFormat:@"expected '%@' to map to '%@' with %@ value '%@'",
+        return [NSString stringWithFormat:@"map '%@' to '%@' with %@ value '%@'",
                 self.sourceKeyPath, self.destinationKeyPath, [self.value class], self.value];
     } else if (self.evaluationBlock) {
-        return [NSString stringWithFormat:@"expected '%@' to map to '%@' satisfying evaluation block",
+        return [NSString stringWithFormat:@"map '%@' to '%@' satisfying evaluation block",
                 self.sourceKeyPath, self.destinationKeyPath];
     } else if (self.mapping) {
-        return [NSString stringWithFormat:@"expected '%@' to map to '%@' using mapping: %@",
+        return [NSString stringWithFormat:@"map '%@' to '%@' using mapping: %@",
                 self.sourceKeyPath, self.destinationKeyPath, self.mapping];
     }
 

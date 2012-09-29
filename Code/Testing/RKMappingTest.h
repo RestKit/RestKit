@@ -119,7 +119,7 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  @param evaluationBlock A block with which to evaluate the success of the mapping.
  @see `RKMappingTestExpectation`
  */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKPropertyMapping *mapping, id value))evaluationBlock;
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(RKMappingTestExpectationEvaluationBlock)evaluationBlock;
 
 /**
  Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object using the given object mapping.
