@@ -17,6 +17,7 @@
 @property (nonatomic, strong) NSURL *baseURL;
 @property (nonatomic, strong) NSString *managedObjectStoreFilename;
 @property (nonatomic, strong) NSMutableDictionary *factoryBlocks;
+@property (nonatomic, strong) NSMutableDictionary *sharedObjectsByFactoryName;
 
 + (RKTestFactory *)sharedFactory;
 - (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
@@ -56,6 +57,7 @@ static RKTestFactory *sharedFactory = nil;
         self.baseURL = [NSURL URLWithString:@"http://127.0.0.1:4567"];
         self.managedObjectStoreFilename = RKTestFactoryDefaultStoreFilename;
         self.factoryBlocks = [NSMutableDictionary new];
+        self.sharedObjectsByFactoryName = [NSMutableDictionary new];
         [self defineDefaultFactories];
     }
 
@@ -75,6 +77,16 @@ static RKTestFactory *sharedFactory = nil;
     id object = block();
     [object setValuesForKeysWithDictionary:properties];
     return object;
+}
+
+- (id)sharedObjectFromFactory:(NSString *)factoryName
+{
+    id sharedObject = [self.sharedObjectsByFactoryName objectForKey:factoryName];
+    if (! sharedObject) {
+        sharedObject = [self objectFromFactory:factoryName properties:nil];
+        [self.sharedObjectsByFactoryName setObject:sharedObject forKey:factoryName];
+    }
+    return sharedObject;
 }
 
 - (void)defineDefaultFactories
@@ -160,6 +172,11 @@ static RKTestFactory *sharedFactory = nil;
     return [[RKTestFactory sharedFactory] objectFromFactory:factoryName properties:nil];
 }
 
++ (id)sharedObjectFromFactory:(NSString *)factoryName
+{
+    return [[RKTestFactory sharedFactory] sharedObjectFromFactory:factoryName];
+}
+
 + (id)insertManagedObjectForEntityForName:(NSString *)entityName
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
                            withProperties:(NSDictionary *)properties
@@ -187,21 +204,22 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)client
 {
-    return [self objectFromFactory:RKTestFactoryDefaultNamesClient properties:nil];
+    return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesClient];
 }
 
 + (id)objectManager
 {
-    return [self objectFromFactory:RKTestFactoryDefaultNamesObjectManager properties:nil];
+    return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesObjectManager];
 }
 
 + (id)managedObjectStore
 {
-    return [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore properties:nil];
+    return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
 }
 
 + (void)setUp
 {
+    [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
     [RKManagedObjectStore setDefaultStore:nil];
 
@@ -218,6 +236,7 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)tearDown
 {
+    [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
     [RKManagedObjectStore setDefaultStore:nil];
 

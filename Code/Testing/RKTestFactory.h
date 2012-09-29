@@ -142,6 +142,16 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 + (id)objectFromFactory:(NSString *)factoryName;
 
 /**
+ Fetches a shared object from the factory with the given name. If an existing object has already been created, then that instance is returned. If a shared instance does not yet exist, one will be constructed and returned for this and all subsequent invocations of `sharedObjectFromFactory:`. Shared object instances are discarded when the factory is torn down.
+
+ Shared objects are used to return object instances for cases where it does not make sense to instantiate a new instance on every invocation of the factory. A common example where this is appropriate is the `managedObjectStore` factory, where construction of a new store on each invocation would yield managed objects that cross Core Data stacks.
+
+ @param factoryName The name of the factory to retrieve the shared instance of.
+ @return The shared object instance for the factory registered with the given name.
+ */
++ (id)sharedObjectFromFactory:(NSString *)factoryName;
+
+/**
  Inserts a new managed object for the `NSEntityDescription` with the given name into the specified  managed object context and sets properties on the instance from the given dictionary. A permanent managed object ID is obtained for the object so that it can be referenced across threads without any further work.
  
  @param entityName The name of the entity to insert a new managed object for.
@@ -160,30 +170,30 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  */
 + (NSSet *)factoryNames;
 
-///-------------------------
-/// @name Building Instances
-///-------------------------
+///--------------------------------
+/// @name Retrieving Shared Objects
+///--------------------------------
 
 /**
- Creates and returns an `AFHTTPClient` object using the factory defined for the name `RKTestFactoryDefaultNamesClient`.
+ Fetches the shared `AFHTTPClient` object using the factory defined for the name `RKTestFactoryDefaultNamesClient`.
 
- @return A new client instance.
+ @return The shared client instance.
  */
 + (id)client;
 
 /**
- Creates and returns an `RKObjectManager` object using the factory defined for the name `RKTestFactoryDefaultNamesObjectManager`. 
+ Fetches the shared `RKObjectManager` object using the factory defined for the name `RKTestFactoryDefaultNamesObjectManager`.
 
- @return A new object manager instance.
+ @return The shared object manager instance.
  */
 + (id)objectManager;
 
 /**
- Creates and returns an `RKManagedObjectStore` object using the factory defined for the name `RKTestFactoryDefaultNamesManagedObjectStore`.
+ Fetches the shared an `RKManagedObjectStore` object using the factory defined for the name `RKTestFactoryDefaultNamesManagedObjectStore`.
 
- A new managed object store will be configured and returned. If there is an existing persistent store (i.e. from a previous test invocation), then the persistent store is deleted.
+ On first invocation per factory setup/teardown, a new managed object store will be configured and returned. If there is an existing persistent store (i.e. from a previous test invocation), then the persistent store is deleted.
 
- @return A new managed object store instance.
+ @return The shared managed object store instance.
  */
 + (id)managedObjectStore;
 
