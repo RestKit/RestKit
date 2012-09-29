@@ -21,11 +21,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "RKMapping.h"
+#import "RKPropertyMapping.h"
 
 @class RKConnectionMapping, RKDynamicMappingMatcher;
 @protocol RKManagedObjectCaching;
-
-typedef id (^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
 // Defines the rules for connecting relationsips
 /**
@@ -93,11 +92,10 @@ typedef id (^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
 
-@interface RKConnectionMapping : NSObject
+@interface RKConnectionMapping : RKPropertyMapping
 
 @property (nonatomic, strong, readonly) NSRelationshipDescription *relationship;
-@property (nonatomic, strong, readonly) NSString *sourceKeyPath;
-@property (nonatomic, strong, readonly) NSString *destinationKeyPath;
+
 @property (nonatomic, strong, readonly) RKDynamicMappingMatcher *matcher; // Can be nil
 
 // Returns YES if the receiver describes a connection between entities that is established

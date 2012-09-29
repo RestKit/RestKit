@@ -149,10 +149,19 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
                                                                                                           connectionMapping:connectionMapping
                                                                                                          managedObjectCache:self.managedObjectCache];
+            // TODO: This should really be done using dependencies...
             if (self.operationQueue) {
                 [self.operationQueue addOperation:operation];
+                [operation setCompletionBlock:^{
+                    if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didConnectRelationship:usingMapping:)]) {
+                        [mappingOperation.delegate mappingOperation:mappingOperation didConnectRelationship:connectionMapping.relationship usingMapping:connectionMapping];
+                    }
+                }];
             } else {
                 [operation start];
+                if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didConnectRelationship:usingMapping:)]) {
+                    [mappingOperation.delegate mappingOperation:mappingOperation didConnectRelationship:connectionMapping.relationship usingMapping:connectionMapping];
+                }
             }
         }
     }

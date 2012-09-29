@@ -21,7 +21,7 @@
 #import "RKObjectMapping.h"
 #import "RKAttributeMapping.h"
 
-@class RKMappingOperation, RKDynamicMapping;
+@class RKMappingOperation, RKDynamicMapping, RKConnectionMapping;
 @protocol RKMappingOperationDataSource;
 
 /**
@@ -87,6 +87,21 @@
  @param dynamicMapping The dynamic source mapping from which the object mapping was determined.
  */
 - (void)mappingOperation:(RKMappingOperation *)operation didSelectObjectMapping:(RKObjectMapping *)objectMapping forDynamicMapping:(RKDynamicMapping *)dynamicMapping;
+
+#ifdef _COREDATADEFINES_H
+
+/**
+ Tells the delegate that the mapping operation has connected a relationship.
+
+ Only sent when mapping an `RKEntityMapping` object that contains connection mappings.
+
+ @param operation The mapping operation.
+ @param relationship The relationship that was connected.
+ @param connectionMapping The mappings that was used to connect the relationship.
+ */
+- (void)mappingOperation:(RKMappingOperation *)operation didConnectRelationship:(NSRelationshipDescription *)relationship usingMapping:(RKConnectionMapping *)connectionMapping;
+
+#endif
 
 @end
 

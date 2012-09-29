@@ -41,31 +41,6 @@
 
 @implementation RKConnectionMapping
 
-//+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping
-//{
-//    RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:nil];
-//    return mapping;
-//}
-//
-//+ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher
-//{
-//    RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:matcher];
-//    return mapping;
-//}
-//
-//- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher
-//{
-//    self = [super init];
-//    if (self) {
-//        self.relationshipName = relationshipName;
-//        self.sourceKeyPath = sourceKeyPath;
-//        self.destinationKeyPath = destinationKeyPath;
-//        self.mapping = objectOrDynamicMapping;
-//        self.matcher = matcher;
-//    }
-//    return self;
-//}
-
 - (Class)connectionMappingClassForRelationship:(NSRelationshipDescription *)relationship sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
 {
     NSEntityDescription *sourceEntity = relationship.entity;
