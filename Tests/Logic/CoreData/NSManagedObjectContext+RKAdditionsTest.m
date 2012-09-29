@@ -17,6 +17,16 @@
 
 @implementation NSManagedObjectContext_RKAdditionsTest
 
+- (void)setUp
+{
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown
+{
+    [RKTestFactory tearDown];
+}
+
 - (void)testFetchObjectForEntityWithValueForPrimaryKeyAttribute
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
@@ -51,7 +61,7 @@
     assertThatInteger(count, is(equalToInteger(1)));
 
     RKHuman *foundHuman = [managedObjectStore.primaryManagedObjectContext fetchObjectForEntityForName:@"RKHuman" withValueForPrimaryKeyAttribute:[NSNumber numberWithInt:12345]];
-    assertThat(foundHuman, is(nilValue()));
+    assertThat(foundHuman, is(notNilValue()));
 
     foundHuman = [context fetchObjectForEntityForName:@"RKHuman" withValueForPrimaryKeyAttribute:[NSNumber numberWithInt:12345]];
     assertThat(foundHuman, is(equalTo(human)));

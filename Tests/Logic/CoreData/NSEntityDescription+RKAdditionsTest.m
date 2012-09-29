@@ -15,6 +15,16 @@
 
 @implementation NSEntityDescription_RKAdditionsTest
 
+- (void)setUp
+{
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown
+{
+    [RKTestFactory tearDown];
+}
+
 - (void)testRetrievalOfPrimaryKeyFromXcdatamodel
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
