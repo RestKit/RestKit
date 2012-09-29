@@ -5,6 +5,18 @@
 //  Created by Blake Watters on 5/1/12.
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
@@ -29,6 +41,10 @@
 
 - (id)initWithEntity:(NSEntityDescription *)entity attribute:(NSString *)attributeName managedObjectContext:(NSManagedObjectContext *)context
 {
+    NSParameterAssert(entity);
+    NSParameterAssert(attributeName);
+    NSParameterAssert(context);
+
     self = [self init];
     if (self) {
         _entity = entity;
@@ -55,8 +71,6 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-
 }
 
 - (NSUInteger)count
@@ -96,14 +110,18 @@
         objectIDExpression.expression = [NSExpression expressionForEvaluatedObject];
         objectIDExpression.expressionResultType = NSObjectIDAttributeType;
 
+        // NOTE: `NSDictionaryResultType` does NOT support fetching pending changes. Pending objects must be manually added to the cache via `addObject:`.
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         fetchRequest.entity = self.entity;
         fetchRequest.resultType = NSDictionaryResultType;
         fetchRequest.propertiesToFetch = [NSArray arrayWithObjects:objectIDExpression, self.attribute, nil];
+
         [self.managedObjectContext performBlockAndWait:^{
-            NSError *error;
+            NSError *error = nil;
             NSArray *dictionaries = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-            if (!dictionaries) {
+            if (dictionaries) {
+                RKLogDebug(@"Retrieved %ld dictionaries for cachable `NSManagedObjectID` objects with fetch request: %@", (long) [dictionaries count], fetchRequest);
+            } else {
                 RKLogWarning(@"Failed to load entity cache. Failed to execute fetch request: %@", fetchRequest);
                 RKLogCoreDataError(error);
             }
@@ -138,11 +156,12 @@
 
 - (NSManagedObject *)objectForObjectID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)context
 {
-    /*
+    /**
      NOTE:
-     We use existingObjectWithID: as opposed to objectWithID: as objectWithID: can return us a fault
-     that will raise an exception when fired. existingObjectWithID:error: will return nil if the ID has been
-     deleted. objectRegisteredForID: is also an acceptable approach.
+
+     We use `existingObjectWithID:` as opposed to `objectWithID:` as `objectWithID:` can return us a fault
+     that will raise an exception when fired. `existingObjectWithID:error:` will return nil if the ID has been
+     deleted. `objectRegisteredForID:` is also an acceptable approach.
      */
     __block NSError *error = nil;
     __block NSManagedObject *object;
