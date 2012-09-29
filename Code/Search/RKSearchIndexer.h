@@ -55,6 +55,11 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  */
 @property (nonatomic, strong) NSSet *stopWords;
 
+/**
+ An optional NSManagedObjectContext to use when performing search indexing
+ */
+@property (nonatomic, strong) NSManagedObjectContext *indexingContext;
+
 ///---------------------------------------------------
 /// @name Indexing Changes in a Managed Object Context
 ///---------------------------------------------------
@@ -83,6 +88,15 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  @param managedObjectContext The managed object context that is to be indexed.
  */
 - (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
+/**
+ Tells the receiver to build a list of all inserted or updated managed objects in the given notification and index each one. Objects for entities that are not indexed are silently ignored.
+
+ Invoked by the indexer in response to a `NSManagedObjectContextDidSaveNotification` if the context is being observed and an indexingContext is present
+
+ @param notification The NSManagedObjectContextDidSaveNotification from which to extract changed objects to be indexed.
+ */
+- (void)indexChangedObjectsFromManagedObjectContextDidSaveNotification:(NSNotification *)notification;
 
 ///--------------------------------
 /// @name Indexing a Managed Object

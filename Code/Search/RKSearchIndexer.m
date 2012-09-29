@@ -11,6 +11,7 @@
 #import "RKSearchWord.h"
 #import "RKLog.h"
 #import "RKSearchTokenizer.h"
+#import "NSManagedObjectContext+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -87,17 +88,28 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 {
     NSParameterAssert(managedObjectContext);
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleManagedObjectContextWillSaveNotification:)
-                                                 name:NSManagedObjectContextWillSaveNotification
-                                               object:managedObjectContext];
+    if (self.indexingContext) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleManagedObjectContextDidSaveNotification:)
+                                                     name:NSManagedObjectContextDidSaveNotification
+                                                   object:managedObjectContext];
+    } else {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleManagedObjectContextWillSaveNotification:)
+                                                     name:NSManagedObjectContextWillSaveNotification
+                                                   object:managedObjectContext];
+    }
 }
 
 - (void)stopObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSParameterAssert(managedObjectContext);
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:managedObjectContext];
+    if (self.indexingContext) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:managedObjectContext];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:managedObjectContext];
+    }
 }
 
 - (NSUInteger)indexManagedObject:(NSManagedObject *)managedObject
@@ -155,7 +167,6 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
             searchWordCount = [searchWords count];
         }];
 
-
         return searchWordCount;
     }
 }
@@ -163,27 +174,38 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 - (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSArray *candidateObjects = [[[NSSet setWithSet:managedObjectContext.insertedObjects] setByAddingObjectsFromSet:managedObjectContext.updatedObjects] allObjects];
-    NSUInteger totalObjects = [candidateObjects count];
-    RKLogInfo(@"Indexing %ld changed objects in managed object context: %@", (unsigned long) totalObjects, managedObjectContext);
+    NSArray *objectsToIndex = [self objectsToIndexFromObjects:candidateObjects checkChangedValues:YES];
+    for (NSManagedObject *managedObject in objectsToIndex) {
+        [self indexManagedObject:managedObject];
+    }
+}
 
-    for (NSManagedObject *managedObject in candidateObjects) {
-        NSUInteger index = [candidateObjects indexOfObject:managedObject];
-        double percentage = (((float)index + 1) / (float)totalObjects) * 100;
-        if ((index + 1) % 250 == 0) RKLogInfo(@"Indexed %ld of %ld (%.2f%% complete)", (unsigned long) index + 1, (unsigned long) totalObjects, percentage);
-        NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
-        if (! searchableAttributes) {
-            RKLogTrace(@"Skipping indexing for managed object for entity '%@': no searchable attributes found.", managedObject.entity.name);
-            continue;
-        }
+- (void)indexChangedObjectsFromManagedObjectContextDidSaveNotification:(NSNotification *)notification
+{
+    NSDictionary *userInfo = [notification userInfo];
+    NSArray *candidateObjects = [[[NSSet setWithSet:[userInfo objectForKey:NSInsertedObjectsKey]] setByAddingObjectsFromSet:[userInfo objectForKey:NSUpdatedObjectsKey]] allObjects];
+    NSArray *objectsToIndex = [self objectsToIndexFromObjects:candidateObjects checkChangedValues:NO];
 
-        for (NSString *attribute in searchableAttributes) {
-            if ([[managedObject changedValues] objectForKey:attribute]) {
-                RKLogTrace(@"Detected change to searchable attribute '%@' for managed object '%@': updating search index.", attribute, managedObject);
+    NSArray *objectIDsForObjectsToIndex = [objectsToIndex valueForKey:@"objectID"];
+    [self.indexingContext performBlock:^{
+        [self.indexingContext reset];
+        NSUInteger indexedObjects = 0;
+        for (NSManagedObjectID *managedObjectID in objectIDsForObjectsToIndex) {
+            NSError *error = nil;
+            NSManagedObject *managedObject = [self.indexingContext existingObjectWithID:managedObjectID error:&error];
+            if (managedObject && error == nil) {
                 [self indexManagedObject:managedObject];
-                break;
+                indexedObjects++;
+            } else {
+                RKLogError(@"Skipping indexing of object (%@) with ID (%@) and error (%@)", managedObject, managedObjectID, error);
             }
         }
-    }
+        RKLogTrace(@"Completed indexing of %d changed objects", indexedObjects);
+        NSAssert(objectsToIndex.count == indexedObjects, @"Expected indexing to index all candidate objects");
+
+        NSError *error = nil;
+        [self.indexingContext saveToPersistentStore:&error];
+    }];
 }
 
 #pragma mark - Private
@@ -194,6 +216,39 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     RKLogInfo(@"Managed object context will save notification received. Checking changed and inserted objects for searchable entities...");
 
     [self indexChangedObjectsInManagedObjectContext:managedObjectContext];
+}
+
+- (void)handleManagedObjectContextDidSaveNotification:(NSNotification *)notification
+{
+    RKLogInfo(@"Managed object context did save notification received. Checking changed and inserted objects for searchable entities...");
+    [self indexChangedObjectsFromManagedObjectContextDidSaveNotification:notification];
+}
+
+- (NSArray *)objectsToIndexFromObjects:(NSArray *)objects checkChangedValues:(BOOL)checkChangedValues
+{
+    NSUInteger totalObjects = [objects count];
+    NSMutableArray *objectsNeedingIndexing = [[NSMutableArray alloc] initWithCapacity:totalObjects];
+    RKLogInfo(@"Indexing %ld changed objects@", (unsigned long) totalObjects);
+
+    for (NSManagedObject *managedObject in objects) {
+        NSUInteger index = [objects indexOfObject:managedObject];
+        double percentage = (((float)index + 1) / (float)totalObjects) * 100;
+        if ((index + 1) % 250 == 0) RKLogInfo(@"Indexed %ld of %ld (%.2f%% complete)", (unsigned long) index + 1, (unsigned long) totalObjects, percentage);
+        NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
+        if (! searchableAttributes) {
+            RKLogTrace(@"Skipping indexing for managed object for entity '%@': no searchable attributes found.", managedObject.entity.name);
+            continue;
+        }
+
+        for (NSString *attribute in searchableAttributes) {
+            if (!checkChangedValues || [[managedObject changedValues] objectForKey:attribute]) {
+                RKLogTrace(@"Detected change to searchable attribute '%@' for managed object '%@': updating search index.", attribute, managedObject);
+                [objectsNeedingIndexing addObject:managedObject];
+                break;
+            }
+        }
+    }
+    return objectsNeedingIndexing;
 }
 
 @end
