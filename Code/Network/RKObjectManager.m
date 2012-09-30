@@ -109,24 +109,6 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     return NO;
 }
 
-static char kRKBaseURLAssociatedObjectKey;
-
-void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL)
-{
-    NSCAssert(baseURL, @"baseURL cannot be nil");
-    NSCAssert(URL, @"URL cannot be nil");
-    objc_setAssociatedObject(URL,
-                             &kRKBaseURLAssociatedObjectKey,
-                             baseURL,
-                             OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
-{
-    NSCAssert(URL, @"URL cannot be nil");
-    return objc_getAssociatedObject(URL, &kRKBaseURLAssociatedObjectKey);
-}
-
 ///////////////////////////////////
 
 @interface RKObjectManager ()
@@ -531,6 +513,70 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
             [operation cancel];
         }
     }
+}
+
+- (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *)route
+                                               objects:(NSArray *)objects
+                                              progress:(void (^)(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations))progress
+                                            completion:(void (^)(NSArray *operations))completion {
+    NSMutableArray *operations = [[NSMutableArray alloc] initWithCapacity:objects.count];
+    for (id object in objects) {
+        RKObjectRequestOperation *operation = nil;
+        NSURL *URL = [self.router URLForRoute:route object:object];
+        NSAssert(URL, @"Failed to generate URL for route %@ with object %@", route, object);
+        if ([route isClassRoute]) {
+            operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodGET path:[URL relativeString] parameters:nil];
+        } else {
+            operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:nil];
+        }
+        [operations addObject:operation];
+    }
+    return [self enqueueBatchOfObjectRequestOperations:operations progress:progress completion:completion];
+}
+
+- (void)enqueueBatchOfObjectRequestOperations:(NSArray *)operations
+                                     progress:(void (^)(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations))progress
+                                   completion:(void (^)(NSArray *operations))completion {
+
+    __block dispatch_group_t dispatchGroup = dispatch_group_create();
+    NSBlockOperation *batchedOperation = [NSBlockOperation blockOperationWithBlock:^{
+        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(operations);
+            }
+        });
+    }];
+
+    for (RKObjectRequestOperation *operation in operations) {
+        void (^originalCompletionBlock)(void) = [operation.completionBlock copy];
+        [operation setCompletionBlock:^{
+            dispatch_queue_t queue = operation.successCallbackQueue ?: dispatch_get_main_queue();
+            dispatch_group_async(dispatchGroup, queue, ^{
+                if (originalCompletionBlock) {
+                    originalCompletionBlock();
+                }
+
+                __block NSUInteger numberOfFinishedOperations = 0;
+                [operations enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                    if ([(NSOperation *)obj isFinished]) {
+                        numberOfFinishedOperations++;
+                    }
+                }];
+
+                if (progress) {
+                    progress(numberOfFinishedOperations, [operations count]);
+                }
+
+                dispatch_group_leave(dispatchGroup);
+            });
+        }];
+
+        dispatch_group_enter(dispatchGroup);
+        [batchedOperation addDependency:operation];
+
+        [self enqueueObjectRequestOperation:operation];
+    }
+    [self.operationQueue addOperation:batchedOperation];
 }
 
 @end

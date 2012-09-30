@@ -22,6 +22,7 @@
 #import "RKRouteSet.h"
 #import "RKRoute.h"
 #import "RKPathMatcher.h"
+#import <objc/runtime.h>
 
 
 @interface RKRouter ()
@@ -29,6 +30,23 @@
 @property (nonatomic, strong, readwrite) RKRouteSet *routeSet;
 @end
 
+static char kRKBaseURLAssociatedObjectKey;
+
+void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL)
+{
+    NSCAssert(baseURL, @"baseURL cannot be nil");
+    NSCAssert(URL, @"URL cannot be nil");
+    objc_setAssociatedObject(URL,
+                             &kRKBaseURLAssociatedObjectKey,
+                             baseURL,
+                             OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
+{
+    NSCAssert(URL, @"URL cannot be nil");
+    return objc_getAssociatedObject(URL, &kRKBaseURLAssociatedObjectKey);
+}
 
 @implementation RKRouter
 
@@ -54,23 +72,32 @@
 - (NSURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object
 {
     RKRoute *route = [self.routeSet routeForName:routeName];
-    if (! route) return nil;
     if (method) *method = route.method;
-    return [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
+    return [self URLForRoute:route object:object];
 }
 
 - (NSURL *)URLForObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForObject:object method:method];
-    if (! route) return nil;
-    return [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
+    return [self URLForRoute:route object:object];
 }
 
 - (NSURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForRelationship:relationshipName ofClass:[object class] method:method];
-    if (! route) return nil;
-    return [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
+    return [self URLForRoute:route object:object];
+}
+
+- (NSURL *)URLForRoute:(RKRoute *)route object:(id)object
+{
+    NSParameterAssert(route);
+    NSURL *URL = [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
+
+    /**
+     Associate our baseURL with the URL of the `NSURLRequest` object. This enables us to match response descriptors by path.
+     */
+    RKAssociateBaseURLWithURL(self.baseURL, URL);
+    return URL;
 }
 
 - (NSString *)pathFromRoute:(RKRoute *)route forObject:(id)object

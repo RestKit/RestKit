@@ -32,6 +32,10 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 @interface RKObjectManagerTest : RKTestCase
 
 @property (nonatomic, strong) RKObjectManager *objectManager;
+@property (nonatomic, strong) RKRoute *humanGETRoute;
+@property (nonatomic, strong) RKRoute *humanPOSTRoute;
+@property (nonatomic, strong) RKRoute *humanCatsRoute;
+@property (nonatomic, strong) RKRoute *humansCollectionRoute;
 
 @end
 
@@ -77,7 +81,16 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
     RKObjectMapping *humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [humanSerialization addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [self.objectManager addRequestDescriptor:[RKRequestDescriptor requestDescriptorWithMapping:humanSerialization objectClass:[RKHuman class] rootKeyPath:@"human"]];
-    [self.objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans" method:RKRequestMethodPOST]];
+
+    self.humanPOSTRoute = [RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans" method:RKRequestMethodPOST];
+    self.humanGETRoute = [RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans/:railsID" method:RKRequestMethodGET];
+    self.humanCatsRoute = [RKRoute routeWithRelationshipName:@"cats" objectClass:[RKHuman class] pathPattern:@"/humans/:railsID/cats" method:RKRequestMethodGET];
+    self.humansCollectionRoute = [RKRoute routeWithName:@"humans" pathPattern:@"/humans" method:RKRequestMethodGET];
+
+    [self.objectManager.router.routeSet addRoute:self.humanPOSTRoute];
+    [self.objectManager.router.routeSet addRoute:self.humanGETRoute];
+    [self.objectManager.router.routeSet addRoute:self.humanCatsRoute];
+    [self.objectManager.router.routeSet addRoute:self.humansCollectionRoute];
 }
 
 - (void)tearDown
@@ -166,6 +179,60 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
     [_objectManager enqueueObjectRequestOperation:operation];
     [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"];
     assertThatBool([operation isCancelled], is(equalToBool(NO)));
+}
+
+- (void)testShouldProperlyFireABatchOfOperations
+{
+    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    temporaryHuman.name = @"My Name";
+
+    RKManagedObjectRequestOperation *successfulGETOperation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:nil];
+    RKManagedObjectRequestOperation *successfulPOSTOperation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
+    RKManagedObjectRequestOperation *failedPOSTOperation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:@"/humans/fail" parameters:nil];
+
+    __block NSUInteger progressCallbackCount = 0;
+    __block NSUInteger completionBlockOperationCount = 0;
+    [_objectManager enqueueBatchOfObjectRequestOperations:@[successfulGETOperation, successfulPOSTOperation, failedPOSTOperation] progress:^(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations) {
+        progressCallbackCount++;
+    } completion:^(NSArray *operations) {
+        completionBlockOperationCount = operations.count;
+    }];
+    assertThat(_objectManager.operationQueue, is(notNilValue()));
+    [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
+
+    // Spin the run loop to allow completion blocks to fire after operations have completed
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+    assertThatInteger(progressCallbackCount, is(equalToInteger(3)));
+    assertThatInteger(completionBlockOperationCount, is(equalToInteger(3)));
+}
+
+- (void)testShouldProperlyFireABatchOfOperationsFromRoute
+{
+    RKHuman *dan = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    dan.name = @"Dan";
+
+    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    blake.name = @"Blake";
+
+    RKHuman *jeff = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    jeff.name = @"Jeff";
+
+    __block NSUInteger progressCallbackCount = 0;
+    __block NSUInteger completionBlockOperationCount = 0;
+    [_objectManager enqueueBatchOfObjectRequestOperationsWithRoute:self.humanPOSTRoute objects:@[dan, blake, jeff] progress:^(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations) {
+        progressCallbackCount++;
+    } completion:^(NSArray *operations) {
+        completionBlockOperationCount = operations.count;
+    }];
+    assertThat(_objectManager.operationQueue, is(notNilValue()));
+    [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
+
+    // Spin the run loop to allow completion blocks to fire after operations have completed
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+    assertThatInteger(progressCallbackCount, is(equalToInteger(3)));
+    assertThatInteger(completionBlockOperationCount, is(equalToInteger(3)));
 }
 
 // TODO: Move to Core Data specific spec file...

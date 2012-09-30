@@ -406,6 +406,37 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 - (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
 
+///--------------------------------------------------
+/// @name Managing Batches of Enqueued Object Request Operations
+///--------------------------------------------------
+
+/**
+ Enqueues a set of `RKObjectRequestOperation`, derived from the provided RKRoute and objects, to the object manager's operation queue.
+
+ @param route The RKRoute to apply to all provided objects.
+ @param objects The set of objects that should be turned into operations using the provided route.
+ @param progress A block object to be executed when an object request operation completes. This block has no return value and takes two arguments: the number of finished operations and the total number of operations initially executed.
+ @param completion A block object to be executed when the object request operations complete. This block has no return value and takes one argument: the list of operations executed.
+
+ @see [RKObjectManager enqueueBatchOfObjectRequestOperations:progress:completion]
+ */
+- (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *)route
+                                               objects:(NSArray *)objects
+                                              progress:(void (^)(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations))progress
+                                            completion:(void (^)(NSArray *operations))completion;
+
+/**
+ Enqueues a set of `RKObjectRequestOperation` to the object manager's operation queue.
+
+ @param operations The set of object request operations to be enqueued.
+ @param progress A block object to be executed when an object request operation completes. This block has no return value and takes two arguments: the number of finished operations and the total number of operations initially executed.
+ @param completion A block object to be executed when the object request operations complete. This block has no return value and takes one argument: the list of operations executed.
+
+ */
+- (void)enqueueBatchOfObjectRequestOperations:(NSArray *)operations
+                                     progress:(void (^)(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations))progress
+                                   completion:(void (^)(NSArray *operations))completion;
+
 ///-------------------------------------
 /// @name Making Object Requests by Path
 ///-------------------------------------

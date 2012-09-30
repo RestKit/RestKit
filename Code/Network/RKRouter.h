@@ -21,6 +21,10 @@
 #import "RKHTTPUtilities.h"
 
 @class RKRouteSet;
+@class RKRoute;
+
+void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL);
+NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 
 /**
  An `RKRouter` instance is responsible for generating `NSURL` objects with a given base URL and a route set. It is used to centralize the knowledge about the URL's that are used by the application.
@@ -105,6 +109,8 @@
  route was found for the given relationship, object and HTTP method.
  */
 - (NSURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method;
+
+- (NSURL *)URLForRoute:(RKRoute *)route object:(id)object;
 
 ///---------------------------------------------
 /// @name Configuring the Base URL and Route Set
