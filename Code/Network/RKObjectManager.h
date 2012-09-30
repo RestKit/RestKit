@@ -412,6 +412,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  Creates and enqueues an `RKObjectRequestOperation` to the object manager's operation queue for each specified object into a batch. Each object request operation is built by evaluating the object against the given route to construct a request path and then invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`. When each object request operation finishes, the specified progress block is executed, until all of the request operations have finished, at which point the completion block also executes.
+ 
+ @warning Note that the route type is significant in how that the object request operation is constructed. If the given route is a class route, then the `targetObject` of the operation will be set to the object for which the operation is being constructed. For named routes and relationship routes, the target object is `nil`.
 
  @param route The route specifying the request method and the path pattern with which to construct the request for each object object request operation in the batch.
  @param objects The set of objects for which to enqueue a batch of object request operations.
@@ -419,6 +421,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param completion A block object to be executed when the object request operations complete. This block has no return value and takes one argument: the list of operations executed.
 
  @see `[RKObjectManager enqueueBatchOfObjectRequestOperations:progress:completion]`
+ @see `RKRoute`
  */
 - (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *)route
                                                objects:(NSArray *)objects
