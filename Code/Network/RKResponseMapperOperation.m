@@ -231,6 +231,11 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 
 @end
 
+static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
+{
+    return [object isKindOfClass:[NSManagedObject class]] ? [object objectID] : nil;
+}
+
 @implementation RKManagedObjectResponseMapperOperation
 
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
@@ -249,11 +254,12 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
         if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
             mapper.targetObject = self.targetObject;
 
-            if (self.targetObjectID) {
-                if ([self.targetObjectID isTemporaryID]) RKLogWarning(@"Performing object mapping to temporary target objectID. Results may not be accessible without obtaining a permanent object ID.");
-                NSManagedObject *localObject = [self.managedObjectContext existingObjectWithID:self.targetObjectID error:&blockError];
+            NSManagedObjectID *objectID = self.targetObjectID ?: RKObjectIDFromObjectIfManaged(self.targetObject);
+            if (objectID) {
+                if ([objectID isTemporaryID]) RKLogWarning(@"Performing object mapping to temporary target objectID. Results may not be accessible without obtaining a permanent object ID.");
+                NSManagedObject *localObject = [self.managedObjectContext existingObjectWithID:objectID error:&blockError];
                 if (! localObject) {
-                    RKLogWarning(@"Failed to retrieve existing object with ID: %@", self.targetObjectID);
+                    RKLogWarning(@"Failed to retrieve existing object with ID: %@", objectID);
                     RKLogCoreDataError(blockError);
                 }
                 mapper.targetObject = localObject;

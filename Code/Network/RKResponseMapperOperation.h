@@ -180,6 +180,8 @@
 
 /**
  The permanent `NSManagedObjectID` for the target object of the mapping operation. During mapping, an instance local to the `managedObjectContext` is fetched and used to perform the mapping operation.
+
+ If `nil` and the `targetObject` is a managed object, the `objectID` of the target object will be used.
  */
 @property (nonatomic, copy) NSManagedObjectID *targetObjectID;
 
