@@ -38,7 +38,6 @@
 
 @implementation RKRoute
 
-
 + (id)routeWithName:(NSString *)name pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
 {
     NSParameterAssert(name);

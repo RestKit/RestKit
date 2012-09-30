@@ -24,7 +24,6 @@
 #import "RKPathMatcher.h"
 #import <objc/runtime.h>
 
-
 @interface RKRouter ()
 @property (nonatomic, strong, readwrite) NSURL *baseURL;
 @property (nonatomic, strong, readwrite) RKRouteSet *routeSet;
@@ -73,29 +72,25 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
 {
     RKRoute *route = [self.routeSet routeForName:routeName];
     if (method) *method = route.method;
-    return [self URLForRoute:route object:object];
+    return [self URLWithRoute:route object:object];
 }
 
 - (NSURL *)URLForObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForObject:object method:method];
-    return [self URLForRoute:route object:object];
+    return [self URLWithRoute:route object:object];
 }
 
 - (NSURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method
 {
     RKRoute *route = [self.routeSet routeForRelationship:relationshipName ofClass:[object class] method:method];
-    return [self URLForRoute:route object:object];
+    return [self URLWithRoute:route object:object];
 }
 
-- (NSURL *)URLForRoute:(RKRoute *)route object:(id)object
+- (NSURL *)URLWithRoute:(RKRoute *)route object:(id)object
 {
     NSParameterAssert(route);
     NSURL *URL = [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
-
-    /**
-     Associate our baseURL with the URL of the `NSURLRequest` object. This enables us to match response descriptors by path.
-     */
     RKAssociateBaseURLWithURL(self.baseURL, URL);
     return URL;
 }

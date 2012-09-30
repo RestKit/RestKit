@@ -23,9 +23,6 @@
 @class RKRouteSet;
 @class RKRoute;
 
-void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL);
-NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
-
 /**
  An `RKRouter` instance is responsible for generating `NSURL` objects with a given base URL and a route set. It is used to centralize the knowledge about the URL's that are used by the application.
 
@@ -61,56 +58,46 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 /**
  Generates a URL for the route with the given name.
 
- The route set is searched for a route with the given name and a new `NSURL` object is instantiated
- with the baseURL of the receiver and the path pattern of the route, optionally interpolated
- with a given object. If a pointer to an `RKRequestMethod` variable is provided, the HTTP method
- for the route will be assigned to the reference.
+ The route set is searched for a route with the given name and a new `NSURL` object is instantiated with the baseURL of the receiver and the path pattern of the route, optionally interpolated with a given object. If a pointer to an `RKRequestMethod` variable is provided, the HTTP method for the route will be assigned to the reference.
 
  @param routeName The name of the route for which a URL is to be generated.
- @param method A pointer to an `RKRequestMethod` variable in which to store the HTTP method associated
-    with the named route. May be nil.
+ @param method A pointer to an `RKRequestMethod` variable in which to store the HTTP method associated with the named route. May be nil.
  @param object An optional object against which to interpolate the path pattern.
- @return A new `NSURL` object constructed by appending the path pattern to the baseURL of the
-    receiver and interpolating against a given object; or nil if no route was found with the given
-    name.
+ @return A new `NSURL` object constructed by appending the path pattern to the baseURL of the receiver and interpolating against a given object; or nil if no route was found with the given name.
  */
 - (NSURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object;
 
 /**
  Generates a URL for a given object and HTTP method.
 
- The route set is searched for a route that matches the HTTP method and class of
- the object being routed. If there is not an exact match for the object's class, the inheritance
- hierarchy is searched until a match is found or all possible routes are exhausted. Exact HTTP request
- matches are favored over the wildcard method (`RKRequestMethodAny`). Once the appropriate route is identified,
- a new `NSURL` object is instantiated with the baseURL of the receiver and the path pattern of the route,
- interpolated against the object being routed.
+ The route set is searched for a route that matches the HTTP method and class of the object being routed. If there is not an exact match for the object's class, the inheritance hierarchy is searched until a match is found or all possible routes are exhausted. Exact HTTP request matches are favored over the wildcard method (`RKRequestMethodAny`). Once the appropriate route is identified, a new `NSURL` object is instantiated with the baseURL of the receiver and the path pattern of the route, interpolated against the object being routed.
 
  @param object The object for which a URL is to be generated.
  @param method The HTTP method for which the URL is to be generated.
- @return A new URL object constructed by appending the path pattern of the route for the object and
- HTTP method to the baseURL of the receiver, interpolated against the routed object; or nil if no route was found
- for the given object and HTTP method.
+ @return A new URL object constructed by appending the path pattern of the route for the object an HTTP method to the baseURL of the receiver, interpolated against the routed object; or nil if no route was found for the given object and HTTP method.
  */
 - (NSURL *)URLForObject:(id)object method:(RKRequestMethod)method;
 
 /**
  Generates a URL for a relationship of a given object with a given HTTP method.
 
- The route set is searched for a route that matches the relationship of the given object's class and the given
- HTTP method. If a matching route is found, a new `NSURL` object is instantiated with the baseURL of the receiver
- and the path pattern of the route, interpolated against the object being routed.
+ The route set is searched for a route that matches the relationship of the given object's class and the given HTTP method. If a matching route is found, a new `NSURL` object is instantiated with the baseURL of the receiver and the path pattern of the route, interpolated against the object being routed.
 
  @param relationshipName The name of the relationship for which a URL is to be generated.
  @param object The object for which the URL is to be generated.
  @param method The HTTP method for which the URL is to be generated.
- @return A new URL object constructed by appending the path pattern of the route for the given object's
- relationship and HTTP method to the baseURL of the receiver, interpolated against the routed object; or nil if no
- route was found for the given relationship, object and HTTP method.
+ @return A new URL object constructed by appending the path pattern of the route for the given object's relationship and HTTP method to the baseURL of the receiver, interpolated against the routed object; or nil if no route was found for the given relationship, object and HTTP method.
  */
 - (NSURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method;
 
-- (NSURL *)URLForRoute:(RKRoute *)route object:(id)object;
+/**
+ Generates a URL with a given route and object.
+
+ @param route The route to generate the URL with.
+ @param object The object with which to interpolate the path pattern of the given route.
+ @return A new URL object constructed by interpolating the path pattern of the given route with the given object to construct a path and constructing an `NSURL` object relative to the `baseURL` of the receiver.
+ */
+- (NSURL *)URLWithRoute:(RKRoute *)route object:(id)object;
 
 ///---------------------------------------------
 /// @name Configuring the Base URL and Route Set
@@ -127,3 +114,40 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 @property (nonatomic, strong, readonly) RKRouteSet *routeSet;
 
 @end
+
+///----------------
+/// @name Functions
+///----------------
+
+/**
+ ## An Important Note about Base URL's Containing a Path
+
+ When a `NSURL` object that was created relative to another URL via `[NSURL URLWithString:relativeToURL:` is used to create an `NSURLRequest`, the `URL` property of the request object is no longer relative to the original base URL. The `relativeString` and `relativePath` methods will return the complete URL path, rather than the expected relative path. This presents a problem for applications in which the `baseURL` contains a path (i.e. the `baseURL` is a value such as 'http://restkit.org/api/v1'), as path patterns used in routing and response descriptors will unexpectedly return the complete path, rather than the relative portion.
+
+ To work around this issue, RestKit provides baseURL association functions that can be used to associate a base URL with the URL of a `NSURLRequest` object. The `RKResponseMapperOperation` class is aware of this associated object and will attempt to use it when evaluating response descriptors.
+
+ @see `RKRouter`
+ @see `RKObjectManager`
+ @see `RKResponseDescriptor`
+ @see `RKResponseMapperOperation`
+ */
+
+//--------------------------------------
+/// @name Base URL Association Functions
+//--------------------------------------
+
+/**
+ Associates a base URL with a given URL.
+
+ @param baseURL The base URL to associate with another URL.
+ @param URL The URL that is associated with the base URL.
+ */
+void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL);
+
+/**
+ Retrieves the base URL associated with the given URL.
+
+ @param URL The URL to retrieve the associated base URL for.
+ @return The base URL associated with the given URL.
+ */
+NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);

@@ -406,23 +406,24 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 - (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
 
-///--------------------------------------------------
-/// @name Managing Batches of Enqueued Object Request Operations
-///--------------------------------------------------
+///-----------------------------------------
+/// @name Batching Object Request Operations
+///-----------------------------------------
 
 /**
- Enqueues a set of `RKObjectRequestOperation`, derived from the provided RKRoute and objects, to the object manager's operation queue.
+ Creates and enqueues an `RKObjectRequestOperation` to the object manager's operation queue for each specified object into a batch. Each object request operation is built by evaluating the object against the given route to construct a request path and then invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`. When each object request operation finishes, the specified progress block is executed, until all of the request operations have finished, at which point the completion block also executes.
 
- @param route The RKRoute to apply to all provided objects.
- @param objects The set of objects that should be turned into operations using the provided route.
+ @param route The route specifying the request method and the path pattern with which to construct the request for each object object request operation in the batch.
+ @param objects The set of objects for which to enqueue a batch of object request operations.
  @param progress A block object to be executed when an object request operation completes. This block has no return value and takes two arguments: the number of finished operations and the total number of operations initially executed.
  @param completion A block object to be executed when the object request operations complete. This block has no return value and takes one argument: the list of operations executed.
 
- @see [RKObjectManager enqueueBatchOfObjectRequestOperations:progress:completion]
+ @see `[RKObjectManager enqueueBatchOfObjectRequestOperations:progress:completion]`
  */
 - (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *)route
                                                objects:(NSArray *)objects
-                                              progress:(void (^)(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations))progress
+                                              progress:(void (^)(NSUInteger numberOfFinishedOperations,
+                                                                 NSUInteger totalNumberOfOperations))progress
                                             completion:(void (^)(NSArray *operations))completion;
 
 /**
@@ -434,7 +435,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
  */
 - (void)enqueueBatchOfObjectRequestOperations:(NSArray *)operations
-                                     progress:(void (^)(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations))progress
+                                     progress:(void (^)(NSUInteger numberOfFinishedOperations,
+                                                        NSUInteger totalNumberOfOperations))progress
                                    completion:(void (^)(NSArray *operations))completion;
 
 ///-------------------------------------

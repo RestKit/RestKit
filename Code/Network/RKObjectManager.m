@@ -517,17 +517,18 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 
 - (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *)route
                                                objects:(NSArray *)objects
-                                              progress:(void (^)(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations))progress
+                                              progress:(void (^)(NSUInteger numberOfFinishedOperations,
+                                                                 NSUInteger totalNumberOfOperations))progress
                                             completion:(void (^)(NSArray *operations))completion {
     NSMutableArray *operations = [[NSMutableArray alloc] initWithCapacity:objects.count];
     for (id object in objects) {
         RKObjectRequestOperation *operation = nil;
-        NSURL *URL = [self.router URLForRoute:route object:object];
+        NSURL *URL = [self.router URLWithRoute:route object:object];
         NSAssert(URL, @"Failed to generate URL for route %@ with object %@", route, object);
         if ([route isClassRoute]) {
-            operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodGET path:[URL relativeString] parameters:nil];
+            operation = [self appropriateObjectRequestOperationWithObject:object method:route.method path:[URL relativeString] parameters:nil];
         } else {
-            operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:nil];
+            operation = [self appropriateObjectRequestOperationWithObject:nil method:route.method path:[URL relativeString] parameters:nil];
         }
         [operations addObject:operation];
     }
