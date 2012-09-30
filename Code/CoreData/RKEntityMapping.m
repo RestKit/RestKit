@@ -25,13 +25,11 @@
 #import "NSEntityDescription+RKAdditions.h"
 #import "RKLog.h"
 #import "RKRelationshipMapping.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
-
-// Implemented in RKMappingOperation
-BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
 
 @interface RKEntityMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;

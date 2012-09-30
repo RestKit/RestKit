@@ -456,6 +456,10 @@
 		259D9861155218E5008C90F5 /* RKEntityCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D985D155218E4008C90F5 /* RKEntityCache.m */; };
 		259D986415521B20008C90F5 /* RKEntityCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D986315521B1F008C90F5 /* RKEntityCacheTest.m */; };
 		259D986515521B20008C90F5 /* RKEntityCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D986315521B1F008C90F5 /* RKEntityCacheTest.m */; };
+		25A226D61618A57500952D72 /* RKObjectUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A226D41618A57500952D72 /* RKObjectUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25A226D71618A57500952D72 /* RKObjectUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A226D41618A57500952D72 /* RKObjectUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25A226D81618A57500952D72 /* RKObjectUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A226D51618A57500952D72 /* RKObjectUtilities.m */; };
+		25A226D91618A57500952D72 /* RKObjectUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A226D51618A57500952D72 /* RKObjectUtilities.m */; };
 		25A34245147D8AAA0009758D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A34244147D8AAA0009758D /* Security.framework */; };
 		25A763DB15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A763DC15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -901,6 +905,8 @@
 		259D985C155218E4008C90F5 /* RKEntityCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKEntityCache.h; sourceTree = "<group>"; };
 		259D985D155218E4008C90F5 /* RKEntityCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEntityCache.m; sourceTree = "<group>"; };
 		259D986315521B1F008C90F5 /* RKEntityCacheTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEntityCacheTest.m; sourceTree = "<group>"; };
+		25A226D41618A57500952D72 /* RKObjectUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectUtilities.h; sourceTree = "<group>"; };
+		25A226D51618A57500952D72 /* RKObjectUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectUtilities.m; sourceTree = "<group>"; };
 		25A34244147D8AAA0009758D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchTokenizer.h; sourceTree = "<group>"; };
 		25A763DA15C7240100A9DF31 /* RKSearchTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTokenizer.m; sourceTree = "<group>"; };
@@ -1262,6 +1268,8 @@
 				25AFF8F015B4CF1F0051877F /* RKMappingErrors.h */,
 				2598888B15EC169E006CAE95 /* RKPropertyMapping.h */,
 				2598888C15EC169E006CAE95 /* RKPropertyMapping.m */,
+				25A226D41618A57500952D72 /* RKObjectUtilities.h */,
+				25A226D51618A57500952D72 /* RKObjectUtilities.m */,
 			);
 			path = ObjectMapping;
 			sourceTree = "<group>";
@@ -1959,6 +1967,7 @@
 				259B96F91604CCCC0000C250 /* AFNetworking.h in Headers */,
 				253477F915FFBD2E002C0E4E /* NSBundle+RKAdditions.h in Headers */,
 				25F53F391606269400A093BE /* RKRequestOperationSubclass.h in Headers */,
+				25A226D61618A57500952D72 /* RKObjectUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2059,6 +2068,7 @@
 				259B96F81604CCCC0000C250 /* UIImageView+AFNetworking.h in Headers */,
 				259B96FA1604CCCC0000C250 /* AFNetworking.h in Headers */,
 				25F53F3A1606269400A093BE /* RKRequestOperationSubclass.h in Headers */,
+				25A226D71618A57500952D72 /* RKObjectUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2435,6 +2445,7 @@
 				259B96ED1604CCCC0000C250 /* AFURLConnectionOperation.m in Sources */,
 				259B96F11604CCCC0000C250 /* AFXMLRequestOperation.m in Sources */,
 				259B96F31604CCCC0000C250 /* UIImageView+AFNetworking.m in Sources */,
+				25A226D81618A57500952D72 /* RKObjectUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2596,6 +2607,7 @@
 				259B96F21604CCCC0000C250 /* AFXMLRequestOperation.m in Sources */,
 				259B96F41604CCCC0000C250 /* UIImageView+AFNetworking.m in Sources */,
 				25E9C8F1161290D500647F84 /* RKObjectParameterization.m in Sources */,
+				25A226D91618A57500952D72 /* RKObjectUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

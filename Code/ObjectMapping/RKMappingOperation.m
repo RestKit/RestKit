@@ -18,7 +18,6 @@
 //  limitations under the License.
 //
 
-#import <objc/message.h>
 #import "RKMappingOperation.h"
 #import "RKMappingErrors.h"
 #import "RKPropertyInspector.h"
@@ -29,40 +28,11 @@
 #import "RKMappingOperationDataSource.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKDynamicMapping.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitObjectMapping
-
-// Temporary home for object equivalancy tests
-BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
-BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue) {
-    NSCAssert(sourceValue, @"Expected sourceValue not to be nil");
-    NSCAssert(destinationValue, @"Expected destinationValue not to be nil");
-
-    SEL comparisonSelector;
-    if ([sourceValue isKindOfClass:[NSString class]] && [destinationValue isKindOfClass:[NSString class]]) {
-        comparisonSelector = @selector(isEqualToString:);
-    } else if ([sourceValue isKindOfClass:[NSNumber class]] && [destinationValue isKindOfClass:[NSNumber class]]) {
-        comparisonSelector = @selector(isEqualToNumber:);
-    } else if ([sourceValue isKindOfClass:[NSDate class]] && [destinationValue isKindOfClass:[NSDate class]]) {
-        comparisonSelector = @selector(isEqualToDate:);
-    } else if ([sourceValue isKindOfClass:[NSArray class]] && [destinationValue isKindOfClass:[NSArray class]]) {
-        comparisonSelector = @selector(isEqualToArray:);
-    } else if ([sourceValue isKindOfClass:[NSDictionary class]] && [destinationValue isKindOfClass:[NSDictionary class]]) {
-        comparisonSelector = @selector(isEqualToDictionary:);
-    } else if ([sourceValue isKindOfClass:[NSSet class]] && [destinationValue isKindOfClass:[NSSet class]]) {
-        comparisonSelector = @selector(isEqualToSet:);
-    } else {
-        comparisonSelector = @selector(isEqual:);
-    }
-
-    // Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
-    // Original code courtesy of Greg Parker
-    // This is necessary because isEqualToNumber will return negative integer values that aren't coercable directly to BOOL's without help [sbw]
-    BOOL (*ComparisonSender)(id, SEL, id) = (BOOL (*)(id, SEL, id))objc_msgSend;
-    return ComparisonSender(sourceValue, comparisonSelector, destinationValue);
-}
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
@@ -192,7 +162,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 
 - (BOOL)isValue:(id)sourceValue equalToValue:(id)destinationValue
 {
-    return RKValueIsEqualToValue(sourceValue, destinationValue);
+    return RKObjectIsEqualToObject(sourceValue, destinationValue);
 }
 
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString *)keyPath
@@ -380,19 +350,6 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     return appliedMappings;
 }
 
-- (BOOL)isTypeACollection:(Class)type
-{
-    Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
-    return (type && ([type isSubclassOfClass:[NSSet class]] ||
-                     [type isSubclassOfClass:[NSArray class]] ||
-                     (orderedSetClass && [type isSubclassOfClass:orderedSetClass])));
-}
-
-- (BOOL)isValueACollection:(id)value
-{
-    return [self isTypeACollection:[value class]];
-}
-
 - (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject withRelationshipMapping:(RKRelationshipMapping *)relationshipMapping
 {
     NSAssert(anObject, @"Cannot map nested object without a nested source object");
@@ -464,23 +421,23 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
         }
 
         // Handle case where incoming content is a single object, but we want a collection
-        Class relationshipType = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
-        BOOL mappingToCollection = [self isTypeACollection:relationshipType];
-        if (mappingToCollection && ![self isValueACollection:value]) {
+        Class relationshipClass = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
+        BOOL mappingToCollection = RKClassIsCollection(relationshipClass);
+        if (mappingToCollection && !RKObjectIsCollection(value)) {
             Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
-            RKLogDebug(@"Asked to map a single object into a collection relationship. Transforming to an instance of: %@", NSStringFromClass(relationshipType));
-            if ([relationshipType isSubclassOfClass:[NSArray class]]) {
-                value = [relationshipType arrayWithObject:value];
-            } else if ([relationshipType isSubclassOfClass:[NSSet class]]) {
-                value = [relationshipType setWithObject:value];
-            } else if (orderedSetClass && [relationshipType isSubclassOfClass:orderedSetClass]) {
-                value = [relationshipType orderedSetWithObject:value];
+            RKLogDebug(@"Asked to map a single object into a collection relationship. Transforming to an instance of: %@", NSStringFromClass(relationshipClass));
+            if ([relationshipClass isSubclassOfClass:[NSArray class]]) {
+                value = [relationshipClass arrayWithObject:value];
+            } else if ([relationshipClass isSubclassOfClass:[NSSet class]]) {
+                value = [relationshipClass setWithObject:value];
+            } else if (orderedSetClass && [relationshipClass isSubclassOfClass:orderedSetClass]) {
+                value = [relationshipClass orderedSetWithObject:value];
             } else {
                 RKLogWarning(@"Failed to transform single object");
             }
         }
 
-        if ([self isValueACollection:value]) {
+        if (RKObjectIsCollection(value)) {
             // One to many relationship
             RKLogDebug(@"Mapping one to many relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
             appliedMappings = YES;
@@ -489,7 +446,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
             id collectionSanityCheckObject = nil;
             if ([value respondsToSelector:@selector(anyObject)]) collectionSanityCheckObject = [value anyObject];
             if ([value respondsToSelector:@selector(lastObject)]) collectionSanityCheckObject = [value lastObject];
-            if ([self isValueACollection:collectionSanityCheckObject]) {
+            if (RKObjectIsCollection(collectionSanityCheckObject)) {
                 RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
                 RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
             }
@@ -611,7 +568,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 {
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
-
+    
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([self.mapping isKindOfClass:[RKDynamicMapping class]]) {
         self.objectMapping = [(RKDynamicMapping *)self.mapping objectMappingForRepresentation:self.sourceObject];
@@ -623,7 +580,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     } else if ([self.mapping isKindOfClass:[RKObjectMapping class]]) {
         self.objectMapping = (RKObjectMapping *)self.mapping;
     }
-    NSAssert(self.objectMapping, @"Cannot perform a mapping operation with an object mapping");
+    NSAssert(self.objectMapping, @"Cannot perform a mapping operation without an object mapping");
 
     [self applyNestedMappings];
     BOOL mappedAttributes = [self applyAttributeMappings];

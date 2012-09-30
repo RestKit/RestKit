@@ -7,9 +7,7 @@
 //
 
 #import "RKDynamicMappingMatcher.h"
-
-// Implemented in RKMappingOperation
-BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
+#import "RKObjectUtilities.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +33,7 @@ BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
 
 - (BOOL)matches:(id)object
 {
-    return RKValueIsEqualToValue([object valueForKeyPath:self.keyPath], self.expectedValue);
+    return RKObjectIsEqualToObject([object valueForKeyPath:self.keyPath], self.expectedValue);
 }
 
 - (NSString *)description

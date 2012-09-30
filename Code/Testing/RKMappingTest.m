@@ -23,6 +23,7 @@
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKRelationshipMapping.h"
 #import "RKErrors.h"
+#import "RKObjectUtilities.h"
 
 // Error Constants
 NSString * const RKMappingTestErrorDomain = @"org.restkit.RKMappingTest.ErrorDomain";
@@ -30,8 +31,6 @@ NSString * const RKMappingTestEventErrorKey = @"RKMappingTestEventErrorKey";
 NSString * const RKMappingTestExpectationErrorKey = @"RKMappingTestExpectationErrorKey";
 NSString * const RKMappingTestValueErrorKey = @"RKMappingTestValueErrorKey";
 NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVerificationFailureException";
-
-BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
 
 ///-----------------------------------------------------------------------------
 ///-----------------------------------------------------------------------------
@@ -217,7 +216,7 @@ BOOL RKValueIsEqualToValue(id sourceValue, id destinationValue);
         }
     } else if (expectation.value) {
         // Use RestKit comparison magic to match values
-        success = RKValueIsEqualToValue(event.value, expectation.value);
+        success = RKObjectIsEqualToObject(event.value, expectation.value);
 
         if (! success) {
             NSString *description = [NSString stringWithFormat:@"mapped to unexpected %@ value '%@'", [event.value class], event.value];
