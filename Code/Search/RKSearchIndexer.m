@@ -329,12 +329,14 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"operationCount"]) {
-        NSUInteger index = self.totalIndexingOperationCount - self.operationQueue.operationCount;
-        double percentage = (((float)index) / (float)self.totalIndexingOperationCount) * 100;
-        if (index % 250 == 0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) index, (unsigned long) self.totalIndexingOperationCount, percentage);
-        if (self.operationQueue.operationCount == 0) {
-            if (self.totalIndexingOperationCount >= 250) RKLogInfo(@"Finished indexing.");
-            self.totalIndexingOperationCount = 0;
+        if (self.totalIndexingOperationCount > 0 && self.operationQueue.operationCount > 0) {
+            NSUInteger index = self.totalIndexingOperationCount - self.operationQueue.operationCount;
+            double percentage = (((float)index) / (float)self.totalIndexingOperationCount) * 100;
+            if (index % 250 == 0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) index, (unsigned long) self.totalIndexingOperationCount, percentage);
+            if (self.operationQueue.operationCount == 0) {
+                if (self.totalIndexingOperationCount >= 250) RKLogInfo(@"Finished indexing.");
+                self.totalIndexingOperationCount = 0;
+            }
         }
     }
 }
