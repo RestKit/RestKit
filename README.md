@@ -357,6 +357,30 @@ RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectReq
 [operation start];
 ```
 
+### Enqueue a Batch of Object Request Operations
+``` objective-c
+
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+
+Airport *jfk = [Airport new];
+jfk.code = @"jfk";
+Airport *lga = [Airport new];
+lga.code = @"lga";
+Airport *rdu = [Airport new];
+rdu.code = @"rdu";
+
+// Enqueue a GET for '/airports/jfk/weather', '/airports/lga/weather', '/airports/rdu/weather'
+RKRoute *route = [RKRoute routeWithName:@"airport_weather" resourcePathPattern:@"/airports/:code/weather" method:RKRequestMethodGET];
+                                
+[manager enqueueBatchOfObjectRequestOperationsWithRoute:route
+                                                objects:@[ jfk, lga, rdu]
+                                               progress:^(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations) {
+                                                   NSLog(@"Finished %d operations", numberOfFinishedOperations);
+                                               } completion:^ (NSArray *operations) {
+                                                   NSLog(@"All Weather Reports Loaded!");
+                                               }];
+```
+
 ### Generate a Seed Database
 ``` objective-c
 NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
