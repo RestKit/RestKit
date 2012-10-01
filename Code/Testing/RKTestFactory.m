@@ -236,7 +236,20 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)tearDown
 {
+    // Cancel any network operations
     [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
+    
+    // Ensure the existing defaultStore is shut down
+    [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
+    if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
+        // Search component is optional
+        [[RKManagedObjectStore defaultStore] performSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)];
+        
+        if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(searchIndexer)]) {
+            id searchIndexer = [[RKManagedObjectStore defaultStore] valueForKey:@"searchIndexer"];
+            [searchIndexer performSelector:@selector(cancelAllIndexingOperations)];
+        }
+    }
     
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
