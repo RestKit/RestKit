@@ -78,6 +78,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     copy.performKeyValueValidation = self.performKeyValueValidation;
     copy.dateFormatters = self.dateFormatters;
     copy.preferredDateFormatter = self.preferredDateFormatter;
+    copy.mutablePropertyMappings = [NSMutableArray new];
 
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
         [copy addPropertyMapping:propertyMapping];

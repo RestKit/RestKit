@@ -33,7 +33,6 @@
 
 @interface RKEntityMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
-@property (nonatomic, strong, readwrite) NSEntityDescription *entity;
 @property (nonatomic, strong) NSMutableArray *mutableConnections;
 @end
 
