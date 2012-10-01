@@ -250,6 +250,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     BOOL success = YES;
 
     if (self.objectMapping.performKeyValueValidation && [self.destinationObject respondsToSelector:@selector(validateValue:forKeyPath:error:)]) {
+        
+        NSArray *keyPathComponents = [keyPath componentsSeparatedByString:@"."];
+        if (keyPathComponents.count > 1) {
+            keyPath = [keyPathComponents objectAtIndex:0];
+        }
+        
         success = [self.destinationObject validateValue:value forKeyPath:keyPath error:&_validationError];
         if (!success) {
             if (_validationError) {
@@ -344,8 +350,30 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     // Ensure that the value is different
     if ([self shouldSetValue:&value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
-
-        [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
+        
+        NSArray *keyPathComponents = [attributeMapping.destinationKeyPath componentsSeparatedByString:@"."];
+        if (keyPathComponents.count == 1) {
+            [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
+        }
+        else {
+            NSMutableDictionary *top = self.destinationObject;
+            NSMutableDictionary *d = top;
+            for (int i = 0; i < keyPathComponents.count; i++) {
+                NSString *keyPathComponent = [keyPathComponents objectAtIndex:i];
+                if (i != keyPathComponents.count - 1) {
+                    NSMutableDictionary *t = [d objectForKey:keyPathComponent];
+                    if (!t) {
+                        t = [NSMutableDictionary new];
+                        [d setValue:t forKey:keyPathComponent];
+                    }
+                    d = t;
+                }
+                else {
+                    [d setValue:value forKey:keyPathComponent];
+                }
+            }
+        }
+        
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate mappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
