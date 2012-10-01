@@ -236,6 +236,8 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)tearDown
 {
+    [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
+    
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
     [RKManagedObjectStore setDefaultStore:nil];
