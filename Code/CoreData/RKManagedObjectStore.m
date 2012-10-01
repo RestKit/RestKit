@@ -93,8 +93,6 @@ static RKManagedObjectStore *defaultStore = nil;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-
 }
 
 - (void)createPersistentStoreCoordinator
