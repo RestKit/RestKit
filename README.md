@@ -390,7 +390,7 @@ RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWit
 [managedObjectStore addSearchIndexingToEntityForName:@"Article" onAttributes:@[ @"title", @"body" ]];
 [managedObjectStore addInMemoryPersistentStore:nil];
 [managedObjectStore createManagedObjectContexts];
-[managedObjectStore startIndexingPrimaryManagedObjectContext];
+[managedObjectStore startIndexingPersistentStoreManagedObjectContext];
 
 Article *article1 = [NSEntityDescription insertNewObjectForEntityForName:@"Article" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
 article1.title = @"First Article";
