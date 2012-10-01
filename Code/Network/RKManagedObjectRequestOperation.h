@@ -27,8 +27,6 @@
 
  The `RKManagedObjectRequestOperation` class extends the basic behavior of an `RKObjectRequestOperation` to meet the constraints imposed by Core Data. In particular, managed object request operations observe the threading requirements by making use of `NSManagedObjectContext` concurrency types, leverage the support for parent/child contexts, and handle obtaining a permanent `NSManagedObjectID` for objects being mapped so that they are addressable across contexts. Object mapping is internally performed within a block provided to the target context via `performBlockAndWait:`, ensuring execution on the appropriate queue.
 
- @warning `RKManagedObjectRequestOperation` **does NOT** support object mapping that targets an `NSManagedObjectContext` with a `concurrencyType` of `NSConfinementConcurrencyType`.
-
  Aside from providing the basic infrastructure for successful object mapping into Core Data, a number of additional Core Data specific features are provided by the `RKManagedObjectRequestOperation` class that warrant discussion in detail.
 
  ## Parent Context
@@ -96,6 +94,10 @@
  ## Managed Object Context Save Behaviors
 
  The results of the operation can either be 'pushed' to the parent context or saved to the persistent store. Configuration is available via the `savesToPersistentStore` property. If an error is encountered while saving the managed object context, then the operation is considered to have failed and the `error` property will be set to the `NSError` object returned by the failed save.
+
+ ## Limitations and Caveats
+
+ @warning `RKManagedObjectRequestOperation` **does NOT** support object mapping that targets an `NSManagedObjectContext` with a `concurrencyType` of `NSConfinementConcurrencyType`.
 
  @see `RKObjectRequestOperation`
  @see `RKEntityMapping`
