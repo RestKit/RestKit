@@ -33,7 +33,7 @@ static inline NSString *RKDescriptionForRequest(NSURLRequest *request)
     return [NSString stringWithFormat:@"%@ '%@'", request.HTTPMethod, [request.URL absoluteString]];
 }
 
-static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
+static NSIndexSet *RKObjectRequestOperationAcceptableStatusCodes()
 {
     static NSMutableIndexSet *statusCodes = nil;
     if (! statusCodes) {
@@ -71,7 +71,7 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
         self.responseDescriptors = responseDescriptors;
         self.requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
         self.requestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
-        self.requestOperation.acceptableStatusCodes = RKObjectRequestOperationAcceptableMIMETypes();
+        self.requestOperation.acceptableStatusCodes = RKObjectRequestOperationAcceptableStatusCodes();
     }
     
     return self;
