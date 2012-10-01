@@ -101,7 +101,7 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 // TODO: Move to Core Data specific spec file...
 - (void)testShouldUpdateACoreDataBackedTargetObject
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
     temporaryHuman.name = @"My Name";
     
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
@@ -116,7 +116,7 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 
 - (void)testShouldNotPersistTemporaryEntityToPersistentStoreOnError
 {
-    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
@@ -130,19 +130,19 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 
 - (void)testShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
     
     // Save it to suppress deletion
-    [self.objectManager.managedObjectStore.primaryManagedObjectContext save:nil];
+    [self.objectManager.managedObjectStore.persistentStoreManagedObjectContext save:nil];
     
     RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:@"/humans/fail" parameters:nil];
     [operation start];
     [operation waitUntilFinished];
     
-    assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.managedObjectStore.primaryManagedObjectContext)));
+    assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.managedObjectStore.persistentStoreManagedObjectContext)));
 }
 
 - (void)testCancellationByExactMethodAndPath
@@ -183,7 +183,7 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 
 - (void)testShouldProperlyFireABatchOfOperations
 {
-    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
     temporaryHuman.name = @"My Name";
 
     RKManagedObjectRequestOperation *successfulGETOperation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:nil];
@@ -209,13 +209,13 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 
 - (void)testShouldProperlyFireABatchOfOperationsFromRoute
 {
-    RKHuman *dan = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *dan = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
     dan.name = @"Dan";
 
-    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
     blake.name = @"Blake";
 
-    RKHuman *jeff = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *jeff = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
     jeff.name = @"Jeff";
 
     __block NSUInteger progressCallbackCount = 0;

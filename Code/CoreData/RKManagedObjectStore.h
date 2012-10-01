@@ -180,35 +180,35 @@
 ///-------------------------------------------
 
 /**
- Creates the primary and main queue managed object contexts for the receiver.
+ Creates the persistent store and main queue managed object contexts for the receiver.
 
- @see primaryManagedObjectContext
- @see mainQueueManagedObjectContext
+ @see `persistentStoreManagedObjectContext`
+ @see `mainQueueManagedObjectContext`
  @raises NSInternalInconsistencyException Raised if the managed object contexts have already been created.
  */
 - (void)createManagedObjectContexts;
 
 /**
- The primary managed object context of the receiver.
+ Returns the managed object context of the receiver that is associated with the persistent store coordinator and is responsible for managing persistence.
 
- The primary context is responsible for managing persistence to the persistent store coordinator for the managed object store. The context is created with the NSPrivateQueueConcurrencyType and as such must be interacted with using `[NSManagedObjectContext performBlock:]` or `[NSManagedObjectContext performBlockAndWait:]`. The primary context is useful as the parent context for scratch contexts or main queue contexts for interacting with the user interface. Created by the invocation of `createManagedObjectContexts`.
+ The persistent store context is created with the `NSPrivateQueueConcurrencyType` and as such must be interacted with using `[NSManagedObjectContext performBlock:]` or `[NSManagedObjectContext performBlockAndWait:]`. This context typically serves as the parent context for scratch contexts or main queue contexts for interacting with the user interface. Created by the invocation of `createManagedObjectContexts`.
 
  @see `createManagedObjectContexts`
  */
-@property (nonatomic, strong, readonly) NSManagedObjectContext *primaryManagedObjectContext;
+@property (nonatomic, strong, readonly) NSManagedObjectContext *persistentStoreManagedObjectContext;
 
 /**
  The main queue managed object context of the receiver.
 
- The main queue context is available for usage on the main queue to drive user interface needs. The context is created with the NSMainQueueConcurrencyType and as such may be messaged directly from the main thread. The context is a child context of the primaryManagedObjectContext and can persist changes up to the parent via a save.
+ The main queue context is available for usage on the main queue to drive user interface needs. The context is created with the NSMainQueueConcurrencyType and as such may be messaged directly from the main thread. The context is a child context of the persistentStoreManagedObjectContext and can persist changes up to the parent via a save.
  */
 @property (nonatomic, strong, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 /**
- Creates a new child managed object context of the primary managed object context with a given concurrency type.
+ Creates a new child managed object context of the persistent store managed object context with a given concurrency type.
 
  @param concurrencyType The desired concurrency type for the new context.
- @return A newly created managed object context with the given concurrency type whose parent is the primaryManagedObjectContext.
+ @return A newly created managed object context with the given concurrency type whose parent is the `persistentStoreManagedObjectContext`.
  */
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType;
 

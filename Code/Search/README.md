@@ -23,11 +23,11 @@ Indexing is configured through the managed object store and **must** be done bef
 	
 	// Create the managed object contexts and start indexing
 	[managedObjectStore createManagedObjectContexts];
-	[managedObjectStore startIndexingPrimaryManagedObjectContext];
+	[managedObjectStore startIndexingPersistentStoreManagedObjectContext];
 
 ```
 
-Once indexing is configured, an instance of `RKSearchIndexer` will observe the primary managed object context for save notifications. On save, any managed objects whose entities were configured for indexing will have their searchable attributes tokenized and stored as a to-many relationship to the `RKSearchWordEntity` entity.
+Once indexing is configured, an instance of `RKSearchIndexer` will observe the persistent store managed object context for save notifications. On save, any managed objects whose entities were configured for indexing will have their searchable attributes tokenized and stored as a to-many relationship to the `RKSearchWordEntity` entity.
 
 ### Performing a Search
 
@@ -90,4 +90,4 @@ The search support is designed to be very easy to configure and use by snapping 
 
 - **Configure an Entity for Search**: `- (void)addSearchIndexingToEntityForName:(NSString *)entityName onAttributes:(NSArray *)attributes` - Adds search indexing to the entity with the given name in the receiver's managed object model for the given set of searchable string attributes.
 - **Accessing the Search Indexer**: `@property (nonatomic, readonly) RKSearchIndexer *searchIndexer` Once indexing is configured for an entity, the `searchIndexer` property becomes available for use.
-- **Managing Automatic Indexing**: `- (void)startIndexingPrimaryManagedObjectContext` and `- (void)stopIndexingPrimaryManagedObjectContext`. These methods provide quick control over automatic indexing of the primary managed object context on save.
+- **Managing Automatic Indexing**: `- (void)startIndexingPersistentStoreManagedObjectContext` and `- (void)stopIndexingPersistentStoreManagedObjectContext`. These methods provide quick control over automatic indexing of the persistent store managed object context on save.

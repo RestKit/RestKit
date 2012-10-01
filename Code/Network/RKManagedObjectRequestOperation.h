@@ -74,7 +74,7 @@
         if (match) {
             airportID = [argsDict objectForKey:@"airport_id"];
             NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"GGTerminal"];
-            NSEntityDescription *entity = [NSEntityDescription entityForName:@"GGAirport" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+            NSEntityDescription *entity = [NSEntityDescription entityForName:@"GGAirport" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
             fetchRequest.predicate = [entity predicateForPrimaryKeyAttributeWithValue:airportID];
             fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
             return fetchRequest;

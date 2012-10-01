@@ -43,7 +43,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
-    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:human forKey:@"human"];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
@@ -57,7 +57,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
-    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:human forKey:testKey];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
@@ -71,8 +71,8 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSArray *humans = [NSArray arrayWithObjects:human1, human2, nil];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:humans forKey:@"humans"];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
@@ -93,7 +93,7 @@
     __block NSManagedObjectID *objectID;
     __block NSMutableDictionary *dictionary;
     [managedObjectContext performBlockAndWait:^{
-        managedObjectContext.parentContext = managedObjectStore.primaryManagedObjectContext;
+        managedObjectContext.parentContext = managedObjectStore.persistentStoreManagedObjectContext;
         RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext];
         BOOL success = [managedObjectContext obtainPermanentIDsForObjects:[NSArray arrayWithObject:human] error:&error];
 
@@ -123,11 +123,11 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
     __block NSArray *humanIDs;
-    [managedObjectStore.primaryManagedObjectContext performBlockAndWait:^{
-        RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
-        RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+        RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
         NSError *error;
-        BOOL success = [managedObjectStore.primaryManagedObjectContext save:&error];
+        BOOL success = [managedObjectStore.persistentStoreManagedObjectContext save:&error];
         assertThatBool(success, is(equalToBool(YES)));
 
         humanIDs = [NSArray arrayWithObjects:[human1 objectID], [human2 objectID], nil];
@@ -136,7 +136,7 @@
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:humanIDs forKey:@"humans"];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.privateQueueManagedObjectContext = managedObjectStore.primaryManagedObjectContext;
+    invocation.privateQueueManagedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
     invocation.mainQueueManagedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     [invocation deserializeManagedObjectIDsForArgument:dictionary withKeyPaths:[NSSet setWithObject:@"humans"]];
     assertThat([dictionary valueForKeyPath:@"humans"], is(instanceOf([NSArray class])));
@@ -162,11 +162,11 @@
         RKObjectManager *objectManager = [RKTestFactory objectManager];
         RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
         objectManager.managedObjectStore = managedObjectStore;
-        NSArray *humans = [NSArray arrayWithObject:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext]];
+        NSArray *humans = [NSArray arrayWithObject:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext]];
         _dictionary = [NSMutableDictionary dictionaryWithObject:humans forKey:@"humans"];
         NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
         RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-        invocation.privateQueueManagedObjectContext = _objectStore.primaryManagedObjectContext;
+        invocation.privateQueueManagedObjectContext = _objectStore.persistentStoreManagedObjectContext;
         invocation.mainQueueManagedObjectContext = _objectStore.mainQueueManagedObjectContext;
         [invocation setTarget:self];
         [invocation setSelector:@selector(informDelegateWithDictionary:)];

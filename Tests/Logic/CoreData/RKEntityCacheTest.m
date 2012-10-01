@@ -29,8 +29,8 @@
     [RKTestFactory setUp];
 
     self.managedObjectStore = [RKTestFactory managedObjectStore];
-    _cache = [[RKEntityCache alloc] initWithManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
-    self.entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    _cache = [[RKEntityCache alloc] initWithManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    self.entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
 }
 
 - (void)tearDown
@@ -43,7 +43,7 @@
 
 - (void)testInitializationSetsManagedObjectContext
 {
-    assertThat(_cache.managedObjectContext, is(equalTo(self.managedObjectStore.primaryManagedObjectContext)));
+    assertThat(_cache.managedObjectContext, is(equalTo(self.managedObjectStore.persistentStoreManagedObjectContext)));
 }
 
 - (void)testIsEntityCachedByAttribute
@@ -70,30 +70,30 @@
 
 - (void)testRetrievalOfObjectForEntityWithAttributeValue
 {
-    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human.railsID = [NSNumber numberWithInteger:12345];
     NSError *error = nil;
-    [self.managedObjectStore.primaryManagedObjectContext save:&error];
+    [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
 
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
+    childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
     NSManagedObject *fetchedObject = [self.cache objectForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
     assertThat(fetchedObject, is(notNilValue()));
 }
 
 - (void)testRetrievalOfObjectsForEntityWithAttributeValue
 {
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
     NSError *error = nil;
-    [self.managedObjectStore.primaryManagedObjectContext save:&error];
+    [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
 
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
+    childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
     NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
     assertThat(objects, hasCountOf(2));
     assertThat([objects valueForKey:@"objectID"], containsInAnyOrder(human1.objectID, human2.objectID, nil));
@@ -101,19 +101,19 @@
 
 - (void)testThatFlushEmptiesAllUnderlyingAttributeCaches
 {
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
     human1.name = @"Blake";
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
     human2.name = @"Sarah";
 
-    [self.managedObjectStore.primaryManagedObjectContext save:nil];
+    [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
     
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
+    childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 
     NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
     assertThat(objects, hasCountOf(2));
@@ -135,17 +135,17 @@
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
 
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
     human1.name = @"Blake";
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
     human2.name = @"Sarah";
     
     __block NSError *error;
     __block BOOL success;
-    [self.managedObjectStore.primaryManagedObjectContext performBlockAndWait:^{
-        success = [self.managedObjectStore.primaryManagedObjectContext save:&error];
+    [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        success = [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
     }];
     assertThatBool(success, is(equalToBool(YES)));
     
@@ -153,7 +153,7 @@
     [_cache addObject:human2];
     
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
+    childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 
     NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
     assertThat(objects, hasCountOf(2));
@@ -169,17 +169,17 @@
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
 
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
     human1.name = @"Blake";
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
     human2.name = @"Sarah";
     
     __block NSError *error;
     __block BOOL success;
-    [self.managedObjectStore.primaryManagedObjectContext performBlockAndWait:^{
-        success = [self.managedObjectStore.primaryManagedObjectContext save:&error];
+    [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        success = [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
     }];
     assertThatBool(success, is(equalToBool(YES)));
     
@@ -187,7 +187,7 @@
     [_cache addObject:human2];
     
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    childContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
+    childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 
     NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
     assertThat(objects, hasCountOf(2));

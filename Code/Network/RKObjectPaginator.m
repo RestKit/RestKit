@@ -209,7 +209,7 @@
 //
 //    if (self.managedObjectStore) {
 //        RKManagedObjectLoader *managedObjectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider] autorelease];
-//        managedObjectLoader.managedObjectContext = self.managedObjectStore.primaryManagedObjectContext;
+//        managedObjectLoader.managedObjectContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 //        managedObjectLoader.mainQueueManagedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
 //        self.objectLoader = managedObjectLoader;
 //    } else {

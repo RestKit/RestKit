@@ -24,7 +24,7 @@
     [managedObjectStore addSearchIndexingToEntityForName:@"RKCat" onAttributes:@[ @"name" ]];
     [managedObjectStore addInMemoryPersistentStore:&error];
     [managedObjectStore createManagedObjectContexts];
-    [managedObjectStore startIndexingPrimaryManagedObjectContext];
+    [managedObjectStore startIndexingPersistentStoreManagedObjectContext];
     
     // Get some content into the index
     RKCat *cat1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
@@ -36,23 +36,23 @@
     [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:&error];
     
     // Execute fetches to verify
-    [managedObjectStore.primaryManagedObjectContext performBlockAndWait:^{
+    [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
         NSPredicate *predicate = [RKSearchPredicate searchPredicateWithText:@"Asia" type:NSAndPredicateType];
         
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKCat"];
         fetchRequest.predicate = predicate;
-        NSArray *objects = [managedObjectStore.primaryManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+        NSArray *objects = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
         assertThat(objects, hasCountOf(1));
         assertThat([objects[0] objectID], is(equalTo(cat1.objectID)));
     }];
     
-    [managedObjectStore.primaryManagedObjectContext performBlockAndWait:^{
+    [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
         NSPredicate *predicate = [RKSearchPredicate searchPredicateWithText:@"Asia Roy" type:NSOrPredicateType];
         
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKCat"];
         fetchRequest.predicate = predicate;
         fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES] ];
-        NSArray *objects = [managedObjectStore.primaryManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+        NSArray *objects = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
         assertThat(objects, hasCountOf(2));
         assertThat([objects[0] objectID], is(equalTo(cat1.objectID))); // Asia
         assertThat([objects[1] objectID], is(equalTo(cat2.objectID))); // Roy
