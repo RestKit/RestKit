@@ -48,13 +48,13 @@
 {
 	if([recorders count] == 1)
 	{
-		[NSException raise:NSInternalInconsistencyException format:@"%@: expected notification was not observed: %@",
+		[NSException raise:NSInternalInconsistencyException format:@"%@: expected notification was not observed: %@", 
 		 [self description], [[recorders lastObject] description]];
 	}
 	if([recorders count] > 0)
 	{
-		[NSException raise:NSInternalInconsistencyException format:@"%@ : %d expected notifications were not observed.",
-		 [self description], [recorders count]];
+		[NSException raise:NSInternalInconsistencyException format:@"%@ : %ld expected notifications were not observed.", 
+		 [self description], (long)[recorders count]];
 	}
 }
 
@@ -65,7 +65,7 @@
 - (void)handleNotification:(NSNotification *)aNotification
 {
 	NSUInteger i, limit;
-
+	
 	limit = expectationOrderMatters ? 1 : [recorders count];
 	for(i = 0; i < limit; i++)
 	{
@@ -75,7 +75,7 @@
 			return;
 		}
 	}
-	[NSException raise:NSInternalInconsistencyException format:@"%@: unexpected notification observed: %@", [self description],
+	[NSException raise:NSInternalInconsistencyException format:@"%@: unexpected notification observed: %@", [self description], 
 	  [aNotification description]];
 }
 

@@ -63,7 +63,7 @@ typedef void(^RKFormBlock)();
 @property (nonatomic, readonly) NSArray *tableItems;
 
 - (void)addSection:(RKFormSection *)section;
-- (void)addSectionUsingBlock:(void (^)(RKFormSection *section))block;
+- (void)addSectionUsingBlock:(void (^)(RKFormSection *section))block; // TODO: Eliminate this signature...
 
 /** @name Single Section Forms */
 

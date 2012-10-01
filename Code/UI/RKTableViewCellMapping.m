@@ -82,6 +82,10 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 
 @end
 
+@interface RKTableViewCellMapping ()
+@property (nonatomic, retain) NSMutableArray *mutablePrepareCellBlocks;
+@end
+
 @implementation RKTableViewCellMapping
 
 @synthesize reuseIdentifier = _reuseIdentifier;
@@ -98,7 +102,8 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 @synthesize targetIndexPathForMove = _targetIndexPathForMove;
 @synthesize rowHeight = _rowHeight;
 @synthesize deselectsRowOnSelection = _deselectsRowOnSelection;
-@synthesize managesCellAttributes;
+@synthesize managesCellAttributes = _managesCellAttributes;
+@synthesize mutablePrepareCellBlocks = _mutablePrepareCellBlocks;
 
 + (id)cellMapping
 {
@@ -137,7 +142,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
         _selectionStyle = UITableViewCellSelectionStyleBlue;
         self.rowHeight = 44;
         self.deselectsRowOnSelection = YES;
-        _prepareCellBlocks = [NSMutableArray new];
+        self.mutablePrepareCellBlocks = [NSMutableArray array];
     }
 
     return self;
@@ -153,7 +158,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 - (void)dealloc
 {
     [_reuseIdentifier release];
-    [_prepareCellBlocks release];
+    [_mutablePrepareCellBlocks release];
     Block_release(_onSelectCell);
     Block_release(_onSelectCellForObjectAtIndexPath);
     Block_release(_onCellWillAppearForObjectAtIndexPath);
@@ -163,11 +168,6 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     Block_release(_editingStyleForObjectAtIndexPath);
     Block_release(_targetIndexPathForMove);
     [super dealloc];
-}
-
-- (NSMutableArray *)prepareCellBlocks
-{
-    return _prepareCellBlocks;
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -187,8 +187,8 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     copy.targetIndexPathForMove = self.targetIndexPathForMove;
     copy.rowHeight = self.rowHeight;
 
-    @synchronized(_prepareCellBlocks) {
-        for (void (^block)(UITableViewCell *) in _prepareCellBlocks) {
+    @synchronized(_mutablePrepareCellBlocks) {
+        for (void (^block)(UITableViewCell *) in _mutablePrepareCellBlocks) {
             void (^blockCopy)(UITableViewCell *cell) = [block copy];
             [copy addPrepareCellBlock:blockCopy];
             [blockCopy release];
@@ -196,30 +196,6 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     }
 
     return copy;
-}
-
-
-- (id)mappableObjectForData:(UITableView *)tableView
-{
-    NSAssert([tableView isKindOfClass:[UITableView class]], @"Expected to be invoked with a tableView as the data. Got %@", tableView);
-    RKLogTrace(@"About to dequeue reusable cell using self.reuseIdentifier=%@", self.reuseIdentifier);
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:self.reuseIdentifier];
-    if (! cell) {
-        cell = [[[self.objectClass alloc] initWithStyle:self.style
-                                       reuseIdentifier:self.reuseIdentifier] autorelease];
-    }
-
-    if (self.managesCellAttributes) {
-        cell.accessoryType = self.accessoryType;
-        cell.selectionStyle = self.selectionStyle;
-    }
-
-    // Fire the prepare callbacks
-    for (void (^block)(UITableViewCell *) in _prepareCellBlocks) {
-        block(cell);
-    }
-
-    return cell;
 }
 
 - (void)setSelectionStyle:(UITableViewCellSelectionStyle)selectionStyle
@@ -270,8 +246,13 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 - (void)addPrepareCellBlock:(void (^)(UITableViewCell *cell))block
 {
     void (^blockCopy)(UITableViewCell *cell) = [block copy];
-    [_prepareCellBlocks addObject:blockCopy];
+    [self.mutablePrepareCellBlocks addObject:blockCopy];
     [blockCopy release];
+}
+
+- (NSArray *)prepareCellBlocks
+{
+    return [NSArray arrayWithArray:self.mutablePrepareCellBlocks];
 }
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents toControlAtKeyPath:(NSString *)keyPath

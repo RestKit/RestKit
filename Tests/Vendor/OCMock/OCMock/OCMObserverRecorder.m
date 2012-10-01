@@ -51,7 +51,7 @@
 - (BOOL)argument:(id)expectedArg matchesArgument:(id)observedArg
 {
 	if([expectedArg isKindOfClass:[OCMConstraint class]])
-	{
+	{	
 		if([expectedArg evaluate:observedArg] == NO)
 			return NO;
 	}

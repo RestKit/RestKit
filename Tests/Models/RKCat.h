@@ -18,14 +18,11 @@
 //  limitations under the License.
 //
 
-
-#import "NSManagedObject+ActiveRecord.h"
+#import <CoreData/CoreData.h>
 
 @class RKHuman;
 
-@interface RKCat : NSManagedObject {
-
-}
+@interface RKCat : NSManagedObject
 
 @property (nonatomic, retain) NSNumber *age;
 @property (nonatomic, retain) NSNumber *birthYear;
@@ -39,5 +36,6 @@
 @property (nonatomic, retain) NSDate *updatedAt;
 
 @property (nonatomic, retain) RKHuman *human;
+@property (nonatomic, retain) NSSet *favoriteOfHumans;
 
 @end

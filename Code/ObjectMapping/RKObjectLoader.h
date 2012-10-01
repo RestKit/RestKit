@@ -20,11 +20,11 @@
 
 #import "Network.h"
 #import "RKObjectMapping.h"
-#import "RKObjectMappingResult.h"
+#import "RKMappingResult.h"
 #import "RKObjectMappingProvider.h"
 
-@class RKObjectMappingProvider;
-@class RKObjectLoader;
+@class RKObjectMappingProvider, RKObjectLoader, RKObjectMapper;
+@protocol RKMappingOperationDataSource;
 
 // Block Types
 typedef void(^RKObjectLoaderBlock)(RKObjectLoader *loader);
@@ -135,9 +135,7 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * RKManagedObjectLoader instead of RKObjectLoader. RKManagedObjectLoader is a descendent class that
  * includes Core Data specific mapping logic.
  */
-@interface RKObjectLoader : RKRequest {
-    NSObject* _targetObject;
-}
+@interface RKObjectLoader : RKRequest
 
 /**
  The object that acts as the delegate of the receiving object loader.
@@ -202,6 +200,8 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  */
 @property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
 
+@property (nonatomic, retain) id<RKMappingOperationDataSource> mappingOperationDataSource;
+
 /**
  * The underlying response object for this loader
  */
@@ -212,7 +212,7 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * object mapping has completed. Provides access to the final products of the
  * object mapper in a variety of formats.
  */
-@property (nonatomic, readonly) RKObjectMappingResult *result;
+@property (nonatomic, retain, readonly) RKMappingResult *result;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Serialization
@@ -240,21 +240,21 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
 
  @see RKObjectSerializer
  */
-@property (nonatomic, retain) NSObject *sourceObject;
+@property (nonatomic, retain) id<NSObject> sourceObject;
 
 /**
  * The target object to map results back onto. If nil, a new object instance
  * for the appropriate mapping will be created. If not nil, the results will
  * be used to update the targetObject's attributes and relationships.
  */
-@property (nonatomic, retain) NSObject *targetObject;
+@property (nonatomic, retain) id<NSObject> targetObject;
 
 /**
- The Grand Central Dispatch queue to perform our parsing and object mapping
+ The operation queue to perform our parsing and object mapping
  within. By default, object loaders will use the mappingQueue from the RKObjectManager
  that created the loader. You can override this on a per-loader basis as necessary.
  */
-@property (nonatomic, assign) dispatch_queue_t mappingQueue;
+@property (nonatomic, retain) NSOperationQueue *mappingQueue;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -278,6 +278,9 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * Handle an error in the response preventing it from being mapped, called from -isResponseMappable
  */
 - (void)handleResponseError;
+
+// Subclass hook for RKManagedObjectLoader...
+- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper;
 
 @end
 

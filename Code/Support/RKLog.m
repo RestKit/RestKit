@@ -38,32 +38,12 @@ void RKLogInitialize(void)
 
 void RKLogConfigureFromEnvironment(void)
 {
-    NSArray *validEnvVariables = [NSArray arrayWithObjects:
-                                       @"RKLogLevel.App",
-                                       @"RKLogLevel.RestKit",
-                                       @"RKLogLevel.RestKit.CoreData",
-                                       @"RKLogLevel.RestKit.CoreData.SearchEngine",
-                                       @"RKLogLevel.RestKit.Network",
-                                       @"RKLogLevel.RestKit.Network.Cache",
-                                       @"RKLogLevel.RestKit.Network.Queue",
-                                       @"RKLogLevel.RestKit.Network.Reachability",
-                                       @"RKLogLevel.RestKit.ObjectMapping",
-                                       @"RKLogLevel.RestKit.Support",
-                                       @"RKLogLevel.RestKit.Support.Parsers",
-                                       @"RKLogLevel.RestKit.Testing",
-                                       @"RKLogLevel.RestKit.Three20",
-                                       @"RKLogLevel.RestKit.UI",
-                                       nil];
-
     static NSString *logComponentPrefix = @"RKLogLevel.";
 
     NSDictionary *envVars = [[NSProcessInfo processInfo] environment];
 
     for (NSString *envVarName in [envVars allKeys]) {
         if ([envVarName hasPrefix:logComponentPrefix]) {
-            if (![validEnvVariables containsObject:envVarName]) {
-                 @throw [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"The RKLogLevel Environment Variable name must be one of the following: %@", validEnvVariables] userInfo:nil];
-            }
             NSString *logLevel = [envVars valueForKey:envVarName];
             NSString *logComponent = [envVarName stringByReplacingOccurrencesOfString:logComponentPrefix withString:@""];
             logComponent = [logComponent stringByReplacingOccurrencesOfString:@"." withString:@"/"];
@@ -128,14 +108,15 @@ int RKLogLevelForString(NSString *logLevel, NSString *envVarName)
     }
 }
 
-void RKLogValidationError(NSError *validationError) {
-    if ([[validationError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
-        NSDictionary *userInfo = [validationError userInfo];
+void RKLogValidationError(NSError *error)
+{
+    if ([[error domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+        NSDictionary *userInfo = [error userInfo];
         NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
         if (errors) {
             for (NSError *detailedError in errors) {
                 NSDictionary *subUserInfo = [detailedError userInfo];
-                RKLogError(@"Core Data Save Error\n \
+                RKLogError(@"Detailed Error\n \
                            NSLocalizedDescription:\t\t%@\n \
                            NSValidationErrorKey:\t\t\t%@\n \
                            NSValidationErrorPredicate:\t%@\n \
@@ -145,9 +126,8 @@ void RKLogValidationError(NSError *validationError) {
                            [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
                            [subUserInfo valueForKey:@"NSValidationErrorObject"]);
             }
-        }
-        else {
-            RKLogError(@"Core Data Save Error\n \
+        } else {
+            RKLogError(@"Validation Error\n \
                        NSLocalizedDescription:\t\t%@\n \
                        NSValidationErrorKey:\t\t\t%@\n \
                        NSValidationErrorPredicate:\t%@\n \
@@ -160,7 +140,8 @@ void RKLogValidationError(NSError *validationError) {
     }
 }
 
-void RKLogIntegerAsBinary(NSUInteger bitMask) {
+void RKLogIntegerAsBinary(NSUInteger bitMask)
+{
     NSUInteger bit = ~(NSUIntegerMax >> 1);
     NSMutableString *string = [NSMutableString string];
     do {
@@ -168,4 +149,11 @@ void RKLogIntegerAsBinary(NSUInteger bitMask) {
     } while (bit >>= 1);
 
     NSLog(@"Value of %ld in binary: %@", (long)bitMask, string);
+}
+
+void RKLogCoreDataError(NSError *error)
+{
+    RKLogToComponentWithLevelWhileExecutingBlock(lcl_cRestKitCoreData, RKLogLevelError, ^{
+        RKLogValidationError(error);
+    });
 }

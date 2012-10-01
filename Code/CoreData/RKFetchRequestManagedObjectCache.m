@@ -7,11 +7,10 @@
 //
 
 #import "RKFetchRequestManagedObjectCache.h"
-#import "NSManagedObject+ActiveRecord.h"
 #import "NSEntityDescription+RKAdditions.h"
 #import "RKLog.h"
-#import "RKObjectPropertyInspector.h"
-#import "RKObjectPropertyInspector+CoreData.h"
+#import "RKPropertyInspector.h"
+#import "RKPropertyInspector+CoreData.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -19,10 +18,10 @@
 
 @implementation RKFetchRequestManagedObjectCache
 
-- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
-                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                                    value:(id)primaryKeyValue
-                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+- (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
+           withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                             value:(id)primaryKeyValue
+            inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSAssert(entity, @"Cannot find existing managed object without a target class");
     NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without mapping that defines a primaryKeyAttribute");
@@ -30,7 +29,7 @@
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a context");
 
     id searchValue = primaryKeyValue;
-    Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:primaryKeyAttribute ofEntity:entity];
+    Class type = [[RKPropertyInspector sharedInspector] typeForProperty:primaryKeyAttribute ofEntity:entity];
     if (type && ([type isSubclassOfClass:[NSString class]] && NO == [primaryKeyValue isKindOfClass:[NSString class]])) {
         searchValue = [NSString stringWithFormat:@"%@", primaryKeyValue];
     } else if (type && ([type isSubclassOfClass:[NSNumber class]] && NO == [primaryKeyValue isKindOfClass:[NSNumber class]])) {
@@ -47,14 +46,25 @@
         // Parse a predicate
         predicate = [NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, searchValue];
     }
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    fetchRequest.entity = entity;
-    fetchRequest.fetchLimit = 1;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[entity name]];
     fetchRequest.predicate = predicate;
-    NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:managedObjectContext];
+    NSError *error = nil;
+    NSArray *objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if (! objects) {
+        RKLogError(@"Failed to execute fetch request due to error: %@", error);
+    }
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
-    [fetchRequest release];
 
+    return objects;
+}
+
+- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
+                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                                    value:(id)primaryKeyValue
+                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
+    NSArray *objects = [self findInstancesOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:managedObjectContext];
+    
     NSManagedObject *object = nil;
     if ([objects count] > 0) {
         object = [objects objectAtIndex:0];

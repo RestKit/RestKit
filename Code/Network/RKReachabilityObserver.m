@@ -396,8 +396,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
    [[NSNotificationCenter defaultCenter] postNotificationName:RKReachabilityDidChangeNotification object:self userInfo:userInfo];
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
     return [NSString stringWithFormat:@"<%@: %p host=%@ isReachabilityDetermined=%@ isMonitoringLocalWiFi=%@ reachabilityFlags=%@>",
             NSStringFromClass([self class]), self, self.host, self.isReachabilityDetermined ? @"YES" : @"NO",
             self.isMonitoringLocalWiFi ? @"YES" : @"NO", [self reachabilityFlagsDescription]];

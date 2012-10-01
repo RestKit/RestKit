@@ -8,9 +8,5 @@
 
 #import "RKCatalog.h"
 
-@interface RKCoreDataExample : UITableViewController {
-    NSArray *_articles;
-    UISegmentedControl *_segmentedControl;
-}
-
+@interface RKCoreDataExample : UITableViewController
 @end

@@ -198,9 +198,9 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p name=%@ suspended=%@ requestCount=%d loadingCount=%d/%d>",
+    return [NSString stringWithFormat:@"<%@: %p name=%@ suspended=%@ requestCount=%ld loadingCount=%ld/%ld>",
             NSStringFromClass([self class]), self, self.name, self.suspended ? @"YES" : @"NO",
-            self.count, self.loadingCount, self.concurrentRequestsLimit];
+            (unsigned long) self.count, (unsigned long) self.loadingCount, (unsigned long) self.concurrentRequestsLimit];
 }
 
 - (NSUInteger)loadingCount
@@ -232,7 +232,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 - (void)removeLoadingRequest:(RKRequest *)request
 {
-    if (self.loadingCount == 1 && [_loadingRequests containsObject:request]) {
+    if ([self nextRequest] == nil && self.loadingCount == 1 && [_loadingRequests containsObject:request]) {
         RKLogTrace(@"Loading count decreasing from 1 to 0. Firing requestQueueDidFinishLoading");
 
         // Transition from processing to empty
@@ -266,8 +266,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 - (RKRequest *)nextRequest
 {
-    for (NSUInteger i = 0; i < [_requests count]; i++) {
-        RKRequest *request = [_requests objectAtIndex:i];
+    for (RKRequest *request in _requests) {
         if ([request isUnsent]) {
             return request;
         }
@@ -281,7 +280,9 @@ static const NSTimeInterval kFlushDelay = 0.3;
     // We always want to dispatch requests from the main thread so the current thread does not terminate
     // and cause us to lose the delegate callbacks
     if (! [NSThread isMainThread]) {
-        [self performSelectorOnMainThread:@selector(loadNextInQueue) withObject:nil waitUntilDone:NO];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self loadNextInQueue];
+        });
         return;
     }
 
@@ -406,6 +407,19 @@ static const NSTimeInterval kFlushDelay = 0.3;
     @synchronized(self) {
         return [_requests containsObject:request];
     }
+}
+
+- (BOOL)containsRequestWithURL:(NSURL *)URL
+{
+    @synchronized(self) {
+        for (RKRequest *request in _requests) {
+            if ([request.URL isEqual:URL]) {
+                return YES;
+            }
+        }
+    }
+
+    return NO;
 }
 
 - (void)cancelRequest:(RKRequest *)request loadNext:(BOOL)loadNext
@@ -590,8 +604,9 @@ static NSInteger networkActivityCount;
 - (void)refreshActivityIndicator
 {
     if (![NSThread isMainThread]) {
-        SEL sel_refresh = @selector(refreshActivityIndicator);
-        [self performSelectorOnMainThread:sel_refresh withObject:nil waitUntilDone:NO];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self refreshActivityIndicator];
+        });
         return;
     }
     BOOL active = (self.networkActivityCount > 0);

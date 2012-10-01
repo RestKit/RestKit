@@ -68,7 +68,7 @@
     NSError *error = nil;
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (! resourcePath) {
-        RKLogWarning(@"%@ Failed to locate Resource with name '%@' and extension '%@': File Not Found.", self, resourcePath, extension);
+        RKLogWarning(@"%@ Failed to locate Resource with name '%@' and extension '%@': File Not Found.", self, name, extension);
         return nil;
     }
 

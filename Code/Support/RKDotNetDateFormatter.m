@@ -64,9 +64,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
         RKLogError(@"Attempted to represent an invalid date: %@", date);
         return nil;
     }
-    NSTimeInterval milliseconds = millisecondsFromSeconds([date timeIntervalSince1970]);
-    NSString *timeZoneOffset = [super stringFromDate:date];
-    return [NSString stringWithFormat:@"/Date(%1.0lf%@)/", milliseconds, timeZoneOffset];
+    return [self stringForObjectValue:date];
 }
 
 - (BOOL)getObjectValue:(id *)outValue forString:(NSString *)string errorDescription:(NSString **)error
@@ -75,6 +73,14 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
     if (outValue)
         *outValue = date;
     return (date != nil);
+}
+
+- (NSString *) stringForObjectValue:(id)value
+{
+    NSParameterAssert([value isKindOfClass:[NSDate class]]);
+    NSString *timeZoneOffset = [super stringForObjectValue:value];
+    NSTimeInterval milliseconds = millisecondsFromSeconds([(NSDate*)value timeIntervalSince1970]);
+    return [NSString stringWithFormat:@"/Date(%1.0lf%@)/", milliseconds, timeZoneOffset];
 }
 
 - (id)init

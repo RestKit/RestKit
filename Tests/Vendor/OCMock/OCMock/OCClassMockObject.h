@@ -5,7 +5,7 @@
 
 #import <OCMock/OCMockObject.h>
 
-@interface OCClassMockObject : OCMockObject
+@interface OCClassMockObject : OCMockObject 
 {
 	Class	mockedClass;
 }

@@ -22,7 +22,7 @@
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
 #import "RKTestResponseLoader.h"
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectMappingProvider.h"
 #import "RKHuman.h"
@@ -41,44 +41,45 @@
 - (void)setUp
 {
     _objectManager = [RKTestFactory objectManager];
-    _objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
+    _objectManager.managedObjectStore = [RKTestFactory managedObjectStore];
     [RKObjectManager setSharedManager:_objectManager];
-    [_objectManager.objectStore deletePersistentStore];
+    NSError *error;
+    [_objectManager.managedObjectStore resetPersistentStores:&error];
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAClass
 {
-    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider addObjectMapping:humanMapping];
-    RKObjectMappingDefinition *returnedMapping = [_objectManager.mappingProvider objectMappingForClass:[RKHuman class]];
+    RKMapping *returnedMapping = [_objectManager.mappingProvider objectMappingForClass:[RKHuman class]];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     assertThat(returnedMapping, is(equalTo(humanMapping)));
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAKeyPath
 {
-    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider setMapping:catMapping forKeyPath:@"cat"];
-    RKObjectMappingDefinition *returnedMapping = [_objectManager.mappingProvider mappingForKeyPath:@"cat"];
+    RKMapping *returnedMapping = [_objectManager.mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     assertThat(returnedMapping, is(equalTo(catMapping)));
 }
 
 - (void)testShouldAllowYouToRemoveAMappingByKeyPath
 {
-    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [mappingProvider setMapping:catMapping forKeyPath:@"cat"];
-    RKObjectMappingDefinition *returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
+    RKMapping *returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     [mappingProvider removeMappingForKeyPath:@"cat"];
     returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
@@ -221,7 +222,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
 
-    RKObjectMappingDefinition *matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
+    RKMapping *matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 
@@ -231,7 +232,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
 
-    RKObjectMappingDefinition *matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
+    RKMapping *matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 

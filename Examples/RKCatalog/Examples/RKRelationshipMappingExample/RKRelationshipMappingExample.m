@@ -20,17 +20,18 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
-        RKManagedObjectStore *objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKRelationshipMappingExample.sqlite"];
-        objectManager.objectStore = objectStore;
+        
+        NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+        RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];                
 
-        RKManagedObjectMapping *taskMapping = [RKManagedObjectMapping mappingForClass:[Task class] inManagedObjectStore:objectStore];
+        RKEntityMapping *taskMapping = [RKEntityMapping mappingForEntityForName:@"Task" inManagedObjectStore:managedObjectStore];
         taskMapping.primaryKeyAttribute = @"taskID";
         [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
         [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
         [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
         [objectManager.mappingProvider setMapping:taskMapping forKeyPath:@"task"];
 
-        RKManagedObjectMapping *userMapping = [RKManagedObjectMapping mappingForClass:[User class] inManagedObjectStore:objectStore];
+        RKEntityMapping *userMapping = [RKEntityMapping mappingForEntityForName:@"User" inManagedObjectStore:managedObjectStore];
         userMapping.primaryKeyAttribute = @"userID";
         [userMapping mapAttributes:@"name", @"email", nil];
         [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
@@ -38,8 +39,7 @@
         [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];
 
         // Hydrate the assignedUser association via primary key
-        [taskMapping hasOne:@"assignedUser" withMapping:userMapping];
-        [taskMapping connectRelationship:@"assignedUser" withObjectForPrimaryKeyAttribute:@"assignedUserID"];
+        [taskMapping connectRelationship:@"assignedUser" fromKeyPath:@"assignedUserID" toKeyPath:@"userID" withMapping:userMapping];
 
         // NOTE - Project is not backed by Core Data
         RKObjectMapping *projectMapping = [RKObjectMapping mappingForClass:[Project class]];
@@ -48,6 +48,20 @@
         [projectMapping mapRelationship:@"user" withMapping:userMapping];
         [projectMapping mapRelationship:@"tasks" withMapping:taskMapping];
         [objectManager.mappingProvider setMapping:projectMapping forKeyPath:@"project"];
+        
+        // Complete Core Data initialization
+        NSError *error;
+        NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"RKRelationshipMappingExample.sqlite"];
+        NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
+        NSAssert(persistentStore, @"Failed to create persistent store with error: %@", error);
+        [managedObjectStore createManagedObjectContexts];
+        
+        // Create a managed object cache. To use the In Memory Cache, you must configure it after context creation
+        managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+        
+        // TODO: Need to update setPrimaryKeyAttributeName to use info dictionary...
+        objectManager.managedObjectStore = managedObjectStore;
+        [managedObjectStore release];
     }
 
     return self;
@@ -76,7 +90,10 @@
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Rats!" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!"
+                                                    message:[error localizedDescription]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"Rats!" otherButtonTitles:nil];
     [alert show];
     [alert release];
 }
@@ -151,13 +168,11 @@
     }
 
     if (indexPath.section == 0) {
-        Project *project = (Project *)[_objects objectAtIndex:indexPath.row];
+        Project *project = [_objects objectAtIndex:indexPath.row];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.textLabel.text = project.name;
     } else if (indexPath.section == 1) {
-        // NOTE: We refetch the object here because Project is not Core Data backed
-        NSManagedObject *objectReference = [_selectedProject.tasks objectAtIndex:indexPath.row];
-        Task *task = (Task *)[[RKObjectManager sharedManager].objectStore objectWithID:[objectReference objectID]];
+        Task *task = [_selectedProject.tasks objectAtIndex:indexPath.row];
         cell.textLabel.text = [NSString stringWithFormat:@"%@", task.name];
         cell.detailTextLabel.text = [NSString stringWithFormat:@"Assigned to: %@", task.assignedUser.name];
     }

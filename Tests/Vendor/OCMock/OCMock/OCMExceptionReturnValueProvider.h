@@ -5,7 +5,7 @@
 
 #import "OCMReturnValueProvider.h"
 
-@interface OCMExceptionReturnValueProvider : OCMReturnValueProvider
+@interface OCMExceptionReturnValueProvider : OCMReturnValueProvider 
 {
 }
 

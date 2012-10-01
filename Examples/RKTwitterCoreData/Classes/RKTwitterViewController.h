@@ -9,9 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <RestKit/RestKit.h>
 
-@interface RKTwitterViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, RKObjectLoaderDelegate> {
-    UITableView *_tableView;
-    NSArray *_statuses;
-}
+@interface RKTwitterViewController : UIViewController
 - (void)loadObjectsFromDataStore;
 @end

@@ -7,7 +7,7 @@
 
 #if NS_BLOCKS_AVAILABLE
 
-@interface OCMBlockCaller : NSObject
+@interface OCMBlockCaller : NSObject 
 {
 	void (^block)(NSInvocation *);
 }

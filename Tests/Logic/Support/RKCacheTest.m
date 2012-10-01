@@ -7,7 +7,7 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKDirectory.h"
+#import "RKDirectoryUtilities.h"
 
 @interface RKCacheTest : RKTestCase
 
@@ -17,7 +17,7 @@
 
 - (void)testCreationOfIntermediateDirectories
 {
-    NSString *cachePath = [RKDirectory cachesDirectory];
+    NSString *cachePath = RKCachesDirectory();
     NSString *subPath = [cachePath stringByAppendingPathComponent:@"TestPath"];
     NSError *error = nil;
     [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];

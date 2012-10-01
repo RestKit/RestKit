@@ -87,7 +87,7 @@
 
 #if NS_BLOCKS_AVAILABLE
 
-- (id)andDo:(void (^)(NSInvocation *))aBlock
+- (id)andDo:(void (^)(NSInvocation *))aBlock 
 {
 	[invocationHandlers addObject:[[[OCMBlockCaller alloc] initWithCallBlock:aBlock] autorelease]];
 	return self;
@@ -133,10 +133,10 @@
 {
 	id  recordedArg, passedArg;
 	int i, n;
-
+	
 	if([anInvocation selector] != [recordedInvocation selector])
 		return NO;
-
+	
 	n = (int)[[recordedInvocation methodSignature] numberOfArguments];
 	for(i = 2; i < n; i++)
 	{
@@ -149,12 +149,12 @@
 				return NO;
 			continue;
 		}
-
+		
 		if([recordedArg isKindOfClass:[NSValue class]])
 			recordedArg = [OCMArg resolveSpecialValues:recordedArg];
-
+		
 		if([recordedArg isKindOfClass:[OCMConstraint class]])
-		{
+		{	
 			if([recordedArg evaluate:passedArg] == NO)
 				return NO;
 		}
@@ -170,7 +170,7 @@
 		}
 		else
 		{
-			if(([recordedArg class] == [NSNumber class]) &&
+			if(([recordedArg class] == [NSNumber class]) && 
 				([(NSNumber*)recordedArg compare:(NSNumber*)passedArg] != NSOrderedSame))
 				return NO;
 			if(([recordedArg isEqual:passedArg] == NO) &&

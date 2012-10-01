@@ -15,4 +15,14 @@
  */
 @interface RKInMemoryManagedObjectCache : NSObject <RKManagedObjectCaching>
 
+/**
+ Initializes the receiver with a managed object context that is to be observed
+ and used to populate the in memory cache. The receiver may then be used to fulfill
+ cache requests for child contexts of the given managed object context.
+ 
+ @param managedObjectContext The managed object context with which to initialize the receiver.
+ @return The receiver, initialized with the given managed object context.
+ */
+- (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
 @end

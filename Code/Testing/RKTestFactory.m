@@ -1,6 +1,6 @@
 //
 //  RKTestFactory.m
-//  RKGithub
+//  RestKit
 //
 //  Created by Blake Watters on 2/16/12.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
@@ -113,13 +113,18 @@ static RKTestFactory *sharedFactory = nil;
     }];
 
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
-        NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:storePath]) {
-            [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+        NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
+        RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
+        NSError *error;
+        NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
+        if (persistentStore) {
+            BOOL success = [managedObjectStore resetPersistentStores:&error];
+            if (! success) {
+                RKLogError(@"Failed to reset persistent store: %@", error);
+            }
         }
-        RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
 
-        return store;
+        return managedObjectStore;
     }];
 }
 
@@ -196,21 +201,24 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)managedObjectStore
 {
-    RKManagedObjectStore *objectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
-    [RKManagedObjectStore setDefaultObjectStore:objectStore];
+    RKManagedObjectStore *managedObjectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
+    [RKManagedObjectStore setDefaultStore:managedObjectStore];
 
-    return objectStore;
+    return managedObjectStore;
 }
 
 + (void)setUp
 {
-    [RKObjectManager setDefaultMappingQueue:dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL)];
+    [RKObjectManager setSharedManager:nil];
+    [RKClient setSharedClient:nil];
+    [RKManagedObjectStore setDefaultStore:nil];
+    [RKObjectManager setDefaultMappingQueue:nil];
     [RKObjectMapping setDefaultDateFormatters:nil];
 
     // Delete the store if it exists
-    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
+    NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-        [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
 
     if ([self respondsToSelector:@selector(didSetUp)]) {
@@ -222,7 +230,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     [RKObjectManager setSharedManager:nil];
     [RKClient setSharedClient:nil];
-    [RKManagedObjectStore setDefaultObjectStore:nil];
+    [RKManagedObjectStore setDefaultStore:nil];
 
     if ([self respondsToSelector:@selector(didTearDown)]) {
         [self didTearDown];
@@ -232,7 +240,7 @@ static RKTestFactory *sharedFactory = nil;
 + (void)clearCacheDirectory
 {
     NSError *error = nil;
-    NSString *cachePath = [RKDirectory cachesDirectory];
+    NSString *cachePath = RKCachesDirectory();
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
     if (success) {
         RKLogDebug(@"Cleared cache directory...");

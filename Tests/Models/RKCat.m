@@ -21,13 +21,13 @@
 
 #import "RKCat.h"
 
-
 @implementation RKCat
 
 @dynamic age;
 @dynamic birthYear;
 @dynamic color;
 @dynamic createdAt;
+@dynamic favoriteOfHumans;
 @dynamic humanId;
 @dynamic name;
 @dynamic nickName;

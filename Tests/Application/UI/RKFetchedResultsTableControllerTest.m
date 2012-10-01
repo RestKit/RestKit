@@ -9,7 +9,7 @@
 #import "RKTestEnvironment.h"
 #import "RKFetchedResultsTableController.h"
 #import "RKManagedObjectStore.h"
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKHuman.h"
 #import "RKEvent.h"
 #import "RKAbstractTableController_Internals.h"
@@ -39,6 +39,7 @@
 @end
 
 @interface RKFetchedResultsTableControllerTest : RKTestCase
+@property (nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
 @end
 
 @implementation RKFetchedResultsTableControllerTest
@@ -57,81 +58,97 @@
 
 - (void)bootstrapStoreAndCache
 {
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman"inManagedObjectStore:managedObjectStore];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
 
-    [RKHuman truncateAll];
-    assertThatInt([RKHuman count:nil], is(equalToInt(0)));
-    RKHuman *blake = [RKHuman createEntity];
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKHuman"  predicate:nil error:nil], is(equalToInt(0)));
+    RKHuman *blake = [managedObjectStore.primaryManagedObjectContext insertNewObjectForEntityForName:@"RKHuman"];
     blake.railsID = [NSNumber numberWithInt:1234];
     blake.name = @"blake";
-    RKHuman *other = [RKHuman createEntity];
+    RKHuman *other = [managedObjectStore.primaryManagedObjectContext insertNewObjectForEntityForName:@"RKHuman"];
     other.railsID = [NSNumber numberWithInt:5678];
     other.name = @"other";
     NSError *error = nil;
-    [store save:&error];
+    [managedObjectStore.primaryManagedObjectContext save:&error];
     assertThat(error, is(nilValue()));
-    assertThatInt([RKHuman count:nil], is(equalToInt(2)));
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKHuman"  predicate:nil error:nil], is(equalToInt(2)));
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    objectManager.objectStore = store;
+    objectManager.managedObjectStore = managedObjectStore;
 
     [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/all\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
-        return [RKHuman requestAllSortedBy:@"name" ascending:YES];
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+        fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+        return fetchRequest;
     }];
+
+    [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/empty\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+        fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+        return fetchRequest;
+    }];
+}
+
+- (NSManagedObjectContext *)managedObjectContext
+{
+    return [[RKObjectManager sharedManager].managedObjectStore mainQueueManagedObjectContext];
 }
 
 - (void)bootstrapNakedObjectStoreAndCache
 {
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *eventMapping = [RKManagedObjectMapping mappingForClass:[RKEvent class] inManagedObjectStore:store];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *eventMapping = [RKEntityMapping mappingForEntityForName:@"RKEvent"inManagedObjectStore:managedObjectStore];
     [eventMapping mapKeyPath:@"event_id" toAttribute:@"eventID"];
     [eventMapping mapKeyPath:@"type" toAttribute:@"eventType"];
     [eventMapping mapAttributes:@"location", @"summary", nil];
     eventMapping.primaryKeyAttribute = @"eventID";
-    [RKEvent truncateAll];
 
-    assertThatInt([RKEvent count:nil], is(equalToInt(0)));
-    RKEvent *nakedEvent = [RKEvent createEntity];
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKEvent"  predicate:nil error:nil], is(equalToInt(0)));
+    RKEvent *nakedEvent = [managedObjectStore.primaryManagedObjectContext insertNewObjectForEntityForName:@"RKEvent"];
     nakedEvent.eventID = @"RK4424";
     nakedEvent.eventType = @"Concert";
     nakedEvent.location = @"Performance Hall";
     nakedEvent.summary = @"Shindig";
     NSError *error = nil;
-    [store save:&error];
+    [managedObjectStore.primaryManagedObjectContext save:&error];
     assertThat(error, is(nilValue()));
-    assertThatInt([RKEvent count:nil], is(equalToInt(1)));
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKEvent"  predicate:nil error:nil], is(equalToInt(1)));
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider addObjectMapping:eventMapping];
-    objectManager.objectStore = store;
+    objectManager.managedObjectStore = managedObjectStore;
 
     id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
-    [[[mockMappingProvider stub] andReturn:[RKEvent requestAllSortedBy:@"eventType" ascending:YES]] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
+
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKEvent"];
+    fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"eventType" ascending:YES]];
+    [[[mockMappingProvider stub] andReturn:fetchRequest] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
 }
 
 - (void)bootstrapEmptyStoreAndCache
 {
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman"inManagedObjectStore:managedObjectStore];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
 
-    [RKHuman truncateAll];
-    assertThatInt([RKHuman count:nil], is(equalToInt(0)));
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKHuman"  predicate:nil error:nil], is(equalToInt(0)));
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    objectManager.objectStore = store;
+    objectManager.managedObjectStore = managedObjectStore;
 
     id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
-    [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
-    [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/empty/array"];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+
+    [[[mockMappingProvider stub] andReturn:fetchRequest] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
+    [[[mockMappingProvider stub] andReturn:fetchRequest] fetchRequestForResourcePath:@"/empty/array"];
 }
 
 - (void)stubObjectManagerToOnline
@@ -150,6 +167,7 @@
     [self bootstrapStoreAndCache];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
 
@@ -164,6 +182,7 @@
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
     tableController.resourcePath = @"/JSON/NakedEvents.json";
+    tableController.managedObjectContext = self.managedObjectContext;
     [tableController setObjectMappingForClass:[RKEvent class]];
     [tableController loadTable];
 
@@ -190,6 +209,7 @@
     NSArray *sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name"
                                                                                       ascending:YES]];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.predicate = predicate;
     tableController.sortDescriptors = sortDescriptors;
@@ -207,6 +227,7 @@
     [self bootstrapStoreAndCache];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     tableController.cacheName = @"allHumansCache";
@@ -227,6 +248,7 @@
     NSArray *sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name"
                                                                                       ascending:YES]];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.predicate = predicate;
     tableController.sortDescriptors = sortDescriptors;
@@ -248,9 +270,9 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
 
@@ -264,9 +286,9 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController loadTable];
@@ -278,9 +300,9 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
     assertThatInt([tableController rowCount], is(equalToInt(2)));
@@ -294,6 +316,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -313,6 +336,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController setEmptyItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Empty";
@@ -332,6 +356,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController setEmptyItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Empty";
@@ -351,6 +376,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -374,6 +400,7 @@
     [self bootstrapEmptyStoreAndCache];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -397,6 +424,7 @@
     [self bootstrapStoreAndCache];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -438,9 +466,9 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController loadTable];
@@ -453,9 +481,9 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
 
@@ -467,9 +495,9 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController loadTable];
@@ -482,9 +510,9 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
 
@@ -505,29 +533,45 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
     assertThatBool(blake == [tableController objectForRowAtIndexPath:indexPath], is(equalToBool(YES)));
     [tableController release];
 }
 
 #pragma mark - Editing
 
+- (id)fetchObjectWithEntityForName:(NSString *)entityName withAttribute:(NSString *)attribute equalTo:(id)value
+{
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:entityName];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"%K = %@", attribute, value];
+    fetchRequest.fetchLimit = 1;
+
+    NSError *error;
+    NSArray *results = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if ([results count] == 1) {
+        return [results objectAtIndex:0];
+    }
+
+    return nil;
+}
+
 - (void)testFireADeleteRequestWhenTheCanEditRowsPropertyIsSet
 {
     [self bootstrapStoreAndCache];
     [self stubObjectManagerToOnline];
-    [[RKObjectManager sharedManager].router routeClass:[RKHuman class]
-                                        toResourcePath:@"/humans/:railsID"
-                                             forMethod:RKRequestMethodDELETE];
+    [[RKObjectManager sharedManager].router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class]
+                                                                  resourcePathPattern:@"/humans/:railsID"
+                                                                               method:RKRequestMethodDELETE]];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.canEditRows = YES;
     RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
@@ -537,8 +581,9 @@
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
     NSIndexPath *deleteIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     assertThat([tableController objectForRowAtIndexPath:indexPath], is(equalTo(other)));
@@ -565,17 +610,17 @@
 
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.canEditRows = YES;
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     NSIndexPath *deleteIndexPath = [NSIndexPath indexPathForRow:1 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
     blake.railsID = nil;
     other.railsID = nil;
 
@@ -603,15 +648,15 @@
 
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanEdit = [tableController tableView:tableController.tableView
@@ -636,13 +681,14 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.canEditRows = YES;
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanEdit = [tableController tableView:tableController.tableView
@@ -662,16 +708,16 @@
     [self bootstrapStoreAndCache];
     UITableView *tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
-    RKFetchedResultsTableController *tableController =
-    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
-                                                viewController:viewController];
+    RKFetchedResultsTableController *tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                                                                   viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.canMoveRows = YES;
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanMove = [tableController tableView:tableController.tableView
@@ -696,6 +742,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
     assertThatBool([tableController isHeaderSection:0], is(equalToBool(YES)));
@@ -711,6 +758,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -732,6 +780,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Footer";
@@ -753,6 +802,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
@@ -775,6 +825,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Footer";
@@ -788,6 +839,104 @@
     assertThatBool([tableController isFooterRow:2], is(equalToBool(YES)));
 }
 
+- (void)testIsFooterRowIsAccurateWhenThereIsAFooterRowWithoutAHeaderRowInASingleSection
+{
+    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
+    [self bootstrapStoreAndCache];
+    UITableView *tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController *tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/empty.json";
+    [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Footer";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    tableController.showsFooterRowsWhenEmpty = YES;
+    tableController.predicate = [NSPredicate predicateWithValue:NO];
+    [tableController loadTable];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(YES)));
+}
+
+- (void)testIsFooterRowIsAccurateWhenThereIsAHeaderAndAFooterRowInASingleSection
+{
+    [self bootstrapStoreAndCache];
+    UITableView *tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController *tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/empty.json";
+    [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Header";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Footer";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    tableController.showsFooterRowsWhenEmpty = YES;
+    tableController.predicate = [NSPredicate predicateWithValue:NO];
+    [tableController loadTable];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(NO)));
+    indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(YES)));
+}
+
+- (void)testIsFooterRowIsAccurateWhenThereIsAreContentRowsAndAHeaderAndAFooterRowInASingleSection
+{    
+    [self bootstrapStoreAndCache];
+    UITableView *tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController *tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/all.json";
+    [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Header";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
+        tableItem.text = @"Footer";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    [tableController loadTable];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    assertThatBool([tableController isHeaderIndexPath:indexPath], is(equalToBool(YES)));
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(NO)));
+    
+    // Check the content rows -- there are 2 of them in the JSON
+    indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
+    assertThatBool([tableController isHeaderIndexPath:indexPath], is(equalToBool(NO)));
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(NO)));
+    indexPath = [NSIndexPath indexPathForRow:2 inSection:0];
+    assertThatBool([tableController isHeaderIndexPath:indexPath], is(equalToBool(NO)));
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(NO)));
+    
+    indexPath = [NSIndexPath indexPathForRow:3 inSection:0];
+    assertThatBool([tableController isHeaderIndexPath:indexPath], is(equalToBool(NO)));
+    assertThatBool([tableController isFooterIndexPath:indexPath], is(equalToBool(YES)));
+}
+
 - (void)testDetermineIfASectionIndexIsAnEmptySection
 {
     [self bootstrapEmptyStoreAndCache];
@@ -796,6 +945,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
     assertThatBool([tableController isEmptySection:0], is(equalToBool(YES)));
@@ -811,6 +961,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
     assertThatBool([tableController isEmptyRow:0], is(equalToBool(YES)));
@@ -826,6 +977,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -850,6 +1002,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Footer";
@@ -874,6 +1027,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController setEmptyItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Empty";
@@ -898,6 +1052,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -920,6 +1075,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Footer";
@@ -941,6 +1097,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
@@ -964,6 +1121,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController setEmptyItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Empty";
@@ -986,6 +1144,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -1014,6 +1173,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
@@ -1044,6 +1204,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -1079,6 +1240,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
@@ -1114,6 +1276,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -1141,6 +1304,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     RKTableItem *headerRow = [RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -1153,8 +1317,8 @@
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
 
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(3)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(headerRow)));
@@ -1171,6 +1335,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     RKTableItem *footerRow = [RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Footer";
@@ -1183,8 +1348,8 @@
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
 
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(3)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(blake)));
@@ -1201,6 +1366,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -1225,6 +1391,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Footer";
@@ -1249,6 +1416,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -1285,6 +1453,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
 
     RKTableItem *headerRow = [RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
@@ -1314,8 +1483,8 @@
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
 
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(4)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(headerRow)));
@@ -1333,6 +1502,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -1369,6 +1539,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem *tableItem) {
         tableItem.text = @"Header";
@@ -1411,6 +1582,7 @@
     UIImage *image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
 
     tableController.imageForEmpty = image;
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/empty/array";
     tableController.autoRefreshFromNetwork = YES;
     [tableController.cache invalidateAll];
@@ -1432,6 +1604,7 @@
     RKFetchedResultsTableController *tableController =
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/NakedEvents.json";
     [tableController setObjectMappingForClass:[RKEvent class]];
 
@@ -1453,6 +1626,7 @@
     RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
     [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.cacheName = @"allHumansCache";
 
@@ -1476,6 +1650,7 @@
     RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
     [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.cacheName = @"allHumansCache";
 
@@ -1496,6 +1671,7 @@
     RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
     [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.cacheName = @"allHumansCache";
 
@@ -1516,6 +1692,7 @@
     RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
     [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.cacheName = @"allHumansCache";
 
@@ -1526,6 +1703,212 @@
     [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:viewController];
     [tableController loadTable];
     [mockDelegate verify];
+}
+
+- (void)testRetrievalOfManagedObjectIndexPath
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/all.json";
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(4)));
+
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+    NSArray *objects = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
+    RKHuman *human = [objects objectAtIndex:0];
+    NSIndexPath *indexPath = [tableController indexPathForObject:human];
+    assertThatInteger(indexPath.section, is(equalToInteger(0)));
+    assertThatInteger(indexPath.row, is(equalToInteger(1)));
+}
+
+- (void)testRetrievalOfHeaderItemIndexPath
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/all.json";
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(4)));
+    NSIndexPath *indexPath = [tableController indexPathForObject:headerItem];
+    assertThatInteger(indexPath.section, is(equalToInteger(0)));
+    assertThatInteger(indexPath.row, is(equalToInteger(0)));
+}
+
+- (void)testRetrievalOfFooterItemIndexPath
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/all.json";
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(4)));
+    NSIndexPath *indexPath = [tableController indexPathForObject:footerItem];
+    assertThatInteger(indexPath.section, is(equalToInteger(0)));
+    assertThatInteger(indexPath.row, is(equalToInteger(3)));
+}
+
+- (void)testRetrievalOfEmptyItemReturnsNilIndexPathWhenNotEmpty
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/all.json";
+
+    RKTableItem *emptyItem = [RKTableItem tableItemWithText:@"Empty!"];
+    emptyItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [emptyItem.cellMapping addDefaultMappings];
+    tableController.emptyItem = emptyItem;
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(4)));
+    NSIndexPath *indexPath = [tableController indexPathForObject:emptyItem];
+    assertThat(indexPath, is(nilValue()));
+}
+
+- (void)testRetrievalOfEmptyItemReturnsIndexPathWhenEmpty
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [[RKFetchedResultsTableController tableControllerForTableViewController:tableViewController] retain];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.managedObjectContext = self.managedObjectContext;
+    tableController.resourcePath = @"/JSON/humans/empty.json";
+    tableController.showsFooterRowsWhenEmpty = NO;
+    tableController.showsHeaderRowsWhenEmpty = NO;
+
+    RKTableItem *emptyItem = [RKTableItem tableItemWithText:@"Empty!"];
+    emptyItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [emptyItem.cellMapping addDefaultMappings];
+    tableController.emptyItem = emptyItem;
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(1)));
+    NSIndexPath *indexPath = [tableController indexPathForObject:emptyItem];
+    assertThatInteger(indexPath.section, is(equalToInteger(0)));
+    assertThatInteger(indexPath.row, is(equalToInteger(0)));
 }
 
 @end

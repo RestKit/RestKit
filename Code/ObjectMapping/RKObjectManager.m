@@ -31,7 +31,7 @@ NSString * const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnline
 // Shared Instances
 
 static RKObjectManager  *sharedManager = nil;
-static dispatch_queue_t defaultMappingQueue = nil;
+static NSOperationQueue *defaultMappingQueue = nil;
 
 ///////////////////////////////////
 
@@ -42,31 +42,32 @@ static dispatch_queue_t defaultMappingQueue = nil;
 @implementation RKObjectManager
 
 @synthesize client = _client;
-@synthesize objectStore = _objectStore;
-@synthesize router = _router;
+@synthesize managedObjectStore = _managedObjectStore;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize networkStatus = _networkStatus;
 @synthesize mappingQueue = _mappingQueue;
 
-+ (dispatch_queue_t)defaultMappingQueue
++ (NSOperationQueue *)defaultMappingQueue
 {
     if (! defaultMappingQueue) {
-        defaultMappingQueue = dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL);
+        defaultMappingQueue = [NSOperationQueue new];
+        defaultMappingQueue.name = @"org.restkit.ObjectMapping";
+        defaultMappingQueue.maxConcurrentOperationCount = 1;
     }
 
     return defaultMappingQueue;
 }
 
-+ (void)setDefaultMappingQueue:(dispatch_queue_t)newDefaultMappingQueue
++ (void)setDefaultMappingQueue:(NSOperationQueue *)newDefaultMappingQueue
 {
     if (defaultMappingQueue) {
-        dispatch_release(defaultMappingQueue);
+        [defaultMappingQueue release];
         defaultMappingQueue = nil;
     }
 
     if (newDefaultMappingQueue) {
-        dispatch_retain(newDefaultMappingQueue);
+        [newDefaultMappingQueue retain];
         defaultMappingQueue = newDefaultMappingQueue;
     }
 }
@@ -76,7 +77,6 @@ static dispatch_queue_t defaultMappingQueue = nil;
     self = [super init];
     if (self) {
         _mappingProvider = [RKObjectMappingProvider new];
-        _router = [RKObjectRouter new];
         _networkStatus = RKObjectManagerNetworkStatusUnknown;
 
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
@@ -126,7 +126,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
-    RKObjectManager *manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];
+    RKObjectManager *manager = [[[self alloc] initWithBaseURL:[RKURL URLWithBaseURL:baseURL]] autorelease];
     return manager;
 }
 
@@ -134,16 +134,11 @@ static dispatch_queue_t defaultMappingQueue = nil;
 {
     [self removeObserver:self forKeyPath:@"client.reachabilityObserver"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    [_router release];
-    _router = nil;
-    self.client = nil;
-    [_objectStore release];
-    _objectStore = nil;
+    
+    [_client release];
+    [_managedObjectStore release];
     [_serializationMIMEType release];
-    _serializationMIMEType = nil;
     [_mappingProvider release];
-    _mappingProvider = nil;
 
     [super dealloc];
 }
@@ -208,7 +203,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 - (void)setAcceptMIMEType:(NSString *)MIMEType
 {
-    [_client setValue:MIMEType forHTTPHeaderField:@"Accept"];
+    [self.client setValue:MIMEType forHTTPHeaderField:@"Accept"];
 }
 
 - (NSString *)acceptMIMEType
@@ -222,7 +217,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
 - (Class)objectLoaderClass
 {
     Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
-    if (self.objectStore && managedObjectLoaderClass) {
+    if (self.managedObjectStore && managedObjectLoaderClass) {
         return managedObjectLoaderClass;
     }
 
@@ -240,7 +235,10 @@ static dispatch_queue_t defaultMappingQueue = nil;
     RKObjectLoader *loader = [[self objectLoaderClass] loaderWithURL:URL mappingProvider:self.mappingProvider];
     loader.configurationDelegate = self;
     if ([loader isKindOfClass:[RKManagedObjectLoader class]]) {
-        [(RKManagedObjectLoader *)loader setObjectStore:self.objectStore];
+        RKManagedObjectLoader *managedObjectLoader = (RKManagedObjectLoader *)loader;
+        managedObjectLoader.managedObjectContext = self.managedObjectStore.primaryManagedObjectContext;
+        managedObjectLoader.mainQueueManagedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
+        managedObjectLoader.managedObjectCache = self.managedObjectStore.managedObjectCache;
     }
     [self configureObjectLoader:loader];
 
@@ -263,14 +261,14 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method
 {
-    NSString *resourcePath = (method == RKRequestMethodInvalid) ? nil : [self.router resourcePathForObject:object method:method];
-    RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
+    RKURL *URL = [self.router URLForObject:object method:method];
+    RKObjectLoader *loader = [self loaderWithURL:URL];
     loader.method = method;
     loader.sourceObject = object;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
 
-    RKObjectMappingDefinition *objectMapping = resourcePath ? [self.mappingProvider objectMappingForResourcePath:resourcePath] : nil;
+    RKMapping *objectMapping = URL.resourcePath ? [self.mappingProvider objectMappingForResourcePath:URL.resourcePath] : nil;
     if (objectMapping == nil || ([objectMapping isKindOfClass:[RKObjectMapping class]] && [object isMemberOfClass:[(RKObjectMapping *)objectMapping objectClass]])) {
         loader.targetObject = object;
     } else {
@@ -347,11 +345,11 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 - (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader *))block
 {
-    NSString *resourcePath = [self.router resourcePathForObject:object method:method];
-    [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
-        loader.method = method;
-        block(loader);
-    }];
+    RKObjectLoader *loader = [self loaderForObject:object method:method];
+    // Yield to the block for setup
+    block(loader);
+
+    [loader send];
 }
 
 - (void)getObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block
@@ -372,6 +370,13 @@ static dispatch_queue_t defaultMappingQueue = nil;
 - (void)deleteObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block
 {
     [self sendObject:object method:RKRequestMethodDELETE usingBlock:block];
+}
+
+- (void)loadRelationship:(NSString *)relationshipName ofObject:(id)object usingBlock:(void(^)(RKObjectLoader *))block
+{
+    // TODO: Try to pull the path/url off of the object (relationshipResourcePath | relationshipURL)
+    RKURL *URL = [self.router URLForRelationship:relationshipName ofObject:object method:RKRequestMethodGET];
+    [self loadObjectsAtResourcePath:URL.resourcePath usingBlock:block];
 }
 
 #endif // NS_BLOCKS_AVAILABLE
@@ -420,17 +425,14 @@ static dispatch_queue_t defaultMappingQueue = nil;
     return self.client.requestQueue;
 }
 
-- (void)setMappingQueue:(dispatch_queue_t)newMappingQueue
+- (RKRouter *)router
 {
-    if (_mappingQueue) {
-        dispatch_release(_mappingQueue);
-        _mappingQueue = nil;
-    }
+    return self.client.router;
+}
 
-    if (newMappingQueue) {
-        dispatch_retain(newMappingQueue);
-        _mappingQueue = newMappingQueue;
-    }
+- (void)setRouter:(RKRouter *)router
+{
+    self.client.router = router;
 }
 
 #pragma mark - RKConfigrationDelegate
@@ -481,6 +483,16 @@ static dispatch_queue_t defaultMappingQueue = nil;
     loader.objectMapping = objectMapping;
 
     [loader send];
+}
+
+- (RKManagedObjectStore *)objectStore
+{
+    return self.managedObjectStore;
+}
+
+- (void)setObjectStore:(RKManagedObjectStore *)objectStore
+{
+    self.managedObjectStore = objectStore;
 }
 
 @end

@@ -59,6 +59,14 @@
 + (RKTestNotificationObserver *)notificationObserverForName:(NSString *)notificationName;
 
 /**
+ Adds the receiver as an observer for the notification name and object under test.
+
+ If the observer has not already been added when waitForNotification
+ is invoked, it will be added before the runloop cycling begins.
+ */
+- (void)addObserver;
+
+/**
  Wait for a notification matching the name and source object we are observing to be posted.
 
  This method will block by spinning the runloop waiting for an appropriate notification matching

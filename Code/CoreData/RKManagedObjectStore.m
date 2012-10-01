@@ -19,11 +19,10 @@
 //
 
 #import "RKManagedObjectStore.h"
-#import "NSManagedObject+ActiveRecord.h"
 #import "RKLog.h"
 #import "RKSearchWordObserver.h"
-#import "RKObjectPropertyInspector.h"
-#import "RKObjectPropertyInspector+CoreData.h"
+#import "RKPropertyInspector.h"
+#import "RKPropertyInspector+CoreData.h"
 #import "RKAlert.h"
 #import "RKDirectory.h"
 #import "RKInMemoryManagedObjectCache.h"
@@ -36,18 +35,16 @@
 #define RKLogComponent lcl_cRestKitCoreData
 
 NSString * const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
-static NSString * const RKManagedObjectStoreThreadDictionaryContextKey = @"RKManagedObjectStoreThreadDictionaryContextKey";
-static NSString * const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RKManagedObjectStoreThreadDictionaryEntityCacheKey";
 
-static RKManagedObjectStore *defaultObjectStore = nil;
+static RKManagedObjectStore *defaultStore = nil;
 
 @interface RKManagedObjectStore ()
 @property (nonatomic, retain, readwrite) NSManagedObjectContext *primaryManagedObjectContext;
+@property (nonatomic, retain, readwrite) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
 - (void)createPersistentStoreCoordinator;
 - (void)createStoreIfNecessaryUsingSeedDatabase:(NSString *)seedDatabase;
-- (NSManagedObjectContext *)newManagedObjectContext;
 @end
 
 @implementation RKManagedObjectStore
@@ -58,20 +55,19 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 @synthesize cacheStrategy = _cacheStrategy;
-@synthesize primaryManagedObjectContext;
+@synthesize primaryManagedObjectContext = _primaryManagedObjectContext;
+@synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
 
-+ (RKManagedObjectStore *)defaultObjectStore
++ (RKManagedObjectStore *)defaultStore
 {
-    return defaultObjectStore;
+    return defaultStore;
 }
 
-+ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore
++ (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore
 {
-    [objectStore retain];
-    [defaultObjectStore release];
-    defaultObjectStore = objectStore;
-
-    [NSManagedObjectContext setDefaultContext:objectStore.primaryManagedObjectContext];
+    [managedObjectStore retain];
+    [defaultStore release];
+    defaultStore = managedObjectStore;
 }
 
 + (void)deleteStoreAtPath:(NSString *)path
@@ -145,71 +141,25 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         }
 
         [self createPersistentStoreCoordinator];
-        self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
+        [self createManagedObjectContexts];
 
-        _cacheStrategy = [RKInMemoryManagedObjectCache new];
+        _cacheStrategy = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.primaryManagedObjectContext];
 
         // Ensure there is a search word observer
         [RKSearchWordObserver sharedObserver];
 
         // Hydrate the defaultObjectStore
-        if (! defaultObjectStore) {
-            [RKManagedObjectStore setDefaultObjectStore:self];
+        if (! defaultStore) {
+            [RKManagedObjectStore setDefaultStore:self];
         }
     }
 
     return self;
 }
 
-- (void)setThreadLocalObject:(id)value forKey:(id)key
-{
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSString *objectStoreKey = [NSString stringWithFormat:@"RKManagedObjectStore_%p", self];
-    if (! [threadDictionary valueForKey:objectStoreKey]) {
-        [threadDictionary setValue:[NSMutableDictionary dictionary] forKey:objectStoreKey];
-    }
-
-    [[threadDictionary objectForKey:objectStoreKey] setObject:value forKey:key];
-}
-
-- (id)threadLocalObjectForKey:(id)key
-{
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSString *objectStoreKey = [NSString stringWithFormat:@"RKManagedObjectStore_%p", self];
-    if (! [threadDictionary valueForKey:objectStoreKey]) {
-        [threadDictionary setObject:[NSMutableDictionary dictionary] forKey:objectStoreKey];
-    }
-
-    return [[threadDictionary objectForKey:objectStoreKey] objectForKey:key];
-}
-
-- (void)removeThreadLocalObjectForKey:(id)key
-{
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSString *objectStoreKey = [NSString stringWithFormat:@"RKManagedObjectStore_%p", self];
-    if (! [threadDictionary valueForKey:objectStoreKey]) {
-        [threadDictionary setObject:[NSMutableDictionary dictionary] forKey:objectStoreKey];
-    }
-
-    [[threadDictionary objectForKey:objectStoreKey] removeObjectForKey:key];
-}
-
-- (void)clearThreadLocalStorage
-{
-    // Clear out our Thread local information
-    NSManagedObjectContext *managedObjectContext = [self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
-    if (managedObjectContext) {
-        [self removeThreadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
-    }
-    if ([self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey]) {
-        [self removeThreadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey];
-    }
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self clearThreadLocalStorage];
 
     [_storeFilename release];
     _storeFilename = nil;
@@ -222,87 +172,85 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     _persistentStoreCoordinator = nil;
     [_cacheStrategy release];
     _cacheStrategy = nil;
-    [primaryManagedObjectContext release];
-    primaryManagedObjectContext = nil;
+    [_primaryManagedObjectContext release];
+    _primaryManagedObjectContext = nil;
 
     [super dealloc];
 }
 
-/**
- Performs the save action for the application, which is to send the save:
- message to the application's managed object context.
- */
 - (BOOL)save:(NSError **)error
 {
-    NSManagedObjectContext *moc = [self managedObjectContextForCurrentThread];
-    NSError *localError = nil;
-
-    @try {
-        if (![moc save:&localError]) {
-            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
-                [self.delegate managedObjectStore:self didFailToSaveContext:moc error:localError exception:nil];
-            }
-
-            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:localError forKey:@"error"];
-            [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
-
-            if ([[localError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
-                NSDictionary *userInfo = [localError userInfo];
-                NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
-                if (errors) {
-                    for (NSError *detailedError in errors) {
-                        NSDictionary *subUserInfo = [detailedError userInfo];
+    __block NSError *localError = nil;
+    __block BOOL success;
+    
+    [self.primaryManagedObjectContext performBlockAndWait:^{
+        @try {
+            success = [self.primaryManagedObjectContext save:&localError];
+            if (!success) {
+                if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
+                    [self.delegate managedObjectStore:self didFailToSaveContext:self.primaryManagedObjectContext error:localError exception:nil];
+                }
+                
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:localError forKey:@"error"];
+                [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
+                
+                if ([[localError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+                    NSDictionary *userInfo = [localError userInfo];
+                    NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
+                    if (errors) {
+                        for (NSError *detailedError in errors) {
+                            NSDictionary *subUserInfo = [detailedError userInfo];
+                            RKLogError(@"Core Data Save Error\n \
+                                       NSLocalizedDescription:\t\t%@\n \
+                                       NSValidationErrorKey:\t\t\t%@\n \
+                                       NSValidationErrorPredicate:\t%@\n \
+                                       NSValidationErrorObject:\n%@\n",
+                                       [subUserInfo valueForKey:@"NSLocalizedDescription"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorKey"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorObject"]);
+                        }
+                    }
+                    else {
                         RKLogError(@"Core Data Save Error\n \
-                              NSLocalizedDescription:\t\t%@\n \
-                              NSValidationErrorKey:\t\t\t%@\n \
-                              NSValidationErrorPredicate:\t%@\n \
-                              NSValidationErrorObject:\n%@\n",
-                              [subUserInfo valueForKey:@"NSLocalizedDescription"],
-                              [subUserInfo valueForKey:@"NSValidationErrorKey"],
-                              [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
-                              [subUserInfo valueForKey:@"NSValidationErrorObject"]);
+                                   NSLocalizedDescription:\t\t%@\n \
+                                   NSValidationErrorKey:\t\t\t%@\n \
+                                   NSValidationErrorPredicate:\t%@\n \
+                                   NSValidationErrorObject:\n%@\n",
+                                   [userInfo valueForKey:@"NSLocalizedDescription"],
+                                   [userInfo valueForKey:@"NSValidationErrorKey"],
+                                   [userInfo valueForKey:@"NSValidationErrorPredicate"],
+                                   [userInfo valueForKey:@"NSValidationErrorObject"]);
                     }
                 }
-                else {
-                    RKLogError(@"Core Data Save Error\n \
-                               NSLocalizedDescription:\t\t%@\n \
-                               NSValidationErrorKey:\t\t\t%@\n \
-                               NSValidationErrorPredicate:\t%@\n \
-                               NSValidationErrorObject:\n%@\n",
-                               [userInfo valueForKey:@"NSLocalizedDescription"],
-                               [userInfo valueForKey:@"NSValidationErrorKey"],
-                               [userInfo valueForKey:@"NSValidationErrorPredicate"],
-                               [userInfo valueForKey:@"NSValidationErrorObject"]);
+                
+                if (error) {
+                    *error = localError;
                 }
             }
-
-            if (error) {
-                *error = localError;
+        }
+        @catch (NSException *e) {
+            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
+                [self.delegate managedObjectStore:self didFailToSaveContext:self.primaryManagedObjectContext error:nil exception:e];
             }
+            else {
+                @throw;
+            }
+        }
+    }];
 
-            return NO;
-        }
-    }
-    @catch (NSException *e) {
-        if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
-            [self.delegate managedObjectStore:self didFailToSaveContext:moc error:nil exception:e];
-        }
-        else {
-            @throw;
-        }
-    }
-
-    return YES;
+    return success;
 }
 
-- (NSManagedObjectContext *)newManagedObjectContext
+- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType
 {
-    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] init];
-    [managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
-    [managedObjectContext setUndoManager:nil];
-    [managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
-    managedObjectContext.managedObjectStore = self;
-
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType];
+    [managedObjectContext performBlockAndWait:^{
+        managedObjectContext.parentContext = self.primaryManagedObjectContext;
+        managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+        managedObjectContext.managedObjectStore = self;
+    }];
+    
     return managedObjectContext;
 }
 
@@ -348,10 +296,31 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     }
 }
 
+- (void)createManagedObjectContexts
+{
+    // Our primary MOC is a private queue concurrency type
+    self.primaryManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    self.primaryManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
+    self.primaryManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+    self.primaryManagedObjectContext.managedObjectStore = self;
+    
+    // Create an MOC for use on the main queue
+    self.mainQueueManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType] autorelease];
+    self.mainQueueManagedObjectContext.parentContext = self.primaryManagedObjectContext;
+    self.mainQueueManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+    self.mainQueueManagedObjectContext.managedObjectStore = self;
+    
+    // Merge changes from a primary MOC back into the main queue when complete
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handlePrimaryManagedObjectContextDidSaveNotification:)
+                                                 name:NSManagedObjectContextDidSaveNotification
+                                               object:self.primaryManagedObjectContext];
+}
+
 - (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile
 {
-    NSURL *storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
-    NSError *error = nil;
+    NSURL* storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
+    NSError* error = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
         if (![[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
             if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToDeletePersistentStore:error:)]) {
@@ -371,11 +340,9 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     if (seedFile) {
         [self createStoreIfNecessaryUsingSeedDatabase:seedFile];
     }
-
+    
     [self createPersistentStoreCoordinator];
-
-    // Recreate the MOC
-    self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
+    [self createManagedObjectContexts];
 }
 
 - (void)deletePersistentStore
@@ -383,55 +350,40 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     [self deletePersistentStoreUsingSeedDatabaseName:nil];
 }
 
-- (NSManagedObjectContext *)managedObjectContextForCurrentThread
+- (void)handlePrimaryManagedObjectContextDidSaveNotification:(NSNotification *)notification
 {
-    if ([NSThread isMainThread]) {
-        return self.primaryManagedObjectContext;
-    }
-
-    // Background threads leverage thread-local storage
-    NSManagedObjectContext *managedObjectContext = [self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
-    if (!managedObjectContext) {
-        managedObjectContext = [self newManagedObjectContext];
-
-        // Store into thread local storage dictionary
-        [self setThreadLocalObject:managedObjectContext forKey:RKManagedObjectStoreThreadDictionaryContextKey];
-        [managedObjectContext release];
-
-        // If we are a background Thread MOC, we need to inform the main thread on save
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(mergeChanges:)
-                                                     name:NSManagedObjectContextDidSaveNotification
-                                                   object:managedObjectContext];
-    }
-
-    return managedObjectContext;
+    RKLogDebug(@"primaryManagedObjectContext was saved: merging changes to mainQueueManagedObjectContext");
+    RKLogTrace(@"Merging changes detailed in userInfo dictionary: %@", [notification userInfo]);
+    NSAssert([notification object] == self.primaryManagedObjectContext, @"Received Managed Object Context Did Save Notification for Unexpected Context: %@", [notification object]);
+    [self.mainQueueManagedObjectContext performBlock:^{
+        [self.mainQueueManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+    }];
 }
 
-- (void)mergeChangesOnMainThreadWithNotification:(NSNotification *)notification
+@end
+
+@implementation RKManagedObjectStore (Deprecations)
+
++ (RKManagedObjectStore *)defaultObjectStore DEPRECATED_ATTRIBUTE
 {
-    assert([NSThread isMainThread]);
-    [self.primaryManagedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
-                                                withObject:notification
-                                             waitUntilDone:YES];
+    return [RKManagedObjectStore defaultStore];
 }
 
-- (void)mergeChanges:(NSNotification *)notification
++ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
 {
-    // Merge changes into the main context on the main thread
-    [self performSelectorOnMainThread:@selector(mergeChangesOnMainThreadWithNotification:) withObject:notification waitUntilDone:YES];
+    [RKManagedObjectStore setDefaultStore:objectStore];
 }
 
 #pragma mark -
 #pragma mark Helpers
 
-- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID
+- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID DEPRECATED_ATTRIBUTE
 {
     NSAssert(objectID, @"Cannot fetch a managedObject with a nil objectID");
     return [[self managedObjectContextForCurrentThread] objectWithID:objectID];
 }
 
-- (NSArray *)objectsWithIDs:(NSArray *)objectIDs
+- (NSArray *)objectsWithIDs:(NSArray *)objectIDs DEPRECATED_ATTRIBUTE
 {
     NSMutableArray *objects = [[NSMutableArray alloc] init];
     for (NSManagedObjectID *objectID in objectIDs) {

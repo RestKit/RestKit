@@ -8,12 +8,27 @@
 
 #import "NSManagedObject+RKAdditions.h"
 #import "NSManagedObjectContext+RKAdditions.h"
+#import "RKLog.h"
+#import "RKManagedObjectStore.h"
+#import "NSEntityDescription+RKAdditions.h"
 
 @implementation NSManagedObject (RKAdditions)
 
 - (RKManagedObjectStore *)managedObjectStore
 {
     return self.managedObjectContext.managedObjectStore;
+}
+
+- (BOOL)hasBeenDeleted
+{
+    NSManagedObject *managedObjectClone = [[self managedObjectContext] existingObjectWithID:[self objectID] error:nil];
+    return (managedObjectClone == nil) ? YES : NO;
+}
+
+- (BOOL)isNew
+{
+    NSDictionary *vals = [self committedValuesForKeys:nil];
+    return [vals count] == 0;
 }
 
 @end

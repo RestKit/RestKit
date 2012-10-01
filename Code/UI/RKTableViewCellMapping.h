@@ -20,17 +20,7 @@
 
 #import <UIKit/UIKit.h>
 #import "RKObjectMapping.h"
-
-/** @name Cell Mapping Block Callbacks **/
-
-typedef void(^RKTableViewCellForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
-typedef CGFloat(^RKTableViewHeightOfCellForObjectAtIndexPathBlock)(id object, NSIndexPath *indexPath);
-typedef void(^RKTableViewAccessoryButtonTappedForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
-typedef NSString *(^RKTableViewTitleForDeleteButtonForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
-typedef UITableViewCellEditingStyle(^RKTableViewEditingStyleForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
-typedef NSIndexPath *(^RKTableViewTargetIndexPathForMoveBlock)(UITableViewCell *cell, id object, NSIndexPath *sourceIndexPath, NSIndexPath *destIndexPath);
-typedef void(^RKTableViewAnonymousBlock)();
-typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
+#import "RKTableCellBlockTypes.h"
 
 /**
  Defines a RestKit object mapping suitable for mapping generic
@@ -46,10 +36,7 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 
  @see RKTableController
  */
-@interface RKTableViewCellMapping : RKObjectMapping {
-@protected
-    NSMutableArray *_prepareCellBlocks;
-}
+@interface RKTableViewCellMapping : RKObjectMapping
 
 /**
  The UITableViewCell subclass that this mapping will target. This
@@ -141,7 +128,7 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
  is invoked with a reference to both the UITableViewCell that was touched and the
  object the cell is representing.
  */
-@property (nonatomic, copy) RKTableViewCellForObjectAtIndexPathBlock onSelectCellForObjectAtIndexPath;
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onSelectCellForObjectAtIndexPath;
 
 /**
  Invoked when the user has touched a cell configured with this mapping. The block is invoked
@@ -150,7 +137,7 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 
  @see onSelectCellForObjectAtIndexPath
  */
-@property (nonatomic, copy) RKTableViewAnonymousBlock onSelectCell;
+@property (nonatomic, copy) RKTableVoidBlock onSelectCell;
 
 /**
  A block to invoke when a table view cell created with this mapping is going to appear in the table.
@@ -159,37 +146,38 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 
  This is a good moment to perform any customization to the cell before it becomes visible in the table view.
  */
-@property (nonatomic, copy) RKTableViewCellForObjectAtIndexPathBlock onCellWillAppearForObjectAtIndexPath;
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onCellWillAppearForObjectAtIndexPath;
 
 /**
  A block to invoke when the table view is measuring the height of the UITableViewCell.
  The block will be invoked with the UITableViewCell, an id reference to the mapped object being
  represented in the cell, and the NSIndexPath for the row position the cell will be appearing at.
  */
-@property (nonatomic, copy) RKTableViewHeightOfCellForObjectAtIndexPathBlock heightOfCellForObjectAtIndexPath;
+@property (nonatomic, copy) RKTableHeightOfCellForObjectAtIndexPathBlock heightOfCellForObjectAtIndexPath;
 
 /**
  A block to invoke when the accessory button for a given cell is tapped by the user.
  The block will be invoked with the UITableViewCell, an id reference to the mapped object being
  represented in the cell, and the NSIndexPath for the row position the cell will be appearing at.
  */
-@property (nonatomic, copy) RKTableViewAccessoryButtonTappedForObjectAtIndexPathBlock onTapAccessoryButtonForObjectAtIndexPath;
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onTapAccessoryButtonForObjectAtIndexPath;
 
 /**
  A block to invoke when the table view is determining the title for the delete confirmation button.
  The block will be invoked with the UITableViewCell, an id reference to the mapped object being
  represented in the cell, and the NSIndexPath for the row position the cell will be appearing at.
  */
-@property (nonatomic, copy) RKTableViewTitleForDeleteButtonForObjectAtIndexPathBlock titleForDeleteButtonForObjectAtIndexPath;
+@property (nonatomic, copy) RKTableStringForObjectAtIndexPathBlock titleForDeleteButtonForObjectAtIndexPath;
 
 /**
  A block to invoke when the table view is determining the editing style for a given row.
  The block will be invoked with the UITableViewCell, an id reference to the mapped object being
  represented in the cell, and the NSIndexPath for the row position the cell will be appearing at.
  */
-@property (nonatomic, copy) RKTableViewEditingStyleForObjectAtIndexPathBlock editingStyleForObjectAtIndexPath;
+@property (nonatomic, copy) RKTableCellEditingStyleForObjectAtIndexPathBlock editingStyleForObjectAtIndexPath;
 
-@property (nonatomic, copy) RKTableViewTargetIndexPathForMoveBlock targetIndexPathForMove;
+// TODO: Docs...
+@property (nonatomic, copy) RKTableTargetIndexPathForMoveBlock targetIndexPathForMove;
 
 /**
  Returns a new auto-released mapping targeting UITableViewCell
@@ -234,6 +222,7 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
  The block will be invoked each time a cell is either initialized or dequeued for reuse.
  */
 - (void)addPrepareCellBlock:(void (^)(UITableViewCell *cell))block;
+@property (nonatomic, readonly) NSArray *prepareCellBlocks;
 
 /** @name Configuring Control Actions */
 // TODO: Docs!!!

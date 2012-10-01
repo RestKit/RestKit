@@ -1,5 +1,5 @@
 //
-//  RKObjectPropertyInspector+CoreData.m
+//  RKPropertyInspector+CoreData.m
 //  RestKit
 //
 //  Created by Blake Watters on 8/14/11.
@@ -19,19 +19,19 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKObjectPropertyInspector+CoreData.h"
+#import "RKPropertyInspector+CoreData.h"
 #import "RKLog.h"
 #import "RKFixCategoryBug.h"
 #import <objc/message.h>
 
 
-RK_FIX_CATEGORY_BUG(RKObjectPropertyInspector_CoreData)
+RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
 
-@implementation RKObjectPropertyInspector (CoreData)
+@implementation RKPropertyInspector (CoreData)
 
 - (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription *)entity
 {
@@ -57,7 +57,7 @@ RK_FIX_CATEGORY_BUG(RKObjectPropertyInspector_CoreData)
             // See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
             objc_property_t prop = class_getProperty(managedObjectClass, propertyName);
             NSString *attributeString = [NSString stringWithCString:property_getAttributes(prop) encoding:NSUTF8StringEncoding];
-            const char *destinationClassName = [[RKObjectPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
+            const char *destinationClassName = [[RKPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
             Class destinationClass = objc_getClass(destinationClassName);
             if (destinationClass) {
                 [propertyNamesAndTypes setObject:destinationClass forKey:name];

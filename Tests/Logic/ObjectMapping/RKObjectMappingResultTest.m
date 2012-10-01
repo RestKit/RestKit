@@ -19,7 +19,7 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKObjectMappingResult.h"
+#import "RKMappingResult.h"
 
 @interface RKObjectMappingResultTest : RKTestCase
 
@@ -30,7 +30,7 @@
 - (void)testShouldNotCrashWhenAsObjectIsInvokedOnAnEmptyResult
 {
     NSException *exception = nil;
-    RKObjectMappingResult *result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
+    RKMappingResult *result = [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     @try {
         [result asObject];
     }
@@ -44,14 +44,14 @@
 
 - (void)testShouldReturnNilForAnEmptyCollectionCoercedToAsObject
 {
-    RKObjectMappingResult *result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
+    RKMappingResult *result = [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     assertThat([result asObject], is(equalTo(nil)));
 }
 
 - (void)testShouldReturnTheFirstObjectInTheCollectionWhenCoercedToAsObject
 {
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"one", @"one", @"two", @"two", nil];
-    RKObjectMappingResult *result = [RKObjectMappingResult mappingResultWithDictionary:dictionary];
+    RKMappingResult *result = [RKMappingResult mappingResultWithDictionary:dictionary];
     assertThat([result asObject], is(equalTo(@"one")));
 }
 

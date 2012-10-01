@@ -1,6 +1,6 @@
 //
 //  RKTestFactory.h
-//  RKGithub
+//  RestKit
 //
 //  Created by Blake Watters on 2/16/12.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
@@ -227,7 +227,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  Clears the contents of the cache directory by removing the directory and
  recreating it.
 
- @see [RKDirectory cachesDirectory]
+ @see RKCachesDirectory()
  */
 + (void)clearCacheDirectory;
 

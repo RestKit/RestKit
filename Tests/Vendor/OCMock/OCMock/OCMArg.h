@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMArg : NSObject
+@interface OCMArg : NSObject 
 
 // constraining arguments
 
