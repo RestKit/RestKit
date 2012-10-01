@@ -72,7 +72,7 @@
  flexibility in cases where a single entity is the target of many mappings with differing
  primary key definitions.
 
- If the primaryKeyAttribute is set on an RKManagedObjectMapping that targets an entity with a
+ If the `primaryKeyAttribute` is set on an `RKEntityMapping` that targets an entity with a
  nil primaryKeyAttribute, then the primaryKeyAttribute will be set on the entity as well for
  convenience and backwards compatibility. This may change in the future.
 

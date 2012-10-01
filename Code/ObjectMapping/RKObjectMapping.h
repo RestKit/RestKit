@@ -221,9 +221,9 @@
 /**
  Returns the default value to be assigned to the specified attribute when it is missing from a mappable payload.
 
- The default implementation returns nil for transient object mappings. On managed object mappings, the default value returned from the Entity definition will be used.
+ The default implementation returns nil for transient object mappings. On an entity mapping, the default value returned from the Entity definition will be used.
 
- @see `[RKManagedObjectMapping defaultValueForMissingAttribute:]`
+ @see `[RKEntityMapping defaultValueForMissingAttribute:]`
  */
 - (id)defaultValueForMissingAttribute:(NSString *)attributeName;
 
