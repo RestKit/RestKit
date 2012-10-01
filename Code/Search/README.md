@@ -54,6 +54,12 @@ Searching an indexed entity is performed via a standard Core Data fetch request 
 
 ```
 
+### Using an Indexing Context
+
+For applications loading payloads containing a large number of searchable entities, it may become desirable to make use of a dedicated managed object context for the purposes of search indexing. When observing the persistent store context for changes, the indexer awaits the posting of a `NSManagedObjectContextWillSave` notification and performs indexing before the save is complete. Because of the nature of parent/child managed object contexts in Core Data, this can introduce blockage of any managed object contexts with the `NSMainQueueConcurrencyType` that are children of the persistent store context. 
+
+To avoid this, a dedicated `indexingContext` can be assigned to the search indexer. When an indexing context is provided, the indexing is performed in response to a `NSManagedObjectContextDidSave` notification on the indexing context. It is recommended that the indexing context have a direct connection to the persistent store coordinator and that its changes are merged back into the persistent store and main queue managed object contexts via observation of the `NSManagedObjectContextDidSave`.
+
 ## Sample Code and Help
 
 An example project is provided in the Examples subdirectory of the RestKit distribution.
