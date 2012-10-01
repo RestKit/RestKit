@@ -31,6 +31,11 @@
 
 NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttributes";
 
+@interface RKSearchIndexer ()
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
+@property (nonatomic, assign) NSUInteger totalIndexingOperationCount;
+@end
+
 @implementation RKSearchIndexer
 
 + (void)addSearchIndexingToEntity:(NSEntityDescription *)entity onAttributes:(NSArray *)attributes
@@ -93,7 +98,19 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     // Connect the relationships as inverses
     [relationship setInverseRelationship:inverseRelationship];
     [inverseRelationship setInverseRelationship:relationship];
+}
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        // Setup serial operation queue to enable cancellation of indexing
+        self.operationQueue = [NSOperationQueue new];
+        self.operationQueue.maxConcurrentOperationCount = 1;
+        [self.operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:NULL];
+    }
+    
+    return self;
 }
 
 - (void)startObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
@@ -116,12 +133,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 - (void)stopObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSParameterAssert(managedObjectContext);
-
-    if (self.indexingContext) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:managedObjectContext];
-    } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:managedObjectContext];
-    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:nil object:managedObjectContext];
 }
 
 - (NSUInteger)indexManagedObject:(NSManagedObject *)managedObject
@@ -183,41 +195,94 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     }
 }
 
+/**
+ NOTE: Does **NOT** use the indexing context as unsaved objects would not be available for indexing in that context
+ */
 - (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                                waitUntilFinished:(BOOL)wait
 {
-    NSArray *candidateObjects = [[[NSSet setWithSet:managedObjectContext.insertedObjects] setByAddingObjectsFromSet:managedObjectContext.updatedObjects] allObjects];
-    NSArray *objectsToIndex = [self objectsToIndexFromObjects:candidateObjects checkChangedValues:YES];
-    for (NSManagedObject *managedObject in objectsToIndex) {
-        [self indexManagedObject:managedObject];
+    NSParameterAssert(managedObjectContext);
+    
+    NSSet *candidateObjects = [[NSSet setWithSet:managedObjectContext.insertedObjects] setByAddingObjectsFromSet:managedObjectContext.updatedObjects];
+    NSSet *objectsToIndex = [self objectsToIndexFromCandidateObjects:candidateObjects checkChangedValues:YES];
+    
+    if (wait) {
+        // Synchronous indexing
+        for (NSManagedObject *managedObject in objectsToIndex) {
+            [self indexManagedObject:managedObject];
+        }
+    } else {
+        // Perform asynchronous indexing
+        for (NSManagedObject *managedObject in objectsToIndex) {
+            [self.operationQueue addOperationWithBlock:^{
+                [self indexManagedObject:managedObject];
+            }];
+        }
+        self.totalIndexingOperationCount = [self.operationQueue operationCount];
     }
 }
 
 - (void)indexChangedObjectsFromManagedObjectContextDidSaveNotification:(NSNotification *)notification
 {
+    if (! self.indexingContext) {
+        RKLogWarning(@"Received `NSManagedObjectContextDidSaveNotification` with nil indexing context: ignoring...");
+        return;
+    }
+    
     NSDictionary *userInfo = [notification userInfo];
-    NSArray *candidateObjects = [[[NSSet setWithSet:[userInfo objectForKey:NSInsertedObjectsKey]] setByAddingObjectsFromSet:[userInfo objectForKey:NSUpdatedObjectsKey]] allObjects];
-    NSArray *objectsToIndex = [self objectsToIndexFromObjects:candidateObjects checkChangedValues:NO];
+    NSSet *candidateObjects = [[NSSet setWithSet:[userInfo objectForKey:NSInsertedObjectsKey]] setByAddingObjectsFromSet:[userInfo objectForKey:NSUpdatedObjectsKey]];
+    NSSet *objectsToIndex = [self objectsToIndexFromCandidateObjects:candidateObjects checkChangedValues:NO];
 
-    NSArray *objectIDsForObjectsToIndex = [objectsToIndex valueForKey:@"objectID"];
-    [self.indexingContext performBlock:^{
-        [self.indexingContext reset];
-        NSUInteger indexedObjects = 0;
-        for (NSManagedObjectID *managedObjectID in objectIDsForObjectsToIndex) {
+    // After all indexing is complete, save the indexing context
+    NSBlockOperation *saveOperation = [NSBlockOperation blockOperationWithBlock:^{
+        [self.indexingContext performBlockAndWait:^{
             NSError *error = nil;
-            NSManagedObject *managedObject = [self.indexingContext existingObjectWithID:managedObjectID error:&error];
-            if (managedObject && error == nil) {
-                [self indexManagedObject:managedObject];
-                indexedObjects++;
-            } else {
-                RKLogError(@"Skipping indexing of object (%@) with ID (%@) and error (%@)", managedObject, managedObjectID, error);
+            RKLogInfo(@"Indexing completed. Saving indexing context...");
+            BOOL success = [self.indexingContext saveToPersistentStore:&error];
+            if (! success) {
+                RKLogError(@"Failed to save indexing context: %@", error);
             }
-        }
-        RKLogTrace(@"Completed indexing of %d changed objects", indexedObjects);
-        NSAssert(objectsToIndex.count == indexedObjects, @"Expected indexing to index all candidate objects");
-
-        NSError *error = nil;
-        [self.indexingContext saveToPersistentStore:&error];
+        }];
     }];
+    
+    NSMutableSet *failedObjectIDs = [NSMutableSet set];
+    
+    // Enqueue an operation for each object to index
+    NSArray *objectIDsForObjectsToIndex = [objectsToIndex valueForKey:@"objectID"];
+    for (NSManagedObjectID *objectID in objectIDsForObjectsToIndex) {
+        NSBlockOperation *indexingOperation = [NSBlockOperation blockOperationWithBlock:^{
+            [self.indexingContext performBlockAndWait:^{
+                NSError *error = nil;
+                NSManagedObject *managedObject = [self.indexingContext existingObjectWithID:objectID error:&error];
+                if (managedObject && error == nil) {
+                    [self indexManagedObject:managedObject];
+                } else {
+                    RKLogError(@"Failed indexing of object %@ with error: %@", managedObject, error);
+                }
+            }];
+        }];
+        
+        [saveOperation addDependency:indexingOperation];
+        [self.operationQueue addOperation:indexingOperation];
+    }
+    
+    // Assert that we indexed everything sucessfully
+    [self.operationQueue addOperationWithBlock:^{
+        NSAssert([failedObjectIDs count] == 0, @"Expected no indexing failures, got %ld", (long) [failedObjectIDs count]);
+    }];
+    
+    [self.operationQueue addOperation:saveOperation];
+    self.totalIndexingOperationCount = [self.operationQueue operationCount];
+}
+
+- (void)cancelAllIndexingOperations
+{
+    [self.operationQueue cancelAllOperations];
+}
+
+- (void)waitUntilAllIndexingOperationsAreFinished
+{
+    [self.operationQueue waitUntilAllOperationsAreFinished];
 }
 
 #pragma mark - Private
@@ -227,7 +292,8 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     NSManagedObjectContext *managedObjectContext = [notification object];
     RKLogInfo(@"Managed object context will save notification received. Checking changed and inserted objects for searchable entities...");
 
-    [self indexChangedObjectsInManagedObjectContext:managedObjectContext];
+    // We wait until finished to ensure that the indexed objects are persisted with the save
+    [self indexChangedObjectsInManagedObjectContext:managedObjectContext waitUntilFinished:YES];
 }
 
 - (void)handleManagedObjectContextDidSaveNotification:(NSNotification *)notification
@@ -236,16 +302,13 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     [self indexChangedObjectsFromManagedObjectContextDidSaveNotification:notification];
 }
 
-- (NSArray *)objectsToIndexFromObjects:(NSArray *)objects checkChangedValues:(BOOL)checkChangedValues
+- (NSSet *)objectsToIndexFromCandidateObjects:(NSSet *)objects checkChangedValues:(BOOL)checkChangedValues
 {
     NSUInteger totalObjects = [objects count];
-    NSMutableArray *objectsNeedingIndexing = [[NSMutableArray alloc] initWithCapacity:totalObjects];
-    RKLogInfo(@"Indexing %ld changed objects@", (unsigned long) totalObjects);
+    NSMutableSet *objectsNeedingIndexing = [[NSMutableSet alloc] initWithCapacity:totalObjects];
+    RKLogInfo(@"Indexing %ld changed objects", (unsigned long) totalObjects);
 
-    for (NSManagedObject *managedObject in objects) {
-        NSUInteger index = [objects indexOfObject:managedObject];
-        double percentage = (((float)index + 1) / (float)totalObjects) * 100;
-        if ((index + 1) % 250 == 0) RKLogInfo(@"Indexed %ld of %ld (%.2f%% complete)", (unsigned long) index + 1, (unsigned long) totalObjects, percentage);
+    for (NSManagedObject *managedObject in objects) {        
         NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
         if (! searchableAttributes) {
             RKLogTrace(@"Skipping indexing for managed object for entity '%@': no searchable attributes found.", managedObject.entity.name);
@@ -261,6 +324,19 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
         }
     }
     return objectsNeedingIndexing;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"operationCount"]) {
+        NSUInteger index = self.totalIndexingOperationCount - self.operationQueue.operationCount;
+        double percentage = (((float)index) / (float)self.totalIndexingOperationCount) * 100;
+        if (index % 250 == 0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) index, (unsigned long) self.totalIndexingOperationCount, percentage);
+        if (self.operationQueue.operationCount == 0) {
+            if (self.totalIndexingOperationCount >= 250) RKLogInfo(@"Finished indexing.");
+            self.totalIndexingOperationCount = 0;
+        }
+    }
 }
 
 @end

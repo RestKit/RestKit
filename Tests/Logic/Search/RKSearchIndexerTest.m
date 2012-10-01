@@ -10,6 +10,10 @@
 #import "RKSearchIndexer.h"
 #import "RKSearchWordEntity.h"
 
+@interface RKSearchIndexer ()
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
+@end
+
 @interface RKSearchIndexerTest : RKTestCase
 
 @end
@@ -280,7 +284,7 @@
     [human setValue:@"This is my name" forKey:@"name"];
     
     // Index the current changes
-    [indexer indexChangedObjectsInManagedObjectContext:managedObjectContext];
+    [indexer indexChangedObjectsInManagedObjectContext:managedObjectContext waitUntilFinished:YES];
     
     NSSet *searchWords = [human valueForKey:RKSearchWordsRelationshipName];
     assertThat([searchWords valueForKey:@"word"],
@@ -315,12 +319,51 @@
     [human setValue:@"This is my name" forKey:@"name"];
 
     // Index the current changes
-    [indexer indexChangedObjectsInManagedObjectContext:managedObjectContext];
+    [indexer indexChangedObjectsInManagedObjectContext:managedObjectContext waitUntilFinished:YES];
 
     NSSet *searchWords = [human valueForKey:RKSearchWordsRelationshipName];
     assertThat([searchWords valueForKey:@"word"],
                is(equalTo([NSSet setWithArray:@[ @"this", @"my", @"name" ]])));
+}
 
+- (void)testCancellationOfIndexingInAnIndexingContext
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
+    
+    NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+    NSError *error;
+    [persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.persistentStoreCoordinator = persistentStoreCoordinator;
+    
+    NSManagedObjectContext *indexingContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    [indexingContext setPersistentStoreCoordinator:persistentStoreCoordinator];
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:indexingContext queue:nil usingBlock:^(NSNotification *notification) {
+        [managedObjectContext performBlock:^{
+            [managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+        }];
+    }];
+    
+    RKSearchIndexer *indexer = [RKSearchIndexer new];
+    [indexer.operationQueue setSuspended:YES];
+    indexer.stopWords = [NSSet setWithObject:@"is"];
+    indexer.indexingContext = indexingContext;
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext];
+    [human setValue:@"This is my name" forKey:@"name"];
+    
+    // Index the current changes
+    [indexer indexChangedObjectsInManagedObjectContext:managedObjectContext waitUntilFinished:NO];
+    
+    assertThat([indexer.operationQueue operations], hasCountOf(1));
+    NSArray *operations = indexer.operationQueue.operations;
+    assertThatBool([operations[0] isCancelled], is(equalToBool(NO)));
+    [indexer cancelAllIndexingOperations];
+    assertThatBool([operations[0] isCancelled], is(equalToBool(YES)));
+    
+    NSSet *searchWords = [human valueForKey:RKSearchWordsRelationshipName];
+    assertThat([searchWords valueForKey:@"word"], is(empty()));
 }
 
 @end
