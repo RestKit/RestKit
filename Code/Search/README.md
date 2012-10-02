@@ -75,7 +75,7 @@ Search is implemented using the Apple recommended pattern of maintaining a relat
 The `RKSearchIndexer` class does all of the heavy lifting with regards to maintaining the searchable content. The indexer can invoked in three ways to update the indexes:
 
 1. Manually via `- (void)indexManagedObject:(NSManagedObject *)`. This method tells the indexer to update the given object.
-2. For an entire context on demand via `- (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext`. This methods tells the indexer to update the `searchWords` of all managed objects in the given context that have been changed since the last save.
+2. For an entire context on demand via `- (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext waitUntilFinished:(BOOL)wait`. This methods tells the indexer to update the `searchWords` of all managed objects in the given context that have been changed since the last save. The `wait` parameter determines whether indexing will be performed synchronously or asynchronously.
 3. Automatically at managed object context save time via `- (void)startObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;`. This methods tells the indexer to watch the given context for the `NSManagedObjectContextWillSaveNotification` and to update all changed objects when the context changes.
 
 ### Stop Words
