@@ -100,7 +100,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 - (id)parseResponseData:(NSError **)error
 {
     NSString *MIMEType = [self.response MIMEType];
-    NSError *underlyingError;
+    NSError *underlyingError = nil;
     id object = [RKMIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
     if (! object) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
