@@ -83,7 +83,7 @@
         }];
 
         if (! success) {
-            *error = localError;
+            if (error) *error = localError;
             return NO;
         }
 

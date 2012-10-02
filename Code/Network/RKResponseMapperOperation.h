@@ -108,9 +108,9 @@
 /**
  A Boolean value that indicates if the receiver should consider empty responses as being successfully mapped even though no mapping is actually performed.
 
- When YES and the response data is empty (see below), a mapping result will be returned containing the target object (if any). Otherwise, the response data will be pass through to the parser which may generate an error.
+ When `YES` and the response data is empty (see below), a mapping result will be returned containing the target object (if any). Otherwise, the response data will be pass through to the parser which may generate an error.
 
- **Default:** YES
+ **Default:** `YES`
 
  @warning To support the Ruby on Rails behavior of rendering a single space character on invocation of `render :nothing => true`, a response body's containing only a single space is treated as empty.
  */

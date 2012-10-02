@@ -222,11 +222,11 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
             NSString *description = [NSString stringWithFormat:@"mapped to unexpected %@ value '%@'", [event.value class], event.value];
             NSString *reason = [NSString stringWithFormat:@"expected to %@, but instead got %@ '%@'",
                                      expectation, [event.value class], event.value];
-            *error = [self errorForExpectation:expectation
-                                      withCode:RKMappingTestEvaluationBlockError
-                                      userInfo:userInfo
-                                   description:description
-                                        reason:reason];
+            if (error) *error = [self errorForExpectation:expectation
+                                                 withCode:RKMappingTestEvaluationBlockError
+                                                 userInfo:userInfo
+                                              description:description
+                                                   reason:reason];
         }
     } else if (expectation.mapping) {
         if ([event.propertyMapping isKindOfClass:[RKRelationshipMapping class]]) {
@@ -238,21 +238,21 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                 NSString *description = [NSString stringWithFormat:@"mapped using unexpected mapping: %@", relationshipMapping];
                 NSString *reason = [NSString stringWithFormat:@"expected to %@, but was instead mapped using: %@",
                                          expectation, relationshipMapping];
-                *error = [self errorForExpectation:expectation
-                                          withCode:RKMappingTestEvaluationBlockError
-                                          userInfo:userInfo
-                                       description:description
-                                            reason:reason];
+                if (error) *error = [self errorForExpectation:expectation
+                                                     withCode:RKMappingTestEvaluationBlockError
+                                                     userInfo:userInfo
+                                                  description:description
+                                                       reason:reason];
             }
         } else {
             NSString *description = [NSString stringWithFormat:@"expected a property mapping of type `RKRelationshipMapping` but instead got a `%@`", [expectation.mapping class]];
             NSString *reason = [NSString stringWithFormat:@"expected to %@, but instead of a `RKRelationshipMapping` got a `%@`",
                                      expectation, [expectation.mapping class]];
-            *error = [self errorForExpectation:expectation
-                                      withCode:RKMappingTestEvaluationBlockError
-                                      userInfo:userInfo
-                                   description:description
-                                        reason:reason];
+            if (error) *error = [self errorForExpectation:expectation
+                                                 withCode:RKMappingTestEvaluationBlockError
+                                                 userInfo:userInfo
+                                              description:description
+                                                   reason:reason];
 
             // Error message here that a relationship was not mapped!!!
             return NO;

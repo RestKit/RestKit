@@ -168,7 +168,7 @@
             }];
 
             if (_blockObjects == nil) {
-                *error = _blockError;
+                if (error) *error = _blockError;
                 return nil;
             }
             RKLogTrace(@"Fetched local objects matching URL '%@' with fetch request '%@': %@", URL, fetchRequest, _blockObjects);
@@ -221,7 +221,7 @@
             }];
         }
         if (! success) {
-            *error = localError;
+            if (error) *error = localError;
             RKLogError(@"Failed saving managed object context %@ %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  self.privateContext);
             RKLogCoreDataError(localError);
         }
@@ -240,7 +240,7 @@
         [self.privateContext performBlockAndWait:^{
             _blockSuccess = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:&localError];
         }];
-        if (!_blockSuccess) *error = localError;
+        if (!_blockSuccess && error) *error = localError;
     }
 
     return _blockSuccess;;
