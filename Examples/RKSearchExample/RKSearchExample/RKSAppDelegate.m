@@ -47,7 +47,7 @@
     NSAssert(count != NSNotFound, @"Failed to import contacts at path '%@': %@", pathToDataFile, error);
     
     // Index the imported objects
-    [managedObjectStore.searchIndexer indexChangedObjectsInManagedObjectContext:importer.managedObjectContext];
+    [managedObjectStore.searchIndexer indexChangedObjectsInManagedObjectContext:importer.managedObjectContext waitUntilFinished:YES];
     BOOL success = [importer finishImporting:&error];
     NSAssert(success, @"Failed to finish import operation: %@", error);
     
