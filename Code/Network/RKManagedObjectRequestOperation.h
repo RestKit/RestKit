@@ -141,7 +141,7 @@
 
  Please see the above discussion of 'Deleting Managed Objects for `DELETE` requests' for more details.
 
- **Default**: NO
+ **Default**: `NO`
  */
 @property (nonatomic, assign) BOOL deletesOrphanedObjects;
 
@@ -149,6 +149,8 @@
  A Boolean value that determines if the operation saves the mapping results to the persistent store upon successful completion. If the network transport or mapping portions of the operation fail the operation then this option has no effect.
  
  When `YES`, the receiver will invoke `saveToPersistentStore:` on its private managed object context to persist the mapping results all the way back to the persistent store coordinator. If `NO`, the private mapping context will be saved causing the mapped objects to be 'pushed' to the parent context as represented by the `managedObjectContext` property.
+ 
+ **Default**: `YES`
  */
 @property (nonatomic, assign) BOOL savesToPersistentStore;
 

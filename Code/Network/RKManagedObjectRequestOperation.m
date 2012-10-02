@@ -44,6 +44,15 @@
 
 @dynamic requestOperation;
 
+- (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
+{
+    self = [super initWithRequest:request responseDescriptors:responseDescriptors];
+    if (self) {
+        self.savesToPersistentStore = YES;
+    }
+    return self;
+}
+
 - (void)setTargetObject:(id)targetObject
 {
     [super setTargetObject:targetObject];
