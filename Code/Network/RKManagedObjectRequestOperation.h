@@ -95,7 +95,7 @@
 
  ## Managed Object Context Save Behaviors
 
- TBD
+ The results of the operation can either be 'pushed' to the parent context or saved to the persistent store. Configuration is available via the `savesToPersistentStore` property. If an error is encountered while saving the managed object context, then the operation is considered to have failed and the `error` property will be set to the `NSError` object returned by the failed save.
 
  @see `RKObjectRequestOperation`
  @see `RKEntityMapping`
@@ -137,8 +137,7 @@
 ///------------------------------------
 
 /**
- A Boolean value that determines if the receiver will delete orphaned objects upon
- completion of the operation.
+ A Boolean value that determines if the receiver will delete orphaned objects upon completion of the operation.
 
  Please see the above discussion of 'Deleting Managed Objects for `DELETE` requests' for more details.
 
@@ -146,8 +145,12 @@
  */
 @property (nonatomic, assign) BOOL deletesOrphanedObjects;
 
-// TODO: May want BOOL autosavesContext | autosavesToPersistentStore
-// TODO: May want BOOL cleanupOrphanedObject option
+/**
+ A Boolean value that determines if the operation saves the mapping results to the persistent store upon successful completion. If the network transport or mapping portions of the operation fail the operation then this option has no effect.
+ 
+ When `YES`, the receiver will invoke `saveToPersistentStore:` on its private managed object context to persist the mapping results all the way back to the persistent store coordinator. If `NO`, the private mapping context will be saved causing the mapped objects to be 'pushed' to the parent context as represented by the `managedObjectContext` property.
+ */
+@property (nonatomic, assign) BOOL savesToPersistentStore;
 
 @end
 

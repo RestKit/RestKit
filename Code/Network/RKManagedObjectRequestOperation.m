@@ -197,9 +197,9 @@
 {
     BOOL success = YES;
     if ([self.privateContext hasChanges]) {
-        success = [self.privateContext saveToPersistentStore:error];
+        success = (self.savesToPersistentStore) ? [self.privateContext saveToPersistentStore:error] : [self.privateContext save:error];
         if (! success) {
-            RKLogError(@"Failed saving managed object context %@ to persistent store: ", self.privateContext);
+            RKLogError(@"Failed saving managed object context %@ %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  self.privateContext);
             RKLogCoreDataError(*error);
         }
     }
