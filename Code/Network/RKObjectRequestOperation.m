@@ -189,7 +189,10 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     NSError *error;
     RKMappingResult *mappingResult = [self performMappingOnResponse:&error];
     if (self.isCancelled) return;
-    if (! mappingResult) {
+
+    // If there is no mapping result but no error, there was no mapping to be performed,
+    // which we do not treat as an error condition
+    if (! mappingResult && error) {
         self.error = error;
         return;
     }

@@ -34,6 +34,7 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 @property (nonatomic, strong) RKObjectManager *objectManager;
 @property (nonatomic, strong) RKRoute *humanGETRoute;
 @property (nonatomic, strong) RKRoute *humanPOSTRoute;
+@property (nonatomic, strong) RKRoute *humanDELETERoute;
 @property (nonatomic, strong) RKRoute *humanCatsRoute;
 @property (nonatomic, strong) RKRoute *humansCollectionRoute;
 
@@ -84,11 +85,13 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 
     self.humanPOSTRoute = [RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans" method:RKRequestMethodPOST];
     self.humanGETRoute = [RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans/:railsID" method:RKRequestMethodGET];
+    self.humanDELETERoute = [RKRoute routeWithClass:[RKHuman class] pathPattern:@"/humans/:railsID" method:RKRequestMethodDELETE];
     self.humanCatsRoute = [RKRoute routeWithRelationshipName:@"cats" objectClass:[RKHuman class] pathPattern:@"/humans/:railsID/cats" method:RKRequestMethodGET];
     self.humansCollectionRoute = [RKRoute routeWithName:@"humans" pathPattern:@"/humans" method:RKRequestMethodGET];
 
     [self.objectManager.router.routeSet addRoute:self.humanPOSTRoute];
     [self.objectManager.router.routeSet addRoute:self.humanGETRoute];
+    [self.objectManager.router.routeSet addRoute:self.humanDELETERoute];
     [self.objectManager.router.routeSet addRoute:self.humanCatsRoute];
     [self.objectManager.router.routeSet addRoute:self.humansCollectionRoute];
 }
@@ -143,6 +146,28 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
     [operation waitUntilFinished];
     
     assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.managedObjectStore.persistentStoreManagedObjectContext)));
+}
+
+- (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDelete
+{
+    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    temporaryHuman.name = @"My Name";
+    temporaryHuman.railsID = @1;
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping addAttributeMappingsFromArray:@[@"name"]];
+
+    // Save it to ensure the object is persisted before we delete it
+    [self.objectManager.managedObjectStore.persistentStoreManagedObjectContext save:nil];
+
+    RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:nil];
+    [operation start];
+    [operation waitUntilFinished];
+
+    NSError *error = nil;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    NSArray *humans = [_objectManager.managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    assertThat(error, is(nilValue()));
+    assertThatInteger(humans.count, is(equalToInteger(0)));
 }
 
 - (void)testCancellationByExactMethodAndPath
