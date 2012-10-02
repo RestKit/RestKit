@@ -105,7 +105,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  There are three types of routes currently supported:
  
- 1. Class Routes. Class routes are configured to target a given object class and HTTP request method. For example, we mightone might route the HTTP `GET` for a `User` class to the path pattern `@"/users/:userID"`.
+ 1. Class Routes. Class routes are configured to target a given object class and HTTP request method. For example, we might route the HTTP `GET` for a `User` class to the path pattern `@"/users/:userID"`.
  1. Relationship Routes. Relationship routes identify the path appropriate for performing a request for an object that is related to another object. For example, each `User` may have many friends. This might be routed as a relationship route for the `User` class with the name `@"friends"` to the path pattern `@"/users/:userID/friends"`.
  1. Named Routes. Names routes bind an arbitrary name to a path. For example, there might be an action to follow another user that could be added as a named route with the name `@"follow_user"` that generates a `POST` to the path pattern `@"/users/:userID/follow"`.
  
