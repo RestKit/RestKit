@@ -43,7 +43,7 @@
 + (RKPathMatcher *)pathMatcherWithPath:(NSString *)pathString;
 
 /**
- Determines if the path string matches the provided pattern, and yields a dictionary with the resulting matched key/value pairs.  Use of this method should be preceded by `matcherWithPath:` Pattern strings should include encoded parameter keys, delimited by a single colon at the beginning of the key name.
+ Determines if the path string matches the provided pattern, and yields a dictionary with the resulting matched key/value pairs.  Use of this method should be preceded by `pathMatcherWithPath:` Pattern strings should include encoded parameter keys, delimited by a single colon at the beginning of the key name.
 
  *NOTE 1 *- Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be separated by at least one unmapped character.  For instance, `/:key1:key2:key3/` is invalid, whereas `/:key1/:key2/:key3/` is acceptable.
 
@@ -77,7 +77,7 @@
 + (RKPathMatcher *)pathMatcherWithPattern:(NSString *)patternString;
 
 /**
- Determines if the given path string matches a pattern, and yields a dictionary with the resulting matched key/value pairs.  Use of this method should be preceded by `matcherWithPattern:`.
+ Determines if the given path string matches a pattern, and yields a dictionary with the resulting matched key/value pairs.  Use of this method should be preceded by `pathMatcherWithPattern:`.
 
  @param pathString The string to evaluate and parse, such as `/districts/tx/upper/?apikey=GC5512354`
  @param shouldTokenize If YES, any query parameters will be tokenized and inserted into the parsed argument dictionary.
@@ -91,11 +91,11 @@
 ///----------------------------------
 
 /**
- Generates a new path by interpolating the properties of the 'object' argument, assuming the existence of a previously specified pattern established via `matcherWithPattern:`.  Otherwise, this method is identical in function to `RKPathFromPatternWithObject` (in fact it is a shortcut for this method).
+ Generates a new path by interpolating the properties of the 'object' argument, assuming the existence of a previously specified pattern established via `pathMatcherWithPattern:`.  Otherwise, this method is identical in function to `RKPathFromPatternWithObject` (in fact it is a shortcut for this method).
 
  For example, given an 'article' object with an 'articleID' property value of 12345 ...
 
-   RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID"];
+   RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/articles/:articleID"];
    NSString *path = [matcher pathFromObject:article];
 
  ... will produce a 'path' containing the string "/articles/12345"
@@ -108,11 +108,11 @@
 - (NSString *)pathFromObject:(id)object DEPRECATED_ATTRIBUTE;
 
 /**
- Generates a path by interpolating the properties of the 'object' argument, assuming the existence of a previously specified pattern established via `matcherWithPattern:`.  Otherwise, this method is identical in function to `RKPathFromPatternWithObject` (in fact it is a shortcut for this method).
+ Generates a path by interpolating the properties of the 'object' argument, assuming the existence of a previously specified pattern established via `pathMatcherWithPattern:`.  Otherwise, this method is identical in function to `RKPathFromPatternWithObject` (in fact it is a shortcut for this method).
 
  For example, given an 'article' object with an 'articleID' property value of 12345 and a code of "This/That"...
 
-     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID/:code"];
+     RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/articles/:articleID/:code"];
      NSString *path = [matcher pathFromObject:article addingEscapes:YES];
 
  ... will produce a 'path' containing the string `@"/articles/12345/This%2FThat"`

@@ -66,7 +66,7 @@
 
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
     [manager addFetchRequestBlock:^NSFetchRequest *(NSURL *URL) {
-        RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:@"/airports/:airport_id/terminals.json"];
+        RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/airports/:airport_id/terminals.json"];
 
         NSDictionary *argsDict = nil;
         BOOL match = [pathMatcher matchesPath:[URL relativePath] tokenizeQueryStrings:NO parsedArguments:&argsDict];
