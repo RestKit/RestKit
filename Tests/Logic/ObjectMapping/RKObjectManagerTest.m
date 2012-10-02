@@ -148,11 +148,33 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
     assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.managedObjectStore.persistentStoreManagedObjectContext)));
 }
 
-- (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDelete
+- (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDeleteReturning200
 {
     RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @1;
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping addAttributeMappingsFromArray:@[@"name"]];
+
+    // Save it to ensure the object is persisted before we delete it
+    [self.objectManager.managedObjectStore.persistentStoreManagedObjectContext save:nil];
+
+    RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:nil];
+    [operation start];
+    [operation waitUntilFinished];
+
+    NSError *error = nil;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    NSArray *humans = [_objectManager.managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    assertThat(error, is(nilValue()));
+    assertThatInteger(humans.count, is(equalToInteger(0)));
+}
+
+- (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDeleteReturning204
+{
+    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    temporaryHuman.name = @"My Name";
+    temporaryHuman.railsID = @204;
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
 

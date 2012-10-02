@@ -84,6 +84,12 @@ class RestKitTestServer < Sinatra::Base
     "{}"
   end
 
+  delete '/humans/204' do
+    status 204
+    content_type 'application/json'
+    "{}"
+  end
+
   post '/echo_params' do
     status 200
     content_type 'application/json'
