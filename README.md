@@ -190,7 +190,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 	NSLog(@"Mapped the article: %@", article);
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	NSLog(@"Failed with error: %@", [error localizedDescription]);
-}];
+}];]
 ```
 
 ### Managed Object Request
@@ -276,6 +276,17 @@ RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithStr
 [manager getObjectsAtPath:@"/articles" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult)) {
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 }];
+```
+
+### Manage a Queue of Object Request Operations
+``` objective-c
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
+
+NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://restkit.org/articles/1234.json"]];
+RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+
+[manager enqueueObjectRequestOperation:operation];
+[manager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodANY matchingPathPattern:@"/articles/:articleID\\.json"];
 ```
 
 ### POST, PATCH, and DELETE an Object
