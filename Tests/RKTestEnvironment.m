@@ -44,6 +44,9 @@
         RKLogError(@"Failed to create caches directory. Unable to run tests: %@", error);
         NSAssert(directoryExists, @"Failed to create caches directory.");
     }
+    
+    // Configure logging from the environment variable. See RKLog.h for details
+    RKLogConfigureFromEnvironment();
 }
 
 @end
