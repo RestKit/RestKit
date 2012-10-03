@@ -113,6 +113,11 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)startObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSParameterAssert(managedObjectContext);
