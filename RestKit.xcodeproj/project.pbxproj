@@ -38,6 +38,10 @@
 		25079C72151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25079C6E151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m */; };
 		25079C76151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */; };
 		25079C77151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */; };
+		2507C327161BD5C700EA71FF /* RKTestHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 2507C325161BD5C700EA71FF /* RKTestHelpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2507C328161BD5C700EA71FF /* RKTestHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 2507C325161BD5C700EA71FF /* RKTestHelpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2507C329161BD5C700EA71FF /* RKTestHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 2507C326161BD5C700EA71FF /* RKTestHelpers.m */; };
+		2507C32A161BD5C700EA71FF /* RKTestHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 2507C326161BD5C700EA71FF /* RKTestHelpers.m */; };
 		250CA67D147D8E8B0047D347 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
 		250CA67E147D8E8F0047D347 /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */; };
 		250CA680147D8F050047D347 /* OCHamcrest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
@@ -645,6 +649,8 @@
 		25079C6D151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSEntityDescription+RKAdditions.h"; sourceTree = "<group>"; };
 		25079C6E151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEntityDescription+RKAdditions.m"; sourceTree = "<group>"; };
 		25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEntityDescription+RKAdditionsTest.m"; sourceTree = "<group>"; };
+		2507C325161BD5C700EA71FF /* RKTestHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestHelpers.h; path = Testing/RKTestHelpers.h; sourceTree = "<group>"; };
+		2507C326161BD5C700EA71FF /* RKTestHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestHelpers.m; path = Testing/RKTestHelpers.m; sourceTree = "<group>"; };
 		250CA67B147D8E800047D347 /* OCHamcrest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrest.framework; sourceTree = "<group>"; };
 		250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrestIOS.framework; sourceTree = "<group>"; };
 		25104F1315C30CD900829135 /* RKSearchWord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchWord.h; sourceTree = "<group>"; };
@@ -1616,6 +1622,8 @@
 				25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */,
 				25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */,
 				25C954A415542A47005C9E08 /* RKTestConstants.m */,
+				2507C325161BD5C700EA71FF /* RKTestHelpers.h */,
+				2507C326161BD5C700EA71FF /* RKTestHelpers.m */,
 			);
 			name = Testing;
 			sourceTree = "<group>";
@@ -1916,6 +1924,7 @@
 				253477F915FFBD2E002C0E4E /* NSBundle+RKAdditions.h in Headers */,
 				25F53F391606269400A093BE /* RKRequestOperationSubclass.h in Headers */,
 				25A226D61618A57500952D72 /* RKObjectUtilities.h in Headers */,
+				2507C327161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2016,6 +2025,7 @@
 				259B96FA1604CCCC0000C250 /* AFNetworking.h in Headers */,
 				25F53F3A1606269400A093BE /* RKRequestOperationSubclass.h in Headers */,
 				25A226D71618A57500952D72 /* RKObjectUtilities.h in Headers */,
+				2507C328161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2344,6 +2354,7 @@
 				259B96F11604CCCC0000C250 /* AFXMLRequestOperation.m in Sources */,
 				259B96F31604CCCC0000C250 /* UIImageView+AFNetworking.m in Sources */,
 				25A226D81618A57500952D72 /* RKObjectUtilities.m in Sources */,
+				2507C329161BD5C700EA71FF /* RKTestHelpers.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2505,6 +2516,7 @@
 				259B96F41604CCCC0000C250 /* UIImageView+AFNetworking.m in Sources */,
 				25E9C8F1161290D500647F84 /* RKObjectParameterization.m in Sources */,
 				25A226D91618A57500952D72 /* RKObjectUtilities.m in Sources */,
+				2507C32A161BD5C700EA71FF /* RKTestHelpers.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

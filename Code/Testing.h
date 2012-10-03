@@ -9,4 +9,5 @@
 #import "RKTestFixture.h"
 #import "RKTestNotificationObserver.h"
 #import "RKTestFactory.h"
+#import "RKTestHelpers.h"
 #import "RKMappingTest.h"
