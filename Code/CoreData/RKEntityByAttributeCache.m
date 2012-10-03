@@ -92,6 +92,9 @@
     if ([attributeValue isKindOfClass:[NSString class]] || [attributeValue isEqual:[NSNull null]]) {
         return NO;
     }
+    
+    if ( [attributeValue respondsToSelector:@selector(stringValue)] )
+        return YES;
 
     Class attributeType = [[RKObjectPropertyInspector sharedInspector] typeForProperty:self.attribute ofEntity:self.entity];
     return [attributeType instancesRespondToSelector:@selector(stringValue)];
