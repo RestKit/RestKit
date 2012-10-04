@@ -25,8 +25,16 @@ extern NSString * const RKDefaultSeedDatabaseFileName;
 
 @protocol RKManagedObjectSeederDelegate
 @required
+// Invoked when the seeder creates a new object from a URL
+- (void)didSeedObject:(NSManagedObject *)object fromURL:(NSURL *)url;
 
-// Invoked when the seeder creates a new object
+/**
+ * Invoked when the seeder creates a new object from a file.
+ *
+ * Note that if you pass a file URL to `seedObjectsFromURL:objectMapping:`, this delegate 
+ * method will still be called.  This is for backwards compatability as well as because it 
+ * is indeed a file.
+ */
 - (void)didSeedObject:(NSManagedObject *)object fromFile:(NSString *)fileName;
 @end
 
@@ -61,18 +69,34 @@ extern NSString * const RKDefaultSeedDatabaseFileName;
 
 /**
  * Seed the database with objects from the specified file(s). The list must be terminated by nil
+ *
+ * The data in the file must be in UTF-8 encoding.
  */
 - (void)seedObjectsFromFiles:(NSString *)fileName, ...;
 
 /**
  * Seed the database with objects from the specified file using the supplied object mapping.
+ *
+ * The data in the file must be in UTF-8 encoding.
  */
 - (void)seedObjectsFromFile:(NSString *)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping;
 
 /**
  * Seed the database with objects from the specified file, from the specified bundle, using the supplied object mapping.
+ *
+ * The data in the file must be in UTF-8 encoding.
  */
 - (void)seedObjectsFromFile:(NSString *)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping bundle:(NSBundle *)nilOrBundle;
+
+/**
+ * Seed the database with objects from the specified URL using the supplied object mapping.
+ *
+ * The data returned at the URL must be in UTF-8 encoding.
+ *
+ * @warning This method uses `stringWithContentsOfURL:encoding:error` on `NSString` to load 
+ * the URL, which is synchronous. This method will block until the network request is complete.
+ */
+- (void)seedObjectsFromURL:(NSURL *)url withObjectMapping:(RKObjectMapping *)nilOrObjectMapping;
 
 /**
  * Completes a seeding session by persisting the store, outputing an informational message
