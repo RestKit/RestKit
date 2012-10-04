@@ -58,7 +58,6 @@ NSDictionary *RKDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncodedS
         } else {
             [queryComponents setObject:value forKey:key];
         }
-        [results addObject:value];
     }
     return queryComponents;
 }

@@ -20,6 +20,8 @@
 
 #import "RKTestEnvironment.h"
 #import "RKURLEncodedSerialization.h"
+#define EXP_SHORTHAND
+#import "Expecta.h"
 
 @interface RKURLEncodedSerializationTest : RKTestCase
 
@@ -94,6 +96,24 @@
     assertThat(queryParameters, isNot(empty()));
     assertThat(queryParameters, hasCountOf(2));
     assertThat(queryParameters, hasEntries(@"keyA", @"valA", @"keyB", @"valB", nil));
+}
+
+- (void)testDictionaryFromURLEncodedStringWithSimpleKeyValues
+{
+    NSString *query = @"this=that&keyA=valueB";
+    NSDictionary *dictionary = RKDictionaryFromURLEncodedStringWithEncoding(query, NSUTF8StringEncoding);
+    expect(@"foo").to.equal(@"foo");
+    NSDictionary *expectedDictionary = @{ @"this": @"that", @"keyA": @"valueB" };
+    expect(dictionary).to.equal(expectedDictionary);
+}
+
+- (void)testDictionaryFromURLEncodedStringWithArrayValues
+{
+    NSString *query = @"this=that&this=theOther";
+    NSDictionary *dictionary = RKDictionaryFromURLEncodedStringWithEncoding(query, NSUTF8StringEncoding);
+    expect(@"foo").to.equal(@"foo");
+    NSDictionary *expectedDictionary = @{ @"this": @[ @"that", @"theOther" ] };
+    expect(dictionary).to.equal(expectedDictionary);
 }
 
 @end
