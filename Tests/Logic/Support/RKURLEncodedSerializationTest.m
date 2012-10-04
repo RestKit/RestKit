@@ -116,4 +116,12 @@
     expect(dictionary).to.equal(expectedDictionary);
 }
 
+- (void)testParsingComplexQueryStringIntoDictionary
+{
+    NSString *query = @"resource_uri=%2Fapi%2Fv1%2Fdevices%2F60%2F&id=60&uuid=8BF7D194-FE8D-46BD-8D07-83F5C73C50B9&pass_token=QazYDHaLeg&apns_token=&organizations%5B%5D=%2Fapi%2Fv1%2Forganizations%2F1%2F&organizations%5B%5D=%2Fapi%2Fv1%2Forganizations%2F2%2F";
+    NSDictionary *dictionary = RKDictionaryFromURLEncodedStringWithEncoding(query, NSUTF8StringEncoding);
+    NSDictionary *expectedDictionary = @{ @"resource_uri": @"/api/v1/devices/60/", @"id": @"60", @"uuid": @"8BF7D194-FE8D-46BD-8D07-83F5C73C50B9", @"apns_token": @"", @"organizations[]": @[ @"/api/v1/organizations/1/", @"/api/v1/organizations/2/" ], @"pass_token": @"QazYDHaLeg"};
+    expect(dictionary).to.equal(expectedDictionary);
+}
+
 @end
