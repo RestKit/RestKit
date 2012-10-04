@@ -76,17 +76,57 @@
  */
 @property (nonatomic, copy, readonly) NSIndexSet *statusCodes;
 
+///---------------------------
+/// @name Setting the Base URL
+///---------------------------
+
+/**
+ The base URL that the `pathPattern` is to be evaluated relative to.
+ 
+ The base URL is set to the base URL of the object manager when a response descriptor is added to an object manager.
+
+ @see `matchesURL:`
+ */
+@property (nonatomic, copy) NSURL *baseURL;
+
 ///---------------------------------
 /// @name Using Response Descriptors
 ///---------------------------------
 
 /**
- Returns `YES` if the receiver's path pattern matches the given path.
+ Returns a Boolean value that indicates if the receiver's path pattern matches the given path.
  
- Path matching is performed using an `RKPathMatcher` object. If the receiver has a nil path pattern or the given path is nil, YES is returned.
+ Path matching is performed using an `RKPathMatcher` object. If the receiver has a `nil` path pattern or the given path is `nil`, `YES` is returned.
  
+ @param path The path to compare with the path pattern of the receiver.
+ @return `YES` if the path matches the receiver's pattern, else `NO`.
  @see `RKPathMatcher`
  */
 - (BOOL)matchesPath:(NSString *)path;
+
+/**
+ Returns a Boolean value that indicates if the given URL object matches the base URL and path pattern of the receiver.
+ 
+ This method considers both the `baseURL` and `pathPattern` of the receiver when evaluating the given URL object. The results evaluate in the following ways:
+ 
+ 1. If the `baseURL` and `pathPattern` of the receiver are both `nil`, then `YES` is returned.
+ 1. If the `baseURL` of the receiver is `nil`, but the path pattern is not, then the entire path and query string of the given URL will be evaluated against the path pattern of the receiver using `matchesPath:`.
+ 1. If the `baseURL` and the `pathPattern` are both non-nil, then the given URL is first checked to verify that it is relative to the base URL using a string prefix comparison. If the absolute string value of the given URL is prefixed with the string value of the base URL, then the URL is considered relative. If the given URL is found not to be relative to the receiver's baseURL, then `NO` is returned. If the URL is found to be relative to the base URL, then the path and query string of the URL are evaluated against the path pattern of the receiver using `matchesPath:`.
+ 
+ @param URL The URL to compare with the base URL and path pattern of the receiver.
+ @return `YES` if the URL matches the base URL and path pattern of the receiver, else `NO`.
+ */
+- (BOOL)matchesURL:(NSURL *)URL;
+
+/**
+ Returns a Boolean value that indicates if the given URL response object matches the receiver.
+ 
+ The match is evaluated by checking if the URL of the response matches the base URL and path pattern of the receiver via the `matchesURL:` method. If the URL is found to match, then the status code of the response is checked for inclusion in the receiver's set of status codes.
+ 
+ @param response The HTTP response object to compare with the base URL, path pattern, and status codes set of the receiver.
+ @return `YES` if the response matches the base URL, path pattern, and status codes set of the receiver, else `NO`.
+ @see `matchesURL:`
+ */
+- (BOOL)matchesResponse:(NSHTTPURLResponse *)response;
 
 @end

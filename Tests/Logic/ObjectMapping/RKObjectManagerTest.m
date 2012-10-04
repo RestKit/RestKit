@@ -26,9 +26,6 @@
 #import "RKCat.h"
 #import "RKObjectMapperTestModel.h"
 
-void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL);
-NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
-
 @interface RKObjectManagerTest : RKTestCase
 
 @property (nonatomic, strong) RKObjectManager *objectManager;
@@ -553,49 +550,5 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
 //    manager.client = client;
 //    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
 //}
-
-- (void)testAssociationAndExtractionOfBaseURL
-{
-    NSURL *baseURL = [NSURL URLWithString:@"http://domain.com/api/v1/"];
-    NSURL *relativeURL = [NSURL URLWithString:@"itemtype" relativeToURL:baseURL];
-    assertThat([relativeURL relativePath], is(equalTo(@"itemtype")));
-    NSURLRequest *request = [NSURLRequest requestWithURL:relativeURL];
-    RKAssociateBaseURLWithURL(baseURL, request.URL);
-    
-    NSURL *associatedBaseURL = RKBaseURLAssociatedWithURL(request.URL);
-    assertThat(associatedBaseURL, is(notNilValue()));
-    NSString *relativePathFromAssociation = [[request.URL absoluteString] substringFromIndex:[[associatedBaseURL absoluteString] length]];
-    assertThat(relativePathFromAssociation, is(equalTo(@"itemtype")));
-}
-
-- (void)testBaseURLandRelativePathRoundTripping
-{
-    NSURL *baseURL = [NSURL URLWithString:@"http://domain.com/api/v1/"];
-    NSURL *relativeURL = [NSURL URLWithString:@"itemtype" relativeToURL:baseURL];
-    assertThat([relativeURL baseURL], is(equalTo(baseURL)));
-    assertThat([relativeURL relativePath], is(equalTo(@"itemtype")));
-    assertThat([relativeURL relativeString], is(equalTo(@"itemtype")));
-    
-    // NSURLRequest clobbers the URL
-    NSURLRequest *request = [NSURLRequest requestWithURL:relativeURL];
-    assertThat([request.URL baseURL], isNot(equalTo(baseURL)));
-    assertThat([request.URL relativePath], isNot(equalTo(@"itemtype")));
-    assertThat([request.URL relativeString], isNot(equalTo(@"itemtype")));
-    
-    // Verify use of associated object support to workaround URL issues. We associate with the request URL after init, which is retained by the NSHTTPURLResponse
-    RKAssociateBaseURLWithURL(baseURL, request.URL);
-    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:request.URL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:nil];
-    assertThat([response.URL baseURL], is(equalTo(nil)));
-    NSURL *associatedBaseURL = RKBaseURLAssociatedWithURL(response.URL);
-    assertThat(associatedBaseURL, is(equalTo(baseURL)));
-    
-    // These are wrong -- we want the relative 'itemtype' path
-    assertThat([response.URL relativePath], is(equalTo(@"/api/v1/itemtype")));
-    assertThat([response.URL relativeString], is(equalTo(@"http://domain.com/api/v1/itemtype")));
-    
-    // Build our own relative path and verify it works
-    NSString *relativePathFromAssociation = [[request.URL absoluteString] substringFromIndex:[[associatedBaseURL absoluteString] length]];
-    assertThat(relativePathFromAssociation, is(equalTo(@"itemtype")));
-}
 
 @end

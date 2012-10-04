@@ -500,6 +500,8 @@
 		25CA7A9114EC5C2D00888FF8 /* RKTestFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB2114D9B35D004863C8 /* RKTestFixture.m */; };
 		25CAAA9415254E7800CAE5D7 /* ArrayOfHumans.json in Resources */ = {isa = PBXBuildFile; fileRef = 25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */; };
 		25CAAA9515254E7800CAE5D7 /* ArrayOfHumans.json in Resources */ = {isa = PBXBuildFile; fileRef = 25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */; };
+		25CC5C59161DDADD0008BD21 /* RKResponseDescriptorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */; };
+		25CC5C5A161DDADD0008BD21 /* RKResponseDescriptorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */; };
 		25DB7508151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */; };
 		25DB7509151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */; };
 		25E36E0215195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */; };
@@ -871,6 +873,7 @@
 		25C954A415542A47005C9E08 /* RKTestConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestConstants.m; path = Testing/RKTestConstants.m; sourceTree = "<group>"; };
 		25CA7A8E14EC570100888FF8 /* RKMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMapping.m; sourceTree = "<group>"; };
 		25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfHumans.json; sourceTree = "<group>"; };
+		25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseDescriptorTest.m; sourceTree = "<group>"; };
 		25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+RKAdditionsTest.m"; sourceTree = "<group>"; };
 		25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchRequestMappingCacheTest.m; sourceTree = "<group>"; };
 		25EC1AD814F8022600C3CF3F /* RestKitFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RestKitFramework-Info.plist"; sourceTree = "<group>"; };
@@ -1400,6 +1403,7 @@
 		2516100B1456F2330060A5C5 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */,
 				252029081577C78600076FB4 /* RKRouteSetTest.m */,
 			);
 			name = Network;
@@ -2250,6 +2254,7 @@
 				25E9C8F01612523400647F84 /* RKObjectParameterizationTest.m in Sources */,
 				25EDFCE3161538F6008BAA1D /* RKObjectManagerTest.m in Sources */,
 				2564E40B16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */,
+				25CC5C59161DDADD0008BD21 /* RKResponseDescriptorTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2389,6 +2394,7 @@
 				5C927E151608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */,
 				25EDFCE5161538F8008BAA1D /* RKObjectManagerTest.m in Sources */,
 				2564E40C16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */,
+				25CC5C5A161DDADD0008BD21 /* RKResponseDescriptorTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

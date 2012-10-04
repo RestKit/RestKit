@@ -29,24 +29,6 @@
 @property (nonatomic, strong, readwrite) RKRouteSet *routeSet;
 @end
 
-static char kRKBaseURLAssociatedObjectKey;
-
-void RKAssociateBaseURLWithURL(NSURL *baseURL, NSURL *URL)
-{
-    NSCAssert(baseURL, @"baseURL cannot be nil");
-    NSCAssert(URL, @"URL cannot be nil");
-    objc_setAssociatedObject(URL,
-                             &kRKBaseURLAssociatedObjectKey,
-                             baseURL,
-                             OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
-{
-    NSCAssert(URL, @"URL cannot be nil");
-    return objc_getAssociatedObject(URL, &kRKBaseURLAssociatedObjectKey);
-}
-
 @implementation RKRouter
 
 - (id)initWithBaseURL:(NSURL *)baseURL
@@ -91,7 +73,6 @@ NSURL *RKBaseURLAssociatedWithURL(NSURL *URL)
 {
     NSParameterAssert(route);
     NSURL *URL = [NSURL URLWithString:[self pathFromRoute:route forObject:object] relativeToURL:self.baseURL];
-    RKAssociateBaseURLWithURL(self.baseURL, URL);
     return URL;
 }
 

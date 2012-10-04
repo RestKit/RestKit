@@ -31,9 +31,6 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
 
-// Defined in RKObjectManager.h
-NSURL *RKBaseURLAssociatedWithURL(NSURL *URL);
-
 NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 {
     NSArray *collection = [mappingResult array];
@@ -57,7 +54,6 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) NSDictionary *responseMappingsDictionary;
-@property (nonatomic, strong) NSString *relativeResponsePath;
 @end
 
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
@@ -78,23 +74,11 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
         self.response = response;
         self.data = data;
         self.responseDescriptors = responseDescriptors;
-        self.relativeResponsePath = [self buildRelativeResponsePath];
         self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
         self.treatsEmptyResponseAsSuccess = YES;
     }
 
     return self;
-}
-
-/**
- NOTE: Because NSURLRequest clobbers the `baseURL` of the NSURL with which it is initialized, we leverage an associated object reference set by `RKObjectManager` (if available). This enables us to accurately path match when the baseURL includes a relative path.
- */
-- (NSString *)buildRelativeResponsePath
-{
-    NSURL *baseURL = RKBaseURLAssociatedWithURL(self.response.URL);
-    NSString *relativePath = baseURL ? [[self.response.URL absoluteString] substringFromIndex:[[baseURL absoluteString] length]] : [self.response.URL relativePath];
-    RKLogTrace(@"Built relative response path '%@' from response.URL <NSURL:%p '%@' (baseURL='%@')>", relativePath, self.response.URL, self.response.URL, baseURL);
-    return relativePath;
 }
 
 - (id)parseResponseData:(NSError **)error
@@ -117,29 +101,11 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     return object;
 }
 
-- (BOOL)responseMatchesResponseDescriptor:(RKResponseDescriptor *)mappingDescriptor
-{
-    if (mappingDescriptor.pathPattern) {
-        RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:mappingDescriptor.pathPattern];
-        if (! [pathMatcher matchesPath:self.relativeResponsePath tokenizeQueryStrings:NO parsedArguments:nil]) {
-            return NO;
-        }
-    }
-
-    if (mappingDescriptor.statusCodes) {
-        if (! [mappingDescriptor.statusCodes containsIndex:self.response.statusCode]) {
-            return NO;
-        }
-    }
-
-    return YES;
-}
-
 - (NSDictionary *)buildResponseMappingsDictionary
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     for (RKResponseDescriptor *responseDescriptor in self.responseDescriptors) {
-        if ([self responseMatchesResponseDescriptor:responseDescriptor]) {
+        if ([responseDescriptor matchesResponse:self.response]) {
             id key = responseDescriptor.keyPath ? responseDescriptor.keyPath : [NSNull null];
             [dictionary setObject:responseDescriptor.mapping forKey:key];
         }

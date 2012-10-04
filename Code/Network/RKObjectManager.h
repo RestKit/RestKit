@@ -203,6 +203,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 @property (nonatomic, strong, readonly) AFHTTPClient *HTTPClient;
 
 /**
+ The base URL of the underlying HTTP client.
+ */
+@property (nonatomic, readonly) NSURL *baseURL;
+
+/**
  The operation queue which manages operations enqueued by the object manager.
  */
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
@@ -650,6 +655,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  Adds a response descriptor to the manager.
  
+ Adding a response descriptor to the manager sets the `baseURL` of the descriptor to the `baseURL` of the manager, causing it to evaluate URL objects relatively.
+
  @param responseDescriptor The response descriptor object to the be added to the manager.
  */
 - (void)addResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;

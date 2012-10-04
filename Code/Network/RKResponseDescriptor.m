@@ -22,7 +22,7 @@
 #import "RKResponseDescriptor.h"
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
-static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
+static NSString *RKStringFromIndexSet(NSIndexSet *indexSet) {
     NSMutableString *string = [NSMutableString string];
 
     NSRange range = NSMakeRange([indexSet firstIndex], 1);
@@ -50,6 +50,23 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
     }
 
     return string;
+}
+
+// Assumes that URL is relative to baseURL
+static NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL)
+{
+    if (baseURL) {
+        NSString *pathAndQuery = [[URL absoluteString] substringFromIndex:[[baseURL absoluteString] length]];
+        return ([pathAndQuery characterAtIndex:0] != '/') ? [NSString stringWithFormat:@"/%@", pathAndQuery] : pathAndQuery;
+    } else {
+        NSString *query = [URL query];
+        return (query && [query length]) ? [NSString stringWithFormat:@"%@?%@", [URL path], query] : [URL path];
+    }
+}
+
+static BOOL RKURLIsRelativeToURL(NSURL *sourceURL, NSURL *baseURL)
+{
+    return [[sourceURL absoluteString] hasPrefix:[baseURL absoluteString]];
 }
 
 @interface RKResponseDescriptor ()
@@ -86,9 +103,32 @@ static NSString * RKStringFromIndexSet(NSIndexSet *indexSet) {
 - (BOOL)matchesPath:(NSString *)path
 {
     if (!self.pathPattern || !path) return YES;
-    
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:self.pathPattern];
     return [pathMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
+}
+
+- (BOOL)matchesURL:(NSURL *)URL
+{
+    NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(URL, self.baseURL);
+    if (self.baseURL) {
+        if (! RKURLIsRelativeToURL(URL, self.baseURL)) return NO;
+        return [self matchesPath:pathAndQueryString];
+    } else {
+        return [self matchesPath:pathAndQueryString];
+    }
+}
+
+- (BOOL)matchesResponse:(NSHTTPURLResponse *)response
+{
+    if (! [self matchesURL:response.URL]) return NO;
+    
+    if (self.statusCodes) {
+        if (! [self.statusCodes containsIndex:response.statusCode]) {
+            return NO;
+        }
+    }
+    
+    return YES;
 }
 
 @end
