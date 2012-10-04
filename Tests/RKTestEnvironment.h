@@ -25,6 +25,9 @@
 #import "OCHamcrest.h"
 #import <SenTestingKit/SenTestingKit.h>
 
+#define EXP_SHORTHAND
+#import "Expecta.h"
+
 #import "RestKit.h"
 #import <RestKit/Testing.h>
 #import <RestKit/RKManagedObjectStore.h>

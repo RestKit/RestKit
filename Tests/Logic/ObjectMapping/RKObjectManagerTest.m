@@ -279,6 +279,15 @@
     assertThatInteger(completionBlockOperationCount, is(equalToInteger(3)));
 }
 
+- (void)testThatObjectParametersAreNotSentDuringGetObject
+{
+    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    temporaryHuman.name = @"My Name";
+    temporaryHuman.railsID = @204;
+    RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:@{@"this": @"that"}];
+    expect([operation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
+}
+
 // TODO: Move to Core Data specific spec file...
 //- (void)testShouldLoadAHuman
 //{

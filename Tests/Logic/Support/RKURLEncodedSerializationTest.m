@@ -20,8 +20,6 @@
 
 #import "RKTestEnvironment.h"
 #import "RKURLEncodedSerialization.h"
-#define EXP_SHORTHAND
-#import "Expecta.h"
 
 @interface RKURLEncodedSerializationTest : RKTestCase
 

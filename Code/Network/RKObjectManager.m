@@ -223,7 +223,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     NSString *stringMethod = RKStringFromRequestMethod(method);
     NSDictionary *requestParameters = nil;
     RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, object);
-    if (requestDescriptor) {
+    if (method != RKRequestMethodGET && requestDescriptor) {
         NSError *error = nil;
         requestParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
         if (parameters) {
