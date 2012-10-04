@@ -118,56 +118,73 @@ NSString * const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 
 - (void)seedObjectsFromFile:(NSString *)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping bundle:(NSBundle *)nilOrBundle
 {
-    NSError *error = nil;
-
     if (nilOrBundle == nil) {
         nilOrBundle = [NSBundle mainBundle];
     }
-
     NSString *filePath = [nilOrBundle pathForResource:fileName ofType:nil];
-    NSString *payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+    NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+    [self seedObjectsFromURL:fileURL withObjectMapping:nilOrObjectMapping];
+}
 
+#pragma mark - URL Method
+
+/**
+ * Seed the database with objects from the specified URL using the supplied object mapping.
+ */
+- (void)seedObjectsFromURL:(NSURL *)url withObjectMapping:(RKObjectMapping *)nilOrObjectMapping
+{
+    NSError *error = NULL;
+    NSString *payload = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
+    
     if (payload) {
-        NSString *MIMEType = [fileName MIMETypeForPathExtension];
-        if (MIMEType == nil) {
-            // Default the MIME type to the value of the Accept header if we couldn't detect it...
-            MIMEType = _manager.acceptMIMEType;
+      NSString *MIMEType = [[url absoluteString] MIMETypeForPathExtension];
+      if (MIMEType == nil) {
+          // Default the MIME type to the value of the Accept header if we couldn't detect it...
+          MIMEType = _manager.acceptMIMEType;
+      }
+      id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
+      NSAssert1(parser, @"Could not find a parser for the MIME Type '%@'", MIMEType);
+      id parsedData = [parser objectFromString:payload error:&error];
+      NSAssert(parsedData, @"Cannot perform object load without data for mapping");
+      
+      RKObjectMappingProvider *mappingProvider = nil;
+      if (nilOrObjectMapping) {
+        mappingProvider = [[RKObjectMappingProvider new] autorelease];
+        [mappingProvider setMapping:nilOrObjectMapping forKeyPath:@""];
+      } else {
+        mappingProvider = _manager.mappingProvider;
+      }
+      
+      RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
+      RKObjectMappingResult *result = [mapper performMapping];
+      if (result == nil) {
+        RKLogError(@"Database seeding from URL '%@' failed due to object mapping errors: %@", url, mapper.errors);
+        return;
+      }
+      
+      NSArray *mappedObjects = [result asCollection];
+      NSAssert1([mappedObjects isKindOfClass:[NSArray class]], @"Expected an NSArray of objects, got %@", mappedObjects);
+      
+      // Inform the delegate
+      if (self.delegate) {
+        for (NSManagedObject *object in mappedObjects) {
+          if (url.isFileURL)
+          {
+            [self.delegate didSeedObject:object fromFile:[url path]];
+          }
+          else
+          {
+            [self.delegate didSeedObject:object fromURL:url];
+          }
         }
-        id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-        NSAssert1(parser, @"Could not find a parser for the MIME Type '%@'", MIMEType);
-        id parsedData = [parser objectFromString:payload error:&error];
-        NSAssert(parsedData, @"Cannot perform object load without data for mapping");
-
-        RKObjectMappingProvider *mappingProvider = nil;
-        if (nilOrObjectMapping) {
-            mappingProvider = [[RKObjectMappingProvider new] autorelease];
-            [mappingProvider setMapping:nilOrObjectMapping forKeyPath:@""];
-        } else {
-            mappingProvider = _manager.mappingProvider;
-        }
-
-        RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
-        RKObjectMappingResult *result = [mapper performMapping];
-        if (result == nil) {
-            RKLogError(@"Database seeding from file '%@' failed due to object mapping errors: %@", fileName, mapper.errors);
-            return;
-        }
-
-        NSArray *mappedObjects = [result asCollection];
-        NSAssert1([mappedObjects isKindOfClass:[NSArray class]], @"Expected an NSArray of objects, got %@", mappedObjects);
-
-        // Inform the delegate
-        if (self.delegate) {
-            for (NSManagedObject *object in mappedObjects) {
-                [self.delegate didSeedObject:object fromFile:fileName];
-            }
-        }
-
-        RKLogInfo(@"Seeded %lu objects from %@...", (unsigned long)[mappedObjects count], [NSString stringWithFormat:@"%@", fileName]);
+      }
+      
+      RKLogInfo(@"Seeded %lu objects from %@...", (unsigned long)[mappedObjects count], [NSString stringWithFormat:@"%@", url]);
     } else {
-        RKLogError(@"Unable to read file %@: %@", fileName, [error localizedDescription]);
+      RKLogError(@"Unable to read URL %@: %@", url, [error localizedDescription]);
     }
 }
+
 
 - (void)finalizeSeedingAndExit
 {
