@@ -22,6 +22,7 @@
 #import "SOCKit.h"
 #import "RKLog.h"
 #import "RKDictionaryUtilities.h"
+#import "RKPathUtilities.h"
 
 static NSString *RKEncodeURLString(NSString *unencodedString);
 extern NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding stringEncoding);
@@ -59,7 +60,6 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     return copy;
 }
 
-
 + (RKPathMatcher *)pathMatcherWithPattern:(NSString *)patternString
 {
     NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform pattern matching.");
@@ -77,11 +77,15 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     return matcher;
 }
 
+// Normalize our root path for matching cleanly with SOCKit
+- (void)setRootPath:(NSString *)rootPath
+{
+    _rootPath = RKPathNormalize(rootPath);
+}
+
 - (BOOL)matches
 {
     NSAssert((self.socPattern != NULL && self.rootPath != NULL), @"Matcher is insufficiently configured.  Before attempting pattern matching, you must provide a path string and a pattern to match it against.");
-    // If the pattern is an exact prefix of the matched string, we evaluate to YES
-    if ([self.rootPath hasPrefix:self.patternString]) return YES;
     return [self.socPattern stringMatches:self.rootPath];
 }
 

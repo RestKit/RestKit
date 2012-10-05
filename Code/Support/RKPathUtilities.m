@@ -119,3 +119,12 @@ NSString *RKMIMETypeFromPathExtension(NSString *path)
     // Consult our internal dictionary of mappings if not found
     return [RKDictionaryOfFileExtensionsToMIMETypes() valueForKey:pathExtension];
 }
+
+NSString *RKPathNormalize(NSString *path)
+{
+    path = [path stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
+    NSUInteger length = [path length];
+    if ([path characterAtIndex:length - 1] == '/') path = [path substringToIndex:length - 1];
+    if ([path characterAtIndex:0] != '/') path = [@"/" stringByAppendingString:path];
+    return path;
+}

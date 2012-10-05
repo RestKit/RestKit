@@ -130,4 +130,22 @@
     expect(matches).to.equal(YES);
 }
 
+- (void)testThatPatternsAreNotMatchedTooAggressively
+{
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/v1/organizations"];
+    BOOL matches = [pathMatcher matchesPath:@"/api/v1/organizations/1234/another?client_search=t" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(NO);
+    
+    pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/:version/organizations"];
+    matches = [pathMatcher matchesPath:@"/api/v1/organizations/1234/another?client_search=t" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(NO);
+    
+    matches = [pathMatcher matchesPath:@"/api/v1/organizations/" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(YES);
+    
+    pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/:version/organizations/:organizationID"];
+    matches = [pathMatcher matchesPath:@"/api/v1/organizations/1234/" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(YES);
+}
+
 @end
