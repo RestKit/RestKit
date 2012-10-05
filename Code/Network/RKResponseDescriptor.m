@@ -69,6 +69,11 @@ static BOOL RKURLIsRelativeToURL(NSURL *sourceURL, NSURL *baseURL)
     return [[sourceURL absoluteString] hasPrefix:[baseURL absoluteString]];
 }
 
+static BOOL RKPathPatternIsNilOrAbsolute(NSString *pathPattern)
+{
+    return pathPattern == nil || [pathPattern characterAtIndex:0] == '/';
+}
+
 @interface RKResponseDescriptor ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, copy, readwrite) NSString *pathPattern;
@@ -84,7 +89,7 @@ static BOOL RKURLIsRelativeToURL(NSURL *sourceURL, NSURL *baseURL)
                                           statusCodes:(NSIndexSet *)statusCodes
 {
     NSParameterAssert(mapping);
-
+    NSAssert(RKPathPatternIsNilOrAbsolute(pathPattern), @"The given path pattern must be absolute as it will be evaluated against a complete path segment.");
     RKResponseDescriptor *mappingDescriptor = [self new];
     mappingDescriptor.mapping = mapping;
     mappingDescriptor.pathPattern = pathPattern;

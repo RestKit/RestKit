@@ -40,6 +40,7 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
 
 @interface RKPathMatcher ()
 @property (nonatomic, strong) SOCPattern *socPattern;
+@property (nonatomic, copy) NSString *patternString; // SOCPattern keeps it private
 @property (nonatomic, copy) NSString *sourcePath;
 @property (nonatomic, copy) NSString *rootPath;
 @property (copy, readwrite) NSDictionary *queryParameters;
@@ -64,6 +65,7 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform pattern matching.");
     RKPathMatcher *matcher = [[RKPathMatcher alloc] init];
     matcher.socPattern = [SOCPattern patternWithString:patternString];
+    matcher.patternString = patternString;
     return matcher;
 }
 
@@ -78,6 +80,8 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
 - (BOOL)matches
 {
     NSAssert((self.socPattern != NULL && self.rootPath != NULL), @"Matcher is insufficiently configured.  Before attempting pattern matching, you must provide a path string and a pattern to match it against.");
+    // If the pattern is an exact prefix of the matched string, we evaluate to YES
+    if ([self.rootPath hasPrefix:self.patternString]) return YES;
     return [self.socPattern stringMatches:self.rootPath];
 }
 

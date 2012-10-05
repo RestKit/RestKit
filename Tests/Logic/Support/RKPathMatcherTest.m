@@ -123,4 +123,11 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
+- (void)testMatchingPathWithTrailingSlashAndQuery
+{
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/v1/organizations"];
+    BOOL matches = [pathMatcher matchesPath:@"/api/v1/organizations/?client_search=t" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(YES);
+}
+
 @end
