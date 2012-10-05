@@ -27,6 +27,7 @@
 
 #import "RKObjectMapping.h"
 #import "RKMappingOperation.h"
+#import "RKMappingErrors.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -48,8 +49,8 @@
 
 + (NSDictionary *)parametersWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor error:(NSError **)error
 {
-    RKObjectParameterization *objectParameters = [[self alloc] initWithObject:object requestDescriptor:requestDescriptor];
-    return [objectParameters mapObjectToParameters:error];
+    RKObjectParameterization *parameterization = [[self alloc] initWithObject:object requestDescriptor:requestDescriptor];
+    return [parameterization mapObjectToParameters:error];
 }
 
 - (id)initWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor
@@ -84,6 +85,12 @@
     operation.delegate = self;
     [operation start];
     if (operation.error) {
+        if (operation.error.code == RKMappingErrorUnmappableRepresentation) {
+            // If the mapped object is empty, return an empty dictionary and no error
+            return @{};
+        }
+        
+        if (error) *error = operation.error;
         return nil;
     }
 

@@ -29,6 +29,7 @@
 #import "RKLog.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKPathMatcher.h"
+#import "RKMappingErrors.h"
 
 #if !__has_feature(objc_arc)
 #error RestKit must be built with ARC.
@@ -215,6 +216,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
             NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(self.HTTPClient.stringEncoding));
             [request setValue:[NSString stringWithFormat:@"%@; charset=%@", self.requestSerializationMIMEType, charset] forHTTPHeaderField:@"Content-Type"];
             NSData *requestBody = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:self.requestSerializationMIMEType error:&error];
+            if (! requestBody) {
+                RKLogError(@"Failed to generate request body from parameters: RKMIMETypeSerialization error: %@", error);
+                return nil;
+            }
             [request setHTTPBody:requestBody];
         }
     }
@@ -253,6 +258,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     if ((method != RKRequestMethodGET && method != RKRequestMethodDELETE) && requestDescriptor) {
         NSError *error = nil;
         requestParameters = [[RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error] mutableCopy];
+        if (error) {
+            RKLogError(@"Object parameterization failed while building %@ request to '%@': %@", stringMethod, requestPath, error);
+            return nil;
+        }
         if (parameters) {
             requestParameters = RKDictionaryByMergingDictionaryWithDictionary(requestParameters, parameters);
         }

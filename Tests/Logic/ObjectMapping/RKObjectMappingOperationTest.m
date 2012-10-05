@@ -53,7 +53,7 @@
 - (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError
 {
     if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"FAIL"]) {
-        *outError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableContent userInfo:nil];
+        *outError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:nil];
         return NO;
     } else if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"REJECT"]) {
         return NO;

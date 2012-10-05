@@ -177,7 +177,7 @@
     assertThat(string, is(equalTo(@"{\"key2-form-name\":\"value2\",\"key1-form-name\":\"value1\"}")));
 }
 
-- (void)testShouldSetReturnNilIfItDoesNotFindAnythingToSerialize
+- (void)testShouldSetReturnEmptyDictionaryIfItDoesNotFindAnythingToSerialize
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
@@ -186,8 +186,8 @@
     NSError *error = nil;
     RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
-
-    assertThat(parameters, is(nilValue()));
+    expect(error).to.beNil();
+    expect(parameters).to.equal(@{});
 }
 
 - (void)testShouldSerializeNestedObjectsContainingDatesToJSON

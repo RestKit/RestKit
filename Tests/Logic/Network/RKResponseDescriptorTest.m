@@ -276,6 +276,20 @@ describe(@"matchesResponse:", ^{
                     [[@([responseDescriptor matchesResponse:response]) should] beYes];
                 });
             });
+            
+            context(@"then given the URL 'http://domain.com/domain/api/v1/recommendation?action=search&type=whatever'", ^{
+                beforeEach(^{
+                    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/recommendation/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+                    responseDescriptor.baseURL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/"];
+                });
+                
+                it(@"returns YES", ^{
+                    NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation?action=search&type=whatever"];
+                    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
+                    [[@([responseDescriptor matchesResponse:response]) should] beYes];
+                });
+            });
         });
     });
 });

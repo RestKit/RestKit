@@ -604,8 +604,9 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
         RKLogError(@"Failed mapping operation: %@", [self.error localizedDescription]);
     } else {
         // We did not find anything to do
-        RKLogDebug(@"Mapping operation did not find any mappable content");
-        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableContent userInfo:nil];
+        RKLogDebug(@"Mapping operation did not find any mappable values for the attribute and relationship mappings in the given object representation");
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"No mappable values found for any of the attributes or relationship mappings" };
+        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:userInfo];
     }
 }
 

@@ -23,6 +23,7 @@
 #import "RKLog.h"
 #import "RKObjectManager.h"
 #import "RKPathUtilities.h"
+#import "RKMIMETypeSerialization.h"
 
 @interface RKTestFactory ()
 
@@ -36,6 +37,12 @@
 - (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties;
 - (void)defineDefaultFactories;
 
+@end
+
+// Expose MIME Type singleton and initialization routine
+@interface RKMIMETypeSerialization ()
++ (RKMIMETypeSerialization *)sharedSerialization;
+- (void)addRegistrationsForKnownSerializations;
 @end
 
 static RKTestFactory *sharedFactory = nil;
@@ -234,6 +241,9 @@ static RKTestFactory *sharedFactory = nil;
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
     [RKManagedObjectStore setDefaultStore:nil];
+    
+    // Restore the default MIME Type Serializations in case a test has manipulated the registry
+    [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
 
     // Delete the store if it exists
     NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];

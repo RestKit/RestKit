@@ -793,7 +793,7 @@
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(NO)));
     assertThat(error, is(notNilValue()));
-    assertThatInteger(operation.error.code, is(equalToInteger(RKMappingErrorUnmappableContent)));
+    assertThatInteger(operation.error.code, is(equalToInteger(RKMappingErrorUnmappableRepresentation)));
 }
 
 - (void)testShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent

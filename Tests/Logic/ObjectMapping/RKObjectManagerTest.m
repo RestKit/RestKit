@@ -137,22 +137,25 @@
 // TODO: Move to Core Data specific spec file...
 - (void)testShouldUpdateACoreDataBackedTargetObject
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
     [operation start];
     [operation waitUntilFinished];
     
-    assertThat([operation.mappingResult array], isNot(empty()));
+    expect(operation.mappingResult).notTo.beNil();
+    expect([operation.mappingResult array]).notTo.beEmpty();
     RKHuman *human = (RKHuman *)[[operation.mappingResult array] objectAtIndex:0];
-    assertThat(human.objectID, is(equalTo(temporaryHuman.objectID)));
-    assertThat(human.railsID, is(equalToInt(1)));
+    expect(human.objectID).to.equal(temporaryHuman.objectID);
+    expect(human.railsID).to.equal(1);
 }
 
 - (void)testShouldNotPersistTemporaryEntityToPersistentStoreOnError
 {
-    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
@@ -161,29 +164,30 @@
     [operation start];
     [operation waitUntilFinished];
     
-    assertThatBool([temporaryHuman isNew], is(equalToBool(YES)));
+    expect([temporaryHuman isNew]).to.equal(YES);
 }
 
-- (void)testShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved
+- (void)testThatFailedObjectRequestOperationDoesNotSaveObjectToPersistentStore
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];    
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
     
-    // Save it to suppress deletion
-    [self.objectManager.managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    expect([temporaryHuman isNew]).to.equal(YES);
     
     RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:@"/humans/fail" parameters:nil];
     [operation start];
     [operation waitUntilFinished];
     
-    assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.managedObjectStore.persistentStoreManagedObjectContext)));
+    expect([temporaryHuman isNew]).to.equal(YES);
 }
 
 - (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDeleteReturning200
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @1;
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -199,13 +203,14 @@
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
     NSArray *humans = [_objectManager.managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-    assertThat(error, is(nilValue()));
-    assertThatInteger(humans.count, is(equalToInteger(0)));
+    expect(error).to.beNil();
+    expect(humans).to.haveCountOf(0);
 }
 
 - (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDeleteReturning204
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -221,8 +226,8 @@
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
     NSArray *humans = [_objectManager.managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-    assertThat(error, is(nilValue()));
-    assertThatInteger(humans.count, is(equalToInteger(0)));
+    expect(error).to.beNil();
+    expect(humans).to.haveCountOf(0);
 }
 
 - (void)testCancellationByExactMethodAndPath
@@ -231,7 +236,7 @@
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
     [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/cancel"];
-    assertThatBool([operation isCancelled], is(equalToBool(YES)));
+    expect([operation isCancelled]).to.equal(YES);
 }
 
 - (void)testCancellationByPathMatch
@@ -240,7 +245,7 @@
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
     [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/:objectID/cancel"];
-    assertThatBool([operation isCancelled], is(equalToBool(YES)));
+    expect([operation isCancelled]).to.equal(YES);
 }
 
 - (void)testCancellationFailsForMismatchedMethod
@@ -249,7 +254,7 @@
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
     [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodPOST matchingPathPattern:@"/object_manager/cancel"];
-    assertThatBool([operation isCancelled], is(equalToBool(NO)));
+    expect([operation isCancelled]).to.equal(NO);
 }
 
 - (void)testCancellationFailsForMismatchedPath
@@ -258,12 +263,13 @@
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
     [_objectManager cancelAllObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"];
-    assertThatBool([operation isCancelled], is(equalToBool(NO)));
+    expect([operation isCancelled]).to.equal(NO);
 }
 
 - (void)testShouldProperlyFireABatchOfOperations
 {
-    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
 
     RKManagedObjectRequestOperation *successfulGETOperation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:nil];
@@ -277,25 +283,26 @@
     } completion:^(NSArray *operations) {
         completionBlockOperationCount = operations.count;
     }];
-    assertThat(_objectManager.operationQueue, is(notNilValue()));
+    expect(_objectManager.operationQueue).notTo.beNil();
     [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
 
     // Spin the run loop to allow completion blocks to fire after operations have completed
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.02]];
 
-    assertThatInteger(progressCallbackCount, is(equalToInteger(3)));
-    assertThatInteger(completionBlockOperationCount, is(equalToInteger(3)));
+    expect(progressCallbackCount).to.equal(3);
+    expect(completionBlockOperationCount).to.equal(3);
 }
 
 - (void)testShouldProperlyFireABatchOfOperationsFromRoute
 {
-    RKHuman *dan = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    RKHuman *dan = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
     dan.name = @"Dan";
 
-    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
     blake.name = @"Blake";
 
-    RKHuman *jeff = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *jeff = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
     jeff.name = @"Jeff";
 
     __block NSUInteger progressCallbackCount = 0;
@@ -305,19 +312,19 @@
     } completion:^(NSArray *operations) {
         completionBlockOperationCount = operations.count;
     }];
-    assertThat(_objectManager.operationQueue, is(notNilValue()));
+    expect(_objectManager.operationQueue).notTo.beNil();
     [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
 
     // Spin the run loop to allow completion blocks to fire after operations have completed
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
 
-    assertThatInteger(progressCallbackCount, is(equalToInteger(3)));
-    assertThatInteger(completionBlockOperationCount, is(equalToInteger(3)));
+    expect(progressCallbackCount).to.equal(3);
+    expect(completionBlockOperationCount).to.equal(3);
 }
 
 - (void)testThatObjectParametersAreNotSentDuringGetObject
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:@{@"this": @"that"}];
@@ -326,11 +333,22 @@
 
 - (void)testThatObjectParametersAreNotSentDuringDeleteObject
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:@{@"this": @"that"}];
     expect([operation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
+}
+
+- (void)testInitializationOfObjectRequestOperationProducesCorrectURLRequest
+{
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    NSURLRequest *request = [_objectManager requestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"}];
+    expect([request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/the/path");
+    expect(request.HTTPMethod).to.equal(@"PATCH");
+    expect(request.HTTPBody).notTo.beNil();
+    NSString *string = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
+    expect(string).to.equal(@"key=value");
 }
 
 // TODO: Move to Core Data specific spec file...
