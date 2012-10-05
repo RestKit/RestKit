@@ -22,7 +22,7 @@
 #import "RKRelationshipMapping.h"
 #import "RKPropertyInspector.h"
 #import "RKLog.h"
-#import "ISO8601DateFormatter.h"
+#import "RKISO8601DateFormatter.h"
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
 
@@ -356,7 +356,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
     numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
     [self addDefaultDateFormatter:numberFormatter];
     
-    ISO8601DateFormatter *isoFormatter = [[ISO8601DateFormatter alloc] init];
+    RKISO8601DateFormatter *isoFormatter = [[RKISO8601DateFormatter alloc] init];
     isoFormatter.parsesStrictly = YES;
     [self addDefaultDateFormatter:isoFormatter];
     

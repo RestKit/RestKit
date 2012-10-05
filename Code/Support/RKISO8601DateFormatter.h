@@ -1,3 +1,5 @@
+// This is a forked copy of the ISO8601DateFormatter
+
 /*ISO8601DateFormatter.h
  *
  *Created by Peter Hosey on 2009-04-11.
@@ -25,24 +27,24 @@
  *Week format is YYYY-Www-D, where ww ranges from 1 to 53 (the 'W' is literal) and D ranges from 1 to 7; for example, 2009-W05-07.
  */
 enum {
-	ISO8601DateFormatCalendar,
-	ISO8601DateFormatOrdinal,
-	ISO8601DateFormatWeek,
+	RKISO8601DateFormatCalendar,
+	RKISO8601DateFormatOrdinal,
+	RKISO8601DateFormatWeek,
 };
-typedef NSUInteger ISO8601DateFormat;
+typedef NSUInteger RKISO8601DateFormat;
 
 //The default separator for time values. Currently, this is ':'.
-extern unichar ISO8601DefaultTimeSeparatorCharacter;
+extern unichar RKISO8601DefaultTimeSeparatorCharacter;
 
-@interface ISO8601DateFormatter: NSFormatter
+@interface RKISO8601DateFormatter: NSFormatter
 {
 	NSString *lastUsedFormatString;
 	NSDateFormatter *unparsingFormatter;
-
+    
 	NSCalendar *parsingCalendar, *unparsingCalendar;
-
+    
 	NSTimeZone *defaultTimeZone;
-	ISO8601DateFormat format;
+	RKISO8601DateFormat format;
 	unichar timeSeparator;
 	BOOL includeTime;
 	BOOL parsesStrictly;
@@ -69,7 +71,7 @@ extern unichar ISO8601DefaultTimeSeparatorCharacter;
 
 #pragma mark Unparsing
 
-@property ISO8601DateFormat format;
+@property RKISO8601DateFormat format;
 @property BOOL includeTime;
 @property unichar timeSeparator;
 

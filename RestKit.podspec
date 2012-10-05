@@ -29,7 +29,6 @@ Pod::Spec.new do |s|
   s.subspec 'ObjectMapping' do |os|
     os.header_dir     = 'RestKit/ObjectMapping'
     os.source_files   = 'Code/ObjectMapping'
-    os.dependency     'ISO8601DateFormatter', '>= 0.6'
   end
   
   s.subspec 'Network' do |ns|
