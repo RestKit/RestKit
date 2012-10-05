@@ -82,8 +82,16 @@ NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
 //NSString * RKStringFromStatusCode(NSInteger statusCode);
 //NSInteger RKStatusCodeFromString(NSString *statusCode);
 
-/*
- * Parse HTTP Date: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
+/**
+ Parse HTTP Date: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
  */
 NSDate *RKDateFromHTTPDateString(NSString *);
+
+/**
+ Returns the cache expiration data from a dictionary of HTTP response headers as appropriate for the given status code. If the status code is not cachable, `nil` is returned.
+ 
+ @param headers The HTTP response headers from which to extract the cache expiration date.
+ @param statusCode The HTTP response status code of the response.
+ @return The expiration date as specified by the cache headers or `nil` if none was found.
+ */
 NSDate *RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *headers, NSInteger statusCode);
