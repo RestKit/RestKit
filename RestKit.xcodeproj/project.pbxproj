@@ -490,6 +490,8 @@
 		25B6E9E014CF912500B1E881 /* RKTestUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9DA14CF912500B1E881 /* RKTestUser.m */; };
 		25B6EA0614CF946400B1E881 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6EA0514CF946300B1E881 /* QuartzCore.framework */; };
 		25B6EA0814CF947E00B1E881 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */; };
+		25BB392E161F4FD700E5C72A /* RKPathUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25BB392D161F4FD700E5C72A /* RKPathUtilitiesTest.m */; };
+		25BB392F161F4FD700E5C72A /* RKPathUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25BB392D161F4FD700E5C72A /* RKPathUtilitiesTest.m */; };
 		25C20466160ABC4800D418D5 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 251611281456F50F0060A5C5 /* SystemConfiguration.framework */; };
 		25C246A415C83B090032212E /* RKSearchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C246A315C83B090032212E /* RKSearchTest.m */; };
 		25C246A515C83B090032212E /* RKSearchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C246A315C83B090032212E /* RKSearchTest.m */; };
@@ -871,6 +873,7 @@
 		25B6E9DA14CF912500B1E881 /* RKTestUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTestUser.m; sourceTree = "<group>"; };
 		25B6EA0514CF946300B1E881 /* QuartzCore.framework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		25BB392D161F4FD700E5C72A /* RKPathUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathUtilitiesTest.m; sourceTree = "<group>"; };
 		25C246A315C83B090032212E /* RKSearchTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTest.m; sourceTree = "<group>"; };
 		25C954A415542A47005C9E08 /* RKTestConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestConstants.m; path = Testing/RKTestConstants.m; sourceTree = "<group>"; };
 		25CA7A8E14EC570100888FF8 /* RKMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMapping.m; sourceTree = "<group>"; };
@@ -1481,6 +1484,7 @@
 				251610561456F2330060A5C5 /* RKPathMatcherTest.m */,
 				2501405215366000004E0466 /* RKObjectiveCppTest.mm */,
 				25CDA0E2161E821000F583F3 /* RKISODateFormatterTest.m */,
+				25BB392D161F4FD700E5C72A /* RKPathUtilitiesTest.m */,
 			);
 			name = Support;
 			path = Logic/Support;
@@ -2248,6 +2252,7 @@
 				2564E40B16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */,
 				25CC5C59161DDADD0008BD21 /* RKResponseDescriptorTest.m in Sources */,
 				25CDA0E7161E828D00F583F3 /* RKISODateFormatterTest.m in Sources */,
+				25BB392E161F4FD700E5C72A /* RKPathUtilitiesTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2389,6 +2394,7 @@
 				2564E40C16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */,
 				25CC5C5A161DDADD0008BD21 /* RKResponseDescriptorTest.m in Sources */,
 				25CDA0E8161E828E00F583F3 /* RKISODateFormatterTest.m in Sources */,
+				25BB392F161F4FD700E5C72A /* RKPathUtilitiesTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -83,17 +83,32 @@
                    toBlocksMatchingRelativeString:(NSString *)relativeString
                       onObjectManager:(RKObjectManager *)nilOrObjectManager;
 
-///-------------------------------
-/// @name Clearing the NSURL Cache
-///-------------------------------
+///-----------------------------
+/// @name Working with the Cache
+///-----------------------------
 
 /**
- Clears the contents of the cache directory by removing the directory and recreating it.
- 
- This has the effect of clearing any `NSCachedURLResponse` objects stored by `NSURLCache` as well as any application specific cache data.
- 
- @see `RKCachesDirectory()`
+ Disables caching by setting a new `[NSURLCache sharedURLCache]` instance in which the memory and disk limits have been set to zero.
  */
-+ (void)clearCacheDirectory;
++ (void)disableCaching;
+
+/**
+ Creates, stores, and returns a `NSCachedURLResponse` object containing an `NSHTTPURLResponse` for the given request with a 200 (OK) status code.
+ 
+ @param request The request to cache the response for.
+ @param responseData The response data to be stored in the cache.
+ @return The cached URL response that was stored to the cache.
+ */
++ (NSCachedURLResponse *)cacheResponseForRequest:(NSURLRequest *)request withResponseData:(NSData *)responseData;
+
+/**
+ Creates, stores, and returns a `NSCachedURLResponse` object containing an `NSHTTPURLResponse` for the given URL and HTTP method with the given response data and a 200 (OK) status code.
+ 
+ @param URL The URL to cache the response for.
+ @param HTTPMethod The HTTP method of the request (i.e. 'GET', 'POST', 'PUT', 'PATCH', or 'DELETE').
+ @param responseData The response data to be stored in the cache.
+ @return The cached URL response that was stored to the cache.
+ */
++ (NSCachedURLResponse *)cacheResponseForURL:(NSURL *)URL HTTPMethod:(NSString *)HTTPMethod headers:(NSDictionary *)requestHeaders withData:(NSData *)responseData;
 
 @end

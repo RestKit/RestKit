@@ -159,7 +159,7 @@
 
 - (void)testShouldSkipObjectMappingOnRequestCacheHitWhenObjectCachePresent
 {
-    [RKTestFactory clearCacheDirectory];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];

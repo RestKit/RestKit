@@ -240,6 +240,9 @@ static RKTestFactory *sharedFactory = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
         [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
+    
+    // Clear the NSURLCache
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     if ([self respondsToSelector:@selector(didSetUp)]) {
         [self didSetUp];
@@ -248,8 +251,9 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)tearDown
 {
-    // Cancel any network operations
+    // Cancel any network operations and clear the cache
     [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];

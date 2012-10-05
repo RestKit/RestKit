@@ -86,23 +86,39 @@
     }
 }
 
-+ (void)clearCacheDirectory
++ (void)disableCaching
 {
     NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
     [NSURLCache setSharedURLCache:sharedCache];
+}
+
++ (NSCachedURLResponse *)cacheResponseForRequest:(NSURLRequest *)request withResponseData:(NSData *)responseData
+{
+    NSParameterAssert(request);
+    NSParameterAssert(responseData);
     
-    NSError *error = nil;
-    NSString *cachePath = RKCachesDirectory();
-    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
-    if (success) {
-        RKLogDebug(@"Cleared cache directory...");
-        success = [[NSFileManager defaultManager] createDirectoryAtPath:cachePath withIntermediateDirectories:YES attributes:nil error:&error];
-        if (!success) {
-            RKLogError(@"Failed creation of cache path '%@': %@", cachePath, [error localizedDescription]);
-        }
-    } else {
-        RKLogError(@"Failed to clear cache path '%@': %@", cachePath, [error localizedDescription]);
-    }
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
+    NSAssert(response, @"Failed to build cached response");
+    NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData];
+    [[NSURLCache sharedURLCache] storeCachedResponse:cachedResponse forRequest:request];
+    
+    // Verify that we can get the cached response back
+    NSCachedURLResponse *storedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
+    NSAssert(storedResponse, @"Expected to retrieve cached response for request '%@', instead got nil.", request);
+    
+    return cachedResponse;
+}
+
++ (NSCachedURLResponse *)cacheResponseForURL:(NSURL *)URL HTTPMethod:(NSString *)HTTPMethod headers:(NSDictionary *)requestHeaders withData:(NSData *)responseData
+{
+    NSParameterAssert(URL);
+    NSParameterAssert(HTTPMethod);
+    NSParameterAssert(responseData);
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+    request.HTTPMethod = HTTPMethod;
+    [request setAllHTTPHeaderFields:requestHeaders];
+    return [self cacheResponseForRequest:request withResponseData:responseData];
 }
 
 @end
