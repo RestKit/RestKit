@@ -125,6 +125,6 @@ NSString *RKPathNormalize(NSString *path)
     path = [path stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
     NSUInteger length = [path length];
     if ([path characterAtIndex:length - 1] == '/') path = [path substringToIndex:length - 1];
-    if ([path characterAtIndex:0] != '/') path = [@"/" stringByAppendingString:path];
+    if ([path characterAtIndex:0] != '/') path = [NSString stringWithFormat:@"/%@", path];
     return path;
 }

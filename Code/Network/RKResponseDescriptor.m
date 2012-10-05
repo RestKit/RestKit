@@ -20,6 +20,7 @@
 
 #import "RKPathMatcher.h"
 #import "RKResponseDescriptor.h"
+#import "RKPathUtilities.h"
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 static NSString *RKStringFromIndexSet(NSIndexSet *indexSet) {
@@ -69,11 +70,6 @@ static BOOL RKURLIsRelativeToURL(NSURL *sourceURL, NSURL *baseURL)
     return [[sourceURL absoluteString] hasPrefix:[baseURL absoluteString]];
 }
 
-static BOOL RKPathPatternIsNilOrAbsolute(NSString *pathPattern)
-{
-    return pathPattern == nil || [pathPattern characterAtIndex:0] == '/';
-}
-
 @interface RKResponseDescriptor ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, copy, readwrite) NSString *pathPattern;
@@ -89,10 +85,9 @@ static BOOL RKPathPatternIsNilOrAbsolute(NSString *pathPattern)
                                           statusCodes:(NSIndexSet *)statusCodes
 {
     NSParameterAssert(mapping);
-    NSAssert(RKPathPatternIsNilOrAbsolute(pathPattern), @"The given path pattern must be absolute as it will be evaluated against a complete path segment.");
     RKResponseDescriptor *mappingDescriptor = [self new];
     mappingDescriptor.mapping = mapping;
-    mappingDescriptor.pathPattern = pathPattern;
+    mappingDescriptor.pathPattern = pathPattern ? RKPathNormalize(pathPattern) : nil;
     mappingDescriptor.keyPath = keyPath;
     mappingDescriptor.statusCodes = statusCodes;
 

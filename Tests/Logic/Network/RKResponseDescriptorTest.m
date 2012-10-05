@@ -14,11 +14,10 @@ SPEC_BEGIN(RKResponseDescriptorSpec)
 
 describe(@"init", ^{
     context(@"when given a relative path pattern", ^{
-        it(@"raises an exception", ^{
-            [[theBlock(^{
-                RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"monkeys" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
-            }) should] raiseWithName:NSInternalInconsistencyException reason:@"The given path pattern must be absolute as it will be evaluated against a complete path segment."];
+        it(@"normalizes the path pattern", ^{
+            RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+            RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"monkeys" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+            [[responseDescriptor.pathPattern should] equal:@"/monkeys"];
         });
     });
 });
@@ -255,6 +254,24 @@ describe(@"matchesResponse:", ^{
                 
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://0.0.0.0:5000/api/v1/organizations/?client_search=t"];
+                    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
+                    [[@([responseDescriptor matchesResponse:response]) should] beYes];
+                });
+            });
+        });
+    });
+    
+    context(@"when the baseURL is 'http://domain.com/domain/api/v1/'", ^{
+        context(@"and the path pattern is '/recommendation/'", ^{
+            context(@"then given the URL 'http://domain.com/domain/api/v1/recommendation'", ^{
+                beforeEach(^{
+                    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/recommendation/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+                    responseDescriptor.baseURL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/"];
+                });
+                
+                it(@"returns YES", ^{
+                    NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation/"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
                     [[@([responseDescriptor matchesResponse:response]) should] beYes];
                 });
