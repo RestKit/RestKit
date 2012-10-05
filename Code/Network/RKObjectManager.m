@@ -201,8 +201,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                                       path:(NSString *)path
                                 parameters:(NSDictionary *)parameters
 {
-    NSURL *url = [NSURL URLWithString:path relativeToURL:self.HTTPClient.baseURL];
+	NSURL *url = [NSURL URLWithString:path relativeToURL:self.HTTPClient.baseURL];	
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+	[request setHTTPMethod:method];
     [request setAllHTTPHeaderFields:self.defaultHeaders];
     
     if (parameters) {
