@@ -171,12 +171,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 ///-------------------------------------
 
 /**
- Creates and returns a new `RKObjectManager` object initialized with a new `AFHTTPClient` object that was in turn initialized with the given base URL.
+ Creates and returns a new `RKObjectManager` object initialized with a new `AFHTTPClient` object that was in turn initialized with the given base URL. The RestKit defaults are applied to the object manager.
  
- This is a convenience interface for initializing an `RKObjectManager` and its underlying `AFHTTPClient` object with a single message. It is functionally equivalent to the following example code:
- 
-    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:baseURL];
-    RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:client];
+ When initialized with a base URL, the returned object manager will have a `requestSerializationMIMEType` with the value of `RKMIMETypeFormURLEncoded` and a default value for the 'Accept' header set to `RKMIMETypeJSON`.
  
  @param baseURL The base URL with which to initialize the `AFHTTPClient` object
  @return A new `RKObjectManager` initialized with an `AFHTTPClient` that was initialized with the given baseURL.
@@ -184,9 +181,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 + (id)managerWithBaseURL:(NSURL *)baseURL;
 
 /**
- Initializes the receiver with the given AFNetworking HTTP client object.
+ Initializes the receiver with the given AFNetworking HTTP client object, adopting the network configuration from the client.
  
- This is the designated initializer. If the sharedManager instance is nil, the receiver will be set as the sharedManager.
+ This is the designated initializer. If the `sharedManager` instance is `nil`, the receiver will be set as the `sharedManager`. The default headers and parameter encoding of the given HTTP client are adopted by the receiver to initialize the values of the `defaultHeaders` and `requestSerializationMIMEType` properties.
 
  @param client The AFNetworking HTTP client with which to initialize the receiver.
  @return The receiver, initialized with the given client.
@@ -206,6 +203,15 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  The base URL of the underlying HTTP client.
  */
 @property (nonatomic, readonly) NSURL *baseURL;
+
+/**
+ The default HTTP headers for all `NSURLRequest` objects constructed by the object manager.
+
+ The returned dictionary contains all of the default headers set on the underlying `AFHTTPClient` object and the value of the 'Accept' header set on the object manager, if any.
+
+ @see `setAcceptHeaderWithMIMEType:`
+ */
+@property (nonatomic, readonly) NSDictionary *defaultHeaders;
 
 /**
  The operation queue which manages operations enqueued by the object manager.
@@ -231,14 +237,14 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
  The value given for the `requestSerializationMIMEType` must correspond to a MIME Type registered via `[RKMIMETypeSerialization registerClass:forMIMEType:]`. Implementations are provided by default for `RKMIMETypeFormURLEncoded` and `RKMIMETypeJSON`.
 
- **Default**: `RKMIMETypeFormURLEncoded`
+ **Default**: `RKMIMETypeFormURLEncoded` or the value of the parameter encoding for the underlying `AFHTTPClient`.
  */
 @property (nonatomic, strong) NSString *requestSerializationMIMEType;
 
 /**
  The value for the HTTP "Accept" header to specify the preferred serialization format for retrieved data.
 
- The default value is `RKMIMETypeJSON`, which is equal to the string `@"application/json"`. A value of `nil` will prevent the object manager from explicitly setting a value for the "Accept" header.
+ If the receiver was initialized with an `AFHTTPClient`, then the value of the 'Accept' header is deferred to the client. If initialized directly with a baseURL, the default value is `RKMIMETypeJSON`, which is equal to the string `@"application/json"`. A value of `nil` will prevent the object manager from explicitly setting a value for the "Accept" header.
 
  @param MIMEType The MIME Type to set as the value for the HTTP "Accept" header.
  */

@@ -90,6 +90,28 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     return NO;
 }
 
+static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParameterEncoding encoding)
+{
+    switch (encoding) {
+        case AFFormURLParameterEncoding:
+            return RKMIMETypeFormURLEncoded;
+            break;
+            
+        case AFJSONParameterEncoding:
+            return RKMIMETypeJSON;
+            break;
+            
+        case AFPropertyListParameterEncoding:
+            break;
+            
+        default:
+            RKLogWarning(@"RestKit is unable to infer the appropriate request serialization MIME Type from an `AFHTTPClientParameterEncoding` value of %d: defaulting to `RKMIMETypeFormURLEncoded`", encoding);
+            break;
+    }
+    
+    return RKMIMETypeFormURLEncoded;
+}
+
 ///////////////////////////////////
 
 @interface RKObjectManager ()
@@ -107,15 +129,12 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     self = [super init];
     if (self) {
         self.HTTPClient = client;
-
-        self.router = [[RKRouter alloc] initWithBaseURL:client.baseURL];
-        self.acceptHeaderValue = RKMIMETypeJSON;
+        self.router = [[RKRouter alloc] initWithBaseURL:client.baseURL];        
         self.operationQueue = [NSOperationQueue new];
         self.mutableRequestDescriptors = [NSMutableArray new];
         self.mutableResponseDescriptors = [NSMutableArray new];
         self.mutableFetchRequestBlocks = [NSMutableArray new];
-
-        self.requestSerializationMIMEType = RKMIMETypeFormURLEncoded;
+        self.requestSerializationMIMEType = RKMIMETypeFromAFHTTPClientParameterEncoding(client.parameterEncoding);        
 
         // Set shared manager if nil
         if (nil == sharedManager) {
@@ -139,6 +158,8 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
     RKObjectManager *manager = [[self alloc] initWithHTTPClient:[AFHTTPClient clientWithBaseURL:baseURL]];
+    manager.acceptHeaderValue = RKMIMETypeJSON;
+    manager.requestSerializationMIMEType = RKMIMETypeFormURLEncoded;
     return manager;
 }
 
@@ -152,6 +173,13 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 - (NSURL *)baseURL
 {
     return self.HTTPClient.baseURL;
+}
+
+- (NSDictionary *)defaultHeaders
+{
+    NSMutableDictionary *defaultHeaders = [self.HTTPClient.defaultHeaders mutableCopy];
+    if (self.acceptHeaderValue) [defaultHeaders setValue:self.acceptHeaderValue forKey:@"Accept"];
+    return defaultHeaders;
 }
 
 /////////////////////////////////////////////////////////////
@@ -175,9 +203,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 {
     NSURL *url = [NSURL URLWithString:path relativeToURL:self.HTTPClient.baseURL];
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    [request setHTTPMethod:method];
-    [request setAllHTTPHeaderFields:self.HTTPClient.defaultHeaders];
-    if (self.acceptHeaderValue) [request setValue:self.acceptHeaderValue forHTTPHeaderField:@"Accept"];
+    [request setAllHTTPHeaderFields:self.defaultHeaders];
     
     if (parameters) {
         if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"]) {
