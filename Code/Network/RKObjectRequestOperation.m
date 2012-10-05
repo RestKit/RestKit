@@ -56,8 +56,10 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 
 - (void)dealloc
 {
+#if !OS_OBJECT_USE_OBJC
     if(_failureCallbackQueue) dispatch_release(_failureCallbackQueue);
     if(_successCallbackQueue) dispatch_release(_successCallbackQueue);
+#endif
 }
 
 - (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
@@ -81,12 +83,16 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 {
    if (successCallbackQueue != _successCallbackQueue) {
        if (_successCallbackQueue) {
+#if !OS_OBJECT_USE_OBJC
            dispatch_release(_successCallbackQueue);
+#endif
            _successCallbackQueue = NULL;
        }
 
        if (successCallbackQueue) {
+#if !OS_OBJECT_USE_OBJC
            dispatch_retain(successCallbackQueue);
+#endif
            _successCallbackQueue = successCallbackQueue;
        }
    }
@@ -96,12 +102,16 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 {
    if (failureCallbackQueue != _failureCallbackQueue) {
        if (_failureCallbackQueue) {
+#if !OS_OBJECT_USE_OBJC
            dispatch_release(_failureCallbackQueue);
+#endif
            _failureCallbackQueue = NULL;
        }
 
        if (failureCallbackQueue) {
+#if !OS_OBJECT_USE_OBJC
            dispatch_retain(failureCallbackQueue);
+#endif
            _failureCallbackQueue = failureCallbackQueue;
        }
    }
