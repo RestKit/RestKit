@@ -47,6 +47,16 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     return error;
 }
 
+static NSError *RKUnprocessableClientErrorFromResponse(NSHTTPURLResponse *response)
+{
+    NSCAssert(NSLocationInRange(response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassClientError)), @"Expected response status code to be in the 400-499 range, instead got %ld", (long) response.statusCode);
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable client error response (%ld)", (long) response.statusCode] forKey:NSLocalizedDescriptionKey];
+    [userInfo setValue:[response URL] forKey:NSURLErrorFailingURLErrorKey];
+    
+    return [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
+}
+
 @interface RKResponseMapperOperation ()
 @property (nonatomic, strong, readwrite) NSHTTPURLResponse *response;
 @property (nonatomic, strong, readwrite) NSData *data;
@@ -140,11 +150,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 
     // If we are an error response and empty, we emit an error that the content is unmappable
     if (isClientError && [self hasEmptyResponse]) {
-        NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-        [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable client error response (%ld)", (long) self.response.statusCode] forKey:NSLocalizedDescriptionKey];
-        [userInfo setValue:[self.response URL] forKey:NSURLErrorFailingURLErrorKey];
-
-        self.error = [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
+        self.error = RKUnprocessableClientErrorFromResponse(self.response);
         return;
     }
 
@@ -172,13 +178,23 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 
     // Object map the response
     self.mappingResult = [self performMappingWithObject:parsedBody error:&error];
+    
+    // If the response is a client error return either the mapping error or the mapped result to the caller as the error
+    if (isClientError) {
+        if ([self.mappingResult count] > 0) {
+            error = RKErrorFromMappingResult(self.mappingResult);
+        } else {
+            // We encountered a client error that we could not map, throw unprocessable error
+            if (! error) error = RKUnprocessableClientErrorFromResponse(self.response);
+        }
+        self.error = error;
+        return;
+    }
+    
     if (! self.mappingResult) {
         self.error = error;
         return;
     }
-
-    // If the response is a client error and we mapped the payload, return it to the caller as the error
-    if (isClientError) self.error = RKErrorFromMappingResult(self.mappingResult);
 }
 
 @end

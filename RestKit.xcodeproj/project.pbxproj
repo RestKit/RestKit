@@ -363,6 +363,8 @@
 		254372D915F54CE3006E8424 /* RKManagedObjectRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372D515F54CE3006E8424 /* RKManagedObjectRequestOperation.m */; };
 		25565956161FC3C300F5BB20 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25565955161FC3C300F5BB20 /* CoreServices.framework */; };
 		25565959161FC3CD00F5BB20 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */; };
+		25565965161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */; };
+		25565966161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */; };
 		2564E40B16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */; };
 		2564E40C16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */; };
 		257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -809,6 +811,7 @@
 		254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginatorTest.m; sourceTree = "<group>"; };
 		25565955161FC3C300F5BB20 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
+		25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseMapperOperationTest.m; sourceTree = "<group>"; };
 		2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRelationshipConnectionOperationTest.m; sourceTree = "<group>"; };
 		257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+RKAdditions.h"; sourceTree = "<group>"; };
 		257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+RKAdditions.m"; sourceTree = "<group>"; };
@@ -862,7 +865,7 @@
 		25A763E415C7424500A9DF31 /* RKSearchIndexerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchIndexerTest.m; sourceTree = "<group>"; };
 		25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingOperationDataSource.m; sourceTree = "<group>"; };
 		25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingOperationDataSourceTest.m; sourceTree = "<group>"; };
-		25AFF8F015B4CF1F0051877F /* RKMappingErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RKMappingErrors.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		25AFF8F015B4CF1F0051877F /* RKMappingErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RKMappingErrors.h; sourceTree = "<group>"; };
 		25B408241491CDDB00F21111 /* RKPathUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPathUtilities.h; sourceTree = "<group>"; };
 		25B408251491CDDB00F21111 /* RKPathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathUtilities.m; sourceTree = "<group>"; };
 		25B6E95414CF795D00B1E881 /* RKErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKErrors.h; sourceTree = "<group>"; };
@@ -1418,6 +1421,7 @@
 			children = (
 				25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */,
 				252029081577C78600076FB4 /* RKRouteSetTest.m */,
+				25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */,
 			);
 			name = Network;
 			path = Logic/Network;
@@ -2261,6 +2265,7 @@
 				25CC5C59161DDADD0008BD21 /* RKResponseDescriptorTest.m in Sources */,
 				25CDA0E7161E828D00F583F3 /* RKISODateFormatterTest.m in Sources */,
 				25BB392E161F4FD700E5C72A /* RKPathUtilitiesTest.m in Sources */,
+				25565965161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2403,6 +2408,7 @@
 				25CC5C5A161DDADD0008BD21 /* RKResponseDescriptorTest.m in Sources */,
 				25CDA0E8161E828E00F583F3 /* RKISODateFormatterTest.m in Sources */,
 				25BB392F161F4FD700E5C72A /* RKPathUtilitiesTest.m in Sources */,
+				25565966161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
