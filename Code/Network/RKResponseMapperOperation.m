@@ -172,13 +172,18 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
 
     // Object map the response
     self.mappingResult = [self performMappingWithObject:parsedBody error:&error];
-    if (! self.mappingResult) {
+
+    // If the response is a client error return either the mapping error or the mapped result to the caller as the error
+    if (isClientError) {
+        if (! error) error = RKErrorFromMappingResult(self.mappingResult);
         self.error = error;
         return;
     }
 
-    // If the response is a client error and we mapped the payload, return it to the caller as the error
-    if (isClientError) self.error = RKErrorFromMappingResult(self.mappingResult);
+    if (! self.mappingResult) {
+        self.error = error;
+        return;
+    }
 }
 
 @end
