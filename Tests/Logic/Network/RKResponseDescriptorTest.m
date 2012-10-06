@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
+#import "Kiwi.h"
 #import "RKTestEnvironment.h"
 #import "RKTestUser.h"
-#import "Kiwi.h"
 
 SPEC_BEGIN(RKResponseDescriptorSpec)
 
