@@ -202,30 +202,23 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                                       path:(NSString *)path
                                 parameters:(NSDictionary *)parameters
 {
-	NSURL *url = [NSURL URLWithString:path relativeToURL:self.HTTPClient.baseURL];	
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-	[request setHTTPMethod:method];
-    [request setAllHTTPHeaderFields:self.defaultHeaders];
-    
-    if (parameters) {
-        if ([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"]) {
-            url = [NSURL URLWithString:[[url absoluteString] stringByAppendingFormat:[path rangeOfString:@"?"].location == NSNotFound ? @"?%@" : @"&%@", AFQueryStringFromParametersWithEncoding(parameters, self.HTTPClient.stringEncoding)]];
-            [request setURL:url];
-        } else {
-            NSError *error = nil;
-            NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(self.HTTPClient.stringEncoding));
-            [request setValue:[NSString stringWithFormat:@"%@; charset=%@", self.requestSerializationMIMEType, charset] forHTTPHeaderField:@"Content-Type"];
-            NSData *requestBody = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:self.requestSerializationMIMEType error:&error];
-            if (! requestBody) {
-                RKLogError(@"Failed to generate request body from parameters: RKMIMETypeSerialization error: %@", error);
-                return nil;
-            }
-            [request setHTTPBody:requestBody];
-        }
+    NSMutableURLRequest* request;
+    if (parameters && !([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"])) {
+        request = [self.HTTPClient requestWithMethod:method path:path parameters:nil];
+		
+        NSError *error = nil;
+        NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(self.HTTPClient.stringEncoding));
+        [request setValue:[NSString stringWithFormat:@"%@; charset=%@", self.requestSerializationMIMEType, charset] forHTTPHeaderField:@"Content-Type"];
+        NSData *requestBody = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:self.requestSerializationMIMEType error:&error];
+        [request setHTTPBody:requestBody];
+	} else {
+        request = [self.HTTPClient requestWithMethod:method path:path parameters:parameters];
     }
+    if (self.acceptHeaderValue) [request setValue:self.acceptHeaderValue forHTTPHeaderField:@"Accept"];
 
 	return request;
 }
+
 - (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName
                                                object:(id)object
                                            parameters:(NSDictionary *)parameters

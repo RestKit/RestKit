@@ -26,6 +26,22 @@
 #import "RKCat.h"
 #import "RKObjectMapperTestModel.h"
 
+@interface RKTestAFHTTPClient : AFHTTPClient
+@end
+
+@implementation RKTestAFHTTPClient
+
+- (NSMutableURLRequest *)requestWithMethod:(NSString *)method
+                                      path:(NSString *)path
+                                parameters:(NSDictionary *)parameters
+{
+    NSMutableURLRequest *request = [super requestWithMethod:method path:path parameters:parameters];
+    [request setAllHTTPHeaderFields:@{@"test": @"value", @"Accept": @"text/html"}];
+    return request;
+}
+
+@end
+
 @interface RKObjectManagerTest : RKTestCase
 
 @property (nonatomic, strong) RKObjectManager *objectManager;
@@ -349,6 +365,33 @@
     expect(request.HTTPBody).notTo.beNil();
     NSString *string = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
     expect(string).to.equal(@"key=value");
+}
+
+- (void)testAFHTTPClientCanModifyRequestsBuiltByObjectManager
+{
+    RKTestAFHTTPClient *testClient = [[RKTestAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://test.com"]];
+    RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:testClient];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    NSURLRequest *request = [manager requestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"}];
+    
+    expect([request.URL absoluteString]).to.equal(@"http://test.com/the/path");
+    expect(request.HTTPMethod).to.equal(@"PATCH");
+    expect([request allHTTPHeaderFields][@"test"]).to.equal(@"value");
+    expect([request allHTTPHeaderFields][@"Accept"]).to.equal(@"text/html");
+}
+
+- (void)testDefaultAcceptHeaderOfObjectManagerOverridesValueOfHTTPClient
+{
+    RKTestAFHTTPClient *testClient = [[RKTestAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://test.com"]];
+    RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:testClient];
+    [manager setAcceptHeaderWithMIMEType:@"application/json"];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    NSURLRequest *request = [manager requestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"}];
+    
+    expect([request.URL absoluteString]).to.equal(@"http://test.com/the/path");
+    expect(request.HTTPMethod).to.equal(@"PATCH");
+    expect([request allHTTPHeaderFields][@"test"]).to.equal(@"value");
+    expect([request allHTTPHeaderFields][@"Accept"]).to.equal(@"application/json");
 }
 
 // TODO: Move to Core Data specific spec file...
