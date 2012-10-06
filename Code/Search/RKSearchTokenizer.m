@@ -13,31 +13,30 @@
 - (NSSet *)tokenize:(NSString *)string
 {
     NSMutableSet *tokens = [NSMutableSet set];
-    
+
     CFLocaleRef locale = CFLocaleCopyCurrent();
-    
+
     // Remove diacratics and lowercase our input text
     NSString *tokenizeText = string = [string stringByFoldingWithOptions:kCFCompareCaseInsensitive|kCFCompareDiacriticInsensitive locale:[NSLocale systemLocale]];
-    CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (CFStringRef)tokenizeText, CFRangeMake(0, CFStringGetLength((CFStringRef)tokenizeText)), kCFStringTokenizerUnitWord, locale);
+    CFStringTokenizerRef tokenizer = CFStringTokenizerCreate(kCFAllocatorDefault, (__bridge CFStringRef)tokenizeText, CFRangeMake(0, CFStringGetLength((__bridge CFStringRef)tokenizeText)), kCFStringTokenizerUnitWord, locale);
     CFStringTokenizerTokenType tokenType = kCFStringTokenizerTokenNone;
-    
-    while(kCFStringTokenizerTokenNone != (tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer))) {
+
+    while (kCFStringTokenizerTokenNone != (tokenType = CFStringTokenizerAdvanceToNextToken(tokenizer))) {
         CFRange tokenRange = CFStringTokenizerGetCurrentTokenRange(tokenizer);
-        
+
         NSRange range = NSMakeRange(tokenRange.location, tokenRange.length);
         NSString *token = [string substringWithRange:range];
-        
+
         [tokens addObject:token];
     }
-    
+
     CFRelease(tokenizer);
     CFRelease(locale);
-    
+
     // Remove any stop words
     if (self.stopWords) [tokens minusSet:self.stopWords];
-    
+
     return tokens;
 }
-
 
 @end

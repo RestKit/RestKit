@@ -20,7 +20,9 @@
 
 #import <Foundation/Foundation.h>
 
-/** @name Error Domain & Codes */
+///---------------------------
+/// @name Error Domain & Codes
+///---------------------------
 
 // The error domain for RestKit generated errors
 extern NSString * const RKErrorDomain;
@@ -30,10 +32,15 @@ typedef enum {
     RKRequestBaseURLOfflineError                =   2,
     RKRequestUnexpectedResponseError            =   3,
     RKObjectLoaderUnexpectedResponseError       =   4,
-    RKRequestConnectionTimeoutError             =   5
+    RKRequestConnectionTimeoutError             =   5,
+    RKUnsupportedMIMETypeError                  =   6,
+    RKParserRegistryEmptyDataError              =   7
 } RKRestKitError;
 
-/** @name Error Constants */
+
+///--------------------------------------
+/// @name Error User Info Dictionary Keys
+///--------------------------------------
 
 /**
  The key RestKit generated errors will appear at within an NSNotification
@@ -51,3 +58,7 @@ extern NSString * const RKErrorNotificationErrorKey;
  @see RKObjectMappingResult
  */
 extern NSString * const RKObjectMapperErrorObjectsKey;
+
+extern NSString * const RKDetailedErrorsKey; // When multiple errors occur, they are stored in a composite error
+
+extern NSString * const RKMIMETypeErrorKey;

@@ -5,29 +5,50 @@
 //  Created by Blake Watters on 2/16/12.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 
+#import "AFHTTPClient.h"
 #import "RKTestFactory.h"
+#import "RKLog.h"
+#import "RKObjectManager.h"
+#import "RKPathUtilities.h"
+#import "RKMIMETypeSerialization.h"
 
 @interface RKTestFactory ()
 
-@property (nonatomic, strong) RKURL *baseURL;
+@property (nonatomic, strong) NSURL *baseURL;
 @property (nonatomic, strong) NSString *managedObjectStoreFilename;
 @property (nonatomic, strong) NSMutableDictionary *factoryBlocks;
+@property (nonatomic, strong) NSMutableDictionary *sharedObjectsByFactoryName;
 
 + (RKTestFactory *)sharedFactory;
 - (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
-- (id)objectFromFactory:(NSString *)factoryName;
+- (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties;
 - (void)defineDefaultFactories;
 
+@end
+
+// Expose MIME Type singleton and initialization routine
+@interface RKMIMETypeSerialization ()
++ (RKMIMETypeSerialization *)sharedSerialization;
+- (void)addRegistrationsForKnownSerializations;
 @end
 
 static RKTestFactory *sharedFactory = nil;
 
 @implementation RKTestFactory
 
-@synthesize baseURL = _baseURL;
-@synthesize managedObjectStoreFilename = _managedObjectStoreFilename;
-@synthesize factoryBlocks = _factoryBlocks;
 
 + (void)initialize
 {
@@ -52,9 +73,10 @@ static RKTestFactory *sharedFactory = nil;
 {
     self = [super init];
     if (self) {
-        self.baseURL = [RKURL URLWithString:@"http://127.0.0.1:4567"];
+        self.baseURL = [NSURL URLWithString:@"http://127.0.0.1:4567"];
         self.managedObjectStoreFilename = RKTestFactoryDefaultStoreFilename;
         self.factoryBlocks = [NSMutableDictionary new];
+        self.sharedObjectsByFactoryName = [NSMutableDictionary new];
         [self defineDefaultFactories];
     }
 
@@ -66,25 +88,32 @@ static RKTestFactory *sharedFactory = nil;
     [self.factoryBlocks setObject:[block copy] forKey:factoryName];
 }
 
-- (id)objectFromFactory:(NSString *)factoryName
+- (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties
 {
     id (^block)() = [self.factoryBlocks objectForKey:factoryName];
     NSAssert(block, @"No factory is defined with the name '%@'", factoryName);
 
-    return block();
+    id object = block();
+    [object setValuesForKeysWithDictionary:properties];
+    return object;
+}
+
+- (id)sharedObjectFromFactory:(NSString *)factoryName
+{
+    id sharedObject = [self.sharedObjectsByFactoryName objectForKey:factoryName];
+    if (! sharedObject) {
+        sharedObject = [self objectFromFactory:factoryName properties:nil];
+        [self.sharedObjectsByFactoryName setObject:sharedObject forKey:factoryName];
+    }
+    return sharedObject;
 }
 
 - (void)defineDefaultFactories
 {
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
-        __block RKClient *client;
-
-        RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
-            RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
-                client = [RKClient clientWithBaseURL:self.baseURL];
-                client.requestQueue.suspended = NO;
-                [client.reachabilityObserver getFlags];
-            });
+        __block AFHTTPClient *client;
+        RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
+            client = [AFHTTPClient clientWithBaseURL:self.baseURL];
         });
 
         return client;
@@ -92,24 +121,11 @@ static RKTestFactory *sharedFactory = nil;
 
     [self defineFactory:RKTestFactoryDefaultNamesObjectManager withBlock:^id {
         __block RKObjectManager *objectManager;
-
-        RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
-            RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
-                objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
-                RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
-                objectManager.mappingProvider = mappingProvider;
-
-                // Force reachability determination
-                [objectManager.client.reachabilityObserver getFlags];
-            });
+        RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
+            objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
         });
 
         return objectManager;
-    }];
-
-    [self defineFactory:RKTestFactoryDefaultNamesMappingProvider withBlock:^id {
-        RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-        return mappingProvider;
     }];
 
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
@@ -130,12 +146,12 @@ static RKTestFactory *sharedFactory = nil;
 
 #pragma mark - Public Static Interface
 
-+ (RKURL *)baseURL
++ (NSURL *)baseURL
 {
     return [RKTestFactory sharedFactory].baseURL;
 }
 
-+ (void)setBaseURL:(RKURL *)URL
++ (void)setBaseURL:(NSURL *)URL
 {
     [RKTestFactory sharedFactory].baseURL = URL;
 }
@@ -147,7 +163,7 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)setBaseURLString:(NSString *)baseURLString
 {
-    [[RKTestFactory sharedFactory] setBaseURL:[RKURL URLWithString:baseURLString]];
+    [[RKTestFactory sharedFactory] setBaseURL:[NSURL URLWithString:baseURLString]];
 }
 
 + (NSString *)managedObjectStoreFilename
@@ -165,9 +181,39 @@ static RKTestFactory *sharedFactory = nil;
     [[RKTestFactory sharedFactory] defineFactory:factoryName withBlock:block];
 }
 
++ (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties
+{
+    return [[RKTestFactory sharedFactory] objectFromFactory:factoryName properties:properties];
+}
+
 + (id)objectFromFactory:(NSString *)factoryName
 {
-    return [[RKTestFactory sharedFactory] objectFromFactory:factoryName];
+    return [[RKTestFactory sharedFactory] objectFromFactory:factoryName properties:nil];
+}
+
++ (id)sharedObjectFromFactory:(NSString *)factoryName
+{
+    return [[RKTestFactory sharedFactory] sharedObjectFromFactory:factoryName];
+}
+
++ (id)insertManagedObjectForEntityForName:(NSString *)entityName
+                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                           withProperties:(NSDictionary *)properties
+{
+    __block id managedObject;
+    __block NSError *error;
+    __block BOOL success;
+    if (! managedObjectContext) managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
+    [managedObjectContext performBlockAndWait:^{
+        managedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:managedObjectContext];
+        success = [managedObjectContext obtainPermanentIDsForObjects:@[managedObject] error:&error];
+        if (! success) {
+            RKLogWarning(@"Failed to obtain permanent objectID for managed object: %@", managedObject);
+            RKLogCoreDataError(error);
+        }
+        [managedObject setValuesForKeysWithDictionary:properties];
+    }];
+    return managedObject;
 }
 
 + (NSSet *)factoryNames
@@ -177,49 +223,36 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)client
 {
-    RKClient *client = [self objectFromFactory:RKTestFactoryDefaultNamesClient];
-    [RKClient setSharedClient:client];
-
-    return client;
+    return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesClient];
 }
 
 + (id)objectManager
 {
-    RKObjectManager *objectManager = [self objectFromFactory:RKTestFactoryDefaultNamesObjectManager];
-    [RKObjectManager setSharedManager:objectManager];
-    [RKClient setSharedClient:objectManager.client];
-
-    return objectManager;
-}
-
-+ (id)mappingProvider
-{
-    RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
-
-    return mappingProvider;
+    return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesObjectManager];
 }
 
 + (id)managedObjectStore
 {
-    RKManagedObjectStore *managedObjectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
-    [RKManagedObjectStore setDefaultStore:managedObjectStore];
-
-    return managedObjectStore;
+    return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
 }
 
 + (void)setUp
 {
+    [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
-    [RKClient setSharedClient:nil];
     [RKManagedObjectStore setDefaultStore:nil];
-    [RKObjectManager setDefaultMappingQueue:nil];
-    [RKObjectMapping setDefaultDateFormatters:nil];
+    
+    // Restore the default MIME Type Serializations in case a test has manipulated the registry
+    [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
 
     // Delete the store if it exists
     NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
         [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
+    
+    // Clear the NSURLCache
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     if ([self respondsToSelector:@selector(didSetUp)]) {
         [self didSetUp];
@@ -228,28 +261,28 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)tearDown
 {
+    // Cancel any network operations and clear the cache
+    [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    // Ensure the existing defaultStore is shut down
+    [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
+    if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
+        // Search component is optional
+        [[RKManagedObjectStore defaultStore] performSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)];
+        
+        if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(searchIndexer)]) {
+            id searchIndexer = [[RKManagedObjectStore defaultStore] valueForKey:@"searchIndexer"];
+            [searchIndexer performSelector:@selector(cancelAllIndexingOperations)];
+        }
+    }
+    
+    [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
-    [RKClient setSharedClient:nil];
     [RKManagedObjectStore setDefaultStore:nil];
 
     if ([self respondsToSelector:@selector(didTearDown)]) {
         [self didTearDown];
-    }
-}
-
-+ (void)clearCacheDirectory
-{
-    NSError *error = nil;
-    NSString *cachePath = RKCachesDirectory();
-    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
-    if (success) {
-        RKLogDebug(@"Cleared cache directory...");
-        success = [[NSFileManager defaultManager] createDirectoryAtPath:cachePath withIntermediateDirectories:YES attributes:nil error:&error];
-        if (!success) {
-            RKLogError(@"Failed creation of cache path '%@': %@", cachePath, [error localizedDescription]);
-        }
-    } else {
-        RKLogError(@"Failed to clear cache path '%@': %@", cachePath, [error localizedDescription]);
     }
 }
 

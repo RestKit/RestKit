@@ -19,51 +19,39 @@
 //
 
 /**
- RKMapping is an abstract class for objects defining RestKit object mappings.
- Its interface is common to all object mapping classes, including its concrete subclasses
- RKObjectMapping and RKDynamicMapping.
+ `RKMapping` is an abstract class for objects defining RestKit object mappings. Its interface is common to all object mapping classes, including its concrete subclasses `RKObjectMapping` and `RKDynamicMapping`.
  */
 @interface RKMapping : NSObject
 
-/**
- The root key path for the receiver.
-
- Root key paths are handled differently depending on the context in which the mapping is
- being used. If the receiver is used for object mapping, the rootKeyPath specifies a nested
- root dictionary that all attribute and relationship mappings will be considered relative to. When
- the mapping is used in a serialization context, the rootKeyPath specifies that the serialized content
- should be stored in a dictionary nested with the rootKeyPath as the key.
-
- @see RKObjectSerializer
- */
-@property (nonatomic, copy) NSString *rootKeyPath;
+///---------------------------------
+/// @name Forcing Collection Mapping
+///---------------------------------
 
 /**
- Forces the mapper to treat the mapped keyPath as a collection even if it does not
- return an array or a set of objects. This permits mapping where a dictionary identifies
- a collection of objects.
+ Forces the mapper to treat the mapped keyPath as a collection even if it does not return an array or a set of objects. This permits mapping where a dictionary identifies a collection of objects.
 
- When enabled, each key/value pair in the resolved dictionary will be mapped as a separate
- entity. This is useful when you have a JSON structure similar to:
+ When enabled, each key/value pair in the resolved dictionary will be mapped as a separate entity. This is useful when you have a JSON structure similar to:
 
- { "users":
- {
- "blake": { "id": 1234, "email": "blake@restkit.org" },
- "rachit": { "id": 5678", "email": "rachit@restkit.org" }
- }
- }
+     { "users": {
+        "blake": { "id": 1234, "email": "blake@restkit.org" },
+        "rachit": { "id": 5678", "email": "rachit@restkit.org" }
+        }
+     }
 
- By enabling forceCollectionMapping, RestKit will map "blake" => attributes and
- "rachit" => attributes as independent objects. This can be combined with
- mapKeyOfNestedDictionaryToAttribute: to properly map these sorts of structures.
+ By enabling `forceCollectionMapping`, RestKit will map "blake" => attributes and "rachit" => attributes as independent objects. This can be combined with `mapKeyOfNestedDictionaryToAttribute:` to properly map these sorts of structures.
 
- @default NO
- @see mapKeyOfNestedDictionaryToAttribute
+ @default `NO`
+ @see `mapKeyOfNestedDictionaryToAttribute`
  */
 @property (nonatomic, assign) BOOL forceCollectionMapping;
 
+
+///-------------------------
+/// @name Comparing Mappings
+///-------------------------
+
 /**
- Returns YES if the receiver and the specified mapping are considered equivalent.
+ Returns `YES` if the receiver and the specified mapping are considered equivalent.
 
  **NOTE**: Must be implemented in subclass.
  */

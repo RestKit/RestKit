@@ -20,52 +20,34 @@
 
 #import "RKPathMatcher.h"
 #import "SOCKit.h"
-#import "NSString+RKAdditions.h"
-#import "NSDictionary+RKAdditions.h"
 #import "RKLog.h"
+#import "RKDictionaryUtilities.h"
+#import "RKPathUtilities.h"
 
-BOOL RKPathUsesParentheticalParameters(NSString *path);
-NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern);
-NSString *RKEncodeURLString(NSString *unencodedString);
-
-BOOL RKPathUsesParentheticalParameters(NSString *path) {
-    NSCharacterSet *parens = [NSCharacterSet characterSetWithCharactersInString:@"()"];
-    NSArray *parenComponents = [path componentsSeparatedByCharactersInSet:parens];
-    return (parenComponents != NULL && [parenComponents count] > 1);
-}
-
-NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
-    if (RKPathUsesParentheticalParameters(pattern)) {
-        RKLogWarning(@"Use of encapsulating parentheses for pattern parameters is deprecated.  Use a single colon instead. For example, instead of /group/(role)/(user) you should use /group/:role/:user");
-        NSString *noTrailingParen = [pattern stringByReplacingOccurrencesOfString:@")" withString:@""];
-        pattern = [noTrailingParen stringByReplacingOccurrencesOfString:@"(" withString:@":"];
-    }
-    return pattern;
-}
+static NSString *RKEncodeURLString(NSString *unencodedString);
+extern NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding stringEncoding);
 
 // NSString's stringByAddingPercentEscapes doesn't do a complete job (it ignores "/?&", among others)
-NSString *RKEncodeURLString(NSString *unencodedString) {
-    NSString *encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(
+static NSString *RKEncodeURLString(NSString *unencodedString)
+{
+    NSString *encodedString = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
                                                                                   NULL,
-                                                                                  (CFStringRef)unencodedString,
+                                                                                  (__bridge CFStringRef)unencodedString,
                                                                                   NULL,
                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                  kCFStringEncodingUTF8);
-    return [encodedString autorelease];
+                                                                                  kCFStringEncodingUTF8));
+    return encodedString;
 }
 
 @interface RKPathMatcher ()
-@property (nonatomic, retain) SOCPattern *socPattern;
+@property (nonatomic, strong) SOCPattern *socPattern;
+@property (nonatomic, copy) NSString *patternString; // SOCPattern keeps it private
 @property (nonatomic, copy) NSString *sourcePath;
 @property (nonatomic, copy) NSString *rootPath;
 @property (copy, readwrite) NSDictionary *queryParameters;
 @end
 
 @implementation RKPathMatcher
-@synthesize socPattern = socPattern_;
-@synthesize sourcePath = sourcePath_;
-@synthesize rootPath = rootPath_;
-@synthesize queryParameters = queryParameters_;
 
 - (id)copyWithZone:(NSZone *)zone
 {
@@ -78,35 +60,32 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     return copy;
 }
 
-- (void)dealloc
-{
-    self.socPattern = nil;
-    self.sourcePath = nil;
-    self.rootPath = nil;
-    self.queryParameters = nil;
-    [super dealloc];
-}
-
-+ (RKPathMatcher *)matcherWithPattern:(NSString *)patternString
++ (RKPathMatcher *)pathMatcherWithPattern:(NSString *)patternString
 {
     NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform pattern matching.");
-    patternString = RKPathPatternFindAndReplaceParensWithColons(patternString);
-    RKPathMatcher *matcher = [[[RKPathMatcher alloc] init] autorelease];
+    RKPathMatcher *matcher = [[RKPathMatcher alloc] init];
     matcher.socPattern = [SOCPattern patternWithString:patternString];
+    matcher.patternString = patternString;
     return matcher;
 }
 
-+ (RKPathMatcher *)matcherWithPath:(NSString *)pathString
++ (RKPathMatcher *)pathMatcherWithPath:(NSString *)pathString
 {
-    RKPathMatcher *matcher = [[[RKPathMatcher alloc] init] autorelease];
+    RKPathMatcher *matcher = [[RKPathMatcher alloc] init];
     matcher.sourcePath = pathString;
     matcher.rootPath = pathString;
     return matcher;
 }
 
+// Normalize our root path for matching cleanly with SOCKit
+- (void)setRootPath:(NSString *)rootPath
+{
+    _rootPath = RKPathNormalize(rootPath);
+}
+
 - (BOOL)matches
 {
-    NSAssert( (self.socPattern != NULL && self.rootPath != NULL), @"Matcher is insufficiently configured.  Before attempting pattern matching, you must provide a path string and a pattern to match it against.");
+    NSAssert((self.socPattern != NULL && self.rootPath != NULL), @"Matcher is insufficiently configured.  Before attempting pattern matching, you must provide a path string and a pattern to match it against.");
     return [self.socPattern stringMatches:self.rootPath];
 }
 
@@ -115,7 +94,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     NSArray *components = [self.sourcePath componentsSeparatedByString:@"?"];
     if ([components count] > 1) {
         self.rootPath = [components objectAtIndex:0];
-        self.queryParameters = [[components objectAtIndex:1] queryParametersUsingEncoding:NSUTF8StringEncoding];
+        self.queryParameters = RKQueryParametersFromStringWithEncoding([components objectAtIndex:1], NSUTF8StringEncoding);
         return YES;
     }
     return NO;
@@ -123,7 +102,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 
 - (BOOL)itMatchesAndHasParsedArguments:(NSDictionary **)arguments tokenizeQueryStrings:(BOOL)shouldTokenize
 {
-    NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using matcherWithPattern: before attempting a pattern match.");
+    NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using pathMatcherWithPattern: before attempting a pattern match.");
     NSMutableDictionary *argumentsCollection = [NSMutableDictionary dictionary];
     if ([self bifurcateSourcePathFromQueryParameters]) {
         if (shouldTokenize) {
@@ -137,7 +116,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     }
     NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:self.rootPath];
     if (extracted)
-        [argumentsCollection addEntriesFromDictionary:[extracted dictionaryByReplacingPercentEscapesInEntries]];
+        [argumentsCollection addEntriesFromDictionary:RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(extracted)];
     *arguments = argumentsCollection;
     return YES;
 }
@@ -145,7 +124,6 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 - (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments
 {
     NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform patterm matching.");
-    patternString = RKPathPatternFindAndReplaceParensWithColons(patternString);
     self.socPattern = [SOCPattern patternWithString:patternString];
     return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
 }
@@ -162,10 +140,9 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     return [self pathFromObject:object addingEscapes:YES];
 }
 
-
 - (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes
 {
-    NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using matcherWithPattern: before calling pathFromObject:");
+    NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using pathMatcherWithPattern: before calling pathFromObject:");
     NSAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     NSString *(^encoderBlock)(NSString *interpolatedString) = nil;
     if (addEscapes)

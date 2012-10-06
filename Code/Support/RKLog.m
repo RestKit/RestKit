@@ -19,7 +19,6 @@
 //
 
 #import "RKLog.h"
-#import "lcl.h"
 
 int RKLogLevelForString(NSString *, NSString *);
 
@@ -28,8 +27,8 @@ static BOOL loggingInitialized = NO;
 void RKLogInitialize(void)
 {
     if (loggingInitialized == NO) {
-        lcl_configure_by_name("RestKit*", RKLogLevelDefault);
-        lcl_configure_by_name("App", RKLogLevelDefault);
+        RKlcl_configure_by_name("RestKit*", RKLogLevelDefault);
+        RKlcl_configure_by_name("App", RKLogLevelDefault);
         RKLogInfo(@"RestKit initialized...");
         loggingInitialized = YES;
     }
@@ -153,7 +152,7 @@ void RKLogIntegerAsBinary(NSUInteger bitMask)
 
 void RKLogCoreDataError(NSError *error)
 {
-    RKLogToComponentWithLevelWhileExecutingBlock(lcl_cRestKitCoreData, RKLogLevelError, ^{
+    RKLogToComponentWithLevelWhileExecutingBlock(RKlcl_cRestKitCoreData, RKLogLevelError, ^{
         RKLogValidationError(error);
     });
 }

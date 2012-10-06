@@ -19,16 +19,18 @@
 //
 
 #import "RKManagedObjectThreadSafeInvocation.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent RKlcl_cRestKitCoreData
 
 @interface RKManagedObjectThreadSafeInvocation ()
-@property (nonatomic, retain) NSMutableDictionary *argumentKeyPaths;
+@property (nonatomic, strong) NSMutableDictionary *argumentKeyPaths;
 @end
 
 @implementation RKManagedObjectThreadSafeInvocation
 
-@synthesize privateQueueManagedObjectContext = _privateQueueManagedObjectContext;
-@synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
-@synthesize argumentKeyPaths = _argumentKeyPaths;
 
 + (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature
 {
@@ -66,7 +68,7 @@
             NSManagedObjectID *objectID = [(NSManagedObject *)value objectID];
             [self setValue:objectID forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
-            id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
+            id collection = [[[[value class] alloc] init] mutableCopy];
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObject class]]) {
                     [collection addObject:[(NSManagedObject *)subObject objectID]];
@@ -74,9 +76,8 @@
                     [collection addObject:subObject];
                 }
             }
-            
+
             [self setValue:collection forKeyPathOrKey:keyPath object:argument];
-            [collection release];
         }
     }
 }
@@ -95,7 +96,7 @@
             NSAssert(managedObject, @"Expected managed object for ID %@, got nil", value);
             [self setValue:managedObject forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
-            id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
+            id collection = [[[[value class] alloc] init] mutableCopy];
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObjectID class]]) {
                     __block NSManagedObject *managedObject = nil;
@@ -103,15 +104,15 @@
                     [self.mainQueueManagedObjectContext performBlockAndWait:^{
                         managedObject = [self.mainQueueManagedObjectContext existingObjectWithID:(NSManagedObjectID *)subObject error:&error];
                     }];
+                    NSAssert(managedObject, @"Expected managed object for ID %@, got nil: %@", subObject, error);
                     [collection addObject:managedObject];
                 } else {
                     [collection addObject:subObject];
                 }
             }
-            
+
 
             [self setValue:collection forKeyPathOrKey:keyPath object:argument];
-            [collection release];
         }
     }
 }
@@ -158,13 +159,5 @@
     }
 }
 
-- (void)dealloc
-{
-    self.mainQueueManagedObjectContext = nil;
-    self.privateQueueManagedObjectContext = nil;
-    self.argumentKeyPaths = nil;
-    
-    [super dealloc];
-}
 
 @end

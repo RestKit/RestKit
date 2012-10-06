@@ -87,18 +87,18 @@
 /**
  The persistent store in which imported managed objects will be persisted.
  */
-@property (nonatomic, retain, readonly) NSPersistentStore *persistentStore;
+@property (nonatomic, strong, readonly) NSPersistentStore *persistentStore;
 
 /**
  The managed object model containing entities that may be imported by the receiver.
  */
-@property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, strong, readonly) NSManagedObjectModel *managedObjectModel;
 
 /**
  A managed object context with the NSPrivateQueueConcurrencyType concurrency type
  used to perform the import.
  */
-@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 
 /**
  A convenience accessor for retrieving the complete filesystem path to the persistent
@@ -108,8 +108,9 @@
 
     NSURL *URL = [importer.persistentStore.persistentStoreCoordinator URLForPersistentStore:importer.persistentStore];
     return [URL path];
+ 
  */
-@property (nonatomic, retain, readonly) NSString *storePath;
+@property (nonatomic, strong, readonly) NSString *storePath;
 
 ///-----------------------------------------------------------------------------
 /// @name Importing Managed Objects

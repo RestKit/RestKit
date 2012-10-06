@@ -5,18 +5,36 @@
 //  Created by Blake Watters on 7/27/12.
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 
 #import "RKSearchIndexer.h"
 #import "RKSearchWordEntity.h"
 #import "RKSearchWord.h"
 #import "RKLog.h"
 #import "RKSearchTokenizer.h"
+#import "NSManagedObjectContext+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitSearch
+#define RKLogComponent RKlcl_cRestKitSearch
 
 NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttributes";
+
+@interface RKSearchIndexer ()
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
+@property (nonatomic, assign) NSUInteger totalIndexingOperationCount;
+@end
 
 @implementation RKSearchIndexer
 
@@ -24,17 +42,17 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 {
     NSParameterAssert(entity);
     NSParameterAssert(attributes);
-    
+
     // Create a relationship from the RKSearchWordEntity to the given searchable entity
     NSEntityDescription *searchWordEntity = [[entity.managedObjectModel entitiesByName] objectForKey:RKSearchWordEntityName];
     if (! searchWordEntity) {
-        searchWordEntity = [[[RKSearchWordEntity alloc] init] autorelease];
-        
+        searchWordEntity = [[RKSearchWordEntity alloc] init];
+
         // Add the entity to the model
         NSArray *entities = [entity.managedObjectModel entities];
         [entity.managedObjectModel setEntities:[entities arrayByAddingObject:searchWordEntity]];
     }
-    
+
     NSMutableArray *attributeNames = [NSMutableArray arrayWithCapacity:[attributes count]];
     for (id attributeIdentifier in attributes) {
         NSAttributeDescription *attribute = nil;
@@ -49,26 +67,26 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                                            reason:[NSString stringWithFormat:@"Unable to configure search indexing: Invalid attribute identifier of type '%@' given, expected an NSString or NSAttributeDescription. (Value: %@)", [attributeIdentifier class], attributeIdentifier]
                                          userInfo:nil];
         }
-        
-        NSAssert(attribute.attributeType == NSStringAttributeType, @"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, got %d.", attribute.attributeType);
+
+        NSAssert(attribute.attributeType == NSStringAttributeType, @"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, got %ld.", (unsigned long) attribute.attributeType);
         [attributeNames addObject:attribute.name];
     }
-    
+
     // Store the searchable attributes into the user info dictionary
     NSMutableDictionary *userInfo = [[entity userInfo] mutableCopy];
     [userInfo setObject:attributeNames forKey:RKSearchableAttributeNamesUserInfoKey];
     [entity setUserInfo:userInfo];
-    
+
     // Create a relationship from our indexed entity to the RKSearchWord entity
     NSRelationshipDescription *relationship = [[NSRelationshipDescription alloc] init];
     [relationship setName:RKSearchWordsRelationshipName];
     [relationship setDestinationEntity:searchWordEntity];
     [relationship setMaxCount:0]; // Make it to-many
     [relationship setDeleteRule:NSNullifyDeleteRule];
-    
+
     NSArray *properties = [entity properties];
     [entity setProperties:[properties arrayByAddingObject:relationship]];
-    
+
     // Create an inverse relationship from the searchWords to the searchable entity
     NSRelationshipDescription *inverseRelationship = [[NSRelationshipDescription alloc] init];
     [inverseRelationship setName:entity.name];
@@ -76,114 +94,200 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     [inverseRelationship setDeleteRule:NSNullifyDeleteRule];
     NSArray *searchWordProperties = [searchWordEntity properties];
     [searchWordEntity setProperties:[searchWordProperties arrayByAddingObject:inverseRelationship]];
-    
+
     // Connect the relationships as inverses
     [relationship setInverseRelationship:inverseRelationship];
     [inverseRelationship setInverseRelationship:relationship];
+}
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        // Setup serial operation queue to enable cancellation of indexing
+        self.operationQueue = [NSOperationQueue new];
+        self.operationQueue.maxConcurrentOperationCount = 1;
+        [self.operationQueue addObserver:self forKeyPath:@"operationCount" options:0 context:NULL];
+    }
     
-    [inverseRelationship release];
-    [relationship release];
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)startObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSParameterAssert(managedObjectContext);
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleManagedObjectContextWillSaveNotification:)
-                                                 name:NSManagedObjectContextWillSaveNotification
-                                               object:managedObjectContext];
+
+    if (self.indexingContext) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleManagedObjectContextDidSaveNotification:)
+                                                     name:NSManagedObjectContextDidSaveNotification
+                                                   object:managedObjectContext];
+    } else {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleManagedObjectContextWillSaveNotification:)
+                                                     name:NSManagedObjectContextWillSaveNotification
+                                                   object:managedObjectContext];
+    }
 }
 
 - (void)stopObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSParameterAssert(managedObjectContext);
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextWillSaveNotification object:managedObjectContext];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:nil object:managedObjectContext];
 }
 
 - (NSUInteger)indexManagedObject:(NSManagedObject *)managedObject
 {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    
-    RKLogDebug(@"Indexing searchable attributes of managed object: %@", managedObject);
-    NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
-    if (! searchableAttributes) {
-        [NSException raise:NSInvalidArgumentException format:@"The given managed object %@ is for an entity (%@) that does not define any searchable attributes. Perhaps you forgot to invoke addSearchIndexingToEntity:onAttributes:?", managedObject, managedObject.entity];
-        return NSNotFound;
-    }
-    
-    RKSearchTokenizer *searchTokenizer = [RKSearchTokenizer new];
-    searchTokenizer.stopWords = self.stopWords;
-    
-    __block NSUInteger searchWordCount;
-    NSManagedObjectContext *managedObjectContext = managedObject.managedObjectContext;
-    [managedObjectContext performBlockAndWait:^{
-        NSMutableSet *searchWords = [NSMutableSet set];
-        for (NSString *searchableAttribute in searchableAttributes) {
-            NSString *attributeValue = [managedObject valueForKey:searchableAttribute];
-            if (attributeValue) {
-                RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
-                NSSet *tokens = [searchTokenizer tokenize:attributeValue];
-                for (NSString *word in tokens) {
-                    if (word && [word length] > 0) {
-                        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:RKSearchWordEntityName];
-                        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"%K = %@", RKSearchWordAttributeName, word];
-                        fetchRequest.fetchLimit = 1;
-                        NSError *error = nil;
-                        NSArray *results = [managedObject.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-                        if (results) {
-                            RKSearchWord *searchWord;
-                            if ([results count] == 0) {
-                                searchWord = [NSEntityDescription insertNewObjectForEntityForName:RKSearchWordEntityName inManagedObjectContext:managedObjectContext];
-                                searchWord.word = word;
+    @autoreleasepool {
+
+        RKLogDebug(@"Indexing searchable attributes of managed object: %@", managedObject);
+        NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
+        if (! searchableAttributes) {
+            [NSException raise:NSInvalidArgumentException format:@"The given managed object %@ is for an entity (%@) that does not define any searchable attributes. Perhaps you forgot to invoke addSearchIndexingToEntity:onAttributes:?", managedObject, managedObject.entity];
+            return NSNotFound;
+        }
+
+        RKSearchTokenizer *searchTokenizer = [RKSearchTokenizer new];
+        searchTokenizer.stopWords = self.stopWords;
+
+        __block NSUInteger searchWordCount;
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:RKSearchWordEntityName];
+        fetchRequest.fetchLimit = 1;
+        NSPredicate *predicateTemplate = [NSPredicate predicateWithFormat:@"%K == $SEARCH_WORD", RKSearchWordAttributeName];
+        NSManagedObjectContext *managedObjectContext = managedObject.managedObjectContext;
+
+        [managedObjectContext performBlockAndWait:^{
+            NSMutableSet *searchWords = [NSMutableSet set];
+            for (NSString *searchableAttribute in searchableAttributes) {
+                NSString *attributeValue = [managedObject valueForKey:searchableAttribute];
+                if (attributeValue) {
+                    RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
+                    NSSet *tokens = [searchTokenizer tokenize:attributeValue];
+                    for (NSString *word in tokens) {
+                        if (word && [word length] > 0) {
+                            fetchRequest.predicate = [predicateTemplate predicateWithSubstitutionVariables:@{ @"SEARCH_WORD" : word }];
+                            NSError *error = nil;
+                            NSArray *results = [managedObject.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                            if (results) {
+                                RKSearchWord *searchWord;
+                                if ([results count] == 0) {
+                                    searchWord = [NSEntityDescription insertNewObjectForEntityForName:RKSearchWordEntityName inManagedObjectContext:managedObjectContext];
+                                    searchWord.word = word;
+                                } else {
+                                    searchWord = [results objectAtIndex:0];
+                                }
+
+                                [searchWords addObject:searchWord];
                             } else {
-                                searchWord = [results objectAtIndex:0];
+                                RKLogError(@"Failed to retrieve search word: %@", error);
                             }
-                            
-                            [searchWords addObject:searchWord];
-                        } else {
-                            RKLogError(@"Failed to retrieve search word: %@", error);
                         }
                     }
                 }
             }
-        }
-        
-        [managedObject setValue:searchWords forKey:RKSearchWordsRelationshipName];
-        RKLogTrace(@"Indexed search words: %@", [searchWords valueForKey:RKSearchWordAttributeName]);
-        searchWordCount = [searchWords count];
-    }];
-    
-    [pool drain];
-    
-    return searchWordCount;
+
+            [managedObject setValue:searchWords forKey:RKSearchWordsRelationshipName];
+            RKLogTrace(@"Indexed search words: %@", [searchWords valueForKey:RKSearchWordAttributeName]);
+            searchWordCount = [searchWords count];
+        }];
+
+        return searchWordCount;
+    }
 }
 
+/**
+ NOTE: Does **NOT** use the indexing context as unsaved objects would not be available for indexing in that context
+ */
 - (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                                waitUntilFinished:(BOOL)wait
 {
-    NSArray *candidateObjects = [[[NSSet setWithSet:managedObjectContext.insertedObjects] setByAddingObjectsFromSet:managedObjectContext.updatedObjects] allObjects];
-    NSUInteger totalObjects = [candidateObjects count];
-    RKLogInfo(@"Indexing %d changed objects in managed object context: %@", totalObjects, managedObjectContext);
+    NSParameterAssert(managedObjectContext);
     
-    for (NSManagedObject *managedObject in candidateObjects) {
-        NSUInteger index = [candidateObjects indexOfObject:managedObject];
-        double percentage = (((float)index + 1) / (float)totalObjects) * 100;
-        if ((index + 1) % 250 == 0) RKLogInfo(@"Indexed %d of %d (%.2f%% complete)", index + 1, totalObjects, percentage);
-        NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
-        if (! searchableAttributes) {
-            RKLogTrace(@"Skipping indexing for managed object for entity '%@': no searchable attributes found.", managedObject.entity.name);
-            continue;
+    NSSet *candidateObjects = [[NSSet setWithSet:managedObjectContext.insertedObjects] setByAddingObjectsFromSet:managedObjectContext.updatedObjects];
+    NSSet *objectsToIndex = [self objectsToIndexFromCandidateObjects:candidateObjects checkChangedValues:YES];
+    
+    if (wait) {
+        // Synchronous indexing
+        for (NSManagedObject *managedObject in objectsToIndex) {
+            [self indexManagedObject:managedObject];
         }
-        
-        for (NSString *attribute in searchableAttributes) {
-            if ([[managedObject changedValues] objectForKey:attribute]) {
-                RKLogTrace(@"Detected change to searchable attribute '%@' for managed object '%@': updating search index.", attribute, managedObject);
+    } else {
+        // Perform asynchronous indexing
+        for (NSManagedObject *managedObject in objectsToIndex) {
+            [self.operationQueue addOperationWithBlock:^{
                 [self indexManagedObject:managedObject];
-                break;
-            }
+            }];
         }
+        self.totalIndexingOperationCount = [self.operationQueue operationCount];
     }
+}
+
+- (void)indexChangedObjectsFromManagedObjectContextDidSaveNotification:(NSNotification *)notification
+{
+    if (! self.indexingContext) {
+        RKLogWarning(@"Received `NSManagedObjectContextDidSaveNotification` with nil indexing context: ignoring...");
+        return;
+    }
+    
+    NSDictionary *userInfo = [notification userInfo];
+    NSSet *candidateObjects = [[NSSet setWithSet:[userInfo objectForKey:NSInsertedObjectsKey]] setByAddingObjectsFromSet:[userInfo objectForKey:NSUpdatedObjectsKey]];
+    NSSet *objectsToIndex = [self objectsToIndexFromCandidateObjects:candidateObjects checkChangedValues:NO];
+
+    // After all indexing is complete, save the indexing context
+    NSBlockOperation *saveOperation = [NSBlockOperation blockOperationWithBlock:^{
+        [self.indexingContext performBlockAndWait:^{
+            NSError *error = nil;
+            RKLogInfo(@"Indexing completed. Saving indexing context...");
+            BOOL success = [self.indexingContext saveToPersistentStore:&error];
+            if (! success) {
+                RKLogError(@"Failed to save indexing context: %@", error);
+            }
+        }];
+    }];
+    
+    NSMutableSet *failedObjectIDs = [NSMutableSet set];
+    
+    // Enqueue an operation for each object to index
+    NSArray *objectIDsForObjectsToIndex = [objectsToIndex valueForKey:@"objectID"];
+    for (NSManagedObjectID *objectID in objectIDsForObjectsToIndex) {
+        NSBlockOperation *indexingOperation = [NSBlockOperation blockOperationWithBlock:^{
+            [self.indexingContext performBlockAndWait:^{
+                NSError *error = nil;
+                NSManagedObject *managedObject = [self.indexingContext existingObjectWithID:objectID error:&error];
+                if (managedObject && error == nil) {
+                    [self indexManagedObject:managedObject];
+                } else {
+                    RKLogError(@"Failed indexing of object %@ with error: %@", managedObject, error);
+                }
+            }];
+        }];
+        
+        [saveOperation addDependency:indexingOperation];
+        [self.operationQueue addOperation:indexingOperation];
+    }
+    
+    // Assert that we indexed everything sucessfully
+    [self.operationQueue addOperationWithBlock:^{
+        NSAssert([failedObjectIDs count] == 0, @"Expected no indexing failures, got %ld", (long) [failedObjectIDs count]);
+    }];
+    
+    [self.operationQueue addOperation:saveOperation];
+    self.totalIndexingOperationCount = [self.operationQueue operationCount];
+}
+
+- (void)cancelAllIndexingOperations
+{
+    [self.operationQueue cancelAllOperations];
+}
+
+- (void)waitUntilAllIndexingOperationsAreFinished
+{
+    [self.operationQueue waitUntilAllOperationsAreFinished];
 }
 
 #pragma mark - Private
@@ -192,8 +296,54 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 {
     NSManagedObjectContext *managedObjectContext = [notification object];
     RKLogInfo(@"Managed object context will save notification received. Checking changed and inserted objects for searchable entities...");
-    
-    [self indexChangedObjectsInManagedObjectContext:managedObjectContext];
+
+    // We wait until finished to ensure that the indexed objects are persisted with the save
+    [self indexChangedObjectsInManagedObjectContext:managedObjectContext waitUntilFinished:YES];
+}
+
+- (void)handleManagedObjectContextDidSaveNotification:(NSNotification *)notification
+{
+    RKLogInfo(@"Managed object context did save notification received. Checking changed and inserted objects for searchable entities...");
+    [self indexChangedObjectsFromManagedObjectContextDidSaveNotification:notification];
+}
+
+- (NSSet *)objectsToIndexFromCandidateObjects:(NSSet *)objects checkChangedValues:(BOOL)checkChangedValues
+{
+    NSUInteger totalObjects = [objects count];
+    NSMutableSet *objectsNeedingIndexing = [[NSMutableSet alloc] initWithCapacity:totalObjects];
+    RKLogInfo(@"Indexing %ld changed objects", (unsigned long) totalObjects);
+
+    for (NSManagedObject *managedObject in objects) {        
+        NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
+        if (! searchableAttributes) {
+            RKLogTrace(@"Skipping indexing for managed object for entity '%@': no searchable attributes found.", managedObject.entity.name);
+            continue;
+        }
+
+        for (NSString *attribute in searchableAttributes) {
+            if (!checkChangedValues || [[managedObject changedValues] objectForKey:attribute]) {
+                RKLogTrace(@"Detected change to searchable attribute '%@' for managed object '%@': updating search index.", attribute, managedObject);
+                [objectsNeedingIndexing addObject:managedObject];
+                break;
+            }
+        }
+    }
+    return objectsNeedingIndexing;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"operationCount"]) {
+        if (self.totalIndexingOperationCount > 0 && self.operationQueue.operationCount > 0) {
+            NSUInteger index = self.totalIndexingOperationCount - self.operationQueue.operationCount;
+            double percentage = (((float)index) / (float)self.totalIndexingOperationCount) * 100;
+            if (index % 250 == 0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) index, (unsigned long) self.totalIndexingOperationCount, percentage);
+            if (self.operationQueue.operationCount == 0) {
+                if (self.totalIndexingOperationCount >= 250) RKLogInfo(@"Finished indexing.");
+                self.totalIndexingOperationCount = 0;
+            }
+        }
+    }
 }
 
 @end

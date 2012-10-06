@@ -5,26 +5,31 @@
 //  Created by Blake Watters on 2/17/12.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 
 #import "RKMappingTestExpectation.h"
-#import "RKAttributeMapping.h"
+#import "RKPropertyMapping.h"
 
 @interface RKMappingTestExpectation ()
 @property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
 @property (nonatomic, copy, readwrite) NSString *destinationKeyPath;
 @property (nonatomic, strong, readwrite) id value;
-@property (nonatomic, copy, readwrite) BOOL (^evaluationBlock)(RKAttributeMapping *mapping, id value);
+@property (nonatomic, copy, readwrite) RKMappingTestExpectationEvaluationBlock evaluationBlock;
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @end
 
-
 @implementation RKMappingTestExpectation
-
-@synthesize sourceKeyPath = _sourceKeyPath;
-@synthesize destinationKeyPath = _destinationKeyPath;
-@synthesize value = _value;
-@synthesize evaluationBlock = _evaluationBlock;
-@synthesize mapping = _mapping;
 
 + (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
 {
@@ -45,12 +50,12 @@
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKAttributeMapping *mapping, id value))testBlock
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock
 {
     RKMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
-    expectation.evaluationBlock = testBlock;
+    expectation.evaluationBlock = evaluationBlock;
 
     return expectation;
 }
@@ -67,20 +72,19 @@
 
 - (NSString *)mappingDescription
 {
-    return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@'",
-            self.sourceKeyPath, self.destinationKeyPath];
+    return [NSString stringWithFormat:@"map '%@' to '%@'", self.sourceKeyPath, self.destinationKeyPath];
 }
 
 - (NSString *)description
 {
     if (self.value) {
-        return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' with %@ value '%@'",
+        return [NSString stringWithFormat:@"map '%@' to '%@' with %@ value '%@'",
                 self.sourceKeyPath, self.destinationKeyPath, [self.value class], self.value];
     } else if (self.evaluationBlock) {
-        return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' satisfying evaluation block",
+        return [NSString stringWithFormat:@"map '%@' to '%@' satisfying evaluation block",
                 self.sourceKeyPath, self.destinationKeyPath];
     } else if (self.mapping) {
-        return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' using mapping: %@",
+        return [NSString stringWithFormat:@"map '%@' to '%@' using mapping: %@",
                 self.sourceKeyPath, self.destinationKeyPath, self.mapping];
     }
 

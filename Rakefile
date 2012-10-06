@@ -64,42 +64,26 @@ namespace :test do
   task :all do
     Rake.application.invoke_task("test:logic")
     unit_status = $?.exitstatus
-    Rake.application.invoke_task("test:application")
+    puts "\033[0;33m!! Warning: RestKit application tests are disabled!!"
+    # Rake.application.invoke_task("test:application")
     integration_status = $?.exitstatus
     puts "\033[0;31m!! Unit Tests failed with exit status of #{unit_status}" if unit_status != 0
     puts "\033[0;31m!! Integration Tests failed with exit status of #{integration_status}" if integration_status != 0
     puts "\033[0;32m** All Tests executed successfully" if unit_status == 0 && integration_status == 0
-  end
-  
-  task :check_mongodb do
-    port_check = RestKit::Server::PortCheck.new('127.0.0.1', 27017)
-    port_check.run
-    if port_check.closed?
-      puts "\033[0;33m!! Warning: MongoDB was not found running on port 27017"
-      puts "MongoDB is required for the execution of the OAuth tests. Tests in RKOAuthClientTest will NOT be executed"
-      `which mongo`
-      if $?.exitstatus == 0
-        puts "Execute MongoDB via `mongod run --config /usr/local/etc/mongod.conf`"
-      else
-        puts "Install mongodb with Homebrew via `brew install mongodb`"
-      end
-      puts "\033[0m"
-      sleep(5)
-    end
   end
 end
 
 desc 'Run all the RestKit tests'
 task :test => "test:all"
 
-task :default => ["test:check_mongodb", "server:autostart", "test:all", "server:autostop"]
+task :default => ["server:autostart", "test:all", "server:autostop"]
 
 def restkit_version
   @restkit_version ||= ENV['VERSION'] || File.read("VERSION").chomp
 end
 
 def apple_doc_command
-  "Vendor/appledoc/appledoc -t Vendor/appledoc/Templates -o Docs/API -p RestKit -v #{restkit_version} -c \"RestKit\" " +
+  "/usr/local/bin/appledoc -t ~/Library/Application\\ Support/appledoc -o Docs/API -p RestKit -v #{restkit_version} -c \"RestKit\" " +
   "--company-id org.restkit --warn-undocumented-object --warn-undocumented-member  --warn-empty-description  --warn-unknown-directive " +
   "--warn-invalid-crossref --warn-missing-arg --no-repeat-first-par "
 end
@@ -125,16 +109,25 @@ end
 desc "Generate documentation via appledoc"
 task :docs => 'docs:generate'
 
+namespace :appledoc do
+  task :check do
+    unless File.exists?('/usr/local/bin/appledoc')
+      "appledoc not found at /usr/local/bin/appledoc: Install via homebrew and try again: `brew install --HEAD appledoc`"
+      exit 1
+    end
+  end
+end
+
 namespace :docs do
-  task :generate do
-    command = apple_doc_command << " --no-create-docset --keep-intermediate-files --create-html Code/"
+  task :generate => 'appledoc:check' do
+    command = apple_doc_command << " --no-create-docset --keep-intermediate-files --create-html `find Code/ -name '*.h'`"
     run(command, 1)
     puts "Generated HTML documentationa at Docs/API/html"
   end
   
   desc "Check that documentation can be built from the source code via appledoc successfully."
-  task :check do
-    command = apple_doc_command << " --no-create-html --verbose 5 Code/"
+  task :check => 'appledoc:check' do
+    command = apple_doc_command << " --no-create-html --verbose 5 `find Code/ -name '*.h'`"
     exitstatus = run(command, 1)
     if exitstatus == 0
       puts "appledoc generation completed successfully!"
@@ -150,8 +143,8 @@ namespace :docs do
   end
   
   desc "Generate & install a docset into Xcode from the current sources"
-  task :install do
-    command = apple_doc_command << " --install-docset Code/"
+  task :install => 'appledoc:check' do
+    command = apple_doc_command << " --install-docset `find Code/ -name '*.h'`"
     run(command, 1)
   end
   
@@ -165,7 +158,7 @@ namespace :docs do
             " --keep-intermediate-files" <<
             " --docset-feed-name \"RestKit #{version} Documentation\"" <<
             " --docset-feed-url http://restkit.org/api/%DOCSETATOMFILENAME" <<
-            " --docset-package-url http://restkit.org/api/%DOCSETPACKAGEFILENAME --publish-docset --verbose 3 Code/"
+            " --docset-package-url http://restkit.org/api/%DOCSETPACKAGEFILENAME --publish-docset --verbose 3 `find Code/ -name '*.h'`"
     run(command, 1)
     puts "Uploading docset to #{destination}..."
     versioned_destination = File.join(destination, version)
@@ -173,7 +166,7 @@ namespace :docs do
     run(command)
     
     if $?.exitstatus == 0
-      command = "rsync -rvpPe ssh Docs/API/publish/ #{destination}"
+      command = "rsync -rvpPe ssh Docs/API/publish/*.xar #{destination}"
       run(command)
     end
   end

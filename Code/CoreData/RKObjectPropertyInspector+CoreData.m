@@ -21,7 +21,7 @@
 #import <CoreData/CoreData.h>
 #import "RKPropertyInspector+CoreData.h"
 #import "RKLog.h"
-#import "RKFixCategoryBug.h"
+#import "RKMacros.h"
 #import <objc/message.h>
 
 
@@ -29,7 +29,7 @@ RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitCoreData
+#define RKLogComponent RKlcl_cRestKitCoreData
 
 @implementation RKPropertyInspector (CoreData)
 

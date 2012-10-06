@@ -23,11 +23,11 @@ Indexing is configured through the managed object store and **must** be done bef
 	
 	// Create the managed object contexts and start indexing
 	[managedObjectStore createManagedObjectContexts];
-	[managedObjectStore startIndexingPrimaryManagedObjectContext];
+	[managedObjectStore startIndexingPersistentStoreManagedObjectContext];
 
 ```
 
-Once indexing is configured, an instance of `RKSearchIndexer` will observe the primary managed object context for save notifications. On save, any managed objects whose entities were configured for indexing will have their searchable attributes tokenized and stored as a to-many relationship to the `RKSearchWordEntity` entity.
+Once indexing is configured, an instance of `RKSearchIndexer` will observe the persistent store managed object context for save notifications. On save, any managed objects whose entities were configured for indexing will have their searchable attributes tokenized and stored as a to-many relationship to the `RKSearchWordEntity` entity.
 
 ### Performing a Search
 
@@ -54,6 +54,12 @@ Searching an indexed entity is performed via a standard Core Data fetch request 
 
 ```
 
+### Using an Indexing Context
+
+For applications loading payloads containing a large number of searchable entities, it may become desirable to make use of a dedicated managed object context for the purposes of search indexing. When observing the persistent store context for changes, the indexer awaits the posting of a `NSManagedObjectContextWillSave` notification and performs indexing before the save is complete. Because of the nature of parent/child managed object contexts in Core Data, this can introduce blockage of any managed object contexts with the `NSMainQueueConcurrencyType` that are children of the persistent store context. 
+
+To avoid this, a dedicated `indexingContext` can be assigned to the search indexer. When an indexing context is provided, the indexing is performed in response to a `NSManagedObjectContextDidSave` notification on the indexing context. It is recommended that the indexing context have a direct connection to the persistent store coordinator and that its changes are merged back into the persistent store and main queue managed object contexts via observation of the `NSManagedObjectContextDidSave`.
+
 ## Sample Code and Help
 
 An example project is provided in the Examples subdirectory of the RestKit distribution.
@@ -69,7 +75,7 @@ Search is implemented using the Apple recommended pattern of maintaining a relat
 The `RKSearchIndexer` class does all of the heavy lifting with regards to maintaining the searchable content. The indexer can invoked in three ways to update the indexes:
 
 1. Manually via `- (void)indexManagedObject:(NSManagedObject *)`. This method tells the indexer to update the given object.
-2. For an entire context on demand via `- (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext`. This methods tells the indexer to update the `searchWords` of all managed objects in the given context that have been changed since the last save.
+2. For an entire context on demand via `- (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext waitUntilFinished:(BOOL)wait`. This methods tells the indexer to update the `searchWords` of all managed objects in the given context that have been changed since the last save. The `wait` parameter determines whether indexing will be performed synchronously or asynchronously.
 3. Automatically at managed object context save time via `- (void)startObservingManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;`. This methods tells the indexer to watch the given context for the `NSManagedObjectContextWillSaveNotification` and to update all changed objects when the context changes.
 
 ### Stop Words
@@ -90,4 +96,4 @@ The search support is designed to be very easy to configure and use by snapping 
 
 - **Configure an Entity for Search**: `- (void)addSearchIndexingToEntityForName:(NSString *)entityName onAttributes:(NSArray *)attributes` - Adds search indexing to the entity with the given name in the receiver's managed object model for the given set of searchable string attributes.
 - **Accessing the Search Indexer**: `@property (nonatomic, readonly) RKSearchIndexer *searchIndexer` Once indexing is configured for an entity, the `searchIndexer` property becomes available for use.
-- **Managing Automatic Indexing**: `- (void)startIndexingPrimaryManagedObjectContext` and `- (void)stopIndexingPrimaryManagedObjectContext`. These methods provide quick control over automatic indexing of the primary managed object context on save.
+- **Managing Automatic Indexing**: `- (void)startIndexingPersistentStoreManagedObjectContext` and `- (void)stopIndexingPersistentStoreManagedObjectContext`. These methods provide quick control over automatic indexing of the persistent store managed object context on save.

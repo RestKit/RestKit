@@ -15,18 +15,17 @@
  */
 @interface NSManagedObject (RKAdditions)
 
-/**
- The receiver's managed object store.
- */
-- (RKManagedObjectStore *)managedObjectStore;
+///--------------------------------------
+/// @name Inspecting Managed Object State
+///--------------------------------------
 
 /**
  Determines if the receiver has been deleted from the persistent store
  and removed from the object graph.
- 
- Unlike isDeleted, will return YES after a save event or if the managed object was deleted 
+
+ Unlike isDeleted, will return YES after a save event or if the managed object was deleted
  in another managed object context that was then merged to the persistent store.
- 
+
  @return YES if the object has been deleted from the persistent store, else NO.
  */
 - (BOOL)hasBeenDeleted;

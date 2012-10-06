@@ -26,7 +26,7 @@ NSString * const RKSearchWordsRelationshipName = @"searchWords";
         [attribute setAttributeType:NSStringAttributeType];
         [self setProperties:[NSArray arrayWithObject:attribute]];
     }
-    
+
     return self;
 }
 

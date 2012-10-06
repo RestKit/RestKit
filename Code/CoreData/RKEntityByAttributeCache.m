@@ -5,6 +5,18 @@
 //  Created by Blake Watters on 5/1/12.
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
@@ -18,34 +30,33 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitCoreDataCache
+#define RKLogComponent RKlcl_cRestKitCoreDataCache
 
 @interface RKEntityByAttributeCache ()
-@property (nonatomic, retain) NSMutableDictionary *attributeValuesToObjectIDs;
+@property (nonatomic, strong) NSMutableDictionary *attributeValuesToObjectIDs;
 @end
 
 @implementation RKEntityByAttributeCache
 
-@synthesize entity = _entity;
-@synthesize attribute = _attribute;
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize attributeValuesToObjectIDs = _attributeValuesToObjectIDs;
-@synthesize monitorsContextForChanges = _monitorsContextForChanges;
 
 - (id)initWithEntity:(NSEntityDescription *)entity attribute:(NSString *)attributeName managedObjectContext:(NSManagedObjectContext *)context
 {
+    NSParameterAssert(entity);
+    NSParameterAssert(attributeName);
+    NSParameterAssert(context);
+
     self = [self init];
     if (self) {
-        _entity = [entity retain];
-        _attribute = [attributeName retain];
-        _managedObjectContext = [context retain];
+        _entity = entity;
+        _attribute = attributeName;
+        _managedObjectContext = context;
         _monitorsContextForChanges = YES;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(managedObjectContextDidChange:)
                                                      name:NSManagedObjectContextObjectsDidChangeNotification
                                                    object:context];
-        
+
 #if TARGET_OS_IPHONE
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(didReceiveMemoryWarning:)
@@ -60,13 +71,6 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    [_entity release];
-    [_attribute release];
-    [_managedObjectContext release];
-    [_attributeValuesToObjectIDs release];
-
-    [super dealloc];
 }
 
 - (NSUInteger)count
@@ -97,23 +101,27 @@
 - (void)load
 {
     RKLogDebug(@"Loading entity cache for Entity '%@' by attribute '%@' in managed object context %@ (concurrencyType = %ld)",
-               self.entity.name, self.attribute, self.managedObjectContext, (unsigned long) self.managedObjectContext.concurrencyType);
+               self.entity.name, self.attribute, self.managedObjectContext, (unsigned long)self.managedObjectContext.concurrencyType);
     @synchronized(self.attributeValuesToObjectIDs) {
         self.attributeValuesToObjectIDs = [NSMutableDictionary dictionary];
 
-        NSExpressionDescription* objectIDExpression = [[NSExpressionDescription new] autorelease];
+        NSExpressionDescription* objectIDExpression = [NSExpressionDescription new];
         objectIDExpression.name = @"objectID";
         objectIDExpression.expression = [NSExpression expressionForEvaluatedObject];
         objectIDExpression.expressionResultType = NSObjectIDAttributeType;
 
+        // NOTE: `NSDictionaryResultType` does NOT support fetching pending changes. Pending objects must be manually added to the cache via `addObject:`.
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         fetchRequest.entity = self.entity;
         fetchRequest.resultType = NSDictionaryResultType;
         fetchRequest.propertiesToFetch = [NSArray arrayWithObjects:objectIDExpression, self.attribute, nil];
+
         [self.managedObjectContext performBlockAndWait:^{
-            NSError *error;
+            NSError *error = nil;
             NSArray *dictionaries = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-            if (!dictionaries) {
+            if (dictionaries) {
+                RKLogDebug(@"Retrieved %ld dictionaries for cachable `NSManagedObjectID` objects with fetch request: %@", (long) [dictionaries count], fetchRequest);
+            } else {
                 RKLogWarning(@"Failed to load entity cache. Failed to execute fetch request: %@", fetchRequest);
                 RKLogCoreDataError(error);
             }
@@ -148,23 +156,26 @@
 
 - (NSManagedObject *)objectForObjectID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)context
 {
-    /*
+    /**
      NOTE:
-     We use existingObjectWithID: as opposed to objectWithID: as objectWithID: can return us a fault
-     that will raise an exception when fired. existingObjectWithID:error: will return nil if the ID has been
-     deleted. objectRegisteredForID: is also an acceptable approach.
+
+     We use `existingObjectWithID:` as opposed to `objectWithID:` as `objectWithID:` can return us a fault
+     that will raise an exception when fired. `existingObjectWithID:error:` will return nil if the ID has been
+     deleted. `objectRegisteredForID:` is also an acceptable approach.
      */
-    NSError *error = nil;
-    NSManagedObject *object;
-    object = [context existingObjectWithID:objectID error:&error];
+    __block NSError *error = nil;
+    __block NSManagedObject *object;
+    [context performBlockAndWait:^{
+        object = [context existingObjectWithID:objectID error:&error];
+    }];
     if (! object) {
         if (error) {
             RKLogError(@"Failed to retrieve managed object with ID %@. Error %@\n%@", objectID, [error localizedDescription], [error userInfo]);
         }
-        
+
         return nil;
     }
-    
+
     return object;
 }
 

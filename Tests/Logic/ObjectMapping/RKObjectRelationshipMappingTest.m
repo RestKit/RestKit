@@ -1,5 +1,5 @@
 //
-//  RKObjectRelationshipMappingTest.m
+//  RKRelationshipMappingTest.m
 //  RestKit
 //
 //  Created by Blake Watters on 6/8/12.
@@ -8,24 +8,24 @@
 
 #import "RKTestEnvironment.h"
 
-@interface RKObjectRelationshipMappingTest : RKTestCase
+@interface RKRelationshipMappingTest : RKTestCase
 
 @end
 
-@implementation RKObjectRelationshipMappingTest
+@implementation RKRelationshipMappingTest
 
 - (void)testThatRelationshipMappingsWithTheSameSourceAndDestinationKeyPathAreConsideredEqual
 {
-    RKRelationshipMapping *mapping1 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that" withMapping:nil];
-    RKRelationshipMapping *mapping2 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that" withMapping:nil];
+    RKRelationshipMapping *mapping1 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that" withMapping:nil];
+    RKRelationshipMapping *mapping2 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that" withMapping:nil];
 
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
 }
 
 - (void)testThatRelationshipMappingsWithDifferingKeyPathsAreNotConsideredEqual
 {
-    RKRelationshipMapping *mapping1 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:nil];
-    RKRelationshipMapping *mapping2 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"the other"  withMapping:nil];
+    RKRelationshipMapping *mapping1 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:nil];
+    RKRelationshipMapping *mapping2 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"the other"  withMapping:nil];
 
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(NO)));
 }
@@ -35,8 +35,8 @@
     RKObjectMapping *relationshipMapping1 = [RKObjectMapping mappingForClass:[NSSet class]];
     RKObjectMapping *relationshipMapping2 = [RKObjectMapping mappingForClass:[NSSet class]];
 
-    RKRelationshipMapping *mapping1 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping1];
-    RKRelationshipMapping *mapping2 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping2];
+    RKRelationshipMapping *mapping1 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping1];
+    RKRelationshipMapping *mapping2 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping2];
 
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
 }
@@ -46,8 +46,8 @@
     RKObjectMapping *relationshipMapping1 = [RKObjectMapping mappingForClass:[NSSet class]];
     RKObjectMapping *relationshipMapping2 = [RKObjectMapping mappingForClass:[NSNumber class]];
 
-    RKRelationshipMapping *mapping1 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping1];
-    RKRelationshipMapping *mapping2 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping2];
+    RKRelationshipMapping *mapping1 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping1];
+    RKRelationshipMapping *mapping2 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping2];
 
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(NO)));
 }
@@ -57,8 +57,8 @@
     RKObjectMapping *relationshipMapping1 = [RKObjectMapping mappingForClass:[NSSet class]];
     RKObjectMapping *relationshipMapping2 = [RKObjectMapping mappingForClass:nil];
 
-    RKRelationshipMapping *mapping1 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping1];
-    RKRelationshipMapping *mapping2 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping2];
+    RKRelationshipMapping *mapping1 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping1];
+    RKRelationshipMapping *mapping2 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping2];
 
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(NO)));
 }
@@ -68,8 +68,8 @@
     RKObjectMapping *relationshipMapping1 = [RKObjectMapping mappingForClass:nil];
     RKObjectMapping *relationshipMapping2 = [RKObjectMapping mappingForClass:nil];
 
-    RKRelationshipMapping *mapping1 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping1];
-    RKRelationshipMapping *mapping2 = [RKRelationshipMapping mappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping2];
+    RKRelationshipMapping *mapping1 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping1];
+    RKRelationshipMapping *mapping2 = [RKRelationshipMapping relationshipMappingFromKeyPath:@"this" toKeyPath:@"that"  withMapping:relationshipMapping2];
 
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
 }

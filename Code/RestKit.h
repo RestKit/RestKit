@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
+#import "ObjectMapping.h"
 #import "Network.h"
 #import "Support.h"
-#import "ObjectMapping.h"
 #import "CoreData.h"
 
 /**
@@ -31,4 +31,4 @@
  to use RKLog() in their own app.
  */
 #undef RKLogComponent
-#define RKLogComponent lcl_cApp
+#define RKLogComponent RKlcl_cApp

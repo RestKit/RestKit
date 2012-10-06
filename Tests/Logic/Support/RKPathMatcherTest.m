@@ -30,7 +30,7 @@
 - (void)testShouldMatchPathsWithQueryArguments
 {
     NSDictionary *arguments = nil;
-    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPath:@"/this/is/my/backend?foo=bar&this=that"];
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:@"/this/is/my/backend?foo=bar&this=that"];
     BOOL isMatchingPattern = [pathMatcher matchesPattern:@"/this/is/:controllerName/:entityName" tokenizeQueryStrings:YES parsedArguments:&arguments];
     assertThatBool(isMatchingPattern, is(equalToBool(YES)));
     assertThat(arguments, isNot(empty()));
@@ -41,7 +41,7 @@
 - (void)testShouldMatchPathsWithEscapedArguments
 {
     NSDictionary *arguments = nil;
-    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPath:@"/bills/tx/82/SB%2014?apikey=GC12d0c6af"];
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:@"/bills/tx/82/SB%2014?apikey=GC12d0c6af"];
     BOOL isMatchingPattern = [pathMatcher matchesPattern:@"/bills/:stateID/:session/:billID" tokenizeQueryStrings:YES parsedArguments:&arguments];
     assertThatBool(isMatchingPattern, is(equalToBool(YES)));
     assertThat(arguments, isNot(empty()));
@@ -52,7 +52,7 @@
 - (void)testShouldMatchPathsWithoutQueryArguments
 {
     NSDictionary *arguments = nil;
-    RKPathMatcher *patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/:username"];
+    RKPathMatcher *patternMatcher = [RKPathMatcher pathMatcherWithPattern:@"github.com/:username"];
     BOOL isMatchingPattern = [patternMatcher matchesPath:@"github.com/jverkoey" tokenizeQueryStrings:NO parsedArguments:&arguments];
     assertThatBool(isMatchingPattern, is(equalToBool(YES)));
     assertThat(arguments, isNot(empty()));
@@ -62,7 +62,7 @@
 - (void)testShouldMatchPathsWithoutAnyArguments
 {
     NSDictionary *arguments = nil;
-    RKPathMatcher *patternMatcher = [RKPathMatcher matcherWithPattern:@"/metadata"];
+    RKPathMatcher *patternMatcher = [RKPathMatcher pathMatcherWithPattern:@"/metadata"];
     BOOL isMatchingPattern = [patternMatcher matchesPath:@"/metadata" tokenizeQueryStrings:NO parsedArguments:&arguments];
     assertThatBool(isMatchingPattern, is(equalToBool(YES)));
     assertThat(arguments, is(empty()));
@@ -71,7 +71,7 @@
 - (void)testShouldPerformTwoMatchesInARow
 {
     NSDictionary *arguments = nil;
-    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPath:@"/metadata?apikey=GC12d0c6af"];
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:@"/metadata?apikey=GC12d0c6af"];
     BOOL isMatchingPattern1 = [pathMatcher matchesPattern:@"/metadata/:stateID" tokenizeQueryStrings:YES parsedArguments:&arguments];
     assertThatBool(isMatchingPattern1, is(equalToBool(NO)));
     BOOL isMatchingPattern2 = [pathMatcher matchesPattern:@"/metadata" tokenizeQueryStrings:YES parsedArguments:&arguments];
@@ -80,31 +80,12 @@
     assertThat(arguments, hasEntry(@"apikey", @"GC12d0c6af"));
 }
 
-- (void)testShouldMatchPathsWithDeprecatedParentheses
-{
-    NSDictionary *arguments = nil;
-    RKPathMatcher *patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/(username)"];
-    BOOL isMatchingPattern = [patternMatcher matchesPath:@"github.com/jverkoey" tokenizeQueryStrings:NO parsedArguments:&arguments];
-    assertThatBool(isMatchingPattern, is(equalToBool(YES)));
-}
-
 - (void)testShouldCreatePathsFromInterpolatedObjects
 {
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
-    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:name/:age"];
-    NSString *interpolatedPath = [matcher pathFromObject:person];
-    assertThat(interpolatedPath, isNot(equalTo(nil)));
-    NSString *expectedPath = @"/people/CuddleGuts/6";
-    assertThat(interpolatedPath, is(equalTo(expectedPath)));
-}
-
-- (void)testShouldCreatePathsFromInterpolatedObjectsWithDeprecatedParentheses
-{
-    NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
-    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/(name)/(age)"];
-    NSString *interpolatedPath = [matcher pathFromObject:person];
+    RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/people/:name/:age"];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES];
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/people/CuddleGuts/6";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
@@ -114,8 +95,8 @@
 {
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
-    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:group/:name?password=:password"];
-    NSString *interpolatedPath = [matcher pathFromObject:person];
+    RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/people/:group/:name?password=:password"];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES];
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/people/15/Joe%20Bob%20Briggs?password=JUICE%7CBOX%26121";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
@@ -125,7 +106,7 @@
 {
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
-    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:group/:name?password=:password"];
+    RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/people/:group/:name?password=:password"];
     NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:NO];
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/people/15/Joe Bob Briggs?password=JUICE|BOX&121";
@@ -135,12 +116,36 @@
 - (void)testShouldCreatePathsThatIncludePatternArgumentsFollowedByEscapedNonPatternDots
 {
     NSDictionary *arguments = [NSDictionary dictionaryWithObjectsAndKeys:@"Resources", @"filename", nil];
-    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/directory/:filename\\.json"];
-    NSString *interpolatedPath = [matcher pathFromObject:arguments];
+    RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/directory/:filename\\.json"];
+    NSString *interpolatedPath = [matcher pathFromObject:arguments addingEscapes:YES];
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/directory/Resources.json";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
+- (void)testMatchingPathWithTrailingSlashAndQuery
+{
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/v1/organizations"];
+    BOOL matches = [pathMatcher matchesPath:@"/api/v1/organizations/?client_search=t" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(YES);
+}
+
+- (void)testThatPatternsAreNotMatchedTooAggressively
+{
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/v1/organizations"];
+    BOOL matches = [pathMatcher matchesPath:@"/api/v1/organizations/1234/another?client_search=t" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(NO);
+    
+    pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/:version/organizations"];
+    matches = [pathMatcher matchesPath:@"/api/v1/organizations/1234/another?client_search=t" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(NO);
+    
+    matches = [pathMatcher matchesPath:@"/api/v1/organizations/" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(YES);
+    
+    pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/:version/organizations/:organizationID"];
+    matches = [pathMatcher matchesPath:@"/api/v1/organizations/1234/" tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(YES);
+}
 
 @end

@@ -10,7 +10,6 @@
 
 @implementation RKMapping
 
-@synthesize rootKeyPath;
 @synthesize forceCollectionMapping;
 
 - (BOOL)isEqualToMapping:(RKMapping *)otherMapping

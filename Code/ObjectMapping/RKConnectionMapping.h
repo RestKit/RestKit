@@ -21,50 +21,115 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "RKMapping.h"
+#import "RKPropertyMapping.h"
 
 @class RKConnectionMapping, RKDynamicMappingMatcher;
 @protocol RKManagedObjectCaching;
 
-typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
-
 // Defines the rules for connecting relationsips
-@interface RKConnectionMapping : NSObject
+/**
+ Instructs RestKit to connect a relationship of the object being mapped to the
+ appropriate target object(s).  It does this by using the value of the object's
+ fromKeyPath attribute to query instances of the target entity that have the
+ same value in their toKeyPath attribute.
 
-@property (nonatomic, retain, readonly) NSString *relationshipName;
-@property (nonatomic, retain, readonly) NSString *sourceKeyPath;
-@property (nonatomic, retain, readonly) NSString *destinationKeyPath;
-@property (nonatomic, retain, readonly) RKMapping *mapping;
-@property (nonatomic, retain, readonly) RKDynamicMappingMatcher *matcher;
+ Note that connectRelationship runs *after* an object's attributes have been
+ mapped and is dependent upon the results of those mappings.  Also, connectRelationship
+ will never create a new object - it simply looks up existing objects.   In effect,
+ connectRelationship allows foreign key relationships between managed objects
+ to be automatically maintained from the server to the underlying Core Data object graph.
+
+ For example, given a Project object associated with a User, where the 'user' relationship is
+ specified by a userID property on the managed object:
+
+ [mapping connectRelationship:@"user" withMapping:userMapping fromKeyPath:@"userId" toKeyPath:@"id"];
+
+ Will hydrate the 'user' association on the managed object with the object
+ in the local object graph having the primary key specified in the managed object's
+ userID property.
+
+ You can also do the reverse. Given a User object associated with a Project, with a
+ 'project' relationship:
+
+ [mapping connectRelationship:@"project" fromKeyPath:@"id" toKeyPath:@"userId" withMapping:projectMapping];
+ */
+//- (void)connectRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping DEPRECATED_ATTRIBUTE;
 
 /**
- Defines a mapping that is used to connect a source object relationship to
- the appropriate target object(s).
+ Conditionally connect a relationship of the object being mapped when the object being mapped has
+ keyPath equal to a specified value.
 
- @param relationshipName The name of the relationship on the source object.
- @param sourceKeyPath Specifies the path to an attribute on the source object that
- contains the value that should be used to connect the relationship.  This will generally
- be a primary key or a foreign key value.
- @param targetKeyPath Specifies the path to an attribute on the target object(s) that
- must match the value of the sourceKeyPath attribute.
- @param withMapping The mapping for the target object.
+ For example, given a Project object associated with a User, where the 'admin' relationship is
+ specified by a adminID property on the managed object:
 
- @return A new instance of a RKObjectConnectionMapping.
+ [mapping connectRelationship:@"admin" fromKeyPath:@"adminId" toKeyPath:@"id" withMapping:userMapping whenValueOfKeyPath:@"userType" isEqualTo:@"Admin"];
+
+ Will hydrate the 'admin' association on the managed object with the object
+ in the local object graph having the primary key specified in the managed object's
+ userID property.  Note that this connection will only occur when the Product's 'userType'
+ property equals 'Admin'. In cases where no match occurs, the relationship connection is skipped.
+
+ @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping;
-
+// - (void)connectRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value DEPRECATED_ATTRIBUTE;
 /**
- Defines a mapping that is used to connect a source object relationship to
- the appropriate target object(s).  This is similar to mapping:fromKeyPath:toKeyPath:withMapping:
- (@see mapping:fromKeyPath:toKeyPath:withMapping:) but adds in an additional matcher parameter
- that can be used to filter source objects.
+ Conditionally connect a relationship of the object being mapped when the object being mapped has
+ block evaluate to YES. This variant is useful in cases where you want to execute an arbitrary
+ block to determine whether or not to connect a relationship.
 
- @return A new instance of a RKObjectConnectionMapping.
+ For example, given a Project object associated with a User, where the 'admin' relationship is
+ specified by a adminID property on the managed object:
+
+ [mapping connectRelationship:@"admin" fromKeyPath:@"adminId" toKeyPath:@"adminID" withMapping:userMapping usingEvaluationBlock:^(id data) {
+ return [User isAuthenticated];
+ }];
+
+ Will hydrate the 'admin' association on the managed object with the object
+ in the local object graph having the primary key specified in the managed object's
+ userID property.  Note that this connection will only occur when the provided block evalutes to YES.
+ In cases where no match occurs, the relationship connection is skipped.
+
+ @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher;
 
+@interface RKConnectionMapping : RKPropertyMapping
+
+@property (nonatomic, strong, readonly) NSRelationshipDescription *relationship;
+
+@property (nonatomic, strong, readonly) RKDynamicMappingMatcher *matcher; // Can be nil
+
+// Returns YES if the receiver describes a connection between entities that is established
+// using Foreign Key lookup via a Core Data Fetch Request
+- (BOOL)isForeignKeyConnection;
+
+// Returns YES if the receiver describes a connection between entities that is established
+// using Key Path traversal of the receiver's object graph
+- (BOOL)isKeyPathConnection;
 /**
  Initializes the receiver with a relationship name, source key path, destination key path, mapping, and matcher.
  */
-- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher;
+///**
+// Defines a mapping that is used to connect a source object relationship to
+// the appropriate target object(s).
+//
+// @param relationshipName The name of the relationship on the source object.
+// @param sourceKeyPath Specifies the path to an attribute on the source object that
+// contains the value that should be used to connect the relationship.  This will generally
+// be a primary key or a foreign key value.
+// @param targetKeyPath Specifies the path to an attribute on the target object(s) that
+// must match the value of the sourceKeyPath attribute.
+// @param withMapping The mapping for the target object.
+//
+// @return A new instance of a RKObjectConnectionMapping.
+// */
+///**
+// Defines a mapping that is used to connect a source object relationship to
+// the appropriate target object(s).  This is similar to mapping:fromKeyPath:toKeyPath:withMapping:
+// (@see mapping:fromKeyPath:toKeyPath:withMapping:) but adds in an additional matcher parameter
+// that can be used to filter source objects.
+//
+// @return A new instance of a RKObjectConnectionMapping.
+// */
+- (id)initWithRelationship:(NSRelationshipDescription *)relationship sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath matcher:(RKDynamicMappingMatcher *)matcher;
 
 @end

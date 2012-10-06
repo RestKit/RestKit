@@ -22,3 +22,6 @@ Docs/API
 Examples/RKDiscussionBoardExample/discussion_board_backend/public/system/attachments/*
 
 test-reports/
+
+# CocoaPods
+Pods

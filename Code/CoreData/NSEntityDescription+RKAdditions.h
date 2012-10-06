@@ -5,6 +5,18 @@
 //  Created by Blake Watters on 3/22/12.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 
 #import <CoreData/CoreData.h>
 
@@ -82,6 +94,7 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
  appropriate. This behavior is a convenience to avoid annoying issues related to Core Data's
  handling of predicates for NSString and NSNumber types that were not appropriately casted.
 
+ @param value The primary key value with which to create the predicate.
  @return A predicate speciying that the value of the primary key attribute is equal to a given value.
  */
 - (NSPredicate *)predicateForPrimaryKeyAttributeWithValue:(id)value;
@@ -90,6 +103,7 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
  Coerces the given value into the class representing the primary key. Currently support NSString
  and NSNumber coercsions.
 
+ @param primaryKeyValue The value of the primary that is to be coerced.
  @bug **NOTE** This API is temporary and will be deprecated and replaced.
  @since 0.10.1
  */

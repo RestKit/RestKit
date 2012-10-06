@@ -18,111 +18,103 @@
 //  limitations under the License.
 //
 
-#import "RKRequest.h"
+#import "RKHTTPUtilities.h"
 
 /**
- The RKRoute class models a single routable resource path pattern in use by the application. A route
- can be combined with an RKURL base URL and interpolated with an object to produce a new fully hydrated
- URL object. Routes are always instantiated with a resource path pattern and metadata to provide for
- the subsequent identification of the defined route.
+ The `RKRoute` class models a single routable path pattern in use by the application. A route can be combined with an `NSURL` base URL and interpolated with an object to produce a new fully hydrated URL object. Routes are always instantiated with a path pattern and metadata to provide for the subsequent identification of the defined route.
 
  There are three types of routes modeled by the RKRoute class:
 
-    1. Named Routes: A named route represents a single resource path and optional request method within
-        the application. The route is not affiliated with any particular class. For example, one might
-        define a route with the name `@"airlines_list"` as a GET to /airlines.json
-    1. Class Routes: An class route represents a single resource path that is identified by object class
-        and request method for which it is appropriate. For example, one might define a route for the class
-        `RKArticle` for a POST to /articles.json.
-    1. Relationship Routes: A relationship route represents a single resource path through which the relationship
-        of a parent object can be manipulated. For example, given an `RKArticle` and `RKComment` class, one
-        might define a relationship route for the `RKArticle` class's `@"comments"` relationship as pointing to
-        a GET to `@"/articles/:articleID/comments".
+ 1. **Named Routes**: A named route represents a single path and optional request method within the application. The route is not affiliated with any particular class. For example, one might define a route with the name `@"airlines_list"` as a GET to the path '/airlines.json'.
+ 1. **Class Routes**: An class route represents a single path that is identified by object class and request method for which it is appropriate. For example, one might define a route for the class `RKArticle` for a POST to the path '/articles.json'.
+ 1. **Relationship Routes**: A relationship route represents a single path through which the relationship of a parent object can be manipulated. For example, given an `RKArticle` and `RKComment` class, one might define a relationship route for the `RKArticle` class's `@"comments"` relationship as pointing to a GET to the path `@"/articles/:articleID/comments".
 
- The RKRoute class is internally implemented as a class cluster and is not to be directly instantiated via alloc and
- init.
+ The RKRoute class is internally implemented as a class cluster and is not to be directly instantiated via alloc and init.
 
  @see RKRouter
  @see RKRouteSet
  */
 @interface RKRoute : NSObject
 
+///---------------------------
+/// @name Instantiating Routes
+///---------------------------
+
+/**
+ Creates and returns a new named route object with the given name, path pattern and method.
+
+ @param name A unique identifying name for the route.
+ @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
+ @param method The request method of the route.
+ @return A new named route object with the given name, path pattern and request method.
+ */
++ (id)routeWithName:(NSString *)name pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
+
+/**
+ Creates and returns a new class route object with the given object class, path pattern and method.
+
+ @param objectClass The class that is represented by the route.
+ @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
+ @param method The request method of the route.
+ @return A new class route object with the given object class, path pattern and request method.
+ */
++ (id)routeWithClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
+
+/**
+ Creates and returns a new relationship route object with the given relationship name, object class, path pattern and method.
+
+ @param name The name of the relationship represented by the route.
+ @param objectClass The class containing the relationship represented by the route.
+ @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
+ @param method The request method of the route.
+ @return A new class route object with the given object class, path pattern and request method.
+ */
++ (id)routeWithRelationshipName:(NSString *)name objectClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
+
+///---------------------------------
+/// @name Accessing Route Attributes
+///---------------------------------
+
 /**
  The name of the receiver.
 
- The name is used to identify named and relationship routes and is nil for object routes.
+ The name is used to identify named and relationship routes and is always `nil` for object routes.
  */
-@property (nonatomic, retain, readonly) NSString *name;
+@property (nonatomic, strong, readonly) NSString *name;
 
 /**
  The object class of the receiver.
 
- Defines the class for which the route is appropriate. Nil for named routes.
+ Defines the class for which the route is appropriate. Always returns `nil` for named routes.
  */
-@property (nonatomic, retain, readonly) Class objectClass;
+@property (nonatomic, strong, readonly) Class objectClass;
 
 /**
  The request method of the receiver.
 
- Appropriate for all route types. If the route is appropriate for any HTTP request method,
- then the value RKRequestMethodAny is used.
+ Appropriate for all route types. If the route is appropriate for any HTTP request method, then the `RKRequestMethodAny` value is used.
  */
 @property (nonatomic, assign, readonly) RKRequestMethod method;
 
 /**
- The resource path pattern of the receiver.
+ The path pattern of the receiver.
 
- A SOCKit pattern that describes the resource path of the route. Required and used by all route types.
+ A SOCKit pattern that describes the format of the path portion of URL's generated from the receiver. Required and used by all route types.
 
- @see SOCPattern
+ @see `SOCPattern`
  */
-@property (nonatomic, retain, readonly) NSString *resourcePathPattern;
+@property (nonatomic, strong, readonly) NSString *pathPattern;
 
 /**
- A Boolean value that determines if the resource path pattern should be escaped when evaluated.
+ A Boolean value that determines if the path pattern should be escaped when evaluated.
 
- *Default*: NO
+ *Default*: `NO`
  */
-@property (nonatomic, assign) BOOL shouldEscapeResourcePath;
+@property (nonatomic, assign) BOOL shouldEscapePath;
 
-///-----------------------------------------------------------------------------
-/// @name Instantiating Routes
-///-----------------------------------------------------------------------------
-
-/**
- Creates and returns a new named route object with the given name, resource path pattern and method.
-
- @param name A unique identifying name for the route.
- @param resourcePathPattern A SOCKit pattern describing the resource path represented by the route.
- @param method The request method of the route.
- @return A new named route object with the given name, resource path pattern and request method.
- */
-+ (id)routeWithName:(NSString *)name resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method;
-
-/**
- Creates and returns a new class route object with the given object class, resource path pattern and method.
-
- @param objectClass The class that is represented by the route.
- @param resourcePathPattern A SOCKit pattern describing the resource path represented by the route.
- @param method The request method of the route.
- @return A new class route object with the given object class, resource path pattern and request method.
- */
-+ (id)routeWithClass:(Class)objectClass resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method;
-
-/**
- Creates and returns a new relationship route object with the given relationship name, object class, resource path pattern and method.
-
- @param relationshipName The name of the relationship represented by the route.
- @param objectClass The class containing the relationship represented by the route.
- @param resourcePathPattern A SOCKit pattern describing the resource path represented by the route.
- @param method The request method of the route.
- @return A new class route object with the given object class, resource path pattern and request method.
- */
-+ (id)routeWithRelationshipName:(NSString *)name objectClass:(Class)objectClass resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method;
-
-///-----------------------------------------------------------------------------
+///-----------------------------
 /// @name Inspecting Route Types
-///-----------------------------------------------------------------------------
+///-----------------------------
 
 /**
  Determines if the receiver is a named route.

@@ -24,60 +24,113 @@
 #import "RKManagedObjectCaching.h"
 #import "RKDynamicMappingMatcher.h"
 
-@interface RKConnectionMapping()
-@property (nonatomic, retain) NSString *relationshipName;
-@property (nonatomic, retain) NSString *destinationKeyPath;
-@property (nonatomic, retain) RKMapping *mapping;
-@property (nonatomic, retain) RKDynamicMappingMatcher *matcher;
-@property (nonatomic, retain) NSString *sourceKeyPath;
+// Provides support for connecting a relationship by
+@interface RKForeignKeyConnectionMapping : RKConnectionMapping
+@end
+
+// Provides support for connecting a relationship by traversing the object graph
+@interface RKKeyPathConnectionMapping : RKConnectionMapping
+@end
+
+@interface RKConnectionMapping ()
+@property (nonatomic, strong, readwrite) NSRelationshipDescription *relationship;
+@property (nonatomic, strong, readwrite) NSString *sourceKeyPath;
+@property (nonatomic, strong, readwrite) NSString *destinationKeyPath;
+@property (nonatomic, strong, readwrite) RKDynamicMappingMatcher *matcher;
 @end
 
 @implementation RKConnectionMapping
 
-@synthesize relationshipName = _relationshipName;
-@synthesize destinationKeyPath = _destinationKeyPath;
-@synthesize mapping = _mapping;
-@synthesize matcher = _matcher;
-@synthesize sourceKeyPath = _sourceKeyPath;
-
-+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping
+- (Class)connectionMappingClassForRelationship:(NSRelationshipDescription *)relationship sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
 {
-    RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:nil];
-    return [mapping autorelease];
+    NSEntityDescription *sourceEntity = relationship.entity;
+    NSEntityDescription *destinationEntity = relationship.destinationEntity;
+
+    if ([[sourceEntity attributesByName] objectForKey:sourceKeyPath] && [[destinationEntity attributesByName] objectForKey:destinationKeyPath]) {
+        return [RKForeignKeyConnectionMapping class];
+    } else {
+        return [RKKeyPathConnectionMapping class];
+    }
 }
 
-+ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher
+- (id)initWithRelationship:(NSRelationshipDescription *)relationship sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath matcher:(RKDynamicMappingMatcher *)matcher
 {
-    RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:matcher];
-    return [mapping autorelease];
-}
+    NSParameterAssert(relationship);
+    NSParameterAssert(sourceKeyPath);
+    NSParameterAssert(destinationKeyPath);
 
-- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher
-{
-    self = [super init];
+    Class connectionClass = [self connectionMappingClassForRelationship:relationship sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath];
+    self = [[connectionClass alloc] init];
     if (self) {
-        self.relationshipName = relationshipName;
+        self.relationship = relationship;
         self.sourceKeyPath = sourceKeyPath;
         self.destinationKeyPath = destinationKeyPath;
-        self.mapping = objectOrDynamicMapping;
         self.matcher = matcher;
     }
+
     return self;
+}
+
+- (id)init
+{
+    if ([self class] == [RKConnectionMapping class]) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"%@ Failed to call designated initializer. "
+                                               "Invoke initWithRelationship:sourceKeyPath:destinationKeyPath:matcher: instead.",
+                                               NSStringFromClass([self class])]
+                                     userInfo:nil];
+    }
+    return [super init];
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    return [[[self class] allocWithZone:zone] initWithRelationshipName:self.relationshipName sourceKeyPath:self.sourceKeyPath destinationKeyPath:self.destinationKeyPath mapping:self.mapping matcher:self.matcher];
+    return [[[self class] allocWithZone:zone] initWithRelationship:self.relationship
+                                                     sourceKeyPath:self.sourceKeyPath
+                                                destinationKeyPath:self.destinationKeyPath
+                                                           matcher:self.matcher];
 }
 
-- (void)dealloc
+- (BOOL)isForeignKeyConnection
 {
-    self.relationshipName = nil;
-    self.destinationKeyPath = nil;
-    self.mapping = nil;
-    self.matcher = nil;
-    self.sourceKeyPath = nil;
-    [super dealloc];
+    return NO;
+}
+
+- (BOOL)isKeyPathConnection
+{
+    return NO;
+}
+
+@end
+
+
+@implementation RKForeignKeyConnectionMapping
+
+- (BOOL)isForeignKeyConnection
+{
+    return YES;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@:%p connecting Relationship '%@' from Entity '%@' with sourceKeyPath=%@ to Destination Entity '%@' with destinationKeyPath=%@>",
+            NSStringFromClass([self class]), self, self.relationship.name, self.relationship.entity.name, self.sourceKeyPath,
+            self.relationship.destinationEntity.name, self.self.destinationKeyPath];
+}
+
+@end
+
+@implementation RKKeyPathConnectionMapping
+
+- (BOOL)isKeyPathConnection
+{
+    return YES;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@:%p connecting Relationship '%@' of Entity '%@' with keyPath=%@>",
+            NSStringFromClass([self class]), self, self.relationship.name, self.relationship.entity.name, self.sourceKeyPath];
 }
 
 @end

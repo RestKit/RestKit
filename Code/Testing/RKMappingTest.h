@@ -24,25 +24,48 @@
 
 @protocol RKMappingOperationDataSource;
 
+///----------------
+/// @name Constants
+///----------------
+
 /**
- An RKMappingTest object provides support for unit testing
- a RestKit object mapping operation by evaluation expectations
- against events recorded during an object mapping operation.
+ The domain for all errors constructed by the `RKMappingTest` class.
+ */
+extern NSString * const RKMappingTestErrorDomain;
+
+/**
+ Name of an exception that occurs when an `RKMappingTest` object fails verification. Raised by `verifyExpectation`.
+ */
+extern NSString * const RKMappingTestVerificationFailureException;
+
+/**
+ Mapping Test Errors
+ */
+enum {
+    RKMappingTestUnsatisfiedExpectationError,   // An expected mapping event did not occur
+    RKMappingTestEvaluationBlockError,          // An evaluation block returned `NO` when evaluating a mapping event
+    RKMappingTestValueInequalityError,          // A mapped value was not equal to the expected value
+    RKMappingTestMappingMismatchError,          // A mapping occurred using an unexpected `RKObjectMapping` object
+};
+
+/**
+ The `RKMappingTestEvent` object for the mapping event which failed to satify the expectation.
+ */
+extern NSString * const RKMappingTestEventErrorKey;
+
+/**
+ The `RKMappingTestExpectation` object which was not satisfied by a mapping event.
+ */
+extern NSString * const RKMappingTestExpectationErrorKey;
+
+/**
+ An `RKMappingTest` object provides support for unit testing a RestKit object mapping operation by evaluation expectations against events recorded during an object mapping operation.
  */
 @interface RKMappingTest : NSObject
 
-///-----------------------------------------------------------------------------
+///---------------------
 /// @name Creating Tests
-///-----------------------------------------------------------------------------
-
-/**
- Creates and returns a new test for a given object mapping and source object.
-
- @param mapping The object mapping being tested.
- @param sourceObject The source object being mapped.
- @return A new mapping test object for a mapping and sourceObject.
- */
-+ (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject;
+///---------------------
 
 /**
  Creates and returns a new test for a given object mapping, source object and destination
@@ -65,90 +88,101 @@
  */
 - (id)initWithMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
 
-///-----------------------------------------------------------------------------
+///---------------------------
 /// @name Setting Expectations
-///-----------------------------------------------------------------------------
+///---------------------------
 
 /**
- Creates and adds an expectation that a key path on the source object will be mapped to a new
- key path on the destination object.
+ Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object.
 
  @param sourceKeyPath A key path on the sourceObject that should be mapped from.
  @param destinationKeyPath A key path on the destinationObject that should be mapped to.
- @see RKObjectMappingTestExpectation
+ @see `RKMappingTestExpectation`
  */
 - (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
 
 /**
- Creates and adds an expectation that a key path on the source object will be mapped to a new
- key path on the destination object with a given value.
+ Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object with a given value.
 
  @param sourceKeyPath A key path on the sourceObject that should be mapped from.
  @param destinationKeyPath A key path on the destinationObject that should be mapped from.
  @param value A value that is expected to be assigned to destinationKeyPath on the destinationObject.
- @see RKObjectMappingTestExpectation
+ @see `RKMappingTestExpectation`
  */
 - (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withValue:(id)value;
 
 /**
- Creates and adds an expectation that a key path on the source object will be mapped to a new
- key path on the destination object with a value that passes a given test block.
+ Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object with a value that passes a given test block.
 
  @param sourceKeyPath A key path on the sourceObject that should be mapped from.
  @param destinationKeyPath A key path on the destinationObject that should be mapped to.
  @param evaluationBlock A block with which to evaluate the success of the mapping.
- @see RKObjectMappingTestExpectation
+ @see `RKMappingTestExpectation`
  */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKAttributeMapping *mapping, id value))evaluationBlock;
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(RKMappingTestExpectationEvaluationBlock)evaluationBlock;
 
 /**
- Creates and adds an expectation that a key path on the source object will be mapped to a new
- key path on the destination object using the given object mapping.
+ Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object using the given object mapping.
 
  @param sourceKeyPath A key path on the sourceObject that should be mapped from.
  @param destinationKeyPath A key path on the destinationObject that should be mapped to.
  @param mapping An object mapping that should be used for mapping the source key path.
- @see RKObjectMappingTestExpectation
+ @see `RKMappingTestExpectation`
  */
 - (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKMapping *)mapping;
 
 /**
  Adds an expectation to the receiver to be evaluated during verification.
 
- If the receiver has been configured with verifiesOnExpect = YES, the mapping
- operation is performed immediately and the expectation is evaluated.
+ If the receiver has been configured with `verifiesOnExpect = YES`, the mapping operation is performed immediately and the expectation is evaluated.
 
  @param expectation An expectation object to evaluate during test verification.
- @see RKObjectMappingTestExpectation
- @see verifiesOnExpect
+ @see `RKMappingTestExpectation`
+ @see `verifiesOnExpect`
  */
 - (void)addExpectation:(RKMappingTestExpectation *)expectation;
 
-///-----------------------------------------------------------------------------
+///------------------------
 /// @name Verifying Results
-///-----------------------------------------------------------------------------
+///------------------------
 
 /**
- Performs the object mapping operation and records any mapping events that occur. The
- mapping events can be verified against expectation through a subsequent call to verify.
+ Performs the object mapping operation and records any mapping events that occur. The mapping events can be verified against expectation through a subsequent call to verify.
 
- @exception NSInternalInconsistencyException Raises an
- NSInternalInconsistencyException if mapping fails.
+ @exception NSInternalInconsistencyException Raises an `NSInternalInconsistencyException` if mapping fails.
  */
 - (void)performMapping;
 
 /**
- Verifies that the mapping is configured correctly by performing an object mapping operation
- and ensuring that all expectations are met.
+ Verifies that the mapping is configured correctly by performing an object mapping operation and ensuring that all expectations are met.
 
- @exception NSInternalInconsistencyException Raises an
- NSInternalInconsistencyException if mapping fails or any expectation is not satisfied.
+ @exception RKMappingTestVerificationFailureException Raises an `RKMappingTestVerificationFailureException` exception if mapping fails or any expectation is not satisfied.
  */
 - (void)verify;
 
-///-----------------------------------------------------------------------------
+/**
+ Evaluates the expectations and returns a Boolean value indicating if all expectations are satisfied.
+
+ Invocation of this method will implicitly invoke `performMapping` if the mapping has not yet been performed.
+
+ @return `YES` if all expectations were met, else `NO`.
+ */
+- (BOOL)evaluate;
+
+/**
+ Evaluates the given expectation against the mapping test and returns a Boolean value indicating if the expectation is met by the receiver.
+
+ Invocation of this method will implicitly invoke `performMapping` if the mapping has not yet been performed.
+
+ @param expectation The expectation to evaluate against the receiver.
+ @param error A pointer to an `NSError` object to be set describing the failure in the event that the expectation is not met.
+ @return `YES` if the expectation is met, else `NO`.
+ */
+- (BOOL)evaluateExpectation:(RKMappingTestExpectation *)expectation error:(NSError **)error;
+
+///-------------------------
 /// @name Test Configuration
-///-----------------------------------------------------------------------------
+///-------------------------
 
 /**
  The object mapping under test.
@@ -157,17 +191,17 @@
 
 /**
  A data source for the mapping operation.
- 
- Defaults to an instance of RKObjectMappingOperationDataSource.
+
+ Defaults to an instance of `RKObjectMappingOperationDataSource`.
+
+ @warning The data source **must** be configured with an instance of `RKManagedObjectMappingOperationDataSource` if testing an `RKEntityMapping`.
  */
 @property (nonatomic, strong) id<RKMappingOperationDataSource> mappingOperationDataSource;
 
 /**
- A key path to apply to the source object to specify the location of the root
- of the data under test. Useful when testing subsets of a larger payload or
- object graph.
+ A key path to apply to the source object to specify the location of the root of the data under test. Useful when testing subsets of a larger payload or object graph.
 
- **Default**: nil
+ **Default**: `nil`
  */
 @property (nonatomic, copy) NSString *rootKeyPath;
 
@@ -179,19 +213,16 @@
 /**
  The destionation object being mapped to.
 
- If nil, the mapping test will instantiate a destination object to perform the mapping
- by invoking `[self.mappingOperationDataSource objectForMappableContent:self.sourceObject mapping:self.mapping]`
- to obtain a new object from the data source and then assign the object as the value for the destinationObject property.
+ If `nil`, the mapping test will instantiate a destination object to perform the mapping by invoking `[self.mappingOperationDataSource objectForMappableContent:self.sourceObject mapping:self.mapping]` to obtain a new object from the data source and then assign the object as the value for the destinationObject property.
 
- @see RKMappingOperationDataSource
+ @see `mappingOperationDataSource`
  */
 @property (nonatomic, strong, readonly) id destinationObject;
 
 /**
- A Boolean value that determines if expectations should be verified immediately
- when added to the receiver.
+ A Boolean value that determines if expectations should be verified immediately when added to the receiver.
 
- **Default**: NO
+ **Default**: `NO`
  */
 @property (nonatomic, assign) BOOL verifiesOnExpect;
 

@@ -21,10 +21,10 @@
 #import "RKRoute.h"
 
 @interface RKRoute ()
-@property (nonatomic, retain, readwrite) NSString *name;
-@property (nonatomic, retain, readwrite) Class objectClass;
+@property (nonatomic, strong, readwrite) NSString *name;
+@property (nonatomic, strong, readwrite) Class objectClass;
 @property (nonatomic, assign, readwrite) RKRequestMethod method;
-@property (nonatomic, retain, readwrite) NSString *resourcePathPattern;
+@property (nonatomic, strong, readwrite) NSString *pathPattern;
 @end
 
 @interface RKNamedRoute : RKRoute
@@ -38,42 +38,37 @@
 
 @implementation RKRoute
 
-@synthesize name = _name;
-@synthesize objectClass = _objectClass;
-@synthesize method = _method;
-@synthesize resourcePathPattern = _resourcePathPattern;
-@synthesize shouldEscapeResourcePath = _shouldEscapeResourcePath;
-
-+ (id)routeWithName:(NSString *)name resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method
++ (id)routeWithName:(NSString *)name pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
 {
     NSParameterAssert(name);
-    NSParameterAssert(resourcePathPattern);
-    RKNamedRoute *route = [[RKNamedRoute new] autorelease];
+    NSParameterAssert(pathPattern);
+    RKNamedRoute *route = [RKNamedRoute new];
     route.name = name;
-    route.resourcePathPattern = resourcePathPattern;
+    route.pathPattern = pathPattern;
     route.method = method;
     return route;
 }
 
-+ (id)routeWithClass:(Class)objectClass resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method
++ (id)routeWithClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
 {
     NSParameterAssert(objectClass);
-    NSParameterAssert(resourcePathPattern);
-    RKClassRoute *route = [[RKClassRoute new] autorelease];
+    NSParameterAssert(pathPattern);
+    RKClassRoute *route = [RKClassRoute new];
     route.objectClass = objectClass;
-    route.resourcePathPattern = resourcePathPattern;
+    route.pathPattern = pathPattern;
     route.method = method;
     return route;
 }
 
-+ (id)routeWithRelationshipName:(NSString *)relationshipName objectClass:(Class)objectClass resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method
++ (id)routeWithRelationshipName:(NSString *)relationshipName objectClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
 {
     NSParameterAssert(relationshipName);
     NSParameterAssert(objectClass);
-    RKRelationshipRoute *route = [[RKRelationshipRoute new] autorelease];
+    NSParameterAssert(pathPattern);
+    RKRelationshipRoute *route = [RKRelationshipRoute new];
     route.name = relationshipName;
     route.objectClass = objectClass;
-    route.resourcePathPattern = resourcePathPattern;
+    route.pathPattern = pathPattern;
     route.method = method;
     return route;
 }
@@ -119,8 +114,8 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p name=%@ method=%@ resourcePathPattern=%@>",
-            NSStringFromClass([self class]), self, self.name, RKStringFromRequestMethod(self.method), self.resourcePathPattern];
+    return [NSString stringWithFormat:@"<%@: %p name=%@ method=%@ pathPattern=%@>",
+            NSStringFromClass([self class]), self, self.name, RKStringFromRequestMethod(self.method), self.pathPattern];
 }
 
 @end
@@ -134,9 +129,9 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p objectClass=%@ method=%@ resourcePathPattern=%@>",
+    return [NSString stringWithFormat:@"<%@: %p objectClass=%@ method=%@ pathPattern=%@>",
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass),
-            RKStringFromRequestMethod(self.method), self.resourcePathPattern];
+            RKStringFromRequestMethod(self.method), self.pathPattern];
 }
 
 @end
@@ -150,9 +145,9 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p relationshipName=%@ objectClass=%@ method=%@ resourcePathPattern=%@>",
+    return [NSString stringWithFormat:@"<%@: %p relationshipName=%@ objectClass=%@ method=%@ pathPattern=%@>",
             NSStringFromClass([self class]), self, self.name, NSStringFromClass(self.objectClass),
-            RKStringFromRequestMethod(self.method), self.resourcePathPattern];
+            RKStringFromRequestMethod(self.method), self.pathPattern];
 }
 
 @end

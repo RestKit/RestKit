@@ -10,20 +10,18 @@
 #import "RKEntityByAttributeCache.h"
 
 @interface RKEntityCache ()
-@property (nonatomic, retain) NSMutableSet *attributeCaches;
+@property (nonatomic, strong) NSMutableSet *attributeCaches;
 @end
 
 @implementation RKEntityCache
 
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize attributeCaches = _attributeCaches;
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)context
 {
     NSAssert(context, @"Cannot initialize entity cache with a nil context");
     self = [super init];
     if (self) {
-        _managedObjectContext = [context retain];
+        _managedObjectContext = context;
         _attributeCaches = [[NSMutableSet alloc] init];
     }
 
@@ -35,12 +33,6 @@
     return [self initWithManagedObjectContext:nil];
 }
 
-- (void)dealloc
-{
-    [_managedObjectContext release];
-    [_attributeCaches release];
-    [super dealloc];
-}
 
 - (void)cacheObjectsForEntity:(NSEntityDescription *)entity byAttribute:(NSString *)attributeName
 {
@@ -53,7 +45,6 @@
         attributeCache = [[RKEntityByAttributeCache alloc] initWithEntity:entity attribute:attributeName managedObjectContext:self.managedObjectContext];
         [attributeCache load];
         [self.attributeCaches addObject:attributeCache];
-        [attributeCache release];
     }
 }
 

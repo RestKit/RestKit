@@ -25,13 +25,12 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 @interface RKRouteSet ()
 
-@property (nonatomic, retain) NSMutableArray *routes;
+@property (nonatomic, strong) NSMutableArray *routes;
 
 @end
 
 @implementation RKRouteSet
 
-@synthesize routes = _routes;
 
 - (id)init
 {
@@ -43,11 +42,6 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     return self;
 }
 
-- (void)dealloc
-{
-    self.routes = nil;
-    [super dealloc];
-}
 
 - (NSArray *)allRoutes
 {
@@ -76,10 +70,12 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 - (NSArray *)relationshipRoutes
 {
-    NSIndexSet *indexes = [self.routes indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        return [(RKRoute *)obj isRelationshipRoute];
-    }];
-    return [self.routes objectsAtIndexes:indexes];
+    NSMutableArray *routes = [NSMutableArray array];
+    for (RKRoute *route in self.routes) {
+        if ([route isRelationshipRoute]) [routes addObject:route];
+    }
+
+    return [NSArray arrayWithArray:routes];
 }
 
 - (void)addRoute:(RKRoute *)route
@@ -200,18 +196,6 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     }
 
     return nil;
-}
-
-- (NSArray *)routesWithResourcePathPattern:(NSString *)resourcePathPattern
-{
-    NSMutableArray *routes = [NSMutableArray array];
-    for (RKRoute *route in self.routes) {
-        if ([route.resourcePathPattern isEqualToString:resourcePathPattern]) {
-            [routes addObject:route];
-        }
-    }
-
-    return [NSArray arrayWithArray:routes];
 }
 
 @end

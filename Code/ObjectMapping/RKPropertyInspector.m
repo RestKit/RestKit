@@ -24,17 +24,17 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitObjectMapping
-
-static RKPropertyInspector *sharedInspector = nil;
+#define RKLogComponent RKlcl_cRestKitObjectMapping
 
 @implementation RKPropertyInspector
 
 + (RKPropertyInspector *)sharedInspector
 {
-    if (sharedInspector == nil) {
+    static RKPropertyInspector *sharedInspector = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         sharedInspector = [RKPropertyInspector new];
-    }
+    });
 
     return sharedInspector;
 }
@@ -49,11 +49,6 @@ static RKPropertyInspector *sharedInspector = nil;
     return self;
 }
 
-- (void)dealloc
-{
-    [_propertyNamesToTypesCache release];
-    [super dealloc];
-}
 
 + (NSString *)propertyTypeFromAttributeString:(NSString *)attributeString
 {

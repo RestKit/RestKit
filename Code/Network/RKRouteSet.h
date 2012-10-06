@@ -24,16 +24,15 @@
 extern RKRequestMethod const RKRequestMethodAny;
 
 /**
- The RKRouteSet class provides for the storage and retrieval of RKRoute objects. Route
- objects are added and removed the route set to manipulate the routing table of the application.
+ The `RKRouteSet` class provides for the storage and retrieval of `RKRoute` objects. Route objects are added and removed the route set to manipulate the routing table of the application.
 
- @see RKRouter
+ @see `RKRouter`
  */
 @interface RKRouteSet : NSObject
 
-///-----------------------------------------------------------------------------
+///---------------------------------
 /// @name Adding and Removing Routes
-///-----------------------------------------------------------------------------
+///---------------------------------
 
 /**
  Adds a route to the receiver.
@@ -51,15 +50,15 @@ extern RKRequestMethod const RKRequestMethodAny;
  */
 - (void)removeRoute:(RKRoute *)route;
 
-///-----------------------------------------------------------------------------
+///---------------------------
 /// @name Querying a Route Set
-///-----------------------------------------------------------------------------
+///---------------------------
 
 /**
  Determines if a given route exists within the receiver.
 
  @param route The route to be tested for containement.
- @return YES if the route is contained within the route set, else NO.
+ @return `YES` if the route is contained within the route set, else `NO`.
  */
 - (BOOL)containsRoute:(RKRoute *)route;
 
@@ -120,8 +119,7 @@ extern RKRequestMethod const RKRequestMethodAny;
 /**
  Retrieves all class routes with a given object class.
 
- Class matches are determined by direct comparison of the class objects. The inheritance
- hierarchy is not consulted.
+ Class matches are determined by direct comparison of the class objects. The inheritance hierarchy is not consulted.
 
  @param objectClass The object class of the routes to be retrieved.
  @return An array containing all class routes with the given class.
@@ -131,12 +129,10 @@ extern RKRequestMethod const RKRequestMethodAny;
 /**
  Retrieves all object routes for a given object.
 
- All object routes are searched and returned if they target a class or superclass of
- the given object (using isKindOfClass:).
+ All object routes are searched and returned if they target a class or superclass of the given object (using `- [NSObject isKindOfClass:]`).
 
  @param object An object for which all object routes are to be retrieved.
- @return An array containing all object routes where the target class is included in the given object's
-    class hierarchy.
+ @return An array containing all object routes where the target class is included in the given object's class hierarchy.
  */
 - (NSArray *)routesForObject:(id)object;
 
@@ -152,19 +148,8 @@ extern RKRequestMethod const RKRequestMethodAny;
 /**
  Retrieves a route for a given object and request method.
 
- The object routes are first searched for an exact match with the given object's class and
- request method. If no exact match is found for the given request method, but a route is found
- for the RKRequestMethodAny method, it is returned. If neither are found, the search process begins
- again and traverses up the inheritance hierarchy.
+ The object routes are first searched for an exact match with the given object's class and request method. If no exact match is found for the given request method, but a route is found for the `RKRequestMethodAny` method, it is returned. If neither are found, the search process begins again and traverses up the inheritance hierarchy.
  */
 - (RKRoute *)routeForObject:(id)object method:(RKRequestMethod)method;
-
-/**
- Retrieves all routes with a given resource path pattern.
-
- @param resourcePathPattern The resource path pattern of the routes to be retrieved.
- @return An array containing all routes with a resource path pattern equal to the given value.
- */
-- (NSArray *)routesWithResourcePathPattern:(NSString *)resourcePathPattern;
 
 @end

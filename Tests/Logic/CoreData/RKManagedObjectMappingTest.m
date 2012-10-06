@@ -56,28 +56,28 @@
 - (void)testShouldMapACollectionOfObjectsWithDynamicKeys
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     mapping.forceCollectionMapping = YES;
     mapping.primaryKeyAttribute = @"name";
     [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
-    RKAttributeMapping *idMapping = [RKAttributeMapping mappingFromKeyPath:@"(name).id" toKeyPath:@"railsID"];
-    [mapping addAttributeMapping:idMapping];
-    RKObjectMappingProvider *provider = [[RKObjectMappingProvider new] autorelease];
-    [provider setMapping:mapping forKeyPath:@"users"];
+    RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"(name).id" toKeyPath:@"railsID"];
+    [mapping addPropertyMapping:idMapping];
+    NSMutableDictionary *mappingDictionary = [NSMutableDictionary dictionary];
+    [mappingsDictionary setObject:mapping forKey:@"users"];
 
     id mockCacheStrategy = [OCMockObject partialMockForObject:managedObjectStore.managedObjectCache];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:OCMOCK_ANY
                                                       withPrimaryKeyAttribute:mapping.primaryKeyAttribute
                                                                         value:@"blake"
-                                                       inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+                                                       inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:mapping.entity
                                                       withPrimaryKeyAttribute:mapping.primaryKeyAttribute
                                                                         value:@"rachit"
-                                                       inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+                                                       inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeys.json"];
-    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
-    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     mapper.mappingOperationDataSource = dataSource;
     [mapper performMapping];
@@ -87,14 +87,14 @@
 - (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKDynamicMapping *dynamicMapping = [RKDynamicMapping dynamicMapping];
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"RKChild" inManagedObjectStore:managedObjectStore];
     childMapping.primaryKeyAttribute = @"railsID";
-    [childMapping mapAttributes:@"name", nil];
+    [childMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"RKParent" inManagedObjectStore:managedObjectStore];
     parentMapping.primaryKeyAttribute = @"railsID";
-    [parentMapping mapAttributes:@"name", @"age", nil];
+    [parentMapping addAttributeMappingsFromArray:@[@"name", @"age"]];
 
     [dynamicMapping setObjectMapping:parentMapping whenValueOfKeyPath:@"type" isEqualTo:@"Parent"];
     [dynamicMapping setObjectMapping:childMapping whenValueOfKeyPath:@"type" isEqualTo:@"Child"];
@@ -112,7 +112,7 @@
 - (void)testShouldIncludeTransformableAttributesInPropertyNamesAndTypes
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     NSDictionary *attributesByName = [entity attributesByName];
     NSDictionary *propertiesByName = [entity propertiesByName];
     NSDictionary *relationshipsByName = [entity relationshipsByName];
@@ -127,7 +127,7 @@
 - (void)testThatAssigningAnEntityWithANonNilPrimaryKeyAttributeSetsTheDefaultValueForTheMapping
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntity:entity];
     assertThat(mapping.primaryKeyAttribute, is(equalTo(@"railsID")));
 }
@@ -135,7 +135,7 @@
 - (void)testThatAssigningAPrimaryKeyAttributeToAMappingWhoseEntityHasANilPrimaryKeyAttributeAssignsItToTheEntity
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCloud" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCloud" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntity:entity];
     assertThat(mapping.primaryKeyAttribute, is(nilValue()));
     mapping.primaryKeyAttribute = @"name";

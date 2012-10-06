@@ -159,12 +159,12 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 - (RKObjectMappingProvider *)paginationMappingProvider
 {
     RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKObjectPaginator class]];
-    [paginationMapping mapKeyPath:@"current_page" toAttribute:@"currentPage"];
-    [paginationMapping mapKeyPath:@"per_page" toAttribute:@"perPage"];
-    [paginationMapping mapKeyPath:@"total_entries" toAttribute:@"objectCount"];
+    [paginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"current_page" toKeyPath:@"currentPage"]];
+    [paginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"per_page" toKeyPath:@"perPage"]];
+    [paginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"total_entries" toKeyPath:@"objectCount"]];
 
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
-    [mapping mapAttributes:@"name", @"age", nil];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     mappingProvider.paginationMapping = paginationMapping;
     [mappingProvider setObjectMapping:mapping forKeyPath:@"entries"];

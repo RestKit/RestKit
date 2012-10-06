@@ -12,16 +12,12 @@ rescue LoadError
   # No debugging...
 end
 
-ENV["DB"] = "rack_oauth2_server"
-
 # Import the RestKit Test server
 $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
 require File.expand_path(File.dirname(__FILE__)) + '/fixtures'
 require 'restkit/network/authentication'
 require 'restkit/network/etags'
 require 'restkit/network/timeout'
-require 'restkit/network/oauth1'
-require 'restkit/network/oauth2'
 require 'restkit/network/redirection'
 
 class Person < Struct.new(:name, :age)
@@ -84,6 +80,12 @@ class RestKitTestServer < Sinatra::Base
 
   delete '/humans/1' do
     status 200
+    content_type 'application/json'
+    "{}"
+  end
+
+  delete '/humans/204' do
+    status 204
     content_type 'application/json'
     "{}"
   end
@@ -255,6 +257,16 @@ class RestKitTestServer < Sinatra::Base
       etag(tag)
       render_fixture '/JSON/humans/all.json'
     end
+  end
+  
+  get '/object_manager/cancel' do
+    sleep 0.05
+    status 204
+  end
+  
+  get '/object_manager/:objectID/cancel' do
+    sleep 0.05
+    status 204
   end
 
   # start the server if ruby file executed directly

@@ -26,8 +26,8 @@
     NSString *_photoURL;
 }
 
-@property (nonatomic, retain) NSNumber *ID;
-@property (nonatomic, retain) NSDate *endsAt;
-@property (nonatomic, retain) NSString *photoURL;
+@property (nonatomic, strong) NSNumber *ID;
+@property (nonatomic, strong) NSDate *endsAt;
+@property (nonatomic, strong) NSString *photoURL;
 
 @end

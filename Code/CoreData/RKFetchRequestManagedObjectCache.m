@@ -14,7 +14,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitCoreData
+#define RKLogComponent RKlcl_cRestKitCoreData
 
 @implementation RKFetchRequestManagedObjectCache
 
@@ -64,7 +64,7 @@
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSArray *objects = [self findInstancesOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:managedObjectContext];
-    
+
     NSManagedObject *object = nil;
     if ([objects count] > 0) {
         object = [objects objectAtIndex:0];

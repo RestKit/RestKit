@@ -23,35 +23,29 @@
 #endif
 
 #import "RKManagedObjectImporter.h"
-#import "RKObjectMapper.h"
-#import "RKObjectMappingProvider+CoreData.h"
+#import "RKMapperOperation.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKInMemoryManagedObjectCache.h"
-#import "NSString+RKAdditions.h"
-#import "RKParserRegistry.h"
+#import "RKMIMETypeSerialization.h"
+#import "RKPathUtilities.h"
 #import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitCoreData
+#define RKLogComponent RKlcl_cRestKitCoreData
 
 @interface RKManagedObjectImporter ()
-@property (nonatomic, retain, readwrite) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, retain, readwrite) NSString *storePath;
-@property (nonatomic, retain, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, retain, readwrite) NSPersistentStore *persistentStore;
-@property (nonatomic, retain, readwrite) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, retain, readwrite) RKManagedObjectMappingOperationDataSource *mappingOperationDataSource;
+@property (nonatomic, strong, readwrite) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, strong, readwrite) NSString *storePath;
+@property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, strong, readwrite) NSPersistentStore *persistentStore;
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong, readwrite) RKManagedObjectMappingOperationDataSource *mappingOperationDataSource;
 @property (nonatomic, assign) BOOL hasPerformedResetIfNecessary;
 @end
 
 @implementation RKManagedObjectImporter
 
-@synthesize managedObjectModel = _managedObjectModel;
-@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-@synthesize persistentStore = _persistentStore;
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize mappingOperationDataSource = _mappingOperationDataSource;
 
 - (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel storePath:(NSString *)storePath
 {
@@ -67,16 +61,13 @@
         NSPersistentStoreCoordinator *persistentStoreCoordinator = [self createPersistentStoreCoordinator:&error];
         NSAssert(persistentStoreCoordinator, @"Importer initialization failed: Unable to create persistent store coordinator: %@", error);
         self.persistentStoreCoordinator = persistentStoreCoordinator;
-        [persistentStoreCoordinator release];
 
         NSManagedObjectContext *managedObjectContext = [self createManagedObjectContext];
         NSAssert(managedObjectContext, @"Importer initialization failed: Unable to create managed object context");
         self.managedObjectContext = managedObjectContext;
-        [managedObjectContext release];
 
         RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [self createMappingOperationDataSource];
         self.mappingOperationDataSource = mappingOperationDataSource;
-        [mappingOperationDataSource release];
 
         self.hasPerformedResetIfNecessary = NO;
         self.resetsStoreBeforeImporting = YES;
@@ -100,11 +91,9 @@
         NSManagedObjectContext *managedObjectContext = [self createManagedObjectContext];
         NSAssert(managedObjectContext, @"Importer initialization failed: Unable to create managed object store");
         self.managedObjectContext = managedObjectContext;
-        [managedObjectContext release];
 
         RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [self createMappingOperationDataSource];
         self.mappingOperationDataSource = mappingOperationDataSource;
-        [mappingOperationDataSource release];
 
         self.hasPerformedResetIfNecessary = NO;
         self.resetsStoreBeforeImporting = NO;
@@ -134,7 +123,6 @@
                                                                                             URL:storeURL
                                                                                         options:nil error:error];
     if (! persistentStore) {
-        [persistentStoreCoordinator release];
         return nil;
     }
 
@@ -161,14 +149,6 @@
     return mappingOperationDataSource;
 }
 
-- (void)dealloc
-{
-    [_managedObjectModel release];
-    [_persistentStoreCoordinator release];
-    [_managedObjectContext release];
-    [_mappingOperationDataSource release];
-    [super dealloc];
-}
 
 - (void)resetPersistentStoreIfNecessary
 {
@@ -197,43 +177,47 @@
 
 - (NSUInteger)importObjectsFromFileAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error
 {
+    NSParameterAssert(path);
+    NSParameterAssert(mapping);
+
     // Perform the reset on the first import action if requested
     [self resetPersistentStoreIfNecessary];
 
-    NSError *localError = nil;
-    NSString *payload = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&localError];
+    __block NSError *localError = nil;
+    NSData *payload = [NSData dataWithContentsOfFile:path options:0 error:&localError];
     if (! payload) {
         RKLogError(@"Failed to read file at path '%@': %@", path, [localError localizedDescription]);
         if (error) *error = localError;
         return NSNotFound;
     }
 
-    NSString *MIMEType = [path MIMETypeForPathExtension];
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-    // TODO: Return error RKParserNotRegisteredForMIMETypeError
-    NSAssert1(parser, @"Could not find a parser for the MIME Type '%@'", MIMEType);
-    id parsedData = [parser objectFromString:payload error:&localError];
+    NSString *MIMEType = RKMIMETypeFromPathExtension(path);
+    id parsedData = [RKMIMETypeSerialization objectFromData:payload MIMEType:MIMEType error:&localError];
+    if (!parsedData) {
+        RKLogError(@"Failed to parse file at path '%@': %@", path, [localError localizedDescription]);
+    }
+    
     if (! parsedData) {
         if (error) *error = localError;
         return NSNotFound;
     }
 
-    RKObjectMappingProvider *mappingProvider = [[RKObjectMappingProvider new] autorelease];
-    [mappingProvider setMapping:mapping forKeyPath:keyPath ? keyPath : @""];
-
-    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
+    NSDictionary *mappingDictionary = @{ (keyPath ?: [NSNull null]) : mapping };
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:parsedData mappingsDictionary:mappingDictionary];
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
     __block RKMappingResult *mappingResult;
     [self.managedObjectContext performBlockAndWait:^{
-        mappingResult = [mapper performMapping];
+        [mapper start];
+        mappingResult = mapper.mappingResult;
+        localError = mapper.error;
     }];
     if (mappingResult == nil) {
-        // TODO: Return error
-        RKLogError(@"Importing file at path '%@' failed with mapping errors: %@", path, mapper.errors);
+        if (error) *error = localError;
+        RKLogError(@"Importing file at path '%@' failed with error: %@", path, localError);
         return NSNotFound;
     }
 
-    NSUInteger objectCount = [[mappingResult asCollection] count];
+    NSUInteger objectCount = [mappingResult count];
     RKLogInfo(@"Imported %lu objects from file at path '%@'", (unsigned long)objectCount, path);
     return objectCount;
 }

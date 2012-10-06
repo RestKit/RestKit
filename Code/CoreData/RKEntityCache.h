@@ -36,7 +36,7 @@
 /**
  The managed object context with which the receiver is associated.
  */
-@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 
 ///-----------------------------------------------------------------------------
 /// @name Caching Objects by Attribute

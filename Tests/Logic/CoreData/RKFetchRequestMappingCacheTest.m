@@ -21,19 +21,19 @@
     // RKCat entity. Integer prinmary key.
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
-    RKCat *reginald = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    RKCat *reginald = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     reginald.name = @"Reginald";
     reginald.railsID = [NSNumber numberWithInt:123456];
-    [managedObjectStore.primaryManagedObjectContext save:nil];
+    [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     NSManagedObject *cachedObject = [cache findInstanceOfEntity:entity
                                         withPrimaryKeyAttribute:mapping.primaryKeyAttribute
                                                           value:[NSNumber numberWithInt:123456]
-                                         inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+                                         inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     assertThat(cachedObject, is(equalTo(reginald)));
 }
 
@@ -42,18 +42,18 @@
     // RKEvent entity. String primary key
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKEvent" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKEvent" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKEvent" inManagedObjectStore:managedObjectStore];
     mapping.primaryKeyAttribute = @"eventID";
 
-    RKEvent *birthday = [NSEntityDescription insertNewObjectForEntityForName:@"RKEvent" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    RKEvent *birthday = [NSEntityDescription insertNewObjectForEntityForName:@"RKEvent" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     birthday.eventID = @"e-1234-a8-b12";
-    [managedObjectStore.primaryManagedObjectContext save:nil];
+    [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     NSManagedObject *cachedObject = [cache findInstanceOfEntity:entity
                                         withPrimaryKeyAttribute:mapping.primaryKeyAttribute
                                                           value:@"e-1234-a8-b12"
-                                         inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+                                         inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     assertThat(cachedObject, is(equalTo(birthday)));
 }
 
