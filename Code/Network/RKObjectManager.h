@@ -31,16 +31,50 @@
 RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
- The `RKObjectManager` class provides a centralized interface for performing object mapping based HTTP request and response operations. It encapsulates common configuration such as request/response descriptors and routing, provides for the creation of NSURLRequest and RKObjectRequestOperation objects, and one-line methods to enqueue object request operations for the basic HTTP request methods (GET, POST, PUT, DELETE, etc).
+ The `RKObjectManager` class provides a centralized interface for performing object mapping based HTTP request and response operations. It encapsulates common configuration such as request/response descriptors and routing, provides for the creation of `NSURLRequest` and `RKObjectRequestOperation` objects, and one-line methods to enqueue object request operations for the basic HTTP request methods (GET, POST, PUT, DELETE, etc).
  
- ## Path Patterns
+ ## Object Request Operations
  
- Key Concepts??
- Routing
- Request Descriptor
- Object Request Operation
- Request and Response MIME Types???
- Parameterization
+ Object request operations model the lifecycle of an object mapped HTTP request from start to finish. They are initialized with a fully configured `NSURLRequest` object and a set of `RKResponseDescriptor` objects that specify how an HTTP response is to be mapped into local domain objects. Object request operations may be constructed as standalone objects, but are often constructed through an `RKObjectManager` object. The object request operation encapsulates the functionality of two underlying operations that perform the bulk of the work. The HTTP request and response loading is handled by an `RKHTTPRequestOperation`, which is responsible for the HTTP transport details. Once a response has been successfully loaded, the object request operation starts an `RKResponseMapperOperation` that is responsible for handling the mapping of the response body. When working with Core Data, the `RKManagedObjectRequestOperation` class is used. The object manager encapsulates the Core Data configuration details and provides an interface that will return the appropriate object request operation for a request through the `appropriateObjectRequestOperationWithObject:method:path:parameters:` method.
+ 
+ ## The Base URL and Path Patterns
+ 
+ Each object manager is configured with a base URL that defines the URL that all request sent through the manager will be relative to. The base URL is configured directly through the `managerWithBaseURL:` method or is inherited from an AFNetworking `AFHTTPClient` object if the manager is initialized via the `initWithHTTPClient:` method. The base URL can point directly at the root of a URL or may include a path.
+ 
+ Path patterns are a common unit of abstraction in RestKit for describing the path portion of URL's. When working with API's, there is typically one or more dynamic portions of the URL that correspond to primary keys or other identifying resource attributes. For example, a blogging application may represent articles in a URL structure such as '/articles/1234' and comments about an article might appear at '/articles/1234/comments'. These path structures could be represented as the path patterns '/articles/:articleID' and '/articles/:articleID/comments', substituing the dynamic key ':articleID' in place of the primary key of in the path. These keys can be used to interpolate a path with an object's property values using key-value coding or be used to match a string.
+ 
+ Path patterns appear throughout RestKit, but the most fundamental uses are for the dynamic generation of URL paths from objects and the matching of request and response URLs for mapping configuration. When generating a URL, a path pattern is interpolated with the value of an object. Consider this example:
+ 
+    // Set object attributes
+    RKArticle *article = [RKArticle new];
+    article.articleID = @12345;
+ 
+    // Interpolate with the object
+    NSString *path = RKPathFromPatternWithObject(@"/articles/:articleID", article);
+    NSLog(@"The path is %@", path); // prints /articles/12345
+ 
+ This may at first glance appear to provide only a small syntactic improvement over using `[NSString stringWithFormat:]`, but it becomes more interesting once you consider that the dynamic key can include key path:
+ 
+    RKCategory *category = [RKCategory new];
+    comment.name = @"RestKit;
+    article.category = category;
+ 
+    NSString *path = RKPathFromPatternWithObject(@"/categories/:comment.name/articles/:articleID/comments/", article);
+    NSLog(@"The path is %@", path); // prints /categories/RestKit/articles/12345
+ 
+ These path patterns can then be registered with the manager via an `RKRoute` object (discussed in detail below), enabling one to perform object request operations like so:
+ 
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    [manager.router.routeSet addRoute:[RKRoute routeWithClass:[RKArticle class] pathPattern:@"/categories/:comment.name/articles/:articleID/comments/" method:RKRequestMethodGET]];
+ 
+    // Now GET our article object... sending a GET to '/categories/RestKit/articles/12345'
+    [manager getObject:article path:nil parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
+        NSLog(@"G");
+    } failure:nil];
+ 
+ Once a path pattern has been registered via the routing system, the manager can automatically build full request URL's when given nothing but the object to be sent.
+ 
+ The second use case of path patterns is in the matching of path into a dictionary of attributes. In this case, the path pattern is evaluatd against a string and used to construct an `NSDictionary` object containing the matched key paths, optionally including the values of a query string. This functionality is provided via the `RKPathMatcher` class and is discussed in detail in the accompanying documentation.  
  
  ## Request and Response Descriptors
  
@@ -97,6 +131,10 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  In the above example, request and response mapping configurations were described for a simple data model and then used to perform a basic POST operation and map the results. An arbitrary number of request and response descriptors may be added to the manager to accommodate your application's needs.
  
+ ## MIME Types
+ 
+ MIME Types serve an important function to the object manager. They are used to identify how content is to be serialized when constructing request bodies and also used to set the 'Accept' header for content negotiation. RestKit aspires to be content type agnostic by leveraging the pluggable `RKMIMESerialization` class to handle content serialization and deserialization.
+ 
  ## Routing
  
  Routing is the process of generating an `NSURL` appropriate for a particular HTTP server request interaction. Using routing instead of hard-coding paths enables centralization of configuration and allows the developer to focus on what they want done rather than the details of how to do it. Changes to the URL structure in the application can be made in one place. Routes can also be useful in testing, as they permit for the changing of paths at run-time.
@@ -145,6 +183,24 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  RestKit features deep integration with Apple's Core Data persistence framework. The object manager provides access to this integration by creating `RKManagedObjectRequestOperation` objects when an attempt is made to interact with a resource that has been mapped using an `RKEntityMapping`. To utilize the Core Data integration, the object manager must be provided with a fully configured `RKManagedObjectStore` object. The `RKManagedObjectStore` provides access to the `NSManagedObjectModel` and `NSManagedObjectContext` objects required to peform object mapping that targets a Core Data entity.
  
  Please see the documentation for `RKManagedObjectStore`, `RKEntityMapping`, and `RKManagedObjectRequestOperation` for in depth information about Core Data in RestKit.
+ 
+ ## Subclassing Notes
+ 
+ The object manager is designed to support subclassing. The default behaviors can be altered and tailored to the specific needs of your application easily by manipulating a few core methods:
+ 
+ * `objectRequestOperationWithRequest:success:failure:` - Used to construct all non-managed object request operations for the manager. Provide a subclass implementation if you wish to alter the behavior of all unmanaged object request operations.
+ * `managedObjectRequestOperationWithRequest:managedObjectContext:success:failure:` - Used to construct all managed object request operations for the manager. Provide a subclass implementation if you wish to alter the behavior of all managed object request operations.
+ * `appropriateObjectRequestOperationWithObject:method:path:parameters:` - Used to construct all object request operations for the manager, both managed and unmanaged. Invokes either `objectRequestOperationWithRequest:success:failure:` or `managedObjectRequestOperationWithRequest:managedObjectContext:success:failure:` to construct the actual request. Provide a subclass implementation to alter behaviors for all object request operations constructed by the manager.
+ * `enqueueObjectRequestOperation:` - Invoked to enqueue all operations constructed by the manager that are to be started as soon as possible. Provide a subclass implementation if you wish to work with object request operations as they are be enqueued.
+ 
+ Also note that the behavior of the lower level HTTP details can also be altered by subclassing `AFHTTPClient` and using an instance of your subclassed client to initialize the manager.
+ 
+ @warning Note that when subclassing `AFHTTPClient` to change object manager behaviors it is not possible to alter the paramters of requests that are constructed on behalf of the manager. This is because the object manager handles its own serialization and construction of the request body, but defers to the `AFHTTPClient` for all other details (such as default HTTP headers, etc).
+ 
+ @see `RKObjectRequestOperation`
+ @see `RKRouter`
+ @see `RKPathMatcher`
+ @see `RKMIMETypeSerialization`
  */
 @interface RKObjectManager : NSObject
 
@@ -206,9 +262,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 /**
  The default HTTP headers for all `NSURLRequest` objects constructed by the object manager.
-
+ 
  The returned dictionary contains all of the default headers set on the underlying `AFHTTPClient` object and the value of the 'Accept' header set on the object manager, if any.
-
+ 
  @see `setAcceptHeaderWithMIMEType:`
  */
 @property (nonatomic, readonly) NSDictionary *defaultHeaders;
@@ -662,7 +718,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  Adds a response descriptor to the manager.
  
  Adding a response descriptor to the manager sets the `baseURL` of the descriptor to the `baseURL` of the manager, causing it to evaluate URL objects relatively.
-
+ 
  @param responseDescriptor The response descriptor object to the be added to the manager.
  */
 - (void)addResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
