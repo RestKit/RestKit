@@ -361,6 +361,8 @@
 		254372D715F54CE3006E8424 /* RKManagedObjectRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372D415F54CE3006E8424 /* RKManagedObjectRequestOperation.h */; };
 		254372D815F54CE3006E8424 /* RKManagedObjectRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372D515F54CE3006E8424 /* RKManagedObjectRequestOperation.m */; };
 		254372D915F54CE3006E8424 /* RKManagedObjectRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372D515F54CE3006E8424 /* RKManagedObjectRequestOperation.m */; };
+		25565956161FC3C300F5BB20 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25565955161FC3C300F5BB20 /* CoreServices.framework */; };
+		25565959161FC3CD00F5BB20 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */; };
 		2564E40B16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */; };
 		2564E40C16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */; };
 		257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -805,6 +807,8 @@
 		254372D415F54CE3006E8424 /* RKManagedObjectRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectRequestOperation.h; sourceTree = "<group>"; };
 		254372D515F54CE3006E8424 /* RKManagedObjectRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectRequestOperation.m; sourceTree = "<group>"; };
 		254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginatorTest.m; sourceTree = "<group>"; };
+		25565955161FC3C300F5BB20 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
+		25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRelationshipConnectionOperationTest.m; sourceTree = "<group>"; };
 		257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+RKAdditions.h"; sourceTree = "<group>"; };
 		257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+RKAdditions.m"; sourceTree = "<group>"; };
@@ -956,6 +960,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25565959161FC3CD00F5BB20 /* SystemConfiguration.framework in Frameworks */,
+				25565956161FC3C300F5BB20 /* CoreServices.framework in Frameworks */,
 				25160E79145651060060A5C5 /* SenTestingKit.framework in Frameworks */,
 				25160E7A145651060060A5C5 /* Cocoa.framework in Frameworks */,
 				25160E7D145651060060A5C5 /* RestKit.framework in Frameworks */,
@@ -1023,6 +1029,8 @@
 		25160D1814564E810060A5C5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */,
+				25565955161FC3C300F5BB20 /* CoreServices.framework */,
 				25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */,
 				25B6EA0514CF946300B1E881 /* QuartzCore.framework */,
 				25A34244147D8AAA0009758D /* Security.framework */,
