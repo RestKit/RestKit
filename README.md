@@ -521,7 +521,7 @@ Edit your Podfile and add RestKit:
 ``` bash
 $ edit Podfile
 platform :ios, '5.0'
-pod 'RestKit', :git => 'https://github.com/RestKit/RestKit.git', :branch => 'feature/reboot-networking-layer'
+pod 'RestKit', :git => 'https://github.com/RestKit/RestKit.git', :branch => 'development'
 ```
 
 Install into your project:
