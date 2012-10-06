@@ -32,8 +32,8 @@
     NSString *unicode = [NSString stringWithFormat:@"%CNo ser ni%Co, ser b%Cfalo%C%C", (unichar)0x00A1, (unichar)0x00F1, (unichar)0x00FA, (unichar)0x2026, (unichar)0x0021];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:unicode forKey:@"utf8"];
     NSString *validUnicode = @"utf8=%C2%A1No%20ser%20ni%C3%B1o,%20ser%20b%C3%BAfalo%E2%80%A6%21";
-    NSString *encodedString = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);    
-    assertThat(encodedString, is(equalTo(validUnicode)));
+    NSString *encodedString = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
+    expect(encodedString).to.equal(validUnicode);
 }
 
 - (void)testShouldEncodeURLStrings
@@ -42,25 +42,25 @@
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:url forKey:@"url"];
     NSString *expectedURL = @"url=http%3A%2F%2Fsome%2Eserver%2Ecom%2Fpath%2Faction%3Fsubject%3D%22That%20thing%20I%20sent%22%26email%3D%22me%40me%2Ecom%22";
     NSString *actualURL = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
-    assertThat(actualURL, is(equalTo(expectedURL)));
+    expect(actualURL).to.equal(expectedURL);
 }
 
 - (void)testShouldEncodeArrays
 {
     NSArray *array = [NSArray arrayWithObjects:@"item1", @"item2", nil];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:array forKey:@"anArray"];
-    NSString *expected = @"anArray%5B%5D=item1&anArray%5B%5D=item2";
+    NSString *expected = @"anArray[]=item1&anArray[]=item2";
     NSString *actual = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
-    assertThat(actual, is(equalTo(expected)));
+    expect(actual).to.equal(expected);
 }
 
 - (void)testShouldEncodeDictionaries
 {
     NSDictionary *subDictionary = [NSDictionary dictionaryWithObject:@"value1" forKey:@"key1"];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:subDictionary forKey:@"aDictionary"];
-    NSString *expected = @"aDictionary%5Bkey1%5D=value1";
+    NSString *expected = @"aDictionary[key1]=value1";
     NSString *actual = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
-    assertThat(actual, is(equalTo(expected)));
+    expect(actual).to.equal(expected);
 }
 
 - (void)testShouldEncodeArrayOfDictionaries
@@ -71,9 +71,9 @@
     NSArray *array = [NSArray arrayWithObjects:dictA, dictB, nil];
     NSDictionary *dictRoot = @{@"root" : array};
 
-    NSString *expected = @"root%5B%5D%5Ba%5D=x&root%5B%5D%5Bb%5D=y&root%5B%5D%5Ba%5D=1&root%5B%5D%5Bb%5D=2";
+    NSString *expected = @"root[][a]=x&root[][b]=y&root[][a]=1&root[][b]=2";
     NSString *actual = RKURLEncodedStringFromDictionaryWithEncoding(dictRoot, NSUTF8StringEncoding);
-    assertThat(actual, is(equalTo(expected)));
+    expect(actual).to.equal(expected);
 }
 
 - (void)testShouldEncodeRecursiveArrays
@@ -82,18 +82,19 @@
     NSArray *recursiveArray2 = [NSArray arrayWithObject:recursiveArray3];
     NSArray *recursiveArray1 = [NSArray arrayWithObject:recursiveArray2];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:recursiveArray1 forKey:@"recursiveArray"];
-    NSString *expected = @"recursiveArray%5B%5D%5B%5D%5B%5D=item1&recursiveArray%5B%5D%5B%5D%5B%5D=item2";
+    NSString *expected = @"recursiveArray[][][]=item1&recursiveArray[][][]=item2";
     NSString *actual = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
-    assertThat(actual, is(equalTo(expected)));
+    expect(actual).to.equal(expected);
 }
 
 - (void)testShouldParseQueryParameters
 {
     NSString *resourcePath = @"/views/thing/?keyA=valA&keyB=valB";
     NSDictionary *queryParameters = RKQueryParametersFromStringWithEncoding(resourcePath, NSUTF8StringEncoding);
-    assertThat(queryParameters, isNot(empty()));
-    assertThat(queryParameters, hasCountOf(2));
-    assertThat(queryParameters, hasEntries(@"keyA", @"valA", @"keyB", @"valB", nil));
+    expect(queryParameters).notTo.beEmpty();
+    expect(queryParameters).to.haveCountOf(2);
+    NSDictionary *expected = @{@"keyA": @"valA", @"keyB": @"valB"};
+    expect(queryParameters).to.equal(expected);
 }
 
 - (void)testDictionaryFromURLEncodedStringWithSimpleKeyValues
