@@ -212,8 +212,8 @@
         localError = mapper.error;
     }];
     if (mappingResult == nil) {
-        // TODO: Return error
-        RKLogError(@"Importing file at path '%@' failed with error: %@", path, mapper.error);
+        if (error) *error = localError;
+        RKLogError(@"Importing file at path '%@' failed with error: %@", path, localError);
         return NSNotFound;
     }
 
