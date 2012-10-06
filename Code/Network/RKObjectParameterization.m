@@ -87,7 +87,7 @@
     if (operation.error) {
         if (operation.error.code == RKMappingErrorUnmappableRepresentation) {
             // If the mapped object is empty, return an empty dictionary and no error
-            return @{};
+            return self.rootKeyPath ? @{ self.rootKeyPath: @{} } : @{};
         }
         
         if (error) *error = operation.error;

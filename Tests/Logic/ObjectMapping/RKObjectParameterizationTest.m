@@ -186,8 +186,21 @@
     NSError *error = nil;
     RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
-    expect(error).to.beNil();
-    expect(parameters).to.equal(@{});
+    EXP_expect(error).to.beNil();
+    EXP_expect(parameters).to.equal(@{});
+}
+
+- (void)testEmptyParameterizationRespectsRootKeyPath
+{
+    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:@"root"];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    EXP_expect(error).to.beNil();
+    EXP_expect(parameters).to.equal(@{@"root":@{}});
 }
 
 - (void)testShouldSerializeNestedObjectsContainingDatesToJSON
