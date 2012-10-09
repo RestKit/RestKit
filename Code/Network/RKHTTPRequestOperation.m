@@ -142,7 +142,7 @@
     if ([AFHTTPRequestOperation instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)]) {
         NSURLRequest *returnValue = [super connection:connection willSendRequest:request redirectResponse:redirectResponse];
         if (returnValue) {
-            RKLogDebug(@"Following redirect request: %@", returnValue);
+            if (redirectResponse) RKLogDebug(@"Following redirect request: %@", returnValue);
             return returnValue;
         } else {
             RKLogDebug(@"Not following redirect to %@", request);
