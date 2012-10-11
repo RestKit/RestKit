@@ -1,1 +1,27 @@
-<?xml version='1.0' encoding='UTF-8'?><Workspace version='1.0'><FileRef location='group:RestKit.xcodeproj'/><FileRef location='group:Pods/Pods.xcodeproj'/></Workspace>
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "container:"
+      name = "Examples - iOS">
+      <FileRef
+         location = "group:Examples/RKTwitter/RKTwitter.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Examples/RKTwitterCoreData/RKTwitterCoreData.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Examples/RKSearchExample/RKSearchExample.xcodeproj">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:"
+      name = "Examples - Mac OS">
+      <FileRef
+         location = "group:Examples/RKMacOSX/RKMacOSX.xcodeproj">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "group:RestKit.xcodeproj">
+   </FileRef>
+</Workspace>
