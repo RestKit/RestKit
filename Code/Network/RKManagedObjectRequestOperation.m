@@ -154,9 +154,17 @@
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error
 {
     NSMutableSet *localObjects = [NSMutableSet set];
-    NSURL *URL = [self.request URL];
     __block NSError *_blockError;
     __block NSArray *_blockObjects;
+
+    // Pass the fetch request blocks a relative `NSURL` object if possible
+    NSURL *URL = [self.request URL];
+    NSArray *baseURLs = [self.responseDescriptors valueForKeyPath:@"@distinctUnionOfObjects.baseURL"];
+    if ([baseURLs count] == 1) {
+        NSURL *baseURL = baseURLs[0];
+        NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(URL, baseURL);
+        URL = [NSURL URLWithString:pathAndQueryString relativeToURL:baseURL];
+    }
 
     for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
         NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
