@@ -309,6 +309,8 @@
 		252029061577AE1800076FB4 /* RKRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = 252029021577AE1800076FB4 /* RKRoute.m */; };
 		252029091577C78600076FB4 /* RKRouteSetTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252029081577C78600076FB4 /* RKRouteSetTest.m */; };
 		2520290A1577C78600076FB4 /* RKRouteSetTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252029081577C78600076FB4 /* RKRouteSetTest.m */; };
+		252205CC162B242400F7B11E /* RKHTTPUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252205CB162B242400F7B11E /* RKHTTPUtilitiesTest.m */; };
+		252205CD162B242400F7B11E /* RKHTTPUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252205CB162B242400F7B11E /* RKHTTPUtilitiesTest.m */; };
 		252EFAFA14D8EAEC004863C8 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAF914D8EAEC004863C8 /* RKEvent.m */; };
 		252EFAFB14D8EAEC004863C8 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAF914D8EAEC004863C8 /* RKEvent.m */; };
 		252EFB2814DA0689004863C8 /* NakedEvents.json in Resources */ = {isa = PBXBuildFile; fileRef = 252EFB2714DA0689004863C8 /* NakedEvents.json */; };
@@ -401,6 +403,10 @@
 		2598888E15EC169E006CAE95 /* RKPropertyMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 2598888B15EC169E006CAE95 /* RKPropertyMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2598888F15EC169E006CAE95 /* RKPropertyMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 2598888C15EC169E006CAE95 /* RKPropertyMapping.m */; };
 		2598889015EC169E006CAE95 /* RKPropertyMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 2598888C15EC169E006CAE95 /* RKPropertyMapping.m */; };
+		259915C41625CB4600C95B5D /* RKManagedObjectRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 259915C31625CB4600C95B5D /* RKManagedObjectRequestOperationTest.m */; };
+		259915C51625CB4600C95B5D /* RKManagedObjectRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 259915C31625CB4600C95B5D /* RKManagedObjectRequestOperationTest.m */; };
+		259AC481162B05C80012D2F9 /* RKObjectRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 259AC480162B05C80012D2F9 /* RKObjectRequestOperationTest.m */; };
+		259AC482162B05C80012D2F9 /* RKObjectRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 259AC480162B05C80012D2F9 /* RKObjectRequestOperationTest.m */; };
 		259B96D51604CCCC0000C250 /* AFHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 259B96C21604CCCC0000C250 /* AFHTTPClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259B96D61604CCCC0000C250 /* AFHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 259B96C21604CCCC0000C250 /* AFHTTPClient.h */; };
 		259B96D71604CCCC0000C250 /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 259B96C31604CCCC0000C250 /* AFHTTPClient.m */; };
@@ -775,6 +781,7 @@
 		252029011577AE1800076FB4 /* RKRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRoute.h; sourceTree = "<group>"; };
 		252029021577AE1800076FB4 /* RKRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRoute.m; sourceTree = "<group>"; };
 		252029081577C78600076FB4 /* RKRouteSetTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouteSetTest.m; sourceTree = "<group>"; };
+		252205CB162B242400F7B11E /* RKHTTPUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHTTPUtilitiesTest.m; sourceTree = "<group>"; };
 		252EFAF814D8EAEC004863C8 /* RKEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKEvent.h; sourceTree = "<group>"; };
 		252EFAF914D8EAEC004863C8 /* RKEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEvent.m; sourceTree = "<group>"; };
 		252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestNotificationObserver.h; path = Testing/RKTestNotificationObserver.h; sourceTree = "<group>"; };
@@ -828,6 +835,8 @@
 		2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRelationshipConnectionOperation.m; sourceTree = "<group>"; };
 		2598888B15EC169E006CAE95 /* RKPropertyMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPropertyMapping.h; sourceTree = "<group>"; };
 		2598888C15EC169E006CAE95 /* RKPropertyMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPropertyMapping.m; sourceTree = "<group>"; };
+		259915C31625CB4600C95B5D /* RKManagedObjectRequestOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectRequestOperationTest.m; sourceTree = "<group>"; };
+		259AC480162B05C80012D2F9 /* RKObjectRequestOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectRequestOperationTest.m; sourceTree = "<group>"; };
 		259B96C21604CCCC0000C250 /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPClient.h; sourceTree = "<group>"; };
 		259B96C31604CCCC0000C250 /* AFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPClient.m; sourceTree = "<group>"; };
 		259B96C41604CCCC0000C250 /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -1279,6 +1288,7 @@
 				25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */,
 				258EFF7915C0CE1400EE4E0D /* RKManagedObjectSeederTest.m */,
 				2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */,
+				259915C31625CB4600C95B5D /* RKManagedObjectRequestOperationTest.m */,
 			);
 			name = CoreData;
 			path = Logic/CoreData;
@@ -1420,6 +1430,7 @@
 				25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */,
 				252029081577C78600076FB4 /* RKRouteSetTest.m */,
 				25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */,
+				259AC480162B05C80012D2F9 /* RKObjectRequestOperationTest.m */,
 			);
 			name = Network;
 			path = Logic/Network;
@@ -1493,6 +1504,7 @@
 				2501405215366000004E0466 /* RKObjectiveCppTest.mm */,
 				25CDA0E2161E821000F583F3 /* RKISODateFormatterTest.m */,
 				25BB392D161F4FD700E5C72A /* RKPathUtilitiesTest.m */,
+				252205CB162B242400F7B11E /* RKHTTPUtilitiesTest.m */,
 			);
 			name = Support;
 			path = Logic/Support;
@@ -2262,6 +2274,9 @@
 				25CDA0E7161E828D00F583F3 /* RKISODateFormatterTest.m in Sources */,
 				25BB392E161F4FD700E5C72A /* RKPathUtilitiesTest.m in Sources */,
 				25565965161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */,
+				259915C41625CB4600C95B5D /* RKManagedObjectRequestOperationTest.m in Sources */,
+				259AC481162B05C80012D2F9 /* RKObjectRequestOperationTest.m in Sources */,
+				252205CC162B242400F7B11E /* RKHTTPUtilitiesTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2405,6 +2420,9 @@
 				25CDA0E8161E828E00F583F3 /* RKISODateFormatterTest.m in Sources */,
 				25BB392F161F4FD700E5C72A /* RKPathUtilitiesTest.m in Sources */,
 				25565966161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */,
+				259915C51625CB4600C95B5D /* RKManagedObjectRequestOperationTest.m in Sources */,
+				259AC482162B05C80012D2F9 /* RKObjectRequestOperationTest.m in Sources */,
+				252205CD162B242400F7B11E /* RKHTTPUtilitiesTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

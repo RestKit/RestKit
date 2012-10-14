@@ -1194,7 +1194,7 @@
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];    
     operation.delegate = mockDelegate;
     NSError *error = nil;
-    [[mockDelegate expect] mappingOperation:operation didFindMapping:nameMapping forKeyPath:@"name"];
+    [[mockDelegate expect] mappingOperation:operation didFindValue:[NSNull null] forKeyPath:@"name" mapping:nameMapping];
     [[mockDelegate expect] mappingOperation:operation didSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
     operation.dataSource = dataSource;
     [operation performMapping:&error];
@@ -1215,7 +1215,7 @@
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     operation.delegate = mockDelegate;
     NSError *error = nil;
-    [[mockDelegate expect] mappingOperation:operation didFindMapping:nameMapping forKeyPath:@"name"];
+    [[mockDelegate expect] mappingOperation:operation didFindValue:@"Blake Watters" forKeyPath:@"name" mapping:nameMapping];
     [[mockDelegate expect] mappingOperation:operation didNotSetUnchangedValue:@"Blake Watters" forKeyPath:@"name" usingMapping:nameMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
