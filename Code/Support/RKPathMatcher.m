@@ -22,7 +22,6 @@
 #import "SOCKit.h"
 #import "RKLog.h"
 #import "RKDictionaryUtilities.h"
-#import "RKPathUtilities.h"
 
 static NSString *RKEncodeURLString(NSString *unencodedString);
 extern NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding stringEncoding);
@@ -75,12 +74,6 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     matcher.sourcePath = pathString;
     matcher.rootPath = pathString;
     return matcher;
-}
-
-// Normalize our root path for matching cleanly with SOCKit
-- (void)setRootPath:(NSString *)rootPath
-{
-    _rootPath = RKPathNormalize(rootPath);
 }
 
 - (BOOL)matches
@@ -145,10 +138,11 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using pathMatcherWithPattern: before calling pathFromObject:");
     NSAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     NSString *(^encoderBlock)(NSString *interpolatedString) = nil;
-    if (addEscapes)
+    if (addEscapes) {
         encoderBlock = ^NSString *(NSString *interpolatedString) {
             return RKEncodeURLString(interpolatedString);
         };
+    }
     NSString *path = [self.socPattern stringFromObject:object withBlock:encoderBlock];
     return path;
 }

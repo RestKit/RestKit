@@ -95,3 +95,25 @@ NSDate *RKDateFromHTTPDateString(NSString *);
  @return The expiration date as specified by the cache headers or `nil` if none was found.
  */
 NSDate *RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *headers, NSInteger statusCode);
+
+/**
+ Returns a Boolean value that indicates if a given URL is relative to another URL.
+
+ This method does not rely on the `baseURL` method of `NSURL` as it only indicates a relationship between the initialization of two URL objects. The relativity of the given URL is assessed by evaluating a prefix match of the URL's absolute string value with the absolute string value of the potential base URL.
+
+ @param URL The URL to assess the relativity of.
+ @param baseURL The base URL to determine if the given URL is relative to.
+ @return `YES` is URL is relative to the base URL, else `NO`.
+ */
+BOOL RKURLIsRelativeToURL(NSURL *URL, NSURL *baseURL);
+
+/**
+ Returns a string object containing the relative path and query string of a given URL object and a base URL that the given URL is relative to.
+
+ If the given URL is found not to be relative to the baseURL, `nil` is returned.
+
+ @param URL The URL to retrieve the relative path and query string of.
+ @param baseURL The base URL to be omitted from the returned path and query string.
+ @return A string containing the relative path and query parameters.
+ */
+NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);

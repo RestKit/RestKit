@@ -12,16 +12,6 @@
 
 SPEC_BEGIN(RKResponseDescriptorSpec)
 
-describe(@"init", ^{
-    context(@"when given a relative path pattern", ^{
-        it(@"normalizes the path pattern", ^{
-            RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-            RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"monkeys" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
-            [[responseDescriptor.pathPattern should] equal:@"/monkeys"];
-        });
-    });
-});
-
 describe(@"matchesURL:", ^{
     __block NSURL *baseURL;
     __block RKResponseDescriptor *responseDescriptor;
@@ -139,10 +129,10 @@ describe(@"matchesURL:", ^{
             baseURL = [NSURL URLWithString:@"http://0.0.0.0:5000"];
         });
         
-        context(@"and the path pattern is '/api/v1/organizations'", ^{
+        context(@"and the path pattern is '/api/v1/organizations/'", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/api/v1/organizations" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                 responseDescriptor.baseURL = baseURL;
             });
             
@@ -199,7 +189,7 @@ describe(@"matchesURL:", ^{
                 context(@"and the path pattern is '/monkeys/:monkeyID\\.json'", ^{
                     beforeEach(^{
                         RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                        responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                        responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                         responseDescriptor.baseURL = baseURL;
                     });
                     
@@ -244,11 +234,11 @@ describe(@"matchesResponse:", ^{
     __block RKResponseDescriptor *responseDescriptor;
     
     context(@"when the baseURL is 'http://0.0.0.0:5000", ^{
-        context(@"and the path pattern is '/api/v1/organizations'", ^{
+        context(@"and the path pattern is '/api/v1/organizations/'", ^{
             context(@"and given the URL 'http://0.0.0.0:5000/api/v1/organizations/?client_search=t'", ^{
                 beforeEach(^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/api/v1/organizations" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
                     responseDescriptor.baseURL = [NSURL URLWithString:@"http://0.0.0.0:5000"];
                 });
                 
@@ -270,10 +260,10 @@ describe(@"matchesResponse:", ^{
                     responseDescriptor.baseURL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/"];
                 });
                 
-                it(@"returns YES", ^{
+                it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation/"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    [[@([responseDescriptor matchesResponse:response]) should] beYes];
+                    [[@([responseDescriptor matchesResponse:response]) should] beNo];
                 });
             });
             
@@ -284,10 +274,10 @@ describe(@"matchesResponse:", ^{
                     responseDescriptor.baseURL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/"];
                 });
                 
-                it(@"returns YES", ^{
+                it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation?action=search&type=whatever"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    [[@([responseDescriptor matchesResponse:response]) should] beYes];
+                    [[@([responseDescriptor matchesResponse:response]) should] beNo];
                 });
             });
         });

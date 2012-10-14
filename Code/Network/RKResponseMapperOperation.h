@@ -55,7 +55,7 @@
  */
 - (id)initWithResponse:(NSHTTPURLResponse *)response
                   data:(NSData *)data
-    responseDescriptors:(NSArray *)responseDescriptors;
+   responseDescriptors:(NSArray *)responseDescriptors;
 
 ///------------------------------
 /// @name Accessing Response Data

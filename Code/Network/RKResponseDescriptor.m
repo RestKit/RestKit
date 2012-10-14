@@ -20,7 +20,7 @@
 
 #import "RKPathMatcher.h"
 #import "RKResponseDescriptor.h"
-#import "RKPathUtilities.h"
+#import "RKHTTPUtilities.h"
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 static NSString *RKStringFromIndexSet(NSIndexSet *indexSet) {
@@ -53,23 +53,6 @@ static NSString *RKStringFromIndexSet(NSIndexSet *indexSet) {
     return string;
 }
 
-// Assumes that URL is relative to baseURL
-static NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL)
-{
-    if (baseURL) {
-        NSString *pathAndQuery = [[URL absoluteString] substringFromIndex:[[baseURL absoluteString] length]];
-        return ([pathAndQuery characterAtIndex:0] != '/') ? [NSString stringWithFormat:@"/%@", pathAndQuery] : pathAndQuery;
-    } else {
-        NSString *query = [URL query];
-        return (query && [query length]) ? [NSString stringWithFormat:@"%@?%@", [URL path], query] : [URL path];
-    }
-}
-
-static BOOL RKURLIsRelativeToURL(NSURL *sourceURL, NSURL *baseURL)
-{
-    return [[sourceURL absoluteString] hasPrefix:[baseURL absoluteString]];
-}
-
 @interface RKResponseDescriptor ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, copy, readwrite) NSString *pathPattern;
@@ -87,7 +70,7 @@ static BOOL RKURLIsRelativeToURL(NSURL *sourceURL, NSURL *baseURL)
     NSParameterAssert(mapping);
     RKResponseDescriptor *mappingDescriptor = [self new];
     mappingDescriptor.mapping = mapping;
-    mappingDescriptor.pathPattern = pathPattern ? RKPathNormalize(pathPattern) : nil;
+    mappingDescriptor.pathPattern = pathPattern;
     mappingDescriptor.keyPath = keyPath;
     mappingDescriptor.statusCodes = statusCodes;
 

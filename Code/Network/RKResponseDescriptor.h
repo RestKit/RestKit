@@ -36,11 +36,10 @@
  Creates and returns a new `RKResponseDescriptor` object.
  
  @param mapping The mapping for the response descriptor.
- @param pathPattern A path pattern that matches against URLs for which the mapping should be used. The path pattern will be normalized on input via `RKPathNormalize`.
+ @param pathPattern A path pattern that matches against URLs for which the mapping should be used.
  @param keyPath A key path specifying the subset of the parsed response for which the mapping is to be used.
  @param statusCodes A set of HTTP status codes for which the mapping is to be used.
  @return A new `RKResponseDescriptor` object.
- @see `RKPathNormalize`
  */
 + (RKResponseDescriptor *)responseDescriptorWithMapping:(RKMapping *)mapping
                                             pathPattern:(NSString *)pathPattern

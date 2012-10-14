@@ -55,11 +55,3 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object);
  @return The expected MIME Type of the resource identified by the path or nil if unknown.
  */
 NSString *RKMIMETypeFromPathExtension(NSString *path);
-
-/**
- Normalizes a given string into a path by ensuring that it includes a leading slash and does not include a trailing slash.
- 
- @param path The path to be normalized.
- @return The given path, normalized with a leading slash and without a trailing sla
- */
-NSString *RKPathNormalize(NSString *path);

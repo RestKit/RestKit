@@ -404,3 +404,20 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
     // If nothing permitted to define the cache expiration delay nor to restrict its cacheability, use a default cache expiration delay
     return [[NSDate alloc] initWithTimeInterval:kRKURLCacheDefault sinceDate:now];
 }
+
+BOOL RKURLIsRelativeToURL(NSURL *URL, NSURL *baseURL)
+{
+    return [[URL absoluteString] hasPrefix:[baseURL absoluteString]];
+}
+
+NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL)
+{
+    if (baseURL) {
+        if (! RKURLIsRelativeToURL(URL, baseURL)) return nil;
+        return [[URL absoluteString] substringFromIndex:[[baseURL absoluteString] length]];
+    } else {
+        // NOTE: [URL relativeString] would return the same value as `absoluteString` if URL is not relative to a baseURL
+        NSString *query = [URL query];
+        return (query && [query length]) ? [NSString stringWithFormat:@"%@?%@", [URL path], query] : [URL path];
+    }
+}

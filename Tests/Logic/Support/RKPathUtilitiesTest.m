@@ -15,22 +15,5 @@
 
 @implementation RKPathUtilitiesTest
 
-- (void)testPathNormalizationRemovesTrailingSlash
-{
-    NSString *normalizedPath = RKPathNormalize(@"/api/v1/organizations/");
-    expect(normalizedPath).to.equal(@"/api/v1/organizations");
-}
-
-- (void)testPathNormalizationAddsLeadingSlash
-{
-    NSString *normalizedPath = RKPathNormalize(@"api/v1/organizations/");
-    expect(normalizedPath).to.equal(@"/api/v1/organizations");
-}
-
-- (void)testPathNormalizationRemovesDuplicateSlashes
-{
-    NSString *normalizedPath = RKPathNormalize(@"api//v1/organizations//");
-    expect(normalizedPath).to.equal(@"/api/v1/organizations");
-}
 
 @end

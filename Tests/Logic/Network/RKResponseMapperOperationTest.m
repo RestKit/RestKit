@@ -11,6 +11,8 @@
 #import "RKErrorMessage.h"
 #import "RKMappingErrors.h"
 
+NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
+
 @interface RKObjectResponseMapperOperationTest : RKTestCase
 
 @end
@@ -104,6 +106,98 @@
     expect(mapper.error).notTo.beNil();
     expect(mapper.error.code).to.equal(NSURLErrorBadServerResponse);
     expect([mapper.error localizedDescription]).to.equal(@"Loaded an unprocessable client error response (422)");
+}
+
+#pragma mark - Response Descriptor Matching
+
+- (void)testThatResponseMapperMatchesBaseURLWithoutPathAppropriately
+{
+    NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org"];
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/organizations/"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor.baseURL = baseURL;
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:data responseDescriptors:@[responseDescriptor]];
+    [mapper start];
+    expect(mapper.error).to.beNil();
+
+    NSDictionary *expectedMappingsDictionary = @{ [NSNull null] : mapping };
+    expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
+}
+
+- (void)testThatResponseMapperMatchesBaseURLWithJustASingleSlashAsThePathAppropriately
+{
+    NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org/"];
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/organizations/"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"api/v1/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor.baseURL = baseURL;
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:data responseDescriptors:@[responseDescriptor]];
+    [mapper start];
+    expect(mapper.error).to.beNil();
+
+    NSDictionary *expectedMappingsDictionary = @{ [NSNull null] : mapping };
+    expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
+}
+
+- (void)testThatResponseMapperMatchesBaseURLWithPathWithoutATrailingSlashAppropriately
+{
+    NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1"];
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/organizations/"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor.baseURL = baseURL;
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:data responseDescriptors:@[responseDescriptor]];
+    [mapper start];
+    expect(mapper.error).to.beNil();
+
+    NSDictionary *expectedMappingsDictionary = @{ [NSNull null] : mapping };
+    expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
+}
+
+- (void)testThatResponseMapperMatchesBaseURLWithPathWithATrailingSlashAppropriately
+{
+    NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/"];
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/organizations/"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor.baseURL = baseURL;
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:data responseDescriptors:@[responseDescriptor]];
+    [mapper start];
+    expect(mapper.error).to.beNil();
+
+    NSDictionary *expectedMappingsDictionary = @{ [NSNull null] : mapping };
+    expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
+}
+
+- (void)testThatResponseMapperMatchesBaseURLWithPathAndQueryParametersAppropriately
+{
+    NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/"];
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/organizations/?client_search=s"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor.baseURL = baseURL;
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:data responseDescriptors:@[responseDescriptor]];
+    [mapper start];
+    expect(mapper.error).to.beNil();
+
+    NSDictionary *expectedMappingsDictionary = @{ [NSNull null] : mapping };
+    expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
 }
 
 @end
