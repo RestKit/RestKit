@@ -92,7 +92,7 @@
      [RKResponseDescriptor responseDescriptorWithMapping:humanMapping pathPattern:nil keyPath:@"humans" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]
      ]];
     
-    RKObjectMapping *humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
+    RKObjectMapping *humanSerialization = [RKObjectMapping requestMapping];
     [humanSerialization addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [self.objectManager addRequestDescriptor:[RKRequestDescriptor requestDescriptorWithMapping:humanSerialization objectClass:[RKHuman class] rootKeyPath:@"human"]];
 

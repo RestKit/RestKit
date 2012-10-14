@@ -55,6 +55,13 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
  */
 - (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
 
+/**
+ Returns an array of object mappings that have been registered with the receiver.
+ 
+ @return An array of `RKObjectMapping` objects registered with the receiver.
+ */
+@property (nonatomic, readonly) NSArray *objectMappings;
+
 ///-----------------------------------------------------------------
 /// @name Retrieving the Object Mapping for an Object Representation
 ///-----------------------------------------------------------------

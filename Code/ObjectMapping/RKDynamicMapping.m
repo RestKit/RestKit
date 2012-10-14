@@ -43,6 +43,11 @@
     return self;
 }
 
+- (NSArray *)objectMappings
+{
+    return [self.matchers valueForKey:@"objectMapping"];
+}
+
 - (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)expectedValue
 {
     RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, expectedValue, NSStringFromClass(objectMapping.objectClass));
