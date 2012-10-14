@@ -82,6 +82,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize OAuth1AccessTokenSecret = _OAuth1AccessTokenSecret;
 @synthesize OAuth2AccessToken = _OAuth2AccessToken;
 @synthesize OAuth2RefreshToken = _OAuth2RefreshToken;
+@synthesize credentials = _credentials;
 @synthesize HTTPHeaders = _HTTPHeaders;
 @synthesize additionalRootCertificates = _additionalRootCertificates;
 @synthesize disableCertificateValidation = _disableCertificateValidation;
@@ -193,6 +194,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
     self.username = nil;
     self.password = nil;
+    self.credentials = nil;
     self.serviceUnavailableAlertTitle = nil;
     self.serviceUnavailableAlertMessage = nil;
     self.requestCache = nil;
@@ -229,6 +231,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     request.authenticationType = self.authenticationType;
     request.username = self.username;
     request.password = self.password;
+    request.credentials = self.credentials;
     request.cachePolicy = self.cachePolicy;
     request.cache = self.requestCache;
     request.queue = self.requestQueue;

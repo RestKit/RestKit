@@ -114,6 +114,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize OAuth1AccessTokenSecret = _OAuth1AccessTokenSecret;
 @synthesize OAuth2AccessToken = _OAuth2AccessToken;
 @synthesize OAuth2RefreshToken = _OAuth2RefreshToken;
+@synthesize credentials = _credentials;
 @synthesize queue = _queue;
 @synthesize timeoutInterval = _timeoutInterval;
 @synthesize reachabilityObserver = _reachabilityObserver;
@@ -251,6 +252,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     _OAuth2AccessToken = nil;
     [_OAuth2RefreshToken release];
     _OAuth2RefreshToken = nil;
+    [_credentials release];
+    _credentials = nil;
     [onDidFailLoadWithError release];
     onDidFailLoadWithError = nil;
     [onDidLoadResponse release];
