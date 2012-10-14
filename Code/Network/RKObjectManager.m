@@ -520,7 +520,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         }
         
         NSURLRequest *request = [(RKObjectRequestOperation *)operation request];
-        if ((!methodName || [methodName isEqualToString:[request HTTPMethod]]) && [pathMatcher matchesPath:[[request URL] path] tokenizeQueryStrings:NO parsedArguments:nil]) {
+        NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL([request URL], self.baseURL);
+        if ((!methodName || [methodName isEqualToString:[request HTTPMethod]]) && [pathMatcher matchesPath:pathAndQueryString tokenizeQueryStrings:NO parsedArguments:nil]) {
             [operation cancel];
         }
     }
