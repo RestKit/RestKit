@@ -258,8 +258,8 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 
 - (void)applyAttributeMapping:(RKAttributeMapping *)attributeMapping withValue:(id)value
 {
-    if ([self.delegate respondsToSelector:@selector(mappingOperation:didFindMapping:forKeyPath:)]) {
-        [self.delegate mappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
+    if ([self.delegate respondsToSelector:@selector(mappingOperation:didFindValue:forKeyPath:mapping:)]) {
+        [self.delegate mappingOperation:self didFindValue:value forKeyPath:attributeMapping.sourceKeyPath mapping:attributeMapping];
     }
     RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
 
@@ -328,8 +328,8 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
             appliedMappings = YES;
             [self applyAttributeMapping:attributeMapping withValue:value];
         } else {
-            if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotFindMappingForKeyPath:)]) {
-                [self.delegate mappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
+            if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotFindValueForKeyPath:mapping:)]) {
+                [self.delegate mappingOperation:self didNotFindValueForKeyPath:attributeMapping.sourceKeyPath mapping:attributeMapping];
             }
             RKLogTrace(@"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
 

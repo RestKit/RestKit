@@ -1,5 +1,5 @@
 //
-//  RKObjectMappingResultTest.m
+//  RKMappingResultTest.m
 //  RestKit
 //
 //  Created by Blake Watters on 7/5/11.
@@ -21,11 +21,11 @@
 #import "RKTestEnvironment.h"
 #import "RKMappingResult.h"
 
-@interface RKObjectMappingResultTest : RKTestCase
+@interface RKMappingResultTest : RKTestCase
 
 @end
 
-@implementation RKObjectMappingResultTest
+@implementation RKMappingResultTest
 
 - (void)testShouldNotCrashWhenAsObjectIsInvokedOnAnEmptyResult
 {

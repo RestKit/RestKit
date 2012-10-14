@@ -136,7 +136,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addAttributeMappingsFromArray:@[@"boolNumber"]];
     TestMappable *object = [[TestMappable alloc] init];
-    
+
     NSData *data = [@"{\"boolNumber\":false}" dataUsingEncoding:NSUTF8StringEncoding];
     id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
 
@@ -172,7 +172,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"numbers" toKeyPath:@"orderedSet"]];
     TestMappable *object = [[TestMappable alloc] init];
-    
+
     NSData *data = [@"{\"numbers\":[1, 2, 3]}" dataUsingEncoding:NSUTF8StringEncoding];
     id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
 

@@ -35,19 +35,20 @@
  Tells the delegate that an attribute or relationship mapping was found for a given key path within the data being mapped.
 
  @param operation The object mapping operation being performed.
- @param mapping The `RKAttributeMapping` or `RKRelationshipMapping` found for the key path.
  @param keyPath The key path in the source object for which the mapping is to be applied.
+ @param value The value that was found at the given key path in the source object representation.
+ @param propertyMapping The `RKAttributeMapping` or `RKRelationshipMapping` for which the mappable value was found within the source object representation.
  */
-- (void)mappingOperation:(RKMappingOperation *)operation didFindMapping:(RKPropertyMapping *)mapping forKeyPath:(NSString *)keyPath;
-// TODO: mappingOperation: willMapKeyPath: usingMapping: ???
+- (void)mappingOperation:(RKMappingOperation *)operation didFindValue:(id)value forKeyPath:(NSString *)keyPath mapping:(RKPropertyMapping *)propertyMapping;
 
 /**
  Tells the delegate that no attribute or relationships mapping was found for a given key path within the data being mapped.
 
  @param operation The object mapping operation being performed.
- @param keyPath The key path in the source object for which no mapping was found.
+ @param keyPath The key path in the source object for which no mappable value was found.
+ @param propertyMapping The `RKAttributeMapping` or `RKRelationshipMapping` for which no mappable value could be found within the source object representation.
  */
-- (void)mappingOperation:(RKMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath;
+- (void)mappingOperation:(RKMappingOperation *)operation didNotFindValueForKeyPath:(NSString *)keyPath mapping:(RKPropertyMapping *)propertyMapping;
 
 /**
  Tells the delegate that the mapping operation has set a value for a given key path with an attribute or relationship mapping.
