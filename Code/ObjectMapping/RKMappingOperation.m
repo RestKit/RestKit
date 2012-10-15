@@ -564,7 +564,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     }
 }
 
-- (void)start
+- (void)main
 {
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
