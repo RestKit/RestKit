@@ -194,4 +194,10 @@
     [self connectRelationship];
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@:%p %@ in %@ using %@>",
+            [self class], self, self.connectionMapping, self.managedObjectContext, self.managedObjectCache];
+}
+
 @end
