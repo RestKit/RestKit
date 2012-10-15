@@ -23,7 +23,6 @@
 #import "RKHTTPUtilities.h"
 #import "RKResponseMapperOperation.h"
 #import "RKRequestOperationSubclass.h"
-#import "RKManagedObjectMappingOperationDataSource.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 
 // Set Logging Component
@@ -35,7 +34,6 @@
 @property (readwrite, nonatomic, strong) NSManagedObjectContext *privateContext;
 @property (readwrite, nonatomic, copy) NSManagedObjectID *targetObjectID;
 @property (readwrite, nonatomic, strong) NSMutableDictionary *managedObjectsByKeyPath;
-@property (readwrite, nonatomic, strong) RKManagedObjectMappingOperationDataSource *dataSource;
 @property (readwrite, nonatomic, strong) NSError *error;
 @property (readonly, nonatomic) RKHTTPRequestOperation *requestOperation;
 @end
@@ -93,33 +91,19 @@
         // TODO: This is unexpectedly returning an empty result set... need to be able to retrieve the appropriate objects...
         return [[RKMappingResult alloc] initWithDictionary:@{}];
     }
-    
-    self.dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.privateContext
-                                                                                                cache:self.managedObjectCache];
-    self.dataSource.operationQueue = [NSOperationQueue new];
-    [self.dataSource.operationQueue setSuspended:YES];
-    [self.dataSource.operationQueue setMaxConcurrentOperationCount:1];
 
-    // Spin up an RKObjectResponseMapperOperation
     RKManagedObjectResponseMapperOperation *mapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.response
                                                                                                                           data:self.responseData
                                                                                                             responseDescriptors:self.responseDescriptors];
     mapperOperation.targetObjectID = self.targetObjectID;
     mapperOperation.managedObjectContext = self.privateContext;
     mapperOperation.managedObjectCache = self.managedObjectCache;
-    mapperOperation.mappingOperationDataSource = self.dataSource;
     [mapperOperation start];
     [mapperOperation waitUntilFinished];
     if (mapperOperation.error) {
         if (error) *error = mapperOperation.error;
         return nil;
     }
-
-    // Allow any enqueued operations to execute
-    // TODO: This should be eliminated. The operations should be dependent on the mapper operation itself
-    RKLogDebug(@"Unsuspending data source operation queue to process the following operations: %@", self.dataSource.operationQueue.operations);
-    [self.dataSource.operationQueue setSuspended:NO];
-    [self.dataSource.operationQueue waitUntilAllOperationsAreFinished];
 
     return mapperOperation.mappingResult;
 }
@@ -153,10 +137,10 @@
 
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error
 {
-    NSMutableSet *localObjects = [NSMutableSet set];
+    NSMutableSet *localObjects = [NSMutableSet set];    
     __block NSError *_blockError;
     __block NSArray *_blockObjects;
-
+    
     // Pass the fetch request blocks a relative `NSURL` object if possible
     NSURL *URL = [self.request URL];
     NSArray *baseURLs = [self.responseDescriptors valueForKeyPath:@"@distinctUnionOfObjects.baseURL"];
@@ -228,7 +212,14 @@
                 success = [self.privateContext save:&localError];
             }];
         }
-        if (! success) {
+        if (success) {
+            if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
+                [self.managedObjectContext performBlock:^{
+                    RKLogDebug(@"Refreshing mapped target object %@ in context %@", self.targetObject, self.managedObjectContext);
+                    [self.managedObjectContext refreshObject:self.targetObject mergeChanges:YES];
+                }];
+            }
+        } else {
             if (error) *error = localError;
             RKLogError(@"Failed saving managed object context %@ %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  self.privateContext);
             RKLogCoreDataError(localError);

@@ -28,6 +28,10 @@
 #import "RKManagedObjectCaching.h"
 #import "RKRelationshipConnectionOperation.h"
 
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent RKlcl_cRestKitCoreData
+
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 @interface RKManagedObjectMappingOperationDataSource ()
@@ -149,20 +153,15 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
                                                                                                           connectionMapping:connectionMapping
                                                                                                          managedObjectCache:self.managedObjectCache];
-            // TODO: This should really be done using dependencies...
-            if (self.operationQueue) {
-                [self.operationQueue addOperation:operation];
-                [operation setCompletionBlock:^{
-                    if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didConnectRelationship:usingMapping:)]) {
-                        [mappingOperation.delegate mappingOperation:mappingOperation didConnectRelationship:connectionMapping.relationship usingMapping:connectionMapping];
-                    }
-                }];
-            } else {
-                [operation start];
+            [operation setCompletionBlock:^{
                 if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didConnectRelationship:usingMapping:)]) {
                     [mappingOperation.delegate mappingOperation:mappingOperation didConnectRelationship:connectionMapping.relationship usingMapping:connectionMapping];
                 }
-            }
+            }];
+            if (self.parentOperation) [operation addDependency:self.parentOperation];
+            NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
+            [operationQueue addOperation:operation];
+            RKLogTrace(@"Enqueued %@ dependent upon parent operation %@ to operation queue %@", operation, self.parentOperation, operationQueue);
         }
     }
 }

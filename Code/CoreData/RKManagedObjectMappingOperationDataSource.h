@@ -31,6 +31,23 @@
  */
 @interface RKManagedObjectMappingOperationDataSource : NSObject <RKMappingOperationDataSource>
 
+///------------------------------------------------------------------
+/// @name Initializing a Managed Object Mapping Operation Data Source
+///------------------------------------------------------------------
+
+/**
+ Initializes the receiver with a given managed object context and managed object cache.
+ 
+ @param managedObjectContext The managed object context with which to associate the receiver. Cannot be nil.
+ @param managedObjectCache The managed object cache used by the receiver to find existing object instances by primary key.
+ @return The receiver, initialized with the given managed object context and managed objet cache.
+ */
+- (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache;
+
+///-----------------------------------------------------
+/// @name Accessing the Managed Object Context and Cache
+///-----------------------------------------------------
+
 /**
  The managed object context with which the receiver is associated.
  */
@@ -44,18 +61,24 @@
  */
 @property (nonatomic, strong, readonly) id<RKManagedObjectCaching> managedObjectCache;
 
+///---------------------------------------------------
+/// @name Configuring Relationship Connection Queueing
+///---------------------------------------------------
+
+/**
+ The parent operation upon which instances of `RKRelationshipConnectionOperation` created by the data source are dependent upon.
+ 
+ When connecting relationships as part of a managed object mapping operation, it is possible that the mapping operation itself will create managed objects that should be used to satisfy the connections mappings of representations being mapped. To support such cases, is is desirable to defer the execution of connection operations until the execution of the aggregate mapping operation is complete. The `parentOperation` property provides support for deferring the execution of the enqueued relationship connection operations by establishing a dependency between the connection operations and a parent operation, such as an instance of `RKMapperOperation` such that they will not be executed by the `operationQueue` until the parent operation has finished executing.
+ */
+@property (nonatomic, weak) NSOperation *parentOperation;
+
 /**
  The operation queue in which instances of `RKRelationshipConnectionOperation` will be enqueued to connect the relationships of mapped objects.
+ 
+ If `nil`, then the operation queue returned from `[NSOperationQueue currentQueue]` will be used.
+ 
+ Please see the documentation for `parentOperation` for a discussion of this property's function.
  */
-@property (nonatomic, strong) NSOperationQueue *operationQueue;
-
-/**
- Initializes the receiver with a given managed object context and managed object cache.
-
- @param managedObjectContext The managed object context with which to associate the receiver. Cannot be nil.
- @param managedObjectCache The managed object cache used by the receiver to find existing object instances by primary key.
- @return The receiver, initialized with the given managed object context and managed objet cache.
- */
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache;
+@property (nonatomic, weak) NSOperationQueue *operationQueue;
 
 @end

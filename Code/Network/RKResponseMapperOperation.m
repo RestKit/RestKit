@@ -19,6 +19,7 @@
 //
 
 #import "RKObjectMappingOperationDataSource.h"
+#import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKLog.h"
 #import "RKResponseDescriptor.h"
 #import "RKPathMatcher.h"
@@ -223,15 +224,23 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
 {
     NSParameterAssert(self.managedObjectContext);
-    NSParameterAssert(self.mappingOperationDataSource);
 
     __block NSError *blockError = nil;
-    __block RKMappingResult *mappingResult;
+    __block RKMappingResult *mappingResult = nil;
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
     [self.managedObjectContext performBlockAndWait:^{
         // Configure the mapper
         RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
         mapper.delegate = self.mapperDelegate;
-        mapper.mappingOperationDataSource = self.mappingOperationDataSource;
+        
+        // Configure a data source to defer execution of connection operations until mapping is complete
+        RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext
+                                                                                                                                          cache:self.managedObjectCache];
+        [operationQueue setMaxConcurrentOperationCount:1];
+        [operationQueue setName:[NSString stringWithFormat:@"Relationship Connection Queue for '%@'", mapper]];
+        dataSource.operationQueue = operationQueue;
+        dataSource.parentOperation = mapper;
+        mapper.mappingOperationDataSource = dataSource;
         
         if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
             mapper.targetObject = self.targetObject;
@@ -259,6 +268,10 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         if (error) *error = blockError;
         return nil;
     }
+    
+    // Mapping completed without error, allow the connection operations to execute
+    RKLogDebug(@"Awaiting execution of %ld enqueued connection operations: %@", (long) [operationQueue operationCount], [operationQueue operations]);
+    [operationQueue waitUntilAllOperationsAreFinished];
 
     return mappingResult;
 }

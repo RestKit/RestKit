@@ -656,7 +656,7 @@
 		25160D8E145650490060A5C5 /* RKObjectMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapping.m; sourceTree = "<group>"; };
 		25160D8F145650490060A5C5 /* RKMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMapping.h; sourceTree = "<group>"; };
 		25160D90145650490060A5C5 /* RKMappingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMappingOperation.h; sourceTree = "<group>"; };
-		25160D91145650490060A5C5 /* RKMappingOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = RKMappingOperation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		25160D91145650490060A5C5 /* RKMappingOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = RKMappingOperation.m; sourceTree = "<group>"; };
 		25160D94145650490060A5C5 /* RKMappingResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMappingResult.h; sourceTree = "<group>"; };
 		25160D95145650490060A5C5 /* RKMappingResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMappingResult.m; sourceTree = "<group>"; };
 		25160D96145650490060A5C5 /* RKPropertyInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPropertyInspector.h; sourceTree = "<group>"; };

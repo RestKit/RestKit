@@ -90,15 +90,6 @@
 @property (nonatomic, strong) id targetObject;
 
 /**
- The data source for the `RKMappingOperation` instances created by the operation to perform the mapping work.
- 
- May be `nil` depending on the subclass implementation requirements.
- 
- @see `RKMappingOperationDataSource`
- */
-@property (nonatomic, weak) id<RKMappingOperationDataSource> mappingOperationDataSource;
-
-/**
  The delegate for the `RKMapperOperation` created by the receiver to perform object mapping on the deserialized response data. May be `nil`.
  
  The delegate provides access to the details of the mapping process as it is executing. Be aware that the delegate will be invoked from the thread on which the mapping is executing.
