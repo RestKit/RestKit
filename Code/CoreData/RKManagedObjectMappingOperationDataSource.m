@@ -137,7 +137,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 - (void)emitDeadlockWarningIfNecessary
 {
     if ([self executingConnectionOperationsWouldDeadlock]) {
-        RKLogWarning(@"Mapping operation was configured with a managedObjectContext with the NSMainQueueConcurrencyType"
+        RKLogWarning(@"Mapping operation was configured with a managedObjectContext with the `NSMainQueueConcurrencyType` concurrency type"
                       " and given an operationQueue to perform background work. This configuration will lead to a deadlock with"
                       " the main queue waiting on the mapping to complete and the operationQueue waiting for access to the MOC."
                       " You should instead provide a managedObjectContext with the NSPrivateQueueConcurrencyType.");

@@ -19,10 +19,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 #import "RKMappingOperation.h"
 #import "RKMappingTestExpectation.h"
 
-@protocol RKMappingOperationDataSource;
+@protocol RKMappingOperationDataSource, RKManagedObjectCaching;
 
 ///----------------
 /// @name Constants
@@ -192,9 +193,7 @@ extern NSString * const RKMappingTestExpectationErrorKey;
 /**
  A data source for the mapping operation.
 
- Defaults to an instance of `RKObjectMappingOperationDataSource`.
-
- @warning The data source **must** be configured with an instance of `RKManagedObjectMappingOperationDataSource` if testing an `RKEntityMapping`.
+ If `nil`, an appropriate data source will be constructed for you using the available configuration of the receiver.
  */
 @property (nonatomic, strong) id<RKMappingOperationDataSource> mappingOperationDataSource;
 
@@ -225,5 +224,23 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  **Default**: `NO`
  */
 @property (nonatomic, assign) BOOL verifiesOnExpect;
+
+///----------------------------
+/// @name Core Data Integration
+///----------------------------
+
+/**
+ The managed object context within which to perform the mapping test. Required if testing an `RKEntityMapping` object and an appropriate `mappingOperationDataSource` has not been configured.
+ 
+ When the `mappingOperationDataSource` property is `nil` and the test targets an entity mapping, this context is used to configure an `RKManagedObjectMappingOperationDataSource` object for the purpose of executing the test.
+ */
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+
+/**
+ The managed object cache to use when performing a mapping test.
+ 
+ If the value of this property is `nil` and the test targets an entity mapping, an instance of `RKFetchRequestManagedObjectCache` will be constructed and used as the cache for the purposes of testing.
+ */
+@property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;
 
 @end

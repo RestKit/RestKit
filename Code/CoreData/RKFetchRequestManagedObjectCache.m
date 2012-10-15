@@ -25,7 +25,6 @@
 {
     NSAssert(entity, @"Cannot find existing managed object without a target class");
     NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without mapping that defines a primaryKeyAttribute");
-    NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a context");
 
     id searchValue = primaryKeyValue;

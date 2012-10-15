@@ -24,6 +24,11 @@
 #import "RKRelationshipMapping.h"
 #import "RKErrors.h"
 #import "RKObjectUtilities.h"
+#import "RKLog.h"
+
+// Core Data
+#import "RKFetchRequestManagedObjectCache.h"
+#import "RKManagedObjectMappingOperationDataSource.h"
 
 // Error Constants
 NSString * const RKMappingTestErrorDomain = @"org.restkit.RKMappingTest.ErrorDomain";
@@ -119,7 +124,6 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         self.events = [NSMutableArray new];
         self.verifiesOnExpect = NO;
         self.performedMapping = NO;
-        self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
 
     return self;
@@ -157,7 +161,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 
 - (RKMappingTestEvent *)eventMatchingKeyPathsForExpectation:(RKMappingTestExpectation *)expectation
 {
-    for (RKMappingTestEvent *event in self.events) {
+    for (RKMappingTestEvent *event in [self.events copy]) {
         if ([event.sourceKeyPath isEqualToString:expectation.sourceKeyPath] && [event.destinationKeyPath isEqualToString:expectation.destinationKeyPath]) {
             return event;
         }
@@ -265,6 +269,26 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     return success;
 }
 
+- (id<RKMappingOperationDataSource>)dataSourceForMappingOperation:(RKMappingOperation *)mappingOperation
+{
+    // If we have been given an explicit data source, use it
+    if (self.mappingOperationDataSource) return self.mappingOperationDataSource;
+    
+    if ([self.mapping isKindOfClass:[RKEntityMapping class]]) {
+        NSAssert(self.managedObjectContext, @"Cannot test an `RKEntityMapping` with a nil managed object context.");
+        id<RKManagedObjectCaching> managedObjectCache = self.managedObjectCache ?: [RKFetchRequestManagedObjectCache new];
+        RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext cache:managedObjectCache];
+        
+        // Configure an operation queue to enable easy testing of connection operations
+        NSOperationQueue *operationQueue = [NSOperationQueue new];
+        dataSource.operationQueue = operationQueue;
+        dataSource.parentOperation = mappingOperation;
+        return dataSource;
+    } else {
+        return [RKObjectMappingOperationDataSource new];
+    }
+}
+
 - (void)performMapping
 {
     NSAssert(self.mapping.objectClass, @"Cannot test a mapping that does not have a destination objectClass");
@@ -273,16 +297,32 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
         if (nil == self.destinationObject) {
-            self.destinationObject = [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:self.sourceObject withMapping:self.mapping];
+            if (self.mappingOperationDataSource) {
+                self.destinationObject = [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:self.sourceObject withMapping:self.mapping];
+            } else {
+                if ([self.mapping isKindOfClass:[RKEntityMapping class]]) {
+                    self.destinationObject = [[NSManagedObject alloc] initWithEntity:[(RKEntityMapping *)self.mapping entity] insertIntoManagedObjectContext:self.managedObjectContext];
+                } else {
+                    self.destinationObject = [self.mapping.objectClass new];
+                }
+            }
         }
         RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:self.destinationObject mapping:self.mapping];
-        mappingOperation.dataSource = self.mappingOperationDataSource;
+        mappingOperation.dataSource = [self dataSourceForMappingOperation:mappingOperation];
         NSError *error = nil;
         mappingOperation.delegate = self;
         [mappingOperation start];
         if (mappingOperation.error) {
             [NSException raise:NSInternalInconsistencyException format:@"%p: failed with error: %@\n%@ during mapping from %@ to %@ with mapping %@",
              self, error, [self description], self.sourceObject, self.destinationObject, self.mapping];
+        }
+        
+        // Let the connection operations execute to completion
+        if ([mappingOperation.dataSource isKindOfClass:[RKManagedObjectMappingOperationDataSource class]]) {
+            NSOperationQueue *operationQueue = [(RKManagedObjectMappingOperationDataSource *)mappingOperation.dataSource operationQueue];
+            if (! [operationQueue isEqual:[NSOperationQueue mainQueue]]) {
+                [operationQueue waitUntilAllOperationsAreFinished];
+            }
         }
 
         self.performedMapping = YES;

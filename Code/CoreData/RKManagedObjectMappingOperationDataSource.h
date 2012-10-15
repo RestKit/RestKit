@@ -75,10 +75,10 @@
 /**
  The operation queue in which instances of `RKRelationshipConnectionOperation` will be enqueued to connect the relationships of mapped objects.
  
- If `nil`, then the operation queue returned from `[NSOperationQueue currentQueue]` will be used.
+ If `nil`, then current operation queue as returned from `[NSOperationQueue currentQueue]` will be used.
  
  Please see the documentation for `parentOperation` for a discussion of this property's function.
  */
-@property (nonatomic, weak) NSOperationQueue *operationQueue;
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 @end

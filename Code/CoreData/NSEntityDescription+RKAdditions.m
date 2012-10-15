@@ -80,6 +80,7 @@ static char primaryKeyPredicateKey;
 
 - (id)coerceValueForPrimaryKey:(id)primaryKeyValue
 {
+    if (primaryKeyValue == nil) return [NSNull null];
     id searchValue = primaryKeyValue;
     Class theClass = [self primaryKeyAttributeClass];
     if (theClass) {
