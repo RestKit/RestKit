@@ -23,6 +23,8 @@
 #import "RKMappableObject.h"
 #import "RKMappableAssociation.h"
 #import "RKObjectMappingOperationDataSource.h"
+#import "RKTestAddress.h"
+#import "RKTestUser.h"
 
 @interface TestMappable : NSObject {
     NSURL *_url;
@@ -165,6 +167,35 @@
     BOOL success = (operation.error == nil);
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"123")));
+}
+
+- (void)testShouldSuccessfullyMapPropertiesBeforeKeyPathAttributes
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
+    RKAttributeMapping *nestedCityMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"nested.city" toKeyPath:@"address.city"];
+    [userMapping addPropertyMapping:nameMapping];
+    [userMapping addPropertyMapping:nestedCityMapping];
+
+    RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    RKAttributeMapping *cityMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"city" toKeyPath:@"city"];
+    [addressMapping addPropertyMapping:cityMapping];
+
+    RKRelationshipMapping *hasOneMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"address" toKeyPath:@"address" withMapping:addressMapping];
+    [userMapping addPropertyMapping:hasOneMapping];
+
+    NSData *data = [@"{\"name\": \"Blake Watters\",\"address\": {\"city\": \"Carrboro\"},\"nested\": {\"city\": \"New York\"}}" dataUsingEncoding:NSUTF8StringEncoding];
+    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:user mapping:userMapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    [operation start];
+    BOOL success = (operation.error == nil);
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"Blake Watters")));
+    assertThat(user.address.city, is(equalTo(@"New York")));
 }
 
 - (void)testShouldSuccessfullyMapArraysToOrderedSets

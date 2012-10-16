@@ -263,9 +263,28 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
     return mappings;
 }
 
-- (NSArray *)attributeMappings
+- (NSArray *)simpleAttributeMappings
 {
-    return [self applyNestingToMappings:self.objectMapping.attributeMappings];
+    NSMutableArray *mappings = [NSMutableArray array];
+    for (RKAttributeMapping *mapping in [self applyNestingToMappings:self.objectMapping.attributeMappings]) {
+        if ([mapping.sourceKeyPath rangeOfString:@"."].location == NSNotFound) {
+            [mappings addObject:mapping];
+        }
+    }
+
+    return mappings;
+}
+
+- (NSArray *)keyPathAttributeMappings
+{
+    NSMutableArray *mappings = [NSMutableArray array];
+    for (RKAttributeMapping *mapping in [self applyNestingToMappings:self.objectMapping.attributeMappings]) {
+        if ([mapping.sourceKeyPath rangeOfString:@"."].location != NSNotFound) {
+            [mappings addObject:mapping];
+        }
+    }
+
+    return mappings;
 }
 
 - (NSArray *)relationshipMappings
@@ -305,7 +324,7 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
 }
 
 // Return YES if we mapped any attributes
-- (BOOL)applyAttributeMappings
+- (BOOL)applyAttributeMappings:(NSArray *)attributeMappings
 {
     // If we have a nesting substitution value, we have alread
     BOOL appliedMappings = (_nestedAttributeSubstitution != nil);
@@ -314,7 +333,7 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
         RKLogDebug(@"Key-value validation is disabled for mapping, skipping...");
     }
 
-    for (RKAttributeMapping *attributeMapping in [self attributeMappings]) {
+    for (RKAttributeMapping *attributeMapping in attributeMappings) {
         if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
             RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", attributeMapping.sourceKeyPath);
             continue;
@@ -602,9 +621,10 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
     NSAssert(self.objectMapping, @"Cannot perform a mapping operation without an object mapping");
 
     [self applyNestedMappings];
-    BOOL mappedAttributes = [self applyAttributeMappings];
+    BOOL mappedSimpleAttributes = [self applyAttributeMappings:[self simpleAttributeMappings]];
     BOOL mappedRelationships = [self applyRelationshipMappings];
-    if ((mappedAttributes || mappedRelationships) && _validationError == nil) {
+    BOOL mappedKeyPathAttributes = [self applyAttributeMappings:[self keyPathAttributeMappings]];
+    if ((mappedSimpleAttributes || mappedKeyPathAttributes || mappedRelationships) && _validationError == nil) {
         RKLogDebug(@"Finished mapping operation successfully...");
 
         if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:)]) {
