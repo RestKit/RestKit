@@ -536,7 +536,7 @@ $ pod install
 
 ### From a Release Package or as a Git submodule
 
-Detailed installation instructions are available in the [Visual Install Guide](https://github.com/RestKit/RestKit/wiki/Installing-RestKit-in-Xcode-4.x) on the Wiki.
+Detailed installation instructions are available in the [Visual Install Guide](https://github.com/RestKit/RestKit/wiki/Installing-RestKit-v0.20.x-as-a-Git-Submodule) on the Wiki.
 
 ## License
 
