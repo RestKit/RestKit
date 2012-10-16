@@ -310,11 +310,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return operation;
 }
 
-// TODO: Unit test me!
-// non-managed object, nil path
-// managed object, given path
-// nil object, path contains response descriptor with entity mapping
-// nil object, path does not 
 - (id)appropriateObjectRequestOperationWithObject:(id)object
                                            method:(RKRequestMethod)method
                                              path:(NSString *)path
