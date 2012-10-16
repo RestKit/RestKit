@@ -54,8 +54,8 @@
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    assertThat(error, is(nilValue()));
-    assertThat(string, is(equalTo(@"key2-form-name=value2&key1-form-name=value1")));
+    expect(error).to.beNil();
+    expect(string).to.equal(@"key2-form-name=value2&key1-form-name=value1");
 }
 
 - (void)testShouldSerializeADate
@@ -68,8 +68,8 @@
     NSError *error = nil;
     RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
-    assertThat(error, is(nilValue()));
-    assertThat(parameters[@"date-form-name"], is(equalTo(@"1970-01-01 00:00:00 +0000")));
+    expect(error).to.beNil();
+    expect(parameters[@"date-form-name"]).to.equal(@"1970-01-01 00:00:00 +0000");
 }
 
 - (void)testShouldSerializeADateToAStringUsingThePreferredDateFormatter
@@ -89,8 +89,8 @@
     
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    assertThat(error, is(nilValue()));
-    assertThat(string, is(equalTo(@"key1-form-name=value1&date-form-name=01/01/1970")));
+    expect(error).to.beNil();
+    expect(string).to.equal(@"key1-form-name=value1&date-form-name=01/01/1970");
 }
 
 - (void)testShouldSerializeADateToJSON
@@ -107,8 +107,8 @@
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    assertThat(error, is(nilValue()));
-    assertThat(string, is(equalTo(@"{\"key1-form-name\":\"value1\",\"date-form-name\":\"1970-01-01 00:00:00 +0000\"}")));
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"key1-form-name\":\"value1\",\"date-form-name\":\"1970-01-01 00:00:00 +0000\"}");
 }
 
 - (void)testShouldSerializeNSDecimalNumberAttributesToJSON
@@ -125,8 +125,8 @@
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    assertThat(error, is(nilValue()));
-    assertThat(string, is(equalTo(@"{\"key1-form-name\":\"value1\",\"number-form-name\":\"18274191731731.4557723623\"}")));
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"key1-form-name\":\"value1\",\"number-form-name\":\"18274191731731.4557723623\"}");
 }
 
 - (void)testShouldSerializeRelationshipsToo
@@ -151,11 +151,11 @@
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    assertThat(error, is(nilValue()));
+    expect(error).to.beNil();
     #if TARGET_OS_IPHONE
-    assertThat(string, is(equalTo(@"key1-form-name=value1&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&relationship2-form-name[subKey1]=subValue1")));
+    expect(string).to.equal(@"key1-form-name=value1&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&relationship2-form-name[subKey1]=subValue1");
     #else
-    assertThat(string, is(equalTo(@"relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1")));
+    expect(string).to.equal(@"relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1");
     #endif
 }
 
@@ -173,8 +173,8 @@
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    assertThat(error, is(nilValue()));
-    assertThat(string, is(equalTo(@"{\"key2-form-name\":\"value2\",\"key1-form-name\":\"value1\"}")));
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"key2-form-name\":\"value2\",\"key1-form-name\":\"value1\"}");
 }
 
 - (void)testShouldSetReturnEmptyDictionaryIfItDoesNotFindAnythingToSerialize
@@ -227,9 +227,9 @@
 
     // Encodes differently on iOS / OS X
     #if TARGET_OS_IPHONE
-    assertThat(string, is(equalTo(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"}}")));
+    expect(string).to.equal(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"}}");
     #else
-    assertThat(string, is(equalTo(@"{\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"},\"stringTest\":\"The string\"}")));
+    expect(string).to.equal(@"{\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"},\"stringTest\":\"The string\"}");
     #endif
 }
 
@@ -244,8 +244,8 @@
     RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:@"stuff"];
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
     
-    assertThat(parameters[@"stuff"][@"key2-form-name"], is(equalTo(@"value2")));
-    assertThat(parameters[@"stuff"][@"key1-form-name"], is(equalTo(@"value1")));
+    expect(parameters[@"stuff"][@"key2-form-name"]).to.equal(@"value2");
+    expect(parameters[@"stuff"][@"key1-form-name"]).to.equal(@"value1");
 }
 
 - (void)testShouldSerializeToManyRelationships
@@ -270,7 +270,7 @@
     
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    assertThat(string, is(equalTo(@"{\"hasMany\":[{\"date\":\"1970-01-01 00:00:00 +0000\"}],\"stringTest\":\"The string\"}")));
+    expect(string).to.equal(@"{\"hasMany\":[{\"date\":\"1970-01-01 00:00:00 +0000\"}],\"stringTest\":\"The string\"}");
 }
 
 - (void)testShouldSerializeAnNSNumberContainingABooleanToTrueFalseIfRequested
@@ -286,8 +286,8 @@
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    assertThat(error, is(nilValue()));
-    assertThat(string, is(equalTo(@"{\"boolean-value\":true}")));
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"boolean-value\":true}");
 }
 
 - (void)testShouldSerializeANSOrderedSetToJSON
@@ -305,8 +305,36 @@
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    assertThat(error, is(nilValue()));
-    assertThat(string, is(equalTo(@"{\"key1-form-name\":\"value1\",\"set-form-name\":[\"setElementOne\",\"setElementTwo\",\"setElementThree\"]}")));
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"key1-form-name\":\"value1\",\"set-form-name\":[\"setElementOne\",\"setElementTwo\",\"setElementThree\"]}");
+}
+
+- (void)testParameterizationOfAttributesNestedByKeyPath
+{
+    NSDictionary *object = @{ @"name" : @"Blake Watters", @"occupation" : @"Hacker" };
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"user.name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"occupation" toKeyPath:@"user.job"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSDictionary *expected = @{@"user": @{@"name": @"Blake Watters", @"job": @"Hacker"}};
+    expect(parameters).to.equal(expected);
+}
+
+- (void)testParameterizationOfAttributesDeeplyNestedByKeyPathToFormEncoded
+{
+    NSDictionary *object = @{ @"name" : @"Blake Watters", @"occupation" : @"Hacker" };
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"user.anotherKeyPath.name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"occupation" toKeyPath:@"user.anotherKeyPath.another.job"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSDictionary *expected = @{@"user": @{@"anotherKeyPath": @{@"name": @"Blake Watters", @"another": @{ @"job": @"Hacker"}}}};
+    expect(parameters).to.equal(expected);
 }
 
 @end

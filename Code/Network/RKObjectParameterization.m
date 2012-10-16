@@ -98,7 +98,7 @@
     return self.rootKeyPath ? [NSMutableDictionary dictionaryWithObject:dictionary forKey:self.rootKeyPath] : dictionary;
 }
 
-#pragma mark - RKObjectMappingOperationDelegate
+#pragma mark - RKMappingOperationDelegate
 
 - (void)mappingOperation:(RKMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping
 {

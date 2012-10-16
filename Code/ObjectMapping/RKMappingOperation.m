@@ -49,6 +49,23 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 // Defined in RKObjectMapping.h
 NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
 
+/**
+ This method ensures that attribute mappings apply cleanly to an `NSMutableDictionary` target class to support mapping to nested keyPaths. See issue #882
+ */
+static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSString *keyPath)
+{
+    if (! [object isKindOfClass:[NSMutableDictionary class]]) return;
+    NSArray *keyPathComponents = [keyPath componentsSeparatedByString:@"."];
+    if ([keyPathComponents count] > 1) {
+        for (NSUInteger index = 0; index < [keyPathComponents count] - 1; index++) {
+            NSString *intermediateKeyPath = [[keyPathComponents subarrayWithRange:NSMakeRange(0, index + 1)] componentsJoinedByString:@"."];
+            if (! [object valueForKeyPath:intermediateKeyPath]) {
+                [object setValue:[NSMutableDictionary dictionary] forKeyPath:intermediateKeyPath];
+            }
+        }
+    }
+}
+
 @implementation RKMappingOperation
 
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
@@ -269,10 +286,12 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
         value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
     }
 
+    RKSetIntermediateDictionaryValuesOnObjectForKeyPath(self.destinationObject, attributeMapping.destinationKeyPath);
+    
     // Ensure that the value is different
     if ([self shouldSetValue:&value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
-
+        
         [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate mappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
