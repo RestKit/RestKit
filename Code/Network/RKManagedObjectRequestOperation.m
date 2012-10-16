@@ -92,8 +92,8 @@
         return [[RKMappingResult alloc] initWithDictionary:@{}];
     }
 
-    RKManagedObjectResponseMapperOperation *mapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.response
-                                                                                                                          data:self.responseData
+    RKManagedObjectResponseMapperOperation *mapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
+                                                                                                                          data:self.HTTPRequestOperation.responseData
                                                                                                             responseDescriptors:self.responseDescriptors];
     mapperOperation.targetObjectID = self.targetObjectID;
     mapperOperation.managedObjectContext = self.privateContext;
@@ -113,8 +113,8 @@
     __block BOOL _blockSuccess = YES;
 
     if (self.targetObjectID
-        && NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))
-        && [[[self.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]) {
+        && NSLocationInRange(self.HTTPRequestOperation.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))
+        && [[[self.HTTPRequestOperation.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]) {
 
         // 2xx DELETE request, proceed with deletion from the MOC
         __block NSError *_blockError = nil;
@@ -142,7 +142,7 @@
     __block NSArray *_blockObjects;
     
     // Pass the fetch request blocks a relative `NSURL` object if possible
-    NSURL *URL = [self.request URL];
+    NSURL *URL = [self.HTTPRequestOperation.request URL];
     NSArray *baseURLs = [self.responseDescriptors valueForKeyPath:@"@distinctUnionOfObjects.baseURL"];
     if ([baseURLs count] == 1) {
         NSURL *baseURL = baseURLs[0];
@@ -180,7 +180,7 @@
         return YES;
     }
 
-    if (! [[self.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
+    if (! [[self.HTTPRequestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
         RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
         return YES;
     }

@@ -391,6 +391,18 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 ///-----------------------------------------
 
 /**
+ Sets the `RKHTTPRequestOperation` subclass to be used when constructing HTTP request operations for requests dispatched through the manager.
+ 
+ When set, an instance of the given class will be initialized via `initWithRequest:` each time that the receiver constructs an HTTP request operation. HTTP request operations are used to initialize instances of `RKObjectRequestOperation` and are responsible for managing the HTTP request/response lifecycle of a request whose response is destined to be object mapped. Providing a subclass implementation of `RKHTTPRequestOperation` allows the behavior of all requests sent through the manager to be changed.
+ 
+ @param operationClass A class object inheriting from `RKHTTPRequestOperation` to be used for HTTP requests dispatched through the manager.
+ @raises `NSInvalidArgumentException` Raised if the given class does not inherit from `RKHTTPRequestOperation`.
+ @see `RKHTTPRequestOperation`
+ @warning The given class must inherit from `RKHTTPRequestOperation`, else an exception will be raised.
+ */
+- (void)setHTTPOperationClass:(Class)operationClass;
+
+/**
  Creates an `RKObjectRequestOperation` operation with the given request and sets the completion block with the given success and failure blocks.
  
  @param request The request object to be loaded asynchronously during execution of the operation.

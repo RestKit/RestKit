@@ -42,6 +42,11 @@
 
 @end
 
+@interface RKTestHTTPRequestOperation : RKHTTPRequestOperation
+@end
+@implementation RKTestHTTPRequestOperation : RKHTTPRequestOperation
+@end
+
 @interface RKObjectManagerTest : RKTestCase
 
 @property (nonatomic, strong) RKObjectManager *objectManager;
@@ -354,7 +359,7 @@
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:@{@"this": @"that"}];
-    expect([operation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
+    expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
 }
 
 - (void)testThatObjectParametersAreNotSentDuringDeleteObject
@@ -363,7 +368,7 @@
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:@{@"this": @"that"}];
-    expect([operation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
+    expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
 }
 
 - (void)testInitializationOfObjectRequestOperationProducesCorrectURLRequest
@@ -402,6 +407,25 @@
     expect(request.HTTPMethod).to.equal(@"PATCH");
     expect([request allHTTPHeaderFields][@"test"]).to.equal(@"value");
     expect([request allHTTPHeaderFields][@"Accept"]).to.equal(@"application/json");
+}
+
+- (void)testRegistrationOfHTTPRequestOperationClass
+{
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    [manager setHTTPOperationClass:[RKTestHTTPRequestOperation class]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/test" relativeToURL:manager.baseURL]];
+    RKObjectRequestOperation *operation = [manager objectRequestOperationWithRequest:request success:nil failure:nil];
+    expect(operation.HTTPRequestOperation).to.beKindOf([RKTestHTTPRequestOperation class]);
+}
+
+- (void)testSettingNilHTTPRequestOperationClassRestoresDefaultHTTPOperationClass
+{
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    [manager setHTTPOperationClass:[RKTestHTTPRequestOperation class]];
+    [manager setHTTPOperationClass:nil];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/test" relativeToURL:manager.baseURL]];
+    RKObjectRequestOperation *operation = [manager objectRequestOperationWithRequest:request success:nil failure:nil];
+    expect(operation.HTTPRequestOperation).to.beKindOf([RKHTTPRequestOperation class]);
 }
 
 // TODO: Move to Core Data specific spec file...

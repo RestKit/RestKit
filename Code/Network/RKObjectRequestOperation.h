@@ -56,9 +56,23 @@
 ///-----------------------------------------------
 
 /**
- Initializes an object request operation with a request object and a set of response descriptors.
+ Initializes an object request operation with an HTTP request operation and a set of response descriptors.
  
  This is the designated initializer.
+ 
+ @param request The request object to be used with the underlying network operation.
+ @param responseDescriptors An array of `RKResponseDescriptor` objects specifying how object mapping is to be performed on the response loaded by the network operation.
+ @return The receiver, initialized with the given request and response descriptors.
+ */
+- (id)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors;
+
+/**
+ Initializes an object request operation with a request object and a set of response descriptors.
+ 
+ This method is a convenience initializer for initializing an object request operation from a URL request with the default HTTP operation class `RKHTTPRequestOperation`. This method is functionally equivalent to the following example code:
+ 
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+    RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:responseDescriptors];
  
  @param request The request object to be used with the underlying network operation.
  @param responseDescriptors An array of `RKResponseDescriptor` objects specifying how object mapping is to be performed on the response loaded by the network operation.
@@ -100,26 +114,14 @@
  */
 @property (nonatomic, strong, readonly) NSError *error;
 
-///-----------------------------------
-/// @name Accessing Network Properties
-///-----------------------------------
+///-------------------------------------------
+/// @name Accessing the HTTP Request Operation
+///-------------------------------------------
 
 /**
- The request object used by the underlying `RKHTTPRequestOperation` network operation.
+ The underlying `RKHTTPRequestOperation` object used to manage the HTTP request/response lifecycle of the object request operation.
  */
-@property (nonatomic, strong, readonly) NSURLRequest *request;
-
-/**
- The response object loaded by the underlying `RKHTTPRequestOperation` network operation.
- */
-@property (nonatomic, readonly) NSHTTPURLResponse *response;
-
-/**
- The response data loaded by the underlying `RKHTTRequestOperation` network operation.
- 
- Object mapping is performed on the deserialized `responseData`.
- */
-@property (nonatomic, readonly) NSData *responseData;
+@property (nonatomic, strong, readonly) RKHTTPRequestOperation *HTTPRequestOperation;
 
 ///-------------------------------------------------------
 /// @name Setting the Completion Block and Callback Queues

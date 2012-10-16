@@ -45,11 +45,10 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 }
 
 @interface RKObjectRequestOperation ()
-@property (nonatomic, strong, readwrite) RKHTTPRequestOperation *requestOperation;
+@property (nonatomic, strong, readwrite) RKHTTPRequestOperation *HTTPRequestOperation;
 @property (nonatomic, strong, readwrite) NSArray *responseDescriptors;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
-@property (nonatomic, strong, readwrite) NSURLRequest *request;
 @end
 
 @implementation RKObjectRequestOperation
@@ -62,21 +61,28 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 #endif
 }
 
-- (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
+// Designated initializer
+- (id)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors
 {
-    NSParameterAssert(request);
+    NSParameterAssert(requestOperation);
     NSParameterAssert(responseDescriptors);
     
     self = [self init];
     if (self) {
-        self.request = request;
         self.responseDescriptors = responseDescriptors;
-        self.requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-        self.requestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
-        self.requestOperation.acceptableStatusCodes = RKObjectRequestOperationAcceptableMIMETypes();
+        self.HTTPRequestOperation = requestOperation;
+        self.HTTPRequestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
+        self.HTTPRequestOperation.acceptableStatusCodes = RKObjectRequestOperationAcceptableMIMETypes();
     }
     
     return self;
+}
+
+- (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
+{
+    NSParameterAssert(request);
+    NSParameterAssert(responseDescriptors);    
+    return [self initWithHTTPRequestOperation:[[RKHTTPRequestOperation alloc] initWithRequest:request] responseDescriptors:responseDescriptors];
 }
 
 - (void)setSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue
@@ -142,21 +148,11 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     };
 }
 
-- (NSHTTPURLResponse *)response
-{
-    return (NSHTTPURLResponse *)self.requestOperation.response;
-}
-
-- (NSData *)responseData
-{
-    return self.requestOperation.responseData;
-}
-
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
     // Spin up an RKObjectResponseMapperOperation
-    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithResponse:self.response
-                                                                                                            data:self.responseData
+    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
+                                                                                                            data:self.HTTPRequestOperation.responseData
                                                                                               responseDescriptors:self.responseDescriptors];
     mapperOperation.targetObject = self.targetObject;
     [mapperOperation start];
@@ -176,7 +172,7 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 - (void)cancel
 {
     [super cancel];
-    [self.requestOperation cancel];
+    [self.HTTPRequestOperation cancel];
 }
 
 - (void)main
@@ -184,12 +180,12 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     if (self.isCancelled) return;
     
     // Send the request
-    [self.requestOperation start];
-    [self.requestOperation waitUntilFinished];
+    [self.HTTPRequestOperation start];
+    [self.HTTPRequestOperation waitUntilFinished];
 
-    if (self.requestOperation.error) {
-        RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", self.requestOperation.error);
-        self.error = self.requestOperation.error;
+    if (self.HTTPRequestOperation.error) {
+        RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", self.HTTPRequestOperation.error);
+        self.error = self.HTTPRequestOperation.error;
         return;
     }
     
