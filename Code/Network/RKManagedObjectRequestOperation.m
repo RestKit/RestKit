@@ -39,9 +39,10 @@
 
 @implementation RKManagedObjectRequestOperation
 
-- (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
+// Designated initializer
+- (id)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors
 {
-    self = [super initWithRequest:request responseDescriptors:responseDescriptors];
+    self = [super initWithHTTPRequestOperation:requestOperation responseDescriptors:responseDescriptors];
     if (self) {
         self.savesToPersistentStore = YES;
     }
