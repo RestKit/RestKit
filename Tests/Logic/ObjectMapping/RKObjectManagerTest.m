@@ -428,6 +428,15 @@
     expect(operation.HTTPRequestOperation).to.beKindOf([RKHTTPRequestOperation class]);
 }
 
+- (void)testThatManagedObjectRequestOperationsDefaultToSavingToPersistentStore
+{
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/whatever" relativeToURL:manager.baseURL]];
+    RKManagedObjectRequestOperation *operation = [manager managedObjectRequestOperationWithRequest:request managedObjectContext:managedObjectContext success:nil failure:nil];
+    expect(operation.savesToPersistentStore).to.equal(YES);
+}
+
 // TODO: Move to Core Data specific spec file...
 //- (void)testShouldLoadAHuman
 //{

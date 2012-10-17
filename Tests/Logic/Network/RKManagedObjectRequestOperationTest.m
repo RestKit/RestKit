@@ -2,7 +2,7 @@
 //  RKManagedObjectRequestOperationTest.m
 //  RestKit
 //
-//  Created by Blake Watters on 10/10/12.
+//  Created by Blake Watters on 10/17/12.
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
@@ -13,14 +13,28 @@
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;
 @end
 
+
 @interface RKManagedObjectRequestOperationTest : RKTestCase
+
 @end
 
 @implementation RKManagedObjectRequestOperationTest
 
-- (void)testThatTargetObjectIsRefreshedWhenStoreIsSavedSuccessfully
+- (void)testThatInitializationWithRequestDefaultsToSavingToPersistentStore
 {
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/whatever" relativeToURL:manager.baseURL]];
+    RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+    expect(operation.savesToPersistentStore).to.equal(YES);
+}
 
+- (void)testThatInitializationWithRequestOperationDefaultsToSavingToPersistentStore
+{
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/whatever" relativeToURL:manager.baseURL]];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+    RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:@[]];
+    expect(operation.savesToPersistentStore).to.equal(YES);
 }
 
 - (void)testFetchRequestBlocksAreInvokedWithARelativeURL
