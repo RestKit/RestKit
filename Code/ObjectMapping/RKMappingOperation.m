@@ -443,12 +443,12 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
         }
         
         if (value == [NSNull null]) {
-            RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
+            RKLogDebug(@"Found null value at keyPath '%@'", relationshipMapping.sourceKeyPath);
             
             // Optionally nil out the property
             id nilReference = nil;
             if ([self shouldSetValue:&nilReference atKeyPath:relationshipMapping.destinationKeyPath]) {
-                RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
+                RKLogTrace(@"Setting nil for null relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
                 [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
             }
             
