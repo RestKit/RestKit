@@ -118,7 +118,7 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
                 return [NSNumber numberWithDouble:[(NSString *)value doubleValue]];
             }
         }
-    } else if (value == [NSNull null] || [value isEqual:[NSNull null]]) {
+    } else if (value == [NSNull null]) {
         // Transform NSNull -> nil for simplicity
         return nil;
     } else if ([sourceType isSubclassOfClass:[NSSet class]]) {
@@ -206,7 +206,7 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
 - (BOOL)shouldSetValue:(id *)value atKeyPath:(NSString *)keyPath
 {
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
-    if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
+    if (currentValue == [NSNull null]) {
         currentValue = nil;
     }
 
@@ -217,7 +217,7 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
 
      See issue & pull request: https://github.com/RestKit/RestKit/pull/436
      */
-    if (*value == [NSNull null] || [*value isEqual:[NSNull null]]) {
+    if (*value == [NSNull null]) {
         RKLogWarning(@"Coercing NSNull value to nil in shouldSetValue:atKeyPath: -- should be fixed.");
         *value = nil;
     }
@@ -429,7 +429,7 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
             @throw;
         }
 
-        if (value == nil || value == [NSNull null] || [value isEqual:[NSNull null]]) {
+        if (value == nil) {
             RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
 
             // Optionally nil out the property
@@ -439,6 +439,19 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
                 [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
             }
 
+            continue;
+        }
+        
+        if (value == [NSNull null]) {
+            RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
+            
+            // Optionally nil out the property
+            id nilReference = nil;
+            if ([self shouldSetValue:&nilReference atKeyPath:relationshipMapping.destinationKeyPath]) {
+                RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
+                [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
+            }
+            
             continue;
         }
 
