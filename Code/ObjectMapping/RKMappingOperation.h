@@ -135,7 +135,9 @@
 @property (nonatomic, strong, readonly) id sourceObject;
 
 /**
- The target object for this operation. Mappable values in elements will be applied to object using key-value coding.
+ The target object for this operation. Mappable values in the source object will be applied to the destination object using key-value coding.
+ 
+ If initialized with a `nil` destination object, the mapping operation will attempt to find or create a destination object via the data source and will populate the value of the `destinationObject` property.
  */
 @property (nonatomic, strong, readonly) id destinationObject;
 

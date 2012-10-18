@@ -71,7 +71,6 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
 {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
-    NSAssert(destinationObject != nil, @"Cannot perform a mapping operation without a destinationObject");
     NSAssert(objectOrDynamicMapping != nil, @"Cannot perform a mapping operation without a mapping");
 
     self = [super init];
@@ -84,6 +83,21 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
     return self;
 }
 
+- (id)destinationObjectForMappingRepresentation:(id)representation withMapping:(RKMapping *)mapping
+{
+    RKObjectMapping *concreteMapping = nil;
+    if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+        concreteMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:representation];
+        if (! concreteMapping) {
+            RKLogDebug(@"Unable to determine concrete object mapping from dynamic mapping %@ with which to map object representation: %@", mapping, representation);
+            return nil;
+        }
+    } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+        concreteMapping = (RKObjectMapping *)mapping;
+    }
+    
+    return [self.dataSource mappingOperation:self targetObjectForRepresentation:representation withMapping:concreteMapping];
+}
 
 - (NSDate *)parseDateFromString:(NSString *)string
 {
@@ -502,20 +516,11 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
                 RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
             }
             for (id nestedObject in value) {
-                RKMapping *mapping = relationshipMapping.mapping;
-                RKObjectMapping *objectMapping = nil;
-                if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-                    objectMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:nestedObject];
-                    if (! objectMapping) {
-                        RKLogDebug(@"Mapping %@ declined mapping for data %@: returned nil objectMapping", mapping, nestedObject);
-                        continue;
-                    }
-                } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
-                    objectMapping = (RKObjectMapping *)mapping;
-                } else {
-                    NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
+                id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject withMapping:relationshipMapping.mapping];
+                if (! mappableObject) {
+                    RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, nestedObject);
+                    continue;
                 }
-                id mappableObject = [self.dataSource mappingOperation:self targetObjectForRepresentation:nestedObject withMapping:objectMapping];
                 if ([self mapNestedObject:nestedObject toObject:mappableObject withRelationshipMapping:relationshipMapping]) {
                     [destinationObject addObject:mappableObject];
                 }
@@ -560,15 +565,11 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
             // One to one relationship
             RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
 
-            RKMapping *mapping = relationshipMapping.mapping;
-            RKObjectMapping *objectMapping = nil;
-            if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-                objectMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:value];
-            } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
-                objectMapping = (RKObjectMapping *)mapping;
+            destinationObject = [self destinationObjectForMappingRepresentation:value withMapping:relationshipMapping.mapping];
+            if (! destinationObject) {
+                RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, destinationObject);
+                continue;
             }
-            NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
-            destinationObject = [self.dataSource mappingOperation:self targetObjectForRepresentation:value withMapping:objectMapping];
             if ([self mapNestedObject:value toObject:destinationObject withRelationshipMapping:relationshipMapping]) {
                 appliedMappings = YES;
             }
@@ -619,6 +620,16 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
 {
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
+    
+    if (! self.destinationObject) {
+        self.destinationObject = [self destinationObjectForMappingRepresentation:self.sourceObject withMapping:self.mapping];
+        if (! self.destinationObject) {
+            RKLogDebug(@"Mapping operation failed: Given nil destination object and unable to instantiate a destination object for mapping.");
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Cannot perform a mapping operation with a nil destination object." };
+            self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorNilDestinationObject userInfo:userInfo];
+            return;
+        }
+    }
     
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([self.mapping isKindOfClass:[RKDynamicMapping class]]) {
