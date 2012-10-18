@@ -291,22 +291,9 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 
 - (void)performMapping
 {
-    NSAssert(self.mapping.objectClass, @"Cannot test a mapping that does not have a destination objectClass");
-
     // Ensure repeated invocations of verify only result in a single mapping operation
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
-        if (nil == self.destinationObject) {
-            if (self.mappingOperationDataSource) {
-                self.destinationObject = [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:self.sourceObject withMapping:self.mapping];
-            } else {
-                if ([self.mapping isKindOfClass:[RKEntityMapping class]]) {
-                    self.destinationObject = [[NSManagedObject alloc] initWithEntity:[(RKEntityMapping *)self.mapping entity] insertIntoManagedObjectContext:self.managedObjectContext];
-                } else {
-                    self.destinationObject = [self.mapping.objectClass new];
-                }
-            }
-        }
         RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:self.destinationObject mapping:self.mapping];
         mappingOperation.dataSource = [self dataSourceForMappingOperation:mappingOperation];
         NSError *error = nil;
@@ -326,6 +313,9 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         }
 
         self.performedMapping = YES;
+        
+        // Get the destination object from the mapping operation
+        if (! self.destinationObject) self.destinationObject = mappingOperation.destinationObject;
     }
 }
 
