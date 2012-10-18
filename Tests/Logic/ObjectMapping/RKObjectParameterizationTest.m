@@ -355,6 +355,7 @@ typedef enum {
 @property (nonatomic, copy) NSNumber *flightNumber;
 @property (nonatomic, copy) NSNumber *departureAirportID;
 @property (nonatomic, copy) NSNumber *arrivalAirportID;
+@property (nonatomic, copy) NSDate *departureDate;
 @end
 
 @implementation RKDynamicParameterizationFlightSearch
@@ -407,6 +408,33 @@ typedef enum {
     expect(parameters).to.beNil();
     expect(error).notTo.beNil();
     expect(error.code).to.equal(RKMappingErrorUnableToDetermineMapping);
+}
+
+- (void)testDynamicParameterizationIncludingADate
+{
+    RKObjectMapping *concreteMapping = [RKObjectMapping requestMapping];
+    [concreteMapping addAttributeMappingsFromDictionary:@{ @"departureDate": @"departure_date" }];
+    
+    RKDynamicMapping *flightSearchMapping = [RKDynamicMapping new];
+    [flightSearchMapping setObjectMapping:concreteMapping whenValueOfKeyPath:@"mode" isEqualTo:@(RKSearchByFlightNumberMode)];
+    
+    RKDynamicParameterizationFlightSearch *flightSearch = [RKDynamicParameterizationFlightSearch new];
+    flightSearch.airlineID = @5678;
+    flightSearch.flightNumber = @1234;
+    flightSearch.departureAirportID = @25;
+    flightSearch.arrivalAirportID = @66;
+    flightSearch.mode = RKSearchByFlightNumberMode;
+    flightSearch.departureDate = [NSDate dateWithTimeIntervalSince1970:0];
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:flightSearchMapping
+                                                                                   objectClass:[RKDynamicParameterizationFlightSearch class]
+                                                                                   rootKeyPath:@"flight_search"];
+    NSError *error = nil;
+    NSDictionary *parameters = nil;
+    
+    // Test generation of Flight Number parameters    
+    parameters = [RKObjectParameterization parametersWithObject:flightSearch requestDescriptor:requestDescriptor error:&error];
+    NSDictionary *expectedParameters = @{ @"flight_search": @{ @"departure_date": @"1970-01-01 00:00:00 +0000" }};
+    expect(parameters).to.equal(expectedParameters);
 }
 
 @end

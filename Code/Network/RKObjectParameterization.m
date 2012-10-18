@@ -24,7 +24,6 @@
 #import "RKMIMETypeSerialization.h"
 #import "RKLog.h"
 #import "RKObjectMappingOperationDataSource.h"
-
 #import "RKObjectMapping.h"
 #import "RKMappingOperation.h"
 #import "RKMappingErrors.h"
@@ -105,8 +104,8 @@
     id transformedValue = nil;
     if ([value isKindOfClass:[NSDate class]]) {
         // Date's are not natively serializable, must be encoded as a string
-        @synchronized(self.mapping.preferredDateFormatter) {
-            transformedValue = [self.mapping.preferredDateFormatter stringForObjectValue:value];
+        @synchronized(mapping.objectMapping.preferredDateFormatter) {
+            transformedValue = [mapping.objectMapping.preferredDateFormatter stringForObjectValue:value];
         }
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits
