@@ -86,21 +86,4 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
 
-#pragma mark - RKDynamicMappingDelegate
-
-- (RKObjectMapping *)objectMappingForData:(id)data
-{
-    if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
-        RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[Girl class]];
-        [mapping addAttributeMappingsFromArray:@[@"name"]];
-        return mapping;
-    } else if ([[data valueForKey:@"type"] isEqualToString:@"Boy"]) {
-        RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[Boy class]];
-        [mapping addAttributeMappingsFromArray:@[@"name"]];
-        return mapping;
-    }
-
-    return nil;
-}
-
 @end
