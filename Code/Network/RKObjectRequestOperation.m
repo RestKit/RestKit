@@ -24,9 +24,32 @@
 #import "RKHTTPUtilities.h"
 #import "RKLog.h"
 
+#import <Availability.h>
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import "AFNetworkActivityIndicatorManager.h"
+#endif
+
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
+
+NSString * const RKObjectRequestOperationDidStartNotification = @"RKObjectRequestOperationDidStartNotification";
+NSString * const RKObjectRequestOperationDidFinishNotification = @"RKObjectRequestOperationDidFinishNotification";
+
+static void RKIncrementNetworkActivityIndicator()
+{
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED
+        [[AFNetworkActivityIndicatorManager sharedManager] incrementActivityCount];
+    #endif
+}
+
+static void RKDecrementNetworkAcitivityIndicator()
+{
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED
+        [[AFNetworkActivityIndicatorManager sharedManager] decrementActivityCount];
+    #endif
+}
 
 static inline NSString *RKDescriptionForRequest(NSURLRequest *request)
 {
@@ -175,14 +198,12 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     [self.HTTPRequestOperation cancel];
 }
 
-- (void)main
+- (void)execute
 {
-    if (self.isCancelled) return;
-    
     // Send the request
     [self.HTTPRequestOperation start];
     [self.HTTPRequestOperation waitUntilFinished];
-
+    
     if (self.HTTPRequestOperation.error) {
         RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", self.HTTPRequestOperation.error);
         self.error = self.HTTPRequestOperation.error;
@@ -190,12 +211,14 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     }
     
     if (self.isCancelled) return;
-
+    
     // Map the response
     NSError *error;
     RKMappingResult *mappingResult = [self performMappingOnResponse:&error];
-    if (self.isCancelled) return;
-
+    if (self.isCancelled) {
+        return;
+    }
+    
     // If there is no mapping result but no error, there was no mapping to be performed,
     // which we do not treat as an error condition
     if (! mappingResult && error) {
@@ -204,6 +227,17 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     }
     self.mappingResult = mappingResult;
     [self willFinish];
+}
+
+- (void)main
+{
+    if (self.isCancelled) return;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidStartNotification object:self];
+    RKIncrementNetworkActivityIndicator();
+    [self execute];
+    RKDecrementNetworkAcitivityIndicator();
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:self];
 }
 
 @end

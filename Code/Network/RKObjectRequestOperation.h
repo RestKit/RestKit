@@ -159,3 +159,17 @@
 // TODO: Need tests for: success, request failure, request timeout, parsing failure, no matching mapping descriptors, parsing an error out of the payload,
 // no mappable content found, unable to parse the MIME type returned, handling a 204 response, getting back a 200 with 'blank' content (i.e. render :nothing => true)
 @end
+
+///--------------------
+/// @name Notifications
+///--------------------
+
+/**
+ Posted when an object request operation begin executing.
+ */
+extern NSString * const RKObjectRequestOperationDidStartNotification;
+
+/**
+ Posted when an object request operation finishes.
+ */
+extern NSString * const RKObjectRequestOperationDidFinishNotification;
