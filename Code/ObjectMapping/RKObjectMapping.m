@@ -33,6 +33,10 @@ static NSUInteger RKObjectMappingMaximumInverseMappingRecursionDepth = 100;
 // Private declaration
 NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
 
+@interface RKPropertyMapping ()
+@property (nonatomic, weak, readwrite) RKObjectMapping *objectMapping;
+@end
+
 @interface RKObjectMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
 @property (nonatomic, strong) NSMutableArray *mutablePropertyMappings;
@@ -146,6 +150,8 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     NSAssert1([[self mappedKeyPaths] containsObject:propertyMapping.destinationKeyPath] == NO,
               @"Unable to add mapping for keyPath %@, one already exists...", propertyMapping.destinationKeyPath);
     NSAssert(self.mutablePropertyMappings, @"self.mutablePropertyMappings is nil");
+    NSAssert(propertyMapping.objectMapping == nil, @"Cannot add a property mapping that already exists in another mapping.");
+    propertyMapping.objectMapping = self;
     [self.mutablePropertyMappings addObject:propertyMapping];
 }
 
@@ -212,7 +218,10 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 
 - (void)removePropertyMapping:(RKPropertyMapping *)attributeOrRelationshipMapping
 {
-    [self.mutablePropertyMappings removeObject:attributeOrRelationshipMapping];
+    if ([self.mutablePropertyMappings containsObject:attributeOrRelationshipMapping]) {
+        attributeOrRelationshipMapping.objectMapping = nil;
+        [self.mutablePropertyMappings removeObject:attributeOrRelationshipMapping];
+    }
 }
 
 - (RKObjectMapping *)inverseMappingAtDepth:(NSInteger)depth
