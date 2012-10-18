@@ -34,7 +34,7 @@
                                         withPrimaryKeyAttribute:mapping.primaryKeyAttribute
                                                           value:[NSNumber numberWithInt:123456]
                                          inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    assertThat(cachedObject, is(equalTo(reginald)));
+    expect(cachedObject).to.equal(reginald);
 }
 
 - (void)testFetchRequestMappingCacheReturnsObjectsWithStringPrimaryKey
@@ -54,7 +54,7 @@
                                         withPrimaryKeyAttribute:mapping.primaryKeyAttribute
                                                           value:@"e-1234-a8-b12"
                                          inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    assertThat(cachedObject, is(equalTo(birthday)));
+    expect(cachedObject).to.equal(birthday);
 }
 
 @end

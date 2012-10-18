@@ -19,7 +19,8 @@
 {
     RKSearchTokenizer *stringTokenizer = [RKSearchTokenizer new];
     NSSet *tokens = [stringTokenizer tokenize:@"This is a test"];
-    assertThat(tokens, is(equalTo([NSSet setWithArray:@[ @"this", @"is", @"a", @"test" ]])));
+    NSSet *expectedTokens = [NSSet setWithArray:@[ @"this", @"is", @"a", @"test" ]];
+    expect(tokens).to.equal(expectedTokens);
 }
 
 - (void)testTokenizingStringWithStopWords
@@ -27,7 +28,8 @@
     RKSearchTokenizer *stringTokenizer = [RKSearchTokenizer new];
     stringTokenizer.stopWords = [NSSet setWithObjects:@"is", @"a", nil];
     NSSet *tokens = [stringTokenizer tokenize:@"This is a test"];
-    assertThat(tokens, is(equalTo([NSSet setWithArray:@[ @"this", @"test" ]])));
+    NSSet *expectedTokens = [NSSet setWithArray:@[ @"this", @"test" ]];
+    expect(tokens).to.equal(expectedTokens);
 }
 
 @end
