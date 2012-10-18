@@ -26,7 +26,8 @@ enum {
     RKMappingErrorTypeMismatch                 = 1002,     // Target class and object mapping are in disagreement
     RKMappingErrorUnmappableRepresentation     = 1003,     // No values were found at the key paths of any attribute or relationship mappings in the given representation
     RKMappingErrorFromMappingResult            = 1004,     // The error was returned from the mapping result
-    RKMappingErrorValidationFailure            = 1005      // Generic error code for use when constructing validation errors
+    RKMappingErrorValidationFailure            = 1005,     // Generic error code for use when constructing validation errors
+    RKMappingErrorUnableToDetermineMapping     = 1006      // The mapping operation was unable to obtain a concrete object mapping from a given dynamic mapping
 };
 
 extern NSString * const RKMappingErrorKeyPathErrorKey; // The key path the error is associated with

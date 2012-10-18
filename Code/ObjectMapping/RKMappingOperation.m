@@ -623,6 +623,11 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([self.mapping isKindOfClass:[RKDynamicMapping class]]) {
         self.objectMapping = [(RKDynamicMapping *)self.mapping objectMappingForRepresentation:self.sourceObject];
+        if (! self.objectMapping) {
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"A dynamic mapping failed to return a concrete object mapping matching the representation being mapped." };
+            self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnableToDetermineMapping userInfo:userInfo];
+            return;
+        }
         RKLogDebug(@"RKObjectMappingOperation was initialized with a dynamic mapping. Determined concrete mapping = %@", self.objectMapping);
 
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSelectObjectMapping:forDynamicMapping:)]) {
@@ -631,7 +636,6 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
     } else if ([self.mapping isKindOfClass:[RKObjectMapping class]]) {
         self.objectMapping = (RKObjectMapping *)self.mapping;
     }
-    NSAssert(self.objectMapping, @"Cannot perform a mapping operation without an object mapping");
 
     [self applyNestedMappings];
     BOOL mappedSimpleAttributes = [self applyAttributeMappings:[self simpleAttributeMappings]];

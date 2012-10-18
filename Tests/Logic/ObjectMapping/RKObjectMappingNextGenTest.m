@@ -1564,10 +1564,10 @@
     RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    [dynamicMapping setObjectMappingForDataBlock:^RKObjectMapping *(id mappableData) {
-        if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
+        if ([[representation valueForKey:@"type"] isEqualToString:@"Boy"]) {
             return boyMapping;
-        } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
+        } else if ([[representation valueForKey:@"type"] isEqualToString:@"Girl"]) {
             return girlMapping;
         }
 
@@ -1668,16 +1668,16 @@
     RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping *(id mappableData) {
-        if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
+        if ([[representation valueForKey:@"type"] isEqualToString:@"Boy"]) {
             return boyMapping;
-        } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
+        } else if ([[representation valueForKey:@"type"] isEqualToString:@"Girl"]) {
             // NO GIRLS ALLOWED(*$!)(*
             return nil;
         }
 
         return nil;
-    };
+    }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     [mappingsDictionary setObject:dynamicMapping forKey:@""];
@@ -1699,16 +1699,16 @@
     RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping *(id mappableData) {
-        if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
+        if ([[representation valueForKey:@"type"] isEqualToString:@"Boy"]) {
             return boyMapping;
-        } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
+        } else if ([[representation valueForKey:@"type"] isEqualToString:@"Girl"]) {
             // NO GIRLS ALLOWED(*$!)(*
             return nil;
         }
 
         return nil;
-    };
+    }];
     [boyMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:dynamicMapping]];;
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
@@ -1734,13 +1734,13 @@
     RKObjectMapping *boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
     [boyMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping *(id mappableData) {
-        if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
+        if ([[representation valueForKey:@"type"] isEqualToString:@"Boy"]) {
             return boyMapping;
         }
 
         return nil;
-    };
+    }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     [mappingsDictionary setObject:dynamicMapping forKey:@""];
@@ -1760,9 +1760,9 @@
     RKObjectMapping *boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
     [boyMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping *(id mappableData) {
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
         return nil;
-    };
+    }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     [mappingsDictionary setObject:dynamicMapping forKey:@""];
@@ -1782,13 +1782,13 @@
     RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping *(id mappableData) {
-        if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
+        if ([[representation valueForKey:@"type"] isEqualToString:@"Girl"]) {
             return girlMapping;
         }
 
         return nil;
-    };
+    }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     [mappingsDictionary setObject:dynamicMapping forKey:@""];

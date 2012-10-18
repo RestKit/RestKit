@@ -22,6 +22,8 @@
 #import "RKObjectParameterization.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKMappableObject.h"
+#import "RKDynamicMapping.h"
+#import "RKMappingErrors.h"
 
 @interface RKMIMETypeSerialization ()
 @property (nonatomic, strong) NSMutableArray *registrations;
@@ -335,6 +337,76 @@
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
     NSDictionary *expected = @{@"user": @{@"anotherKeyPath": @{@"name": @"Blake Watters", @"another": @{ @"job": @"Hacker"}}}};
     expect(parameters).to.equal(expected);
+}
+
+@end
+
+#pragma mark - Dynamic Request Paramterization
+
+typedef enum {
+    RKSearchByFlightNumberMode = 1,
+    RKSearchByRouteMode = 2,
+    RKSearcyByOtherMode
+} RKFlightSearchMode;
+
+@interface RKDynamicParameterizationFlightSearch : NSObject
+@property (nonatomic, assign) RKFlightSearchMode mode;
+@property (nonatomic, copy) NSNumber *airlineID;
+@property (nonatomic, copy) NSNumber *flightNumber;
+@property (nonatomic, copy) NSNumber *departureAirportID;
+@property (nonatomic, copy) NSNumber *arrivalAirportID;
+@end
+
+@implementation RKDynamicParameterizationFlightSearch
+@end
+
+@interface RKDynamicParameterizationTest : RKTestCase
+@end
+
+@implementation RKDynamicParameterizationTest
+
+- (void)testParameterizationUsingDynamicMapping
+{
+    NSDictionary *expectedFlightNumberParameters = @{ @"flight_search": @{ @"flight_number": @1234, @"airline_id": @5678 } };
+    NSDictionary *expectedRouteParameters = @{ @"flight_search": @{ @"departure_airport_id": @25, @"arrival_airport_id": @66, @"airline_id": @5678 } };
+    
+    RKObjectMapping *flightNumberMapping = [RKObjectMapping requestMapping];
+    [flightNumberMapping addAttributeMappingsFromDictionary:@{ @"flightNumber": @"flight_number", @"airlineID": @"airline_id" }];
+    RKObjectMapping *routeMapping = [RKObjectMapping requestMapping];
+    [routeMapping addAttributeMappingsFromDictionary:@{ @"airlineID": @"airline_id", @"departureAirportID": @"departure_airport_id", @"arrivalAirportID": @"arrival_airport_id" }];
+    
+    RKDynamicMapping *flightSearchMapping = [RKDynamicMapping new];
+    [flightSearchMapping setObjectMapping:flightNumberMapping whenValueOfKeyPath:@"mode" isEqualTo:@(RKSearchByFlightNumberMode)];
+    [flightSearchMapping setObjectMapping:routeMapping whenValueOfKeyPath:@"mode" isEqualTo:@(RKSearchByRouteMode)];
+    
+    RKDynamicParameterizationFlightSearch *flightSearch = [RKDynamicParameterizationFlightSearch new];
+    flightSearch.airlineID = @5678;
+    flightSearch.flightNumber = @1234;
+    flightSearch.departureAirportID = @25;
+    flightSearch.arrivalAirportID = @66;
+    
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:flightSearchMapping
+                                                                                   objectClass:[RKDynamicParameterizationFlightSearch class]
+                                                                                   rootKeyPath:@"flight_search"];
+    NSError *error = nil;
+    NSDictionary *parameters = nil;
+    
+    // Test generation of Flight Number parameters
+    flightSearch.mode = RKSearchByFlightNumberMode;
+    parameters = [RKObjectParameterization parametersWithObject:flightSearch requestDescriptor:requestDescriptor error:&error];
+    expect(parameters).to.equal(expectedFlightNumberParameters);
+    
+    // Test generation of Route paramters
+    flightSearch.mode = RKSearchByRouteMode;
+    parameters = [RKObjectParameterization parametersWithObject:flightSearch requestDescriptor:requestDescriptor error:&error];
+    expect(parameters).to.equal(expectedRouteParameters);
+    
+    // Test non-match
+    flightSearch.mode = RKSearcyByOtherMode;
+    parameters = [RKObjectParameterization parametersWithObject:flightSearch requestDescriptor:requestDescriptor error:&error];
+    expect(parameters).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.code).to.equal(RKMappingErrorUnableToDetermineMapping);
 }
 
 @end

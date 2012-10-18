@@ -65,40 +65,25 @@
 - (void)testShouldPickTheAppropriateMappingBasedOnBlockDelegateCallback
 {
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping *(id data) {
-        if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
+        if ([[representation valueForKey:@"type"] isEqualToString:@"Girl"]) {
             RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[Girl class]];
             [mapping addAttributeMappingsFromArray:@[@"name"]];
             return mapping;
-        } else if ([[data valueForKey:@"type"] isEqualToString:@"Boy"]) {
+        } else if ([[representation valueForKey:@"type"] isEqualToString:@"Boy"]) {
             RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[Boy class]];
             [mapping addAttributeMappingsFromArray:@[@"name"]];
             return mapping;
         }
 
         return nil;
-    };
+    }];
     RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
     mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
-}
-
-- (void)testShouldFailAnAssertionWhenInvokedWithSomethingOtherThanADictionary
-{
-    NSException *exception = nil;
-    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    @try {
-        [dynamicMapping objectMappingForRepresentation:(NSDictionary *)[NSArray array]];
-    }
-    @catch (NSException *e) {
-        exception = e;
-    }
-    @finally {
-        assertThat(exception, is(notNilValue()));
-    }
 }
 
 #pragma mark - RKDynamicMappingDelegate

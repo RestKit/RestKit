@@ -21,7 +21,7 @@
 #import "RKMapping.h"
 #import "RKObjectMapping.h"
 
-typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
+typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id representation);
 
 /**
  Defines a dynamic object mapping that determines the appropriate concrete object mapping to apply at mapping time. This allows you to map very similar payloads differently depending on the type of data contained therein.
@@ -37,8 +37,7 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
 
  @param block The block object to invoke to select the object mapping with which to map the given object representation.
  */
-- (void)setObjectMappingForDataBlock:(RKDynamicMappingDelegateBlock)block;
-// TODO: Better method signature...
+- (void)setObjectMappingForRepresentationBlock:(RKDynamicMappingDelegateBlock)block;
 
 /**
  Defines a dynamic mapping rule stating that when the value of the key property matches the specified value, the given mapping should be used to map the representation.
@@ -67,11 +66,11 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
 ///-----------------------------------------------------------------
 
 /**
- Invoked by the `RKMapperOperation` and `RKMappingOperation` to determine the appropriate `RKObjectMapping` to use when mapping the specified dictionary of mappable data.
+ Invoked by the `RKMapperOperation` and `RKMappingOperation` to determine the appropriate `RKObjectMapping` to use when mapping the given object representation.
 
- @param representation A dictionary representation of the object that is being mapped.
+ @param representation The object representation that being mapped dynamically for which to determine the appropriate concrete mapping.
  @return The object mapping to be used to map the given object representation.
  */
-- (RKObjectMapping *)objectMappingForRepresentation:(NSDictionary *)representation;
+- (RKObjectMapping *)objectMappingForRepresentation:(id)representation;
 
 @end
