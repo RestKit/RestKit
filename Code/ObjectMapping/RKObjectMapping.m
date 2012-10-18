@@ -150,7 +150,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     NSAssert1([[self mappedKeyPaths] containsObject:propertyMapping.destinationKeyPath] == NO,
               @"Unable to add mapping for keyPath %@, one already exists...", propertyMapping.destinationKeyPath);
     NSAssert(self.mutablePropertyMappings, @"self.mutablePropertyMappings is nil");
-    NSAssert(propertyMapping.objectMapping == nil, @"Cannot add a property mapping that already exists in another mapping.");
+    NSAssert(propertyMapping.objectMapping == nil, @"Cannot add a property mapping object that has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the mapping: `[propertyMapping copy]`");
     propertyMapping.objectMapping = self;
     [self.mutablePropertyMappings addObject:propertyMapping];
 }
