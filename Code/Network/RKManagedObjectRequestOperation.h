@@ -169,3 +169,12 @@
  @return An `NSFetchRequest` object corresponding to the given URL, or nil if the URL could not be processed.
  */
 typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL);
+
+/**
+ Returns a fetch request object from an array of `RKFetchRequestBlock` objects given a URL.
+ 
+ @param fetchRequestBlocks An array of `RKFetchRequestBlock` blocks to
+ @param URL The URL for which to return a fetch request.
+ @return A fetch request from the first block that matches the URL.
+ */
+NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL);

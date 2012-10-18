@@ -29,6 +29,16 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
+NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL)
+{
+    NSFetchRequest *fetchRequest = nil;
+    for (RKFetchRequestBlock block in [fetchRequestBlocks reverseObjectEnumerator]) {
+        fetchRequest = block(URL);
+        if (fetchRequest) break;
+    }
+    return fetchRequest;
+}
+
 @interface RKManagedObjectRequestOperation () <RKMapperOperationDelegate>
 // Core Data specific
 @property (readwrite, nonatomic, strong) NSManagedObjectContext *privateContext;
