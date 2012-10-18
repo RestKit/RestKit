@@ -490,4 +490,24 @@
     });
 }
 
+- (void)testMappingSimpleAttributesDoesNotTriggerDataSourceAssertion
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping addAttributeMappingsFromArray:@[@"boolString"]];
+    TestMappable *object = [TestMappable new];
+    object.boolString = @"test";
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
+    NSException *exception = nil;
+    @try {
+        [operation start];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        expect(exception).to.beNil();
+    }
+}
+
 @end

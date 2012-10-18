@@ -650,7 +650,7 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
 
     [self applyNestedMappings];
     BOOL mappedSimpleAttributes = [self applyAttributeMappings:[self simpleAttributeMappings]];
-    BOOL mappedRelationships = [self applyRelationshipMappings];
+    BOOL mappedRelationships = [[self relationshipMappings] count] ? [self applyRelationshipMappings] : NO;
     BOOL mappedKeyPathAttributes = [self applyAttributeMappings:[self keyPathAttributeMappings]];
     if ((mappedSimpleAttributes || mappedKeyPathAttributes || mappedRelationships) && _validationError == nil) {
         RKLogDebug(@"Finished mapping operation successfully...");
