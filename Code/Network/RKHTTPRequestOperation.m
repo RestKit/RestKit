@@ -28,6 +28,27 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
 
+static BOOL RKLogIsStringBlank(NSString *string)
+{
+    return ([[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] == 0);
+}
+
+static NSString *RKLogTruncateString(NSString *string)
+{
+    static NSInteger maxMessageLength;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSDictionary *envVars = [[NSProcessInfo processInfo] environment];
+        maxMessageLength = RKLogIsStringBlank(envVars[@"RKLogMaxLength"]) ? NSIntegerMax : [envVars[@"RKLogMaxLength"] integerValue];
+    });
+    
+    return ([string length] <= maxMessageLength)
+        ? string
+        : [NSString stringWithFormat:@"%@... (truncated at %ld characters)",
+           [string substringToIndex:maxMessageLength],
+           (long) maxMessageLength];
+}
+
 @interface RKHTTPRequestOperationLogger : NSObject
 
 + (id)sharedLogger;
@@ -76,12 +97,13 @@
 - (void)HTTPOperationDidStart:(NSNotification *)notification
 {
     RKHTTPRequestOperation *operation = [notification object];
-    NSString *body = nil;
-    if ([operation.request HTTPBody]) {
-        body = [NSString stringWithUTF8String:[[operation.request HTTPBody] bytes]];
-    }
 
     if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
+        NSString *body = nil;
+        if ([operation.request HTTPBody]) {
+            body = RKLogTruncateString([NSString stringWithUTF8String:[[operation.request HTTPBody] bytes]]);
+        }
+        
         RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
     } else {
         RKLogInfo(@"%@ '%@'", [operation.request HTTPMethod], [[operation.request URL] absoluteString]);
@@ -99,7 +121,7 @@
         }
     } else {
         if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogTrace(@"%@ '%@' (%ld):\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], [operation.response allHeaderFields], operation.responseString);
+            RKLogTrace(@"%@ '%@' (%ld):\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], [operation.response allHeaderFields], RKLogTruncateString(operation.responseString));
         } else {
             RKLogInfo(@"%@ '%@' (%ld)", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode]);
         }
