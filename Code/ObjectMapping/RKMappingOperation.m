@@ -66,6 +66,12 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
     }
 }
 
+static BOOL RKIsManagedObject(id object)
+{
+    Class managedObjectClass = NSClassFromString(@"NSManagedObject");
+    return managedObjectClass && [object isKindOfClass:managedObjectClass];
+}
+
 @implementation RKMappingOperation
 
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
@@ -422,10 +428,104 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
     return YES;
 }
 
+- (BOOL)mapOneToOneRelationshipWithValue:(id)value mapping:(RKRelationshipMapping *)relationshipMapping
+{
+    // One to one relationship
+    RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
+
+    id destinationObject = [self destinationObjectForMappingRepresentation:value withMapping:relationshipMapping.mapping];
+    if (! destinationObject) {
+        RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, destinationObject);
+        return NO;
+    }
+    [self mapNestedObject:value toObject:destinationObject withRelationshipMapping:relationshipMapping];
+
+    // If the relationship has changed, set it
+    if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
+        RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
+        [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
+    } else {
+        if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
+            [self.delegate mappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
+        }
+    }
+
+    return YES;
+}
+
+- (BOOL)mapCoreDataToManyRelationshipValue:(id)valueForRelationship withMapping:(RKRelationshipMapping *)relationshipMapping
+{
+    if (! RKIsManagedObject(self.destinationObject)) return NO;
+
+    RKLogTrace(@"Mapping a to-many relationship for an `NSManagedObject`. About to apply value via mutable[Set|Array]ValueForKey");
+    if ([valueForRelationship isKindOfClass:[NSSet class]]) {
+        RKLogTrace(@"Mapped `NSSet` relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, valueForRelationship);
+        NSMutableSet *destinationSet = [self.destinationObject mutableSetValueForKeyPath:relationshipMapping.destinationKeyPath];
+        [destinationSet setSet:valueForRelationship];
+    } else if ([valueForRelationship isKindOfClass:[NSArray class]]) {
+        RKLogTrace(@"Mapped `NSArray` relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, valueForRelationship);
+        NSMutableArray *destinationArray = [self.destinationObject mutableArrayValueForKeyPath:relationshipMapping.destinationKeyPath];
+        [destinationArray setArray:valueForRelationship];
+    } else if ([valueForRelationship isKindOfClass:[NSOrderedSet class]]) {
+        RKLogTrace(@"Mapped `NSOrderedSet` relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, valueForRelationship);
+        [self.destinationObject setValue:valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath];
+    }
+
+    return YES;
+}
+
+- (BOOL)mapOneToManyRelationshipWithValue:(id)value mapping:(RKRelationshipMapping *)relationshipMapping
+{
+    // One to many relationship
+    RKLogDebug(@"Mapping one to many relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
+
+    NSMutableArray *relationshipCollection = [NSMutableArray arrayWithCapacity:[value count]];
+    id collectionSanityCheckObject = nil;
+    if ([value respondsToSelector:@selector(anyObject)]) collectionSanityCheckObject = [value anyObject];
+    if ([value respondsToSelector:@selector(lastObject)]) collectionSanityCheckObject = [value lastObject];
+    if (RKObjectIsCollection(collectionSanityCheckObject)) {
+        RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
+        RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
+    }
+    for (id nestedObject in value) {
+        id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject withMapping:relationshipMapping.mapping];
+        if (! mappableObject) {
+            RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, nestedObject);
+            continue;
+        }
+        if ([self mapNestedObject:nestedObject toObject:mappableObject withRelationshipMapping:relationshipMapping]) {
+            [relationshipCollection addObject:mappableObject];
+        }
+    }
+
+    id valueForRelationship = relationshipCollection;
+    // Transform from NSSet <-> NSArray if necessary
+    Class type = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
+    if (type && NO == [[relationshipCollection class] isSubclassOfClass:type]) {
+        valueForRelationship = [self transformValue:relationshipCollection atKeyPath:relationshipMapping.sourceKeyPath toType:type];
+    }
+
+    // If the relationship has changed, set it
+    if ([self shouldSetValue:&valueForRelationship atKeyPath:relationshipMapping.destinationKeyPath]) {
+        if (! [self mapCoreDataToManyRelationshipValue:valueForRelationship withMapping:relationshipMapping]) {
+            RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, valueForRelationship);
+            [self.destinationObject setValue:valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath];
+        }
+    } else {
+        if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
+            [self.delegate mappingOperation:self didNotSetUnchangedValue:valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
+        }
+
+        return NO;
+    }
+
+    return YES;
+}
+
 - (BOOL)applyRelationshipMappings
 {
     NSAssert(self.dataSource, @"Cannot perform relationship mapping without a data source");
-    BOOL appliedMappings = NO;
+    NSMutableArray *mappingsApplied = [NSMutableArray array];
     id destinationObject = nil;
 
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
@@ -442,6 +542,9 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
 
             @throw;
         }
+
+        // Track that we applied this mapping
+        [mappingsApplied addObject:relationshipMapping];
 
         if (value == nil) {
             RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
@@ -502,89 +605,14 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
             }
         }
 
+        BOOL setValueForRelationship;
         if (RKObjectIsCollection(value)) {
-            // One to many relationship
-            RKLogDebug(@"Mapping one to many relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
-            appliedMappings = YES;
-
-            destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
-            id collectionSanityCheckObject = nil;
-            if ([value respondsToSelector:@selector(anyObject)]) collectionSanityCheckObject = [value anyObject];
-            if ([value respondsToSelector:@selector(lastObject)]) collectionSanityCheckObject = [value lastObject];
-            if (RKObjectIsCollection(collectionSanityCheckObject)) {
-                RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
-                RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
-            }
-            for (id nestedObject in value) {
-                id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject withMapping:relationshipMapping.mapping];
-                if (! mappableObject) {
-                    RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, nestedObject);
-                    continue;
-                }
-                if ([self mapNestedObject:nestedObject toObject:mappableObject withRelationshipMapping:relationshipMapping]) {
-                    [destinationObject addObject:mappableObject];
-                }
-            }
-
-            // Transform from NSSet <-> NSArray if necessary
-            Class type = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
-            if (type && NO == [[destinationObject class] isSubclassOfClass:type]) {
-                destinationObject = [self transformValue:destinationObject atKeyPath:relationshipMapping.sourceKeyPath toType:type];
-            }
-
-            // If the relationship has changed, set it
-            if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
-                Class managedObjectClass = NSClassFromString(@"NSManagedObject");
-                Class nsOrderedSetClass = NSClassFromString(@"NSOrderedSet");
-                if (managedObjectClass && [self.destinationObject isKindOfClass:managedObjectClass]) {
-                    RKLogTrace(@"Found a managedObject collection. About to apply value via mutable[Set|Array]ValueForKey");
-                    if ([destinationObject isKindOfClass:[NSSet class]]) {
-                        RKLogTrace(@"Mapped NSSet relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-                        NSMutableSet *destinationSet = [self.destinationObject mutableSetValueForKeyPath:relationshipMapping.destinationKeyPath];
-                        if ([relationshipMapping.destinationKeyPath isEqualToString:@"departureAirport.checkpoints"]) {
-                        }
-                       [destinationSet setSet:destinationObject];
-                    } else if ([destinationObject isKindOfClass:[NSArray class]]) {
-                        RKLogTrace(@"Mapped NSArray relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-                        NSMutableArray *destinationArray = [self.destinationObject mutableArrayValueForKeyPath:relationshipMapping.destinationKeyPath];
-                        [destinationArray setArray:destinationObject];
-                    } else if (nsOrderedSetClass && [destinationObject isKindOfClass:nsOrderedSetClass]) {
-                        RKLogTrace(@"Mapped NSOrderedSet relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-                        [self.destinationObject setValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath];
-                    }
-                } else {
-                    RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-                    [self.destinationObject setValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath];
-                }
-            } else {
-                if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
-                    [self.delegate mappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
-                }
-            }
+            setValueForRelationship = [self mapOneToManyRelationshipWithValue:value mapping:relationshipMapping];
         } else {
-            // One to one relationship
-            RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
-
-            destinationObject = [self destinationObjectForMappingRepresentation:value withMapping:relationshipMapping.mapping];
-            if (! destinationObject) {
-                RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, destinationObject);
-                continue;
-            }
-            if ([self mapNestedObject:value toObject:destinationObject withRelationshipMapping:relationshipMapping]) {
-                appliedMappings = YES;
-            }
-
-            // If the relationship has changed, set it
-            if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
-                appliedMappings = YES;
-                RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-                [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
-            } else {
-                if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
-                    [self.delegate mappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
-                }
-            }
+            setValueForRelationship = [self mapOneToOneRelationshipWithValue:value mapping:relationshipMapping];
         }
+
+        if (! setValueForRelationship) continue;
 
         // Notify the delegate
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
@@ -597,7 +625,7 @@ static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSStr
         }
     }
 
-    return appliedMappings;
+    return [mappingsApplied count] > 0;
 }
 
 - (void)applyNestedMappings
