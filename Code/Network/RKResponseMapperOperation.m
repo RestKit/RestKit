@@ -245,15 +245,22 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
             mapper.targetObject = self.targetObject;
 
-            NSManagedObjectID *objectID = self.targetObjectID ?: RKObjectIDFromObjectIfManaged(self.targetObject);
-            if (objectID) {
-                if ([objectID isTemporaryID]) RKLogWarning(@"Performing object mapping to temporary target objectID. Results may not be accessible without obtaining a permanent object ID.");
-                NSManagedObject *localObject = [self.managedObjectContext existingObjectWithID:objectID error:&blockError];
-                if (! localObject) {
-                    RKLogWarning(@"Failed to retrieve existing object with ID: %@", objectID);
-                    RKLogCoreDataError(blockError);
+            if (self.targetObjectID || self.targetObject) {
+                NSManagedObjectID *objectID = self.targetObjectID ?: RKObjectIDFromObjectIfManaged(self.targetObject);
+                if (objectID) {
+                    if ([objectID isTemporaryID]) RKLogWarning(@"Performing object mapping to temporary target objectID. Results may not be accessible without obtaining a permanent object ID.");
+                    NSManagedObject *localObject = [self.managedObjectContext existingObjectWithID:objectID error:&blockError];
+                    NSAssert([localObject.managedObjectContext isEqual:self.managedObjectContext], @"Serious Core Data error: requested existing object with ID %@ in context %@, instead got an object reference in context %@. This may indicate that the objectID for your target managed object was obtained using `obtainPermanentIDsForObjects:error:` in the wrong context.", objectID, self.managedObjectContext, [localObject managedObjectContext]);
+                    if (! localObject) {
+                        RKLogWarning(@"Failed to retrieve existing object with ID: %@", objectID);
+                        RKLogCoreDataError(blockError);
+                    }
+                    mapper.targetObject = localObject;
+                } else {
+                    if (mapper.targetObject) RKLogDebug(@"Mapping HTTP response to unmanaged target object with `RKManagedObjectResponseMapperOperation`: %@", mapper.targetObject);
                 }
-                mapper.targetObject = localObject;
+            } else {
+                RKLogTrace(@"Mapping HTTP response to nil target object...");
             }
         } else {
             RKLogInfo(@"Non-successful state code encountered: performing mapping with nil target object.");
