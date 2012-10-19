@@ -18,6 +18,9 @@
 //  limitations under the License.
 //
 
+#ifndef _RESTKIT_
+#define _RESTKIT_
+
 #import "ObjectMapping.h"
 #import "Network.h"
 #import "Support.h"
@@ -32,3 +35,5 @@
  */
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cApp
+
+#endif /* _RESTKIT_ */
