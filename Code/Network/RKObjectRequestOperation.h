@@ -34,6 +34,10 @@
  
  If the HTTP request returned a response in the Client Error (400-499 range) or Server Error (500-599 range) class and an appropriate `RKResponseDescriptor` is provided to perform mapping on the response, then the object mapping result is considered to contain a server returned error. In this case, an `NSError` object is created in the `RKErrorDomain` with an error code of `RKMappingErrorFromMappingResult` and the object request operation is failed. In the event that an a response is returned in an error class and no `RKResponseDescriptor` has been provided to the operation to handle it, then an `NSError` object in the `AFNetworkingErrorDomain` with an error code of `NSURLErrorBadServerResponse` will be returned by the underlying `RKHTTPRequestOperation` indicating that an unexpected status code was returned. 
  
+ ## Prioritization and Cancellation
+ 
+ Object request operations support prioritization and cancellation of the underlying `RKHTTPRequestOperation` and `RKResponseMapperOperation` operations that perform the network transport and object mapping duties on their behalf. The queue priority of the object request operation, as set via the `[NSOperation setQueuePriority:]` method, is applied to the underlying response mapping operation when it is enqueued onto the `responseMappingQueue`. If the object request operation is cancelled, then the underlying HTTP request operation and response mapping operation are also cancelled.
+ 
  ## Caching
  
  Instances of `RKObjectRequestOperation` support all the HTTP caching facilities available via the `NSURLConnection` family of API's. For caching to be enabled, the remote web server that the application is communicating with must emit the appropriate `Cache-Control`, `Expires`, and/or `ETag` headers. When the response headers include the appropriate caching information, the shared `NSURLCache` instance will manage responses and transparently add conditional GET support to cachable requests. HTTP caching is a deep topic explored in depth across the web and detailed in RFC 2616: http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html
@@ -152,12 +156,19 @@
  */
 @property (nonatomic, assign) dispatch_queue_t failureCallbackQueue;
 
-// Things to consider:
-//  - (void)willMapObject:(id* inout)object | willMapResponseObject:
-// mapperDelegate
-// TODO: Add a Boolean to enable the network if possible
-// TODO: Need tests for: success, request failure, request timeout, parsing failure, no matching mapping descriptors, parsing an error out of the payload,
-// no mappable content found, unable to parse the MIME type returned, handling a 204 response, getting back a 200 with 'blank' content (i.e. render :nothing => true)
+///-------------------------------------------
+/// @name Accessing the Response Mapping Queue
+///-------------------------------------------
+
+/**
+ Returns the operation queue used by all object request operations when object mapping the body of a response loaded via HTTP.
+ 
+ By default, the response mapping queue is configured with a maximum concurrent operation count of 1, ensuring that only one HTTP response is mapped at a time.
+ 
+ @return The response mapping queue.
+ */
++ (NSOperationQueue *)responseMappingQueue;
+
 @end
 
 ///--------------------

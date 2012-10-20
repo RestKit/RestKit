@@ -58,6 +58,19 @@ static NSError *RKUnprocessableClientErrorFromResponse(NSHTTPURLResponse *respon
     return [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
 }
 
+/**
+ A serial dispatch queue used for all deserialization of response bodies
+ */
+static dispatch_queue_t RKResponseMapperSerializationQueue() {
+    static dispatch_queue_t serializationQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        serializationQueue = dispatch_queue_create("org.restkit.response-mapper.serialization", DISPATCH_QUEUE_SERIAL);
+    });
+    
+    return serializationQueue;
+}
+
 @interface RKResponseMapperOperation ()
 @property (nonatomic, strong, readwrite) NSHTTPURLResponse *response;
 @property (nonatomic, strong, readwrite) NSData *data;
@@ -65,6 +78,7 @@ static NSError *RKUnprocessableClientErrorFromResponse(NSHTTPURLResponse *respon
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) NSDictionary *responseMappingsDictionary;
+@property (nonatomic, strong) RKMapperOperation *mapperOperation;
 @end
 
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
@@ -95,8 +109,11 @@ static NSError *RKUnprocessableClientErrorFromResponse(NSHTTPURLResponse *respon
 - (id)parseResponseData:(NSError **)error
 {
     NSString *MIMEType = [self.response MIMEType];
-    NSError *underlyingError = nil;
-    id object = [RKMIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
+    __block NSError *underlyingError = nil;
+    __block id object;
+    dispatch_sync(RKResponseMapperSerializationQueue(), ^{
+        object = [RKMIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
+    });
     if (! object) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
         [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable response (%ld) with content type '%@'", (long) self.response.statusCode, MIMEType]
@@ -141,6 +158,12 @@ static NSError *RKUnprocessableClientErrorFromResponse(NSHTTPURLResponse *respon
 
     NSUInteger length = [self.data length];
     return (length == 0 || (length == 1 && [self.data isEqualToData:whitespaceData]));
+}
+
+- (void)cancel
+{
+    [super cancel];
+    [self.mapperOperation cancel];
 }
 
 - (void)main
@@ -205,11 +228,11 @@ static NSError *RKUnprocessableClientErrorFromResponse(NSHTTPURLResponse *respon
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
 {
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
-    mapper.mappingOperationDataSource = dataSource;
-    [mapper start];
-    if (error) *error = mapper.error;
-    return mapper.mappingResult;
+    self.mapperOperation = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
+    self.mapperOperation.mappingOperationDataSource = dataSource;
+    [self.mapperOperation start];
+    if (error) *error = self.mapperOperation.error;
+    return self.mapperOperation.mappingResult;
 }
 
 @end
@@ -219,7 +242,17 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     return [object isKindOfClass:[NSManagedObject class]] ? [object objectID] : nil;
 }
 
+@interface RKManagedObjectResponseMapperOperation ()
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
+@end
+
 @implementation RKManagedObjectResponseMapperOperation
+
+- (void)cancel
+{
+    [super cancel];
+    [self.operationQueue cancelAllOperations];
+}
 
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
 {
@@ -227,23 +260,23 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
 
     __block NSError *blockError = nil;
     __block RKMappingResult *mappingResult = nil;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    self.operationQueue = [NSOperationQueue new];
     [self.managedObjectContext performBlockAndWait:^{
         // Configure the mapper
-        RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
-        mapper.delegate = self.mapperDelegate;
+        self.mapperOperation = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
+        self.mapperOperation.delegate = self.mapperDelegate;
         
         // Configure a data source to defer execution of connection operations until mapping is complete
         RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext
                                                                                                                                           cache:self.managedObjectCache];
-        [operationQueue setMaxConcurrentOperationCount:1];
-        [operationQueue setName:[NSString stringWithFormat:@"Relationship Connection Queue for '%@'", mapper]];
-        dataSource.operationQueue = operationQueue;
-        dataSource.parentOperation = mapper;
-        mapper.mappingOperationDataSource = dataSource;
+        [self.operationQueue setMaxConcurrentOperationCount:1];
+        [self.operationQueue setName:[NSString stringWithFormat:@"Relationship Connection Queue for '%@'", self.mapperOperation]];
+        dataSource.operationQueue = self.operationQueue;
+        dataSource.parentOperation = self.mapperOperation;
+        self.mapperOperation.mappingOperationDataSource = dataSource;
         
         if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
-            mapper.targetObject = self.targetObject;
+            self.mapperOperation.targetObject = self.targetObject;
 
             if (self.targetObjectID || self.targetObject) {
                 NSManagedObjectID *objectID = self.targetObjectID ?: RKObjectIDFromObjectIfManaged(self.targetObject);
@@ -255,9 +288,9 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
                         RKLogWarning(@"Failed to retrieve existing object with ID: %@", objectID);
                         RKLogCoreDataError(blockError);
                     }
-                    mapper.targetObject = localObject;
+                    self.mapperOperation.targetObject = localObject;
                 } else {
-                    if (mapper.targetObject) RKLogDebug(@"Mapping HTTP response to unmanaged target object with `RKManagedObjectResponseMapperOperation`: %@", mapper.targetObject);
+                    if (self.mapperOperation.targetObject) RKLogDebug(@"Mapping HTTP response to unmanaged target object with `RKManagedObjectResponseMapperOperation`: %@", self.mapperOperation.targetObject);
                 }
             } else {
                 RKLogTrace(@"Mapping HTTP response to nil target object...");
@@ -266,10 +299,12 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
             RKLogInfo(@"Non-successful state code encountered: performing mapping with nil target object.");
         }
 
-        [mapper start];
-        blockError = mapper.error;
-        mappingResult = mapper.mappingResult;
+        [self.mapperOperation start];
+        blockError = self.mapperOperation.error;
+        mappingResult = self.mapperOperation.mappingResult;
     }];
+    
+    if (self.isCancelled) return nil;
 
     if (! mappingResult) {
         if (error) *error = blockError;
@@ -277,8 +312,8 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     }
     
     // Mapping completed without error, allow the connection operations to execute
-    RKLogDebug(@"Awaiting execution of %ld enqueued connection operations: %@", (long) [operationQueue operationCount], [operationQueue operations]);
-    [operationQueue waitUntilAllOperationsAreFinished];
+    RKLogDebug(@"Awaiting execution of %ld enqueued connection operations: %@", (long) [self.operationQueue operationCount], [self.operationQueue operations]);
+    [self.operationQueue waitUntilAllOperationsAreFinished];
 
     return mappingResult;
 }

@@ -276,6 +276,8 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
     BOOL foundMappable = NO;
     NSMutableDictionary *results = [NSMutableDictionary dictionary];
     for (NSString *keyPath in mappingsByKeyPath) {
+        if ([self isCancelled]) return nil;
+        
         id mappingResult = nil;
         id mappableValue = nil;
 
@@ -316,11 +318,22 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
     return results;
 }
 
-// TODO: Add support for cancellation!
+- (void)cancel
+{
+    [super cancel];
+    RKLogDebug(@"%@:%p received `cancel` message: cancelling mapping...", [self class], self);
+    
+    if ([self.delegate respondsToSelector:@selector(mapperDidCancelMapping:)]) {
+        [self.delegate mapperDidCancelMapping:self];
+    }
+}
+
 - (void)main
 {
     NSAssert(self.sourceObject != nil, @"Cannot perform object mapping without a source object to map from");
     NSAssert(self.mappingsDictionary, @"Cannot perform object mapping without a dictionary of mappings");
+    
+    if ([self isCancelled]) return;
 
     RKLogDebug(@"Performing object mapping sourceObject: %@\n and targetObject: %@", self.sourceObject, self.targetObject);
 
@@ -331,6 +344,7 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
     // Perform the mapping
     BOOL foundMappable = NO;
     NSMutableDictionary *results = [self performKeyPathMappingUsingMappingDictionary:self.mappingsDictionary];
+    if ([self isCancelled]) return;
     foundMappable = (results != nil);
 
     if ([self.delegate respondsToSelector:@selector(mapperDidFinishMapping:)]) {

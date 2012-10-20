@@ -45,6 +45,7 @@ NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSU
 @property (readwrite, nonatomic, copy) NSManagedObjectID *targetObjectID;
 @property (readwrite, nonatomic, strong) NSMutableDictionary *managedObjectsByKeyPath;
 @property (readwrite, nonatomic, strong) NSError *error;
+@property (nonatomic, strong) RKManagedObjectResponseMapperOperation *responseMapperOperation;
 @end
 
 @implementation RKManagedObjectRequestOperation
@@ -92,6 +93,12 @@ NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSU
 
 #pragma mark - RKObjectRequestOperation Overrides
 
+- (void)cancel
+{
+    [super cancel];
+    [self.responseMapperOperation cancel];
+}
+
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
     if (self.HTTPRequestOperation.wasNotModified) {
@@ -100,20 +107,22 @@ NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSU
         return [[RKMappingResult alloc] initWithDictionary:@{}];
     }
 
-    RKManagedObjectResponseMapperOperation *mapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
-                                                                                                                          data:self.HTTPRequestOperation.responseData
-                                                                                                            responseDescriptors:self.responseDescriptors];
-    mapperOperation.targetObjectID = self.targetObjectID;
-    mapperOperation.managedObjectContext = self.privateContext;
-    mapperOperation.managedObjectCache = self.managedObjectCache;
-    [mapperOperation start];
-    [mapperOperation waitUntilFinished];
-    if (mapperOperation.error) {
-        if (error) *error = mapperOperation.error;
+    self.responseMapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
+                                                                                               data:self.HTTPRequestOperation.responseData
+                                                                                responseDescriptors:self.responseDescriptors];
+    self.responseMapperOperation.targetObjectID = self.targetObjectID;
+    self.responseMapperOperation.managedObjectContext = self.privateContext;
+    self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
+    [self.responseMapperOperation setQueuePriority:[self queuePriority]];
+    [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
+    [self.responseMapperOperation waitUntilFinished];
+    if ([self isCancelled]) return nil;
+    if (self.responseMapperOperation.error) {
+        if (error) *error = self.responseMapperOperation.error;
         return nil;
     }
 
-    return mapperOperation.mappingResult;
+    return self.responseMapperOperation.mappingResult;
 }
 
 - (BOOL)deleteTargetObjectIfAppropriate:(NSError **)error

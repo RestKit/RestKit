@@ -161,6 +161,13 @@
  */
 - (void)mapperDidFinishMapping:(RKMapperOperation *)mapper;
 
+/**
+ Tells the delegate that the mapper has been cancelled.
+ 
+ @param mapper The mapper operation that was cancelled.
+ */
+- (void)mapperDidCancelMapping:(RKMapperOperation *)mapper;
+
 ///-------------------------------
 /// @name Key Path Search Messages
 ///-------------------------------

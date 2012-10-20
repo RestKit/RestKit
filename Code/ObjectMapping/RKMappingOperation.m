@@ -354,6 +354,8 @@ static BOOL RKIsManagedObject(id object)
     }
 
     for (RKAttributeMapping *attributeMapping in attributeMappings) {
+        if ([self isCancelled]) return NO;
+        
         if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
             RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", attributeMapping.sourceKeyPath);
             continue;
@@ -529,6 +531,8 @@ static BOOL RKIsManagedObject(id object)
     id destinationObject = nil;
 
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
+        if ([self isCancelled]) return NO;
+        
         id value = nil;
         @try {
             value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
@@ -644,8 +648,16 @@ static BOOL RKIsManagedObject(id object)
     }
 }
 
+- (void)cancel
+{
+    [super cancel];
+    RKLogDebug(@"Mapping operation cancelled: %@", self);
+}
+
 - (void)main
 {
+    if ([self isCancelled]) return;
+    
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
     
@@ -677,8 +689,11 @@ static BOOL RKIsManagedObject(id object)
     }
 
     [self applyNestedMappings];
+    if ([self isCancelled]) return;
     BOOL mappedSimpleAttributes = [self applyAttributeMappings:[self simpleAttributeMappings]];
+    if ([self isCancelled]) return;
     BOOL mappedRelationships = [[self relationshipMappings] count] ? [self applyRelationshipMappings] : NO;
+    if ([self isCancelled]) return;
     BOOL mappedKeyPathAttributes = [self applyAttributeMappings:[self keyPathAttributeMappings]];
     if ((mappedSimpleAttributes || mappedKeyPathAttributes || mappedRelationships) && _validationError == nil) {
         RKLogDebug(@"Finished mapping operation successfully...");
@@ -714,8 +729,8 @@ static BOOL RKIsManagedObject(id object)
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"RKObjectMappingOperation for '%@' object. Mapping values from object %@ to object %@ with object mapping %@",
-            NSStringFromClass([self.destinationObject class]), self.sourceObject, self.destinationObject, self.objectMapping];
+    return [NSString stringWithFormat:@"<%@ %p> for '%@' object. Mapping values from object %@ to object %@ with object mapping %@",
+            [self class], self, NSStringFromClass([self.destinationObject class]), self.sourceObject, self.destinationObject, self.objectMapping];
 }
 
 @end

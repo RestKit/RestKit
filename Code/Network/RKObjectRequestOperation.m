@@ -72,9 +72,23 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 @property (nonatomic, strong, readwrite) NSArray *responseDescriptors;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong) RKObjectResponseMapperOperation *responseMapperOperation;
 @end
 
 @implementation RKObjectRequestOperation
+
++ (NSOperationQueue *)responseMappingQueue
+{
+    static NSOperationQueue *responseMappingQueue = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        responseMappingQueue = [NSOperationQueue new];
+        [responseMappingQueue setName:@"RKObjectRequestOperation Response Mapping Queue" ];
+        [responseMappingQueue setMaxConcurrentOperationCount:1];
+    });
+    
+    return responseMappingQueue;
+}
 
 - (void)dealloc
 {
@@ -174,17 +188,19 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
     // Spin up an RKObjectResponseMapperOperation
-    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
-                                                                                                            data:self.HTTPRequestOperation.responseData
-                                                                                              responseDescriptors:self.responseDescriptors];
-    mapperOperation.targetObject = self.targetObject;
-    [mapperOperation start];
-    [mapperOperation waitUntilFinished];
-    if (mapperOperation.error) {
-        if (error) *error = mapperOperation.error;
+    self.responseMapperOperation = [[RKObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
+                                                                                        data:self.HTTPRequestOperation.responseData
+                                                                         responseDescriptors:self.responseDescriptors];
+    self.responseMapperOperation.targetObject = self.targetObject;
+    [self.responseMapperOperation setQueuePriority:[self queuePriority]];
+    [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
+    [self.responseMapperOperation waitUntilFinished];
+    if ([self isCancelled]) return nil;
+    if (self.responseMapperOperation.error) {
+        if (error) *error = self.responseMapperOperation.error;
         return nil;
     }
-    return mapperOperation.mappingResult;
+    return self.responseMapperOperation.mappingResult;
 }
 
 - (void)willFinish
@@ -196,6 +212,7 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
 {
     [super cancel];
     [self.HTTPRequestOperation cancel];
+    [self.responseMapperOperation cancel];
 }
 
 - (void)execute

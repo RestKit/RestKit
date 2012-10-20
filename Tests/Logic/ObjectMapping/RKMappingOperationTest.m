@@ -510,4 +510,25 @@
     }
 }
 
+- (void)testCancellationOfMapperOperation
+{
+    RKObjectMapping *childMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [childMapping addAttributeMappingsFromArray:@[@"name"]];
+    
+    RKEntityMapping *parentMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [parentMapping addAttributeMappingsFromArray:@[@"name"]];
+    [parentMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"children" toKeyPath:@"friends" withMapping:childMapping]];
+    NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
+    
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:JSON mappingsDictionary:mappingsDictionary];
+    [operationQueue addOperation:mapper];
+    [mapper cancel];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    expect([mapper isCancelled]).to.equal(YES);
+    expect(mapper.error).to.beNil();
+    expect(mapper.mappingResult).to.beNil();
+}
+
 @end
