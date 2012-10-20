@@ -157,6 +157,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 
 - (void)addPropertyMappingsFromArray:(NSArray *)arrayOfPropertyMappings
 {
+    NSAssert([[arrayOfPropertyMappings valueForKeyPath:@"@distinctUnionOfObjects.objectMapping"] count] == 0, @"One or more of the property mappings in the given array has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the array of mappings: `[[NSArray alloc] initWithArray:arrayOfPropertyMappings copyItems:YES]`");
     for (RKPropertyMapping *propertyMapping in arrayOfPropertyMappings) {
         [self addPropertyMapping:propertyMapping];
     }
@@ -204,16 +205,19 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 
 - (void)addAttributeMappingsFromArray:(NSArray *)arrayOfAttributeNamesOrMappings
 {
+    NSMutableArray *arrayOfAttributeMappings = [NSMutableArray arrayWithCapacity:[arrayOfAttributeNamesOrMappings count]];
     for (id entry in arrayOfAttributeNamesOrMappings) {
         if ([entry isKindOfClass:[NSString class]]) {
-            [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:entry toKeyPath:entry]];
+            [arrayOfAttributeMappings addObject:[RKAttributeMapping attributeMappingFromKeyPath:entry toKeyPath:entry]];
         } else if ([entry isKindOfClass:[RKAttributeMapping class]]) {
-            [self addPropertyMapping:entry];
+            [arrayOfAttributeMappings addObject:entry];
         } else {
             [NSException raise:NSInvalidArgumentException
                         format:@"*** - [%@ %@]: Unable to attribute mapping from unsupported entry of type '%@' (%@).", NSStringFromClass([self class]), NSStringFromSelector(_cmd), NSStringFromClass([entry class]), entry];
         }
     }
+
+    [self addPropertyMappingsFromArray:arrayOfAttributeMappings];
 }
 
 - (void)removePropertyMapping:(RKPropertyMapping *)attributeOrRelationshipMapping

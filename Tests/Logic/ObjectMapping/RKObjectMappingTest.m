@@ -105,4 +105,64 @@
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(NO)));
 }
 
+- (void)testThatAddingAPropertyMappingThatExistsInAnotherMappingTriggersException
+{
+    RKObjectMapping *firstMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"this" toKeyPath:@"that"];
+    [firstMapping addPropertyMapping:attributeMapping];
+
+    RKObjectMapping *secondMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSException *exception = nil;
+    @try {
+        [secondMapping addPropertyMapping:attributeMapping];
+    }
+    @catch (NSException *caughtException) {
+        exception = caughtException;
+    }
+    @finally {
+        expect(exception).notTo.beNil();
+        expect(exception.reason).to.equal(@"Cannot add a property mapping object that has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the mapping: `[propertyMapping copy]`");
+    }
+}
+
+- (void)testThatAddingAnArrayOfPropertyMappingsThatExistInAnotherMappingTriggersException
+{
+    RKObjectMapping *firstMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"this" toKeyPath:@"that"];
+    [firstMapping addPropertyMapping:attributeMapping];
+
+    RKObjectMapping *secondMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSException *exception = nil;
+    @try {
+        [secondMapping addPropertyMappingsFromArray:@[attributeMapping]];
+    }
+    @catch (NSException *caughtException) {
+        exception = caughtException;
+    }
+    @finally {
+        expect(exception).notTo.beNil();
+        expect(exception.reason).to.equal(@"One or more of the property mappings in the given array has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the array of mappings: `[[NSArray alloc] initWithArray:arrayOfPropertyMappings copyItems:YES]`");
+    }
+}
+
+- (void)testThatAddingAnArrayOfAttributeMappingsThatExistInAnotherMappingTriggersException
+{
+    RKObjectMapping *firstMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"this" toKeyPath:@"that"];
+    [firstMapping addPropertyMapping:attributeMapping];
+
+    RKObjectMapping *secondMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSException *exception = nil;
+    @try {
+        [secondMapping addAttributeMappingsFromArray:@[attributeMapping, @"stringValue"]];
+    }
+    @catch (NSException *caughtException) {
+        exception = caughtException;
+    }
+    @finally {
+        expect(exception).notTo.beNil();
+        expect(exception.reason).to.equal(@"One or more of the property mappings in the given array has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the array of mappings: `[[NSArray alloc] initWithArray:arrayOfPropertyMappings copyItems:YES]`");
+    }
+}
+
 @end
