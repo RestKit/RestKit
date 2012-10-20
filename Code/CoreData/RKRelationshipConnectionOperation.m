@@ -46,6 +46,9 @@
 
 - (id)initWithManagedObject:(NSManagedObject *)managedObject connectionMapping:(RKConnectionMapping *)connectionMapping managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache
 {
+    NSParameterAssert(managedObject);
+    NSParameterAssert(connectionMapping);
+    NSParameterAssert(managedObjectCache);
     self = [self init];
     if (self) {
         self.managedObject = managedObject;
@@ -63,6 +66,7 @@
 
 - (NSManagedObject *)findOneConnectedWithSourceValue:(id)sourceValue
 {
+    NSAssert(self.managedObjectContext, @"Cannot lookup objects with a nil managedObjectContext");
     return [self.managedObjectCache findInstanceOfEntity:self.connectionMapping.relationship.destinationEntity
                                  withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
                                                    value:sourceValue
@@ -126,6 +130,7 @@
     }
 
     for (id value in values) {
+        NSAssert(self.managedObjectContext, @"Cannot lookup objects with a nil managedObjectContext");
         NSArray *objects = [self.managedObjectCache findInstancesOfEntity:self.connectionMapping.relationship.destinationEntity
                                                   withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
                                                                     value:value

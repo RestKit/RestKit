@@ -25,7 +25,7 @@
 {
     NSAssert(entity, @"Cannot find existing managed object without a target class");
     NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without mapping that defines a primaryKeyAttribute");
-    NSAssert(managedObjectContext, @"Cannot find existing managed object with a context");
+    NSAssert(managedObjectContext, @"Cannot find existing managed object with a nil context");
 
     id searchValue = primaryKeyValue;
     Class type = [[RKPropertyInspector sharedInspector] typeForProperty:primaryKeyAttribute ofEntity:entity];
