@@ -23,6 +23,20 @@
 #import "RKRoute.h"
 #import "RKPathUtilities.h"
 #import "RKLog.h"
+#import "SOCKit.h"
+
+@interface SOCPattern (RKTestHelpers)
+@property (nonatomic, strong, readonly) NSArray* parameters;
+@end
+
+@implementation SOCPattern (RKTestHelpers)
+
+- (NSArray *)parameters
+{
+    return _parameters;
+}
+
+@end
 
 @implementation RKTestHelpers
 
@@ -66,7 +80,18 @@
                                   onObjectManager:(RKObjectManager *)nilOrObjectManager
 {
     RKObjectManager *objectManager = nilOrObjectManager ?: [RKObjectManager sharedManager];
-    NSURL *URL = [NSURL URLWithString:pathPattern relativeToURL:objectManager.HTTPClient.baseURL];
+    
+    // Extract the dynamic portions of the path pattern to construct a set of parameters
+    SOCPattern *pattern = [SOCPattern patternWithString:pathPattern];
+    NSArray *parameterNames = [pattern.parameters valueForKey:@"string"];
+    NSMutableDictionary *stubbedParameters = [NSMutableDictionary dictionaryWithCapacity:[parameterNames count]];
+    for (NSString *parameter in parameterNames) {
+        [stubbedParameters setValue:@"value" forKey:parameter];
+    }
+    NSString *stubbedPathPattern = [pattern stringFromObject:stubbedParameters];
+    
+    NSURL *URL = [NSURL URLWithString:stubbedPathPattern relativeToURL:objectManager.HTTPClient.baseURL];
+    NSAssert(URL, @"Failed to build URL from path pattern '%@' relative to base URL '%@'", pathPattern, objectManager.HTTPClient.baseURL);
     for (RKFetchRequestBlock block in objectManager.fetchRequestBlocks) {
         NSFetchRequest *fetchRequest = block(URL);
         if (fetchRequest) {
