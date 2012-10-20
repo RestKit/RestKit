@@ -47,7 +47,6 @@
 
 @implementation RKManagedObjectImporter
 
-
 - (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel storePath:(NSString *)storePath
 {
     NSParameterAssert(managedObjectModel);

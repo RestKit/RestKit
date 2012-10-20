@@ -148,6 +148,13 @@
  */
 @property (nonatomic, strong, readonly) RKMapping *mapping;
 
+/**
+ The concrete object mapping for the operation.
+
+ If the value of `mapping` is an `RKObjectMapping`, returns the same value as `mapping`. If `mapping` is an `RKDynamicMapping`, then returns the concrete `RKObjectMapping` object selected for mapping `sourceObject`.
+ */
+@property (nonatomic, strong, readonly) RKObjectMapping *objectMapping;
+
 ///-------------------------------------------
 /// @name Configuring Delegate and Data Source
 ///-------------------------------------------

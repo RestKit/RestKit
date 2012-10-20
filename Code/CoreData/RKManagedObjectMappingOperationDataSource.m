@@ -146,7 +146,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 - (void)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation
 {
-    if ([mappingOperation.mapping isKindOfClass:[RKEntityMapping class]]) {
+    if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
         [self emitDeadlockWarningIfNecessary];
 
         for (RKConnectionMapping *connectionMapping in [(RKEntityMapping *)mappingOperation.mapping connectionMappings]) {

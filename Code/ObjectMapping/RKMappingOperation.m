@@ -43,7 +43,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 @property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
 @property (nonatomic, strong) NSError *validationError;
 @property (nonatomic, strong, readwrite) NSError *error;
-@property (nonatomic, strong) RKObjectMapping *objectMapping; // The concrete mapping
+@property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping; // The concrete mapping
 @end
 
 // Defined in RKObjectMapping.h
