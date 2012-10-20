@@ -132,12 +132,10 @@
 ///-------------------------------------------------------
 
 /**
- Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the request on completion. If `error` returns a value, which can be caused by an unacceptable status code or content type, then `failure` is executed. Otherwise, `success` is executed.
+ Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the object request on completion. If `error` returns a value, which can be set during HTTP transport by the underlying `HTTPRequestOperation` or during object mapping by the `RKResponseMapperOperation` object, then `failure` is executed. If the object request operation is cancelled, then neither success nor failure will be executed. Otherwise, `success` is executed.
 
  @param success The block to be executed on the completion of a successful operation. This block has no return value and takes two arguments: the receiver operation and the mapping result from object mapping the response data of the request.
  @param failure The block to be executed on the completion of an unsuccessful operation. This block has no return value and takes two arguments: the receiver operation and the error that occurred during the execution of the operation.
-
- @discussion This method should be overridden in subclasses in order to specify the response object passed into the success block.
  */
 - (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
