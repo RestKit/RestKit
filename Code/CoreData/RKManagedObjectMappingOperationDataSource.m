@@ -27,6 +27,7 @@
 #import "RKDynamicMappingMatcher.h"
 #import "RKManagedObjectCaching.h"
 #import "RKRelationshipConnectionOperation.h"
+#import "RKMappingErrors.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -144,12 +145,20 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
 }
 
-- (void)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation
+- (BOOL)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation error:(NSError **)error
 {
     if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
         [self emitDeadlockWarningIfNecessary];
+        
+        NSArray *connectionMappings = [(RKEntityMapping *)mappingOperation.objectMapping connectionMappings];
+        if ([connectionMappings count] > 0) {            
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Cannot map an entity mapping that contains connection mappings with a data source whose managed object cache is nil." };
+            NSError *localError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorNilManagedObjectCache userInfo:userInfo];
+            if (error) *error = localError;
+            return NO;
+        }
 
-        for (RKConnectionMapping *connectionMapping in [(RKEntityMapping *)mappingOperation.objectMapping connectionMappings]) {
+        for (RKConnectionMapping *connectionMapping in connectionMappings) {
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
                                                                                                           connectionMapping:connectionMapping
                                                                                                          managedObjectCache:self.managedObjectCache];
@@ -164,6 +173,8 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             RKLogTrace(@"Enqueued %@ dependent upon parent operation %@ to operation queue %@", operation, self.parentOperation, operationQueue);
         }
     }
+    
+    return YES;
 }
 
 @end

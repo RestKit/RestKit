@@ -186,9 +186,9 @@ extern NSString * const RKMappingTestExpectationErrorKey;
 ///-------------------------
 
 /**
- The object mapping under test.
+ The mapping under test. Can be either an `RKObjectMapping` or `RKDynamicMapping` object.
  */
-@property (nonatomic, strong, readonly) RKObjectMapping *mapping;
+@property (nonatomic, strong, readonly) RKMapping *mapping;
 
 /**
  A data source for the mapping operation.

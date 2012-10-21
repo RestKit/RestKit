@@ -51,8 +51,9 @@
  Tells the data source to commit any changes to the underlying data store.
 
  @param mappingOperation The mapping operation that has completed its work.
+ @param error A pointer to an error to be set in the event that the mapping operation could not be committed.
+ @return A Boolean value indicating if the changes for the mapping operation were committed successfully.
  */
-// TODO: better name?
-- (void)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation;
+- (BOOL)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation error:(NSError **)error;
 
 @end

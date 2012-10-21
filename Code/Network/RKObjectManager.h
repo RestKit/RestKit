@@ -68,7 +68,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
     // Now GET our article object... sending a GET to '/categories/RestKit/articles/12345'
     [manager getObject:article path:nil parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
-        NSLog(@"G");
+        NSLog(@"Loading mapping result: %@", result);
     } failure:nil];
  
  Once a path pattern has been registered via the routing system, the manager can automatically build full request URL's when given nothing but the object to be sent.

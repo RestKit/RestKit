@@ -13,6 +13,7 @@
 #import "RKHuman.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKMappableObject.h"
+#import "RKMappingErrors.h"
 
 @interface RKManagedObjectMappingOperationDataSourceTest : RKTestCase
 
@@ -289,6 +290,25 @@
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
     assertThatInteger([object.railsID integerValue], is(equalToInteger(12345)));
+}
+
+- (void)testThatMappingAnEntityMappingContainingAConnectionMappingWithANilManagedObjectCacheTriggersError
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:entity];
+    RKConnectionMapping *connectionMapping = [[RKConnectionMapping alloc] initWithRelationship:entity.relationshipsByName[@"favoriteCat"] sourceKeyPath:@"test" destinationKeyPath:@"test" matcher:nil];
+    [mapping addConnectionMapping:connectionMapping];
+    
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                      cache:nil];
+    id mockOperation = [OCMockObject mockForClass:[RKMappingOperation class]];
+    [[[mockOperation stub] andReturn:mapping] objectMapping];
+    NSError *error = nil;
+    BOOL success = [dataSource commitChangesForMappingOperation:mockOperation error:&error];
+    expect(success).to.beFalsy();
+    expect([error code]).to.equal(RKMappingErrorNilManagedObjectCache);
+    expect([error localizedDescription]).to.equal(@"Cannot map an entity mapping that contains connection mappings with a data source whose managed object cache is nil.");
 }
 
 @end

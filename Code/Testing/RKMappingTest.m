@@ -90,7 +90,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 ///-----------------------------------------------------------------------------
 
 @interface RKMappingTest () <RKMappingOperationDelegate>
-@property (nonatomic, strong, readwrite) RKObjectMapping *mapping;
+@property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
 @property (nonatomic, strong, readwrite) id destinationObject;
 @property (nonatomic, strong) NSMutableArray *expectations;
@@ -105,12 +105,12 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 
 @implementation RKMappingTest
 
-+ (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
++ (RKMappingTest *)testForMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
 {
     return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:destinationObject];
 }
 
-- (id)initWithMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
+- (id)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
 {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(mapping != nil, @"Cannot perform a mapping operation without a mapping");

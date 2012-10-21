@@ -41,7 +41,6 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 @property (nonatomic, strong, readwrite) id sourceObject;
 @property (nonatomic, strong, readwrite) id destinationObject;
 @property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
-@property (nonatomic, strong) NSError *validationError;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping; // The concrete mapping
 @end
@@ -210,10 +209,10 @@ static BOOL RKIsManagedObject(id object)
         NSError *validationError;
         success = [self.destinationObject validateValue:value forKeyPath:keyPath error:&validationError];
         if (!success) {
-            _validationError = validationError;
-            if (_validationError) {
-                RKLogError(@"Validation failed while mapping attribute at key path '%@' to value %@. Error: %@", keyPath, *value, [_validationError localizedDescription]);
-                RKLogValidationError(_validationError);
+            self.error = validationError;
+            if (validationError) {
+                RKLogError(@"Validation failed while mapping attribute at key path '%@' to value %@. Error: %@", keyPath, *value, [validationError localizedDescription]);
+                RKLogValidationError(validationError);
             } else {
                 RKLogWarning(@"Destination object %@ rejected attribute value %@ for keyPath %@. Skipping...", self.destinationObject, *value, keyPath);
             }
@@ -346,7 +345,7 @@ static BOOL RKIsManagedObject(id object)
 // Return YES if we mapped any attributes
 - (BOOL)applyAttributeMappings:(NSArray *)attributeMappings
 {
-    // If we have a nesting substitution value, we have alread
+    // If we have a nesting substitution value, we have already succeeded
     BOOL appliedMappings = (_nestedAttributeSubstitution != nil);
 
     if (!self.objectMapping.performKeyValueValidation) {
@@ -402,9 +401,7 @@ static BOOL RKIsManagedObject(id object)
         }
 
         // Fail out if an error has occurred
-        if (_validationError) {
-            return NO;
-        }
+        if (self.error) break;
     }
 
     return appliedMappings;
@@ -624,9 +621,7 @@ static BOOL RKIsManagedObject(id object)
         }
 
         // Fail out if a validation error has occurred
-        if (_validationError) {
-            return NO;
-        }
+        if (self.error) break;
     }
 
     return [mappingsApplied count] > 0;
@@ -694,29 +689,35 @@ static BOOL RKIsManagedObject(id object)
     if ([self isCancelled]) return;
     BOOL mappedRelationships = [[self relationshipMappings] count] ? [self applyRelationshipMappings] : NO;
     if ([self isCancelled]) return;
+    // NOTE: We map key path attributes last to allow you to map across the object graphs for objects created/updated by the relationship mappings
     BOOL mappedKeyPathAttributes = [self applyAttributeMappings:[self keyPathAttributeMappings]];
-    if ((mappedSimpleAttributes || mappedKeyPathAttributes || mappedRelationships) && _validationError == nil) {
-        RKLogDebug(@"Finished mapping operation successfully...");
-
+    
+    if (!mappedSimpleAttributes && !mappedRelationships && !mappedKeyPathAttributes) {
+        // We did not find anything to do
+        RKLogDebug(@"Mapping operation did not find any mappable values for the attribute and relationship mappings in the given object representation");
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"No mappable values found for any of the attributes or relationship mappings" };
+        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:userInfo];
+    }
+    
+    // We did some mapping work, if there's no error let's commit our changes to the data source
+    if (self.error == nil) {
         if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:)]) {
-            [self.dataSource commitChangesForMappingOperation:self];
+            NSError *error = nil;
+            BOOL success = [self.dataSource commitChangesForMappingOperation:self error:&error];
+            if (! success) {
+                self.error = error;
+            }
         }
-        return;
     }
 
-    if (self.validationError) {
-        // We failed out due to validation
-        self.error = _validationError;
+    if (self.error) {
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didFailWithError:)]) {
             [self.delegate mappingOperation:self didFailWithError:self.error];
         }
 
         RKLogError(@"Failed mapping operation: %@", [self.error localizedDescription]);
     } else {
-        // We did not find anything to do
-        RKLogDebug(@"Mapping operation did not find any mappable values for the attribute and relationship mappings in the given object representation");
-        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"No mappable values found for any of the attributes or relationship mappings" };
-        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:userInfo];
+        RKLogDebug(@"Finished mapping operation successfully...");
     }
 }
 

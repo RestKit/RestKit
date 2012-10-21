@@ -1623,13 +1623,13 @@
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     NSArray *objects = [mapper.mappingResult array];
-    assertThat(objects, hasCountOf(2));
-    assertThat([objects objectAtIndex:0], is(instanceOf([Boy class])));
-    assertThat([objects objectAtIndex:1], is(instanceOf([Girl class])));
+    expect(objects).to.haveCountOf(2);
+    expect(objects[0]).to.beInstanceOf([Boy class]);
+    expect(objects[1]).to.beInstanceOf([Girl class]);
     Boy *boy = [objects objectAtIndex:0];
     Girl *girl = [objects objectAtIndex:1];
-    assertThat(boy.name, is(equalTo(@"Blake Watters")));
-    assertThat(girl.name, is(equalTo(@"Sarah")));
+    expect(boy.name).to.equal(@"Blake Watters");
+    expect(girl.name).to.equal(@"Sarah");
 }
 
 - (void)testShouldMapARelationshipDynamically
