@@ -151,7 +151,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         [self emitDeadlockWarningIfNecessary];
         
         NSArray *connectionMappings = [(RKEntityMapping *)mappingOperation.objectMapping connectionMappings];
-        if ([connectionMappings count] > 0) {            
+        if ([connectionMappings count] > 0 && self.managedObjectCache == nil) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Cannot map an entity mapping that contains connection mappings with a data source whose managed object cache is nil." };
             NSError *localError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorNilManagedObjectCache userInfo:userInfo];
             if (error) *error = localError;

@@ -701,7 +701,7 @@ static BOOL RKIsManagedObject(id object)
     
     // We did some mapping work, if there's no error let's commit our changes to the data source
     if (self.error == nil) {
-        if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:)]) {
+        if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:error:)]) {
             NSError *error = nil;
             BOOL success = [self.dataSource commitChangesForMappingOperation:self error:&error];
             if (! success) {
