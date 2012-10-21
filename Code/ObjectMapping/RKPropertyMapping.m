@@ -46,7 +46,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p %@ => %@>", self.class, self, self.sourceKeyPath, self.destinationKeyPath];
+    return [NSString stringWithFormat:@"<%@:%p %@ => %@>", self.class, self, self.sourceKeyPath, self.destinationKeyPath];
 }
 
 @end
