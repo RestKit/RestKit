@@ -265,6 +265,9 @@ static RKTestFactory *sharedFactory = nil;
     [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
+    // Cancel any object mapping in the response mapping queue
+    [[RKObjectRequestOperation responseMappingQueue] cancelAllOperations];
+
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
     if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
