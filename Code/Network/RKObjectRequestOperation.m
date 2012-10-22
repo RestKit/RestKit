@@ -67,6 +67,31 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     return statusCodes;
 }
 
+static NSString *RKStringForStateOfObjectRequestOperation(RKObjectRequestOperation *operation)
+{
+    if ([operation isExecuting]) {
+        return @"Executing";
+    } else if ([operation isFinished]) {
+        if (operation.error) {
+            return @"Failed";
+        } else {
+            return @"Successful";
+        }
+    } else {
+        return @"Ready";
+    }
+}
+
+static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, NSData *data)
+{
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *)response;
+        return [NSString stringWithFormat:@"<%@: %p statusCode=%ld MIMEType=%@ length=%ld>", [response class], response, (long) [HTTPResponse statusCode], [HTTPResponse MIMEType], (long) [data length]];
+    } else {
+        return [response description];
+    }
+}
+
 @interface RKObjectRequestOperation ()
 @property (nonatomic, strong, readwrite) RKHTTPRequestOperation *HTTPRequestOperation;
 @property (nonatomic, strong, readwrite) NSArray *responseDescriptors;
@@ -256,5 +281,12 @@ static NSIndexSet *RKObjectRequestOperationAcceptableMIMETypes()
     RKDecrementNetworkAcitivityIndicator();
     [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:self];
 }
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p, state: %@, isCancelled=%@, request: %@, response: %@>",
+            NSStringFromClass([self class]), self, RKStringForStateOfObjectRequestOperation(self), [self isCancelled] ? @"YES" : @"NO",
+            self.HTTPRequestOperation.request, RKStringDescribingURLResponseWithData(self.HTTPRequestOperation.response, self.HTTPRequestOperation.responseData)];
+}
+
 
 @end
