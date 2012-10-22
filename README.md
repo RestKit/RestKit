@@ -231,7 +231,7 @@ operation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContex
 
 RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
 // The entire value at the source key path containing the errors maps to the message
-[errorMapping addAttributeMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"message"]];
+[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"message"]];
 
 NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError);
 // Any response in the 4xx status code range with an "errors" key path uses this mapping
@@ -254,7 +254,7 @@ RKResponseDescriptor *articleDescriptor = [RKResponseDescriptor responseDescript
 
 RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
 // The entire value at the source key path containing the errors maps to the message
-[errorMapping addAttributeMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"message"]];
+[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"message"]];
 NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError);
 // Any response in the 4xx status code range with an "errors" key path uses this mapping
 RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:@"errors" statusCodes:statusCodes];
