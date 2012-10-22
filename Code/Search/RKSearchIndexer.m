@@ -142,7 +142,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     [[NSNotificationCenter defaultCenter] removeObserver:self name:nil object:managedObjectContext];
 }
 
-- (NSUInteger)indexManagedObject:(NSManagedObject *)managedObject
+- (NSUInteger)indexManagedObject:(NSManagedObject *)managedObject withProgressBlock:(void (^)(NSManagedObject *managedObject, RKSearchWord *searchWord, BOOL *stop))progressBlock;
 {
     @autoreleasepool {
 
@@ -161,7 +161,8 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
         fetchRequest.fetchLimit = 1;
         NSPredicate *predicateTemplate = [NSPredicate predicateWithFormat:@"%K == $SEARCH_WORD", RKSearchWordAttributeName];
         NSManagedObjectContext *managedObjectContext = managedObject.managedObjectContext;
-
+        __block BOOL stop = NO;
+        
         [managedObjectContext performBlockAndWait:^{
             NSMutableSet *searchWords = [NSMutableSet set];
             for (NSString *searchableAttribute in searchableAttributes) {
@@ -185,21 +186,34 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 
                                 NSAssert([[searchWord managedObjectContext] isEqual:managedObjectContext], @"Serious Core Data error: Expected `NSManagedObject` for the 'RKSearchWord' entity in context %@, but got one in %@", managedObject, [searchWord managedObjectContext]);
                                 [searchWords addObject:searchWord];
+                                                                
+                                if (progressBlock) progressBlock(managedObject, searchWord, &stop);
                             } else {
                                 RKLogError(@"Failed to retrieve search word: %@", error);
                             }
                         }
+                        
+                        if (stop) break;
                     }
                 }
+                
+                if (stop) break;
             }
 
-            [managedObject setValue:searchWords forKey:RKSearchWordsRelationshipName];
-            RKLogTrace(@"Indexed search words: %@", [searchWords valueForKey:RKSearchWordAttributeName]);
-            searchWordCount = [searchWords count];
+            if (! stop) {
+                [managedObject setValue:searchWords forKey:RKSearchWordsRelationshipName];
+                RKLogTrace(@"Indexed search words: %@", [searchWords valueForKey:RKSearchWordAttributeName]);
+                searchWordCount = [searchWords count];
+            }
         }];
 
         return searchWordCount;
     }
+}
+
+- (NSUInteger)indexManagedObject:(NSManagedObject *)managedObject
+{
+    return [self indexManagedObject:managedObject withProgressBlock:nil];
 }
 
 /**
@@ -265,7 +279,10 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                 NSManagedObject *managedObject = [self.indexingContext existingObjectWithID:objectID error:&error];
                 NSAssert([[managedObject managedObjectContext] isEqual:self.indexingContext], @"Serious Core Data error: Asked for an `NSManagedObject` with ID in indexing context %@, but got one in %@", objectID, self.indexingContext, [managedObject managedObjectContext]);
                 if (managedObject && error == nil) {
-                    [self indexManagedObject:managedObject];
+                    [self indexManagedObject:managedObject withProgressBlock:^(NSManagedObject *managedObject, RKSearchWord *searchWord, BOOL *stop) {
+                        // Stop the indexing process if we have been cancelled
+                        if ([indexingOperation isCancelled]) *stop = YES;
+                    }];
                 } else {
                     RKLogError(@"Failed indexing of object %@ with error: %@", managedObject, error);
                 }
