@@ -115,6 +115,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 
 - (void)dealloc
 {
+    [self cancelAllIndexingOperations];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -172,7 +173,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                         if (word && [word length] > 0) {
                             fetchRequest.predicate = [predicateTemplate predicateWithSubstitutionVariables:@{ @"SEARCH_WORD" : word }];
                             NSError *error = nil;
-                            NSArray *results = [managedObject.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                            NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
                             if (results) {
                                 RKSearchWord *searchWord;
                                 if ([results count] == 0) {
@@ -182,6 +183,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                                     searchWord = [results objectAtIndex:0];
                                 }
 
+                                NSAssert([[searchWord managedObjectContext] isEqual:managedObjectContext], @"Serious Core Data error: Expected `NSManagedObject` for the 'RKSearchWord' entity in context %@, but got one in %@", managedObject, [searchWord managedObjectContext]);
                                 [searchWords addObject:searchWord];
                             } else {
                                 RKLogError(@"Failed to retrieve search word: %@", error);
@@ -239,7 +241,8 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     NSSet *objectsToIndex = [self objectsToIndexFromCandidateObjects:candidateObjects checkChangedValues:NO];
 
     // After all indexing is complete, save the indexing context
-    NSBlockOperation *saveOperation = [NSBlockOperation blockOperationWithBlock:^{
+    __block NSBlockOperation *saveOperation = [NSBlockOperation blockOperationWithBlock:^{
+        if ([saveOperation isCancelled]) return;
         [self.indexingContext performBlockAndWait:^{
             NSError *error = nil;
             RKLogInfo(@"Indexing completed. Saving indexing context...");
@@ -255,10 +258,12 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     // Enqueue an operation for each object to index
     NSArray *objectIDsForObjectsToIndex = [objectsToIndex valueForKey:@"objectID"];
     for (NSManagedObjectID *objectID in objectIDsForObjectsToIndex) {
-        NSBlockOperation *indexingOperation = [NSBlockOperation blockOperationWithBlock:^{
+        __block NSBlockOperation *indexingOperation = [NSBlockOperation blockOperationWithBlock:^{
+            if ([indexingOperation isCancelled]) return;
             [self.indexingContext performBlockAndWait:^{
                 NSError *error = nil;
                 NSManagedObject *managedObject = [self.indexingContext existingObjectWithID:objectID error:&error];
+                NSAssert([[managedObject managedObjectContext] isEqual:self.indexingContext], @"Serious Core Data error: Asked for an `NSManagedObject` with ID in indexing context %@, but got one in %@", objectID, self.indexingContext, [managedObject managedObjectContext]);
                 if (managedObject && error == nil) {
                     [self indexManagedObject:managedObject];
                 } else {
