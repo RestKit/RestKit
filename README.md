@@ -218,7 +218,7 @@ operation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContex
 [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
   Article *article = [result firstObject];
 	NSLog(@"Mapped the article: %@", article);
-	NSLog(@"Mapped the category: %@", category);
+	NSLog(@"Mapped the category: %@", [article.categories anyObject]);
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	NSLog(@"Failed with error: %@", [error localizedDescription]);
 }];
