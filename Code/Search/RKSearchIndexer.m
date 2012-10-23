@@ -229,9 +229,19 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     
     if (wait) {
         // Synchronous indexing
+        NSUInteger totalObjects = [objectsToIndex count];
+        __block NSMutableSet *indexedIDs = [NSMutableSet setWithCapacity:totalObjects];
         for (NSManagedObject *managedObject in objectsToIndex) {
-            [self indexManagedObject:managedObject];
+            [self indexManagedObject:managedObject withProgressBlock:^(NSManagedObject *managedObject, RKSearchWord *searchWord, BOOL *stop) {
+                if (totalObjects < 250) return;
+                if ([indexedIDs containsObject:[managedObject objectID]]) return;
+                [indexedIDs addObject:[managedObject objectID]];
+                double percentage = (((float)[indexedIDs count]) / (float)totalObjects) * 100;
+                if ([indexedIDs count] % 250 == 0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) [indexedIDs count], (unsigned long) totalObjects, percentage);
+            }];
         }
+                
+        if (totalObjects >= 250) RKLogInfo(@"Finished indexing.");
     } else {
         // Perform asynchronous indexing
         for (NSManagedObject *managedObject in objectsToIndex) {
