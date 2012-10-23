@@ -312,8 +312,10 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     }
     
     // Mapping completed without error, allow the connection operations to execute
-    RKLogDebug(@"Awaiting execution of %ld enqueued connection operations: %@", (long) [self.operationQueue operationCount], [self.operationQueue operations]);
-    [self.operationQueue waitUntilAllOperationsAreFinished];
+    if ([self.operationQueue operationCount]) {
+        RKLogTrace(@"Awaiting execution of %ld enqueued connection operations: %@", (long) [self.operationQueue operationCount], [self.operationQueue operations]);
+        [self.operationQueue waitUntilAllOperationsAreFinished];
+    }
 
     return mappingResult;
 }
