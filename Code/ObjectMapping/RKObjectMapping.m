@@ -375,6 +375,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
     
     [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];
     [self addDefaultDateFormatterForString:@"yyyy-MM-dd'T'HH:mm:ss'Z'" inTimeZone:nil];
+    [self addDefaultDateFormatterForString:@"yyyy-MM-dd" inTimeZone:nil];
 }
 
 + (void)setDefaultDateFormatters:(NSArray *)dateFormatters

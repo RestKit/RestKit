@@ -1809,12 +1809,15 @@
 {
     [RKObjectMapping resetDefaultDateFormatters];
     NSArray *dateFormatters = [RKObjectMapping defaultDateFormatters];
-    assertThat(dateFormatters, hasCountOf(4));
-    assertThat([[dateFormatters objectAtIndex:0] dateFormat], is(equalTo(@"yyyy-MM-dd'T'HH:mm:ss'Z'")));
-    assertThat([[dateFormatters objectAtIndex:1] dateFormat], is(equalTo(@"MM/dd/yyyy")));
+    expect(dateFormatters).to.haveCountOf(5);
+    expect([dateFormatters[0] dateFormat]).to.equal(@"yyyy-MM-dd");
+    expect([dateFormatters[1] dateFormat]).to.equal(@"yyyy-MM-dd'T'HH:mm:ss'Z'");
+    expect([dateFormatters[2] dateFormat]).to.equal(@"MM/dd/yyyy");
+
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    assertThat([[dateFormatters objectAtIndex:0] timeZone], is(equalTo(UTCTimeZone)));
-    assertThat([[dateFormatters objectAtIndex:1] timeZone], is(equalTo(UTCTimeZone)));
+    expect([[dateFormatters objectAtIndex:0] timeZone]).to.equal(UTCTimeZone);
+    expect([[dateFormatters objectAtIndex:1] timeZone]).to.equal(UTCTimeZone);
+    expect([[dateFormatters objectAtIndex:2] timeZone]).to.equal(UTCTimeZone);
 }
 
 - (void)testShouldLetYouSetTheDefaultDateFormatters
@@ -1828,10 +1831,10 @@
 - (void)testShouldLetYouAppendADateFormatterToTheList
 {
     [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     [RKObjectMapping addDefaultDateFormatter:dateFormatter];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
 }
 
 - (void)testShouldAllowNewlyAddedDateFormatterToRunFirst
@@ -1867,10 +1870,10 @@
 - (void)testShouldLetYouConfigureANewDateFormatterFromAStringAndATimeZone
 {
     [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:EDTTimeZone];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     assertThat(dateFormatter.timeZone, is(equalTo(EDTTimeZone)));
 }
@@ -1897,12 +1900,39 @@
 - (void)testShouldConfigureANewDateFormatterInTheUTCTimeZoneIfPassedANilTimeZone
 {
     [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
-    [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:nil];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:nil];
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     assertThat(dateFormatter.timeZone, is(equalTo(UTCTimeZone)));
+}
+
+- (void)testShouldEnsureRailsDatesAreParsedInUTCTimeZone
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
+    [mapping addPropertyMapping:birthDateMapping];
+
+    NSDictionary *dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
+    [mutableDictionary setValue:@"2012-03-01" forKey:@"birthdate"];
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:mutableDictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+
+    NSDateComponents *components = [[NSDateComponents alloc] init];
+    components.year = 2012;
+    components.month = 3;
+    components.day = 1;
+    components.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDate *date = [calendar dateFromComponents:components];
+
+    expect(user.birthDate).to.equal(date);
 }
 
 #pragma mark - Object Serialization
