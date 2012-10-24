@@ -23,6 +23,7 @@
 #import "lcl_RK.h"
 #import "RKHTTPUtilities.h"
 #import "RKMIMETypes.h"
+#import "RKObjectManager.h"
 
 // Set Logging Component
 #undef RKLogComponent
