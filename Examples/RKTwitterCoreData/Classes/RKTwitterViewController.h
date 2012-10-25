@@ -10,5 +10,4 @@
 #import <RestKit/RestKit.h>
 
 @interface RKTwitterViewController : UIViewController
-- (void)loadObjectsFromDataStore;
 @end

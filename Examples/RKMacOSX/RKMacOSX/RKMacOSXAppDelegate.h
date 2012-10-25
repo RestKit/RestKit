@@ -9,9 +9,9 @@
 #import <Cocoa/Cocoa.h>
 #import <RestKit/RestKit.h>
 
-@interface RKMacOSXAppDelegate : NSObject <NSApplicationDelegate, RKRequestDelegate>
+@interface RKMacOSXAppDelegate : NSObject <NSApplicationDelegate>
 
-@property (nonatomic, retain) RKClient *client;
-@property (assign) IBOutlet NSWindow *window;
+@property (nonatomic, strong) RKObjectManager *objectManager;
+@property (unsafe_unretained) IBOutlet NSWindow *window;
 
 @end

@@ -69,7 +69,7 @@
     [objectManager addResponseDescriptor:responseDescriptor];
 
     // Create Window and View Controllers
-    RKTwitterViewController *viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+    RKTwitterViewController *viewController = [[RKTwitterViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *controller = [[UINavigationController alloc] initWithRootViewController:viewController];
     UIWindow *window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     [window addSubview:controller.view];
@@ -78,10 +78,6 @@
     return YES;
 }
 
-- (void)dealloc
-{
-    [super dealloc];
-}
 
 
 @end

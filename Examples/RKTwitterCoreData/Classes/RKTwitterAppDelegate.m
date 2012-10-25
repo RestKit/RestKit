@@ -14,6 +14,8 @@
 
 @implementation RKTwitterAppDelegate
 
+@synthesize window;
+
 #pragma mark -
 #pragma mark Application lifecycle
 
@@ -23,44 +25,51 @@
     NSURL *baseURL = [NSURL URLWithString:@"http://twitter.com"];
     RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:baseURL];
 
-    // Enable automatic network activity indicator management
-    objectManager.client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
+    // Enable Activity Indicator Spinner
+    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
 
     // Initialize managed object store
     NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
     objectManager.managedObjectStore = managedObjectStore;
-    [managedObjectStore release];
 
     // Setup our object mappings
-    /*!
+    /**
      Mapping by entity. Here we are configuring a mapping by targetting a Core Data entity with a specific
      name. This allows us to map back Twitter user objects directly onto NSManagedObject instances --
      there is no backing model class!
      */
     RKEntityMapping *userMapping = [RKEntityMapping mappingForEntityForName:@"RKTUser" inManagedObjectStore:managedObjectStore];
     userMapping.primaryKeyAttribute = @"userID";
-    [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
-    [userMapping mapKeyPath:@"screen_name" toAttribute:@"screenName"];
-    [userMapping mapAttributes:@"name", nil];
+    [userMapping addAttributeMappingsFromDictionary:@{
+     @"id": @"userID",
+     @"screen_name": @"screenName",
+    }];
+    // If source and destination key path are the same, we can simply add a string to the array
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
 
     RKEntityMapping *statusMapping = [RKEntityMapping mappingForEntityForName:@"RKTStatus" inManagedObjectStore:managedObjectStore];
     statusMapping.primaryKeyAttribute = @"statusID";
-    [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
-     @"created_at", @"createdAt",
-     @"text", @"text",
-     @"url", @"urlString",
-     @"in_reply_to_screen_name", @"inReplyToScreenName",
-     @"favorited", @"isFavorited",
-     nil];
-    [statusMapping mapRelationship:@"user" withMapping:userMapping];        
+    [statusMapping addAttributeMappingsFromDictionary:@{
+     @"id": @"statusID",
+     @"created_at": @"createdAt",
+     @"text": @"text",
+     @"url": @"urlString",
+     @"in_reply_to_screen_name": @"inReplyToScreenName",
+     @"favorited": @"isFavorited",
+     }];
+    [statusMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:userMapping]];
 
     // Update date format so that we can parse Twitter dates properly
     // Wed Sep 29 15:31:08 +0000 2010
     [RKObjectMapping addDefaultDateFormatterForString:@"E MMM d HH:mm:ss Z y" inTimeZone:nil];
 
     // Register our mappings with the provider
-    [objectManager.mappingProvider setObjectMapping:statusMapping forResourcePathPattern:@"/status/user_timeline/:username"];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:statusMapping
+                                                                                       pathPattern:@"/status/user_timeline/:username"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    [objectManager addResponseDescriptor:responseDescriptor];
 
     // Uncomment this to use XML, comment it to use JSON
     //  objectManager.acceptMIMEType = RKMIMETypeXML;
@@ -93,6 +102,8 @@
     } else {
         RKLogError(@"Failed to finish import and save seed database due to error: %@", error);
     }
+
+    exit(0);
 #else
     /**
      Complete Core Data stack initialization
@@ -108,15 +119,8 @@
     [managedObjectStore createManagedObjectContexts];
     
     // Configure a managed object cache to ensure we do not create duplicate objects
-    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
 #endif
-
-    // Create Window and View Controllers
-    RKTwitterViewController *viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-    UINavigationController *controller = [[UINavigationController alloc] initWithRootViewController:viewController];
-    UIWindow *window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
-    [window addSubview:controller.view];
-    [window makeKeyAndVisible];
 
     return YES;
 }

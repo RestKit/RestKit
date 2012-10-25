@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2843" systemVersion="12C60" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="Dvq-rA-0Mv">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1929"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="M9A-m5-O3F">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="Dvq-rA-0Mv" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="blackTranslucent" id="rD1-7I-BA4">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="SSJ-De-MIy" kind="relationship" relationship="rootViewController" id="Asy-b3-2v1"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TIa-39-he5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="74" y="13"/>
+        </scene>
+        <!--Twitter View Controller-->
+        <scene sceneID="QQl-Jl-slk">
+            <objects>
+                <viewController id="SSJ-De-MIy" customClass="RKTwitterViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="FBz-Pc-zyO">
+                        <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="BG.png" translatesAutoresizingMaskIntoConstraints="NO" id="QMe-h7-zHE">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="568" id="xqS-mC-icU"/>
+                                </constraints>
+                            </imageView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="EGy-lH-ixA">
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="SSJ-De-MIy" id="q2Z-wZ-TZF"/>
+                                    <outlet property="delegate" destination="SSJ-De-MIy" id="5yK-u5-sH9"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="EGy-lH-ixA" firstAttribute="top" secondItem="FBz-Pc-zyO" secondAttribute="top" type="default" id="4ug-6z-oFF"/>
+                            <constraint firstItem="QMe-h7-zHE" firstAttribute="bottom" secondItem="FBz-Pc-zyO" secondAttribute="bottom" type="default" id="Ck6-7L-f1F"/>
+                            <constraint firstItem="EGy-lH-ixA" firstAttribute="leading" secondItem="FBz-Pc-zyO" secondAttribute="leading" type="default" id="HYh-p1-6qu"/>
+                            <constraint firstItem="EGy-lH-ixA" firstAttribute="trailing" secondItem="FBz-Pc-zyO" secondAttribute="trailing" type="default" id="PXc-fk-Lte"/>
+                            <constraint firstItem="EGy-lH-ixA" firstAttribute="bottom" secondItem="FBz-Pc-zyO" secondAttribute="bottom" type="default" id="ilU-ZA-2sp"/>
+                            <constraint firstItem="QMe-h7-zHE" firstAttribute="leading" secondItem="FBz-Pc-zyO" secondAttribute="leading" type="default" id="rlZ-cm-QgD"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="lYI-Ww-tcJ">
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="9Sq-Uv-U1H">
+                            <connections>
+                                <action selector="refresh:" destination="SSJ-De-MIy" id="fZU-gs-oAi"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="EGy-lH-ixA" id="Fdz-er-tsW"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9MF-fk-I9D" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="559" y="13"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="BG.png" width="320" height="480"/>
+    </resources>
+    <classes>
+        <class className="NSLayoutConstraint" superclassName="NSObject">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
+        </class>
+        <class className="RKTwitterViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/RKTwitterViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="refresh:"/>
+                <relationship kind="outlet" name="tableView" candidateClass="UITableView"/>
+            </relationships>
+        </class>
+    </classes>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
+</document>

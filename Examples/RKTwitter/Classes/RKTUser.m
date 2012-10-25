@@ -9,18 +9,4 @@
 #import "RKTUser.h"
 
 @implementation RKTUser
-
-@synthesize userID = _userID;
-@synthesize name = _name;
-@synthesize screenName = _screenName;
-
-- (void)dealloc
-{
-    [_userID release];
-    [_name release];
-    [_screenName release];
-
-    [super dealloc];
-}
-
 @end
