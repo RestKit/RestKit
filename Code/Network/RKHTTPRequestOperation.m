@@ -181,6 +181,8 @@ static NSString *RKLogTruncateString(NSString *string)
             }
 
             // Log the new request.
+            // Alternatively, we could pass 'self' as the object and update self.request (ro now).
+            // That would also show the correct request URL in the response log message.
             [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification
                                                                 object:[[RKHTTPRequestOperation alloc] initWithRequest:request]];
         }
