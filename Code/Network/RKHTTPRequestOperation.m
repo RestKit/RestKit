@@ -168,6 +168,8 @@ static NSString *RKLogTruncateString(NSString *string)
     if (request) {
         AFHTTPClient *client = [RKObjectManager sharedManager].HTTPClient;
         if (redirectResponse) {
+            RKLogDebug(@"Following redirect request");
+
             // Was a redirection.  Add HTTP headers back to this new request.
             NSString *urlString = [request.URL absoluteString];
             NSString *baseURLString = [client.baseURL absoluteString];
@@ -175,10 +177,12 @@ static NSString *RKLogTruncateString(NSString *string)
                 NSString *path = [urlString substringFromIndex:[baseURLString length]];
                 request = [client requestWithMethod:request.HTTPMethod path:path parameters:nil];
             } else {
-                RKLogDebug(@"Not adding headers to request, it is not on our baseURL: %@", urlString);
+                RKLogDebug(@"Not adding headers, redirect is not on our baseURL: %@", urlString);
             }
 
-            RKLogDebug(@"Following redirect request: %@", request);
+            // Log the new request.
+            [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification
+                                                                object:[[RKHTTPRequestOperation alloc] initWithRequest:request]];
         }
 
         return request;
