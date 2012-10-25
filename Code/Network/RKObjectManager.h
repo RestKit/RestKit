@@ -262,7 +262,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  The default HTTP headers for all `NSURLRequest` objects constructed by the object manager.
  
- The returned dictionary contains all of the default headers set on the underlying `AFHTTPClient` object and the value of the 'Accept' header set on the object manager, if any.
+ The returned dictionary contains all of the default headers set on the underlying `AFHTTPClient` object.
  
  @see `setAcceptHeaderWithMIMEType:`
  */
