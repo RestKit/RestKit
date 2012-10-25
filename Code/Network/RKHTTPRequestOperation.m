@@ -49,6 +49,34 @@ static NSString *RKLogTruncateString(NSString *string)
            (long) maxMessageLength];
 }
 
+static NSString *RKStringFromStreamStatus(NSStreamStatus streamStatus)
+{
+    switch (streamStatus) {
+        case NSStreamStatusNotOpen:     return @"Not Open";
+        case NSStreamStatusOpening:     return @"Opening";
+        case NSStreamStatusOpen:        return @"Open";
+        case NSStreamStatusReading:     return @"Reading";
+        case NSStreamStatusWriting:     return @"Writing";
+        case NSStreamStatusAtEnd:       return @"At End";
+        case NSStreamStatusClosed:      return @"Closed";
+        case NSStreamStatusError:       return @"Error";
+        default:                        break;
+    }
+    return nil;
+}
+
+static NSString *RKStringDescribingStream(NSStream *stream)
+{
+    NSString *errorDescription = ([stream streamStatus] == NSStreamStatusError) ? [NSString stringWithFormat:@", error=%@", [stream streamError]] : @"";
+    if ([stream isKindOfClass:[NSInputStream class]]) {
+        return [NSString stringWithFormat:@"<%@: %p hasBytesAvailable=%@, status='%@'%@>", [stream class], stream, [(NSInputStream *)stream hasBytesAvailable] ? @"YES" : @"NO", RKStringFromStreamStatus([stream streamStatus]), errorDescription];
+    } else if ([stream isKindOfClass:[NSOutputStream class]]) {
+        return [NSString stringWithFormat:@"<%@: %p hasSpaceAvailable=%@, status='%@'%@>", [stream class], stream, [(NSOutputStream *)stream hasSpaceAvailable] ? @"YES" : @"NO", RKStringFromStreamStatus([stream streamStatus]), errorDescription];
+    } else {
+        return [stream description];
+    }
+}
+
 @interface RKHTTPRequestOperationLogger : NSObject
 
 + (id)sharedLogger;
@@ -102,6 +130,8 @@ static NSString *RKLogTruncateString(NSString *string)
         NSString *body = nil;
         if ([operation.request HTTPBody]) {
             body = RKLogTruncateString([NSString stringWithUTF8String:[[operation.request HTTPBody] bytes]]);
+        } else if ([operation.request HTTPBodyStream]) {
+            body = RKStringDescribingStream([operation.request HTTPBodyStream]);
         }
         
         RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
