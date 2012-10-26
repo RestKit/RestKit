@@ -110,6 +110,9 @@
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits
         transformedValue = [(NSDecimalNumber *)value stringValue];
+    } else if ([value isKindOfClass:[NSSet class]]) {
+        // NSSets are not natively serializable, so let's just turn it into an NSArray
+        transformedValue = [value allObjects];
     } else if ([value isKindOfClass:[NSOrderedSet class]]) {
         // NSOrderedSets are not natively serializable, so let's just turn it into an NSArray
         transformedValue = [value array];

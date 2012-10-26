@@ -3,4 +3,4 @@
 	url = git://github.com/RestKit/RKCatalog-Server.git
 [submodule "Vendor/AFNetworking"]
 	path = Vendor/AFNetworking
-	url = git@github.com:link-nv/AFNetworking.git
+	url = https://github.com/AFNetworking/AFNetworking.git
