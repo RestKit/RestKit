@@ -291,7 +291,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 - (void)setHTTPOperationClass:(Class)operationClass
 {
-    NSAssert(operationClass == nil || [operationClass isSubclassOfClass:[RKHTTPRequestOperation class]], @"");
+    NSAssert(operationClass == nil || [operationClass isSubclassOfClass:[RKHTTPRequestOperation class]], @"The HTTP operation class must be a subclass of `RKHTTPRequestOperation`");
     _HTTPOperationClass = operationClass;
 }
 
