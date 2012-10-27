@@ -188,22 +188,22 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    __block RKObjectRequestOperation *_blockSelf = self;
+    __weak RKObjectRequestOperation *weakSelf = self;
     self.completionBlock = ^ {
-        if ([_blockSelf isCancelled]) {
+        if ([weakSelf isCancelled]) {
             return;
         }
 
-        if (_blockSelf.error) {
+        if (weakSelf.error) {
             if (failure) {
-                dispatch_async(_blockSelf.failureCallbackQueue ? _blockSelf.failureCallbackQueue : dispatch_get_main_queue(), ^{
-                    failure(_blockSelf, _blockSelf.error);
+                dispatch_async(weakSelf.failureCallbackQueue ? weakSelf.failureCallbackQueue : dispatch_get_main_queue(), ^{
+                    failure(weakSelf, weakSelf.error);
                 });
             }
         } else {
             if (success) {
-                dispatch_async(self.successCallbackQueue ? _blockSelf.successCallbackQueue : dispatch_get_main_queue(), ^{
-                    success(_blockSelf, _blockSelf.mappingResult);
+                dispatch_async(weakSelf.successCallbackQueue ? weakSelf.successCallbackQueue : dispatch_get_main_queue(), ^{
+                    success(weakSelf, weakSelf.mappingResult);
                 });
             }
         }
