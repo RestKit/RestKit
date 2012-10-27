@@ -185,29 +185,46 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
    }
 }
 
+// Adopted fix for "The Deallocation Problem" from AFN
+- (void)setCompletionBlock:(void (^)(void))block {
+    if (!block) {
+        [super setCompletionBlock:nil];
+    } else {
+        __unsafe_unretained id weakSelf = self;
+        [super setCompletionBlock:^ {
+            block();
+            [weakSelf setCompletionBlock:nil];
+        }];
+    }
+}
+
 - (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    __weak RKObjectRequestOperation *weakSelf = self;
+// See above setCompletionBlock:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
     self.completionBlock = ^ {
-        if ([weakSelf isCancelled]) {
+        if ([self isCancelled]) {
             return;
         }
 
-        if (weakSelf.error) {
+        if (self.error) {
             if (failure) {
-                dispatch_async(weakSelf.failureCallbackQueue ? weakSelf.failureCallbackQueue : dispatch_get_main_queue(), ^{
-                    failure(weakSelf, weakSelf.error);
+                NSLog(@"Invoking failure callback with error: %@", self.error);
+                dispatch_async(self.failureCallbackQueue ? self.failureCallbackQueue : dispatch_get_main_queue(), ^{
+                    failure(self, self.error);
                 });
             }
         } else {
             if (success) {
-                dispatch_async(weakSelf.successCallbackQueue ? weakSelf.successCallbackQueue : dispatch_get_main_queue(), ^{
-                    success(weakSelf, weakSelf.mappingResult);
+                dispatch_async(self.successCallbackQueue ? self.successCallbackQueue : dispatch_get_main_queue(), ^{
+                    success(self, self.mappingResult);
                 });
             }
         }
     };
+#pragma clang diagnostic pop
 }
 
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
