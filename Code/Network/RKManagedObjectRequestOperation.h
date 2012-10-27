@@ -71,8 +71,8 @@
         NSString *airportID;
         if (match) {
             airportID = [argsDict objectForKey:@"airport_id"];
-            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"GGTerminal"];
-            NSEntityDescription *entity = [NSEntityDescription entityForName:@"GGAirport" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Terminal"];
+            NSEntityDescription *entity = [NSEntityDescription entityForName:@"Airport" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
             fetchRequest.predicate = [entity predicateForPrimaryKeyAttributeWithValue:airportID];
             fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
             return fetchRequest;
@@ -85,7 +85,7 @@
 
  In more concrete terms, given the URL `http://restkit.org/airports/1234/terminals.json` the block would return an `NSFetchRequest` equal to:
 
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"GGTerminal"];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Terminal"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"airportID = 1234"];
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
 
