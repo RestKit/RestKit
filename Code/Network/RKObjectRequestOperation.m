@@ -186,7 +186,8 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 }
 
 // Adopted fix for "The Deallocation Problem" from AFN
-- (void)setCompletionBlock:(void (^)(void))block {
+- (void)setCompletionBlock:(void (^)(void))block
+{
     if (!block) {
         [super setCompletionBlock:nil];
     } else {
