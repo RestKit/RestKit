@@ -212,7 +212,6 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
         if (self.error) {
             if (failure) {
-                NSLog(@"Invoking failure callback with error: %@", self.error);
                 dispatch_async(self.failureCallbackQueue ? self.failureCallbackQueue : dispatch_get_main_queue(), ^{
                     failure(self, self.error);
                 });
