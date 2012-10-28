@@ -49,7 +49,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
 
 /**
- This method ensures that attribute mappings apply cleanly to an `NSMutableDictionary` target class to support mapping to nested keyPaths. See issue #882
+ This function ensures that attribute mappings apply cleanly to an `NSMutableDictionary` target class to support mapping to nested keyPaths. See issue #882
  */
 static void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSString *keyPath)
 {
