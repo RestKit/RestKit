@@ -286,6 +286,8 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     }
     self.mappingResult = mappingResult;
     [self willFinish];
+    
+    if (self.error) self.mappingResult = nil;
 }
 
 - (void)main
