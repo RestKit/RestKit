@@ -133,6 +133,7 @@
  @param nilOrOptions An optional dictionary of options with which to configure the persistent store. If `nil`, a dictionary of options enabling `NSMigratePersistentStoresAutomaticallyOption` and `NSInferMappingModelAutomaticallyOption` will be used.
  @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error object containing the error information. You may specify nil for this parameter if you do not want the error information.
 
+ @bug Note that when built for iOS, this method will set a resource value on the SQLite file backing the persistent store for the `NSURLIsExcludedFromBackupKey` key set to `YES` to exclude the SQLite file from being backed up by iCloud to conform with the ["iOS Data Storage Guidelines"](https://developer.apple.com/icloud/documentation/data-storage/)
  @warning If the seed database at the given path was created with an incompatible managed object model an application error may be raised.
  */
 - (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath

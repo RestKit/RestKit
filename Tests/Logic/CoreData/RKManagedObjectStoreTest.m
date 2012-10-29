@@ -236,4 +236,19 @@
     assertThat(array, is(empty()));
 }
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+- (void)testThatAddingASQLiteStoreExcludesThePathFromiCloudBackups
+{
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
+    NSError *error;
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestBackupExclusion.sqlite"];
+    [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];    
+    NSURL *storeURL = [NSURL fileURLWithPath:storePath];
+    id resourceValue = nil;
+    BOOL success = [storeURL getResourceValue:&resourceValue forKey:NSURLIsExcludedFromBackupKey error:&error];
+    expect(success).to.beTruthy();
+    expect(resourceValue).to.equal(@(YES));
+}
+#endif
+
 @end
