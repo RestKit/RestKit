@@ -268,6 +268,15 @@ class RestKitTestServer < Sinatra::Base
     sleep 0.05
     status 204
   end
+  
+  get '/304' do
+    status 304
+  end
+  
+  get '/204_with_not_modified_status' do
+    status 204
+    response.headers['Status'] = '304 Not Modified'
+  end
 
   # start the server if ruby file executed directly
   run! if app_file == $0

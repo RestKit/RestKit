@@ -29,14 +29,15 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
-NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL)
+NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL)
 {
+    NSMutableArray *fetchRequests = [NSMutableArray array];
     NSFetchRequest *fetchRequest = nil;
     for (RKFetchRequestBlock block in [fetchRequestBlocks reverseObjectEnumerator]) {
         fetchRequest = block(URL);
-        if (fetchRequest) break;
+        if (fetchRequest) [fetchRequests addObject:fetchRequest];
     }
-    return fetchRequest;
+    return fetchRequests;
 }
 
 static NSDictionary *RKDictionaryOfManagedObjectsInContextFromDictionaryOfManagedObjects(NSDictionary *dictionaryOfManagedObjects, NSManagedObjectContext *managedObjectContext)
@@ -67,6 +68,20 @@ static NSDictionary *RKDictionaryOfManagedObjectsInContextFromDictionaryOfManage
     }];
     
     return newDictionary;
+}
+
+static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *responseDescriptors)
+{
+    NSCParameterAssert(URL);
+    NSCParameterAssert(responseDescriptors);
+    NSArray *baseURLs = [responseDescriptors valueForKeyPath:@"@distinctUnionOfObjects.baseURL"];
+    if ([baseURLs count] == 1) {
+        NSURL *baseURL = baseURLs[0];
+        NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(URL, baseURL);
+        URL = [NSURL URLWithString:pathAndQueryString relativeToURL:baseURL];
+    }
+    
+    return URL;
 }
 
 @interface RKManagedObjectRequestOperation () <RKMapperOperationDelegate>
@@ -134,8 +149,21 @@ static NSDictionary *RKDictionaryOfManagedObjectsInContextFromDictionaryOfManage
 {
     if (self.HTTPRequestOperation.wasNotModified) {
         RKLogDebug(@"Managed object mapping requested for cached response: skipping mapping...");
-        // TODO: This is unexpectedly returning an empty result set... need to be able to retrieve the appropriate objects...
-        return [[RKMappingResult alloc] initWithDictionary:@{}];
+        NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
+        NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
+        NSMutableArray *managedObjects = [NSMutableArray array];
+        [self.managedObjectContext performBlockAndWait:^{
+            NSError *error = nil;
+            for (NSFetchRequest *fetchRequest in fetchRequests) {
+                NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                if (fetchedObjects) {
+                    [managedObjects addObjectsFromArray:fetchedObjects];
+                } else {
+                    RKLogError(@"Failed to execute fetch request %@: %@", fetchRequest, error);
+                }
+            }
+        }];
+        return [[RKMappingResult alloc] initWithDictionary:@{ [NSNull null]: managedObjects }];
     }
 
     self.responseMapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
@@ -190,14 +218,7 @@ static NSDictionary *RKDictionaryOfManagedObjectsInContextFromDictionaryOfManage
     __block NSArray *_blockObjects;
     
     // Pass the fetch request blocks a relative `NSURL` object if possible
-    NSURL *URL = [self.HTTPRequestOperation.request URL];
-    NSArray *baseURLs = [self.responseDescriptors valueForKeyPath:@"@distinctUnionOfObjects.baseURL"];
-    if ([baseURLs count] == 1) {
-        NSURL *baseURL = baseURLs[0];
-        NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(URL, baseURL);
-        URL = [NSURL URLWithString:pathAndQueryString relativeToURL:baseURL];
-    }
-
+    NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
     for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
         NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
         if (fetchRequest) {

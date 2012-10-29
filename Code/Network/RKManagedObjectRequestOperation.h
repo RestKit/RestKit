@@ -88,6 +88,10 @@
  ## Managed Object Context Save Behaviors
 
  The results of the operation can either be 'pushed' to the parent context or saved to the persistent store. Configuration is available via the `savesToPersistentStore` property. If an error is encountered while saving the managed object context, then the operation is considered to have failed and the `error` property will be set to the `NSError` object returned by the failed save.
+ 
+ ## 304 'Not Modified' Responses
+ 
+ In the event that a managed object request operation loads a 304 'Not Modified' response for an HTTP request no object mapping is performed as Core Data is assumed to contain a managed object representation of the resource requested. No object mapping is performed on the cached response body, making a cache hit for a managed object request operation a very lightweight operation. To build the mapping result returned to the caller, all of the fetch request blocks matching the request URL will be invoked and each fetch request returned is executed against the managed object context and the objects returned are added to the mapping result. Please note that all managed objects returned in the mapping result for a 'Not Modified' response will be returned under the `[NSNull null]` key path.
 
  ## Limitations and Caveats
 
@@ -165,10 +169,10 @@
 typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL);
 
 /**
- Returns a fetch request object from an array of `RKFetchRequestBlock` objects given a URL.
+ Returns an array of fetch request objects from an array of `RKFetchRequestBlock` objects given a URL.
  
  @param fetchRequestBlocks An array of `RKFetchRequestBlock` blocks to
  @param URL The URL for which to return a fetch request.
- @return A fetch request from the first block that matches the URL.
+ @return An array of fetch requests from all blocks that match the given URL.
  */
-NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL);
+NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL);
