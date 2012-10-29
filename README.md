@@ -200,7 +200,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
 RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
 NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Store.sqlite"];
-[managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil error:nil];
+[managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:nil];
 [managedObjectStore createManagedObjectContexts];
 
 RKEntityMapping *categoryMapping = [RKEntityMapping mappingForEntityForName:@"Category" inManagedObjectStore:managedObjectStore];

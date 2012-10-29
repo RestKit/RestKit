@@ -129,11 +129,17 @@
 
  @param storePath The path at which to save the persistent store on disk.
  @param seedPath An optional path to a seed database to copy to the given storePath in the event that a store does not yet exist.
+ @param nilOrConfigurationName An optional name of a Core Data configuration in the managed object model.
+ @param nilOrOptions An optional dictionary of options with which to configure the persistent store. If `nil`, a dictionary of options enabling `NSMigratePersistentStoresAutomaticallyOption` and `NSInferMappingModelAutomaticallyOption` will be used.
  @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error object containing the error information. You may specify nil for this parameter if you do not want the error information.
 
  @warning If the seed database at the given path was created with an incompatible managed object model an application error may be raised.
  */
-- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error;
+- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath
+                               fromSeedDatabaseAtPath:(NSString *)seedPath
+                                    withConfiguration:(NSString *)nilOrConfigurationName
+                                              options:(NSDictionary *)nilOrOptions
+                                                error:(NSError **)error;
 
 /**
  Resets the persistent stores in the receiver's persistent store coordinator and recreates them. If a store being reset is backed by a file on disk (such as a SQLite file), the file will be removed prior to recreating the store. If the store was originally created using a seed database, the seed will be recopied to reset the store to its seeded state.

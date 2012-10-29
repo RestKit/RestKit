@@ -152,10 +152,10 @@
 
 - (void)testThatInvalidObjectFailingManagedObjectContextSaveFailsOperation
 {
-    // NOTE: The model defines a maximum length of 12 for the 'name' attribute    
+    // NOTE: The model defines a maximum length of 15 for the 'name' attribute    
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
-    human.name = @"This Is An Invalid Name Because It Exceeds Twelve Characters";
+    human.name = @"This Is An Invalid Name Because It Exceeds Fifteen Characters";
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/all.json" relativeToURL:[RKTestFactory baseURL]]];
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];

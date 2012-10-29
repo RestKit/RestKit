@@ -55,23 +55,23 @@
     RKManagedObjectStore *seedStore = [[RKManagedObjectStore alloc] init];
     NSString *seedPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Seed.sqlite"];
     NSError *error;
-    NSPersistentStore *persistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil error:&error];
-    assertThat(persistentStore, is(notNilValue()));
+    NSPersistentStore *persistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    expect(persistentStore).notTo.beNil();
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:seedPath];
-    assertThatBool(fileExists, is(equalToBool(YES)));
+    expect(fileExists).to.beTruthy();
 
     // Create a secondary store using the seed
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
-    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Test.sqlite"];
-    persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath error:&error];
-    assertThat(persistentStore, is(notNilValue()));
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Test.sqlite"];    
+    persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath withConfiguration:nil options:nil error:&error];
+    expect(persistentStore).notTo.beNil();
 
     fileExists = [[NSFileManager defaultManager] fileExistsAtPath:storePath];
-    assertThatBool(fileExists, is(equalToBool(YES)));
+    expect(fileExists).to.beTruthy();
 
     // Check that the store has a reference to the seed file option
     NSString *seedDatabasePath = [[persistentStore options] valueForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
-    assertThat(seedDatabasePath, is(equalTo(seedPath)));
+    expect(seedDatabasePath).to.equal(seedPath);
 }
 
 - (void)testAddingPersistentSQLiteStoreFromSeedDatabase
@@ -80,7 +80,7 @@
     RKManagedObjectStore *seedStore = [[RKManagedObjectStore alloc] init];
     NSError *error;
     NSString *seedPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Seed.sqlite"];
-    NSPersistentStore *seedPersistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil error:&error];
+    NSPersistentStore *seedPersistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
     assertThat(seedPersistentStore, is(notNilValue()));
     [seedStore createManagedObjectContexts];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:seedStore.persistentStoreManagedObjectContext];
@@ -92,7 +92,7 @@
     // Create a secondary store using the first store as the seed
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"SeededStore.sqlite"];
     RKManagedObjectStore *seededStore = [[RKManagedObjectStore alloc] init];
-    NSPersistentStore *persistentStore = [seededStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath error:&error];
+    NSPersistentStore *persistentStore = [seededStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath withConfiguration:nil options:nil error:&error];
     assertThat(persistentStore, is(notNilValue()));
     [seededStore createManagedObjectContexts];
 
@@ -139,7 +139,7 @@
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
     NSError *error;
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Test.sqlite"];
-    NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
+    NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
     assertThat(persistentStore, is(notNilValue()));
     [managedObjectStore createManagedObjectContexts];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -166,7 +166,7 @@
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
     NSError *error;
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Test.sqlite"];
-    NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
+    NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
     assertThat(persistentStore, is(notNilValue()));
     [managedObjectStore createManagedObjectContexts];
 
@@ -195,7 +195,7 @@
     RKManagedObjectStore *seedStore = [[RKManagedObjectStore alloc] init];
     NSError *error;
     NSString *seedPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Seed.sqlite"];
-    NSPersistentStore *seedPersistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil error:&error];
+    NSPersistentStore *seedPersistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
     assertThat(seedPersistentStore, is(notNilValue()));
     [seedStore createManagedObjectContexts];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:seedStore.persistentStoreManagedObjectContext];
@@ -207,7 +207,7 @@
     // Create a secondary store using the first store as the seed
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"SeededStore.sqlite"];
     RKManagedObjectStore *seededStore = [[RKManagedObjectStore alloc] init];
-    NSPersistentStore *persistentStore = [seededStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath error:&error];
+    NSPersistentStore *persistentStore = [seededStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath withConfiguration:nil options:nil error:&error];
     assertThat(persistentStore, is(notNilValue()));
     [seededStore createManagedObjectContexts];
 

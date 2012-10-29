@@ -132,7 +132,7 @@ static RKTestFactory *sharedFactory = nil;
         NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
         RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
         NSError *error;
-        NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
+        NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
         if (persistentStore) {
             BOOL success = [managedObjectStore resetPersistentStores:&error];
             if (! success) {

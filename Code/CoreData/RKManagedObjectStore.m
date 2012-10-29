@@ -107,7 +107,11 @@ static RKManagedObjectStore *defaultStore = nil;
     return [self.persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:error];
 }
 
-- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error
+- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath
+                               fromSeedDatabaseAtPath:(NSString *)seedPath
+                                    withConfiguration:(NSString *)nilOrConfigurationName
+                                              options:(NSDictionary *)nilOrOptions
+                                                error:(NSError **)error
 {
     if (! self.persistentStoreCoordinator) [self createPersistentStoreCoordinator];
 
@@ -117,14 +121,29 @@ static RKManagedObjectStore *defaultStore = nil;
         if (! success) return nil;
     }
 
-    // Allow inferred migration from the original version of the application.
-    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             (seedPath ? seedPath : [NSNull null]), RKSQLitePersistentStoreSeedDatabasePathOption,
-                             [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
-                             [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption,
-                             nil];
+    NSDictionary *options = nil;
+    if (nilOrOptions) {
+        NSMutableDictionary *mutableOptions = [nilOrOptions mutableCopy];
+        mutableOptions[RKSQLitePersistentStoreSeedDatabasePathOption] = seedPath ?: [NSNull null];
+        options = mutableOptions;
+    } else {
+        options = @{ RKSQLitePersistentStoreSeedDatabasePathOption: (seedPath ?: [NSNull null]),
+                     NSMigratePersistentStoresAutomaticallyOption: @(YES),
+                     NSInferMappingModelAutomaticallyOption: @(YES) };
+    }
+    
+    /** 
+     There seems to be trouble with combining configurations and migration. So do this in two steps: first, attach the store with NO configuration, but WITH migration options; then remove it and reattach WITH configuration, but NOT migration options.
+     
+     http://blog.atwam.com/blog/2012/05/11/multiple-persistent-stores-and-seed-data-with-core-data/
+     http://stackoverflow.com/questions/1774359/core-data-migration-error-message-model-does-not-contain-configuration-xyz
+     */    
+    NSPersistentStore *persistentStore = [self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:error];
+    if (! persistentStore) return nil;
+    if (! [self.persistentStoreCoordinator removePersistentStore:persistentStore error:error]) return nil;
 
-    return [self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:error];
+    NSDictionary *seedOptions = @{ RKSQLitePersistentStoreSeedDatabasePathOption: (seedPath ?: [NSNull null]) };
+    return [self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nilOrConfigurationName URL:storeURL options:seedOptions error:error];
 }
 
 - (BOOL)copySeedDatabaseIfNecessaryFromPath:(NSString *)seedPath toPath:(NSString *)storePath error:(NSError **)error
