@@ -8,6 +8,7 @@
 
 #import "RKTestEnvironment.h"
 #import "RKManagedObjectRequestOperation.h"
+#import "RKEntityMapping.h"
 
 @interface RKManagedObjectRequestOperation ()
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;
@@ -82,6 +83,26 @@
     expect([blockURL.baseURL absoluteString]).to.equal(@"http://restkit.org/api/v1/");
     expect(blockURL.relativePath).to.equal(@"library");
     expect(blockURL.relativeString).to.equal(@"library/");
+}
+
+- (void)testThatMappingResultContainsObjectsFetchedFromManagedObjectContextTheOperationWasInitializedWith
+{
+    // void RKSetIntermediateDictionaryValuesOnObjectForKeyPath(id object, NSString *keyPath);
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/all.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect(managedObjectRequestOperation.mappingResult).notTo.beNil();
+    NSArray *managedObjectContexts = [[managedObjectRequestOperation.mappingResult array] valueForKeyPath:@"@distinctUnionOfObjects.managedObjectContext"];
+    expect([managedObjectContexts count]).to.equal(1);
+    expect(managedObjectContexts[0]).to.equal(managedObjectStore.mainQueueManagedObjectContext);
 }
 
 @end

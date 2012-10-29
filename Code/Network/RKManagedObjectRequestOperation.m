@@ -39,13 +39,44 @@ NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSU
     return fetchRequest;
 }
 
+static NSDictionary *RKDictionaryOfManagedObjectsInContextFromDictionaryOfManagedObjects(NSDictionary *dictionaryOfManagedObjects, NSManagedObjectContext *managedObjectContext)
+{
+    NSMutableDictionary *newDictionary = [[NSMutableDictionary alloc] initWithCapacity:[dictionaryOfManagedObjects count]];
+    [managedObjectContext performBlockAndWait:^{
+        NSError *error = nil;
+        for (NSString *key in dictionaryOfManagedObjects) {
+            id value = dictionaryOfManagedObjects[key];
+            if ([value isKindOfClass:[NSArray class]]) {
+                NSMutableArray *newValue = [[NSMutableArray alloc] initWithCapacity:[value count]];
+                for (__strong id object in value) {
+                    if ([object isKindOfClass:[NSManagedObject class]]) {
+                        object = [managedObjectContext existingObjectWithID:[object objectID] error:&error];
+                        NSCAssert(object, @"Failed to find existing object with ID %@ in context %@: %@", [object objectID], managedObjectContext, error);
+                    }
+                    
+                    [newValue addObject:object];
+                }
+                value = [newValue copy];
+            } else if ([value isKindOfClass:[NSManagedObject class]]) {
+                value = [managedObjectContext existingObjectWithID:[value objectID] error:&error];
+                NSCAssert(value, @"Failed to find existing object with ID %@ in context %@: %@", [value objectID], managedObjectContext, error);
+            }
+            
+            [newDictionary setValue:value forKey:key];
+        }
+    }];
+    
+    return newDictionary;
+}
+
 @interface RKManagedObjectRequestOperation () <RKMapperOperationDelegate>
 // Core Data specific
-@property (readwrite, nonatomic, strong) NSManagedObjectContext *privateContext;
-@property (readwrite, nonatomic, copy) NSManagedObjectID *targetObjectID;
-@property (readwrite, nonatomic, strong) NSMutableDictionary *managedObjectsByKeyPath;
-@property (readwrite, nonatomic, strong) NSError *error;
+@property (nonatomic, strong) NSManagedObjectContext *privateContext;
+@property (nonatomic, copy) NSManagedObjectID *targetObjectID;
+@property (nonatomic, strong) NSMutableDictionary *managedObjectsByKeyPath;
 @property (nonatomic, strong) RKManagedObjectResponseMapperOperation *responseMapperOperation;
+@property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @end
 
 @implementation RKManagedObjectRequestOperation
@@ -288,6 +319,10 @@ NSFetchRequest *RKFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSU
     }
     success = [self saveContext:&error];
     if (! success) self.error = error;
+    
+    // Refetch the mapping results from the externally configured context
+    NSDictionary *resultsDictionaryFromOriginalContext = RKDictionaryOfManagedObjectsInContextFromDictionaryOfManagedObjects([self.mappingResult dictionary], self.managedObjectContext);
+    self.mappingResult = [[RKMappingResult alloc] initWithDictionary:resultsDictionaryFromOriginalContext];
 }
 
 @end

@@ -46,12 +46,6 @@
 
  Primary key attributes are used in conjunction with the `RKManagedObjectCaching` protocol. Each managed object request operation is associated with an object conforming to the `RKManagedObjectCaching` protocol via the `managedObjectCache` proeprty. This cache is consulted during mapping to find existing objects and when establishing relationships between entities by primary key. Please see the documentation accompanying `RKManagedObjectCaching` and `RKConnectionMapping` for more information.
 
- ## Fetching Result Objects
-
- When a `completionBlock` is configured for an instance of `RKManagedObjectRequestOperation` additional work is performed before the mapping result is returned to the caller. Because mapping internally occurs on a private managed object context with the `NSPrivateQueueConcurrencyType` concurrency type, attempts to directly access the `NSManagedObject` instances contained within the `RKMappingResult` would violate the threading constraints imposed by Core Data. As such, before the mapping result is returned to the caller in a completion block the objects are re-fetched from the `managedObjectContext`. Please see `RKManagedObjectThreadSafeInvocation` for details about the implementation.
-
- TODO: Is this necessary?
-
  ## Deleting Managed Objects for `DELETE` requests
 
  `RKManagedObjectRequestOperation` adds special behavior to `DELETE` requests. Upon retrieving a successful (2xx status code) response for a `DELETE`, the operation will invoke `deleteObject:` with the operations `targetObject` on the managed object context. This will delete the target object from the local store in conjunction the successfully deleted remote representation.

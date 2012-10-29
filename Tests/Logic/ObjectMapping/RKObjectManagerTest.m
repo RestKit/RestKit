@@ -437,32 +437,35 @@
     expect(operation.savesToPersistentStore).to.equal(YES);
 }
 
-// TODO: Move to Core Data specific spec file...
-//- (void)testShouldLoadAHuman
-//{
-//
-//    __block RKObjectRequestOperation *requestOperation = nil;
-//    [self.objectManager getObjectsAtPath:@"/JSON/humans/1.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-//        requestOperation = operation;
-//    } failure:nil];
-//    [self.objectManager.operationQueue waitUntilAllOperationsAreFinished];
-//
-//    assertThat(loader.error, is(nilValue()));
-//    assertThat(loader.objects, isNot(empty()));
-//    RKHuman *blake = (RKHuman *)[loader.objects objectAtIndex:0];
-//    assertThat(blake.name, is(equalTo(@"Blake Watters")));
-//}
-//
-//- (void)testShouldLoadAllHumans
-//{
-//    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
-//    [_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:loader];
-//    [loader waitForResponse];
-//    NSArray *humans = (NSArray *)loader.objects;
-//    assertThatUnsignedInteger([humans count], is(equalToInt(2)));
-//    assertThat([humans objectAtIndex:0], is(instanceOf([RKHuman class])));
-//}
-//
+- (void)testShouldLoadAHuman
+{
+    __block RKObjectRequestOperation *requestOperation = nil;
+    [self.objectManager getObjectsAtPath:@"/JSON/humans/1.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        requestOperation = operation;
+    } failure:nil];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        expect(requestOperation.error).to.beNil();
+        expect([requestOperation.mappingResult array]).notTo.beEmpty();
+        RKHuman *blake = (RKHuman *)[requestOperation.mappingResult array][0];
+        expect(blake.name).to.equal(@"Blake Watters");
+    });
+}
+
+- (void)testShouldLoadAllHumans
+{
+    __block RKObjectRequestOperation *requestOperation = nil;
+    [_objectManager getObjectsAtPath:@"/JSON/humans/all.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        requestOperation = operation;
+    } failure:nil];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSArray *humans = [requestOperation.mappingResult array];
+        expect(humans).to.haveCountOf(2);
+        expect(humans[0]).to.beInstanceOf([RKHuman class]);
+    });
+}
+
 //- (void)testShouldHandleConnectionFailures
 //{
 //    NSString *localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
@@ -675,38 +678,5 @@
 //    [responseLoader waitForResponse];
 //}
 //
-//- (void)testThatInitializationOfObjectManagerInitializesNetworkStatusFromClient
-//{
-//    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
-//    id mockObserver = [OCMockObject partialMockForObject:observer];
-//    BOOL yes = YES;
-//    [[[mockObserver stub] andReturnValue:OCMOCK_VALUE(yes)] isReachabilityDetermined];
-//    [[[mockObserver stub] andReturnValue:OCMOCK_VALUE(yes)] isNetworkReachable];
-//    RKClient *client = [RKTestFactory client];
-//    client.reachabilityObserver = mockObserver;
-//    RKObjectManager *manager = [[RKObjectManager alloc] init];
-//    manager.client = client;
-//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
-//}
-//
-//- (void)testThatMutationOfUnderlyingClientReachabilityObserverUpdatesManager
-//{
-//    RKObjectManager *manager = [RKTestFactory objectManager];
-//    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
-//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
-//    manager.client.reachabilityObserver = observer;
-//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
-//
-//
-//- (void)testThatReplacementOfUnderlyingClientUpdatesManagerReachabilityObserver
-//{
-//    RKObjectManager *manager = [RKTestFactory objectManager];
-//    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
-//    RKClient *client = [RKTestFactory client];
-//    client.reachabilityObserver = observer;
-//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
-//    manager.client = client;
-//    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
-//}
 
 @end
