@@ -47,6 +47,7 @@
 - (id)initWithManagedObject:(NSManagedObject *)managedObject connectionMapping:(RKConnectionMapping *)connectionMapping managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache
 {
     NSParameterAssert(managedObject);
+    NSAssert([managedObject isKindOfClass:[NSManagedObject class]], @"Relationship connection requires an instance of NSManagedObject");
     NSParameterAssert(connectionMapping);
     NSParameterAssert(managedObjectCache);
     self = [self init];
