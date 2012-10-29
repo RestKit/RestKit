@@ -147,18 +147,8 @@ static RKManagedObjectStore *defaultStore = nil;
     persistentStore = [self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nilOrConfigurationName URL:storeURL options:seedOptions error:error];
     if (! persistentStore) return nil;
     
-    /**
-     Exclude the SQLite database from iCloud Backups to conform to the iCloud Data Storage Guidelines
-     
-     See https://developer.apple.com/icloud/documentation/data-storage/
-     */
-    #if __IPHONE_OS_VERSION_MIN_REQUIRED
-    BOOL success = [storeURL setResourceValue:@(YES) forKey:NSURLIsExcludedFromBackupKey error:error];
-    if (!success) {
-        RKLogError(@"Failed to exclude SQLite store at path '%@' from iCloud Backup: %@", storePath, *error);
-        return nil;
-    }
-    #endif
+    // Exclude the SQLite database from iCloud Backups to conform to the iCloud Data Storage Guidelines
+    RKSetExcludeFromBackupAttributeForItemAtPath(storePath);
     
     return persistentStore;
 }

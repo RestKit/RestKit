@@ -55,3 +55,15 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object);
  @return The expected MIME Type of the resource identified by the path or nil if unknown.
  */
 NSString *RKMIMETypeFromPathExtension(NSString *path);
+
+/**
+ Excludes the item at a given path from backup via iTunes and/or iCloud using the approaches detailed in "Apple Technical Q&A QA1719".
+ 
+ Excluding a path from backup can be necessary in order to conform to the iCloud Data Storage Guidelines. Please refer to the following links for more details:
+ 
+ 1. [iCloud Data Storage Guidelines](https://developer.apple.com/icloud/documentation/data-storage/)
+ 1. [Technical Q&A QA1719](http://developer.apple.com/library/ios/#qa/qa1719/_index.html)
+ 
+ @param path The path to the item that is to be excluded from backup.
+ */
+void RKSetExcludeFromBackupAttributeForItemAtPath(NSString *path);

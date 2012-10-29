@@ -8,9 +8,12 @@
 
 #if TARGET_OS_IPHONE
 #import <MobileCoreServices/UTType.h>
+#import <UIKit/UIDevice.h>
 #else
 #import <CoreServices/CoreServices.h>
 #endif
+#import <Availability.h>
+#import <sys/xattr.h>
 #import "RKPathUtilities.h"
 #import "RKLog.h"
 #import "RKPathMatcher.h"
@@ -118,4 +121,41 @@ NSString *RKMIMETypeFromPathExtension(NSString *path)
     
     // Consult our internal dictionary of mappings if not found
     return [RKDictionaryOfFileExtensionsToMIMETypes() valueForKey:pathExtension];
+}
+
+void RKSetExcludeFromBackupAttributeForItemAtPath(NSString *path)
+{
+    NSCParameterAssert(path);
+    NSCAssert([[NSFileManager defaultManager] fileExistsAtPath:path], @"Cannot set Exclude from Backup attribute for non-existant item at path: '%@'", path);
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+    NSError *error = nil;
+    NSURL *URL = [NSURL fileURLWithPath:path];
+    
+    NSComparisonResult order = [[UIDevice currentDevice].systemVersion compare:@"5.1" options:NSNumericSearch];
+    if (order == NSOrderedSame || order == NSOrderedDescending) {
+        // On iOS >= 5.1, we can use the resource value API's. Note that we probe the iOS version number directly because the `setResourceValue:forKey:` symbol is defined in iOS 4.0 and greater, but performs no operation when invoked until iOS 5.1
+        BOOL success = [URL setResourceValue:@(YES) forKey:NSURLIsExcludedFromBackupKey error:&error];
+        if (!success) {
+            RKLogError(@"Failed to exclude item at path '%@' from Backup: %@", path, error);
+        }
+    } else {
+        order = [[UIDevice currentDevice].systemVersion compare:@"5.0.1" options: NSNumericSearch];
+        if (order == NSOrderedSame || order == NSOrderedDescending) {
+            // On iOS 5.0.1 we must use the extended attribute API's directly
+            const char* filePath = [[URL path] fileSystemRepresentation];
+            const char* attrName = "com.apple.MobileBackup";
+            u_int8_t attrValue = 1;
+            
+            int result = setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
+            if (result != 0) {
+                RKLogError(@"Failed to exclude item at path '%@' from Backup. setxattr returned result code %d", path, result);
+            }
+        } else {
+            RKLogWarning(@"Unable to exclude item from backup: resource value and extended attribute APIs are only available on iOS 5.0.1 and up");
+        }
+    }
+#else
+    RKLogDebug(@"Not built for iOS -- excluding path from Backup is not possible.");
+#endif
 }
