@@ -261,7 +261,7 @@
         objectID = [object objectID];
         attributeValue = [object valueForKey:self.attribute];
     }];
-    NSAssert([entity isEqual:self.entity], @"Cannot add object with entity '%@' to cache for entity of '%@'", [entity name], [self.entity name]);
+    NSAssert([entity isKindOfEntity:self.entity], @"Cannot add object with entity '%@' to cache for entity of '%@'", [entity name], [self.entity name]);
     // Coerce to a string if possible
     [self setObjectID:objectID forAttributeValue:attributeValue];
 }
@@ -276,7 +276,7 @@
         objectID = [object objectID];
         attributeValue = [object valueForKey:self.attribute];
     }];
-    NSAssert([entity isEqual:self.entity], @"Cannot remove object with entity '%@' from cache for entity of '%@'", [entity name], [self.entity name]);
+    NSAssert([entity isKindOfEntity:self.entity], @"Cannot remove object with entity '%@' from cache for entity of '%@'", [entity name], [self.entity name]);
     [self removeObjectID:objectID forAttributeValue:attributeValue];
 }
 
@@ -307,13 +307,13 @@
     [objectsToAdd unionSet:updatedObjects];
 
     for (NSManagedObject *object in objectsToAdd) {
-        if ([object.entity isEqual:self.entity]) {
+        if ([object.entity isKindOfEntity:self.entity]) {
             [self addObject:object];
         }
     }
 
     for (NSManagedObject *object in deletedObjects) {
-        if ([object.entity isEqual:self.entity]) {
+        if ([object.entity isKindOfEntity:self.entity]) {
             [self removeObject:object];
         }
     }
