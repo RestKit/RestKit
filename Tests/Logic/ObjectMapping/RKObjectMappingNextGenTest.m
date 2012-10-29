@@ -1857,7 +1857,6 @@
     [operation performMapping:&error];
 
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     [dateFormatter setDateFormat:@"MM/dd/yyyy"];
 
     /*
