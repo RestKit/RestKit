@@ -90,14 +90,16 @@ static NSString *RKStringDescribingStream(NSStream *stream)
     static RKHTTPRequestOperationLogger *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [[RKHTTPRequestOperationLogger alloc] init];
+        sharedInstance = [[self alloc] init];
     });
     return sharedInstance;
 }
 
 + (void)load
 {
-    [self sharedLogger];
+    @autoreleasepool {
+        [self sharedLogger];
+    };
 }
 
 - (id)init
