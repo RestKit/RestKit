@@ -10,11 +10,11 @@
 #import "RKManagedObjectRequestOperation.h"
 #import "RKEntityMapping.h"
 #import "RKHuman.h"
+#import "RKMappingErrors.h"
 
 @interface RKManagedObjectRequestOperation ()
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;
 @end
-
 
 @interface RKManagedObjectRequestOperationTest : RKTestCase
 
@@ -148,6 +148,27 @@
     NSArray *mappedObjects = [managedObjectRequestOperation.mappingResult array];
     expect(mappedObjects).to.haveCountOf(1);
     expect(mappedObjects[0]).to.equal(human);
+}
+
+- (void)testThatInvalidObjectFailingManagedObjectContextSaveFailsOperation
+{
+    // NOTE: The model defines a maximum length of 12 for the 'name' attribute    
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    human.name = @"This Is An Invalid Name Because It Exceeds Twelve Characters";
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/all.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect(managedObjectRequestOperation.error).notTo.beNil();
+    expect(managedObjectRequestOperation.mappingResult).to.beNil();
+    expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"The operation couldn’t be completed. (Cocoa error 1660.)");
 }
 
 @end
