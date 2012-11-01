@@ -365,7 +365,7 @@ NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormReq
 }];
 
 RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequesOperationWithRequest:request success:nil failure:nil];
-[operation start];
+[[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
 ```
 
 ### Enqueue a Batch of Object Request Operations
