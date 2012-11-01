@@ -148,7 +148,9 @@
  @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error object containing the error information. You may specify nil for this parameter if you do not want the error information.
  @return A Boolean value indicating if the reset was successful.
 
- @warning This method will implictly result in the managed object contexts associated with the receiver to be discarded and recreated. Any managed objects or additional child contexts associated with the store will need to be discarded or else exceptions may be raised (i.e. `NSObjectInaccessibleException`).
+ @bug This method will implictly result in the managed object contexts associated with the receiver to be discarded and recreated. Any managed objects or additional child contexts associated with the store will need to be discarded or else exceptions may be raised (i.e. `NSObjectInaccessibleException`).
+
+ Also note that care must be taken to cancel/suspend all mapping operations, reset all managed object contexts, and disconnect all `NSFetchedResultController` objects that are associated with managed object contexts using the persistent stores of the receiver before attempting a reset. Failure to completely disconnect usage before calling this method is likely to result in a deadlock.
  */
 - (BOOL)resetPersistentStores:(NSError **)error;
 
