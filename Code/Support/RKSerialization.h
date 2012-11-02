@@ -46,7 +46,6 @@
  Serializes and returns a UTF-8 encoded data representation of the given Foundation object in the format supported by the receiver (i.e. JSON, XML, etc).
  
  @param object The object to be serialized.
- @param A pointer to an `NSError` object.
  @param error A pointer to an NSError object.
  @return A data representation of the given object in UTF-8 encoding, or nil if an error occurred.
  */
