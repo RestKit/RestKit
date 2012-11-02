@@ -67,4 +67,9 @@
  */
 @property (nonatomic, strong, readonly) id<RKManagedObjectCaching> managedObjectCache;
 
+/**
+ The object or collection of objects that was connected by the operation.
+ */
+@property (nonatomic, strong, readonly) id connectedValue;
+
 @end

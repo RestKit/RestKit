@@ -98,9 +98,21 @@
 
  @param operation The mapping operation.
  @param relationship The relationship that was connected.
+ @param value The value that was connected to the relationship
  @param connectionMapping The mappings that was used to connect the relationship.
  */
-- (void)mappingOperation:(RKMappingOperation *)operation didConnectRelationship:(NSRelationshipDescription *)relationship usingMapping:(RKConnectionMapping *)connectionMapping;
+- (void)mappingOperation:(RKMappingOperation *)operation didConnectRelationship:(NSRelationshipDescription *)relationship withValue:(id)value usingMapping:(RKConnectionMapping *)connectionMapping;
+
+/**
+ Tells the delegate that the mapping operation failed to connect a relationship.
+
+ Only sent when mapping an `RKEntityMapping` object that contains connection mappings.
+
+ @param operation The mapping operation.
+ @param relationship The relationship that was connected.
+ @param connectionMapping The mappings that was used to connect the relationship.
+ */
+- (void)mappingOperation:(RKMappingOperation *)operation didFailToConnectRelationship:(NSRelationshipDescription *)relationship usingMapping:(RKConnectionMapping *)connectionMapping;
 
 #endif
 

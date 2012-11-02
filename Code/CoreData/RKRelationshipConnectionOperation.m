@@ -35,6 +35,7 @@
 @property (nonatomic, strong, readwrite) RKConnectionMapping *connectionMapping;
 @property (nonatomic, strong, readwrite) id<RKManagedObjectCaching> managedObjectCache;
 @property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong, readwrite) id connectedValue;
 
 // Helpers
 @property (weak, nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
@@ -188,9 +189,9 @@
     NSString *relationshipName = self.connectionMapping.relationship.name;
     RKLogTrace(@"Connecting relationship '%@' with mapping: %@", relationshipName, self.connectionMapping);
     [self.managedObjectContext performBlockAndWait:^{
-        id relatedObject = [self findConnected];
-        [self.managedObject setValue:relatedObject forKeyPath:relationshipName];
-        RKLogDebug(@"Connected relationship '%@' to object '%@'", relationshipName, relatedObject);
+        self.connectedValue = [self findConnected];
+        [self.managedObject setValue:self.connectedValue forKeyPath:relationshipName];
+        RKLogDebug(@"Connected relationship '%@' to object '%@'", relationshipName, self.connectedValue);
     }];
 }
 
