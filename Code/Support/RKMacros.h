@@ -21,7 +21,7 @@
 #ifndef RestKit_RKMacros_h
 #define RestKit_RKMacros_h
 
-/**
+/*
  Instead of using the normal DEPRECATED_ATTRIBUTE use DEPRECATED_ATTRIBUTE_MESSAGE(message)
  to display a helpful recommendation message along with the deprecation message.
  */
@@ -29,7 +29,7 @@
 #define DEPRECATED_ATTRIBUTE_MESSAGE(message) __attribute__((deprecated (message)))
 #endif
 
-/**
+/*
  Add this macro before each category implementation, so we don't have to use
  -all_load or -force_load to load object files from static libraries that only contain
  categories and no classes.
