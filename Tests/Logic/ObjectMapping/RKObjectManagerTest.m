@@ -409,6 +409,20 @@
     expect([request allHTTPHeaderFields][@"Accept"]).to.equal(@"application/json");
 }
 
+- (void)testDefaultAcceptHeaderOfObjectManagerOverridesValueOfHTTPClientOnMultipartRequests
+{
+    RKTestAFHTTPClient *testClient = [[RKTestAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://test.com"]];
+    RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:testClient];
+    [manager setAcceptHeaderWithMIMEType:@"application/json"];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    NSURLRequest *request = [manager multipartFormRequestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"} constructingBodyWithBlock:nil];
+
+    expect([request.URL absoluteString]).to.equal(@"http://test.com/the/path");
+    expect(request.HTTPMethod).to.equal(@"PATCH");
+    expect([request allHTTPHeaderFields][@"test"]).to.equal(@"value");
+    expect([request allHTTPHeaderFields][@"Accept"]).to.equal(@"application/json");
+}
+
 - (void)testRegistrationOfHTTPRequestOperationClass
 {
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];

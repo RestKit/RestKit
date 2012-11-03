@@ -285,8 +285,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     } else {
         requestParameters = parameters;
     }
+    NSMutableURLRequest *multipartRequest = [self.HTTPClient multipartFormRequestWithMethod:stringMethod path:requestPath parameters:requestParameters constructingBodyWithBlock:block];
+    if (self.acceptHeaderValue) [multipartRequest setValue:self.acceptHeaderValue forHTTPHeaderField:@"Accept"];
 
-    return [self.HTTPClient multipartFormRequestWithMethod:stringMethod path:requestPath parameters:requestParameters constructingBodyWithBlock:block];
+    return multipartRequest;
 }
 
 - (void)setHTTPOperationClass:(Class)operationClass
