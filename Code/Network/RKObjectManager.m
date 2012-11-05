@@ -572,8 +572,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
     for (RKObjectRequestOperation *operation in operations) {
         void (^originalCompletionBlock)(void) = [operation.completionBlock copy];
+        __weak RKObjectRequestOperation *weakOperation = operation;
         [operation setCompletionBlock:^{
-            dispatch_queue_t queue = operation.successCallbackQueue ?: dispatch_get_main_queue();
+            dispatch_queue_t queue = weakOperation.successCallbackQueue ?: dispatch_get_main_queue();
             dispatch_group_async(dispatchGroup, queue, ^{
                 if (originalCompletionBlock) {
                     originalCompletionBlock();

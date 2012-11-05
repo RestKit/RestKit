@@ -162,10 +162,11 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
                                                                                                           connectionMapping:connectionMapping
                                                                                                          managedObjectCache:self.managedObjectCache];
+            __weak RKRelationshipConnectionOperation *weakOperation = operation;
             [operation setCompletionBlock:^{
-                if (operation.connectedValue) {
+                if (weakOperation.connectedValue) {
                     if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didConnectRelationship:withValue:usingMapping:)]) {
-                        [mappingOperation.delegate mappingOperation:mappingOperation didConnectRelationship:connectionMapping.relationship withValue:operation.connectedValue usingMapping:connectionMapping];
+                        [mappingOperation.delegate mappingOperation:mappingOperation didConnectRelationship:connectionMapping.relationship withValue:weakOperation.connectedValue usingMapping:connectionMapping];
                     }
                 } else {
                     if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didFailToConnectRelationship:usingMapping:)]) {
