@@ -156,16 +156,6 @@ static RKTestFactory *sharedFactory = nil;
     [RKTestFactory sharedFactory].baseURL = URL;
 }
 
-+ (NSString *)baseURLString
-{
-    return [[[RKTestFactory sharedFactory] baseURL] absoluteString];
-}
-
-+ (void)setBaseURLString:(NSString *)baseURLString
-{
-    [[RKTestFactory sharedFactory] setBaseURL:[NSURL URLWithString:baseURLString]];
-}
-
 + (NSString *)managedObjectStoreFilename
 {
    return [RKTestFactory sharedFactory].managedObjectStoreFilename;

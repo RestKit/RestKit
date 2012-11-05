@@ -96,21 +96,6 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 + (void)setBaseURL:(NSURL *)URL;
 
 /**
- Returns the base URL as a string value.
-
- @return The base URL for the factory, as a string.
- */
-+ (NSString *)baseURLString;
-
-/**
- Sets the base URL for the factory to a new value by constructing an RKURL
- from the given string.
-
- @param baseURLString A string containing the URL to set as the base URL for the factory.
- */
-+ (void)setBaseURLString:(NSString *)baseURLString;
-
-/**
  Returns the filename used when constructing instances of `RKManagedObjectStore` via the factory.
 
  @return A string containing the filename to use when creating a managed object store.
