@@ -272,7 +272,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     if (self.isCancelled) return;
     
     // Map the response
-    NSError *error;
+    NSError *error = nil;
     RKMappingResult *mappingResult = [self performMappingOnResponse:&error];
     if (self.isCancelled) {
         return;

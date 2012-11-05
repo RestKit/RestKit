@@ -183,7 +183,9 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
         if (self.targetObject) {
             self.mappingResult = [[RKMappingResult alloc] initWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:[NSNull null]]];
         } else {
-            self.mappingResult = [[RKMappingResult alloc] initWithDictionary:[NSDictionary dictionary]];
+            // NOTE: For alignment with the behavior of loading an empty array or empty dictionary, if there is a nil targetObject we return a nil mappingResult.
+            // This informs the caller that operation succeeded, but performed no mapping.
+            self.mappingResult = nil;
         }
 
         return;
@@ -230,6 +232,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     self.mapperOperation = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     self.mapperOperation.mappingOperationDataSource = dataSource;
+    self.mapperOperation.targetObject = self.targetObject;
     [self.mapperOperation start];
     if (error) *error = self.mapperOperation.error;
     return self.mapperOperation.mappingResult;
