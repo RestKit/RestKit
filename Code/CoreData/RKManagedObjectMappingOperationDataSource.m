@@ -107,8 +107,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         object = [self.managedObjectCache findInstanceOfEntity:entity
                                        withPrimaryKeyAttribute:primaryKeyAttribute
                                                          value:primaryKeyValue
-                                        inManagedObjectContext:self.managedObjectContext];
-
+                                                 forConnection:NO
+                                        inManagedObjectContext:self.managedObjectContext];                
+        
         if (object && [self.managedObjectCache respondsToSelector:@selector(didFetchObject:)]) {
             [self.managedObjectCache didFetchObject:object];
         }

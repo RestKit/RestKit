@@ -72,6 +72,7 @@
     return [self.managedObjectCache findInstanceOfEntity:self.connectionMapping.relationship.destinationEntity
                                  withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
                                                    value:sourceValue
+                                           forConnection:YES
                                   inManagedObjectContext:self.managedObjectContext];
 }
 
@@ -136,6 +137,7 @@
         NSArray *objects = [self.managedObjectCache findInstancesOfEntity:self.connectionMapping.relationship.destinationEntity
                                                   withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
                                                                     value:value
+                                                            forConnection:YES
                                                    inManagedObjectContext:self.managedObjectContext];
         [result addObjectsFromArray:objects];
     }
@@ -163,6 +165,9 @@
         if ([self.connectionMapping isForeignKeyConnection]) {
             BOOL isToMany = [self isToMany];
             id sourceValue = [self.managedObject valueForKey:self.connectionMapping.sourceKeyPath];
+            if (!sourceValue)
+                return nil;
+
             if (isToMany) {
                 connectionResult = [self findAllConnectedWithSourceValue:sourceValue];
             } else {

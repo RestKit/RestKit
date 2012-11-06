@@ -109,7 +109,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     dispatch_once(&onceToken, ^{
         responseMappingQueue = [NSOperationQueue new];
         [responseMappingQueue setName:@"RKObjectRequestOperation Response Mapping Queue" ];
-        [responseMappingQueue setMaxConcurrentOperationCount:1];
+        [responseMappingQueue setMaxConcurrentOperationCount:NSOperationQueueDefaultMaxConcurrentOperationCount];
     });
     
     return responseMappingQueue;

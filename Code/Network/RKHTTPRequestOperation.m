@@ -23,6 +23,7 @@
 #import "lcl_RK.h"
 #import "RKHTTPUtilities.h"
 #import "RKMIMETypes.h"
+#import "RKObjectManager.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -193,18 +194,35 @@ static NSString *RKStringDescribingStream(NSStream *stream)
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
 {
-    if ([AFHTTPRequestOperation instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)]) {
-        NSURLRequest *returnValue = [super connection:connection willSendRequest:request redirectResponse:redirectResponse];
-        if (returnValue) {
-            if (redirectResponse) RKLogDebug(@"Following redirect request: %@", returnValue);
-            return returnValue;
-        } else {
-            RKLogDebug(@"Not following redirect to %@", request);
-            return nil;
+    if ([AFHTTPRequestOperation instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)])
+        request = [super connection:connection willSendRequest:request redirectResponse:redirectResponse];
+
+    if (request) {
+        AFHTTPClient *client = [RKObjectManager sharedManager].HTTPClient;
+        if (redirectResponse) {
+            RKLogDebug(@"Following redirect request");
+
+            // Was a redirection.  Add HTTP headers back to this new request.
+            NSString *urlString = [request.URL absoluteString];
+            NSString *baseURLString = [client.baseURL absoluteString];
+            if ([urlString hasPrefix:baseURLString]) {
+                NSString *path = [urlString substringFromIndex:[baseURLString length]];
+                request = [client requestWithMethod:request.HTTPMethod path:path parameters:nil];
+            } else {
+                RKLogDebug(@"Not adding headers, redirect is not on our baseURL: %@", urlString);
+            }
+
+            // Log the new request.
+            // Alternatively, we could pass 'self' as the object and update self.request (ro now).
+            // That would also show the correct request URL in the response log message.
+            [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification
+                                                                object:[[RKHTTPRequestOperation alloc] initWithRequest:request]];
         }
-    } else {
-        if (redirectResponse) RKLogDebug(@"Following redirect request: %@", request);
+
         return request;
+    } else {
+        RKLogDebug(@"Not following redirect to %@", request);
+        return nil;
     }
 }
 

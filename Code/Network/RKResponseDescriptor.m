@@ -25,6 +25,8 @@
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 static NSString *RKStringFromIndexSet(NSIndexSet *indexSet) {
     NSMutableString *string = [NSMutableString string];
+    if (!indexSet)
+        return string;
 
     NSRange range = NSMakeRange([indexSet firstIndex], 1);
     while (range.location != NSNotFound) {

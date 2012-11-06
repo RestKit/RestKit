@@ -36,6 +36,7 @@
 - (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
                                     value:(id)primaryKeyValue
+                            forConnection:(BOOL)isForConnection
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 /**
@@ -52,6 +53,7 @@
 - (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
            withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
                              value:(id)primaryKeyValue
+                     forConnection:(BOOL)isForConnection
             inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 ///---------------------------------------------------

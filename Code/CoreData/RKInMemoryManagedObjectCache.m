@@ -56,6 +56,7 @@
 - (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
                                     value:(id)primaryKeyValue
+                            forConnection:(BOOL)isForConnection
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSAssert(self.entityCache, @"Entity cache cannot be nil.");
@@ -70,9 +71,10 @@
 }
 
 - (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
-                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                                     value:(id)primaryKeyValue
-                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+           withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                             value:(id)primaryKeyValue
+                     forConnection:(BOOL)isForConnection
+            inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSAssert(self.entityCache, @"Entity cache cannot be nil.");
 
