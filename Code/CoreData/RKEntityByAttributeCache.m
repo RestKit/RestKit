@@ -169,7 +169,8 @@
         object = [context existingObjectWithID:objectID error:&error];
     }];
     if (! object) {
-        if (error) {
+        // Referential integrity errors often indicates that the temporary objectID does not exist in the specified context
+        if (error && !([objectID isTemporaryID] && [error code] == NSManagedObjectReferentialIntegrityError)) {
             RKLogError(@"Failed to retrieve managed object with ID %@. Error %@\n%@", objectID, [error localizedDescription], [error userInfo]);
         }
 
