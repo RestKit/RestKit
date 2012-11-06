@@ -20,6 +20,19 @@
 
 #import "RKLog.h"
 
+// Hook into Objective-C runtime to configure logging when we are loaded
+@interface RKLogInitializer : NSObject
+@end
+
+@implementation RKLogInitializer
+
++ (void)load
+{
+    RKLogInitialize();
+}
+
+@end
+
 int RKLogLevelForString(NSString *, NSString *);
 
 static BOOL loggingInitialized = NO;
