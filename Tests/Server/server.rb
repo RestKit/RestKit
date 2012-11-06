@@ -277,6 +277,12 @@ class RestKitTestServer < Sinatra::Base
     status 204
     response.headers['Status'] = '304 Not Modified'
   end
+  
+  delete '/humans/1234/whitespace' do
+    content_type 'application/json'
+    status 200
+    ' '
+  end
 
   # start the server if ruby file executed directly
   run! if app_file == $0
