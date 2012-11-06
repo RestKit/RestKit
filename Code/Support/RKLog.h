@@ -183,7 +183,7 @@ RKlcl_configure_by_name("App", level);
  For example to configure the equivalent of setting the following in code:
  RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
 
- Define an environment variable named RKLogLevel.RestKit.Network and set its value to "Trace"
+ Define an environment variable named 'RKLogLevel.RestKit.Network' and set its value to "Trace"
 
  See lcl_config_components_RK.h for configurable RestKit logging components.
 
