@@ -106,7 +106,6 @@ RKlcl_log(RKLogComponent, RKlcl_vTrace, @"" __VA_ARGS__)
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelCritical);
  */
 #define RKLogConfigureByName(name, level)                                               \
-RKLogInitialize();                                                                      \
 RKlcl_configure_by_name(name, level);
 
 /**
@@ -115,7 +114,6 @@ RKlcl_configure_by_name(name, level);
  their apps.
  */
 #define RKLogSetAppLoggingLevel(level)                                                  \
-RKLogInitialize();                                                                      \
 RKlcl_configure_by_name("App", level);
 
 /**
@@ -177,11 +175,6 @@ RKlcl_configure_by_name("App", level);
         #define RKLogLevelDefault RKLogLevelWarning
     #endif
 #endif
-
-/**
- Initialize the logging environment
- */
-void RKLogInitialize(void);
 
 /**
  Configure RestKit logging from environment variables.

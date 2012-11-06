@@ -28,25 +28,14 @@
 
 + (void)load
 {
-    RKLogInitialize();
+    RKlcl_configure_by_name("RestKit*", RKLogLevelDefault);
+    RKlcl_configure_by_name("App", RKLogLevelDefault);
+    RKLogInfo(@"RestKit logging initialized...");
 }
 
 @end
 
 int RKLogLevelForString(NSString *, NSString *);
-
-static BOOL loggingInitialized = NO;
-
-void RKLogInitialize(void)
-{
-    if (loggingInitialized == NO) {
-        RKlcl_configure_by_name("RestKit*", RKLogLevelDefault);
-        RKlcl_configure_by_name("App", RKLogLevelDefault);
-        RKLogInfo(@"RestKit initialized...");
-        loggingInitialized = YES;
-    }
-}
-
 
 void RKLogConfigureFromEnvironment(void)
 {
