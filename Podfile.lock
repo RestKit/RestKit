@@ -2,19 +2,23 @@
 PODS:
 - Expecta (0.2.0)
 - Kiwi (1.1.0)
-- OCHamcrest (1.8)
-- OCMock (2.0.1)
+- OCHamcrest (HEAD based on 1.8)
+- OCMock (2.0.1.classmocks)
 
 DEPENDENCIES:
 - Expecta (= 0.2.0)
 - Kiwi (= 1.1.0)
-- OCHamcrest (= 1.8)
-- OCMock (= 2.0.1)
+- OCHamcrest (HEAD)
+- OCMock (from `git@github.com:blakewatters/ocmock.git')
+
+EXTERNAL SOURCES:
+  OCMock:
+    :git: git@github.com:blakewatters/ocmock.git
 
 SPEC CHECKSUMS:
   Expecta: 1521da8c54c253277d5fae673f516c76ed838bc7
   Kiwi: 9141d15cf4f52a2178139ea16722f021b4059906
   OCHamcrest: 75258b3746b118ed9de96a6a8d985546f32e0f9b
-  OCMock: 77a9c4c57af6bf258a537d34cf09abf422affede
+  OCMock: 5ab9b659efcd39b4ca4825628bee3df51a189ff8
 
-COCOAPODS: 0.15.2
+COCOAPODS: 0.16.0.rc3
