@@ -68,9 +68,14 @@ static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPath(NSArray *respon
  */
 static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObject(NSArray *requestDescriptors, id object)
 {
-    for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-        if ([requestDescriptor matchesObject:object]) return requestDescriptor;
-    }
+    Class searchClass = [object class];
+    do {
+        for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
+            if ([requestDescriptor.objectClass isEqual:searchClass]) return requestDescriptor;
+        }
+        searchClass = [searchClass superclass];
+    } while (searchClass);
+    
     return nil;
 }
 
@@ -459,7 +464,11 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 - (void)addRequestDescriptor:(RKRequestDescriptor *)requestDescriptor
 {
     NSParameterAssert(requestDescriptor);
+    if ([self.requestDescriptors containsObject:requestDescriptor]) return;
     NSAssert([requestDescriptor isKindOfClass:[RKRequestDescriptor class]], @"Expected an object of type RKRequestDescriptor, got '%@'", [requestDescriptor class]);
+    [self.requestDescriptors enumerateObjectsUsingBlock:^(RKRequestDescriptor *registeredDescriptor, NSUInteger idx, BOOL *stop) {
+        NSAssert(![registeredDescriptor.objectClass isEqual:requestDescriptor.objectClass], @"Cannot add a request descriptor for the same object class as an existing request descriptor.");
+    }];
     [self.mutableRequestDescriptors addObject:requestDescriptor];
 }
 
