@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <objc/message.h>
+#import <objc/runtime.h>
 #import "RKPropertyInspector.h"
 #import "RKLog.h"
 
@@ -66,6 +66,77 @@
     return type;
 }
 
++ (Class)kvcClassForObjCType:(const char *)type
+{
+    if (type) {
+        // https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
+        switch (type[0]) {
+            case '@': {
+                char *openingQuoteLoc = strchr(type, '"');
+                if (openingQuoteLoc) {
+                    char *closingQuoteLoc = strchr(openingQuoteLoc+1, '"');
+                    if (closingQuoteLoc) {
+                        size_t classNameStrLen = closingQuoteLoc-openingQuoteLoc;
+                        char className[classNameStrLen];
+                        memcpy(className, openingQuoteLoc+1, classNameStrLen-1);
+                        // Null-terminate the array to stringify
+                        className[classNameStrLen-1] = '\0';
+                        return objc_getClass(className);
+                    }
+                }
+                // If there is no quoted class type (id), it can be used as-is.
+                return Nil;
+            }
+                
+            case 'c': // char
+            case 'C': // unsigned char
+            case 's': // short
+            case 'S': // unsigned short
+            case 'i': // int
+            case 'I': // unsigned int
+            case 'l': // long
+            case 'L': // unsigned long
+            case 'q': // long long
+            case 'Q': // unsigned long long
+            case 'f': // float
+            case 'd': // double
+                return [NSNumber class];
+                
+            case 'B': // C++ bool or C99 _Bool
+                return objc_getClass("NSCFBoolean")
+                ?: objc_getClass("__NSCFBoolean")
+                ?: [NSNumber class];
+                
+            case '{': // struct
+            case 'b': // bitfield
+            case '(': // union
+                return [NSValue class];
+                
+            case '[': // c array
+            case '^': // pointer
+            case 'v': // void
+            case '*': // char *
+            case '#': // Class
+            case ':': // selector
+            case '?': // unknown type (function pointer, etc)
+            default:
+                break;
+        }
+    }
+    return Nil;
+}
+
++ (Class)kvcClassFromPropertyAttributes:(const char *)attr
+{
+    if (attr) {
+        const char *typeIdentifierLoc = strchr(attr, 'T');
+        if (typeIdentifierLoc) {
+            return [self kvcClassForObjCType:(typeIdentifierLoc+1)];
+        }
+    }
+    return Nil;
+}
+
 - (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass
 {
     NSMutableDictionary *propertyNames = [_propertyNamesToTypesCache objectForKey:theClass];
@@ -78,24 +149,24 @@
     Class currentClass = theClass;
     while (currentClass != nil) {
         // Get the raw list of properties
-        unsigned int outCount;
+        unsigned int outCount = 0;
         objc_property_t *propList = class_copyPropertyList(currentClass, &outCount);
 
         // Collect the property names
-        int i;
-        NSString *propName;
-        for (i = 0; i < outCount; i++) {
-            // property_getAttributes() returns everything we need to implement this...
-            // See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
+        for (typeof(outCount) i = 0; i < outCount; i++) {
             objc_property_t *prop = propList + i;
-            NSString *attributeString = [NSString stringWithCString:property_getAttributes(*prop) encoding:NSUTF8StringEncoding];
-            propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
+            const char *propName = property_getName(*prop);
 
-            if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
-                const char *className = [[RKPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
-                Class aClass = objc_getClass(className);
-                if (aClass) {
-                    [propertyNames setObject:aClass forKey:propName];
+            if (strcmp(propName, "_mapkit_hasPanoramaID") != 0) {
+                const char *attr = property_getAttributes(*prop);
+                if (attr) {
+                    Class aClass = [RKPropertyInspector kvcClassFromPropertyAttributes:attr];
+                    if (aClass) {
+                        NSString *propNameObj = [[NSString alloc] initWithCString:propName encoding:NSUTF8StringEncoding];
+                        if (propNameObj) {
+                            [propertyNames setObject:aClass forKey:propNameObj];
+                        }
+                    }
                 }
             }
         }
