@@ -115,7 +115,9 @@ static BOOL RKIsManagedObject(id object)
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     Class sourceType = [value class];
 
-    if ([sourceType isSubclassOfClass:[NSString class]]) {
+    if ([destinationType isSubclassOfClass:[NSData class]]) {
+        return [NSKeyedArchiver archivedDataWithRootObject:value];
+    } else if ([sourceType isSubclassOfClass:[NSString class]]) {
         if ([destinationType isSubclassOfClass:[NSDate class]]) {
             // String -> Date
             return [self parseDateFromString:(NSString *)value];

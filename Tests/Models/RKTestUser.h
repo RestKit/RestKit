@@ -9,23 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RKTestAddress.h"
 
-@interface RKTestUser : NSObject {
-    NSNumber *_userID;
-    NSString *_name;
-    NSDate *_birthDate;
-    NSArray *_favoriteColors;
-    NSDictionary *_addressDictionary;
-    NSURL *_website;
-    NSNumber *_isDeveloper;
-    NSNumber *_luckyNumber;
-    NSDecimalNumber *_weight;
-    NSArray *_interests;
-    NSString *_country;
-
-    // Relationships
-    RKTestAddress *_address;
-    NSArray *_friends;
-}
+@interface RKTestUser : NSObject
 
 @property (nonatomic, strong) NSNumber *userID;
 @property (nonatomic, strong) NSString *name;
@@ -43,6 +27,7 @@
 @property (nonatomic, strong) NSArray *friends;
 @property (nonatomic, strong) NSSet *friendsSet;
 @property (nonatomic, strong) NSOrderedSet *friendsOrderedSet;
+@property (nonatomic, strong) NSData *data;
 
 + (RKTestUser *)user;
 

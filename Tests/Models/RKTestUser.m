@@ -11,23 +11,6 @@
 
 @implementation RKTestUser
 
-@synthesize userID = _userID;
-@synthesize name = _name;
-@synthesize birthDate = _birthDate;
-@synthesize favoriteDate = _favoriteDate;
-@synthesize favoriteColors = _favoriteColors;
-@synthesize addressDictionary = _addressDictionary;
-@synthesize website = _website;
-@synthesize isDeveloper = _isDeveloper;
-@synthesize luckyNumber = _luckyNumber;
-@synthesize weight = _weight;
-@synthesize interests = _interests;
-@synthesize country = _country;
-@synthesize address = _address;
-@synthesize friends = _friends;
-@synthesize friendsSet = _friendsSet;
-@synthesize friendsOrderedSet = _friendsOrderedSet;
-
 + (RKTestUser *)user
 {
     return [self new];
