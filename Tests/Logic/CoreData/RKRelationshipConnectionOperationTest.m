@@ -9,6 +9,8 @@
 #import "RKTestEnvironment.h"
 #import "RKHuman.h"
 #import "RKCat.h"
+#import "RKHouse.h"
+#import "RKResident.h"
 #import "RKRelationshipConnectionOperation.h"
 #import "RKFetchRequestManagedObjectCache.h"
 
@@ -83,6 +85,123 @@
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connectionMapping:connectionMapping managedObjectCache:managedObjectCache];
     [operation start];
     assertThat(human.cats, is(empty()));
+}
+
+#pragma mark - Key Path Connections
+
+- (void)testConnectingToOneRelationshipViaKeyPath
+{
+    NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"RKHuman"];
+    NSRelationshipDescription *relationship = [entity relationshipsByName][@"landlord"];
+    RKConnectionMapping *connectionMapping = [[RKConnectionMapping alloc] initWithRelationship:relationship sourceKeyPath:@"residence.owner" destinationKeyPath:nil matcher:nil];
+
+    RKHuman *tenant = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHouse *house = [RKTestFactory insertManagedObjectForEntityForName:@"RKHouse" inManagedObjectContext:nil withProperties:nil];
+    house.owner = homeowner;
+    tenant.residence = house;
+
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:tenant connectionMapping:connectionMapping managedObjectCache:managedObjectCache];
+    [operation start];
+
+    expect(tenant.landlord).to.equal(homeowner);
+}
+
+- (void)testConnectingToManyRelationshipViaKeyPath
+{
+    NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"RKHuman"];
+    NSRelationshipDescription *relationship = [entity relationshipsByName][@"roommates"];
+    RKConnectionMapping *connectionMapping = [[RKConnectionMapping alloc] initWithRelationship:relationship sourceKeyPath:@"house.residents" destinationKeyPath:nil matcher:nil];
+
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHouse *house = [RKTestFactory insertManagedObjectForEntityForName:@"RKHouse" inManagedObjectContext:nil withProperties:nil];
+    RKResident *resident1 = [RKTestFactory insertManagedObjectForEntityForName:@"RKResident" inManagedObjectContext:nil withProperties:nil];
+    RKResident *resident2 = [RKTestFactory insertManagedObjectForEntityForName:@"RKResident" inManagedObjectContext:nil withProperties:nil];
+
+    human.house = house;
+    house.residents = [NSSet setWithObjects:resident1, resident2, nil];
+
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connectionMapping:connectionMapping managedObjectCache:managedObjectCache];
+    [operation start];
+
+    NSSet *expectedRoommates = [NSSet setWithObjects:resident1, resident2, nil];
+    expect(human.roommates).to.equal(expectedRoommates);
+}
+
+- (void)testConnectingAcrossToManyRelationshipsViaKeyPath
+{
+    NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"RKHuman"];
+    NSRelationshipDescription *relationship = [entity relationshipsByName][@"friends"];
+    RKConnectionMapping *connectionMapping = [[RKConnectionMapping alloc] initWithRelationship:relationship sourceKeyPath:@"housesResidedAt.ownersInChronologicalOrder" destinationKeyPath:nil matcher:nil];
+
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+
+    // Create 2 houses with 2 previous owners
+    RKHouse *house1 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHouse" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner1 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner2 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    house1.ownersInChronologicalOrder = [NSOrderedSet orderedSetWithObjects:homeowner1, homeowner2, nil];
+
+    RKHouse *house2 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHouse" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner3 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner4 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    house2.ownersInChronologicalOrder = [NSOrderedSet orderedSetWithObjects:homeowner3, homeowner4, nil];
+
+    human.housesResidedAt = [NSOrderedSet orderedSetWithObjects:house1, house2, nil];
+
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connectionMapping:connectionMapping managedObjectCache:managedObjectCache];
+    [operation start];
+
+    NSSet *expectedFriends = [NSSet setWithObjects:homeowner1, homeowner2, homeowner3, homeowner4, nil];
+    expect(human.friends).to.haveCountOf(4);
+    expect(human.friends).to.equal(expectedFriends);
+}
+
+- (void)testConnectingToManyOrderedSetRelationshipViaKeyPath
+{
+    NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"RKHuman"];
+    NSRelationshipDescription *relationship = [entity relationshipsByName][@"friendsInTheOrderWeMet"];
+    RKConnectionMapping *connectionMapping = [[RKConnectionMapping alloc] initWithRelationship:relationship sourceKeyPath:@"housesResidedAt.ownersInChronologicalOrder" destinationKeyPath:nil matcher:nil];
+
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+
+    // Create 2 houses with 2 previous owners
+    RKHouse *house1 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHouse" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner1 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner2 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    house1.ownersInChronologicalOrder = [NSOrderedSet orderedSetWithObjects:homeowner1, homeowner2, nil];
+
+    RKHouse *house2 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHouse" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner3 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *homeowner4 = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    house2.ownersInChronologicalOrder = [NSOrderedSet orderedSetWithObjects:homeowner3, homeowner4, nil];
+
+    human.housesResidedAt = [NSOrderedSet orderedSetWithObjects:house1, house2, nil];
+
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connectionMapping:connectionMapping managedObjectCache:managedObjectCache];
+    [operation start];
+
+    NSOrderedSet *expectedFriends = [NSOrderedSet orderedSetWithObjects:homeowner1, homeowner2, homeowner3, homeowner4, nil];
+    expect(human.friendsInTheOrderWeMet).to.equal(expectedFriends);
+}
+
+- (void)testConnectingToManyOrderedSetRelationshipWithEmptyTargetViaKeyPath
+{
+    NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"RKHuman"];
+    NSRelationshipDescription *relationship = [entity relationshipsByName][@"friendsInTheOrderWeMet"];
+    RKConnectionMapping *connectionMapping = [[RKConnectionMapping alloc] initWithRelationship:relationship sourceKeyPath:@"housesResidedAt.ownersInChronologicalOrder" destinationKeyPath:nil matcher:nil];
+
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connectionMapping:connectionMapping managedObjectCache:managedObjectCache];
+    [operation start];
+
+    expect([human.friendsInTheOrderWeMet set]).to.beEmpty();
 }
 
 @end

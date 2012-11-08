@@ -72,6 +72,14 @@ BOOL RKObjectIsCollectionContainingOnlyManagedObjects(id object)
     return YES;
 }
 
+BOOL RKObjectIsCollectionOfCollections(id object)
+{
+    if (! RKObjectIsCollection(object)) return NO;
+    id collectionSanityCheckObject = nil;
+    if ([object respondsToSelector:@selector(anyObject)]) collectionSanityCheckObject = [object anyObject];
+    if ([object respondsToSelector:@selector(lastObject)]) collectionSanityCheckObject = [object lastObject];
+    return RKObjectIsCollection(collectionSanityCheckObject);
+}
 
 Class RKKeyValueCodingClassForObjCType(const char *type)
 {

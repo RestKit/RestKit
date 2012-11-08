@@ -25,10 +25,17 @@
 #import "RKManagedObjectCaching.h"
 #import "RKDynamicMappingMatcher.h"
 #import "RKErrors.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
+
+static id RKMutableSetValueForRelationship(NSRelationshipDescription *relationship)
+{
+    if (! [relationship isToMany]) return nil;
+    return [relationship isOrdered] ? [NSMutableOrderedSet orderedSet] : [NSMutableSet set];
+}
 
 @interface RKRelationshipConnectionOperation ()
 @property (nonatomic, strong, readwrite) NSManagedObject *managedObject;
@@ -81,18 +88,15 @@
 
     // NOTE: This is a nasty hack to work around the fact that NSOrderedSet does not support key-value
     // collection operators. We try to detect and unpack a doubly wrapped collection
-    if ([self.connectionMapping.relationship isOrdered]
-        && [result conformsToProtocol:@protocol(NSFastEnumeration)]
-        && [[result lastObject] conformsToProtocol:@protocol(NSFastEnumeration)]) {
-
-        NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSet];
+    if ([self.connectionMapping.relationship isToMany] && RKObjectIsCollectionOfCollections(result)) {
+        id mutableSet = RKMutableSetValueForRelationship(self.connectionMapping.relationship);
         for (id<NSFastEnumeration> enumerable in result) {
             for (id object in enumerable) {
-                [set addObject:object];
+                [mutableSet addObject:object];
             }
         }
 
-        return set;
+        return mutableSet;
     }
 
     if ([self.connectionMapping.relationship isToMany]) {
@@ -107,6 +111,12 @@
                 return [NSOrderedSet orderedSetWithSet:result];
             } else {
                 return result;
+            }
+        } else if ([result isKindOfClass:[NSOrderedSet class]]) {
+            if ([self.connectionMapping.relationship isOrdered]) {
+                return result;
+            } else {
+                return [(NSOrderedSet *)result set];
             }
         } else {
             if ([self.connectionMapping.relationship isOrdered]) {

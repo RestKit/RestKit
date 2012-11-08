@@ -39,9 +39,13 @@
 @dynamic catIDs;
 @dynamic catsInOrderByAge;
 
-- (NSString *)polymorphicResourcePath
-{
-    return @"/this/is/the/path";
-}
+@dynamic house;
+@dynamic landlord;
+@dynamic roommates;
+@dynamic tenants;
+@dynamic residence;
+@dynamic housesResidedAt;
+@dynamic friends;
+@dynamic friendsInTheOrderWeMet;
 
 @end

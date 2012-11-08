@@ -21,9 +21,9 @@
 
 #import <CoreData/CoreData.h>
 
-@interface RKHouse : NSManagedObject {
+@class RKHuman;
 
-}
+@interface RKHouse : NSManagedObject
 
 @property (nonatomic, strong) NSString *city;
 @property (nonatomic, strong) NSDate *createdAt;
@@ -33,5 +33,9 @@
 @property (nonatomic, strong) NSString *street;
 @property (nonatomic, strong) NSDate *updatedAt;
 @property (nonatomic, strong) NSString *zip;
+
+@property (nonatomic, strong) RKHuman *owner;
+@property (nonatomic, strong) NSSet *residents;
+@property (nonatomic, strong) NSOrderedSet *ownersInChronologicalOrder;
 
 @end

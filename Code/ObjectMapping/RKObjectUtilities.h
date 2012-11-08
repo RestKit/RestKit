@@ -70,6 +70,14 @@ BOOL RKObjectIsCollection(id object);
 BOOL RKObjectIsCollectionContainingOnlyManagedObjects(id object);
 
 /**
+ Returns a Boolean value that indicates if the given object is a collection containing subcollections.
+ 
+ @param object The object to be tested.
+ @return `YES` if the object is a collection of collections, else `NO`.
+ */
+BOOL RKObjectIsCollectionOfCollections(id object);
+
+/**
  Returns an appropriate class to use for KVC access based on the Objective C runtime type encoding.
  
  Objective C Runtime type encodings: https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html

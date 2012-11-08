@@ -57,14 +57,13 @@
 {
     NSParameterAssert(relationship);
     NSParameterAssert(sourceKeyPath);
-    NSParameterAssert(destinationKeyPath);
 
     Class connectionClass = [self connectionMappingClassForRelationship:relationship sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath];
     self = [[connectionClass alloc] init];
     if (self) {
         self.relationship = relationship;
         self.sourceKeyPath = sourceKeyPath;
-        self.destinationKeyPath = destinationKeyPath;
+        self.destinationKeyPath = destinationKeyPath ?: [relationship name];
         self.matcher = matcher;
     }
 

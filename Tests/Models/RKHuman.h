@@ -20,7 +20,7 @@
 
 #import <CoreData/CoreData.h>
 
-@class RKCat;
+@class RKCat, RKHouse, RKResident;
 
 @interface RKHuman : NSManagedObject
 
@@ -41,6 +41,16 @@
 @property (nonatomic, strong) NSArray *catIDs;
 @property (nonatomic, strong) NSOrderedSet *catsInOrderByAge;
 
+@property (nonatomic, strong) RKHouse *house;
+@property (nonatomic, strong) RKHuman *landlord;
+@property (nonatomic, strong) NSSet *roommates;
+@property (nonatomic, strong) NSSet *tenants;
+@property (nonatomic, strong) RKHouse *residence;
+@property (nonatomic, strong) NSSet *housesResidedAt;
+
+@property (nonatomic, strong) NSSet *friends;
+@property (nonatomic, strong) NSOrderedSet *friendsInTheOrderWeMet;
+
 @end
 
 @interface RKHuman (CoreDataGeneratedAccessors)
@@ -48,5 +58,4 @@
 - (void)removeCatsObject:(RKCat *)value;
 - (void)addCats:(NSSet *)value;
 - (void)removeCats:(NSSet *)value;
-
 @end

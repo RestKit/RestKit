@@ -130,6 +130,9 @@
 //
 // @return A new instance of a RKObjectConnectionMapping.
 // */
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath matcher:(RKDynamicMappingMatcher *)matcher;
+- (id)initWithRelationship:(NSRelationshipDescription *)relationship
+             sourceKeyPath:(NSString *)sourceKeyPath
+        destinationKeyPath:(NSString *)destinationKeyPath
+                   matcher:(RKDynamicMappingMatcher *)matcher;
 
 @end
