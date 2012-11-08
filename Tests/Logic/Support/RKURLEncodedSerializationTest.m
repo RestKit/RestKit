@@ -40,7 +40,7 @@
 {
     NSString *url = @"http://some.server.com/path/action?subject=\"That thing I sent\"&email=\"me@me.com\"";
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:url forKey:@"url"];
-    NSString *expectedURL = @"url=http%3A%2F%2Fsome%2Eserver%2Ecom%2Fpath%2Faction%3Fsubject%3D%22That%20thing%20I%20sent%22%26email%3D%22me%40me%2Ecom%22";
+    NSString *expectedURL = @"url=http%3A%2F%2Fsome.server.com%2Fpath%2Faction%3Fsubject%3D%22That%20thing%20I%20sent%22%26email%3D%22me%40me.com%22";
     NSString *actualURL = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
     expect(actualURL).to.equal(expectedURL);
 }
