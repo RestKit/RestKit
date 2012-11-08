@@ -22,8 +22,6 @@
 
 /**
  The default filename used for managed object stores created via the factory.
-
- @see `[RKTestFactory setManagedObjectStoreFilename:]`
  */
 extern NSString * const RKTestFactoryDefaultStoreFilename;
 
@@ -94,20 +92,6 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  @param URL The new base URL.
  */
 + (void)setBaseURL:(NSURL *)URL;
-
-/**
- Returns the filename used when constructing instances of `RKManagedObjectStore` via the factory.
-
- @return A string containing the filename to use when creating a managed object store.
- */
-+ (NSString *)managedObjectStoreFilename;
-
-/**
- Sets the filename to use when the factory constructs an instance of `RKManagedObjectStore`.
-
- @param managedObjectStoreFilename A string containing the filename to use when creating managed object store instances.
- */
-+ (void)setManagedObjectStoreFilename:(NSString *)managedObjectStoreFilename;
 
 ///-----------------------------------------------------------------------------
 /// @name Defining & Instantiating Objects from Factories

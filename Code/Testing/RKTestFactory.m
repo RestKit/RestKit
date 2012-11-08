@@ -28,7 +28,6 @@
 @interface RKTestFactory ()
 
 @property (nonatomic, strong) NSURL *baseURL;
-@property (nonatomic, strong) NSString *managedObjectStoreFilename;
 @property (nonatomic, strong) NSMutableDictionary *factoryBlocks;
 @property (nonatomic, strong) NSMutableDictionary *sharedObjectsByFactoryName;
 
@@ -74,7 +73,6 @@ static RKTestFactory *sharedFactory = nil;
     self = [super init];
     if (self) {
         self.baseURL = [NSURL URLWithString:@"http://127.0.0.1:4567"];
-        self.managedObjectStoreFilename = RKTestFactoryDefaultStoreFilename;
         self.factoryBlocks = [NSMutableDictionary new];
         self.sharedObjectsByFactoryName = [NSMutableDictionary new];
         [self defineDefaultFactories];
@@ -154,16 +152,6 @@ static RKTestFactory *sharedFactory = nil;
 + (void)setBaseURL:(NSURL *)URL
 {
     [RKTestFactory sharedFactory].baseURL = URL;
-}
-
-+ (NSString *)managedObjectStoreFilename
-{
-   return [RKTestFactory sharedFactory].managedObjectStoreFilename;
-}
-
-+ (void)setManagedObjectStoreFilename:(NSString *)managedObjectStoreFilename
-{
-    [RKTestFactory sharedFactory].managedObjectStoreFilename = managedObjectStoreFilename;
 }
 
 + (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block
