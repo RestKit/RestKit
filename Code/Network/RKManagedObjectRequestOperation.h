@@ -141,7 +141,7 @@
 
  Please see the above discussion of 'Deleting Managed Objects for `DELETE` requests' for more details.
 
- **Default**: `NO`
+ **Default**: `YES`
  */
 @property (nonatomic, assign) BOOL deletesOrphanedObjects;
 

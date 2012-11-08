@@ -102,6 +102,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     self = [super initWithHTTPRequestOperation:requestOperation responseDescriptors:responseDescriptors];
     if (self) {
         self.savesToPersistentStore = YES;
+        self.deletesOrphanedObjects = YES;
     }
     return self;
 }
