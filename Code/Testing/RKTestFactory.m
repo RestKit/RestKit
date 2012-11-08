@@ -228,6 +228,12 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)setUp
 {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // On initial set up, perform a tear down to clear any state from the application launch
+        [self tearDown];
+    });
+
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
     [RKManagedObjectStore setDefaultStore:nil];
