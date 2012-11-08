@@ -57,7 +57,7 @@
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     expect(error).to.beNil();
-    expect(string).to.equal(@"key2-form-name=value2&key1-form-name=value1");
+    expect(string).to.equal(@"key1-form-name=value1&key2-form-name=value2");
 }
 
 - (void)testShouldSerializeADate
@@ -92,7 +92,7 @@
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     expect(error).to.beNil();
-    expect(string).to.equal(@"key1-form-name=value1&date-form-name=01/01/1970");
+    expect(string).to.equal(@"date-form-name=01/01/1970&key1-form-name=value1");
 }
 
 - (void)testShouldSerializeADateToJSON
@@ -155,7 +155,7 @@
 
     expect(error).to.beNil();
     #if TARGET_OS_IPHONE
-    expect(string).to.equal(@"key1-form-name=value1&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&relationship2-form-name[subKey1]=subValue1");
+    expect(string).to.equal(@"key1-form-name=value1&key2-form-name=value2&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&relationship2-form-name[subKey1]=subValue1");
     #else
     expect(string).to.equal(@"relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1");
     #endif
