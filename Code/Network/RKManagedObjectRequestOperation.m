@@ -153,10 +153,10 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
         NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
         NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
         NSMutableArray *managedObjects = [NSMutableArray array];
-        [self.managedObjectContext performBlockAndWait:^{
+        [self.privateContext performBlockAndWait:^{
             NSError *error = nil;
             for (NSFetchRequest *fetchRequest in fetchRequests) {
-                NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                NSArray *fetchedObjects = [self.privateContext executeFetchRequest:fetchRequest error:&error];
                 if (fetchedObjects) {
                     [managedObjects addObjectsFromArray:fetchedObjects];
                 } else {
