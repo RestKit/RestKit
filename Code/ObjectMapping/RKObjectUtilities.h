@@ -68,3 +68,30 @@ BOOL RKObjectIsCollection(id object);
  @return `YES` if the object is a collection containing only `NSManagedObject` derived objects.
  */
 BOOL RKObjectIsCollectionContainingOnlyManagedObjects(id object);
+
+/**
+ Returns an appropriate class to use for KVC access based on the Objective C runtime type encoding.
+ 
+ Objective C Runtime type encodings: https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
+ KVC Scalar/Structure support: http://developer.apple.com/library/ios/#documentation/cocoa/conceptual/KeyValueCoding/Articles/DataTypes.html#//apple_ref/doc/uid/20002171-BAJEAIEE
+ 
+ @param type An Objective C Runtime type encoding
+ @return The class name for the property type encoded in the given attribute string, an appropriate class for wrapping/unwrapping the primitive type, or `Nil` when no transformation is required or possible.
+ */
+Class RKKeyValueCodingClassForObjCType(const char *type);
+
+/**
+ Returns an appropriate class to use for KVC access based on the output obtained via the `property_getAttributes` reflection API.
+ 
+ @param attributeString A c string containing encoding attribute information.
+ @return The class name for the property type encoded in the given attribute string, an appropriate class for wrapping/unwrapping the primitive type, or `Nil` when no transformation is required or possible.
+ */
+Class RKKeyValueCodingClassFromPropertyAttributes(const char *attr);
+
+/**
+ Returns the name of a property when provided the name of a property obtained via the `property_getAttributes` reflection API.
+ 
+ @param attributeString A string object encoding attribute information.
+ @return The class name for the property type encoded in the given attribute string or `@"NULL"` if the property does not have an object type (the declared property is for a primitive type).
+ */
+NSString *RKPropertyTypeFromAttributeString(NSString *attributeString);

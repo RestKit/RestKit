@@ -94,7 +94,7 @@
         return NO;
     }
 
-    Class attributeType = [[RKPropertyInspector sharedInspector] typeForProperty:self.attribute ofEntity:self.entity];
+    Class attributeType = [[RKPropertyInspector sharedInspector] classForPropertyNamed:self.attribute ofEntity:self.entity];
     return [attributeType instancesRespondToSelector:@selector(stringValue)];
 }
 

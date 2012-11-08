@@ -269,7 +269,8 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:@{[NSNull null] : mapping}];
-    mapper.targetObject = [NSDictionary new];
+    NSDictionary *dictionary = [NSDictionary new];
+    mapper.targetObject = dictionary;
     [mapper start];
     assertThat(mapper.error, is(notNilValue()));
     // TODO: Better check on the error type...

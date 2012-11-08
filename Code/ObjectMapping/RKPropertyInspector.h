@@ -60,18 +60,6 @@
  @param objectClass The class to retrieve the property from.
  @return A `Class` object specifying the type of the requested property.
  */
-- (Class)typeForProperty:(NSString *)propertyName ofClass:(Class)objectClass;
-
-///------------------------------------------------------
-/// @name Retrieving the Properties and Types for a Class
-///------------------------------------------------------
-
-/**
- Returns the name of a property when provided the name of a property obtained via the `property_getAttributes` reflection API.
-
- @param attributeString A string object encoding attribute information.
- @return The class name for the property type encoded in the given attribute string or `@"NULL"` if the property does not have an object type (the declared property is for a primitive type).
- */
-+ (NSString *)propertyTypeFromAttributeString:(NSString *)attributeString;
+- (Class)classForPropertyNamed:(NSString *)propertyName ofClass:(Class)objectClass;
 
 @end

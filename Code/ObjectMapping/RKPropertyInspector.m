@@ -18,9 +18,10 @@
 //  limitations under the License.
 //
 
-#import <objc/message.h>
+#import <objc/runtime.h>
 #import "RKPropertyInspector.h"
 #import "RKLog.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -49,23 +50,6 @@
     return self;
 }
 
-
-+ (NSString *)propertyTypeFromAttributeString:(NSString *)attributeString
-{
-    NSString *type = [NSString string];
-    NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
-    [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
-
-    // we are not dealing with an object
-    if ([typeScanner isAtEnd]) {
-        return @"NULL";
-    }
-    [typeScanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\"@"] intoString:NULL];
-    // this gets the actual object type
-    [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\""] intoString:&type];
-    return type;
-}
-
 - (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass
 {
     NSMutableDictionary *propertyNames = [_propertyNamesToTypesCache objectForKey:theClass];
@@ -78,24 +62,24 @@
     Class currentClass = theClass;
     while (currentClass != nil) {
         // Get the raw list of properties
-        unsigned int outCount;
+        unsigned int outCount = 0;
         objc_property_t *propList = class_copyPropertyList(currentClass, &outCount);
 
         // Collect the property names
-        int i;
-        NSString *propName;
-        for (i = 0; i < outCount; i++) {
-            // property_getAttributes() returns everything we need to implement this...
-            // See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
+        for (typeof(outCount) i = 0; i < outCount; i++) {
             objc_property_t *prop = propList + i;
-            NSString *attributeString = [NSString stringWithCString:property_getAttributes(*prop) encoding:NSUTF8StringEncoding];
-            propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
+            const char *propName = property_getName(*prop);
 
-            if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
-                const char *className = [[RKPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
-                Class aClass = objc_getClass(className);
-                if (aClass) {
-                    [propertyNames setObject:aClass forKey:propName];
+            if (strcmp(propName, "_mapkit_hasPanoramaID") != 0) {
+                const char *attr = property_getAttributes(*prop);
+                if (attr) {
+                    Class aClass = RKKeyValueCodingClassFromPropertyAttributes(attr);
+                    if (aClass) {
+                        NSString *propNameObj = [[NSString alloc] initWithCString:propName encoding:NSUTF8StringEncoding];
+                        if (propNameObj) {
+                            [propertyNames setObject:aClass forKey:propNameObj];
+                        }
+                    }
                 }
             }
         }
@@ -109,7 +93,7 @@
     return propertyNames;
 }
 
-- (Class)typeForProperty:(NSString *)propertyName ofClass:(Class)objectClass
+- (Class)classForPropertyNamed:(NSString *)propertyName ofClass:(Class)objectClass
 {
     NSDictionary *dictionary = [self propertyNamesAndTypesForClass:objectClass];
     return [dictionary objectForKey:propertyName];

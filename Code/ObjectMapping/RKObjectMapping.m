@@ -294,7 +294,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 
 - (Class)classForProperty:(NSString *)propertyName
 {
-    return [[RKPropertyInspector sharedInspector] typeForProperty:propertyName ofClass:self.objectClass];
+    return [[RKPropertyInspector sharedInspector] classForPropertyNamed:propertyName ofClass:self.objectClass];
 }
 
 - (Class)classForKeyPath:(NSString *)keyPath
@@ -302,7 +302,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     NSArray *components = [keyPath componentsSeparatedByString:@"."];
     Class propertyClass = self.objectClass;
     for (NSString *property in components) {
-        propertyClass = [[RKPropertyInspector sharedInspector] typeForProperty:property ofClass:propertyClass];
+        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass];
         if (! propertyClass) break;
     }
 

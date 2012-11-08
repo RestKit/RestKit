@@ -28,7 +28,7 @@
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a nil context");
 
     id searchValue = primaryKeyValue;
-    Class type = [[RKPropertyInspector sharedInspector] typeForProperty:primaryKeyAttribute ofEntity:entity];
+    Class type = [[RKPropertyInspector sharedInspector] classForPropertyNamed:primaryKeyAttribute ofEntity:entity];
     if (type && ([type isSubclassOfClass:[NSString class]] && NO == [primaryKeyValue isKindOfClass:[NSString class]])) {
         searchValue = [NSString stringWithFormat:@"%@", primaryKeyValue];
     } else if (type && ([type isSubclassOfClass:[NSNumber class]] && NO == [primaryKeyValue isKindOfClass:[NSNumber class]])) {

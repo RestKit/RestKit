@@ -137,7 +137,7 @@
 {
     Class propertyClass = [super classForProperty:propertyName];
     if (! propertyClass) {
-        propertyClass = [[RKPropertyInspector sharedInspector] typeForProperty:propertyName ofEntity:self.entity];
+        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:propertyName ofEntity:self.entity];
     }
 
     return propertyClass;

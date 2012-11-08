@@ -19,11 +19,11 @@
 //
 
 #import <CoreData/CoreData.h>
+#import <objc/message.h>
 #import "RKPropertyInspector+CoreData.h"
 #import "RKLog.h"
+#import "RKObjectUtilities.h"
 #import "RKMacros.h"
-#import <objc/message.h>
-
 
 RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
 
@@ -33,7 +33,7 @@ RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
 
 @implementation RKPropertyInspector (CoreData)
 
-- (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription *)entity
+- (NSDictionary *)propertyNamesAndClassesForEntity:(NSEntityDescription *)entity
 {
     NSMutableDictionary *propertyNamesAndTypes = [_propertyNamesToTypesCache objectForKey:[entity name]];
     if (propertyNamesAndTypes) {
@@ -44,7 +44,11 @@ RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
     for (NSString *name in [entity attributesByName]) {
         NSAttributeDescription *attributeDescription = [[entity attributesByName] valueForKey:name];
         if ([attributeDescription attributeValueClassName]) {
-            [propertyNamesAndTypes setValue:NSClassFromString([attributeDescription attributeValueClassName]) forKey:name];
+            Class cls = NSClassFromString([attributeDescription attributeValueClassName]);
+            if ([cls isSubclassOfClass:[NSNumber class]] && [attributeDescription attributeType] == NSBooleanAttributeType) {
+                cls = objc_getClass("NSCFBoolean") ?: objc_getClass("__NSCFBoolean") ?: cls;
+            }
+            [propertyNamesAndTypes setValue:cls forKey:name];
 
         } else if ([attributeDescription attributeType] == NSTransformableAttributeType &&
                    ![name isEqualToString:@"_mapkit_hasPanoramaID"]) {
@@ -53,12 +57,10 @@ RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
             const char *propertyName = [name cStringUsingEncoding:NSUTF8StringEncoding];
             Class managedObjectClass = objc_getClass(className);
 
-            // property_getAttributes() returns everything we need to implement this...
-            // See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
             objc_property_t prop = class_getProperty(managedObjectClass, propertyName);
-            NSString *attributeString = [NSString stringWithCString:property_getAttributes(prop) encoding:NSUTF8StringEncoding];
-            const char *destinationClassName = [[RKPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
-            Class destinationClass = objc_getClass(destinationClassName);
+
+            const char *attr = property_getAttributes(prop);
+            Class destinationClass = RKKeyValueCodingClassFromPropertyAttributes(attr);
             if (destinationClass) {
                 [propertyNamesAndTypes setObject:destinationClass forKey:name];
             }
@@ -81,9 +83,9 @@ RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
     return propertyNamesAndTypes;
 }
 
-- (Class)typeForProperty:(NSString *)propertyName ofEntity:(NSEntityDescription *)entity
+- (Class)classForPropertyNamed:(NSString *)propertyName ofEntity:(NSEntityDescription *)entity
 {
-    return [[self propertyNamesAndTypesForEntity:entity] valueForKey:propertyName];
+    return [[self propertyNamesAndClassesForEntity:entity] valueForKey:propertyName];
 }
 
 @end

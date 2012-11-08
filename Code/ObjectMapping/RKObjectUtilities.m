@@ -71,3 +71,91 @@ BOOL RKObjectIsCollectionContainingOnlyManagedObjects(id object)
     }
     return YES;
 }
+
+
+Class RKKeyValueCodingClassForObjCType(const char *type)
+{
+    if (type) {
+        // https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
+        switch (type[0]) {
+            case '@': {
+                char *openingQuoteLoc = strchr(type, '"');
+                if (openingQuoteLoc) {
+                    char *closingQuoteLoc = strchr(openingQuoteLoc+1, '"');
+                    if (closingQuoteLoc) {
+                        size_t classNameStrLen = closingQuoteLoc-openingQuoteLoc;
+                        char className[classNameStrLen];
+                        memcpy(className, openingQuoteLoc+1, classNameStrLen-1);
+                        // Null-terminate the array to stringify
+                        className[classNameStrLen-1] = '\0';
+                        return objc_getClass(className);
+                    }
+                }
+                // If there is no quoted class type (id), it can be used as-is.
+                return Nil;
+            }
+                
+            case 'c': // char
+            case 'C': // unsigned char
+            case 's': // short
+            case 'S': // unsigned short
+            case 'i': // int
+            case 'I': // unsigned int
+            case 'l': // long
+            case 'L': // unsigned long
+            case 'q': // long long
+            case 'Q': // unsigned long long
+            case 'f': // float
+            case 'd': // double
+                return [NSNumber class];
+                
+            case 'B': // C++ bool or C99 _Bool
+                return objc_getClass("NSCFBoolean")
+                ?: objc_getClass("__NSCFBoolean")
+                ?: [NSNumber class];
+                
+            case '{': // struct
+            case 'b': // bitfield
+            case '(': // union
+                return [NSValue class];
+                
+            case '[': // c array
+            case '^': // pointer
+            case 'v': // void
+            case '*': // char *
+            case '#': // Class
+            case ':': // selector
+            case '?': // unknown type (function pointer, etc)
+            default:
+                break;
+        }
+    }
+    return Nil;
+}
+
+Class RKKeyValueCodingClassFromPropertyAttributes(const char *attr)
+{
+    if (attr) {
+        const char *typeIdentifierLoc = strchr(attr, 'T');
+        if (typeIdentifierLoc) {
+            return RKKeyValueCodingClassForObjCType(typeIdentifierLoc+1);
+        }
+    }
+    return Nil;
+}
+
+NSString *RKPropertyTypeFromAttributeString(NSString *attributeString)
+{
+    NSString *type = [NSString string];
+    NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
+    [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
+    
+    // we are not dealing with an object
+    if ([typeScanner isAtEnd]) {
+        return @"NULL";
+    }
+    [typeScanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\"@"] intoString:NULL];
+    // this gets the actual object type
+    [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\""] intoString:&type];
+    return type;
+}
