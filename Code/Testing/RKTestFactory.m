@@ -25,11 +25,19 @@
 #import "RKPathUtilities.h"
 #import "RKMIMETypeSerialization.h"
 
+// Expose MIME Type singleton and initialization routine
+@interface RKMIMETypeSerialization ()
++ (RKMIMETypeSerialization *)sharedSerialization;
+- (void)addRegistrationsForKnownSerializations;
+@end
+
 @interface RKTestFactory ()
 
 @property (nonatomic, strong) NSURL *baseURL;
 @property (nonatomic, strong) NSMutableDictionary *factoryBlocks;
 @property (nonatomic, strong) NSMutableDictionary *sharedObjectsByFactoryName;
+@property (nonatomic, copy) void (^setUpBlock)();
+@property (nonatomic, copy) void (^tearDownBlock)();
 
 + (RKTestFactory *)sharedFactory;
 - (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
@@ -38,29 +46,17 @@
 
 @end
 
-// Expose MIME Type singleton and initialization routine
-@interface RKMIMETypeSerialization ()
-+ (RKMIMETypeSerialization *)sharedSerialization;
-- (void)addRegistrationsForKnownSerializations;
-@end
-
-static RKTestFactory *sharedFactory = nil;
-
 @implementation RKTestFactory
-
 
 + (void)initialize
 {
     // Ensure the shared factory is initialized
     [self sharedFactory];
-
-    if ([RKTestFactory respondsToSelector:@selector(didInitialize)]) {
-        [RKTestFactory didInitialize];
-    }
 }
 
 + (RKTestFactory *)sharedFactory
 {
+    static RKTestFactory *sharedFactory = nil;
     if (! sharedFactory) {
         sharedFactory = [RKTestFactory new];
     }
@@ -214,6 +210,16 @@ static RKTestFactory *sharedFactory = nil;
     return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
 }
 
++ (void)setSetupBlock:(void (^)())block
+{
+    [RKTestFactory sharedFactory].setUpBlock = block;
+}
+
++ (void)setTearDownBlock:(void (^)())block
+{
+    [RKTestFactory sharedFactory].tearDownBlock = block;
+}
+
 + (void)setUp
 {
     static dispatch_once_t onceToken;
@@ -238,9 +244,7 @@ static RKTestFactory *sharedFactory = nil;
     // Clear the NSURLCache
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
-    if ([self respondsToSelector:@selector(didSetUp)]) {
-        [self didSetUp];
-    }
+    if ([RKTestFactory sharedFactory].setUpBlock) [RKTestFactory sharedFactory].setUpBlock();
 }
 
 + (void)tearDown
@@ -268,9 +272,7 @@ static RKTestFactory *sharedFactory = nil;
     [RKObjectManager setSharedManager:nil];
     [RKManagedObjectStore setDefaultStore:nil];
 
-    if ([self respondsToSelector:@selector(didTearDown)]) {
-        [self didTearDown];
-    }
+    if ([RKTestFactory sharedFactory].tearDownBlock) [RKTestFactory sharedFactory].tearDownBlock();
 }
 
 @end
