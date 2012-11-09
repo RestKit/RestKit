@@ -68,7 +68,7 @@
             NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Terminal"];
             NSEntityDescription *entity = [NSEntityDescription entityForName:@"Airport" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
             fetchRequest.predicate = [entity predicateForPrimaryKeyAttributeWithValue:airportID];
-            fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+            fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES] ];
             return fetchRequest;
         }
 
