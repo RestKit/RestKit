@@ -120,13 +120,17 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 {
     _managedObjectContext = managedObjectContext;
 
-    // Create a private context
-    NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    [privateContext performBlockAndWait:^{
-        privateContext.parentContext = self.managedObjectContext;
-        privateContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
-    }];
-    self.privateContext = privateContext;
+    if (managedObjectContext) {
+        // Create a private context
+        NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [privateContext performBlockAndWait:^{
+            privateContext.parentContext = managedObjectContext;
+            privateContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
+        }];
+        self.privateContext = privateContext;
+    } else {
+        self.privateContext = nil;
+    }
 }
 
 #pragma mark - RKMapperOperationDelegate methods
