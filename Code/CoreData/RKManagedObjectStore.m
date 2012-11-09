@@ -136,9 +136,8 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         }
         NSMutableArray *allManagedObjectModels = [NSMutableArray arrayWithObject:nilOrManagedObjectModel];
         _managedObjectModel = [[NSManagedObjectModel modelByMergingModels:allManagedObjectModels] retain];
-        _delegate = delegate;
 
-	_delegate = delegate;
+        _delegate = delegate;
 
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
