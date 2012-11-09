@@ -86,7 +86,7 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
                 return [NSNumber numberWithDouble:[(NSString *)value doubleValue]];
             }
         }
-    } else if (value == [NSNull null]) {
+    } else if ([value isEqual:[NSNull null]]) {
         // Transform NSNull -> nil for simplicity
         return nil;
     } else if ([sourceType isSubclassOfClass:[NSSet class]]) {
@@ -201,7 +201,7 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
         return dateString;
     } else {
         id transformedValue = RKTransformValueFromClassToClass(value, sourceType, destinationType);
-        if (transformedValue) return transformedValue;
+        if (transformedValue != value) return transformedValue;
     }
     
     RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
