@@ -24,6 +24,7 @@
 #import "RKMappableObject.h"
 #import "RKDynamicMapping.h"
 #import "RKMappingErrors.h"
+#import "RKHuman.h"
 
 @interface RKMIMETypeSerialization ()
 @property (nonatomic, strong) NSMutableArray *registrations;
@@ -39,8 +40,15 @@
 
 - (void)setUp
 {
+    [RKTestFactory setUp];
+    
     [RKMIMETypeSerialization sharedSerialization].registrations = [NSMutableArray array];
     [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
+}
+
+- (void)tearDown
+{
+    [RKTestFactory tearDown];
 }
 
 - (void)testShouldSerializeToFormEncodedData
@@ -337,6 +345,88 @@
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
     NSDictionary *expected = @{@"user": @{@"anotherKeyPath": @{@"name": @"Blake Watters", @"another": @{ @"job": @"Hacker"}}}};
     expect(parameters).to.equal(expected);
+}
+
+- (void)testParameterizationOfPrimitiveBooleansToJSONBooleans
+{
+    NSDictionary *object = @{ @"name" : @"Blake Watters", @"isHacker" : @YES };
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"isHacker" toKeyPath:@"isHacker"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSDictionary *expected = @ {@"name": @"Blake Watters", @"isHacker": @YES };
+    expect(parameters).to.equal(expected);
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"name\":\"Blake Watters\",\"isHacker\":true}");
+}
+
+- (void)testParameterizationOfBooleanPropertiesToJSONBooleansFromObjectProperties
+{
+    RKMappableObject *object = [RKMappableObject new];
+    object.stringTest = @"Whatever";
+    object.isValid = NO;
+    object.numberTest = @YES;
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"stringTest" toKeyPath:@"name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"isValid" toKeyPath:@"is_valid"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"numberTest" toKeyPath:@"is_boolean"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"is_valid\":0,\"name\":\"Whatever\",\"is_boolean\":true}");
+}
+
+- (void)testParameterizationofBooleanPropertiesFromManagedObjectProperty
+{
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    human.isHappy = [NSNumber numberWithBool:YES];
+    human.name = @"Blake Watters";
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"isHappy" toKeyPath:@"happy"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:human requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"name\":\"Blake Watters\",\"happy\":true}");
+}
+
+- (void)testParameterizationofBooleanPropertiesFromManagedObjectPropertyWithFalseValue
+{
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    human.isHappy = [NSNumber numberWithBool:NO];
+    human.name = @"Blake Watters";
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"isHappy" toKeyPath:@"happy"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:human requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"name\":\"Blake Watters\",\"happy\":false}");
 }
 
 @end

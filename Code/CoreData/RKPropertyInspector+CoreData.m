@@ -25,8 +25,6 @@
 #import "RKObjectUtilities.h"
 #import "RKMacros.h"
 
-RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
-
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
@@ -86,6 +84,27 @@ RK_FIX_CATEGORY_BUG(RKPropertyInspector_CoreData)
 - (Class)classForPropertyNamed:(NSString *)propertyName ofEntity:(NSEntityDescription *)entity
 {
     return [[self propertyNamesAndClassesForEntity:entity] valueForKey:propertyName];
+}
+
+@end
+
+@interface NSManagedObject (RKPropertyInspection)
+- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath;
+@end
+
+@implementation NSManagedObject (RKPropertyInspection)
+
+- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath
+{
+    NSArray *components = [keyPath componentsSeparatedByString:@"."];
+    Class propertyClass = [self class];
+    for (NSString *property in components) {
+        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofEntity:[self entity]];
+        propertyClass = propertyClass ?: [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass];
+        if (! propertyClass) break;
+    }
+    
+    return propertyClass;
 }
 
 @end

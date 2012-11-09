@@ -63,3 +63,17 @@
 - (Class)classForPropertyNamed:(NSString *)propertyName ofClass:(Class)objectClass;
 
 @end
+
+///----------------------------
+/// @name Convenience Functions
+///----------------------------
+
+/**
+ Returns the class of the attribute or relationship property at the key path of the given object.
+ 
+ Given a key path to a string property, this will return an `NSString`, etc.
+ 
+ @param keyPath The key path to the property to retrieve the class of.
+ @return The class of the property at the given key path.
+ */
+Class RKPropertyInspectorGetClassForPropertyAtKeyPathOfObject(NSString *keyPath, id object);

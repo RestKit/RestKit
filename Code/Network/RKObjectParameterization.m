@@ -27,10 +27,13 @@
 #import "RKObjectMapping.h"
 #import "RKMappingOperation.h"
 #import "RKMappingErrors.h"
+#import "RKPropertyInspector.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
+
+id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinationType);
 
 @interface RKObjectParameterization () <RKMappingOperationDelegate>
 @property (nonatomic, strong) id object;
@@ -113,6 +116,11 @@
     } else if ([value isKindOfClass:[NSOrderedSet class]]) {
         // NSOrderedSets are not natively serializable, so let's just turn it into an NSArray
         transformedValue = [value array];
+    } else {
+        Class propertyClass = RKPropertyInspectorGetClassForPropertyAtKeyPathOfObject(mapping.sourceKeyPath, operation.sourceObject);
+        if ([propertyClass isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] || [propertyClass isSubclassOfClass:NSClassFromString(@"NSCFBoolean")]) {
+            transformedValue = @([value boolValue]);
+        }
     }
 
     if (transformedValue) {

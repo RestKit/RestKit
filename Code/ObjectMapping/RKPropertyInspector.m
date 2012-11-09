@@ -100,3 +100,29 @@
 }
 
 @end
+
+
+@interface NSObject (RKPropertyInspection)
+- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath;
+@end
+
+@implementation NSObject (RKPropertyInspection)
+
+- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath
+{
+    NSArray *components = [keyPath componentsSeparatedByString:@"."];
+    Class propertyClass = [self class];
+    for (NSString *property in components) {
+        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass];
+        if (! propertyClass) break;
+    }
+    
+    return propertyClass;
+}
+
+@end
+
+Class RKPropertyInspectorGetClassForPropertyAtKeyPathOfObject(NSString *keyPath, id object)
+{
+    return [object rk_classForPropertyAtKeyPath:keyPath];
+}

@@ -50,6 +50,7 @@
 
 @property (nonatomic, strong) NSSet *friends;
 @property (nonatomic, strong) NSOrderedSet *friendsInTheOrderWeMet;
+@property (nonatomic, strong) NSNumber *isHappy;
 
 @end
 

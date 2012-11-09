@@ -36,15 +36,6 @@
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
-@interface RKMappingOperation ()
-@property (nonatomic, strong, readwrite) RKMapping *mapping;
-@property (nonatomic, strong, readwrite) id sourceObject;
-@property (nonatomic, strong, readwrite) id destinationObject;
-@property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
-@property (nonatomic, strong, readwrite) NSError *error;
-@property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping; // The concrete mapping
-@end
-
 // Defined in RKObjectMapping.h
 NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
 
@@ -71,57 +62,13 @@ static BOOL RKIsManagedObject(id object)
     return managedObjectClass && [object isKindOfClass:managedObjectClass];
 }
 
-@implementation RKMappingOperation
-
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
+id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinationType);
+id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinationType)
 {
-    NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
-    NSAssert(objectOrDynamicMapping != nil, @"Cannot perform a mapping operation without a mapping");
-
-    self = [super init];
-    if (self) {
-        self.sourceObject = sourceObject;
-        self.destinationObject = destinationObject;
-        self.mapping = objectOrDynamicMapping;
-    }
-
-    return self;
-}
-
-- (id)destinationObjectForMappingRepresentation:(id)representation withMapping:(RKMapping *)mapping
-{
-    RKObjectMapping *concreteMapping = nil;
-    if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-        concreteMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:representation];
-        if (! concreteMapping) {
-            RKLogDebug(@"Unable to determine concrete object mapping from dynamic mapping %@ with which to map object representation: %@", mapping, representation);
-            return nil;
-        }
-    } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
-        concreteMapping = (RKObjectMapping *)mapping;
-    }
-    
-    return [self.dataSource mappingOperation:self targetObjectForRepresentation:representation withMapping:concreteMapping];
-}
-
-- (NSDate *)parseDateFromString:(NSString *)string
-{
-    RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
-    return RKDateFromStringWithFormatters(string, self.objectMapping.dateFormatters);
-}
-
-- (id)transformValue:(id)value atKeyPath:(NSString *)keyPath toType:(Class)destinationType
-{
-    RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
-    Class sourceType = [value class];
-
     if ([destinationType isSubclassOfClass:[NSData class]]) {
         return [NSKeyedArchiver archivedDataWithRootObject:value];
     } else if ([sourceType isSubclassOfClass:[NSString class]]) {
-        if ([destinationType isSubclassOfClass:[NSDate class]]) {
-            // String -> Date
-            return [self parseDateFromString:(NSString *)value];
-        } else if ([destinationType isSubclassOfClass:[NSURL class]]) {
+        if ([destinationType isSubclassOfClass:[NSURL class]]) {
             // String -> URL
             return [NSURL URLWithString:(NSString *)value];
         } else if ([destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
@@ -183,6 +130,67 @@ static BOOL RKIsManagedObject(id object)
         }
     } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
         return [value stringValue];
+    }
+    
+    return nil;
+}
+
+@interface RKMappingOperation ()
+@property (nonatomic, strong, readwrite) RKMapping *mapping;
+@property (nonatomic, strong, readwrite) id sourceObject;
+@property (nonatomic, strong, readwrite) id destinationObject;
+@property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
+@property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping; // The concrete mapping
+@end
+
+@implementation RKMappingOperation
+
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
+{
+    NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
+    NSAssert(objectOrDynamicMapping != nil, @"Cannot perform a mapping operation without a mapping");
+
+    self = [super init];
+    if (self) {
+        self.sourceObject = sourceObject;
+        self.destinationObject = destinationObject;
+        self.mapping = objectOrDynamicMapping;
+    }
+
+    return self;
+}
+
+- (id)destinationObjectForMappingRepresentation:(id)representation withMapping:(RKMapping *)mapping
+{
+    RKObjectMapping *concreteMapping = nil;
+    if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+        concreteMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:representation];
+        if (! concreteMapping) {
+            RKLogDebug(@"Unable to determine concrete object mapping from dynamic mapping %@ with which to map object representation: %@", mapping, representation);
+            return nil;
+        }
+    } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+        concreteMapping = (RKObjectMapping *)mapping;
+    }
+    
+    return [self.dataSource mappingOperation:self targetObjectForRepresentation:representation withMapping:concreteMapping];
+}
+
+- (NSDate *)parseDateFromString:(NSString *)string
+{
+    RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
+    return RKDateFromStringWithFormatters(string, self.objectMapping.dateFormatters);
+}
+
+- (id)transformValue:(id)value atKeyPath:(NSString *)keyPath toType:(Class)destinationType
+{
+    RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
+    Class sourceType = [value class];
+
+    if ([sourceType isSubclassOfClass:[NSString class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
+        // String -> Date
+        return [self parseDateFromString:(NSString *)value];
     } else if ([destinationType isSubclassOfClass:[NSString class]] && [value isKindOfClass:[NSDate class]]) {
         // NSDate -> NSString
         // Transform using the preferred date formatter
@@ -191,8 +199,11 @@ static BOOL RKIsManagedObject(id object)
             dateString = [self.objectMapping.preferredDateFormatter stringForObjectValue:value];
         }
         return dateString;
+    } else {
+        id transformedValue = RKTransformValueFromClassToClass(value, sourceType, destinationType);
+        if (transformedValue) return transformedValue;
     }
-
+    
     RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
 
     return nil;

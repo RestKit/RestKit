@@ -38,6 +38,7 @@
 @dynamic cats;
 @dynamic catIDs;
 @dynamic catsInOrderByAge;
+@dynamic isHappy;
 
 @dynamic house;
 @dynamic landlord;
