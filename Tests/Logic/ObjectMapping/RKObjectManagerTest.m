@@ -351,11 +351,10 @@
     expect(_objectManager.operationQueue).notTo.beNil();
     [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
 
-    // Spin the run loop to allow completion blocks to fire after operations have completed
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
-
-    expect(progressCallbackCount).to.equal(3);
-    expect(completionBlockOperationCount).to.equal(3);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        expect(progressCallbackCount).to.equal(3);
+        expect(completionBlockOperationCount).to.equal(3);
+    });
 }
 
 - (void)testThatObjectParametersAreNotSentDuringGetObject

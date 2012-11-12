@@ -20,10 +20,14 @@
 
 #import <CoreData/CoreData.h>
 
+@class RKSearchWord;
+
 /**
  The key for an NSArray object that indentifies the list of searchable attributes in the user info dictionary of an NSEntityDescription.
  */
 extern NSString * const RKSearchableAttributeNamesUserInfoKey;
+
+@protocol RKSearchIndexerDelegate;
 
 /**
  The `RKSearchIndexer` class provides support for adding full text searching to Core Data entities and managing the indexing of managed object instances of searchable entities.
@@ -63,6 +67,8 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  @warning It is recommended that the indexing context be configured with a direct connection to the persistent store coordinator and a merge policy of `NSMergeByPropertyObjectTrumpMergePolicy`.
  */
 @property (nonatomic, strong) NSManagedObjectContext *indexingContext;
+
+@property (nonatomic, weak) id<RKSearchIndexerDelegate> delegate;
 
 ///---------------------------------------------------
 /// @name Indexing Changes in a Managed Object Context
@@ -139,5 +145,76 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  @warning Invoking this method may cause a deadlock if indexing operations have been enqueued for a managed object context with the `NSMainQueueConcurrencyType` and the method is called from the main thread.
  */
 - (void)waitUntilAllIndexingOperationsAreFinished;
+
+@end
+
+/**
+ Objects that acts as the delegate for a `RKSearchIndexer` object must adopt the `RKSearchIndexerDelegate` protocol. The delegate may customize the behavior of the search indexer to match the needs of the application in several ways. The delegate may provide an alternate implementation for fetching an existing `RKSearchWord` managed object for a given word, it  is consulted when the indexer determines that a new search word object is to be inserted and may decline the insertion, and it is notified after a new search word has been inserted.
+ */
+@protocol RKSearchIndexerDelegate <NSObject>
+
+@optional
+
+///-------------------------------------
+/// @name Fetching Existing Search Words
+///-------------------------------------
+
+/**
+ Asks the delegate for an existing search word object for a given word in the managed object context being indexed. If no search word is found for the given word, then `nil` is to be returned.
+ 
+ By default, the search indexer creates and executes a fetch request against the context being indexed for each word during indexing. For large data-sets, this can wind up taking a significant amount of time. By providing an implementation of `searchIndexer:searchWordForWord:inManagedObjectContext:error:`, the delegate can be used to implement a caching scheme to reduce the overhead associated with the execution of these fetch requests.
+ 
+ @param searchIndexer The search indexer object performing the indexing.
+ @param word The search word for which to retrieve an existing
+ @param managedObjectContext The managed object context in which indexing is taking place.
+ @param error A pointer to an error object to be set in the event an error occurs.
+ @return The `RKSearchWord` object corresponding to the given word, or `nil` if none could be found. In the event an error occurs, `nil` is to be returned and the value of the error property is to be set to a pointer to an `NSError` object describing the failure.
+ */
+- (RKSearchWord *)searchIndexer:(RKSearchIndexer *)searchIndexer searchWordForWord:(NSString *)word inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext error:(NSError **)error;
+
+///-------------------------------------------
+/// @name Tracking Indexing of Managed Objects
+///-------------------------------------------
+
+/**
+ Asks the delegate is a managed object should be indexed.
+ 
+ @param searchIndexer The search indexer object performing the indexing. 
+ @param managedObject The managed object the indexer is preparing to index.
+ @return `YES` if indexing should proceed, else `NO`.
+ */
+- (BOOL)searchIndexer:(RKSearchIndexer *)searchIndexer shouldIndexManagedObject:(NSManagedObject *)managedObject;
+
+/**
+ Tells the delegate that the indexer has finished indexing a managed object.
+ 
+ @param searchIndexer The search indexer object performing the indexing.
+ @param managedObject The managed object the indexer has just finished indexing.
+ */
+- (void)searchIndexer:(RKSearchIndexer *)searchIndxer didIndexManagedObject:(NSManagedObject *)managedObject;
+
+///-----------------------------------------
+/// @name Tracking Insertion of Search Words
+///-----------------------------------------
+
+/**
+ Asks the delegate if the indexer should insert a new search word for a word that does not currently exist in the index.
+ 
+ @param searchIndexer The search indexer object performing the indexing.
+ @param word A search word that appears in an indexed object but does not yet exist in the index.
+ @param managedObjectContext The managed object context in which indexing is taking place.
+ @return `YES` if the indexer should insert an `RKSearchWord` object for the given word, else `NO`.
+ */
+- (BOOL)searchIndexer:(RKSearchIndexer *)searchIndexer shouldInsertSearchWordForWord:(NSString *)word inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
+/**
+ Tells the delegate that the indexer has inserted a new search word object for a word.
+ 
+ @param searchIndexer The search indexer object performing the indexing.
+ @param searchWord The search word that was inserted.
+ @param word The word for which the search word object was created.
+ @param managedObjectContext The managed object context in which indexing is taking place.
+ */
+- (void)searchIndexer:(RKSearchIndexer *)searchIndexer didInsertSearchWord:(RKSearchWord *)searchWord forWord:(NSString *)word inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 @end

@@ -42,8 +42,7 @@
 
  @param entity The Core Data entity description for the managed objects being cached.
  @param attributeName The name of an attribute within the cached entity that acts as the cache key.
- @param context The managed object context the cache retrieves the cached
-    objects from
+ @param context The managed object context the cache retrieves the cached objects from.
  @return The receiver, initialized with the given entity, attribute, and managed object
     context.
  */

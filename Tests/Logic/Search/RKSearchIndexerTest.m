@@ -366,4 +366,149 @@
     assertThat([searchWords valueForKey:@"word"], is(empty()));
 }
 
+#pragma mark - Delegate Tests
+
+- (void)testThatDelegateCanDenyCreationOfSearchWordForWord
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
+
+    NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+    NSError *error;
+    [persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.persistentStoreCoordinator = persistentStoreCoordinator;
+
+    RKSearchIndexer *indexer = [RKSearchIndexer new];
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext];
+    [human setValue:@"This is my name" forKey:@"name"];
+    
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
+    BOOL returnValue = NO;
+    [[[mockDelegate expect] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"this" inManagedObjectContext:managedObjectContext];
+    returnValue = YES;
+    [[[mockDelegate expect] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"my" inManagedObjectContext:managedObjectContext];
+    [[[mockDelegate expect] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"name" inManagedObjectContext:managedObjectContext];
+    indexer.delegate = mockDelegate;
+     
+    NSUInteger count = [indexer indexManagedObject:human];
+    expect(count).to.equal(2);
+    NSSet *searchWords = [human valueForKey:RKSearchWordsRelationshipName];
+
+    NSSet *expectedSet = [NSSet setWithArray:@[ @"my", @"name" ]];
+    expect([searchWords valueForKey:@"word"]).to.equal(expectedSet);
+    [mockDelegate verify];
+}
+
+- (void)testThatDelegateIsInformedWhenSearchWordIsCreated
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
+    
+    NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+    NSError *error;
+    [persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.persistentStoreCoordinator = persistentStoreCoordinator;
+    
+    RKSearchIndexer *indexer = [RKSearchIndexer new];
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext];
+    [human setValue:@"This is my name" forKey:@"name"];
+    
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
+    BOOL returnValue = YES;
+    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:indexer shouldInsertSearchWordForWord:OCMOCK_ANY inManagedObjectContext:OCMOCK_ANY];
+    [[mockDelegate expect] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:@"this" inManagedObjectContext:managedObjectContext];
+    [[mockDelegate expect] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:@"is" inManagedObjectContext:managedObjectContext];
+    [[mockDelegate expect] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:@"my" inManagedObjectContext:managedObjectContext];
+    [[mockDelegate expect] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:@"name" inManagedObjectContext:managedObjectContext];
+    indexer.delegate = mockDelegate;
+    
+    [indexer indexManagedObject:human];
+    [mockDelegate verify];
+}
+
+- (void)testThatDelegateCanBeUsedToFetchExistingSearchWords
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
+    
+    NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+    NSError *error;
+    [persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.persistentStoreCoordinator = persistentStoreCoordinator;
+    
+    RKSearchIndexer *indexer = [RKSearchIndexer new];
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext];
+    [human setValue:@"This is my name" forKey:@"name"];
+    
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
+    BOOL returnValue = NO;
+    RKSearchWord *searchWord = [NSEntityDescription insertNewObjectForEntityForName:@"RKSearchWord" inManagedObjectContext:managedObjectContext];
+    [[[mockDelegate expect] andReturn:searchWord] searchIndexer:indexer searchWordForWord:@"this" inManagedObjectContext:managedObjectContext error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
+    [[[mockDelegate expect] andReturn:searchWord] searchIndexer:indexer searchWordForWord:@"is" inManagedObjectContext:managedObjectContext error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
+    [[[mockDelegate expect] andReturn:searchWord] searchIndexer:indexer searchWordForWord:@"my" inManagedObjectContext:managedObjectContext error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
+    [[[mockDelegate expect] andReturn:searchWord] searchIndexer:indexer searchWordForWord:@"name" inManagedObjectContext:managedObjectContext error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
+    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:indexer shouldInsertSearchWordForWord:OCMOCK_ANY inManagedObjectContext:OCMOCK_ANY];
+    [[mockDelegate reject] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:OCMOCK_ANY inManagedObjectContext:OCMOCK_ANY];
+    indexer.delegate = mockDelegate;
+    
+    [indexer indexManagedObject:human];
+    [mockDelegate verify];
+}
+
+- (void)testThatTheDelegateCanDeclineIndexingOfAnObject
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
+    
+    NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+    NSError *error;
+    [persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.persistentStoreCoordinator = persistentStoreCoordinator;
+    
+    RKSearchIndexer *indexer = [RKSearchIndexer new];
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext];
+    [human setValue:@"This is my name" forKey:@"name"];
+    
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
+    BOOL returnValue = NO;
+    [[[mockDelegate expect] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:indexer shouldIndexManagedObject:human];
+    indexer.delegate = mockDelegate;
+    
+    [indexer indexChangedObjectsInManagedObjectContext:managedObjectContext waitUntilFinished:YES];
+    [mockDelegate verify];
+    NSSet *searchWords = [human valueForKey:RKSearchWordsRelationshipName];
+    expect([searchWords valueForKey:@"word"]).to.beEmpty();
+}
+
+- (void)testThatTheDelegateIsNotifiedAfterIndexingHasCompleted
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"RKHuman"];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
+    
+    NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+    NSError *error;
+    [persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.persistentStoreCoordinator = persistentStoreCoordinator;
+    
+    RKSearchIndexer *indexer = [RKSearchIndexer new];
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext];
+    [human setValue:@"This is my name" forKey:@"name"];
+    
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
+    [[mockDelegate expect] searchIndexer:indexer didIndexManagedObject:human];
+    indexer.delegate = mockDelegate;
+    [indexer indexManagedObject:human];
+    [mockDelegate verify];
+}
+
 @end
