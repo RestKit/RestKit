@@ -68,6 +68,9 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  */
 @property (nonatomic, strong) NSManagedObjectContext *indexingContext;
 
+/**
+ The delegate of the search indexer.
+ */
 @property (nonatomic, weak) id<RKSearchIndexerDelegate> delegate;
 
 ///---------------------------------------------------
