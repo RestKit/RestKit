@@ -31,7 +31,7 @@
  The importer requires that the source files have a MIME type that is identifiable by file extension and be
  parsable using a parser registered with the shared parser registry.
 
- @see RKParserRegistry
+ @see RKMIMETypeSerialization
  */
 @interface RKManagedObjectImporter : NSObject
 

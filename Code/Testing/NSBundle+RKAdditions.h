@@ -60,7 +60,7 @@
  @param name The name of the resource file.
  @param extension If extension is an empty string or nil, the extension is assumed not to exist and the file is the first file encountered that exactly matches name.
  @return A new image object for the specified file, or nil if the method could not initialize the image from the specified file.
- @see RKParserRegistry
+ @see RKMIMETypeSerialization
  */
 - (id)parsedObjectWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension;
 
