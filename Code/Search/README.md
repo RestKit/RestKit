@@ -60,6 +60,57 @@ For applications loading payloads containing a large number of searchable entiti
 
 To avoid this, a dedicated `indexingContext` can be assigned to the search indexer. When an indexing context is provided, the indexing is performed in response to a `NSManagedObjectContextDidSave` notification on the indexing context. It is recommended that the indexing context have a direct connection to the persistent store coordinator and that its changes are merged back into the persistent store and main queue managed object contexts via observation of the `NSManagedObjectContextDidSave`.
 
+### Using a Cache to Accelerate Indexing
+
+Indexing is an intensive operation and can take a significant amount of time to complete. By default, `RKSearchIndexer` uses fetch requests to search the store for an existing `RKSearchWord` object for each search word tokenized during indexing. This repeated execution of fetch requests is not the most efficient strategy from a CPU or real time consumption standpoint, but has the advantage of being very simple and requires no external dependencies beyond Core Data, making it ideal for small applications with basic search indexing needs.
+
+Larger applications may begin to feel constrained from a performance standpoint by the fetch request implementation. The search indexer provides an affordance for introducing a caching strategy to accelerate the indexing operation via the `RKSearchIndexerDelegate` protocol. The search indexer's delegate is consulted during indexing and may provide an implementation of the method `searchIndexer:searchWordForWord:inManagedObjectContext:error:` method to return a `RKSearchWord` object for a given word.
+
+If your application's searchable text is not extremely large (i.e. you are searching across names, addresses, etc as opposed to large paragraphs of text) then you may be able to leverage the RestKit `RKEntityByAttributeCache` to accelerate the indexing process. This cache class uses a specially crafted dictionary based fetch request to select out only the managed object ID and the value for an attribute and maintains an in memory cache. Look-ups are then performed entirely in memory, providing a dramatic speed-up. Within one large production application containing roughly 16,000 unique search words, indexing time for a seed database was reduced from 10 minutes to roughly 45 seconds using this cache strategy. But keep in mind that this cache keeps the entire index in memory, so you must profile your application to evaluate its suitability.
+
+To configure an `RKEntityByAttributeCache` for indexing your application, add the following class to your application:
+
+```objc
+
+// MyAppSearchIndexingDelegate.h
+@interface MyAppSearchIndexingDelegate : NSObject <RKSearchIndexerDelegate>
+@end
+
+// MyAppSearchIndexingDelegate.m
+#import <RestKit/CoreData/RKEntityByAttributeCache.h>
+
+@interface MyAppSearchIndexingDelegate ()
+@property (nonatomic, strong) RKEntityByAttributeCache *searchWordCache;
+@end
+
+@implementation MyAppSearchIndexingDelegate
+
+- (id)init
+{
+	self = [super init];
+	if (self) {
+		NSEntityDescription *searchWordEntity = [[self.managedObjectModel entitiesByName] objectForKey:RKSearchWordEntityName];
+    	self.searchWordCache = [[RKEntityByAttributeCache alloc] initWithEntity:searchWordEntity attribute:@"word" managedObjectContext:indexingContext];
+    	[self.searchWordCache load];
+	}
+	
+	return self;
+}
+
+- (RKSearchWord *)searchIndexer:(RKSearchIndexer *)searchIndexer searchWordForWord:(NSString *)word inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext error:(NSError **)error
+{
+    return (RKSearchWord *)[self.searchWordCache objectWithAttributeValue:word inContext:managedObjectContext];
+}
+
+- (void)searchIndexer:(RKSearchIndexer *)searchIndexer didInsertSearchWord:(RKSearchWord *)searchWord forWord:(NSString *)word inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
+    [self.searchWordCache addObject:(NSManagedObject *)searchWord];
+}
+
+@end
+
+```
+
 ## Sample Code and Help
 
 An example project is provided in the Examples subdirectory of the RestKit distribution.
