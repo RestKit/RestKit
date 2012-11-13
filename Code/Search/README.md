@@ -10,20 +10,20 @@ For the sample code below, imagine that we have a `Recipe` entity containing str
 
 Indexing is configured through the managed object store and **must** be done before the managed object contexts have been created, as the search support modifies the searchable entity to include a new relationship.
 
-```
-	#import <RestKit/CoreData.h>
-	#import <RestKit/Search.h>
-	
-	// Initialize the managed object model and RestKit managed object store
-	NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
-	RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
-	
-	// Configure indexing for the Recipe entity
-	[managedObjectStore addSearchIndexingToEntityForName:@"Recipe" onAttributes:@[ @"name", @"description" ]];
-	
-	// Create the managed object contexts and start indexing
-	[managedObjectStore createManagedObjectContexts];
-	[managedObjectStore startIndexingPersistentStoreManagedObjectContext];
+```objc
+#import <RestKit/CoreData.h>
+#import <RestKit/Search.h>
+
+// Initialize the managed object model and RestKit managed object store
+NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+
+// Configure indexing for the Recipe entity
+[managedObjectStore addSearchIndexingToEntityForName:@"Recipe" onAttributes:@[ @"name", @"description" ]];
+
+// Create the managed object contexts and start indexing
+[managedObjectStore createManagedObjectContexts];
+[managedObjectStore startIndexingPersistentStoreManagedObjectContext];
 
 ```
 
@@ -34,23 +34,22 @@ Once indexing is configured, an instance of `RKSearchIndexer` will observe the p
 Searching an indexed entity is performed via a standard Core Data fetch request with a compound predicate that will match your search text against a list of search words associated with the target managed object.
 
 ```objc
+#import <RestKit/CoreData.h>
+#import <RestKit/Search.h>
 
-	#import <RestKit/CoreData.h>
-	#import <RestKit/Search.h>
+/* Construct the predicate.
 	
-	/* Construct the predicate.
-		
-	   Supported predicate types are NSNotPredicateType, NSAndPredicateType, and NSOrPredicateType. 
-	   See NSCompoundPredicate.h for details.
-	 */
-	RKSearchPredicate *searchPredicate = [RKSearchPredicate predicateWithSearchText:@"vietnamese food" type:NSAndPredicateType];
+   Supported predicate types are NSNotPredicateType, NSAndPredicateType, and NSOrPredicateType. 
+   See NSCompoundPredicate.h for details.
+ */
+RKSearchPredicate *searchPredicate = [RKSearchPredicate predicateWithSearchText:@"vietnamese food" type:NSAndPredicateType];
 
-	NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestForEntityWithName:@"Recipe"];
-	fetchRequest.predicate = searchPredicate;
-	NSError *error;	
-	NSArray *matches = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-	
-	NSLog(@"Found the following matching recipes: %@", matches);
+NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestForEntityWithName:@"Recipe"];
+fetchRequest.predicate = searchPredicate;
+NSError *error;	
+NSArray *matches = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+
+NSLog(@"Found the following matching recipes: %@", matches);
 
 ```
 
