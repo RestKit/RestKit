@@ -189,8 +189,11 @@
 - (NSArray *)objectsWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context
 {
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
-    NSMutableArray *objectIDs = [[self.attributeValuesToObjectIDs objectForKey:attributeValue] copy];
-    if (objectIDs) {
+    NSArray *objectIDs = nil;
+    @synchronized(self.attributeValuesToObjectIDs) {
+        objectIDs = [[NSArray alloc] initWithArray:[self.attributeValuesToObjectIDs objectForKey:attributeValue] copyItems:YES];
+    }
+    if ([objectIDs count]) {
         /**
          NOTE:
          In my benchmarking, retrieving the objects one at a time using existingObjectWithID: is significantly faster
