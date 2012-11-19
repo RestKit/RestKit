@@ -20,7 +20,7 @@
 
 #import <RestKit/Network.h>
 #import "RKRouter.h"
-#import "RKObjectPaginator.h"
+#import "RKPaginator.h"
 #import "RKMacros.h"
 #import "AFNetworking.h"
 #import "RKManagedObjectRequestOperation.h"
@@ -88,7 +88,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
     @interface RKWikiPage : NSObject
     @property (nonatomic, copy) NSString *title;
     @property (nonatomic, copy) NSString *body;
-    @end     
+    @end
  
     // Construct a request mapping for our class
     RKObjectMapping *requestMapping = [RKObjectMapping requestMapping];
@@ -777,19 +777,30 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 - (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
 
-///---------------------------------
-/// @name Creating Paginator Objects
-///---------------------------------
+///------------------------------------
+/// @name Accessing Paginated Resources
+///------------------------------------
 
 /**
- Creates and returns an RKObjectPaginator instance targeting the specified path pattern.
+ The object mapping describing how to map pagination metadata from paginated responses.
  
- The paginator instantiated will be initialized with a URL built by appending the pathPattern to the baseURL of the client.
+ The object mapping must have an object class of `RKPaginator`. 
  
- @return The newly created paginator instance.
- @see RKObjectPaginator
+ @see [RKPaginator initWithRequest:paginationMapping:responseDescriptors]
  */
-//- (RKObjectPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
+@property (nonatomic, strong) RKObjectMapping *paginationMapping;
+
+/**
+ Creates and returns a paginator object configured to paginate the collection resource accessible at the specified path pattern.
+ 
+ The paginator instantiated will be initialized with a URL built by appending the given pathPattern to the baseURL of the client. The response descriptors and Core Data configuration, if any, are inherited from the receiver.
+ 
+ @param pathPattern A patterned URL fragment to be appended to the baseURL of the receiver in order to construct the pattern URL with which to access the paginated collection.
+ @return The newly created paginator instance.
+ @see RKPaginator
+ @warning Will raise an exception if the value of the `paginationMapping` property is nil.
+ */
+- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
 
 @end
 

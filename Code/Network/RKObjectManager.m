@@ -30,6 +30,7 @@
 #import "RKMIMETypeSerialization.h"
 #import "RKPathMatcher.h"
 #import "RKMappingErrors.h"
+#import "RKPaginator.h"
 
 #if !__has_feature(objc_arc)
 #error RestKit must be built with ARC.
@@ -189,17 +190,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return defaultHeaders;
 }
 
-/////////////////////////////////////////////////////////////
-#pragma mark - Object Collection Loaders
-
-//- (RKObjectPaginator *)paginatorWithPathPattern:(NSString *)pathPattern
-//{
-//    RKURL *patternURL = [[self baseURL] URLByAppendingResourcePath:resourcePathPattern];
-//    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL
-//                                                              mappingProvider:self.mappingProvider];
-//    paginator.configurationDelegate = self;
-//    return paginator;
-//}
+#pragma mark - Building Requests
 
 /**
  This method is the `RKObjectManager` analog for the method of the same name on `AFHTTPClient`.
@@ -307,6 +298,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     Class operationClass = self.HTTPOperationClass ?: [RKHTTPRequestOperation class];
     return [[operationClass alloc] initWithRequest:request];
 }
+
+#pragma mark - Object Request Operations
 
 - (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
                                                         success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
@@ -461,6 +454,19 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     [self enqueueObjectRequestOperation:operation];
 }
 
+- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern
+{
+    NSAssert(self.paginationMapping, @"Cannot instantiate a paginator when `paginationMapping` is nil.");
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:pathPattern parameters:nil];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:self.responseDescriptors];
+    paginator.managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
+    paginator.managedObjectCache = self.managedObjectStore.managedObjectCache;
+    paginator.fetchRequestBlocks = self.fetchRequestBlocks;
+    return paginator;
+}
+
+#pragma mark - Request & Response Descriptors
+
 - (NSArray *)requestDescriptors
 {
     return [NSArray arrayWithArray:self.mutableRequestDescriptors];
@@ -518,6 +524,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     [self.mutableResponseDescriptors removeObject:responseDescriptor];
 }
 
+#pragma mark - Fetch Request Blocks
+
 - (NSArray *)fetchRequestBlocks
 {
     return [NSArray arrayWithArray:self.mutableFetchRequestBlocks];
@@ -528,6 +536,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSParameterAssert(block);
     [self.mutableFetchRequestBlocks addObject:block];
 }
+
+#pragma mark - Queue Management
 
 - (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation
 {

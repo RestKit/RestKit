@@ -163,6 +163,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         managedObjectRequestOperation.managedObjectContext = self.managedObjectContext;
         managedObjectRequestOperation.managedObjectCache = self.managedObjectCache;
         managedObjectRequestOperation.fetchRequestBlocks = self.fetchRequestBlocks;
+        managedObjectRequestOperation.deletesOrphanedObjects = NO;
         
         self.objectRequestOperation = managedObjectRequestOperation;
     } else {

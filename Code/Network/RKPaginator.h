@@ -92,7 +92,14 @@
 /// @name Accessing Pagination Results
 ///-----------------------------------
 
+/**
+ The mapping result containing the last set of paginated objects or `nil` if an error was encountered.
+ */
 @property (nonatomic, strong, readonly) RKMappingResult *mappingResult;
+
+/**
+ The error, if any, that occured during the last load of the paginator.
+ */
 @property (nonatomic, strong, readonly) NSError *error;
 
 ///-----------------------------------
