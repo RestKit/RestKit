@@ -26,12 +26,37 @@
 /**
  An `RKObjectMapping` object describes a transformation between object represenations using key-value coding and run-time type introspection. The mapping is defined in terms of a source object class and a collection of `RKPropertyMapping` objects describing how key paths in the source representation should be transformed into attributes and relationships on the target object. Object mappings are provided to instances of `RKMapperOperation` and `RKMappingOperation` to perform the transformations they describe.
 
- Object mappings are containers of property mappings that describe the actual key path transformations. There are two types of property mappings:
+ Object mappings are containers of property mappings that describe the actual key path transformations. There are three types of property mappings:
 
  1. `RKAttributeMapping`: An attribute mapping describes a transformation between a single value from a source key path to a destination key path. The value to be mapped is read from the source object representation using `valueForKeyPath:` and then set to the destination key path using `setValueForKeyPath:`. Before the value is set, the `RKObjecMappingOperation` performing the mapping performs runtime introspection on the destination property to determine what, if any, type transformation is to be performed. Typical type transformations include reading an `NSString` value representation and mapping it to an `NSDecimalNumber` destination key path or reading an `NSString` and transforming it into an `NSDate` value before assigning to the destination.
  1. `RKRelationshipMapping`: A relationship mapping describes a transformation between a nested child object or objects from a source key path to a destination key path using another `RKObjectMapping`. The child objects to be mapped are read from the source object representation using `valueForKeyPath:`, then mapped recursively using the object mapping associated with the relationship mapping, and then finally assigned to the destination key path. Before assignment to the destination key path runtime type introspection is performed to determine if any type transformation is necessary. For relationship mappings, common type transformations include transforming a single object value in an `NSArray` or transforming an `NSArray` of object values into an `NSSet`.
+ 1. `RKConnectionMapping`: A connection mapping describes how to establish a relationship within a Core Data data model using foreign keys transmitted within the mapped response body.
 
- All type transformations available are discussed in detail in the documentation for `RKObjectMappingOperation`.
+ All type transformations available are discussed in detail in the documentation for `RKMappingOperation`.
+ 
+ ## Transforming Representation to Property Keys
+ 
+ Configuring object mappings can become quite repetitive if the keys in your serialized object representations follow a different convention than their local domain counterparts. For example, consider a typical JSON document in the "snake case" format:
+ 
+    {"user": {"first_name": "Blake", "last_name": "Watters", "email_address": "blake@restkit.org"}}
+ 
+ Typically when configuring a mapping for the object represented in this document we would transform the destination properties into the Objective-C idiomatic "llama case" variation. This can produce lengthy, error-prone mapping configurations in which the transformations are specified manually:
+ 
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"first_name": @"firstName", @"last_name": @"lastName", @"email_address", @"emailAddress" }];
+ 
+ To combat this repetition, a block can be designated to perform a transformation on source keys to produce corresponding destination keys:
+ 
+    [userMapping setDefaultSourceToDestinationKeyTransformationBlock:^NSString *(NSString *sourceKey) {
+        // Value transformer compliments of TransformerKit (See https://github.com/mattt/TransformerKit)
+        return [[NSValueTransformer valueTransformerForName:TKLlamaCaseStringTransformerName] transformedValue:key];
+    }];
+ 
+ With the block configured, the original configuration can be changed into a simpler array based invocation:
+ 
+    [userMapping addAttributeMappingsFromArray:@[ @"first_name", @"last_name", @"email_address" ]];
+ 
+ Transformation blocks can be configured on a per-mapping basis or globally via `[RKObjectMapping setDefaultSourceToDestinationKeyTransformationBlock:]`.
 
  @see `RKAttributeMapping`
  @see `RKRelationshipMapping`
@@ -141,6 +166,37 @@
  @param An array of `RKAttributeMapping` or `NSString` values to be added to the receiver's set of attribute mappings,
  */
 - (void)addAttributeMappingsFromArray:(NSArray *)arrayOfAttributeNamesOrMappings;
+
+/**
+ Adds a relationship mapping to the receiver with the given source key path and mapping.
+ 
+ The 
+ */
+- (void)addRelationshipMappingWithSourceKeyPath:(NSString *)sourceKeyPath mapping:(RKMapping *)mapping;
+
+///-------------------------------------
+/// @name Configuring Key Transformation
+///-------------------------------------
+
+/**
+ Sets an application-wide default transformation block to be used when attribute or relationship mappings are added to an object mapping by source key path.
+ 
+ @param block The block to be set as the default source to destination key transformer for all object mappings in the application.
+ @see [RKObjectMapping setPropertyNameTransformationBlock:]
+ */
++ (void)setDefaultSourceToDestinationKeyTransformationBlock:(NSString * (^)(NSString *sourceKey))block;
+
+/**
+ Sets a block to executed to transform a source key into a destination key.
+ 
+ The transformation block set with this method is used whenever an attribute or relationship mapping is added to the receiver via a method that accepts a string value for the source key. The block will be executed with the source key as the only argument and the value returned will be taken as the corresponding destination key. Methods on the `RKObjectMapping` class that will trigger the execution of the block configured via this method include:
+ * `addAttributeMappingsFromArray:` - Each string element contained in the given array is interpretted as a source key path and will be evaluated with the block to obtain a corresponding destination key path.
+ * `addRelationshipMappingWithSourceKeyPath:mapping:` - The source key path will be evaluated with the block to obtain a corresponding destination key path.
+ 
+ @param block The block to execute when the receiver needs to transform a source key into a destination key. The block has a string return value specifying the destination key and accepts a single string argument: the source key that is to be transformed.
+ @warning Please note that the block given accepts a **key** as opposed to a **key path**. When a key path is given to a method supporting key transformation it will be decomposed into its key components by splitting the key path at the '.' (period) character, then each key will be evaluated using the transformation block and the results will be joined together into a new key path with the period character delimiter.
+ */
+- (void)setSourceToDestinationKeyTransformationBlock:(NSString * (^)(NSString *sourceKey))block;
 
 ///----------------------------------
 /// @name Mapping Nested Dictionaries

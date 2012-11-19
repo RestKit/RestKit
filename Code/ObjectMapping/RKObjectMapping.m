@@ -33,6 +33,22 @@ static NSUInteger RKObjectMappingMaximumInverseMappingRecursionDepth = 100;
 // Private declaration
 NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
 
+typedef NSString * (^RKSourceToDesinationKeyTransformationBlock)(NSString *sourceKey);
+
+static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyTransformationBlock = nil;
+
+// Evaluate each component individually so that camelization, etc. considers each component individually
+static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RKSourceToDesinationKeyTransformationBlock block, NSString *keyPath)
+{
+    NSArray *components = [keyPath componentsSeparatedByString:@"."];
+    NSMutableArray *mutableComponents = [NSMutableArray arrayWithCapacity:[components count]];
+    [components enumerateObjectsUsingBlock:^(id component, NSUInteger idx, BOOL *stop) {
+        [mutableComponents addObject:block(component)];
+    }];
+    
+    return [mutableComponents componentsJoinedByString:@"."];
+}
+
 @interface RKPropertyMapping ()
 @property (nonatomic, weak, readwrite) RKObjectMapping *objectMapping;
 @end
@@ -41,7 +57,8 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 @property (nonatomic, weak, readwrite) Class objectClass;
 @property (nonatomic, strong) NSMutableArray *mutablePropertyMappings;
 
-@property (weak, nonatomic, readonly) NSArray *mappedKeyPaths;
+@property (nonatomic, weak, readonly) NSArray *mappedKeyPaths;
+@property (nonatomic, copy) RKSourceToDesinationKeyTransformationBlock sourceToDestinationKeyTransformationBlock;
 @end
 
 @implementation RKObjectMapping
@@ -67,6 +84,7 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
         self.forceCollectionMapping = NO;
         self.performKeyValueValidation = YES;
         self.ignoreUnknownKeyPaths = NO;
+        self.sourceToDestinationKeyTransformationBlock = defaultSourceToDestinationKeyTransformationBlock;
     }
 
     return self;
@@ -83,12 +101,18 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     copy.dateFormatters = self.dateFormatters;
     copy.preferredDateFormatter = self.preferredDateFormatter;
     copy.mutablePropertyMappings = [NSMutableArray new];
+    copy.sourceToDestinationKeyTransformationBlock = self.sourceToDestinationKeyTransformationBlock;
 
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
         [copy addPropertyMapping:propertyMapping];
     }
 
     return copy;
+}
+
++ (void)setDefaultSourceToDestinationKeyTransformationBlock:(NSString * (^)(NSString *sourceKey))block
+{
+    defaultSourceToDestinationKeyTransformationBlock = block;
 }
 
 - (NSArray *)propertyMappings
@@ -208,7 +232,8 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     NSMutableArray *arrayOfAttributeMappings = [NSMutableArray arrayWithCapacity:[arrayOfAttributeNamesOrMappings count]];
     for (id entry in arrayOfAttributeNamesOrMappings) {
         if ([entry isKindOfClass:[NSString class]]) {
-            [arrayOfAttributeMappings addObject:[RKAttributeMapping attributeMappingFromKeyPath:entry toKeyPath:entry]];
+            NSString *destinationKeyPath = self.sourceToDestinationKeyTransformationBlock ? RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(self.sourceToDestinationKeyTransformationBlock, entry) : entry;
+            [arrayOfAttributeMappings addObject:[RKAttributeMapping attributeMappingFromKeyPath:entry toKeyPath:destinationKeyPath]];
         } else if ([entry isKindOfClass:[RKAttributeMapping class]]) {
             [arrayOfAttributeMappings addObject:entry];
         } else {
@@ -218,6 +243,16 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     }
 
     [self addPropertyMappingsFromArray:arrayOfAttributeMappings];
+}
+
+- (void)addRelationshipMappingWithSourceKeyPath:(NSString *)sourceKeyPath mapping:(RKMapping *)mapping
+{
+    NSParameterAssert(sourceKeyPath);
+    NSParameterAssert(mapping);
+    
+    NSString *destinationKeyPath = self.sourceToDestinationKeyTransformationBlock ? RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(self.sourceToDestinationKeyTransformationBlock, sourceKeyPath) : sourceKeyPath;
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:mapping];
+    [self addPropertyMapping:relationshipMapping];
 }
 
 - (void)removePropertyMapping:(RKPropertyMapping *)attributeOrRelationshipMapping
@@ -237,14 +272,12 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
     }
 
     for (RKRelationshipMapping *relationshipMapping in self.relationshipMappings) {
-//        if (relationshipMapping.reversible) {
         RKMapping *mapping = relationshipMapping.mapping;
         if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
             RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", relationshipMapping.sourceKeyPath, NSStringFromClass([mapping class]));
             continue;
         }
         [inverseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withMapping:[(RKObjectMapping *)mapping inverseMappingAtDepth:depth+1]]];
-//        }
     }
 
     return inverseMapping;
