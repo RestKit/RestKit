@@ -12,34 +12,6 @@
 // Models
 #import "RKObjectLoaderTestResultModel.h"
 
-//
-//@interface RKTestResponseLoaderWithWillMapData : RKTestResponseLoader {
-//    id _mappableData;
-//}
-//
-//@property (nonatomic, readonly) id mappableData;
-//
-//@end
-//
-//@implementation RKTestResponseLoaderWithWillMapData
-//
-//@synthesize mappableData = _mappableData;
-//
-//- (void)dealloc
-//{
-//    [_mappableData release];
-//    [super dealloc];
-//}
-//
-//- (void)objectLoader:(RKObjectLoader *)loader willMapData:(inout id *)mappableData
-//{
-//    [*mappableData setValue:@"monkey!" forKey:@"newKey"];
-//    _mappableData = [*mappableData retain];
-//}
-//
-//@end
-//
-
 @interface RKTestComplexUser : NSObject
 
 @property (nonatomic, retain) NSNumber *userID;
@@ -532,14 +504,21 @@
 
 #pragma mark - Will Map Data Block
 
-//- (void)testShouldAllowMutationOfTheParsedDataInWillMapData
-//{
-//    RKTestResponseLoaderWithWillMapData *loader = (RKTestResponseLoaderWithWillMapData *)[RKTestResponseLoaderWithWillMapData responseLoader];
-//    RKObjectManager *manager = [RKTestFactory objectManager];
-//    [manager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
-//    [loader waitForResponse];
-//    assertThat([loader.mappableData valueForKey:@"newKey"], is(equalTo(@"monkey!")));
-//}
-//
+- (void)testShouldAllowMutationOfTheParsedDataInWillMapData
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [mapping addAttributeMappingsFromArray:@[@"firstname", @"lastname", @"email"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:@"user" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/ComplexNestedUser.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [requestOperation setWillMapDeserializedResponseBlock:^id(id deserializedResponseBody) {
+        return @{ @"user": @{ @"email": @"blake@restkit.org" } };
+    }];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    RKTestComplexUser *user = [requestOperation.mappingResult firstObject];
+    expect(user).notTo.beNil();
+    expect(user.email).to.equal(@"blake@restkit.org");
+}
 
 @end

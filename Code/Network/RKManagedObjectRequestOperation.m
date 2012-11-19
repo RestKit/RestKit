@@ -92,9 +92,12 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 @property (nonatomic, strong) RKManagedObjectResponseMapperOperation *responseMapperOperation;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
+@property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @end
 
 @implementation RKManagedObjectRequestOperation
+
+@dynamic willMapDeserializedResponseBlock;
 
 // Designated initializer
 - (id)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors
@@ -177,6 +180,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     self.responseMapperOperation.targetObjectID = self.targetObjectID;
     self.responseMapperOperation.managedObjectContext = self.privateContext;
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
+    [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
     [self.responseMapperOperation waitUntilFinished];

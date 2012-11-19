@@ -79,6 +79,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) NSDictionary *responseMappingsDictionary;
 @property (nonatomic, strong) RKMapperOperation *mapperOperation;
+@property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @end
 
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
@@ -113,7 +114,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     __block id object;
     dispatch_sync(RKResponseMapperSerializationQueue(), ^{
         object = [RKMIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
-    });
+    });    
     if (! object) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
         [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable response (%ld) with content type '%@'", (long) self.response.statusCode, MIMEType]
@@ -201,6 +202,17 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
         return;
     }
     if (self.isCancelled) return;
+    
+    // Invoke the will map deserialized response block
+    if (self.willMapDeserializedResponseBlock) {
+        parsedBody = self.willMapDeserializedResponseBlock(parsedBody);
+        if (! parsedBody) {
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Mapping was declined due to a `willMapDeserializedResponseBlock` returning nil." };
+            self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorFromMappingResult userInfo:userInfo];
+            RKLogError(@"Failed to parse response data: %@", [error localizedDescription]);
+            return;
+        }
+    }
 
     // Object map the response
     self.mappingResult = [self performMappingWithObject:parsedBody error:&error];

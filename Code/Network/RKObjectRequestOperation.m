@@ -98,6 +98,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong) RKObjectResponseMapperOperation *responseMapperOperation;
+@property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @end
 
 @implementation RKObjectRequestOperation
@@ -235,6 +236,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
                                                                          responseDescriptors:self.responseDescriptors];
     self.responseMapperOperation.targetObject = self.targetObject;
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];
+    [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
     [self.responseMapperOperation waitUntilFinished];
     if ([self isCancelled]) return nil;

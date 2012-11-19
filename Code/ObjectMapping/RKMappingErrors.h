@@ -29,7 +29,8 @@ enum {
     RKMappingErrorValidationFailure            = 1005,     // Generic error code for use when constructing validation errors
     RKMappingErrorUnableToDetermineMapping     = 1006,     // The mapping operation was unable to obtain a concrete object mapping from a given dynamic mapping
     RKMappingErrorNilDestinationObject         = 1007,     // The mapping operation failed due to a nil destination object.
-    RKMappingErrorNilManagedObjectCache        = 1008      // A managed object cache is required to satisfy the mapping, but none was given.
+    RKMappingErrorNilManagedObjectCache        = 1008,     // A managed object cache is required to satisfy the mapping, but none was given.
+    RKMappingErrorMappingDeclined              = 1009      // Mapping was declined by a callback.
 };
 
 extern NSString * const RKMappingErrorKeyPathErrorKey; // The key path the error is associated with

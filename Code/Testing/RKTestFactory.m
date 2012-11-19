@@ -24,6 +24,7 @@
 #import "RKObjectManager.h"
 #import "RKPathUtilities.h"
 #import "RKMIMETypeSerialization.h"
+#import "RKManagedObjectStore.h"
 
 // Expose MIME Type singleton and initialization routine
 @interface RKMIMETypeSerialization ()

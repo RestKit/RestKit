@@ -337,10 +337,10 @@
 		254372BD15F54C3F006E8424 /* RKObjectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372AC15F54C3F006E8424 /* RKObjectManager.h */; };
 		254372BE15F54C3F006E8424 /* RKObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372AD15F54C3F006E8424 /* RKObjectManager.m */; };
 		254372BF15F54C3F006E8424 /* RKObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372AD15F54C3F006E8424 /* RKObjectManager.m */; };
-		254372C015F54C3F006E8424 /* RKObjectPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372AE15F54C3F006E8424 /* RKObjectPaginator.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		254372C115F54C3F006E8424 /* RKObjectPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372AE15F54C3F006E8424 /* RKObjectPaginator.h */; };
-		254372C215F54C3F006E8424 /* RKObjectPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372AF15F54C3F006E8424 /* RKObjectPaginator.m */; };
-		254372C315F54C3F006E8424 /* RKObjectPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372AF15F54C3F006E8424 /* RKObjectPaginator.m */; };
+		254372C015F54C3F006E8424 /* RKPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372AE15F54C3F006E8424 /* RKPaginator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		254372C115F54C3F006E8424 /* RKPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372AE15F54C3F006E8424 /* RKPaginator.h */; };
+		254372C215F54C3F006E8424 /* RKPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372AF15F54C3F006E8424 /* RKPaginator.m */; };
+		254372C315F54C3F006E8424 /* RKPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372AF15F54C3F006E8424 /* RKPaginator.m */; };
 		254372C415F54C3F006E8424 /* RKObjectRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372B015F54C3F006E8424 /* RKObjectRequestOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		254372C515F54C3F006E8424 /* RKObjectRequestOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372B015F54C3F006E8424 /* RKObjectRequestOperation.h */; };
 		254372C615F54C3F006E8424 /* RKObjectRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 254372B115F54C3F006E8424 /* RKObjectRequestOperation.m */; };
@@ -369,6 +369,8 @@
 		25565959161FC3CD00F5BB20 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */; };
 		25565965161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */; };
 		25565966161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */; };
+		255F87911656B22D00914D57 /* RKPaginatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKPaginatorTest.m */; };
+		255F87921656B22F00914D57 /* RKPaginatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKPaginatorTest.m */; };
 		2564E40B16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */; };
 		2564E40C16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */; };
 		257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -801,8 +803,8 @@
 		254372AB15F54C3F006E8424 /* RKHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHTTPRequestOperation.m; sourceTree = "<group>"; };
 		254372AC15F54C3F006E8424 /* RKObjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectManager.h; sourceTree = "<group>"; };
 		254372AD15F54C3F006E8424 /* RKObjectManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectManager.m; sourceTree = "<group>"; };
-		254372AE15F54C3F006E8424 /* RKObjectPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectPaginator.h; sourceTree = "<group>"; };
-		254372AF15F54C3F006E8424 /* RKObjectPaginator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginator.m; sourceTree = "<group>"; };
+		254372AE15F54C3F006E8424 /* RKPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPaginator.h; sourceTree = "<group>"; };
+		254372AF15F54C3F006E8424 /* RKPaginator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPaginator.m; sourceTree = "<group>"; };
 		254372B015F54C3F006E8424 /* RKObjectRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectRequestOperation.h; sourceTree = "<group>"; };
 		254372B115F54C3F006E8424 /* RKObjectRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectRequestOperation.m; sourceTree = "<group>"; };
 		254372B215F54C3F006E8424 /* RKRequestDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestDescriptor.h; sourceTree = "<group>"; };
@@ -815,7 +817,7 @@
 		254372D515F54CE3006E8424 /* RKManagedObjectRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectRequestOperation.m; sourceTree = "<group>"; };
 		2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectRequestOperationTest.m; sourceTree = "<group>"; };
 		2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestDescriptorTest.m; sourceTree = "<group>"; };
-		254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginatorTest.m; sourceTree = "<group>"; };
+		254A62BF14AD591C00939BEE /* RKPaginatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPaginatorTest.m; sourceTree = "<group>"; };
 		25565955161FC3C300F5BB20 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseMapperOperationTest.m; sourceTree = "<group>"; };
@@ -1117,8 +1119,8 @@
 				E4081DFF15FB8B4000364948 /* ObjectRequestOperations */,
 				254372AC15F54C3F006E8424 /* RKObjectManager.h */,
 				254372AD15F54C3F006E8424 /* RKObjectManager.m */,
-				254372AE15F54C3F006E8424 /* RKObjectPaginator.h */,
-				254372AF15F54C3F006E8424 /* RKObjectPaginator.m */,
+				254372AE15F54C3F006E8424 /* RKPaginator.h */,
+				254372AF15F54C3F006E8424 /* RKPaginator.m */,
 				254372B215F54C3F006E8424 /* RKRequestDescriptor.h */,
 				254372B315F54C3F006E8424 /* RKRequestDescriptor.m */,
 				254372B415F54C3F006E8424 /* RKResponseDescriptor.h */,
@@ -1456,7 +1458,7 @@
 				251610241456F2330060A5C5 /* RKMappingResultTest.m */,
 				251610261456F2330060A5C5 /* RKObjectParameterizationTest.m */,
 				251610271456F2330060A5C5 /* RKMIMETypeSerializationTest.m */,
-				254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */,
+				254A62BF14AD591C00939BEE /* RKPaginatorTest.m */,
 				2519764215823BA1004FE9DD /* RKAttributeMappingTest.m */,
 				2519764715824455004FE9DD /* RKRelationshipMappingTest.m */,
 				2519764B158244F8004FE9DD /* RKObjectMappingTest.m */,
@@ -1739,7 +1741,7 @@
 				254372A815F54995006E8424 /* RKObjectParameterization.h in Headers */,
 				254372B815F54C3F006E8424 /* RKHTTPRequestOperation.h in Headers */,
 				254372BC15F54C3F006E8424 /* RKObjectManager.h in Headers */,
-				254372C015F54C3F006E8424 /* RKObjectPaginator.h in Headers */,
+				254372C015F54C3F006E8424 /* RKPaginator.h in Headers */,
 				254372C415F54C3F006E8424 /* RKObjectRequestOperation.h in Headers */,
 				254372C815F54C3F006E8424 /* RKRequestDescriptor.h in Headers */,
 				254372CC15F54C3F006E8424 /* RKResponseDescriptor.h in Headers */,
@@ -1839,7 +1841,7 @@
 				2598888E15EC169E006CAE95 /* RKPropertyMapping.h in Headers */,
 				254372B915F54C3F006E8424 /* RKHTTPRequestOperation.h in Headers */,
 				254372BD15F54C3F006E8424 /* RKObjectManager.h in Headers */,
-				254372C115F54C3F006E8424 /* RKObjectPaginator.h in Headers */,
+				254372C115F54C3F006E8424 /* RKPaginator.h in Headers */,
 				254372C515F54C3F006E8424 /* RKObjectRequestOperation.h in Headers */,
 				254372C915F54C3F006E8424 /* RKRequestDescriptor.h in Headers */,
 				254372CD15F54C3F006E8424 /* RKResponseDescriptor.h in Headers */,
@@ -2261,7 +2263,7 @@
 				254372A915F54995006E8424 /* RKObjectParameterization.m in Sources */,
 				254372BA15F54C3F006E8424 /* RKHTTPRequestOperation.m in Sources */,
 				254372BE15F54C3F006E8424 /* RKObjectManager.m in Sources */,
-				254372C215F54C3F006E8424 /* RKObjectPaginator.m in Sources */,
+				254372C215F54C3F006E8424 /* RKPaginator.m in Sources */,
 				254372C615F54C3F006E8424 /* RKObjectRequestOperation.m in Sources */,
 				254372CA15F54C3F006E8424 /* RKRequestDescriptor.m in Sources */,
 				254372CE15F54C3F006E8424 /* RKResponseDescriptor.m in Sources */,
@@ -2345,6 +2347,7 @@
 				2549D646162B376F003DD135 /* RKRequestDescriptorTest.m in Sources */,
 				2506759F162DEA25003210B0 /* RKEntityMappingTest.m in Sources */,
 				2548AC6D162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m in Sources */,
+				255F87911656B22D00914D57 /* RKPaginatorTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2406,7 +2409,7 @@
 				2598889015EC169E006CAE95 /* RKPropertyMapping.m in Sources */,
 				254372BB15F54C3F006E8424 /* RKHTTPRequestOperation.m in Sources */,
 				254372BF15F54C3F006E8424 /* RKObjectManager.m in Sources */,
-				254372C315F54C3F006E8424 /* RKObjectPaginator.m in Sources */,
+				254372C315F54C3F006E8424 /* RKPaginator.m in Sources */,
 				254372C715F54C3F006E8424 /* RKObjectRequestOperation.m in Sources */,
 				254372CB15F54C3F006E8424 /* RKRequestDescriptor.m in Sources */,
 				254372CF15F54C3F006E8424 /* RKResponseDescriptor.m in Sources */,
@@ -2491,6 +2494,7 @@
 				2549D647162B376F003DD135 /* RKRequestDescriptorTest.m in Sources */,
 				250675A1162DEA27003210B0 /* RKEntityMappingTest.m in Sources */,
 				2548AC6E162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m in Sources */,
+				255F87921656B22F00914D57 /* RKPaginatorTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

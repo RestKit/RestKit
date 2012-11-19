@@ -130,6 +130,18 @@
  */
 @property (nonatomic, strong, readonly) NSError *error;
 
+///-------------------------------------
+/// @name Manipulating the Mappable Data
+///-------------------------------------
+
+/**
+ Sets a block to be executed before the response mapper operation begins mapping the deserialized response body, providing an opportunity to manipulate the mappable representation input before mapping begins.
+ 
+ @param block A block object to be executed before the deserialized response is passed to the response mapper. The block has an `id` return type and must return a dictionary or array of dictionaries corresponding to the object representations that are to be mapped. The block accepts a single argument: the deserialized response data that was loaded via HTTP.
+ @warning The deserialized response body may or may not be immutable depending on the implementation details of the `RKSerialization` class that deserialized the response. If you wish to make changes to the mappable object representations, you must obtain a mutable copy of the response body input.
+ */
+- (void)setWillMapDeserializedResponseBlock:(id (^)(id deserializedResponseBody))block;
+
 @end
 
 /**
