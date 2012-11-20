@@ -1,6 +1,3 @@
-[submodule "Examples/RKCatalog/Server"]
-	path = Examples/RKCatalog/Server
-	url = git://github.com/RestKit/RKCatalog-Server.git
 [submodule "Vendor/AFNetworking"]
 	path = Vendor/AFNetworking
 	url = https://github.com/AFNetworking/AFNetworking.git
