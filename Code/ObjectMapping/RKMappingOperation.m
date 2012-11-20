@@ -373,27 +373,11 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
             continue;
         }
 
-        if (self.objectMapping.ignoreUnknownKeyPaths && ![self.sourceObject respondsToSelector:NSSelectorFromString(attributeMapping.sourceKeyPath)]) {
-            RKLogDebug(@"Source object is not key-value coding compliant for the keyPath '%@', skipping...", attributeMapping.sourceKeyPath);
-            continue;
-        }
-
         id value = nil;
-        @try {
-            if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
-                value = self.sourceObject;
-            } else {
-                value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
-            }
-        }
-        @catch (NSException *exception) {
-            if ([[exception name] isEqualToString:NSUndefinedKeyException] && self.objectMapping.ignoreUnknownKeyPaths) {
-                RKLogWarning(@"Encountered an undefined attribute mapping for keyPath '%@' that generated NSUndefinedKeyException exception. Skipping due to objectMapping.ignoreUnknownKeyPaths = YES",
-                           attributeMapping.sourceKeyPath);
-                continue;
-            }
-
-            @throw;
+        if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
+            value = self.sourceObject;
+        } else {
+            value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         }
 
         if (value) {
@@ -540,19 +524,7 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         if ([self isCancelled]) return NO;
         
-        id value = nil;
-        @try {
-            value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
-        }
-        @catch (NSException *exception) {
-            if ([[exception name] isEqualToString:NSUndefinedKeyException] && self.objectMapping.ignoreUnknownKeyPaths) {
-                RKLogWarning(@"Encountered an undefined relationship mapping for keyPath '%@' that generated NSUndefinedKeyException exception. Skipping due to objectMapping.ignoreUnknownKeyPaths = YES",
-                             relationshipMapping.sourceKeyPath);
-                continue;
-            }
-
-            @throw;
-        }
+        id value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
 
         // Track that we applied this mapping
         [mappingsApplied addObject:relationshipMapping];

@@ -266,15 +266,6 @@
 @property (nonatomic, assign) BOOL performKeyValueValidation;
 
 /**
- When `YES`, the mapping operation will check that the object being mapped is key-value coding compliant for the mapped key. If it is not, the attribute/relationship mapping will be ignored and mapping will continue. When `NO`, property mappings for unknown key paths will trigger `NSUnknownKeyException` exceptions for the unknown keyPath.
-
- Defaults to `NO` to help the developer catch incorrect mapping configurations during development.
-
- **Default**: `NO`
- */
-@property (nonatomic, assign) BOOL ignoreUnknownKeyPaths;
-
-/**
  Returns the default value to be assigned to the specified attribute when it is missing from a mappable payload.
 
  The default implementation returns nil for transient object mappings. On an entity mapping, the default value returned from the Entity definition will be used.

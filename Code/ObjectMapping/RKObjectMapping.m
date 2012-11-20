@@ -83,7 +83,6 @@ static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RK
         self.setNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
         self.performKeyValueValidation = YES;
-        self.ignoreUnknownKeyPaths = NO;
         self.sourceToDestinationKeyTransformationBlock = defaultSourceToDestinationKeyTransformationBlock;
     }
 
