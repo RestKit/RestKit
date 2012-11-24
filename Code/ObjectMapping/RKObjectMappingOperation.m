@@ -379,27 +379,25 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             continue;
         }
 
-        if (self.objectMapping.ignoreUnknownKeyPaths && ![self.sourceObject respondsToSelector:NSSelectorFromString(attributeMapping.sourceKeyPath)]) {
+        id value = nil;
+        if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
+            value = self.sourceObject;
+        } else if (self.objectMapping.ignoreUnknownKeyPaths && ![self.sourceObject respondsToSelector:NSSelectorFromString(attributeMapping.sourceKeyPath)]) {
             RKLogDebug(@"Source object is not key-value coding compliant for the keyPath '%@', skipping...", attributeMapping.sourceKeyPath);
             continue;
-        }
-
-        id value = nil;
-        @try {
-            if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
-                value = self.sourceObject;
-            } else {
+        } else {
+            @try {
                 value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
             }
-        }
-        @catch (NSException *exception) {
-            if ([[exception name] isEqualToString:NSUndefinedKeyException] && self.objectMapping.ignoreUnknownKeyPaths) {
-                RKLogWarning(@"Encountered an undefined attribute mapping for keyPath '%@' that generated NSUndefinedKeyException exception. Skipping due to objectMapping.ignoreUnknownKeyPaths = YES",
-                           attributeMapping.sourceKeyPath);
-                continue;
-            }
+            @catch (NSException *exception) {
+                if ([[exception name] isEqualToString:NSUndefinedKeyException] && self.objectMapping.ignoreUnknownKeyPaths) {
+                    RKLogWarning(@"Encountered an undefined attribute mapping for keyPath '%@' that generated NSUndefinedKeyException exception. Skipping due to objectMapping.ignoreUnknownKeyPaths = YES",
+                                 attributeMapping.sourceKeyPath);
+                    continue;
+                }
 
-            @throw;
+                @throw;
+            }
         }
 
         if (value) {
