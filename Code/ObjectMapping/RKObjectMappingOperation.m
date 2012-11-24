@@ -463,6 +463,11 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     id destinationObject = nil;
 
     for (RKObjectRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
+        if(self.objectMapping.ignoreUnknownKeyPaths && ![self.sourceObject respondsToSelector:NSSelectorFromString(relationshipMapping.sourceKeyPath)]) {
+            RKLogDebug(@"Source object is not key-value coding compliant for the keyPath '%@', skipping...", relationshipMapping.sourceKeyPath);
+            continue;
+        }
+
         id value = nil;
         @try {
             value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
