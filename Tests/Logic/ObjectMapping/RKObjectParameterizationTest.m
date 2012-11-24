@@ -391,7 +391,7 @@
 
 - (void)testParameterizationofBooleanPropertiesFromManagedObjectProperty
 {
-    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     human.isHappy = [NSNumber numberWithBool:YES];
     human.name = @"Blake Watters";
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
@@ -411,7 +411,7 @@
 
 - (void)testParameterizationofBooleanPropertiesFromManagedObjectPropertyWithFalseValue
 {
-    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     human.isHappy = [NSNumber numberWithBool:NO];
     human.name = @"Blake Watters";
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];

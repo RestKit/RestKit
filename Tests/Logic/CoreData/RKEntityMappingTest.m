@@ -49,7 +49,7 @@
     // Load Core Data
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
-    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
     id value = [mapping defaultValueForMissingAttribute:@"name"];
     assertThat(value, is(equalTo(@"Kitty Cat!")));
 }
@@ -58,7 +58,7 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     mapping.forceCollectionMapping = YES;
     mapping.primaryKeyAttribute = @"name";
     [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
@@ -89,12 +89,12 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"RKChild" inManagedObjectStore:managedObjectStore];
-    childMapping.primaryKeyAttribute = @"railsID";
+    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
+    child[mapping setEntityIdentifierWithAttributes:@"railsID"];
     [childMapping addAttributeMappingsFromArray:@[@"name"]];
 
-    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"RKParent" inManagedObjectStore:managedObjectStore];
-    parentMapping.primaryKeyAttribute = @"railsID";
+    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
+    parent[mapping setEntityIdentifierWithAttributes:@"railsID"];
     [parentMapping addAttributeMappingsFromArray:@[@"name", @"age"]];
 
     [dynamicMapping setObjectMapping:parentMapping whenValueOfKeyPath:@"type" isEqualTo:@"Parent"];
@@ -103,17 +103,17 @@
     RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"parent.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThatBool([mapping isKindOfClass:[RKEntityMapping class]], is(equalToBool(YES)));
-    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"RKParent")));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Parent")));
     mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"child.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThatBool([mapping isKindOfClass:[RKEntityMapping class]], is(equalToBool(YES)));
-    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"RKChild")));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Child")));
 }
 
 - (void)testShouldIncludeTransformableAttributesInPropertyNamesAndTypes
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSDictionary *attributesByName = [entity attributesByName];
     NSDictionary *propertiesByName = [entity propertiesByName];
     NSDictionary *relationshipsByName = [entity relationshipsByName];
@@ -128,7 +128,7 @@
 - (void)testThatAssigningAnEntityWithANonNilPrimaryKeyAttributeSetsTheDefaultValueForTheMapping
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:entity];
     assertThat(mapping.primaryKeyAttribute, is(equalTo(@"railsID")));
 }
@@ -136,7 +136,7 @@
 - (void)testThatAssigningAPrimaryKeyAttributeToAMappingWhoseEntityHasANilPrimaryKeyAttributeAssignsItToTheEntity
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCloud" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Cloud" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:entity];
     assertThat(mapping.primaryKeyAttribute, is(nilValue()));
     mapping.primaryKeyAttribute = @"name";
@@ -146,15 +146,15 @@
 
 - (void)testThatMappingAnEmptyArrayOnToAnExistingRelationshipDisassociatesTheRelatedObjects
 {
-    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:@{ @"name": @"Blake" }];
-    RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"RKCat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
-    RKCat *roy = [RKTestFactory insertManagedObjectForEntityForName:@"RKCat" inManagedObjectContext:nil withProperties:@{ @"name": @"Roy" }];
+    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:@{ @"name": @"Blake" }];
+    RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
+    RKCat *roy = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Roy" }];
     blake.cats = [NSSet setWithObjects:asia, roy, nil];
     
     NSDictionary *JSON = @{ @"name" : @"Blake Watters", @"cats" : @[] };
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:[RKTestFactory managedObjectStore]];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
     
@@ -169,14 +169,14 @@
 
 - (void)testThatMappingAnNullArrayOnToAnExistingToOneRelationshipDisassociatesTheRelatedObjects
 {
-    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:@{ @"name": @"Blake" }];
-    RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"RKCat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
+    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:@{ @"name": @"Blake" }];
+    RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
     blake.favoriteCat = asia;
     
     NSDictionary *JSON = @{ @"name" : @"Blake Watters", @"favoriteCat" : [NSNull null] };
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:[RKTestFactory managedObjectStore]];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favoriteCat" toKeyPath:@"favoriteCat" withMapping:catMapping]];
     
@@ -192,15 +192,15 @@
 
 - (void)testThatMappingAnNullArrayOnToAnExistingToManyRelationshipDisassociatesTheRelatedObjects
 {
-    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:@{ @"name": @"Blake" }];
-    RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"RKCat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
-    RKCat *roy = [RKTestFactory insertManagedObjectForEntityForName:@"RKCat" inManagedObjectContext:nil withProperties:@{ @"name": @"Roy" }];
+    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:@{ @"name": @"Blake" }];
+    RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
+    RKCat *roy = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Roy" }];
     blake.cats = [NSSet setWithObjects:asia, roy, nil];
     
     NSDictionary *JSON = @{ @"name" : @"Blake Watters", @"cats" : [NSNull null] };
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:[RKTestFactory managedObjectStore]];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
     
