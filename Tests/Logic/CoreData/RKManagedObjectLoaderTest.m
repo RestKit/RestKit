@@ -96,7 +96,7 @@
                                                                        inManagedObjectStore:managedObjectStore];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
-    human[mapping setEntityIdentifierWithAttributes:@"railsID"];
+    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
     humanMapping.rootKeyPath = @"human";
 
     // Create 3 objects, we will expect 2 after the load
@@ -167,7 +167,7 @@
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
-    human[mapping setEntityIdentifierWithAttributes:@"railsID"];
+    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
     humanMapping.rootKeyPath = @"human";
 
     NSError *error;

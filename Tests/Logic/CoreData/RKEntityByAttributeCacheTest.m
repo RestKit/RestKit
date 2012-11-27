@@ -29,7 +29,7 @@
     
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
     self.cache = [[RKEntityByAttributeCache alloc] initWithEntity:entity
-                                                              attribute:@"railsID"
+                                                       attributes:@[ @"railsID" ]
                                                    managedObjectContext:self.managedObjectContext];
     // Disable cache monitoring. Tested in specific cases.
     self.cache.monitorsContextForChanges = NO;
@@ -61,7 +61,7 @@
 
 - (void)testAttributeNameIsAssigned
 {
-    assertThat(self.cache.attribute, is(equalTo(@"railsID")));
+    assertThat(self.cache.attributes, is(equalTo(@[ @"railsID" ])));
 }
 
 #pragma mark - Loading and Flushing
@@ -124,7 +124,7 @@
 
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectContext;
-    NSManagedObject *object = [self.cache objectWithAttributeValue:[NSNumber numberWithInteger:12345] inContext:childContext];
+    NSManagedObject *object = [self.cache objectWithAttributeValues:@{ @"railsID": @12345 } inContext:childContext];
     assertThat(object.objectID, is(equalTo(human.objectID)));
 }
 
@@ -137,7 +137,7 @@
 
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectContext;
-    NSManagedObject *object = [self.cache objectWithAttributeValue:@"12345" inContext:childContext];
+    NSManagedObject *object = [self.cache objectWithAttributeValues:@{ @"railsID": @"12345" } inContext:childContext];
     assertThat(object, is(notNilValue()));
     assertThat(object.objectID, is(equalTo(human.objectID)));
 }
@@ -155,7 +155,7 @@
 
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectContext;
-    NSArray *objects = [self.cache objectsWithAttributeValue:[NSNumber numberWithInt:12345] inContext:childContext];
+    NSArray *objects = [self.cache objectsWithAttributeValues:@{ @"railsID": @(12345) } inContext:childContext];
     assertThat(objects, hasCountOf(2));
     assertThat([objects objectAtIndex:0], is(instanceOf([NSManagedObject class])));
 }
@@ -241,7 +241,7 @@
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObject:human];
-    assertThatBool([self.cache containsObjectWithAttributeValue:[NSNumber numberWithInteger:12345]], is(equalToBool(YES)));
+    assertThatBool([self.cache containsObjectWithAttributeValues:@{ @"railsID": @(12345) }], is(equalToBool(YES)));
 }
 
 - (void)testCount
@@ -286,7 +286,7 @@
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
-    assertThatInteger([self.cache countWithAttributeValue:[NSNumber numberWithInteger:12345]], is(equalToInteger(2)));
+    assertThatInteger([self.cache countWithAttributeValues:@{ @"railsID": @(12345) }], is(equalToInteger(2)));
 }
 
 - (void)testThatUnloadedCacheReturnsCountOfZero
@@ -387,5 +387,13 @@
         assertThatBool([self.cache containsObject:human2], is(equalToBool(NO)));
     }];
 }
+
+#pragma mark - Compound Key Tests
+
+// missing attributes
+// padding nil
+// trying to look-up by nil
+// trying to lookup with empty dictionary
+// using weird attribute types as cache keys
 
 @end

@@ -18,6 +18,13 @@
 
 @required
 
+/// @name Retrieving Managed Objects
+
+// New API
+- (NSArray *)managedObjectsWithEntity:(NSEntityDescription *)entity
+                      attributeValues:(NSDictionary *)attributeValues
+               inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
 ///------------------------------
 /// @name Finding Managed Objects
 ///------------------------------
@@ -33,10 +40,10 @@
  @return A managed object that is an instance of the given entity with a primary key and value matching
  the specified parameters, or nil if no object was found.
  */
-- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
-                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                                    value:(id)primaryKeyValue
-                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+//- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
+//                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+//                                    value:(id)primaryKeyValue
+//                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 /**
  Retrieves an array of model objects from the object store given a Core Data entity and
@@ -49,10 +56,10 @@
  @return An array of managed objects that are instances of the given entity with a primary key and value matching
  the specified parameters, or nil if no object was found.
  */
-- (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
-           withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                             value:(id)primaryKeyValue
-            inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+//- (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
+//           withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+//                             value:(id)primaryKeyValue
+//            inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 ///---------------------------------------------------
 /// @name Handling Managed Object Change Notifications

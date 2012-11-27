@@ -26,6 +26,8 @@
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
 
+typedef NSString * (^RKSourceToDesinationKeyTransformationBlock)(RKObjectMapping *, NSString *sourceKey);
+
 // Constants
 NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
 static NSUInteger RKObjectMappingMaximumInverseMappingRecursionDepth = 100;
@@ -33,21 +35,7 @@ static NSUInteger RKObjectMappingMaximumInverseMappingRecursionDepth = 100;
 // Private declaration
 NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
 
-typedef NSString * (^RKSourceToDesinationKeyTransformationBlock)(NSString *sourceKey);
-
 static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyTransformationBlock = nil;
-
-// Evaluate each component individually so that camelization, etc. considers each component individually
-static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RKSourceToDesinationKeyTransformationBlock block, NSString *keyPath)
-{
-    NSArray *components = [keyPath componentsSeparatedByString:@"."];
-    NSMutableArray *mutableComponents = [NSMutableArray arrayWithCapacity:[components count]];
-    [components enumerateObjectsUsingBlock:^(id component, NSUInteger idx, BOOL *stop) {
-        [mutableComponents addObject:block(component)];
-    }];
-    
-    return [mutableComponents componentsJoinedByString:@"."];
-}
 
 @interface RKPropertyMapping ()
 @property (nonatomic, weak, readwrite) RKObjectMapping *objectMapping;
@@ -109,7 +97,7 @@ static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RK
     return copy;
 }
 
-+ (void)setDefaultSourceToDestinationKeyTransformationBlock:(NSString * (^)(NSString *sourceKey))block
++ (void)setDefaultSourceToDestinationKeyTransformationBlock:(RKSourceToDesinationKeyTransformationBlock)block
 {
     defaultSourceToDestinationKeyTransformationBlock = block;
 }
@@ -219,6 +207,20 @@ static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RK
     return nil;
 }
 
+// Evaluate each component individually so that camelization, etc. considers each component individually
+- (NSString *)transformSourceKeyPath:(NSString *)keyPath
+{
+    if (!self.sourceToDestinationKeyTransformationBlock) return keyPath;
+    
+    NSArray *components = [keyPath componentsSeparatedByString:@"."];
+    NSMutableArray *mutableComponents = [NSMutableArray arrayWithCapacity:[components count]];
+    [components enumerateObjectsUsingBlock:^(id component, NSUInteger idx, BOOL *stop) {
+        [mutableComponents addObject:self.sourceToDestinationKeyTransformationBlock(self, component)];
+    }];
+    
+    return [mutableComponents componentsJoinedByString:@"."];
+}
+
 - (void)addAttributeMappingsFromDictionary:(NSDictionary *)keyPathToAttributeNames
 {
     for (NSString *attributeKeyPath in keyPathToAttributeNames) {
@@ -231,7 +233,7 @@ static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RK
     NSMutableArray *arrayOfAttributeMappings = [NSMutableArray arrayWithCapacity:[arrayOfAttributeNamesOrMappings count]];
     for (id entry in arrayOfAttributeNamesOrMappings) {
         if ([entry isKindOfClass:[NSString class]]) {
-            NSString *destinationKeyPath = self.sourceToDestinationKeyTransformationBlock ? RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(self.sourceToDestinationKeyTransformationBlock, entry) : entry;
+            NSString *destinationKeyPath = [self transformSourceKeyPath:entry];
             [arrayOfAttributeMappings addObject:[RKAttributeMapping attributeMappingFromKeyPath:entry toKeyPath:destinationKeyPath]];
         } else if ([entry isKindOfClass:[RKAttributeMapping class]]) {
             [arrayOfAttributeMappings addObject:entry];
@@ -249,7 +251,7 @@ static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RK
     NSParameterAssert(sourceKeyPath);
     NSParameterAssert(mapping);
     
-    NSString *destinationKeyPath = self.sourceToDestinationKeyTransformationBlock ? RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(self.sourceToDestinationKeyTransformationBlock, sourceKeyPath) : sourceKeyPath;
+    NSString *destinationKeyPath = [self transformSourceKeyPath:sourceKeyPath];
     RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:mapping];
     [self addPropertyMapping:relationshipMapping];
 }
@@ -287,12 +289,12 @@ static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RK
     return [self inverseMappingAtDepth:0];
 }
 
-- (void)mapKeyOfNestedDictionaryToAttribute:(NSString *)attributeName
+- (void)addAttributeMappingFromKeyOfRepresentationToAttribute:(NSString *)attributeName
 {
     [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:RKObjectMappingNestingAttributeKeyName toKeyPath:attributeName]];
 }
 
-- (RKAttributeMapping *)attributeMappingForKeyOfNestedDictionary
+- (RKAttributeMapping *)attributeMappingForKeyOfRepresentation
 {
     return [self mappingForKeyPath:RKObjectMappingNestingAttributeKeyName];
 }
@@ -319,7 +321,7 @@ static NSString *RKDestinationKeyPathFromTransformationBlockWithSourceKeyPath(RK
     return nil;
 }
 
-- (id)defaultValueForMissingAttribute:(NSString *)attributeName
+- (id)defaultValueForAttribute:(NSString *)attributeName
 {
     return nil;
 }

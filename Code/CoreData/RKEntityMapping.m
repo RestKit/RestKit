@@ -22,7 +22,6 @@
 #import "RKManagedObjectStore.h"
 #import "RKDynamicMappingMatcher.h"
 #import "RKPropertyInspector+CoreData.h"
-#import "NSEntityDescription+RKAdditions.h"
 #import "RKLog.h"
 #import "RKRelationshipMapping.h"
 #import "RKObjectUtilities.h"
@@ -31,13 +30,32 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
+static BOOL entityIdentifierInferenceEnabled = YES;
+
+static void RKInferIdentifiersForEntityMapping(RKEntityMapping *entityMapping)
+{
+    if (! [RKEntityMapping isEntityIdentifierInferenceEnabled]) return;
+    
+    entityMapping.entityIdentifier = [RKEntityIdentifier inferredIdentifierForEntity:entityMapping.entity];
+    [[entityMapping.entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationship, BOOL *stop) {
+        RKEntityIdentifier *entityIdentififer = [RKEntityIdentifier inferredIdentifierForEntity:relationship.destinationEntity];
+        if (entityIdentififer) {
+            [entityMapping setEntityIdentifier:entityIdentififer forRelationship:relationshipName];
+        }
+    }];
+}
+
+@interface RKObjectMapping (Private)
+- (NSString *)transformSourceKeyPath:(NSString *)keyPath;
+@end
+
 @interface RKEntityMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
 @property (nonatomic, strong) NSMutableArray *mutableConnections;
+@property (nonatomic, strong) NSMutableDictionary *relationshipNamesToEntityIdentifiers;
 @end
 
 @implementation RKEntityMapping
-
 
 + (id)mappingForClass:(Class)objectClass
 {
@@ -60,9 +78,7 @@
     self = [self initWithClass:objectClass];
     if (self) {
         self.entity = entity;
-
-        [self addObserver:self forKeyPath:@"entity" options:NSKeyValueObservingOptionInitial context:nil];
-        [self addObserver:self forKeyPath:@"primaryKeyAttribute" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
+        RKInferIdentifiersForEntityMapping(self);
     }
 
     return self;
@@ -73,61 +89,106 @@
     self = [super initWithClass:objectClass];
     if (self) {
         self.mutableConnections = [NSMutableArray array];
+        self.relationshipNamesToEntityIdentifiers = [NSMutableDictionary dictionary];
     }
 
     return self;
 }
 
-- (void)dealloc
+- (id)copyWithZone:(NSZone *)zone
 {
-    [self removeObserver:self forKeyPath:@"entity"];
-    [self removeObserver:self forKeyPath:@"primaryKeyAttribute"];
+    RKEntityMapping *copy = [super copyWithZone:zone];
+    copy.entityIdentifier = [self.entityIdentifier copy];
+    
+    for (RKConnectionDescription *connection in self.connections) {
+        [copy addConnection:[connection copy]];
+    }
+    
+    return copy;
 }
 
-- (RKConnectionMapping *)connectionMappingForRelationshipWithName:(NSString *)relationshipName
+- (RKConnectionDescription *)connectionForRelationship:(id)relationshipOrName
 {
-    for (RKConnectionMapping *connection in self.connectionMappings) {
-        if ([connection.relationship.name isEqualToString:relationshipName]) {
+    NSAssert([relationshipOrName isKindOfClass:[NSString class]] || [relationshipOrName isKindOfClass:[NSRelationshipDescription class]], @"Relationship specifier must be a name or a relationship description");
+    NSString *relationshipName = [relationshipOrName isKindOfClass:[NSRelationshipDescription class]] ? [(NSRelationshipDescription *)relationshipOrName name] : relationshipOrName;
+    for (RKConnectionDescription *connection in self.connections) {
+        if ([[connection.relationship name] isEqualToString:relationshipName]) {
             return connection;
         }
     }
     return nil;
 }
 
-- (void)addConnectionMapping:(RKConnectionMapping *)mapping
+- (void)addConnection:(RKConnectionDescription *)connection
 {
-    NSParameterAssert(mapping);
-    RKConnectionMapping *connectionMapping = [self connectionMappingForRelationshipWithName:mapping.relationship.name];
-    NSAssert(connectionMapping == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", mapping.relationship.name);
+    NSParameterAssert(connection);
+    RKConnectionDescription *existingConnection = [self connectionForRelationship:connection.relationship];
+    NSAssert(existingConnection == nil, @"Cannot add connection: An existing connection already exists for the '%@' relationship.", connection.relationship.name);
     NSAssert(self.mutableConnections, @"self.mutableConnections should not be nil");
-    [self.mutableConnections addObject:mapping];
+    [self.mutableConnections addObject:connection];
 }
 
-- (void)addConnectionMappingsFromArray:(NSArray *)arrayOfConnectionMappings
+- (void)removeConnection:(RKConnectionDescription *)connection
 {
-    for (RKConnectionMapping *connectionMapping in arrayOfConnectionMappings) {
-        [self addConnectionMapping:connectionMapping];
+    [self.mutableConnections removeObject:connection];
+}
+
+- (NSArray *)connections
+{
+    return [NSArray arrayWithArray:self.mutableConnections];
+}
+
+- (void)addConnectionForRelationship:(id)relationshipOrName connectedBy:(id)connectionSpecifier
+{
+    NSRelationshipDescription *relationship = [relationshipOrName isKindOfClass:[NSRelationshipDescription class]] ? relationshipOrName : [self.entity relationshipsByName][relationshipOrName];
+    NSAssert(relationship, @"No relatiobship was found named '%@' in the '%@' entity", relationshipOrName, [self.entity name]);
+    RKConnectionDescription *connection = nil;
+    if ([connectionSpecifier isKindOfClass:[NSString class]]) {
+        NSString *sourceAttribute = connectionSpecifier;
+        NSString *destinationAttribute = [self transformSourceKeyPath:sourceAttribute];
+        connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ sourceAttribute: destinationAttribute }];
+    } else if ([connectionSpecifier isKindOfClass:[NSArray class]]) {
+        NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:[connectionSpecifier count]];
+        for (NSString *sourceAttribute in connectionSpecifier) {
+            NSString *destinationAttribute = [self transformSourceKeyPath:sourceAttribute];
+            attributes[sourceAttribute] = destinationAttribute;
+        }
+        connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:attributes];
+    } else if ([connectionSpecifier isKindOfClass:[NSDictionary class]]) {
+        connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:connectionSpecifier];
+    } else {
+        [NSException raise:NSInvalidArgumentException format:@"Connections can only be described using `NSString`, `NSArray`, or `NSDictionary` objects. Instead, got: %@", connectionSpecifier];
     }
+    
+    [self.mutableConnections addObject:connection];
 }
 
-- (RKConnectionMapping *)addConnectionMappingForRelationshipForName:(NSString *)relationshipName
-                                                  fromSourceKeyPath:(NSString *)sourceKeyPath
-                                                          toKeyPath:(NSString *)destinationKeyPath
-                                                            matcher:(RKDynamicMappingMatcher *)matcher
+- (void)setEntityIdentifier:(RKEntityIdentifier *)entityIdentifier
 {
-    NSRelationshipDescription *relationship = [[self.entity propertiesByName] objectForKey:relationshipName];
-    NSAssert(relationship, @"Unable to find a relationship named '%@' in the entity: %@", relationshipName, self.entity);
-    RKConnectionMapping *connectionMapping = [[RKConnectionMapping alloc] initWithRelationship:relationship sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath matcher:matcher];
-    [self addConnectionMapping:connectionMapping];
-    return connectionMapping;
+    NSAssert(entityIdentifier == nil || [entityIdentifier.entity isKindOfEntity:self.entity], @"Invalid entity identifier value: The identifier given is for the '%@' entity.", [entityIdentifier.entity name]);
+    _entityIdentifier = entityIdentifier;
 }
 
-- (void)removeConnectionMapping:(RKConnectionMapping *)connectionMapping
+- (void)setEntityIdentifier:(RKEntityIdentifier *)entityIdentifier forRelationship:(NSString *)relationshipName
 {
-    [self.mutableConnections removeObject:connectionMapping];
+    NSRelationshipDescription *relationship = [self.entity relationshipsByName][relationshipName];
+    NSAssert(relationship, @"Cannot set entity identififer for relationship '%@': no relationship found for that name.", relationshipName);
+    NSAssert([[relationship destinationEntity] isKindOfEntity:entityIdentifier.entity], @"Cannot set entity identifier for relationship '%@': the given relationship identifier is for the '%@' entity, but the '%@' entity was expected.", relationshipName, [entityIdentifier.entity name], [[relationship destinationEntity] name]);
+    self.relationshipNamesToEntityIdentifiers[relationshipName] = entityIdentifier;
 }
 
-- (id)defaultValueForMissingAttribute:(NSString *)attributeName
+- (RKEntityIdentifier *)entityIdentifierForRelationship:(NSString *)relationshipName
+{
+    RKEntityIdentifier *entityIdentifier = self.relationshipNamesToEntityIdentifiers[relationshipName];
+    if (! entityIdentifier) {
+        RKRelationshipMapping *relationshipMapping = [self propertyMappingsByDestinationKeyPath][relationshipName];
+        entityIdentifier = [relationshipMapping.mapping isKindOfClass:[RKEntityIdentifier class]] ? [(RKEntityMapping *)relationshipMapping.mapping entityIdentifier] : nil;
+    }
+    
+    return entityIdentifier;
+}
+
+- (id)defaultValueForAttribute:(NSString *)attributeName
 {
     NSAttributeDescription *desc = [[self.entity attributesByName] valueForKey:attributeName];
     return [desc defaultValue];
@@ -143,25 +204,14 @@
     return propertyClass;
 }
 
-/*
- Allows the primaryKeyAttributeName property on the NSEntityDescription to configure the mapping and vice-versa
- */
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
++ (void)setEntityIdentifierInferenceEnabled:(BOOL)enabled
 {
-    if ([keyPath isEqualToString:@"entity"]) {
-        if (! self.primaryKeyAttribute) {
-            self.primaryKeyAttribute = [self.entity primaryKeyAttributeName];
-        }
-    } else if ([keyPath isEqualToString:@"primaryKeyAttribute"]) {
-        if (! self.entity.primaryKeyAttribute) {
-            self.entity.primaryKeyAttributeName = self.primaryKeyAttribute;
-        }
-    }
+    entityIdentifierInferenceEnabled = enabled;
 }
 
-- (NSArray *)connectionMappings
++ (BOOL)isEntityIdentifierInferenceEnabled
 {
-    return [NSArray arrayWithArray:self.mutableConnections];
+    return entityIdentifierInferenceEnabled;
 }
 
 @end

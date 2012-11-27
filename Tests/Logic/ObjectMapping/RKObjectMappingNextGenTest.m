@@ -361,7 +361,7 @@
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     mapping.forceCollectionMapping = YES;
-    [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"(name).id" toKeyPath:@"userID"];
     [mapping addPropertyMapping:idMapping];
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
@@ -386,7 +386,7 @@
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     mapping.forceCollectionMapping = YES;
-    [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
 
     RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
     [addressMapping addAttributeMappingsFromArray:@[@"city", @"state"]];
@@ -419,7 +419,7 @@
 
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     userMapping.forceCollectionMapping = YES;
-    [userMapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [userMapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"users" toKeyPath:@"users" withMapping:userMapping]];;
 
     RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
@@ -475,7 +475,7 @@
 
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     userMapping.forceCollectionMapping = YES;
-    [userMapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [userMapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"users" toKeyPath:@"users" withMapping:userMapping]];;
 
     RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
@@ -2037,7 +2037,7 @@
     NSArray *array = [RKTestFixture parsedObjectWithContentsOfFixture:@"ArrayOfHumans.json"];
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
-    [humanMapping setEntityIdentifierWithAttributes:@"railsID"];
+    humanMapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     [mappingsDictionary setObject:humanMapping forKey:@"human"];
 

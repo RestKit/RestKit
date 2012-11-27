@@ -52,38 +52,23 @@
                                  userInfo:nil];
 }
 
-
-- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
-                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                                    value:(id)primaryKeyValue
-                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+- (NSArray *)managedObjectsWithEntity:(NSEntityDescription *)entity
+                      attributeValues:(NSDictionary *)attributeValues
+               inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-    NSAssert(self.entityCache, @"Entity cache cannot be nil.");
-    if (! [self.entityCache isEntity:entity cachedByAttribute:primaryKeyAttribute]) {
-        RKLogInfo(@"Caching instances of Entity '%@' by primary key attribute '%@'", entity.name, primaryKeyAttribute);
-        [self.entityCache cacheObjectsForEntity:entity byAttribute:primaryKeyAttribute];
-        RKEntityByAttributeCache *attributeCache = [self.entityCache attributeCacheForEntity:entity attribute:primaryKeyAttribute];
+    NSParameterAssert(entity);
+    NSParameterAssert(attributeValues);
+    NSParameterAssert(managedObjectContext);
+    
+    NSArray *attributes = [attributeValues allKeys];
+    if (! [self.entityCache isEntity:entity cachedByAttributes:attributes]) {
+        RKLogInfo(@"Caching instances of Entity '%@' by attributes '%@'", entity.name, [attributes componentsJoinedByString:@", "]);
+        [self.entityCache cacheObjectsForEntity:entity byAttributes:attributes];
+        RKEntityByAttributeCache *attributeCache = [self.entityCache attributeCacheForEntity:entity attributes:attributes];
         RKLogTrace(@"Cached %ld objects", (long)[attributeCache count]);
     }
-
-    return [self.entityCache objectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue inContext:managedObjectContext];
-}
-
-- (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
-                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                                     value:(id)primaryKeyValue
-                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
-{
-    NSAssert(self.entityCache, @"Entity cache cannot be nil.");
-
-    if (! [self.entityCache isEntity:entity cachedByAttribute:primaryKeyAttribute]) {
-        RKLogInfo(@"Caching instances of Entity '%@' by primary key attribute '%@'", entity.name, primaryKeyAttribute);
-        [self.entityCache cacheObjectsForEntity:entity byAttribute:primaryKeyAttribute];
-        RKEntityByAttributeCache *attributeCache = [self.entityCache attributeCacheForEntity:entity attribute:primaryKeyAttribute];
-        RKLogTrace(@"Cached %ld objects", (long)[attributeCache count]);
-    }
-
-    return [self.entityCache objectsForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue inContext:managedObjectContext];
+    
+    return [self.entityCache objectsForEntity:entity withAttributeValues:attributeValues inContext:managedObjectContext];
 }
 
 - (void)didFetchObject:(NSManagedObject *)object

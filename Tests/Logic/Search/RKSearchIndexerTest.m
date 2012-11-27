@@ -111,7 +111,7 @@
     }
     @finally {
         assertThat(exception, is(notNilValue()));
-        assertThat(exception.reason, containsString(@"Invalid attribute identifier given: No attribute with the name 'doesNotExist' found in the 'RKHuman' entity."));
+        assertThat(exception.reason, containsString(@"Invalid attribute identifier given: No attribute with the name 'doesNotExist' found in the 'Human' entity."));
     }
 }
 

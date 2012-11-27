@@ -23,7 +23,7 @@
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    [mapping setEntityIdentifierWithAttributes:@"railsID"];
+    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Cat" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
 
     RKCat *reginald = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     reginald.name = @"Reginald";
@@ -44,17 +44,17 @@
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Event" inManagedObjectStore:managedObjectStore];
-    [mapping setEntityIdentifierWithAttributes:@"eventID"];
+    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Event" attributes:@[ @"eventID" ] inManagedObjectStore:managedObjectStore];
 
     RKEvent *birthday = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     birthday.eventID = @"e-1234-a8-b12";
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
-
-    NSManagedObject *cachedObject = [cache findInstanceOfEntity:entity
-                                        withPrimaryKeyAttribute:mapping.primaryKeyAttribute
-                                                          value:@"e-1234-a8-b12"
-                                         inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    expect(cachedObject).to.equal(birthday);
+    
+    NSArray *managedObjects = [cache managedObjectsWithEntity:entity
+                                              attributeValues:@{ @"eventID": @"e-1234-a8-b12" }
+                                       inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSArray *birthdays = @[ birthday ];
+    expect(managedObjects).to.equal(birthdays);
 }
 
 @end

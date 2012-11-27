@@ -20,13 +20,26 @@
 
 #import <CoreData/CoreData.h>
 #import "RKObjectMapping.h"
-#import "RKConnectionMapping.h"
+#import "RKConnectionDescription.h"
 #import "RKMacros.h"
+#import "RKEntityIdentifier.h"
 
 @class RKManagedObjectStore;
 
 /**
  RKEntityMapping objects model an object mapping with a Core Data destination entity.
+ 
+ ## Entity Identification
+ 
+ TBD
+ 
+ ### Inferring Entity Identifiers
+ 
+ TBD
+ 
+ ## Connecting Relationships
+ 
+ TBD
  */
 @interface RKEntityMapping : RKObjectMapping
 
@@ -62,58 +75,63 @@
  */
 @property (nonatomic, strong) NSEntityDescription *entity;
 
-/**
- The name of the attribute on the destination entity that acts as the primary key for instances
- of the entity in the remote backend system. Used to uniquely identify objects within the store
- so that existing objects are updated rather than creating new ones.
+// The index for finding existing objects. Can be compound.
+@property (nonatomic, copy) RKEntityIdentifier *entityIdentifier;
 
- @warning Note that primaryKeyAttribute defaults to the primaryKeyAttribute configured
- on the NSEntityDescription for the entity targetted by the receiving mapping. This provides
- flexibility in cases where a single entity is the target of many mappings with differing
- primary key definitions.
+// Setting an existing entity identifier replaces it...
+- (void)setEntityIdentifier:(RKEntityIdentifier *)entityIdentifier forRelationship:(NSString *)relationshipName;
 
- If the `primaryKeyAttribute` is set on an `RKEntityMapping` that targets an entity with a
- nil primaryKeyAttribute, then the primaryKeyAttribute will be set on the entity as well for
- convenience and backwards compatibility. This may change in the future.
+// NOTE: This returns explicitly set value, then the entityIdentifier for the relationship mapping
+- (RKEntityIdentifier *)entityIdentifierForRelationship:(NSString *)relationshipName;
 
- @see `[NSEntityDescription primaryKeyAttribute]`
- */
-// TODO: Make me readonly
-@property (nonatomic, strong) NSString *primaryKeyAttribute;
+///**
+// The name of the attribute on the destination entity that acts as the primary key for instances
+// of the entity in the remote backend system. Used to uniquely identify objects within the store
+// so that existing objects are updated rather than creating new ones.
+//
+// @warning Note that primaryKeyAttribute defaults to the primaryKeyAttribute configured
+// on the NSEntityDescription for the entity targetted by the receiving mapping. This provides
+// flexibility in cases where a single entity is the target of many mappings with differing
+// primary key definitions.
+//
+// If the `primaryKeyAttribute` is set on an `RKEntityMapping` that targets an entity with a
+// nil primaryKeyAttribute, then the primaryKeyAttribute will be set on the entity as well for
+// convenience and backwards compatibility. This may change in the future.
+//
+// @see `[NSEntityDescription primaryKeyAttribute]`
+// */
+//// TODO: Make me readonly
+//@property (nonatomic, strong) NSString *primaryKeyAttribute;
 
-/**
- Retrieves an array of RKConnectionMapping objects for connecting the receiver's relationships
- by primary key.
-
- @see `RKConnectionMapping`
- */
-@property (weak, nonatomic, readonly) NSArray *connectionMappings;
+@property (weak, nonatomic, readonly) NSArray *connections;
 
 /**
  Adds a connection mapping to the receiver.
 
  @param connectionMapping The connection mapping to be added.
  */
-- (void)addConnectionMapping:(RKConnectionMapping *)connectionMapping;
-- (void)addConnectionMappingsFromArray:(NSArray *)arrayOfConnectionMappings;
+- (void)addConnection:(RKConnectionDescription *)connection;
+- (void)removeConnection:(RKConnectionDescription *)connection;
+- (void)addConnectionForRelationship:(id)relationshipOrName connectedBy:(id)connectionSpecifier;
+- (RKConnectionDescription *)connectionForRelationship:(id)relationshipOrName;
 
-// Convenience method.
-- (RKConnectionMapping *)addConnectionMappingForRelationshipForName:(NSString *)relationshipName
-                                                  fromSourceKeyPath:(NSString *)sourceKeyPath
-                                                          toKeyPath:(NSString *)destinationKeyPath
-                                                            matcher:(RKDynamicMappingMatcher *)matcher;
-
-/**
- Removes a connection mapping from the receiver.
-
- @param connectionMapping The connection mapping to be added.
- */
-- (void)removeConnectionMapping:(RKConnectionMapping *)connectionMapping;
+///------------------------------------------
+/// @name Retrieving Default Attribute Values
+///------------------------------------------
 
 /**
  Returns the default value for the specified attribute as expressed in the Core Data entity definition. This value will
  be assigned if the object mapping is applied and a value for a missing attribute is not present in the payload.
  */
-- (id)defaultValueForMissingAttribute:(NSString *)attributeName;
+- (id)defaultValueForAttribute:(NSString *)attributeName;
+
+///----------------------------------------------
+/// @name Configuring Entity Identifier Inference
+///----------------------------------------------
+
+// setInfersEntityIdentifiers:(BOOL) | setShouldInferEntityIdentifiers:
+// setEntityIdentificationInferenceEnabled: | :
++ (void)setEntityIdentifierInferenceEnabled:(BOOL)enabled; // Default YES
++ (BOOL)isEntityIdentifierInferenceEnabled;
 
 @end

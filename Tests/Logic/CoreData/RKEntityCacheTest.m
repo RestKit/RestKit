@@ -47,21 +47,21 @@
 
 - (void)testIsEntityCachedByAttribute
 {
-    assertThatBool([_cache isEntity:self.entity cachedByAttribute:@"railsID"], is(equalToBool(NO)));
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    assertThatBool([_cache isEntity:self.entity cachedByAttribute:@"railsID"], is(equalToBool(YES)));
+    assertThatBool([_cache isEntity:self.entity cachedByAttributes:@[ @"railsID" ]], is(equalToBool(NO)));
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"railsID" ]];
+    assertThatBool([_cache isEntity:self.entity cachedByAttributes:@[ @"railsID" ]], is(equalToBool(YES)));
 }
 
 - (void)testRetrievalOfUnderlyingEntityAttributeCache
 {
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    RKEntityByAttributeCache *attributeCache = [_cache attributeCacheForEntity:self.entity attribute:@"railsID"];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"railsID" ]];
+    RKEntityByAttributeCache *attributeCache = [_cache attributeCacheForEntity:self.entity attributes:@[  @"railsID" ]];
     assertThat(attributeCache, is(notNilValue()));
 }
 
 - (void)testRetrievalOfUnderlyingEntityAttributeCaches
 {
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"railsID" ]];
     NSArray *caches = [_cache attributeCachesForEntity:self.entity];
     assertThat(caches, is(notNilValue()));
     assertThatInteger([caches count], is(equalToInteger(1)));
@@ -74,10 +74,10 @@
     NSError *error = nil;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
 
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"railsID" ]];
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
-    NSManagedObject *fetchedObject = [self.cache objectForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
+    NSManagedObject *fetchedObject = [self.cache objectForEntity:self.entity withAttributeValues:@{ @"railsID": @(12345) } inContext:childContext];
     assertThat(fetchedObject, is(notNilValue()));
 }
 
@@ -90,10 +90,10 @@
     NSError *error = nil;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
 
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"railsID" ]];
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
-    NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
+    NSArray *objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"railsID": @(12345) } inContext:childContext];
     assertThat(objects, hasCountOf(2));
     assertThat([objects valueForKey:@"objectID"], containsInAnyOrder(human1.objectID, human2.objectID, nil));
 }
@@ -108,31 +108,31 @@
     human2.name = @"Sarah";
 
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"railsID" ]];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"name" ]];
     
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 
-    NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
+    NSArray *objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"railsID": @(12345) } inContext:childContext];
     assertThat(objects, hasCountOf(2));
     assertThat([objects valueForKey:@"objectID"], containsInAnyOrder(human1.objectID, human2.objectID, nil));
 
-    objects = [self.cache objectsForEntity:self.entity withAttribute:@"name" value:@"Blake" inContext:childContext];
+    objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"name": @"Blake" } inContext:childContext];
     assertThat(objects, hasCountOf(1));
     assertThat([objects valueForKey:@"objectID"], contains(human1.objectID, nil));
 
     [self.cache flush];
-    objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
+    objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"railsID": @(12345) } inContext:childContext];
     assertThat(objects, is(empty()));
-    objects = [self.cache objectsForEntity:self.entity withAttribute:@"name" value:@"Blake" inContext:childContext];
+    objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"name": @"Blake" } inContext:childContext];
     assertThat(objects, is(empty()));
 }
 
 - (void)testAddingObjectAddsToEachUnderlyingEntityAttributeCaches
 {
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"railsID" ]];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"name" ]];
 
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
@@ -154,19 +154,19 @@
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 
-    NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
+    NSArray *objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"railsID": @(12345) } inContext:childContext];
     assertThat(objects, hasCountOf(2));
     assertThat([objects valueForKey:@"objectID"], containsInAnyOrder(human1.objectID, human2.objectID, nil));
 
-    objects = [self.cache objectsForEntity:self.entity withAttribute:@"name" value:@"Blake" inContext:childContext];
+    objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"name": @"Blake" } inContext:childContext];
     assertThat(objects, hasCountOf(1));
     assertThat([objects  valueForKey:@"objectID"], contains(human1.objectID, nil));
 }
 
 - (void)testRemovingObjectRemovesFromUnderlyingEntityAttributeCaches
 {
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"railsID" ]];
+    [_cache cacheObjectsForEntity:self.entity byAttributes:@[ @"name" ]];
 
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
@@ -188,11 +188,11 @@
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 
-    NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345] inContext:childContext];
+    NSArray *objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"railsID": @(12345) } inContext:childContext];
     assertThat(objects, hasCountOf(2));
     assertThat([objects valueForKey:@"objectID"], containsInAnyOrder(human1.objectID, human2.objectID, nil));
 
-    RKEntityByAttributeCache *entityAttributeCache = [self.cache attributeCacheForEntity:self.entity attribute:@"railsID"];
+    RKEntityByAttributeCache *entityAttributeCache = [self.cache attributeCacheForEntity:self.entity attributes:@[ @"railsID" ]];
     assertThatBool([entityAttributeCache containsObject:human1], is(equalToBool(YES)));
     [self.cache removeObject:human1];
     assertThatBool([entityAttributeCache containsObject:human1], is(equalToBool(NO)));

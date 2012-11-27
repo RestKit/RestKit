@@ -20,7 +20,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class RKConnectionMapping;
+@class RKConnectionDescription;
 @protocol RKManagedObjectCaching;
 
 /**
@@ -30,7 +30,7 @@
 
  @see `RKConnectionMapping`
  */
-@interface RKRelationshipConnectionOperation : NSOperation
+@interface RKConnectionOperation : NSOperation
 
 ///-------------------------------------------------------
 /// @name Initializing a Relationship Connection Operation
@@ -45,7 +45,7 @@
  @return The receiver, initialized with the given managed object, connection mapping, and managed object cache.
  */
 - (id)initWithManagedObject:(NSManagedObject *)managedObject
-          connectionMapping:(RKConnectionMapping *)connectionMapping
+                 connection:(RKConnectionDescription *)connection
          managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
 
 ///--------------------------------------------
@@ -60,7 +60,7 @@
 /**
  The connection mapping describing the relationship connection the receiver will attempt to connect.
  */
-@property (nonatomic, strong, readonly) RKConnectionMapping *connectionMapping;
+@property (nonatomic, strong, readonly) RKConnectionDescription *connection;
 
 /**
  The managed object cache the receiver will use to fetch a related object satisfying the connection mapping.
