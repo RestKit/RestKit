@@ -164,7 +164,8 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
     animation.delegate = self;
     animation.duration = kFlipArrowAnimationTime;
     animation.toValue = [NSNumber numberWithDouble:0];
-    animation.removedOnCompletion = YES;
+    animation.fillMode = kCAFillModeForwards;
+    animation.removedOnCompletion = NO;
     return animation;
 }
 
