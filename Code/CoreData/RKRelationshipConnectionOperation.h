@@ -24,13 +24,13 @@
 @protocol RKManagedObjectCaching;
 
 /**
- The `RKRelationshipConnectionOperation` class is a subclass of `NSOperation` that manages the connection of `NSManagedObject` relationships as described by an `RKConnectionMapping` object. When executed, the operation will find related objects by searching the associated managed object cache for a matching object whose destination attribute value matches that of the associated managed object's source attribute.
+ The `RKRelationshipConnectionOperation` class is a subclass of `NSOperation` that manages the connection of `NSManagedObject` relationships as described by an `RKConnectionDescription` object. When executed, the operation will find related objects by searching the associated managed object cache for objects matching the connection description and setting them as the value for the relationship being connected.
 
  For example, given a managed object for the `Employee` entity with a one-to-one relationship to a `Company` named `company` (with an inverse relationship one-to-many relationship named `employees`) and a connection mapping specifying that the relationship can be connected by finding the `Company` managed object whose `companyID` attribute matches the `companyID` of the `Employee`, the operation would find the Company that employs the Employee by primary key and set the Core Data relationship to reflect the relationship appropriately.
 
- @see `RKConnectionMapping`
+ @see `RKConnectionDescription`
  */
-@interface RKConnectionOperation : NSOperation
+@interface RKRelationshipConnectionOperation : NSOperation
 
 ///-------------------------------------------------------
 /// @name Initializing a Relationship Connection Operation

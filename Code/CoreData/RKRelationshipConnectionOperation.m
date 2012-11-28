@@ -19,7 +19,7 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKConnectionOperation.h"
+#import "RKRelationshipConnectionOperation.h"
 #import "RKConnectionDescription.h"
 #import "RKEntityMapping.h"
 #import "RKLog.h"
@@ -50,7 +50,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     return destinationEntityAttributeValues;
 }
 
-@interface RKConnectionOperation ()
+@interface RKRelationshipConnectionOperation ()
 @property (nonatomic, strong, readwrite) NSManagedObject *managedObject;
 @property (nonatomic, strong, readwrite) RKConnectionDescription *connection;
 @property (nonatomic, strong, readwrite) id<RKManagedObjectCaching> managedObjectCache;
@@ -62,7 +62,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 
 @end
 
-@implementation RKConnectionOperation
+@implementation RKRelationshipConnectionOperation
 
 - (id)initWithManagedObject:(NSManagedObject *)managedObject
                  connection:(RKConnectionDescription *)connection

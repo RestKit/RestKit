@@ -399,10 +399,10 @@
 		2595B47415F670530087A59B /* RKNSJSONSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2595B46D15F670530087A59B /* RKNSJSONSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2595B47515F670530087A59B /* RKNSJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2595B46E15F670530087A59B /* RKNSJSONSerialization.m */; };
 		2595B47615F670530087A59B /* RKNSJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2595B46E15F670530087A59B /* RKNSJSONSerialization.m */; };
-		2597F99C15AF6DC400E547D7 /* RKConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2597F99A15AF6DC400E547D7 /* RKConnectionOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2597F99D15AF6DC400E547D7 /* RKConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2597F99A15AF6DC400E547D7 /* RKConnectionOperation.h */; };
-		2597F99E15AF6DC400E547D7 /* RKConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2597F99B15AF6DC400E547D7 /* RKConnectionOperation.m */; };
-		2597F99F15AF6DC400E547D7 /* RKConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2597F99B15AF6DC400E547D7 /* RKConnectionOperation.m */; };
+		2597F99C15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2597F99D15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */; };
+		2597F99E15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */; };
+		2597F99F15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */; };
 		2598888D15EC169E006CAE95 /* RKPropertyMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 2598888B15EC169E006CAE95 /* RKPropertyMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2598888E15EC169E006CAE95 /* RKPropertyMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 2598888B15EC169E006CAE95 /* RKPropertyMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2598888F15EC169E006CAE95 /* RKPropertyMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 2598888C15EC169E006CAE95 /* RKPropertyMapping.m */; };
@@ -845,8 +845,8 @@
 		2595B46C15F670530087A59B /* RKMIMETypeSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMIMETypeSerialization.m; sourceTree = "<group>"; };
 		2595B46D15F670530087A59B /* RKNSJSONSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKNSJSONSerialization.h; sourceTree = "<group>"; };
 		2595B46E15F670530087A59B /* RKNSJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKNSJSONSerialization.m; sourceTree = "<group>"; };
-		2597F99A15AF6DC400E547D7 /* RKConnectionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKConnectionOperation.h; sourceTree = "<group>"; };
-		2597F99B15AF6DC400E547D7 /* RKConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKConnectionOperation.m; sourceTree = "<group>"; };
+		2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRelationshipConnectionOperation.h; sourceTree = "<group>"; };
+		2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRelationshipConnectionOperation.m; sourceTree = "<group>"; };
 		2598888B15EC169E006CAE95 /* RKPropertyMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPropertyMapping.h; sourceTree = "<group>"; };
 		2598888C15EC169E006CAE95 /* RKPropertyMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPropertyMapping.m; sourceTree = "<group>"; };
 		259AC480162B05C80012D2F9 /* RKObjectRequestOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectRequestOperationTest.m; sourceTree = "<group>"; };
@@ -1128,8 +1128,8 @@
 				E4081E0915FB8FD800364948 /* Mapping */,
 				25160D52145650490060A5C5 /* RKManagedObjectStore.h */,
 				25160D53145650490060A5C5 /* RKManagedObjectStore.m */,
-				2597F99A15AF6DC400E547D7 /* RKConnectionOperation.h */,
-				2597F99B15AF6DC400E547D7 /* RKConnectionOperation.m */,
+				2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */,
+				2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -1756,7 +1756,7 @@
 				258EA4A815A38BC0007E07A6 /* RKObjectMappingOperationDataSource.h in Headers */,
 				258EA4AE15A38E7E007E07A6 /* RKMappingOperationDataSource.h in Headers */,
 				258EA4B215A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */,
-				2597F99C15AF6DC400E547D7 /* RKConnectionOperation.h in Headers */,
+				2597F99C15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */,
 				25AFF8F115B4CF1F0051877F /* RKMappingErrors.h in Headers */,
 				5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */,
 				25104F1F15C30CD900829135 /* RKSearchWord.h in Headers */,
@@ -1859,7 +1859,7 @@
 				258EA4A915A38BC0007E07A6 /* RKObjectMappingOperationDataSource.h in Headers */,
 				258EA4AF15A38E7E007E07A6 /* RKMappingOperationDataSource.h in Headers */,
 				258EA4B315A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */,
-				2597F99D15AF6DC400E547D7 /* RKConnectionOperation.h in Headers */,
+				2597F99D15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */,
 				25AFF8F215B4CF1F0051877F /* RKMappingErrors.h in Headers */,
 				5CCC295715B7124A0045F0F5 /* RKMacros.h in Headers */,
 				25104F2015C30CD900829135 /* RKSearchWord.h in Headers */,
@@ -2268,7 +2268,7 @@
 				25FBB854159272DD00955D27 /* RKRouter.m in Sources */,
 				258EA4AA15A38BC0007E07A6 /* RKObjectMappingOperationDataSource.m in Sources */,
 				25AA23D015AF2920006EF62D /* RKManagedObjectMappingOperationDataSource.m in Sources */,
-				2597F99E15AF6DC400E547D7 /* RKConnectionOperation.m in Sources */,
+				2597F99E15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m in Sources */,
 				25104F2115C30CD900829135 /* RKSearchWord.m in Sources */,
 				25104F2B15C30D1700829135 /* RKManagedObjectStore+RKSearchAdditions.m in Sources */,
 				25104F3115C30E7400829135 /* RKSearchIndexer.m in Sources */,
@@ -2417,7 +2417,7 @@
 				25FBB855159272DD00955D27 /* RKRouter.m in Sources */,
 				258EA4AB15A38BC0007E07A6 /* RKObjectMappingOperationDataSource.m in Sources */,
 				25AA23D115AF2920006EF62D /* RKManagedObjectMappingOperationDataSource.m in Sources */,
-				2597F99F15AF6DC400E547D7 /* RKConnectionOperation.m in Sources */,
+				2597F99F15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m in Sources */,
 				25104F2215C30CD900829135 /* RKSearchWord.m in Sources */,
 				25104F2C15C30D1700829135 /* RKManagedObjectStore+RKSearchAdditions.m in Sources */,
 				25104F3215C30E7400829135 /* RKSearchIndexer.m in Sources */,

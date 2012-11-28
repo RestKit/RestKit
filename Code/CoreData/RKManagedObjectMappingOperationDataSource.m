@@ -26,7 +26,7 @@
 #import "RKMappingOperation.h"
 #import "RKDynamicMappingMatcher.h"
 #import "RKManagedObjectCaching.h"
-#import "RKConnectionOperation.h"
+#import "RKRelationshipConnectionOperation.h"
 #import "RKMappingErrors.h"
 #import "RKValueTransformers.h"
 
@@ -217,8 +217,8 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         }
 
         for (RKConnectionDescription *connection in connections) {
-            RKConnectionOperation *operation = [[RKConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connection:connection managedObjectCache:self.managedObjectCache];
-            __weak RKConnectionOperation *weakOperation = operation;
+            RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connection:connection managedObjectCache:self.managedObjectCache];
+            __weak RKRelationshipConnectionOperation *weakOperation = operation;
             [operation setCompletionBlock:^{
                 if (weakOperation.connectedValue) {
                     if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didConnectRelationship:withValue:usingMapping:)]) {
