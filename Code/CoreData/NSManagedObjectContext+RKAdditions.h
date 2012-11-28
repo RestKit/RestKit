@@ -64,28 +64,6 @@
  */
 - (NSUInteger)countForEntityForName:(NSString *)entityName predicate:(NSPredicate *)predicate error:(NSError **)error;
 
-/////----------------------------------------------
-///// @name Fetching Managed Objects by Primary Key
-/////----------------------------------------------
-//
-///**
-// Fetches a single managed object for the given entity with the given value for the primary key attribute in the receiver.
-//
-// @param entity The entity of the managed object to be retrieved by primary key.
-// @param primaryKeyValue The value for the entity's primary key attribute.
-// @return The managed object with the primary key attribute equal to the given value or nil if none was found.
-// */
-//- (id)fetchObjectForEntity:(NSEntityDescription *)entity withValueForPrimaryKeyAttribute:(id)primaryKeyValue;
-//
-///**
-// Fetches a single managed object for the entity for the given name with the given value for the primary key attribute in the receiver.
-//
-// @param entityName The name of the entity of the managed object to be retrieved by primary key.
-// @param primaryKeyValue The value for the receiving entity's primary key attribute.
-// @return The managed object with the primary key attribute equal to the given value or nil if none was found.
-// */
-//- (id)fetchObjectForEntityForName:(NSString *)entityName withValueForPrimaryKeyAttribute:(id)primaryKeyValue;
-
 ///-------------------------------------------------
 /// @name Saving the Context to the Persistent Store
 ///-------------------------------------------------

@@ -9,57 +9,26 @@
 #import <CoreData/CoreData.h>
 
 /**
- Objects implementing the RKManagedObjectCaching protocol can act as the cache
- strategy for RestKit managed object stores. The managed object cache is consulted
- when objects are retrieved from Core Data during object mapping operations and provide
- an opportunity to accelerate the mapping process by trading memory for speed.
+ Objects implementing the `RKManagedObjectCaching` provide support for retrieving managed object matching a set of attributes using an opaque caching strategy. The objects retrieved are not required to be in any particular order, but must exactly match the attribute values requested.
  */
 @protocol RKManagedObjectCaching <NSObject>
 
 @required
 
+///---------------------------------
 /// @name Retrieving Managed Objects
+///---------------------------------
 
-// New API
+/**
+ Returns all managed objects for a given entity with attributes whose names and values match the given dictionary in a given context.
+ 
+ @param entity The entity to retrieve managed objects for.
+ @param attributeValues A dictionary specifying the attribute criteria for retrieving managed objects.
+ @param managedObjectContext The context to fetch the matching objects in.
+ */
 - (NSArray *)managedObjectsWithEntity:(NSEntityDescription *)entity
                       attributeValues:(NSDictionary *)attributeValues
                inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
-
-///------------------------------
-/// @name Finding Managed Objects
-///------------------------------
-
-/**
- Retrieves a model object from the object store given a Core Data entity and
- the primary key attribute and value for the desired object.
-
- @param entity The Core Data entity for the type of object to be retrieved from the cache.
- @param primaryKeyAttribute The name of the attribute that acts as the primary key for the entity.
- @param primaryKeyValue The value for the primary key attribute of the object to be retrieved from the cache.
- @param managedObjectContext The managed object context to be searched for a matching instance.
- @return A managed object that is an instance of the given entity with a primary key and value matching
- the specified parameters, or nil if no object was found.
- */
-//- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
-//                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-//                                    value:(id)primaryKeyValue
-//                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
-
-/**
- Retrieves an array of model objects from the object store given a Core Data entity and
- the primary key attribute and value for the desired object.
-
- @param entity The Core Data entity for the type of object to be retrieved from the cache.
- @param primaryKeyAttribute The name of the attribute that acts as the primary key for the entity.
- @param primaryKeyValue The value for the primary key attribute of the object to be retrieved from the cache.
- @param managedObjectContext The managed object context to be searched for a matching instance.
- @return An array of managed objects that are instances of the given entity with a primary key and value matching
- the specified parameters, or nil if no object was found.
- */
-//- (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
-//           withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-//                             value:(id)primaryKeyValue
-//            inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 ///---------------------------------------------------
 /// @name Handling Managed Object Change Notifications
