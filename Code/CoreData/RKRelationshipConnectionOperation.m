@@ -135,38 +135,6 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     return result;
 }
 
-- (NSMutableSet *)findAllConnectedWithSourceValue:(id)sourceValue
-{
-    NSMutableSet *result = [NSMutableSet set];
-
-    id values = nil;
-    if ([sourceValue conformsToProtocol:@protocol(NSFastEnumeration)]) {
-        values = sourceValue;
-    } else {
-        values = [NSArray arrayWithObject:sourceValue];
-    }
-
-    for (id value in values) {
-        NSAssert(self.managedObjectContext, @"Cannot lookup objects with a nil managedObjectContext");
-//        NSArray *objects = [self.managedObjectCache findInstancesOfEntity:self.connectionMapping.relationship.destinationEntity
-//                                                  withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
-//                                                                    value:value
-//                                                   inManagedObjectContext:self.managedObjectContext];
-//        [result addObjectsFromArray:objects];
-    }
-    return result;
-}
-
-//- (NSManagedObject *)findOneConnectedWithSourceValue:(id)sourceValue
-//{
-//    NSAssert(self.managedObjectContext, @"Cannot lookup objects with a nil managedObjectContext");
-//    NSArray * 
-//    return [self.managedObjectCache findInstanceOfEntity:self.connectionMapping.relationship.destinationEntity
-//                                 withPrimaryKeyAttribute:self.connectionMapping.destinationKeyPath
-//                                                   value:sourceValue
-//                                  inManagedObjectContext:self.managedObjectContext];
-//}
-
 - (id)findConnected
 {
     id connectionResult = nil;
@@ -175,6 +143,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
         NSArray *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[self.connection.relationship destinationEntity]
                                                                     attributeValues:attributeValues
                                                              inManagedObjectContext:self.managedObjectContext];
+        if (self.connection.predicate) managedObjects = [managedObjects filteredArrayUsingPredicate:self.connection.predicate];
         if ([self.connection.relationship isToMany]) {
             connectionResult = managedObjects;
         } else {

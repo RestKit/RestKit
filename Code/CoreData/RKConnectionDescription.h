@@ -106,4 +106,13 @@
  */
 @property (nonatomic, strong, readonly) NSRelationshipDescription *relationship;
 
+///----------------------------
+/// @name Setting the Predicate
+///----------------------------
+
+/**
+ An optional predicate for filtering objects to be connected.
+ */
+@property (nonatomic, copy) NSPredicate *predicate;
+
 @end

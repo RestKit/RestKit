@@ -478,7 +478,6 @@
 		25AA23D115AF2920006EF62D /* RKManagedObjectMappingOperationDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */; };
 		25AA23D815AF5085006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */; };
 		25AA23D915AF5086006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */; };
-		25AE61CA15ADEBD000B319C8 /* RKConnectionMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC044C81576CE72003DCDD6 /* RKConnectionMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25AFF8F115B4CF1F0051877F /* RKMappingErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 25AFF8F015B4CF1F0051877F /* RKMappingErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25AFF8F215B4CF1F0051877F /* RKMappingErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 25AFF8F015B4CF1F0051877F /* RKMappingErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408261491CDDC00F21111 /* RKPathUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKPathUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -574,7 +573,6 @@
 		73D3907714CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
 		73D3907914CA1DD40093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
-		8BC044CA1576CE72003DCDD6 /* RKConnectionMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC044C81576CE72003DCDD6 /* RKConnectionMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AAB37371906649BD90E20FAF /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04014C1F2EA945798F953D38 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -939,8 +937,6 @@
 		73D3907114CA19F90093E3D6 /* parent.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = parent.json; sourceTree = "<group>"; };
 		73D3907314CA1A4A0093E3D6 /* child.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = child.json; sourceTree = "<group>"; };
 		73D3907814CA1D710093E3D6 /* channels.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = channels.xml; sourceTree = "<group>"; };
-		8BC044C81576CE72003DCDD6 /* RKConnectionMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKConnectionMapping.h; sourceTree = "<group>"; };
-		8BC044C91576CE72003DCDD6 /* RKConnectionMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKConnectionMapping.m; sourceTree = "<group>"; };
 		92A418BC16A64A74BF92549F /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		93B7B61F0199413CAA60E8A7 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		964648386780496FA49D3DD6 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
@@ -1160,8 +1156,6 @@
 		25160D7A145650490060A5C5 /* ObjectMapping */ = {
 			isa = PBXGroup;
 			children = (
-				8BC044C81576CE72003DCDD6 /* RKConnectionMapping.h */,
-				8BC044C91576CE72003DCDD6 /* RKConnectionMapping.m */,
 				25B6E95A14CF7E3C00B1E881 /* RKDynamicMappingMatcher.h */,
 				25B6E95B14CF7E3C00B1E881 /* RKDynamicMappingMatcher.m */,
 				25160D7C145650490060A5C5 /* RKDynamicMapping.h */,
@@ -1749,7 +1743,6 @@
 				257ABAB61511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
 				259D98541550C69A008C90F5 /* RKEntityByAttributeCache.h in Headers */,
 				259D985E155218E5008C90F5 /* RKEntityCache.h in Headers */,
-				8BC044CA1576CE72003DCDD6 /* RKConnectionMapping.h in Headers */,
 				252028FC1577AE0B00076FB4 /* RKRouteSet.h in Headers */,
 				252029031577AE1800076FB4 /* RKRoute.h in Headers */,
 				25FBB852159272DD00955D27 /* RKRouter.h in Headers */,
@@ -1852,7 +1845,6 @@
 				257ABAB71511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
 				259D98551550C69A008C90F5 /* RKEntityByAttributeCache.h in Headers */,
 				259D985F155218E5008C90F5 /* RKEntityCache.h in Headers */,
-				25AE61CA15ADEBD000B319C8 /* RKConnectionMapping.h in Headers */,
 				252028FD1577AE0B00076FB4 /* RKRouteSet.h in Headers */,
 				252029041577AE1800076FB4 /* RKRoute.h in Headers */,
 				25FBB853159272DD00955D27 /* RKRouter.h in Headers */,
