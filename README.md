@@ -130,12 +130,12 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
     <td>Models a mapping for transforming an object representation into a <tt>NSManagedObject</tt> instance for a given <tt>NSEntityDescription</tt>.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKConnectionMapping.html">RKConnectionMapping</a></td>
+    <td><a href="http://restkit.org/api/0.20.0/Classes/RKConnectionDescription.html">RKConnectionDescription</a></td>
     <td>Describes a mapping for establishing a relationship between Core Data entities using foreign key attributes.</td>
   </tr>  
   <tr>
     <td><a href="http://restkit.org/api/0.20.0/Classes/RKManagedObjectRequestOperation.html">RKManagedObjectRequestOperation</a></td>
-    <td>An <tt>NSOperation</tt> subclass that sends an HTTP request and performs object mapping on the parsed response body to create <tt>NSManagedObject</tt> instances, establishes relationships between objects using <tt>RKConnectionMapping</tt> objects, and cleans up orphaned objects that no longer exist in the remote backend system.</td>
+    <td>An <tt>NSOperation</tt> subclass that sends an HTTP request and performs object mapping on the parsed response body to create <tt>NSManagedObject</tt> instances, establishes relationships between objects using <tt>RKConnectionDescription</tt> objects, and cleans up orphaned objects that no longer exist in the remote backend system.</td>
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/0.20.0/Classes/RKManagedObjectImporter.html">RKManagedObjectImporter</a></td>
