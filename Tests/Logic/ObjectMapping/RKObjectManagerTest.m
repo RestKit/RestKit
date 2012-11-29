@@ -76,7 +76,7 @@
     NSError *error;
     [self.objectManager.managedObjectStore resetPersistentStores:&error];
     
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:_objectManager.managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:_objectManager.managedObjectStore];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
@@ -86,7 +86,7 @@
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:_objectManager.managedObjectStore];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:_objectManager.managedObjectStore];
     [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
     [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
@@ -165,7 +165,7 @@
 - (void)testShouldUpdateACoreDataBackedTargetObject
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
@@ -182,7 +182,7 @@
 - (void)testShouldNotPersistTemporaryEntityToPersistentStoreOnError
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
@@ -197,7 +197,7 @@
 - (void)testThatFailedObjectRequestOperationDoesNotSaveObjectToPersistentStore
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];    
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];    
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
@@ -214,7 +214,7 @@
 - (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDeleteReturning200
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @1;
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -228,7 +228,7 @@
     [operation waitUntilFinished];
 
     NSError *error = nil;
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     NSArray *humans = [_objectManager.managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     expect(error).to.beNil();
     expect(humans).to.haveCountOf(0);
@@ -237,7 +237,7 @@
 - (void)testShouldDeleteACoreDataBackedTargetObjectOnSuccessfulDeleteReturning204
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -251,7 +251,7 @@
     [operation waitUntilFinished];
 
     NSError *error = nil;
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     NSArray *humans = [_objectManager.managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     expect(error).to.beNil();
     expect(humans).to.haveCountOf(0);
@@ -306,7 +306,7 @@
 - (void)testShouldProperlyFireABatchOfOperations
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     temporaryHuman.name = @"My Name";
 
     RKManagedObjectRequestOperation *successfulGETOperation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:nil];
@@ -332,13 +332,13 @@
 - (void)testShouldProperlyFireABatchOfOperationsFromRoute
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
-    RKHuman *dan = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
+    RKHuman *dan = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     dan.name = @"Dan";
 
-    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
+    RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     blake.name = @"Blake";
 
-    RKHuman *jeff = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectContext withProperties:nil];
+    RKHuman *jeff = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     jeff.name = @"Jeff";
 
     __block NSUInteger progressCallbackCount = 0;
@@ -359,7 +359,7 @@
 
 - (void)testThatObjectParametersAreNotSentDuringGetObject
 {
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:@{@"this": @"that"}];
@@ -368,7 +368,7 @@
 
 - (void)testThatObjectParametersAreNotSentDuringDeleteObject
 {
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:@{@"this": @"that"}];
@@ -377,7 +377,7 @@
 
 - (void)testInitializationOfObjectRequestOperationProducesCorrectURLRequest
 {
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     NSURLRequest *request = [_objectManager requestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"}];
     expect([request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/the/path");
     expect(request.HTTPMethod).to.equal(@"PATCH");
@@ -390,7 +390,7 @@
 {
     RKTestAFHTTPClient *testClient = [[RKTestAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://test.com"]];
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:testClient];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     NSURLRequest *request = [manager requestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"}];
     
     expect([request.URL absoluteString]).to.equal(@"http://test.com/the/path");
@@ -404,7 +404,7 @@
     RKTestAFHTTPClient *testClient = [[RKTestAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://test.com"]];
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:testClient];
     [manager setAcceptHeaderWithMIMEType:@"application/json"];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     NSURLRequest *request = [manager requestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"}];
     
     expect([request.URL absoluteString]).to.equal(@"http://test.com/the/path");
@@ -418,7 +418,7 @@
     RKTestAFHTTPClient *testClient = [[RKTestAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://test.com"]];
     RKObjectManager *manager = [[RKObjectManager alloc] initWithHTTPClient:testClient];
     [manager setAcceptHeaderWithMIMEType:@"application/json"];
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"RKHuman" inManagedObjectContext:nil withProperties:nil];
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     NSURLRequest *request = [manager multipartFormRequestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"} constructingBodyWithBlock:nil];
 
     expect([request.URL absoluteString]).to.equal(@"http://test.com/the/path");

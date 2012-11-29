@@ -128,11 +128,6 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
 }
 
-- (NSString *)pathFromObject:(id)object
-{
-    return [self pathFromObject:object addingEscapes:YES];
-}
-
 - (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes
 {
     NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using pathMatcherWithPattern: before calling pathFromObject:");

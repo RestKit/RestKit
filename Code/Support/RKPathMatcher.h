@@ -91,23 +91,6 @@
 ///----------------------------------
 
 /**
- Generates a new path by interpolating the properties of the 'object' argument, assuming the existence of a previously specified pattern established via `pathMatcherWithPattern:`.  Otherwise, this method is identical in function to `RKPathFromPatternWithObject` (in fact it is a shortcut for this method).
-
- For example, given an 'article' object with an 'articleID' property value of 12345 ...
-
-   RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/articles/:articleID"];
-   NSString *path = [matcher pathFromObject:article];
-
- ... will produce a 'path' containing the string "/articles/12345"
-
- @param object The object containing the properties to interpolate.
- @return A string with the object's interpolated property values inserted into the receiver's established pattern.
- @see `RKPathFromPatternWithObject`
- @see `RKRouter`
- */
-- (NSString *)pathFromObject:(id)object DEPRECATED_ATTRIBUTE;
-
-/**
  Generates a path by interpolating the properties of the 'object' argument, assuming the existence of a previously specified pattern established via `pathMatcherWithPattern:`.  Otherwise, this method is identical in function to `RKPathFromPatternWithObject` (in fact it is a shortcut for this method).
 
  For example, given an 'article' object with an 'articleID' property value of 12345 and a code of "This/That"...

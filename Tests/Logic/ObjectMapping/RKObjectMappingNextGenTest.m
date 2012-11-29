@@ -361,7 +361,7 @@
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     mapping.forceCollectionMapping = YES;
-    [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"(name).id" toKeyPath:@"userID"];
     [mapping addPropertyMapping:idMapping];
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
@@ -386,7 +386,7 @@
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     mapping.forceCollectionMapping = YES;
-    [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
 
     RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
     [addressMapping addAttributeMappingsFromArray:@[@"city", @"state"]];
@@ -419,7 +419,7 @@
 
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     userMapping.forceCollectionMapping = YES;
-    [userMapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [userMapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"users" toKeyPath:@"users" withMapping:userMapping]];;
 
     RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
@@ -475,7 +475,7 @@
 
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     userMapping.forceCollectionMapping = YES;
-    [userMapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [userMapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"users" toKeyPath:@"users" withMapping:userMapping]];;
 
     RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
@@ -2012,11 +2012,11 @@
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
 
-    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     blake.name = @"Blake Watters";
-    RKCat *asia = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKCat *asia = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     asia.name = @"Asia";
-    RKCat *roy = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKCat *roy = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     roy.name = @"Roy";
     blake.cats = [NSSet setWithObjects:asia, roy, nil];
 
@@ -2035,16 +2035,16 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     NSArray *array = [RKTestFixture parsedObjectWithContentsOfFixture:@"ArrayOfHumans.json"];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
-    humanMapping.primaryKeyAttribute = @"railsID";
+    humanMapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     [mappingsDictionary setObject:humanMapping forKey:@"human"];
 
     // Create instances that should match the fixture
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     human1.railsID = [NSNumber numberWithInt:201];
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     human2.railsID = [NSNumber numberWithInt:202];
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 

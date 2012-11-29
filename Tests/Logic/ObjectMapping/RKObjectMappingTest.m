@@ -175,7 +175,7 @@
 - (void)testPropertyNameTransformationBlockForAttributes
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [mapping setSourceToDestinationKeyTransformationBlock:^NSString *(NSString *sourceKey) {
+    [mapping setSourceToDestinationKeyTransformationBlock:^NSString *(RKObjectMapping *mapping, NSString *sourceKey) {
         return [sourceKey uppercaseString];
     }];
     [mapping addAttributeMappingsFromArray:@[ @"name", @"rank" ]];
@@ -186,7 +186,7 @@
 - (void)testPropertyNameTransformationBlockForRelationships
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [mapping setSourceToDestinationKeyTransformationBlock:^NSString *(NSString *sourceKey) {
+    [mapping setSourceToDestinationKeyTransformationBlock:^NSString *(RKObjectMapping *mapping, NSString *sourceKey) {
         return [sourceKey uppercaseString];
     }];
     RKObjectMapping *relatedMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -200,7 +200,7 @@
 - (void)testTransformationOfAttributeKeyPaths
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    [mapping setSourceToDestinationKeyTransformationBlock:^NSString *(NSString *sourceKey) {
+    [mapping setSourceToDestinationKeyTransformationBlock:^NSString *(RKObjectMapping *mapping, NSString *sourceKey) {
         return [sourceKey capitalizedString];
     }];
     [mapping addAttributeMappingsFromArray:@[ @"user.comments" ]];
@@ -210,7 +210,7 @@
 
 - (void)testDefaultSourceToDestinationKeyTransformationBlock
 {
-    [RKObjectMapping setDefaultSourceToDestinationKeyTransformationBlock:^NSString *(NSString *sourceKey) {
+    [RKObjectMapping setDefaultSourceToDestinationKeyTransformationBlock:^NSString *(RKObjectMapping *mapping, NSString *sourceKey) {
         return [sourceKey capitalizedString];
     }];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];

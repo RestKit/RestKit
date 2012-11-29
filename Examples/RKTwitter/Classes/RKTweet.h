@@ -1,5 +1,5 @@
 //
-//  RKTStatus.h
+//  RKTweet.h
 //  RKTwitter
 //
 //  Created by Blake Watters on 9/5/10.
@@ -8,7 +8,7 @@
 
 #import "RKTUser.h"
 
-@interface RKTStatus : NSObject
+@interface RKTweet : NSObject
 
 /**
  * The unique ID of this Status

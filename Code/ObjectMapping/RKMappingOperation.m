@@ -29,6 +29,7 @@
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKDynamicMapping.h"
 #import "RKObjectUtilities.h"
+#import "RKValueTransformers.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -62,10 +63,22 @@ static BOOL RKIsManagedObject(id object)
     return managedObjectClass && [object isKindOfClass:managedObjectClass];
 }
 
-id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinationType);
-id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinationType)
+id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer);
+id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer)
 {
-    if ([destinationType isSubclassOfClass:[NSData class]]) {
+    Class sourceType = [value class];
+    
+    if ([value isKindOfClass:destinationType]) {
+        // No transformation necessary
+        return value;
+    } else if ([sourceType isSubclassOfClass:[NSString class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
+        // String -> Date
+        return [dateToStringValueTransformer transformedValue:value];
+    } else if ([destinationType isSubclassOfClass:[NSString class]] && [value isKindOfClass:[NSDate class]]) {
+        // NSDate -> NSString
+        // Transform using the preferred date formatter
+        return [dateToStringValueTransformer reverseTransformedValue:value];
+    } else if ([destinationType isSubclassOfClass:[NSData class]]) {
         return [NSKeyedArchiver archivedDataWithRootObject:value];
     } else if ([sourceType isSubclassOfClass:[NSString class]]) {
         if ([destinationType isSubclassOfClass:[NSURL class]]) {
@@ -135,6 +148,33 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
     return nil;
 }
 
+// Applies
+// Key comes from: [[_nestedAttributeSubstitution allKeys] lastObject]] AND [[_nestedAttributeSubstitution allValues] lastObject];
+NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings);
+NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings)
+{
+    if (!attributeName) return propertyMappings;
+        
+    NSString *searchString = [NSString stringWithFormat:@"(%@)", attributeName];
+    NSString *replacementString = [NSString stringWithFormat:@"%@", value];
+    NSMutableArray *nestedMappings = [NSMutableArray arrayWithCapacity:[propertyMappings count]];
+    for (RKPropertyMapping *propertyMapping in propertyMappings) {
+        NSString *sourceKeyPath = [propertyMapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+        NSString *destinationKeyPath = [propertyMapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+        RKPropertyMapping *nestedMapping = nil;
+        if ([propertyMapping isKindOfClass:[RKAttributeMapping class]]) {
+            nestedMapping = [RKAttributeMapping attributeMappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
+        } else if ([propertyMapping isKindOfClass:[RKRelationshipMapping class]]) {
+            nestedMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath
+                                                                        toKeyPath:destinationKeyPath
+                                                                      withMapping:[(RKRelationshipMapping *)propertyMapping mapping]];
+        }
+        [nestedMappings addObject:nestedMapping];
+    }
+    
+    return nestedMappings;
+}
+
 @interface RKMappingOperation ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
@@ -186,23 +226,9 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
 - (id)transformValue:(id)value atKeyPath:(NSString *)keyPath toType:(Class)destinationType
 {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
-    Class sourceType = [value class];
-
-    if ([sourceType isSubclassOfClass:[NSString class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
-        // String -> Date
-        return [self parseDateFromString:(NSString *)value];
-    } else if ([destinationType isSubclassOfClass:[NSString class]] && [value isKindOfClass:[NSDate class]]) {
-        // NSDate -> NSString
-        // Transform using the preferred date formatter
-        NSString *dateString = nil;
-        @synchronized(self.objectMapping.preferredDateFormatter) {
-            dateString = [self.objectMapping.preferredDateFormatter stringForObjectValue:value];
-        }
-        return dateString;
-    } else {
-        id transformedValue = RKTransformValueFromClassToClass(value, sourceType, destinationType);
-        if (transformedValue != value) return transformedValue;
-    }
+    RKDateToStringValueTransformer *transformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
+    id transformedValue = RKTransformedValueWithClass(value, destinationType, transformer);
+    if (transformedValue != value) return transformedValue;
     
     RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
 
@@ -269,27 +295,30 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
     return NO;
 }
 
+// TODO:
 - (NSArray *)applyNestingToMappings:(NSArray *)mappings
 {
     if (_nestedAttributeSubstitution) {
-        NSString *searchString = [NSString stringWithFormat:@"(%@)", [[_nestedAttributeSubstitution allKeys] lastObject]];
-        NSString *replacementString = [[_nestedAttributeSubstitution allValues] lastObject];
-        NSMutableArray *array = [NSMutableArray arrayWithCapacity:[self.objectMapping.attributeMappings count]];
-        for (RKPropertyMapping *mapping in mappings) {
-            NSString *sourceKeyPath = [mapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
-            NSString *destinationKeyPath = [mapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
-            RKPropertyMapping *nestedMapping = nil;
-            if ([mapping isKindOfClass:[RKAttributeMapping class]]) {
-                nestedMapping = [RKAttributeMapping attributeMappingFromKeyPath:sourceKeyPath toKeyPath:mapping.destinationKeyPath];
-            } else if ([mapping isKindOfClass:[RKRelationshipMapping class]]) {
-                nestedMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath
-                                                                            toKeyPath:destinationKeyPath
-                                                                          withMapping:[(RKRelationshipMapping *)mapping mapping]];
-            }
-            [array addObject:nestedMapping];
-        }
-
-        return array;
+        return RKApplyNestingAttributeValueToMappings([[_nestedAttributeSubstitution allKeys] lastObject], [[_nestedAttributeSubstitution allValues] lastObject], mappings);
+        
+//        NSString *searchString = [NSString stringWithFormat:@"(%@)", [[_nestedAttributeSubstitution allKeys] lastObject]];
+//        NSString *replacementString = [[_nestedAttributeSubstitution allValues] lastObject];
+//        NSMutableArray *array = [NSMutableArray arrayWithCapacity:[self.objectMapping.attributeMappings count]];
+//        for (RKPropertyMapping *mapping in mappings) {
+//            NSString *sourceKeyPath = [mapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+//            NSString *destinationKeyPath = [mapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+//            RKPropertyMapping *nestedMapping = nil;
+//            if ([mapping isKindOfClass:[RKAttributeMapping class]]) {
+//                nestedMapping = [RKAttributeMapping attributeMappingFromKeyPath:sourceKeyPath toKeyPath:mapping.destinationKeyPath];
+//            } else if ([mapping isKindOfClass:[RKRelationshipMapping class]]) {
+//                nestedMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath
+//                                                                            toKeyPath:destinationKeyPath
+//                                                                          withMapping:[(RKRelationshipMapping *)mapping mapping]];
+//            }
+//            [array addObject:nestedMapping];
+//        }
+//
+//        return array;
     }
 
     return mappings;
@@ -391,7 +420,7 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
 
             // Optionally set the default value for missing values
             if ([self.objectMapping shouldSetDefaultValueForMissingAttributes]) {
-                [self.destinationObject setValue:[self.objectMapping defaultValueForMissingAttribute:attributeMapping.destinationKeyPath]
+                [self.destinationObject setValue:[self.objectMapping defaultValueForAttribute:attributeMapping.destinationKeyPath]
                                       forKeyPath:attributeMapping.destinationKeyPath];
                 RKLogTrace(@"Setting nil for missing attribute value at keyPath '%@'", attributeMapping.sourceKeyPath);
             }
@@ -611,7 +640,7 @@ id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinatio
 
 - (void)applyNestedMappings
 {
-    RKAttributeMapping *attributeMapping = [self.objectMapping attributeMappingForKeyOfNestedDictionary];
+    RKAttributeMapping *attributeMapping = [self.objectMapping attributeMappingForKeyOfRepresentation];
     if (attributeMapping) {
         RKLogDebug(@"Found nested mapping definition to attribute '%@'", attributeMapping.destinationKeyPath);
         id attributeValue = [[self.sourceObject allKeys] lastObject];

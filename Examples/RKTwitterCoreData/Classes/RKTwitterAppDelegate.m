@@ -10,7 +10,7 @@
 #import <RestKit/CoreData.h>
 #import "RKTwitterAppDelegate.h"
 #import "RKTwitterViewController.h"
-#import "RKTStatus.h"
+#import "RKTweet.h"
 
 @implementation RKTwitterAppDelegate
 
@@ -39,8 +39,8 @@
      name. This allows us to map back Twitter user objects directly onto NSManagedObject instances --
      there is no backing model class!
      */
-    RKEntityMapping *userMapping = [RKEntityMapping mappingForEntityForName:@"RKTUser" inManagedObjectStore:managedObjectStore];
-    userMapping.primaryKeyAttribute = @"userID";
+    RKEntityMapping *userMapping = [RKEntityMapping mappingForEntityForName:@"User" inManagedObjectStore:managedObjectStore];
+    [userMapping setEntityIdentifier:[RKEntityIdentifier identifierWithEntityName:@"User" attributes:@[ @"userID" ] inManagedObjectStore:managedObjectStore]];
     [userMapping addAttributeMappingsFromDictionary:@{
      @"id": @"userID",
      @"screen_name": @"screenName",
@@ -48,9 +48,9 @@
     // If source and destination key path are the same, we can simply add a string to the array
     [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
 
-    RKEntityMapping *statusMapping = [RKEntityMapping mappingForEntityForName:@"RKTStatus" inManagedObjectStore:managedObjectStore];
-    statusMapping.primaryKeyAttribute = @"statusID";
-    [statusMapping addAttributeMappingsFromDictionary:@{
+    RKEntityMapping *tweetMapping = [RKEntityMapping mappingForEntityForName:@"Tweet" inManagedObjectStore:managedObjectStore];
+    [tweetMapping setEntityIdentifier:[RKEntityIdentifier identifierWithEntityName:@"Tweet" attributes:@[ @"statusID" ] inManagedObjectStore:managedObjectStore]];
+    [tweetMapping addAttributeMappingsFromDictionary:@{
      @"id": @"statusID",
      @"created_at": @"createdAt",
      @"text": @"text",
@@ -58,14 +58,14 @@
      @"in_reply_to_screen_name": @"inReplyToScreenName",
      @"favorited": @"isFavorited",
      }];
-    [statusMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:userMapping]];
+    [tweetMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:userMapping]];
 
     // Update date format so that we can parse Twitter dates properly
     // Wed Sep 29 15:31:08 +0000 2010
     [RKObjectMapping addDefaultDateFormatterForString:@"E MMM d HH:mm:ss Z y" inTimeZone:nil];
 
     // Register our mappings with the provider
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:statusMapping
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:tweetMapping
                                                                                        pathPattern:@"/status/user_timeline/:username"
                                                                                            keyPath:nil
                                                                                        statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
@@ -89,7 +89,7 @@
     NSString *seedStorePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"RKSeedDatabase.sqlite"];
     RKManagedObjectImporter *importer = [[RKManagedObjectImporter alloc] initWithManagedObjectModel:managedObjectModel storePath:seedStorePath];
     [importer importObjectsFromItemAtPath:[[NSBundle mainBundle] pathForResource:@"restkit" ofType:@"json"]
-                              withMapping:statusMapping
+                              withMapping:tweetMapping
                                   keyPath:nil
                                     error:&error];
     [importer importObjectsFromItemAtPath:[[NSBundle mainBundle] pathForResource:@"users" ofType:@"json"]
@@ -103,7 +103,8 @@
         RKLogError(@"Failed to finish import and save seed database due to error: %@", error);
     }
 
-    exit(0);
+    // Clear out the root view controller
+    [self.window setRootViewController:[UIViewController new]];
 #else
     /**
      Complete Core Data stack initialization

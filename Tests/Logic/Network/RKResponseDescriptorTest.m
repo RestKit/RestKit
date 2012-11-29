@@ -6,11 +6,11 @@
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
-#import "Kiwi.h"
 #import "RKTestEnvironment.h"
 #import "RKTestUser.h"
+#import "Specta.h"
 
-SPEC_BEGIN(RKResponseDescriptorSpec)
+SpecBegin(RKResponseDescriptorSpec)
 
 describe(@"matchesURL:", ^{
     __block NSURL *baseURL;
@@ -28,9 +28,9 @@ describe(@"matchesURL:", ^{
                 responseDescriptor.baseURL = baseURL;
             });
             
-            it(@"returns YES", ^{                
+            it(@"returns YES", ^{
                 NSURL *URL = [NSURL URLWithString:@"http://restkit.org/monkeys/1234.json"];
-                [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                expect([responseDescriptor matchesURL:URL]).to.equal(YES);
             });
         });
         
@@ -44,14 +44,14 @@ describe(@"matchesURL:", ^{
             context(@"and given a URL in which the path and query string match the path pattern", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/monkeys/1234.json"];
-                    [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(YES);
                 });
             });
             
             context(@"and given a URL in which the path and query string do match the path pattern", ^{
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/mismatch"];
-                    [[@([responseDescriptor matchesURL:URL]) should] beNo];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
                 });
             });
         });
@@ -72,20 +72,20 @@ describe(@"matchesURL:", ^{
             context(@"and given the URL 'http://google.com/monkeys/1234.json'", ^{
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://google.com/monkeys/1234.json"];
-                    [[@([responseDescriptor matchesURL:URL]) should] beNo];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
                 });
             });
             
             context(@"and given the URL 'http://restkit.org/whatever", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/whatever"];
-                    [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(YES);
                 });
             });
         });
         
         context(@"and the path pattern is '/monkeys/:monkeyID\\.json'", ^{
-            beforeEach(^{                
+            beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
                 responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                 responseDescriptor.baseURL = baseURL;
@@ -95,7 +95,7 @@ describe(@"matchesURL:", ^{
                 it(@"returns NO", ^{
                     NSURL *otherBaseURL = [NSURL URLWithString:@"http://google.com"];
                     NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json" relativeToURL:otherBaseURL];
-                    [[@([responseDescriptor matchesURL:URL]) should] beNo];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
                 });
             });
             
@@ -103,21 +103,21 @@ describe(@"matchesURL:", ^{
                 context(@"in which the path and query string match the path pattern", ^{
                     it(@"returns YES", ^{
                         NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json" relativeToURL:baseURL];
-                        [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                        expect([responseDescriptor matchesURL:URL]).to.equal(YES);
                     });
                 });
                 
                 context(@"in which the path and query string do match the path pattern", ^{
                     it(@"returns NO", ^{
                         NSURL *URL = [NSURL URLWithString:@"/mismatch" relativeToURL:baseURL];
-                        [[@([responseDescriptor matchesURL:URL]) should] beNo];
+                        expect([responseDescriptor matchesURL:URL]).to.equal(NO);
                     });
                 });
                 
                 context(@"and the URL includes a query string", ^{
                     it(@"returns NO", ^{
                         NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json?param1=val1&param2=val2" relativeToURL:baseURL];
-                        [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                        expect([responseDescriptor matchesURL:URL]).to.equal(YES);
                     });
                 });
             });
@@ -139,15 +139,15 @@ describe(@"matchesURL:", ^{
             context(@"and given the URL 'http://0.0.0.0:5000/api/v1/organizations/?client_search=t'", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://0.0.0.0:5000/api/v1/organizations/?client_search=t"];
-                    [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(YES);
                 });
             });
         });
     });
-
+    
     context(@"when the baseURL is 'http://restkit.org/api/v1/'", ^{
         beforeEach(^{
-            baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/"];            
+            baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/"];
         });
         
         context(@"and the path pattern is nil", ^{
@@ -160,14 +160,14 @@ describe(@"matchesURL:", ^{
             context(@"and given the URL 'http://google.com/monkeys/api/v1/1234.json'", ^{
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/monkeys/1234.json"];
-                    [[@([responseDescriptor matchesURL:URL]) should] beNo];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
                 });
             });
             
             context(@"and given the URL 'http://restkit.org/api/v1/whatever", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/api/v1/whatever"];
-                    [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(YES);
                 });
             });
         });
@@ -181,7 +181,7 @@ describe(@"matchesURL:", ^{
                     
                     NSURL *otherBaseURL = [NSURL URLWithString:@"http://google.com"];
                     NSURL *URL = [NSURL URLWithString:@"monkeys/1234.json" relativeToURL:otherBaseURL];
-                    [[@([responseDescriptor matchesURL:URL]) should] beNo];
+                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
                 });
             });
             
@@ -197,14 +197,14 @@ describe(@"matchesURL:", ^{
                         context(@"in which the path and query string match the path pattern", ^{
                             it(@"returns YES", ^{
                                 NSURL *URL = [NSURL URLWithString:@"monkeys/1234.json" relativeToURL:baseURL];
-                                [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                                expect([responseDescriptor matchesURL:URL]).to.equal(YES);
                             });
                         });
                         
                         context(@"in which the path and query string do match the path pattern", ^{
                             it(@"returns NO", ^{
                                 NSURL *URL = [NSURL URLWithString:@"mismatch" relativeToURL:baseURL];
-                                [[@([responseDescriptor matchesURL:URL]) should] beNo];
+                                expect([responseDescriptor matchesURL:URL]).to.equal(NO);
                             });
                         });
                     });
@@ -213,14 +213,14 @@ describe(@"matchesURL:", ^{
                         context(@"in which the path and query string match the path pattern", ^{
                             it(@"returns YES", ^{
                                 NSURL *URL = [NSURL URLWithString:@"http://restkit.org/api/v1/monkeys/1234.json"];
-                                [[@([responseDescriptor matchesURL:URL]) should] beYes];
+                                expect([responseDescriptor matchesURL:URL]).to.equal(YES);
                             });
                         });
                         
                         context(@"in which the path and query string do match the path pattern", ^{
                             it(@"returns NO", ^{
                                 NSURL *URL = [NSURL URLWithString:@"http://restkit.org/api/v1/mismatch"];
-                                [[@([responseDescriptor matchesURL:URL]) should] beNo];
+                                expect([responseDescriptor matchesURL:URL]).to.equal(NO);
                             });
                         });
                     });
@@ -245,7 +245,7 @@ describe(@"matchesResponse:", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://0.0.0.0:5000/api/v1/organizations/?client_search=t"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    [[@([responseDescriptor matchesResponse:response]) should] beYes];
+                    expect([responseDescriptor matchesResponse:response]).to.equal(YES);
                 });
             });
         });
@@ -263,7 +263,7 @@ describe(@"matchesResponse:", ^{
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation/"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    [[@([responseDescriptor matchesResponse:response]) should] beNo];
+                    expect([responseDescriptor matchesResponse:response]).to.equal(NO);
                 });
             });
             
@@ -277,11 +277,11 @@ describe(@"matchesResponse:", ^{
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation?action=search&type=whatever"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    [[@([responseDescriptor matchesResponse:response]) should] beNo];
+                    expect([responseDescriptor matchesResponse:response]).to.equal(NO);
                 });
             });
         });
     });
 });
 
-SPEC_END
+SpecEnd

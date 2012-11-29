@@ -41,12 +41,12 @@
  Initializes the receiver with a given entity, attribute, and managed object context.
 
  @param entity The Core Data entity description for the managed objects being cached.
- @param attributeName The name of an attribute within the cached entity that acts as the cache key.
+ @param attributeNames An array of attribute names used as the cache keys.
  @param context The managed object context the cache retrieves the cached objects from.
  @return The receiver, initialized with the given entity, attribute, and managed object
     context.
  */
-- (id)initWithEntity:(NSEntityDescription *)entity attribute:(NSString *)attributeName managedObjectContext:(NSManagedObjectContext *)context;
+- (id)initWithEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames managedObjectContext:(NSManagedObjectContext *)context;
 
 ///-----------------------------
 /// @name Getting Cache Identity
@@ -58,9 +58,9 @@
 @property (nonatomic, readonly) NSEntityDescription *entity;
 
 /**
- An attribute that is part of the cached entity that acts as the cache key.
+ An array of attribute names specifying attributes of the cached entity that act as the cache key.
  */
-@property (nonatomic, readonly) NSString *attribute;
+@property (nonatomic, readonly) NSArray *attributes;
 
 /**
  The managed object context the receiver fetches cached objects from.
@@ -105,14 +105,12 @@
 - (NSUInteger)count;
 
 /**
- Returns the total number of cached objects with a given value for the attribute acting as the cache key.
+ Returns the total number of cached objects whose attributes match the values in the given dictionary of attribute values.
 
- @param attributeValue The value for the cache key attribute to retrieve
-    a count of the objects with a matching value.
- @return The number of objects in the cache with the given value for the cache
-    attribute of the receiver.
+ @param attributeValues The value for the cache key attribute to retrieve a count of the objects with a matching value.
+ @return The number of objects in the cache with the given value for the cache attribute of the receiver.
  */
-- (NSUInteger)countWithAttributeValue:(id)attributeValue;
+- (NSUInteger)countWithAttributeValues:(NSDictionary *)attributeValues;
 
 /**
  Returns the number of unique attribute values contained within the receiver.
@@ -137,17 +135,16 @@
  @param attributeValue The value with which to check the cache for objects with a matching value.
  @return YES if one or more objects with the given value for the cache key attribute is present in the cache, otherwise NO.
  */
-- (BOOL)containsObjectWithAttributeValue:(id)attributeValue;
+- (BOOL)containsObjectWithAttributeValues:(NSDictionary *)attributeValues;
 
 /**
- Returns the first object with a matching value for the cache key attribute
- in a given managed object context.
+ Returns the first object with a matching value for the cache key attributes in a given managed object context.
 
- @param attributeValue A value for the cache key attribute.
+ @param attributeValues A value for the cache key attribute.
  @param context The managed object context to retrieve the object from.
  @return An object with the value of attribute matching attributeValue or nil.
  */
-- (NSManagedObject *)objectWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context;
+- (NSManagedObject *)objectWithAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context;
 
 /**
  Returns the collection of objects with a matching value for the cache key attribute in a given managed object context.
@@ -156,7 +153,7 @@
  @param context The managed object context to retrieve the objects from.
  @return An array of objects with the value of attribute matching attributeValue or an empty array.
  */
-- (NSArray *)objectsWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context;
+- (NSArray *)objectsWithAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context;
 
 ///------------------------------
 /// @name Managing Cached Objects

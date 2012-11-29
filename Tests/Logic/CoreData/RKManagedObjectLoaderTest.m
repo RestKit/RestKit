@@ -37,14 +37,14 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
     
-    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     human.name = @"Blake Watters";
     human.railsID = [NSNumber numberWithInt:1];
     [objectManager.managedObjectStore.persistentStoreManagedObjectContextContext save:nil];
 
     assertThat(objectManager.managedObjectStore.persistentStoreManagedObjectContextContext, is(equalTo(managedObjectStore.persistentStoreManagedObjectContextContext)));
 
-    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/humans/1"];
     RKManagedObjectLoader *objectLoader = [[RKManagedObjectLoader alloc] initWithURL:URL mappingProvider:objectManager.mappingProvider];
@@ -67,9 +67,9 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
 
-    RKObjectMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    RKObjectMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
-    RKObjectMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectStore:managedObjectStore];
+    RKObjectMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favorite_cat" toKeyPath:@"favoriteCat" withMapping:catMapping]];;
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
@@ -92,24 +92,24 @@
 - (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman"
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human"
                                                                        inManagedObjectStore:managedObjectStore];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
-    humanMapping.primaryKeyAttribute = @"railsID";
+    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
     humanMapping.rootKeyPath = @"human";
 
     // Create 3 objects, we will expect 2 after the load
     NSError *error;
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContextContext countForFetchRequest:fetchRequest error:&error];
 
     assertThatUnsignedInteger(count, is(equalToInt(0)));
-    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
+    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     blake.railsID = [NSNumber numberWithInt:123];
-    RKHuman *other = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
+    RKHuman *other = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     other.railsID = [NSNumber numberWithInt:456];
-    RKHuman *deleteMe = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
+    RKHuman *deleteMe = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     deleteMe.railsID = [NSNumber numberWithInt:9999];
     [managedObjectStore.persistentStoreManagedObjectContextContext save:nil];
 
@@ -147,12 +147,12 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
 
-    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
     RKResponse *response = [objectLoader sendSynchronously];
 
-    NSUInteger humanCount = [managedObjectStore.persistentStoreManagedObjectContextContext countForEntityForName:@"RKHuman" predicate:nil error:nil];
+    NSUInteger humanCount = [managedObjectStore.persistentStoreManagedObjectContextContext countForEntityForName:@"Human" predicate:nil error:nil];
     assertThatUnsignedInteger(humanCount, is(equalToInt(1)));
     assertThatInteger(response.statusCode, is(equalToInt(200)));
 }
@@ -164,19 +164,19 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     objectManager.managedObjectStore = managedObjectStore;
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
-    humanMapping.primaryKeyAttribute = @"railsID";
+    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
     humanMapping.rootKeyPath = @"human";
 
     NSError *error;
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContextContext countForFetchRequest:fetchRequest error:&error];
     assertThatInteger(count, is(equalToInteger(0)));
-    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
+    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     blake.railsID = [NSNumber numberWithInt:123];
-    RKHuman *other = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
+    RKHuman *other = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     other.railsID = [NSNumber numberWithInt:456];
     [managedObjectStore.persistentStoreManagedObjectContextContext save:nil];
     count = [managedObjectStore.persistentStoreManagedObjectContextContext countForFetchRequest:fetchRequest error:&error];
@@ -247,7 +247,7 @@
     BOOL success = NO;
     [[[mockStore stub] andReturnValue:OCMOCK_VALUE(success)] save:[OCMArg anyPointer]];
 
-    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
 
@@ -265,13 +265,13 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
-    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectStore:managedObjectStore];
+    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
     objectLoader.serializationMapping = [RKObjectMapping serializationMapping];
     [objectLoader.serializationMapping addAttributeMappingsFromArray:@[@"name"]];
     
-    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     assertThatBool([human.objectID isTemporaryID], is(equalToBool(YES)));
     objectLoader.sourceObject = human;
     objectLoader.method = RKRequestMethodGET;

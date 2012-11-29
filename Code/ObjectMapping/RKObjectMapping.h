@@ -26,11 +26,10 @@
 /**
  An `RKObjectMapping` object describes a transformation between object represenations using key-value coding and run-time type introspection. The mapping is defined in terms of a source object class and a collection of `RKPropertyMapping` objects describing how key paths in the source representation should be transformed into attributes and relationships on the target object. Object mappings are provided to instances of `RKMapperOperation` and `RKMappingOperation` to perform the transformations they describe.
 
- Object mappings are containers of property mappings that describe the actual key path transformations. There are three types of property mappings:
+ Object mappings are containers of property mappings that describe the actual key path transformations. There are two types of property mappings:
 
  1. `RKAttributeMapping`: An attribute mapping describes a transformation between a single value from a source key path to a destination key path. The value to be mapped is read from the source object representation using `valueForKeyPath:` and then set to the destination key path using `setValueForKeyPath:`. Before the value is set, the `RKObjecMappingOperation` performing the mapping performs runtime introspection on the destination property to determine what, if any, type transformation is to be performed. Typical type transformations include reading an `NSString` value representation and mapping it to an `NSDecimalNumber` destination key path or reading an `NSString` and transforming it into an `NSDate` value before assigning to the destination.
  1. `RKRelationshipMapping`: A relationship mapping describes a transformation between a nested child object or objects from a source key path to a destination key path using another `RKObjectMapping`. The child objects to be mapped are read from the source object representation using `valueForKeyPath:`, then mapped recursively using the object mapping associated with the relationship mapping, and then finally assigned to the destination key path. Before assignment to the destination key path runtime type introspection is performed to determine if any type transformation is necessary. For relationship mappings, common type transformations include transforming a single object value in an `NSArray` or transforming an `NSArray` of object values into an `NSSet`.
- 1. `RKConnectionMapping`: A connection mapping describes how to establish a relationship within a Core Data data model using foreign keys transmitted within the mapped response body.
 
  All type transformations available are discussed in detail in the documentation for `RKMappingOperation`.
  
@@ -170,7 +169,10 @@
 /**
  Adds a relationship mapping to the receiver with the given source key path and mapping.
  
- The 
+ The destination key path will be the same as the source key path or processed by the source to destination key transformation block, if any is configured.
+ 
+ @param sourceKeyPath The source key path at which to read the nested representation of the related objects.
+ @param mapping The object mapping with which to process the related object representation.
  */
 - (void)addRelationshipMappingWithSourceKeyPath:(NSString *)sourceKeyPath mapping:(RKMapping *)mapping;
 
@@ -184,7 +186,7 @@
  @param block The block to be set as the default source to destination key transformer for all object mappings in the application.
  @see [RKObjectMapping setPropertyNameTransformationBlock:]
  */
-+ (void)setDefaultSourceToDestinationKeyTransformationBlock:(NSString * (^)(NSString *sourceKey))block;
++ (void)setDefaultSourceToDestinationKeyTransformationBlock:(NSString * (^)(RKObjectMapping *mapping, NSString *sourceKey))block;
 
 /**
  Sets a block to executed to transform a source key into a destination key.
@@ -196,14 +198,14 @@
  @param block The block to execute when the receiver needs to transform a source key into a destination key. The block has a string return value specifying the destination key and accepts a single string argument: the source key that is to be transformed.
  @warning Please note that the block given accepts a **key** as opposed to a **key path**. When a key path is given to a method supporting key transformation it will be decomposed into its key components by splitting the key path at the '.' (period) character, then each key will be evaluated using the transformation block and the results will be joined together into a new key path with the period character delimiter.
  */
-- (void)setSourceToDestinationKeyTransformationBlock:(NSString * (^)(NSString *sourceKey))block;
+- (void)setSourceToDestinationKeyTransformationBlock:(NSString * (^)(RKObjectMapping *mapping, NSString *sourceKey))block;
 
 ///----------------------------------
 /// @name Mapping Nested Dictionaries
 ///----------------------------------
 
 /**
- Configures a sub-key mapping for cases where JSON has been nested underneath a key named after an attribute.
+ Adds an attribute mapping from a dynamic nesting key value to an attribute. The mapped attribute name can then be referenced within other attribute mappings to access the nested content.
 
  For example, consider the following JSON:
 
@@ -218,15 +220,10 @@
 
      RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[User class]];
      mapping.forceCollectionMapping = YES; // RestKit cannot infer this is a collection, so we force it
-     [mapping mapKeyOfNestedDictionaryToAttribute:@"firstName"];
-     [mapping mapFromKeyPath:@"(firstName).id" toAttribute:"userID"];
-     [mapping mapFromKeyPath:@"(firstName).email" toAttribute:"email"];
-
-     [[RKObjectManager sharedManager].mappingProvider setObjectMapping:mapping forKeyPath:@"users"];
-
+     [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"firstName"];
+     [mapping addAttributeMappingsFromDictionary:@{ @"(firstName).id": @"userID", @"(firstName).email": @"email" }];
  */
-- (void)mapKeyOfNestedDictionaryToAttribute:(NSString *)attributeName;
-// TODO: Can we eliminate this API???
+- (void)addAttributeMappingFromKeyOfRepresentationToAttribute:(NSString *)attributeName;
 
 /**
  Returns the attribute mapping targeting the key of a nested dictionary in the source JSON.
@@ -234,9 +231,9 @@
  This attribute mapping corresponds to the attributeName configured via `mapKeyOfNestedDictionaryToAttribute:`
 
  @return An attribute mapping for the key of a nested dictionary being mapped or nil
- @see `mapKeyOfNestedDictionaryToAttribute:`
+ @see `addAttributeMappingFromKeyOfRepresentationToAttribute:`
  */
-- (RKAttributeMapping *)attributeMappingForKeyOfNestedDictionary;
+- (RKAttributeMapping *)attributeMappingForKeyOfRepresentation;
 
 ///----------------------------------
 /// @name Configuring Mapping Options
@@ -270,9 +267,9 @@
 
  The default implementation returns nil for transient object mappings. On an entity mapping, the default value returned from the Entity definition will be used.
 
- @see `[RKEntityMapping defaultValueForMissingAttribute:]`
+ @see `[RKEntityMapping defaultValueForAttribute:]`
  */
-- (id)defaultValueForMissingAttribute:(NSString *)attributeName;
+- (id)defaultValueForAttribute:(NSString *)attributeName;
 
 ///----------------------------------
 /// @name Configuring Date Formatters
@@ -302,7 +299,6 @@
  mapping will have the source and destination keyPaths swapped for all attribute and relationship mappings.
  */
 - (RKObjectMapping *)inverseMapping;
-// TODO: Keep or kill inverse???
 
 ///---------------------------------------------------
 /// @name Obtaining Information About the Target Class

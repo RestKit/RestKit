@@ -33,8 +33,6 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
 
-id RKTransformValueFromClassToClass(id value, Class sourceType, Class destinationType);
-
 @interface RKObjectParameterization () <RKMappingOperationDelegate>
 @property (nonatomic, strong) id object;
 @property (nonatomic, strong) RKRequestDescriptor *requestDescriptor;

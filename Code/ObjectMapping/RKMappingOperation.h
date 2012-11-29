@@ -21,7 +21,7 @@
 #import "RKObjectMapping.h"
 #import "RKAttributeMapping.h"
 
-@class RKMappingOperation, RKDynamicMapping, RKConnectionMapping;
+@class RKMappingOperation, RKDynamicMapping, RKConnectionDescription;
 @protocol RKMappingOperationDataSource;
 
 /**
@@ -99,9 +99,9 @@
  @param operation The mapping operation.
  @param relationship The relationship that was connected.
  @param value The value that was connected to the relationship
- @param connectionMapping The mappings that was used to connect the relationship.
+ @param connection The connection object describing how the relationship was to be connected.
  */
-- (void)mappingOperation:(RKMappingOperation *)operation didConnectRelationship:(NSRelationshipDescription *)relationship withValue:(id)value usingMapping:(RKConnectionMapping *)connectionMapping;
+- (void)mappingOperation:(RKMappingOperation *)operation didConnectRelationship:(NSRelationshipDescription *)relationship toValue:(id)value usingConnection:(RKConnectionDescription *)connection;
 
 /**
  Tells the delegate that the mapping operation failed to connect a relationship.
@@ -110,9 +110,9 @@
 
  @param operation The mapping operation.
  @param relationship The relationship that was connected.
- @param connectionMapping The mappings that was used to connect the relationship.
+ @param connection The connection object describing how the relationship was to be connected.
  */
-- (void)mappingOperation:(RKMappingOperation *)operation didFailToConnectRelationship:(NSRelationshipDescription *)relationship usingMapping:(RKConnectionMapping *)connectionMapping;
+- (void)mappingOperation:(RKMappingOperation *)operation didFailToConnectRelationship:(NSRelationshipDescription *)relationship usingConnection:(RKConnectionDescription *)connection;
 
 #endif
 

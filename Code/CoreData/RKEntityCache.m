@@ -46,58 +46,60 @@
 }
 
 
-- (void)cacheObjectsForEntity:(NSEntityDescription *)entity byAttribute:(NSString *)attributeName
+- (void)cacheObjectsForEntity:(NSEntityDescription *)entity byAttributes:(NSArray *)attributeNames
 {
-    NSAssert(entity, @"Cannot cache objects for a nil entity");
-    NSAssert(attributeName, @"Cannot cache objects without an attribute");
-    RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attribute:attributeName];
+    NSParameterAssert(entity);
+    NSParameterAssert(attributeNames);
+    RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attributes:attributeNames];
     if (attributeCache && !attributeCache.isLoaded) {
         [attributeCache load];
     } else {
-        attributeCache = [[RKEntityByAttributeCache alloc] initWithEntity:entity attribute:attributeName managedObjectContext:self.managedObjectContext];
+        attributeCache = [[RKEntityByAttributeCache alloc] initWithEntity:entity attributes:attributeNames managedObjectContext:self.managedObjectContext];
         [attributeCache load];
         [self.attributeCaches addObject:attributeCache];
     }
 }
 
-- (BOOL)isEntity:(NSEntityDescription *)entity cachedByAttribute:(NSString *)attributeName
+- (BOOL)isEntity:(NSEntityDescription *)entity cachedByAttributes:(NSArray *)attributeNames
 {
-    NSAssert(entity, @"Cannot check cache status for a nil entity");
-    NSAssert(attributeName, @"Cannot check cache status for a nil attribute");
-    RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attribute:attributeName];
+    NSParameterAssert(entity);
+    NSParameterAssert(attributeNames);
+    RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attributes:attributeNames];
     return (attributeCache && attributeCache.isLoaded);
 }
 
-- (NSManagedObject *)objectForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue inContext:(NSManagedObjectContext *)context
+- (NSManagedObject *)objectForEntity:(NSEntityDescription *)entity withAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
 {
-    NSAssert(entity, @"Cannot retrieve cached objects with a nil entity");
-    NSAssert(attributeName, @"Cannot retrieve cached objects by a nil entity");
-    RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attribute:attributeName];
+    NSParameterAssert(entity);
+    NSParameterAssert(attributeValues);
+    NSParameterAssert(context);
+    RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attributes:[attributeValues allKeys]];
     if (attributeCache) {
-        return [attributeCache objectWithAttributeValue:attributeValue inContext:context];
+        return [attributeCache objectWithAttributeValues:attributeValues inContext:context];
     }
 
     return nil;
 }
 
-- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue inContext:(NSManagedObjectContext *)context
+- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
 {
-    NSAssert(entity, @"Cannot retrieve cached objects with a nil entity");
-    NSAssert(attributeName, @"Cannot retrieve cached objects by a nil entity");
-    RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attribute:attributeName];
+    NSParameterAssert(entity);
+    NSParameterAssert(attributeValues);
+    NSParameterAssert(context);
+    RKEntityByAttributeCache *attributeCache = [self attributeCacheForEntity:entity attributes:[attributeValues allKeys]];
     if (attributeCache) {
-        return [attributeCache objectsWithAttributeValue:attributeValue inContext:context];
+        return [attributeCache objectsWithAttributeValues:attributeValues inContext:context];
     }
 
     return [NSSet set];
 }
 
-- (RKEntityByAttributeCache *)attributeCacheForEntity:(NSEntityDescription *)entity attribute:(NSString *)attributeName
+- (RKEntityByAttributeCache *)attributeCacheForEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames
 {
-    NSAssert(entity, @"Cannot retrieve attribute cache for a nil entity");
-    NSAssert(attributeName, @"Cannot retrieve attribute cache for a nil attribute");
+    NSParameterAssert(entity);
+    NSParameterAssert(attributeNames);
     for (RKEntityByAttributeCache *cache in self.attributeCaches) {
-        if ([cache.entity isEqual:entity] && [cache.attribute isEqualToString:attributeName]) {
+        if ([cache.entity isEqual:entity] && [cache.attributes isEqualToArray:attributeNames]) {
             return cache;
         }
     }

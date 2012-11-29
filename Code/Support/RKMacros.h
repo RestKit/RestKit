@@ -40,4 +40,12 @@
 #define RK_FIX_CATEGORY_BUG(name) @interface RK_FIX_CATEGORY_BUG##name @end \
 @implementation RK_FIX_CATEGORY_BUG##name @end
 
+/*
+ Raises an `NSInvalidArgumentException` in the event that the given value is not an instance of the given class or an instance of any class that inherits from that class.
+ */
+#define RKAssertValueIsKindOfClass(value, expectedClass) \
+if (! [value isKindOfClass:expectedClass]) { \
+[NSException raise:NSInvalidArgumentException format:@"%@ invoked with invalid input value: expected a `%@`, but instead got a `%@`", [self class], expectedClass, [value class]]; \
+}
+
 #endif

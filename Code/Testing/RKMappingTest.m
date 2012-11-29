@@ -43,18 +43,21 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 @interface RKMappingTestEvent : NSObject
 
 @property (nonatomic, strong, readonly) RKPropertyMapping *propertyMapping;
+@property (nonatomic, strong, readonly) RKConnectionDescription *connection;
 @property (nonatomic, strong, readonly) id value;
 
 @property (weak, nonatomic, readonly) NSString *sourceKeyPath;
 @property (weak, nonatomic, readonly) NSString *destinationKeyPath;
 
 + (RKMappingTestEvent *)eventWithMapping:(RKPropertyMapping *)propertyMapping value:(id)value;
++ (RKMappingTestEvent *)eventWithConnection:(RKConnectionDescription *)connection value:(id)value;
 
 @end
 
 @interface RKMappingTestEvent ()
 @property (nonatomic, strong, readwrite) id value;
 @property (nonatomic, strong, readwrite) RKPropertyMapping *propertyMapping;
+@property (nonatomic, strong, readwrite) RKConnectionDescription *connection;
 @end
 
 @implementation RKMappingTestEvent
@@ -65,6 +68,14 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     event.value = value;
     event.propertyMapping = propertyMapping;
 
+    return event;
+}
+
++ (RKMappingTestEvent *)eventWithConnection:(RKConnectionDescription *)connection value:(id)value
+{
+    RKMappingTestEvent *event = [RKMappingTestEvent new];
+    event.connection = connection;
+    event.value = value;
     return event;
 }
 
@@ -80,8 +91,20 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@ mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@>", [self class],
-            self.sourceKeyPath, self.destinationKeyPath, self.value];
+    if (self.propertyMapping) {
+        return [NSString stringWithFormat:@"%@ mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@>", [self class],
+                self.sourceKeyPath, self.destinationKeyPath, self.value];
+    } else if (self.connection) {
+        if ([self.connection isForeignKeyConnection]) {
+            return [NSString stringWithFormat:@"%@ connected Relationship '%@' using attributes '%@' to value: %@>", [self class],
+                    [self.connection.relationship name], [self.connection.attributes valueForKey:@"name"], self.value];
+        } else if ([self.connection isKeyPathConnection]) {
+            return [NSString stringWithFormat:@"%@ connected Relationship '%@' using keyPath '%@' to value: %@>", [self class],
+                    [self.connection.relationship name], self.connection.keyPath, self.value];
+        }
+    }
+    
+    return [super description];
 }
 
 @end
@@ -419,10 +442,9 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
 }
 
-- (void)mappingOperation:(RKMappingOperation *)operation didConnectRelationship:(NSRelationshipDescription *)relationship usingMapping:(RKConnectionMapping *)connectionMapping
+- (void)mappingOperation:(RKMappingOperation *)operation didConnectRelationship:(NSRelationshipDescription *)relationship toValue:(id)value usingConnection:(RKConnectionDescription *)connection
 {
-    id connectedObjects = [operation.destinationObject valueForKey:relationship.name];
-    [self addEvent:[RKMappingTestEvent eventWithMapping:connectionMapping value:connectedObjects]];
+    [self addEvent:[RKMappingTestEvent eventWithConnection:connection value:value]];
 }
 
 @end

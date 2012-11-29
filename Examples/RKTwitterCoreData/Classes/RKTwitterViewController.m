@@ -7,7 +7,7 @@
 //
 
 #import "RKTwitterViewController.h"
-#import "RKTStatus.h"
+#import "RKTweet.h"
 
 static void RKTwitterShowAlertWithError(NSError *error)
 {
@@ -18,7 +18,7 @@ static void RKTwitterShowAlertWithError(NSError *error)
     [alert show];
 }
 
-@interface RKTwitterViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface RKTwitterViewController () <UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate>
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 @end
@@ -35,7 +35,7 @@ static void RKTwitterShowAlertWithError(NSError *error)
     // Setup View and Table View
     self.title = @"RestKit Tweets";
 
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKTStatus"];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Tweet"];
     NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO];
     fetchRequest.sortDescriptors = @[descriptor];
     NSError *error = nil;
@@ -45,7 +45,9 @@ static void RKTwitterShowAlertWithError(NSError *error)
                                                                         managedObjectContext:[RKManagedObjectStore defaultStore].mainQueueManagedObjectContext
                                                                           sectionNameKeyPath:nil
                                                                                    cacheName:nil];
+    [self.fetchedResultsController setDelegate:self];
     BOOL fetchSuccessful = [self.fetchedResultsController performFetch:&error];
+    NSAssert([[self.fetchedResultsController fetchedObjects] count], @"Seeding didn't work...");
     if (! fetchSuccessful) {
         RKTwitterShowAlertWithError(error);
     }
@@ -79,7 +81,7 @@ static void RKTwitterShowAlertWithError(NSError *error)
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    RKTStatus *status = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    RKTweet *status = [self.fetchedResultsController objectAtIndexPath:indexPath];
     CGSize size = [[status text] sizeWithFont:[UIFont systemFontOfSize:14] constrainedToSize:CGSizeMake(300, 9000)];
     return size.height + 10;
 }
@@ -113,9 +115,16 @@ static void RKTwitterShowAlertWithError(NSError *error)
         cell.textLabel.backgroundColor = [UIColor clearColor];
         cell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"listbg.png"]];
     }
-    RKTStatus *status = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    RKTweet *status = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = status.text;
     return cell;
+}
+
+#pragma mark NSFetchedResultsControllerDelegate methods
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
+{
+    [self.tableView reloadData];
 }
 
 @end
