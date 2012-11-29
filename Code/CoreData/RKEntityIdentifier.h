@@ -20,6 +20,9 @@
 
 #import <CoreData/CoreData.h>
 
+/**
+ The name of a key in the user info dictionary of a `NSEntityDescription` specifying the name or one or more attributes to be used to infer an entity identifier. The value of this string is 'RKEntityIdentifierAttributes'.
+ */
 extern NSString * const RKEntityIdentifierUserInfoKey;
 
 @class RKManagedObjectStore;
@@ -82,7 +85,9 @@ extern NSString * const RKEntityIdentifierUserInfoKey;
 /**
  Creates and returns an entity identifier for the given entity inferred from the managed object model.
  
- When inferring an entity identifier, the entity is first searched for an attribute whose name matches the llama-cased version of the entity. For example, an entity named 'Article' would have an inferred identifier attribute of 'articleID' and an entity named 'ApprovedComment' would be inferred as 'approvedCommentID'. If such an attribute is found within the entity, an identifier is returned specifying that attribute. If none is returned, the the attributes are search for the following names:
+ When inferring an entity identifier, the entity is first checked for a user info key specifying the identifying attributes. If the user info of the given entity contains a value for the key 'RKEntityIdentifierAttributes', then that value is used to construct an entity identifier. The user info key must contain a string or an array of strings specifying the names of attributes that exist in the given entity.
+ 
+ If no attributes are specified in the user info, then the entity is searched for an attribute whose name matches the llama-cased name of the entity. For example, an entity named 'Article' would have an inferred identifier attribute of 'articleID' and an entity named 'ApprovedComment' would be inferred as 'approvedCommentID'. If such an attribute is found within the entity, an identifier is returned specifying that attribute. If none is returned, the the attributes are search for the following names:
  
  1. 'identifier'
  1. 'ID'
