@@ -19,7 +19,6 @@
 //
 
 #import "RKInMemoryManagedObjectCache.h"
-#import "NSEntityDescription+RKAdditions.h"
 #import "RKEntityCache.h"
 #import "RKLog.h"
 #import "RKEntityByAttributeCache.h"

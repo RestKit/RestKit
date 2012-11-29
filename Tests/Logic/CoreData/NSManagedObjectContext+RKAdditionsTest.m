@@ -8,7 +8,6 @@
 
 #import "RKTestEnvironment.h"
 #import "NSManagedObjectContext+RKAdditions.h"
-#import "NSEntityDescription+RKAdditions.h"
 #import "RKHuman.h"
 
 @interface NSManagedObjectContext_RKAdditionsTest : SenTestCase

@@ -20,7 +20,6 @@
 
 #import <objc/runtime.h>
 #import "NSManagedObjectContext+RKAdditions.h"
-#import "NSEntityDescription+RKAdditions.h"
 #import "RKLog.h"
 
 @implementation NSManagedObjectContext (RKAdditions)

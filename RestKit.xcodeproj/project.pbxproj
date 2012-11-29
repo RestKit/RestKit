@@ -622,8 +622,6 @@
 		25055B8314EEF32A00B9C4DD /* RKTestFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestFactory.m; path = Testing/RKTestFactory.m; sourceTree = "<group>"; };
 		25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKMappingTestExpectation.h; path = Testing/RKMappingTestExpectation.h; sourceTree = "<group>"; };
 		25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingTestExpectation.m; path = Testing/RKMappingTestExpectation.m; sourceTree = "<group>"; };
-		25079C6D151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSEntityDescription+RKAdditions.h"; sourceTree = "<group>"; };
-		25079C6E151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEntityDescription+RKAdditions.m"; sourceTree = "<group>"; };
 		25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEntityDescription+RKAdditionsTest.m"; sourceTree = "<group>"; };
 		2507C325161BD5C700EA71FF /* RKTestHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestHelpers.h; path = Testing/RKTestHelpers.h; sourceTree = "<group>"; };
 		2507C326161BD5C700EA71FF /* RKTestHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestHelpers.m; path = Testing/RKTestHelpers.m; sourceTree = "<group>"; };
@@ -1638,8 +1636,6 @@
 				257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */,
 				257ABAB41511371C00CCAA76 /* NSManagedObject+RKAdditions.h */,
 				257ABAB51511371D00CCAA76 /* NSManagedObject+RKAdditions.m */,
-				25079C6D151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h */,
-				25079C6E151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m */,
 			);
 			name = Additions;
 			sourceTree = "<group>";

@@ -24,7 +24,6 @@
 #import "RKMappableObject.h"
 #import "RKChild.h"
 #import "RKParent.h"
-#import "NSEntityDescription+RKAdditions.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKDynamicMapping.h"
 
