@@ -216,8 +216,8 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p patternURL=%@ isLoaded=%@ perPage=%d currentPage=%@ pageCount=%@ objectCount=%@>",
-            NSStringFromClass([self class]), self, self.patternURL, self.isLoaded ? @"YES" : @"NO", self.perPage,
+    return [NSString stringWithFormat:@"<%@: %p patternURL=%@ isLoaded=%@ perPage=%ld currentPage=%@ pageCount=%@ objectCount=%@>",
+            NSStringFromClass([self class]), self, self.patternURL, self.isLoaded ? @"YES" : @"NO", (long) self.perPage,
             [self hasCurrentPage] ? @(self.currentPage) : @"???",
             [self hasPageCount] ? @(self.pageCount) : @"???",
             [self hasObjectCount] ? @(self.objectCount) : @"???"];
