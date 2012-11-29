@@ -16,7 +16,7 @@
 		250CA69B147D8FD30047D347 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160FB31456E8A30060A5C5 /* libRestKit.a */; };
 		250CA69C147D8FFD0047D347 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E864123424F000ACB5D7 /* CoreData.framework */; };
 		2538E811123419CA00ACB5D7 /* RKTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E810123419CA00ACB5D7 /* RKTUser.m */; };
-		2538E814123419EC00ACB5D7 /* RKTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTStatus.m */; };
+		2538E814123419EC00ACB5D7 /* RKTweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTweet.m */; };
 		2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E8661234250100ACB5D7 /* SystemConfiguration.framework */; };
 		25BE936614F96729008BC1C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25BE936514F96729008BC1C0 /* QuartzCore.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
@@ -81,8 +81,8 @@
 		250CA699147D8FCC0047D347 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2538E80F123419CA00ACB5D7 /* RKTUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTUser.h; sourceTree = "<group>"; };
 		2538E810123419CA00ACB5D7 /* RKTUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTUser.m; sourceTree = "<group>"; };
-		2538E812123419EC00ACB5D7 /* RKTStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTStatus.h; sourceTree = "<group>"; };
-		2538E813123419EC00ACB5D7 /* RKTStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTStatus.m; sourceTree = "<group>"; };
+		2538E812123419EC00ACB5D7 /* RKTweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTweet.h; sourceTree = "<group>"; };
+		2538E813123419EC00ACB5D7 /* RKTweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTweet.m; sourceTree = "<group>"; };
 		2538E864123424F000ACB5D7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2538E8661234250100ACB5D7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		25BE936514F96729008BC1C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -134,8 +134,8 @@
 				28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */,
 				2538E80F123419CA00ACB5D7 /* RKTUser.h */,
 				2538E810123419CA00ACB5D7 /* RKTUser.m */,
-				2538E812123419EC00ACB5D7 /* RKTStatus.h */,
-				2538E813123419EC00ACB5D7 /* RKTStatus.m */,
+				2538E812123419EC00ACB5D7 /* RKTweet.h */,
+				2538E813123419EC00ACB5D7 /* RKTweet.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -324,7 +324,7 @@
 				1D3623260D0F684500981E51 /* RKTwitterAppDelegate.m in Sources */,
 				28D7ACF80DDB3853001CB0EB /* RKTwitterViewController.m in Sources */,
 				2538E811123419CA00ACB5D7 /* RKTUser.m in Sources */,
-				2538E814123419EC00ACB5D7 /* RKTStatus.m in Sources */,
+				2538E814123419EC00ACB5D7 /* RKTweet.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

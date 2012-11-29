@@ -7,7 +7,7 @@
 //
 
 #import "RKTwitterViewController.h"
-#import "RKTStatus.h"
+#import "RKTweet.h"
 
 @interface RKTwitterViewController (Private)
 - (void)loadData;
@@ -92,7 +92,7 @@
         cell.textLabel.backgroundColor = [UIColor clearColor];
         cell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"listbg.png"]];
     }
-    RKTStatus* status = [_statuses objectAtIndex:indexPath.row];
+    RKTweet* status = [_statuses objectAtIndex:indexPath.row];
     cell.textLabel.text = [status text];
     cell.detailTextLabel.text = status.user.screenName;
     return cell;

@@ -9,7 +9,7 @@
 #import <RestKit/RestKit.h>
 #import "RKTwitterAppDelegate.h"
 #import "RKTwitterViewController.h"
-#import "RKTStatus.h"
+#import "RKTweet.h"
 #import "RKTUser.h"
 
 @implementation RKTwitterAppDelegate
@@ -43,7 +43,7 @@
      @"name" : @"name"
      }];
 
-    RKObjectMapping *statusMapping = [RKObjectMapping mappingForClass:[RKTStatus class]];
+    RKObjectMapping *statusMapping = [RKObjectMapping mappingForClass:[RKTweet class]];
     [statusMapping addAttributeMappingsFromDictionary:@{
      @"id" : @"statusID",
      @"created_at" : @"createdAt",
