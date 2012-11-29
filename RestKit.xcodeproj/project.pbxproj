@@ -526,8 +526,8 @@
 		25E88C83165C5B580042ABD0 /* RKEntityIdentifier.h in Headers */ = {isa = PBXBuildFile; fileRef = 25E88C80165C5B580042ABD0 /* RKEntityIdentifier.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25E88C84165C5B580042ABD0 /* RKEntityIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E88C81165C5B580042ABD0 /* RKEntityIdentifier.m */; };
 		25E88C85165C5B580042ABD0 /* RKEntityIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E88C81165C5B580042ABD0 /* RKEntityIdentifier.m */; };
-		25E88C88165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 25E88C86165C5CC30042ABD0 /* RKConnectionDescription.h */; };
-		25E88C89165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 25E88C86165C5CC30042ABD0 /* RKConnectionDescription.h */; };
+		25E88C88165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 25E88C86165C5CC30042ABD0 /* RKConnectionDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25E88C89165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 25E88C86165C5CC30042ABD0 /* RKConnectionDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25E88C8A165C5CC30042ABD0 /* RKConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E88C87165C5CC30042ABD0 /* RKConnectionDescription.m */; };
 		25E88C8B165C5CC30042ABD0 /* RKConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E88C87165C5CC30042ABD0 /* RKConnectionDescription.m */; };
 		25E88C8E165C87FF0042ABD0 /* RKEntityIdentifierTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E88C8D165C87FF0042ABD0 /* RKEntityIdentifierTest.m */; };
