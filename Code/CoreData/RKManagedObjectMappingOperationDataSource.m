@@ -167,7 +167,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         if (entityMapping.entityIdentifier.predicate) objects = [objects filteredArrayUsingPredicate:entityMapping.entityIdentifier.predicate];
         if ([objects count] > 0) {
             managedObject = objects[0];
-            if ([objects count] > 1) RKLogWarning(@"Managed object cache returned %d objects for the identifier configured for the '%@' entity, expected 1.", [objects count], [entity name]);
+            if ([objects count] > 1) RKLogWarning(@"Managed object cache returned %ld objects for the identifier configured for the '%@' entity, expected 1.", (long) [objects count], [entity name]);
         }
         if (managedObject && [self.managedObjectCache respondsToSelector:@selector(didFetchObject:)]) {
             [self.managedObjectCache didFetchObject:managedObject];
