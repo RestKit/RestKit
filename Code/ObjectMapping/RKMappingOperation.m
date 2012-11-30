@@ -295,30 +295,10 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     return NO;
 }
 
-// TODO:
 - (NSArray *)applyNestingToMappings:(NSArray *)mappings
 {
     if (_nestedAttributeSubstitution) {
         return RKApplyNestingAttributeValueToMappings([[_nestedAttributeSubstitution allKeys] lastObject], [[_nestedAttributeSubstitution allValues] lastObject], mappings);
-        
-//        NSString *searchString = [NSString stringWithFormat:@"(%@)", [[_nestedAttributeSubstitution allKeys] lastObject]];
-//        NSString *replacementString = [[_nestedAttributeSubstitution allValues] lastObject];
-//        NSMutableArray *array = [NSMutableArray arrayWithCapacity:[self.objectMapping.attributeMappings count]];
-//        for (RKPropertyMapping *mapping in mappings) {
-//            NSString *sourceKeyPath = [mapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
-//            NSString *destinationKeyPath = [mapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
-//            RKPropertyMapping *nestedMapping = nil;
-//            if ([mapping isKindOfClass:[RKAttributeMapping class]]) {
-//                nestedMapping = [RKAttributeMapping attributeMappingFromKeyPath:sourceKeyPath toKeyPath:mapping.destinationKeyPath];
-//            } else if ([mapping isKindOfClass:[RKRelationshipMapping class]]) {
-//                nestedMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath
-//                                                                            toKeyPath:destinationKeyPath
-//                                                                          withMapping:[(RKRelationshipMapping *)mapping mapping]];
-//            }
-//            [array addObject:nestedMapping];
-//        }
-//
-//        return array;
     }
 
     return mappings;
