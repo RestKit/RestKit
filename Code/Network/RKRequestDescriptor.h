@@ -31,9 +31,9 @@
  */
 @interface RKRequestDescriptor : NSObject
 
-///-------------------------------------
-/// @name Creating a Response Descriptor
-///-------------------------------------
+///------------------------------------
+/// @name Creating a Request Descriptor
+///------------------------------------
 
 /**
  Creates and returns a new `RKRequestDescriptor` object.
