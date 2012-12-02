@@ -322,8 +322,6 @@
 
 #pragma mark - Entity Identifier Inference
 
-// TODO: The attributes to auto-detect: entityNameID, ID, identififer, url, URL
-
 - (void)testEntityIdentifierInferenceForEntityWithLlamaCasedIDAttribute
 {
     NSEntityDescription *entity = [[NSEntityDescription alloc] init];
@@ -465,6 +463,45 @@
         expect([caughtException name]).to.equal(NSInvalidArgumentException);
         expect([caughtException reason]).to.equal(@"Invalid identifier attribute specified in user info key 'RKEntityIdentificationAttributes' of entity 'Monkey': no attribue was found with the name 'nonExistant'");
     }
+}
+
+- (void)testInferenceOfSnakeCasedEntityName
+{
+    NSEntityDescription *entity = [[NSEntityDescription alloc] init];
+    [entity setName:@"Monkey"];
+    NSAttributeDescription *identifierAttribute = [NSAttributeDescription new];
+    [identifierAttribute setName:@"monkey_id"];
+    [entity setProperties:@[ identifierAttribute ]];
+    NSArray *identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
+    expect(identificationAttributes).notTo.beNil();
+    NSArray *attributeNames = @[ @"monkey_id" ];
+    expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
+}
+
+- (void)testInferenceOfCompoundSnakeCasedEntityName
+{
+    NSEntityDescription *entity = [[NSEntityDescription alloc] init];
+    [entity setName:@"ArcticMonkey"];
+    NSAttributeDescription *identifierAttribute = [NSAttributeDescription new];
+    [identifierAttribute setName:@"arctic_monkey_id"];
+    [entity setProperties:@[ identifierAttribute ]];
+    NSArray *identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
+    expect(identificationAttributes).notTo.beNil();
+    NSArray *attributeNames = @[ @"arctic_monkey_id" ];
+    expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
+}
+
+- (void)testInferenceOfSnakeCasedEntityNameWithAbbreviation
+{
+    NSEntityDescription *entity = [[NSEntityDescription alloc] init];
+    [entity setName:@"ArcticMonkeyURL"];
+    NSAttributeDescription *identifierAttribute = [NSAttributeDescription new];
+    [identifierAttribute setName:@"arctic_monkey_url_id"];
+    [entity setProperties:@[ identifierAttribute ]];
+    NSArray *identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
+    expect(identificationAttributes).notTo.beNil();
+    NSArray *attributeNames = @[ @"arctic_monkey_url_id" ];
+    expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
 }
 
 @end
