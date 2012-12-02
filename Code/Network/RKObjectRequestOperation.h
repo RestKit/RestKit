@@ -20,6 +20,7 @@
 
 #import "RKHTTPRequestOperation.h"
 #import "RKMappingResult.h"
+#import "RKMapperOperation.h"
 
 /**
  `RKObjectRequestOperation` is an `NSOperation` subclass that implements object mapping on the response body of an `NSHTTPResponse` loaded via an `RKHTTPRequestOperation`.
@@ -48,12 +49,16 @@
  
  `RKObjectRequestOperation` is not able to perform object mapping that targets Core Data destination entities. Please refer to the `RKManagedObjectRequestOperation` subclass for details regarding performing a Core Data object request operation.
  
+ ## Subclassing Notes
+ 
+ The `RKObjectRequestOperation` is a non-current `NSOperation` subclass and can be extended by subclassing and providing an implementation of the `main` method. It conforms to the `RKMapperOperationDelegate` protocol, providing access to the lifecycle of the mapping process to subclasses.
+ 
  @see `RKResponseDescriptor`
  @see `RKHTTPRequestOperation`
  @see `RKMIMETypeSerialization`
  @see `RKManagedObjectRequestOperation`
  */
-@interface RKObjectRequestOperation : NSOperation
+@interface RKObjectRequestOperation : NSOperation <RKMapperOperationDelegate>
 
 ///-----------------------------------------------
 /// @name Initializing an Object Request Operation

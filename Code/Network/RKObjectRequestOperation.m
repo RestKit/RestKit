@@ -235,6 +235,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
                                                                                         data:self.HTTPRequestOperation.responseData
                                                                          responseDescriptors:self.responseDescriptors];
     self.responseMapperOperation.targetObject = self.targetObject;
+    self.responseMapperOperation.mapperDelegate = self;
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];

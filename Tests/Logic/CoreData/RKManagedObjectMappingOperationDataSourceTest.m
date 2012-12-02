@@ -47,7 +47,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
     
     NSDictionary *data = [NSDictionary dictionary];
     id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping];
@@ -74,7 +74,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNull null] forKey:@"id"];    
@@ -90,7 +90,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -115,7 +115,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -142,7 +142,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"createdAt" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"createdAt" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"monkey.created_at" toKeyPath:@"createdAt"]];
     
     NSString *createdAtString = @"2012-03-22T11:05:42Z";
@@ -171,7 +171,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -198,7 +198,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -226,7 +226,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"createdAt" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"createdAt" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"monkey.created_at" toKeyPath:@"createdAt"]];
     
     NSString *createdAtString = @"2012-03-22T11:05:42Z";
@@ -254,7 +254,7 @@
     managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:entity];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"monkey.name" toKeyPath:@"name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"monkey.railsID" toKeyPath:@"railsID"]];
     
@@ -306,7 +306,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID", @"name", @"createdAt" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID", @"name", @"createdAt" ];
     [mapping addAttributeMappingsFromDictionary:@{ @"monkey.id": @"railsID", @"monkey.name": @"name", @"monkey.created_at": @"createdAt" }];
     
     NSString *createdAtString = @"2012-03-22T11:05:42Z";
@@ -337,7 +337,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID", @"name", @"createdAt" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID", @"name", @"createdAt" ];
     [mapping addAttributeMappingsFromDictionary:@{ @"monkey.id": @"railsID", @"monkey.name": @"name", @"monkey.created_at": @"createdAt" }];
     
     NSString *createdAtString = @"2012-03-22T11:05:42Z";
@@ -368,7 +368,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"name" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"name" ];
     [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     [mapping addAttributeMappingsFromDictionary:@{ @"(name).id": @"railsID" }];
     
@@ -395,7 +395,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"name", @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"name", @"railsID" ];
     [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     [mapping addAttributeMappingsFromDictionary:@{ @"(name).id": @"railsID" }];
     
@@ -422,7 +422,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID", @"name" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID", @"name" ];
     [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
     [mapping addAttributeMappingsFromDictionary:@{ @"(name).id": @"railsID" }];
     
@@ -449,8 +449,8 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier.predicate = [NSPredicate predicateWithFormat:@"age < 30"];
+    mapping.identificationAttributes = @[ @"railsID" ];
+    mapping.identificationPredicate = [NSPredicate predicateWithFormat:@"age < 30"];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     // Create two humans matching the identifier, but differ in matching the 

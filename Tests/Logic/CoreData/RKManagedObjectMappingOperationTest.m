@@ -57,7 +57,7 @@
     NSDictionary *sourceObject = @{ @"name" : @"Blake Watters" };
     [managedObjectContext performBlockAndWait:^{
         RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-        humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+        humanmapping.identificationAttributes = @[ @"railsID" ];
         [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
         NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectContext];
         RKHuman *human = [[RKHuman alloc] initWithEntity:entity insertIntoManagedObjectContext:managedObjectContext];
@@ -76,11 +76,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping];
 
@@ -110,11 +110,11 @@
     NSManagedObjectContext *managedObjectContext = managedObjectStore.persistentStoreManagedObjectContextContext;
     
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
     [catMapping connectRelationship:@"favoriteOfHumans" fromKeyPath:@"railsID" toKeyPath:@"favoriteCatID" withMapping:humanMapping];
 
@@ -158,11 +158,11 @@
     RKManagedObjectStore* managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping];
 
@@ -191,11 +191,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping];
 
@@ -224,11 +224,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"catIDs"]];
     [humanMapping connectRelationship:@"cats" fromKeyPath:@"catIDs" toKeyPath:@"railsID" withMapping:catMapping];
 
@@ -265,11 +265,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name", @"humanId"]];
     [catMapping connectRelationship:@"human" fromKeyPath:@"humanId" toKeyPath:@"railsID" withMapping:humanMapping];
 
@@ -297,11 +297,11 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping hasMany:@"cats" withMapping:catMapping];
 
@@ -322,11 +322,11 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"catsInOrderByAge" withMapping:catMapping]];;
 
@@ -396,11 +396,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping whenValueOfKeyPath:@"name" isEqualTo:@"Blake"];
 
@@ -429,11 +429,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping connectRelationship:@"favoriteCat" fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" withMapping:catMapping whenValueOfKeyPath:@"name" isEqualTo:@"Jeff"];
 
@@ -460,11 +460,11 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
-    childmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    childmapping.identificationAttributes = @[ @"railsID" ];
     [childMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
-    parentmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    parentmapping.identificationAttributes = @[ @"railsID" ];
     [parentMapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     [parentMapping hasMany:@"children" withMapping:childMapping];
 
@@ -698,11 +698,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping* catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping* humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
     [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
@@ -731,11 +731,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping* catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping* humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
     [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
@@ -764,11 +764,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping* catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping* humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
     [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
@@ -797,11 +797,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping* catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping* humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID", @"catIDs"]];
     [humanMapping mapRelationship:@"cats" withMapping:catMapping];
     [humanMapping connectRelationship:@"cats" withObjectForPrimaryKeyAttribute:@"catIDs"];
@@ -837,11 +837,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping* catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping* humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
     [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID" whenValueOfKeyPath:@"name" isEqualTo:@"Blake"];
@@ -870,11 +870,11 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
     RKEntityMapping* catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    catmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    catmapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping* humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    humanmapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Human" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    humanmapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
     [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID" whenValueOfKeyPath:@"name" isEqualTo:@"Jeff"];

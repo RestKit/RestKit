@@ -84,11 +84,10 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return URL;
 }
 
-@interface RKManagedObjectRequestOperation () <RKMapperOperationDelegate>
+@interface RKManagedObjectRequestOperation ()
 // Core Data specific
 @property (nonatomic, strong) NSManagedObjectContext *privateContext;
 @property (nonatomic, copy) NSManagedObjectID *targetObjectID;
-@property (nonatomic, strong) NSMutableDictionary *managedObjectsByKeyPath;
 @property (nonatomic, strong) RKManagedObjectResponseMapperOperation *responseMapperOperation;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
@@ -136,15 +135,6 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     }
 }
 
-#pragma mark - RKMapperOperationDelegate methods
-
-- (void)mapper:(RKMapperOperation *)mapper didFinishMappingOperation:(RKMappingOperation *)mappingOperation forKeyPath:(NSString *)keyPath
-{
-    if ([mappingOperation.destinationObject isKindOfClass:[NSManagedObject class]]) {
-        [self.managedObjectsByKeyPath setObject:mappingOperation.destinationObject forKey:keyPath];
-    }
-}
-
 #pragma mark - RKObjectRequestOperation Overrides
 
 - (void)cancel
@@ -177,6 +167,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     self.responseMapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
                                                                                                data:self.HTTPRequestOperation.responseData
                                                                                 responseDescriptors:self.responseDescriptors];
+    self.responseMapperOperation.mapperDelegate = self;
     self.responseMapperOperation.targetObjectID = self.targetObjectID;
     self.responseMapperOperation.managedObjectContext = self.privateContext;
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;

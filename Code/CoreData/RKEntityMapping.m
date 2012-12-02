@@ -30,20 +30,99 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
-static BOOL entityIdentifierInferenceEnabled = YES;
+NSString * const RKEntityIdentificationAttributesUserInfoKey = @"RKEntityIdentificationAttributes";
 
-static void RKInferIdentifiersForEntityMapping(RKEntityMapping *entityMapping)
+#pragma mark - Functions
+
+static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDescription *entity)
 {
-    if (! [RKEntityMapping isEntityIdentifierInferenceEnabled]) return;
+    id userInfoValue = [entity userInfo][RKEntityIdentificationAttributesUserInfoKey];
+    if (userInfoValue) {
+        NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
+        NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
+        [attributeNames enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
+            if (! [attributeName isKindOfClass:[NSString class]]) {
+                [NSException raise:NSInvalidArgumentException format:@"Invalid value given in user info key '%@' of entity '%@': expected an `NSString` or `NSArray` of strings, instead got '%@' (%@)", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName, [attributeName class]];
+            }
+            
+            NSAttributeDescription *attribute = [entity attributesByName][attributeName];
+            if (! attribute) {
+                [NSException raise:NSInvalidArgumentException format:@"Invalid identifier attribute specified in user info key '%@' of entity '%@': no attribue was found with the name '%@'", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName];
+            }
+            
+            [attributes addObject:attribute];
+        }];
+        return attributes;
+    }
     
-    entityMapping.entityIdentifier = [RKEntityIdentifier inferredIdentifierForEntity:entityMapping.entity];
-    [[entityMapping.entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationship, BOOL *stop) {
-        RKEntityIdentifier *entityIdentififer = [RKEntityIdentifier inferredIdentifierForEntity:relationship.destinationEntity];
-        if (entityIdentififer) {
-            [entityMapping setEntityIdentifier:entityIdentififer forRelationship:relationshipName];
-        }
-    }];
+    return nil;
 }
+
+static NSString *RKUnderscoredStringFromCamelCasedString(NSString *camelCasedString)
+{
+    NSError *error = nil;
+    NSRegularExpression *regularExpression = [NSRegularExpression regularExpressionWithPattern:@"((^[a-z]+)|([A-Z]{1}[a-z]+)|([A-Z]+(?=([A-Z][a-z])|($))))" options:0 error:&error];
+    if (! regularExpression) return nil;
+    NSMutableArray *lowercasedComponents = [NSMutableArray array];
+    [regularExpression enumerateMatchesInString:camelCasedString options:0 range:NSMakeRange(0, [camelCasedString length]) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        [lowercasedComponents addObject:[[camelCasedString substringWithRange:[result range]] lowercaseString]];
+    }];
+    return [lowercasedComponents componentsJoinedByString:@"_"];
+}
+
+// Given 'Human', returns 'humanID' and 'human_id'; Given 'AmenityReview' returns 'amenityReviewID' and 'amenity_review_id'
+static NSArray *RKEntityIdentificationAttributeNamesForEntity(NSEntityDescription *entity)
+{
+    NSString *entityName = [entity name];
+    NSString *lowerCasedFirstCharacter = [[entityName substringToIndex:1] lowercaseString];
+    NSString *camelizedIDAttributeName = [NSString stringWithFormat:@"%@%@ID", lowerCasedFirstCharacter, [entityName substringFromIndex:1]];
+    NSString *underscoredIDAttributeName = [NSString stringWithFormat:@"%@_id", RKUnderscoredStringFromCamelCasedString([entity name])];
+    return @[ camelizedIDAttributeName, underscoredIDAttributeName ];
+}
+
+static NSArray *RKEntityIdentificationAttributeNames()
+{
+    return [NSArray arrayWithObjects:@"identifier", @"id", @"ID", @"URL", @"url", nil];
+}
+
+static NSArray *RKArrayOfAttributesForEntityFromAttributesOrNames(NSEntityDescription *entity, NSArray *attributesOrNames)
+{
+    NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributesOrNames count]];
+    for (id attributeOrName in attributesOrNames) {
+        if ([attributeOrName isKindOfClass:[NSAttributeDescription class]]) {
+            if (! [[entity properties] containsObject:attributeOrName]) [NSException raise:NSInvalidArgumentException format:@"Invalid attribute value '%@' given for entity identifer: not found in the '%@' entity", attributeOrName, [entity name]];
+            [attributes addObject:attributeOrName];
+        } else if ([attributeOrName isKindOfClass:[NSString class]]) {
+            NSAttributeDescription *attribute = [entity attributesByName][attributeOrName];
+            if (!attribute) [NSException raise:NSInvalidArgumentException format:@"Invalid attribute '%@': no attribute was found for the given name in the '%@' entity.", attributeOrName, [entity name]];
+            [attributes addObject:attribute];
+        } else {
+            [NSException raise:NSInvalidArgumentException format:@"Invalid value provided for entity identifier attribute: Acceptable values are either `NSAttributeDescription` or `NSString` objects."];
+        }
+    }
+    
+    return attributes;
+}
+
+NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entity)
+{
+    NSArray *attributes = RKEntityIdentificationAttributesFromUserInfoOfEntity(entity);
+    if (attributes) {
+        return RKArrayOfAttributesForEntityFromAttributesOrNames(entity, attributes);
+    }
+    
+    NSMutableArray *identifyingAttributes = [RKEntityIdentificationAttributeNamesForEntity(entity) mutableCopy];
+    [identifyingAttributes addObjectsFromArray:RKEntityIdentificationAttributeNames()];
+    for (NSString *attributeName in identifyingAttributes) {
+        NSAttributeDescription *attribute = [entity attributesByName][attributeName];
+        if (attribute) {
+            return @[ attribute ];
+        }
+    }
+    return nil;
+}
+
+static BOOL entityIdentificationInferenceEnabled = YES;
 
 @interface RKObjectMapping (Private)
 - (NSString *)transformSourceKeyPath:(NSString *)keyPath;
@@ -52,10 +131,11 @@ static void RKInferIdentifiersForEntityMapping(RKEntityMapping *entityMapping)
 @interface RKEntityMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
 @property (nonatomic, strong) NSMutableArray *mutableConnections;
-@property (nonatomic, strong) NSMutableDictionary *relationshipNamesToEntityIdentifiers;
 @end
 
 @implementation RKEntityMapping
+
+@synthesize identificationAttributes = _identificationAttributes;
 
 + (id)mappingForClass:(Class)objectClass
 {
@@ -78,7 +158,7 @@ static void RKInferIdentifiersForEntityMapping(RKEntityMapping *entityMapping)
     self = [self initWithClass:objectClass];
     if (self) {
         self.entity = entity;
-        RKInferIdentifiersForEntityMapping(self);
+        if ([RKEntityMapping isEntityIdentificationInferenceEnabled]) self.identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
     }
 
     return self;
@@ -89,7 +169,6 @@ static void RKInferIdentifiersForEntityMapping(RKEntityMapping *entityMapping)
     self = [super initWithClass:objectClass];
     if (self) {
         self.mutableConnections = [NSMutableArray array];
-        self.relationshipNamesToEntityIdentifiers = [NSMutableDictionary dictionary];
     }
 
     return self;
@@ -98,13 +177,25 @@ static void RKInferIdentifiersForEntityMapping(RKEntityMapping *entityMapping)
 - (id)copyWithZone:(NSZone *)zone
 {
     RKEntityMapping *copy = [super copyWithZone:zone];
-    copy.entityIdentifier = [self.entityIdentifier copy];
+    copy.identificationAttributes = self.identificationAttributes;
+    copy.identificationPredicate = self.identificationPredicate;
     
     for (RKConnectionDescription *connection in self.connections) {
         [copy addConnection:[connection copy]];
     }
     
     return copy;
+}
+
+- (void)setIdentificationAttributes:(NSArray *)attributesOrNames
+{
+    if (attributesOrNames && [attributesOrNames count] == 0) [NSException raise:NSInvalidArgumentException format:@"At least one attribute must be provided to identify managed objects"];
+    _identificationAttributes = attributesOrNames ? RKArrayOfAttributesForEntityFromAttributesOrNames(self.entity, attributesOrNames) : nil;
+}
+
+- (NSArray *)identificationAttributes
+{
+    return _identificationAttributes;
 }
 
 - (RKConnectionDescription *)connectionForRelationship:(id)relationshipOrName
@@ -163,31 +254,6 @@ static void RKInferIdentifiersForEntityMapping(RKEntityMapping *entityMapping)
     [self.mutableConnections addObject:connection];
 }
 
-- (void)setEntityIdentifier:(RKEntityIdentifier *)entityIdentifier
-{
-    NSAssert(entityIdentifier == nil || [entityIdentifier.entity isKindOfEntity:self.entity], @"Invalid entity identifier value: The identifier given is for the '%@' entity.", [entityIdentifier.entity name]);
-    _entityIdentifier = entityIdentifier;
-}
-
-- (void)setEntityIdentifier:(RKEntityIdentifier *)entityIdentifier forRelationship:(NSString *)relationshipName
-{
-    NSRelationshipDescription *relationship = [self.entity relationshipsByName][relationshipName];
-    NSAssert(relationship, @"Cannot set entity identififer for relationship '%@': no relationship found for that name.", relationshipName);
-    NSAssert([[relationship destinationEntity] isKindOfEntity:entityIdentifier.entity], @"Cannot set entity identifier for relationship '%@': the given relationship identifier is for the '%@' entity, but the '%@' entity was expected.", relationshipName, [entityIdentifier.entity name], [[relationship destinationEntity] name]);
-    self.relationshipNamesToEntityIdentifiers[relationshipName] = entityIdentifier;
-}
-
-- (RKEntityIdentifier *)entityIdentifierForRelationship:(NSString *)relationshipName
-{
-    RKEntityIdentifier *entityIdentifier = self.relationshipNamesToEntityIdentifiers[relationshipName];
-    if (! entityIdentifier) {
-        RKRelationshipMapping *relationshipMapping = [self propertyMappingsByDestinationKeyPath][relationshipName];
-        entityIdentifier = [relationshipMapping.mapping isKindOfClass:[RKEntityIdentifier class]] ? [(RKEntityMapping *)relationshipMapping.mapping entityIdentifier] : nil;
-    }
-    
-    return entityIdentifier;
-}
-
 - (id)defaultValueForAttribute:(NSString *)attributeName
 {
     NSAttributeDescription *desc = [[self.entity attributesByName] valueForKey:attributeName];
@@ -204,14 +270,14 @@ static void RKInferIdentifiersForEntityMapping(RKEntityMapping *entityMapping)
     return propertyClass;
 }
 
-+ (void)setEntityIdentifierInferenceEnabled:(BOOL)enabled
++ (void)setEntityIdentificationInferenceEnabled:(BOOL)enabled
 {
-    entityIdentifierInferenceEnabled = enabled;
+    entityIdentificationInferenceEnabled = enabled;
 }
 
-+ (BOOL)isEntityIdentifierInferenceEnabled
++ (BOOL)isEntityIdentificationInferenceEnabled
 {
-    return entityIdentifierInferenceEnabled;
+    return entityIdentificationInferenceEnabled;
 }
 
 @end

@@ -46,7 +46,7 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id representation);
 
     RKDynamicMapping *mapping = [RKDynamicMapping new];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"male"];
-    [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"female"];
+    [mapping setObjectMapping:girlMapping whenValueOfKeyPath:@"gender" isEqualTo:@"female"];
 
  @param objectMapping The mapping to be used when the value at the given key path is equal to the given value.
  @param keyPath The key path to retrieve the comparison value from in the object representation being mapped.

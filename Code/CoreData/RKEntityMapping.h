@@ -22,7 +22,6 @@
 #import "RKObjectMapping.h"
 #import "RKConnectionDescription.h"
 #import "RKMacros.h"
-#import "RKEntityIdentifier.h"
 
 @class RKManagedObjectStore;
 
@@ -31,17 +30,30 @@
  
  ## Entity Identification
  
- One of the fundamental problems when object mapping representations into Core Data entities is determining if a new object should be created or an existing object should be updated. The `RKEntityIdentifier` class describes how existing objects should be identified when an entity mapping is being applied. Entity identifiers specify one or more attributes of the entity that are to be used to identify existing objects. Typically the values of these attributes are populated by attribute mappings. It is common practice to use a single attribute corresponding to the primary key of the remote resource being mapped, but an arbitrary number of attributes may be specified for identification. Identifying attributes have all type transformations support by the mapper applied before the managed object context is search, supporting such use-cases as using an `NSDate` as an identifying attribute whose value is mapped from an `NSString`.
+ One of the fundamental problems when object mapping representations into Core Data entities is determining if a new object should be created or an existing object should be updated. In an entity mapping, one or more attributes can be designated as being used for identification purposes via the `identificationAttributes` property. Typically the values of these attributes are populated by attribute mappings. It is common practice to use a single attribute corresponding to the primary key of the remote resource being mapped, but an arbitrary number of attributes may be specified for identification. Identifying attributes have all type transformations support by the mapper applied before the managed object context is searched, supporting such use-cases as using an `NSDate` as an identifying attribute whose value is mapped from an `NSString`. Identified objects can be further constrained by configuring an identification predicate via the `identificationPredicate` property. The predicate is applied after the managed object has been searched.
  
- ### Inferring Entity Identifiers
+ ### Identification Inference
  
- The `RKEntityMapping` class provides support for inferring an entity identifier from the managed object model. When inference is enabled (the default state), the entity is searched for several commonly used identifying attributes and if any is found, an `entityIdentifier` is automatically configured. Inference is performed by the `[RKEntityIdentifier inferredIdentifierForEntity:` method and the inference rules are detailed in the accompanying documentation.
+ The `RKEntityMapping` class provides support for inferring identification attributes from the managed object model. When inference is enabled (the default state), the entity is searched for several commonly used identifying attributes and if any is found, the value of the `identificationAttributes` property is automatically configured. Inference is performed by the `RKIdentificationAttributesInferredFromEntity` function.
+ 
+ When `RKIdentificationAttributesInferredFromEntity` is invoked, the entity is first checked for a user info key specifying the identifying attributes. If the user info of the given entity contains a value for the key 'RKEntityIdentificationAttributes', then that value is used to construct an array of attributes. The user info key must contain a string or an array of strings specifying the names of attributes that exist in the given entity.
+ 
+ If no attributes are specified in the user info, then the entity is searched for an attribute whose name matches the llama-cased or snake-cased name of the entity. For example, an entity named 'Article' would have an inferred identifying attributes of 'articleID' and 'article_id', and an entity named 'ApprovedComment' would be inferred as 'approvedCommentID' and 'approved_comment_id'. If such an attribute is found within the entity, an array is returned containing the attribute. If none is returned, the the attributes are searched for the following names:
+ 
+ 1. 'identifier'
+ 1. 'id'
+ 1. 'ID'
+ 1. 'URL'
+ 1. 'url'
+ 
+ If any of these attributes are found, then an array is returned containing the attribute. If all possible inferred attributes are exhausted, then `nil` is returned.
+ 
+ Note that inference will only return a single attribute. Compound attributes must be configured manually via the `identificationAttributes` property.
  
  ## Connecting Relationships
  
  When modeling an API into Core Data representation, a common problem is that managed objects that are semantically related are loaded across discrete requests, leaving the Core Data relationships empty. The `RKConnectionDescription` class provides a means for expressing a connection between entities using corresponding attribute values or by key path. Please refer to the documentation accompanying the `RKConnectionDescription` class and the `addConnectionForRelationship:connectedBy:` method of this class.
  
- @see `RKEntityIdentifier`
  @see `RKConnectionDescription`
  */
 @interface RKEntityMapping : RKObjectMapping
@@ -87,31 +99,21 @@
 ///----------------------------------
 
 /**
- The entity identifier used to identify `NSManagedObject` instances for the receiver's entity by one or more attributes.
+ The array of `NSAttributeDescription` objects specifying the attributes of the receiver's entity that are used during mapping to determine whether an existing object should be updated or a new managed object should be inserted. Please see the "Entity Identification" section of this document for more information.
  
- The entity identifier is used during mapping to determine whether an existing object should be updated or a new managed object should be inserted. Please see the "Entity Identification" section of this document for more information.
+ @return An array of identifying attributes or `nil` if none have been configured.
+ @raises NSInvalidArgumentException Raised if the setter is invoked with the name of an attribute or an `NSAttributeDescription` that does not exist in the receiver's entity. Also raised if the setter is invoked with an empty array.
+ @warning Note that for convenience, this property may be set with an array containing `NSAttributeDescription` objects or `NSString` objects specifying the names of attributes that exist within the receiver's entity. The getter will always return an array of `NSAttributeDescription` objects.
  */
-@property (nonatomic, copy) RKEntityIdentifier *entityIdentifier;
+@property (nonatomic, copy) NSArray *identificationAttributes;
 
 /**
- Sets an entity identifier for the relationship with the given name.
+ An optional predicate used to filter identified objects during mapping.
  
- When mapping the specified relationship, the given entity identifier will be used to find existing managed object instances. If no identifier is specified, then the entity identifier of the entity mapping is used by default. This method need only be invoked if the relationship has specific identification needs that diverge from the entity.
- 
- @param entityIdentifier The entity identifier to be used when mapping the specified relationship
- @param relationshipName The name of the relationship for which the specified identifier is to be used.
+ @return The identification predicate.
  */
-- (void)setEntityIdentifier:(RKEntityIdentifier *)entityIdentifier forRelationship:(NSString *)relationshipName;
+@property (nonatomic, copy) NSPredicate *identificationPredicate;
 
-/**
- Returns the entity identifier for the relationship with the given name.
- 
- This method will return `nil` unless an entity identifier was specified via the `setEntityIdentifier:forRelationship:` method.
- 
- @param relationshipName The name of the relationship to retrieve the entity identifier for.
- @return The entity identifier for the specified relationship or `nil` if none was configured.
- */
-- (RKEntityIdentifier *)entityIdentifierForRelationship:(NSString *)relationshipName;
 
 ///-------------------------------------------
 /// @name Configuring Relationship Connections
@@ -120,7 +122,7 @@
 /**
  Returns the array of `RKConnectionDescripton` objects configured for connecting relationships during object mapping.
  */
-@property (weak, nonatomic, readonly) NSArray *connections;
+@property (nonatomic, copy, readonly) NSArray *connections;
 
 /**
  Adds a connection to the receiver.
@@ -185,24 +187,43 @@
  */
 - (id)defaultValueForAttribute:(NSString *)attributeName;
 
-///----------------------------------------------
-/// @name Configuring Entity Identifier Inference
-///----------------------------------------------
+///--------------------------------------------------
+/// @name Configuring Entity Identification Inference
+///--------------------------------------------------
 
 /**
- Enables or disabled entity identifier inference.
+ Enables or disabled entity identification inference.
  
  **Default:** `YES`
  
- @param enabled A Boolean value indicating if entity identifier inference is to be performed.
+ @param enabled A Boolean value indicating if entity identification inference is to be performed.
  */
-+ (void)setEntityIdentifierInferenceEnabled:(BOOL)enabled;
++ (void)setEntityIdentificationInferenceEnabled:(BOOL)enabled;
 
 /**
- Returns a Boolean value that indicates is entity identifier inference has been enabled.
+ Returns a Boolean value that indicates if entity identification inference has been enabled.
  
- @return `YES` if entity identifier inference is enabled, else `NO`.
+ @return `YES` if entity identification inference is enabled, else `NO`.
  */
-+ (BOOL)isEntityIdentifierInferenceEnabled;
++ (BOOL)isEntityIdentificationInferenceEnabled;
 
 @end
+
+/**
+ The name of a key in the user info dictionary of a `NSEntityDescription` specifying the name or one or more attributes to be used to infer an entity identifier. The value of this string is 'RKEntityIdentificationAttributes'.
+ */
+extern NSString * const RKEntityIdentificationAttributesUserInfoKey;
+
+///----------------
+/// @name Functions
+///----------------
+
+/**
+ Returns an array of attributes likely to be usable for identification purposes inferred from the given entity.
+ 
+ Please see the documentation accompanying the `RKEntityMapping` class for details about the inference rules.
+ 
+ @param entity The entity to infer identification from.
+ @return An array containing identifying attributes inferred from the given entity or `nil` if none could be inferred.
+ */
+NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entity);

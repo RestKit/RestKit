@@ -89,7 +89,7 @@ To configure an `RKEntityByAttributeCache` for indexing your application, add th
 	self = [super init];
 	if (self) {
 		NSEntityDescription *searchWordEntity = [[self.managedObjectModel entitiesByName] objectForKey:RKSearchWordEntityName];
-    	self.searchWordCache = [[RKEntityByAttributeCache alloc] initWithEntity:searchWordEntity attribute:@"word" managedObjectContext:indexingContext];
+    	self.searchWordCache = [[RKEntityByAttributeCache alloc] initWithEntity:searchWordEntity attributes:@[ @"word" ] managedObjectContext:indexingContext];
     	[self.searchWordCache load];
 	}
 	

@@ -270,7 +270,7 @@ static NSString *RKCacheKeyForEntityWithAttributeValues(NSEntityDescription *ent
     __block NSEntityDescription *entity;
     __block NSDictionary *attributeValues;
     __block NSManagedObjectID *objectID;
-    [self.managedObjectContext performBlockAndWait:^{
+    [object.managedObjectContext performBlockAndWait:^{
         entity = object.entity;
         objectID = [object objectID];
         attributeValues = [object dictionaryWithValuesForKeys:self.attributes];
