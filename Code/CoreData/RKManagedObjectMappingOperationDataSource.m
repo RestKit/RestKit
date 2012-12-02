@@ -38,7 +38,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
 // Return YES if the entity is identified by an attribute that acts as the nesting key in the source representation
 static BOOL RKEntityMappingIsIdentifiedByNestingAttribute(RKEntityMapping *entityMapping)
 {
-    for (NSAttributeDescription *attribute in entityMapping.entityIdentifier.attributes) {
+    for (NSAttributeDescription *attribute in [entityMapping identificationAttributes]) {
         RKAttributeMapping *attributeMapping = [[entityMapping propertyMappingsByDestinationKeyPath] objectForKey:[attribute name]];
         if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
             return YES;
@@ -49,10 +49,10 @@ static BOOL RKEntityMappingIsIdentifiedByNestingAttribute(RKEntityMapping *entit
 }
 
 // We always need to map the dynamic nesting attribute first so that sub-key attribute mappings apply cleanly
-static NSArray *RKEntityIdentifierAttributesInMappingOrder(RKEntityMapping *entityMapping)
+static NSArray *RKEntityIdentificationAttributesInMappingOrder(RKEntityMapping *entityMapping)
 {
-    NSMutableArray *orderedAttributes = [NSMutableArray arrayWithCapacity:[entityMapping.entityIdentifier.attributes count]];
-    for (NSAttributeDescription *attribute in entityMapping.entityIdentifier.attributes) {
+    NSMutableArray *orderedAttributes = [NSMutableArray arrayWithCapacity:[[entityMapping identificationAttributes] count]];
+    for (NSAttributeDescription *attribute in [entityMapping identificationAttributes]) {
         RKAttributeMapping *attributeMapping = [[entityMapping propertyMappingsByDestinationKeyPath] objectForKey:[attribute name]];
         if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
             // We want to map the nesting attribute first
@@ -86,11 +86,11 @@ static RKAttributeMapping *RKAttributeMappingForNameInMappings(NSString *name, N
 /**
  This function is the workhorse for extracting entity identifier attributes from a dictionary representation. It supports type transformations, compound entity identifier attributes, and dynamic nesting keys within the representation. 
  */
-static NSDictionary *RKEntityIdentifierAttributesForEntityMappingWithRepresentation(RKEntityMapping *entityMapping, NSDictionary *representation)
+static NSDictionary *RKEntityIdentificationAttributesForEntityMappingWithRepresentation(RKEntityMapping *entityMapping, NSDictionary *representation)
 {
     RKDateToStringValueTransformer *dateToStringTransformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:entityMapping.preferredDateFormatter
                                                                                                              stringToDateFormatters:entityMapping.dateFormatters];
-    NSArray *orderedAttributes = RKEntityIdentifierAttributesInMappingOrder(entityMapping);
+    NSArray *orderedAttributes = RKEntityIdentificationAttributesInMappingOrder(entityMapping);
     BOOL containsNestingAttribute = RKEntityMappingIsIdentifiedByNestingAttribute(entityMapping);
     __block NSArray *attributeMappings = entityMapping.attributeMappings;
     if (containsNestingAttribute) RKLogDebug(@"Detected use of nested dictionary key as identifying attribute");
@@ -151,7 +151,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
 
     RKEntityMapping *entityMapping = (RKEntityMapping *)mapping;    
-    NSDictionary *entityIdentifierAttributes = RKEntityIdentifierAttributesForEntityMappingWithRepresentation(entityMapping, representation);
+    NSDictionary *entityIdentifierAttributes = RKEntityIdentificationAttributesForEntityMappingWithRepresentation(entityMapping, representation);
     if (! self.managedObjectCache) {
         RKLogWarning(@"Performing managed object mapping with a nil managed object cache:\n"
                       "Unable to update existing object instances by primary key. Duplicate objects may be created.");
@@ -164,7 +164,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         NSArray *objects = [self.managedObjectCache managedObjectsWithEntity:entity
                                                              attributeValues:entityIdentifierAttributes
                                                       inManagedObjectContext:self.managedObjectContext];
-        if (entityMapping.entityIdentifier.predicate) objects = [objects filteredArrayUsingPredicate:entityMapping.entityIdentifier.predicate];
+        if (entityMapping.identificationPredicate) objects = [objects filteredArrayUsingPredicate:entityMapping.identificationPredicate];
         if ([objects count] > 0) {
             managedObject = objects[0];
             if ([objects count] > 1) RKLogWarning(@"Managed object cache returned %ld objects for the identifier configured for the '%@' entity, expected 1.", (long) [objects count], [entity name]);

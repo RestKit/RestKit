@@ -23,7 +23,7 @@
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Cat" attributes:@[ @"railsID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
 
     RKCat *reginald = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     reginald.name = @"Reginald";
@@ -44,7 +44,7 @@
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Event" inManagedObjectStore:managedObjectStore];
-    mapping.entityIdentifier = [RKEntityIdentifier identifierWithEntityName:@"Event" attributes:@[ @"eventID" ] inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"eventID" ];
 
     RKEvent *birthday = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     birthday.eventID = @"e-1234-a8-b12";

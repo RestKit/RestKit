@@ -40,7 +40,7 @@
      there is no backing model class!
      */
     RKEntityMapping *userMapping = [RKEntityMapping mappingForEntityForName:@"User" inManagedObjectStore:managedObjectStore];
-    [userMapping setEntityIdentifier:[RKEntityIdentifier identifierWithEntityName:@"User" attributes:@[ @"userID" ] inManagedObjectStore:managedObjectStore]];
+    userMapping.identificationAttributes = @[ @"userID" ];
     [userMapping addAttributeMappingsFromDictionary:@{
      @"id": @"userID",
      @"screen_name": @"screenName",
@@ -49,7 +49,7 @@
     [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
 
     RKEntityMapping *tweetMapping = [RKEntityMapping mappingForEntityForName:@"Tweet" inManagedObjectStore:managedObjectStore];
-    [tweetMapping setEntityIdentifier:[RKEntityIdentifier identifierWithEntityName:@"Tweet" attributes:@[ @"statusID" ] inManagedObjectStore:managedObjectStore]];
+    userMapping.identificationAttributes = @[ @"statusID" ];
     [tweetMapping addAttributeMappingsFromDictionary:@{
      @"id": @"statusID",
      @"created_at": @"createdAt",
