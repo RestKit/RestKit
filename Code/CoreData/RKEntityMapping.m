@@ -58,12 +58,26 @@ static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDes
     return nil;
 }
 
-// Given 'Human', returns 'humanID'; Given 'AmenityReview' returns 'amenityReviewID'
-static NSString *RKEntityIdentificationAttributeNameForEntity(NSEntityDescription *entity)
+static NSString *RKUnderscoredStringFromCamelCasedString(NSString *camelCasedString)
+{
+    NSError *error = nil;
+    NSRegularExpression *regularExpression = [NSRegularExpression regularExpressionWithPattern:@"((^[a-z]+)|([A-Z]{1}[a-z]+)|([A-Z]+(?=([A-Z][a-z])|($))))" options:0 error:&error];
+    if (! regularExpression) return nil;
+    NSMutableArray *lowercasedComponents = [NSMutableArray array];
+    [regularExpression enumerateMatchesInString:camelCasedString options:0 range:NSMakeRange(0, [camelCasedString length]) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        [lowercasedComponents addObject:[[camelCasedString substringWithRange:[result range]] lowercaseString]];
+    }];
+    return [lowercasedComponents componentsJoinedByString:@"_"];
+}
+
+// Given 'Human', returns 'humanID' and 'human_id'; Given 'AmenityReview' returns 'amenityReviewID' and 'amenity_review_id'
+static NSArray *RKEntityIdentificationAttributeNamesForEntity(NSEntityDescription *entity)
 {
     NSString *entityName = [entity name];
     NSString *lowerCasedFirstCharacter = [[entityName substringToIndex:1] lowercaseString];
-    return [NSString stringWithFormat:@"%@%@ID", lowerCasedFirstCharacter, [entityName substringFromIndex:1]];
+    NSString *camelizedIDAttributeName = [NSString stringWithFormat:@"%@%@ID", lowerCasedFirstCharacter, [entityName substringFromIndex:1]];
+    NSString *underscoredIDAttributeName = [NSString stringWithFormat:@"%@_id", RKUnderscoredStringFromCamelCasedString([entity name])];
+    return @[ camelizedIDAttributeName, underscoredIDAttributeName ];
 }
 
 static NSArray *RKEntityIdentificationAttributeNames()
@@ -97,7 +111,7 @@ NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entit
         return RKArrayOfAttributesForEntityFromAttributesOrNames(entity, attributes);
     }
     
-    NSMutableArray *identifyingAttributes = [NSMutableArray arrayWithObject:RKEntityIdentificationAttributeNameForEntity(entity)];
+    NSMutableArray *identifyingAttributes = [RKEntityIdentificationAttributeNamesForEntity(entity) mutableCopy];
     [identifyingAttributes addObjectsFromArray:RKEntityIdentificationAttributeNames()];
     for (NSString *attributeName in identifyingAttributes) {
         NSAttributeDescription *attribute = [entity attributesByName][attributeName];

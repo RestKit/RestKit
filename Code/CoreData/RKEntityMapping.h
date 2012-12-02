@@ -38,7 +38,7 @@
  
  When `RKIdentificationAttributesInferredFromEntity` is invoked, the entity is first checked for a user info key specifying the identifying attributes. If the user info of the given entity contains a value for the key 'RKEntityIdentificationAttributes', then that value is used to construct an array of attributes. The user info key must contain a string or an array of strings specifying the names of attributes that exist in the given entity.
  
- If no attributes are specified in the user info, then the entity is searched for an attribute whose name matches the llama-cased name of the entity. For example, an entity named 'Article' would have an inferred identifier attribute of 'articleID' and an entity named 'ApprovedComment' would be inferred as 'approvedCommentID'. If such an attribute is found within the entity, an array is returned containing the attribute. If none is returned, the the attributes are searched for the following names:
+ If no attributes are specified in the user info, then the entity is searched for an attribute whose name matches the llama-cased or snake-cased name of the entity. For example, an entity named 'Article' would have an inferred identifying attributes of 'articleID' and 'article_id', and an entity named 'ApprovedComment' would be inferred as 'approvedCommentID' and 'approved_comment_id'. If such an attribute is found within the entity, an array is returned containing the attribute. If none is returned, the the attributes are searched for the following names:
  
  1. 'identifier'
  1. 'id'
