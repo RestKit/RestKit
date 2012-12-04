@@ -31,6 +31,7 @@
 #import "RKPathMatcher.h"
 #import "RKMappingErrors.h"
 #import "RKPaginator.h"
+#import "RKDynamicMapping.h"
 
 #if !__has_feature(objc_arc)
 #error RestKit must be built with ARC.
@@ -91,6 +92,15 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
         if ([responseDescriptor.mapping isKindOfClass:[RKEntityMapping class]]) {
             return YES;
+        }
+      
+        if ([responseDescriptor.mapping isKindOfClass:[RKDynamicMapping class]]) {
+            RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)responseDescriptor.mapping;
+            for (RKMapping *mapping in dynamicMapping.objectMappings) {
+                if ([mapping isKindOfClass:[RKEntityMapping class]]) {
+                  return YES;
+                }
+            }
         }
     }
     

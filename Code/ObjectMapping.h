@@ -25,3 +25,4 @@
 #import "RKObjectParameterization.h"
 #import "RKMappingResult.h"
 #import "RKMapperOperation.h"
+#import "RKDynamicMapping.h"
