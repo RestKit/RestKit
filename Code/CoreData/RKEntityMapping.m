@@ -36,7 +36,7 @@ NSString * const RKEntityIdentificationAttributesUserInfoKey = @"RKEntityIdentif
 
 static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDescription *entity)
 {
-    id userInfoValue = [entity userInfo][RKEntityIdentificationAttributesUserInfoKey];
+    id userInfoValue = [[entity userInfo] valueForKey:RKEntityIdentificationAttributesUserInfoKey];
     if (userInfoValue) {
         NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
         NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
