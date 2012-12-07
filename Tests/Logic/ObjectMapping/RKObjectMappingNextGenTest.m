@@ -2063,4 +2063,23 @@
     assertThat([humans objectAtIndex:1], is(equalTo(human2)));
 }
 
+- (void)testMappingMultipleKeyPathsAtRootOfObject
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping1 addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"prodId" toKeyPath:@"userID"]];
+    
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping2 addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"catId" toKeyPath:@"userID"]];
+    
+    NSDictionary *dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"SameKeyDifferentTargetClasses.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:dictionary mappingsDictionary:@{ @"products": mapping1, @"categories": mapping2 }];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    mapper.mappingOperationDataSource = dataSource;
+    [mapper start];
+    
+    expect(mapper.error).to.beNil();
+    expect(mapper.mappingResult).notTo.beNil();
+    expect([mapper.mappingResult array]).to.haveCountOf(4);
+}
+
 @end
