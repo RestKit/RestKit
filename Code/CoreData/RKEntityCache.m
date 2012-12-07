@@ -81,7 +81,7 @@
     return nil;
 }
 
-- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
+- (NSSet *)objectsForEntity:(NSEntityDescription *)entity withAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
 {
     NSParameterAssert(entity);
     NSParameterAssert(attributeValues);

@@ -38,9 +38,9 @@
  @param attributeValues A dictionary specifying the attribute criteria for retrieving managed objects.
  @param managedObjectContext The context to fetch the matching objects in.
  */
-- (NSArray *)managedObjectsWithEntity:(NSEntityDescription *)entity
-                      attributeValues:(NSDictionary *)attributeValues
-               inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+- (NSSet *)managedObjectsWithEntity:(NSEntityDescription *)entity
+                    attributeValues:(NSDictionary *)attributeValues
+             inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 ///---------------------------------------------------
 /// @name Handling Managed Object Change Notifications

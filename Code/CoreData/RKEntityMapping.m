@@ -270,6 +270,19 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return propertyClass;
 }
 
+- (Class)classForKeyPath:(NSString *)keyPath
+{
+    NSArray *components = [keyPath componentsSeparatedByString:@"."];
+    Class propertyClass = self.objectClass;
+    for (NSString *property in components) {
+        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass];
+        if (! propertyClass) propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofEntity:self.entity];
+        if (! propertyClass) break;
+    }
+
+    return propertyClass;
+}
+
 + (void)setEntityIdentificationInferenceEnabled:(BOOL)enabled
 {
     entityIdentificationInferenceEnabled = enabled;

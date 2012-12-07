@@ -10,24 +10,33 @@
 #import "RKLog.h"
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
+/*
+ NOTE: At the moment this cache key assume that the structure of the values for each key in the `attributeValues` in constant
+ i.e. if you have `userID`, it will always be a single value, or `userIDs` will always be an array.
+ It will need to be reimplemented if changes in attribute values occur during the life of a single cache
+ */
 static NSString *RKPredicateCacheKeyForAttributes(NSArray *attributeNames)
 {
     return [[attributeNames sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] componentsJoinedByString:@":"];
 }
 
 // NOTE: We build a dynamic format string here because `NSCompoundPredicate` does not support use of substiution variables
-static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributes(NSArray *attributeNames)
+static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDictionary *attributeValues)
 {
+    NSArray *attributeNames = [attributeValues allKeys];
     NSMutableArray *formatFragments = [NSMutableArray arrayWithCapacity:[attributeNames count]];
-    for (NSString *attributeName in attributeNames) {
-        NSString *formatFragment = [NSString stringWithFormat:@"%@ = $%@", attributeName, attributeName];
+    [attributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, id value, BOOL *stop) {
+        NSString *formatFragment = RKObjectIsCollection(value)
+                                 ? [NSString stringWithFormat:@"%@ IN $%@", attributeName, attributeName]
+                                 : [NSString stringWithFormat:@"%@ = $%@", attributeName, attributeName];
         [formatFragments addObject:formatFragment];
-    }
+    }];
 
     return [NSPredicate predicateWithFormat:[formatFragments componentsJoinedByString:@" AND "]];
 }
@@ -47,9 +56,9 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributes(NSArray *at
     return self;
 }
 
-- (NSArray *)managedObjectsWithEntity:(NSEntityDescription *)entity
-                      attributeValues:(NSDictionary *)attributeValues
-               inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+- (NSSet *)managedObjectsWithEntity:(NSEntityDescription *)entity
+                    attributeValues:(NSDictionary *)attributeValues
+             inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
 
     NSAssert(entity, @"Cannot find existing managed object without a target class");
@@ -59,7 +68,7 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributes(NSArray *at
     NSString *predicateCacheKey = RKPredicateCacheKeyForAttributes([attributeValues allKeys]);
     NSPredicate *substitutionPredicate = [self.predicateCache objectForKey:predicateCacheKey];
     if (! substitutionPredicate) {
-        substitutionPredicate = RKPredicateWithSubsitutionVariablesForAttributes([attributeValues allKeys]);
+        substitutionPredicate = RKPredicateWithSubsitutionVariablesForAttributeValues(attributeValues);
         [self.predicateCache setObject:substitutionPredicate forKey:predicateCacheKey];
     }
     
@@ -72,7 +81,7 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributes(NSArray *at
     }
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
 
-    return objects;
+    return [NSSet setWithArray:objects];
 }
 
 @end

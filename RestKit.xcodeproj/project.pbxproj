@@ -697,7 +697,6 @@
 		25160F7B145657220060A5C5 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		25160F7D1456572F0060A5C5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		25160FC71456F2330060A5C5 /* RKManagedObjectLoaderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoaderTest.m; sourceTree = "<group>"; };
-		25160FC81456F2330060A5C5 /* RKManagedObjectMappingOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingOperationTest.m; sourceTree = "<group>"; };
 		25160FC91456F2330060A5C5 /* RKEntityMappingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEntityMappingTest.m; sourceTree = "<group>"; };
 		25160FCB1456F2330060A5C5 /* RKManagedObjectStoreTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectStoreTest.m; sourceTree = "<group>"; };
 		25160FCF1456F2330060A5C5 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
@@ -1290,7 +1289,6 @@
 			isa = PBXGroup;
 			children = (
 				25160FC71456F2330060A5C5 /* RKManagedObjectLoaderTest.m */,
-				25160FC81456F2330060A5C5 /* RKManagedObjectMappingOperationTest.m */,
 				25160FC91456F2330060A5C5 /* RKEntityMappingTest.m */,
 				25160FCB1456F2330060A5C5 /* RKManagedObjectStoreTest.m */,
 				25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */,

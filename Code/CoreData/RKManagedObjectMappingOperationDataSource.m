@@ -161,12 +161,12 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     NSEntityDescription *entity = [entityMapping entity];
     NSManagedObject *managedObject = nil;
     if ([entityIdentifierAttributes count]) {
-        NSArray *objects = [self.managedObjectCache managedObjectsWithEntity:entity
-                                                             attributeValues:entityIdentifierAttributes
-                                                      inManagedObjectContext:self.managedObjectContext];
-        if (entityMapping.identificationPredicate) objects = [objects filteredArrayUsingPredicate:entityMapping.identificationPredicate];
+        NSSet *objects = [self.managedObjectCache managedObjectsWithEntity:entity
+                                                           attributeValues:entityIdentifierAttributes
+                                                    inManagedObjectContext:self.managedObjectContext];
+        if (entityMapping.identificationPredicate) objects = [objects filteredSetUsingPredicate:entityMapping.identificationPredicate];
         if ([objects count] > 0) {
-            managedObject = objects[0];
+            managedObject = [objects anyObject];
             if ([objects count] > 1) RKLogWarning(@"Managed object cache returned %ld objects for the identifier configured for the '%@' entity, expected 1.", (long) [objects count], [entity name]);
         }
         if (managedObject && [self.managedObjectCache respondsToSelector:@selector(didFetchObject:)]) {

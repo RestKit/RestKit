@@ -27,6 +27,7 @@
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
 #import "NSManagedObject+RKAdditions.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -52,6 +53,32 @@ static NSString *RKCacheKeyForEntityWithAttributeValues(NSEntityDescription *ent
     }];
     
     return [sortedValues componentsJoinedByString:@":"];
+}
+
+/*
+ This function recursively calculates a set of cache keys given a dictionary of attribute values. The basic premise is that we wish to decompose all arrays of values within the dictionary into a distinct cache key, as each object within the cache will appear for only one key.
+ */
+static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *entity, NSDictionary *attributeValues)
+{
+    NSMutableArray *cacheKeys = [NSMutableArray array];
+    NSSet *collectionKeys = [attributeValues keysOfEntriesPassingTest:^BOOL(id key, id obj, BOOL *stop) {
+        return RKObjectIsCollection(obj);
+    }];
+
+    if ([collectionKeys count] > 0) {
+        for (NSString *attributeName in collectionKeys) {
+            id attributeValue = [attributeValues objectForKey:attributeName];
+            for (id value in attributeValue) {
+                NSMutableDictionary *mutableAttributeValues = [attributeValues mutableCopy];
+                [mutableAttributeValues setValue:value forKey:attributeName];
+                [cacheKeys addObjectsFromArray:RKCacheKeysForEntityFromAttributeValues(entity, mutableAttributeValues)];
+            }
+        }
+    } else {
+        [cacheKeys addObject:RKCacheKeyForEntityWithAttributeValues(entity, attributeValues)];
+    }
+
+    return cacheKeys;
 }
 
 @interface RKEntityByAttributeCache ()
@@ -193,39 +220,39 @@ static NSString *RKCacheKeyForEntityWithAttributeValues(NSEntityDescription *ent
 
 - (NSManagedObject *)objectWithAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
 {
-    NSArray *objects = [self objectsWithAttributeValues:attributeValues inContext:context];
-    return ([objects count] > 0) ? [objects objectAtIndex:0] : nil;
+    NSSet *objects = [self objectsWithAttributeValues:attributeValues inContext:context];
+    return ([objects count] > 0) ? [objects anyObject] : nil;
 }
 
-- (NSArray *)objectsWithAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
+- (NSSet *)objectsWithAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
 {
     // TODO: Assert that the attribute values contains all of the cache attributes!!!
-    NSString *cacheKey = RKCacheKeyForEntityWithAttributeValues(self.entity, attributeValues);
-    NSArray *objectIDs = nil;
-    @synchronized(self.cacheKeysToObjectIDs) {
-        objectIDs = [[NSArray alloc] initWithArray:[self.cacheKeysToObjectIDs objectForKey:cacheKey] copyItems:YES];
-    }
-    if ([objectIDs count]) {
-        /**
-         NOTE:
-         In my benchmarking, retrieving the objects one at a time using existingObjectWithID: is significantly faster
-         than issuing a single fetch request against all object ID's.
-         */
-        NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[objectIDs count]];
-        for (NSManagedObjectID *objectID in objectIDs) {
-            NSManagedObject *object = [self objectForObjectID:objectID inContext:context];
-            if (object) {
-                [objects addObject:object];
-            } else {
-                RKLogDebug(@"Evicting objectID association for attributes %@ of Entity '%@': %@", attributeValues, self.entity.name, objectID);
-                [self removeObjectID:objectID forAttributeValues:attributeValues];
+    NSMutableSet *objects = [NSMutableSet set];
+    NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
+    for (NSString *cacheKey in cacheKeys) {
+        NSArray *objectIDs = nil;
+        @synchronized(self.cacheKeysToObjectIDs) {
+            objectIDs = [[NSArray alloc] initWithArray:[self.cacheKeysToObjectIDs objectForKey:cacheKey] copyItems:YES];
+        }
+        if ([objectIDs count]) {
+            /**
+             NOTE:
+             In my benchmarking, retrieving the objects one at a time using existingObjectWithID: is significantly faster
+             than issuing a single fetch request against all object ID's.
+             */
+            for (NSManagedObjectID *objectID in objectIDs) {
+                NSManagedObject *object = [self objectForObjectID:objectID inContext:context];
+                if (object) {
+                    [objects addObject:object];
+                } else {
+                    RKLogDebug(@"Evicting objectID association for attributes %@ of Entity '%@': %@", attributeValues, self.entity.name, objectID);
+                    [self removeObjectID:objectID forAttributeValues:attributeValues];
+                }
             }
         }
-
-        return objects;
     }
 
-    return [NSArray array];
+    return objects;
 }
 
 - (void)setObjectID:(NSManagedObjectID *)objectID forAttributeValues:(NSDictionary *)attributeValues
