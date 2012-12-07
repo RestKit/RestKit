@@ -106,7 +106,7 @@
 /**
  The base URL that all URLs constructed by the receiver are relative to.
  */
-@property (nonatomic, strong, readonly) NSURL *baseURL;
+@property (nonatomic, strong, readwrite) NSURL *baseURL;
 
 /**
  A route set defining all the routes addressable through the receiver.

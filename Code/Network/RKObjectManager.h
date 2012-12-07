@@ -255,7 +255,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  The AFNetworking HTTP client with which the receiver makes requests.
  */
-@property (nonatomic, strong, readonly) AFHTTPClient *HTTPClient;
+@property (nonatomic, strong, readwrite) AFHTTPClient *HTTPClient;
 
 /**
  The base URL of the underlying HTTP client.

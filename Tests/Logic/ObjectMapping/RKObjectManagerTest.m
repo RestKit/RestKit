@@ -594,6 +594,13 @@
     expect(objectRequestOperation).to.beInstanceOf([RKManagedObjectRequestOperation class]);
 }
 
+- (void)testChangingHTTPClient
+{
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    manager.HTTPClient = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://google.com/"]];
+    expect([manager.baseURL absoluteString]).to.equal(@"http://google.com/");
+}
+
 // Test with relationship 2 levels deep
 // Test with recursive relationships
 

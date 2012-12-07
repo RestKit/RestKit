@@ -25,7 +25,6 @@
 #import <objc/runtime.h>
 
 @interface RKRouter ()
-@property (nonatomic, strong, readwrite) NSURL *baseURL;
 @property (nonatomic, strong, readwrite) RKRouteSet *routeSet;
 @end
 

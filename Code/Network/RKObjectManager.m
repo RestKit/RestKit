@@ -194,7 +194,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 ///////////////////////////////////
 
 @interface RKObjectManager ()
-@property (nonatomic, strong, readwrite) AFHTTPClient *HTTPClient;
 @property (nonatomic, strong) NSMutableArray *mutableRequestDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableResponseDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableFetchRequestBlocks;

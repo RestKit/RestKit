@@ -321,6 +321,8 @@
 		2534781715FFD4A6002C0E4E /* RKURLEncodedSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */; };
 		2534781815FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2534781915FFD4A6002C0E4E /* RKURLEncodedSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2536D1FD167270F100DF9BB0 /* RKRouterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2536D1FC167270F100DF9BB0 /* RKRouterTest.m */; };
+		2536D1FE167270F100DF9BB0 /* RKRouterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2536D1FC167270F100DF9BB0 /* RKRouterTest.m */; };
 		253B495214E35D1A00B0483F /* RKTestFixture.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB2014D9B35D004863C8 /* RKTestFixture.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253B495F14E35EC300B0483F /* RKTestFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB2114D9B35D004863C8 /* RKTestFixture.m */; };
 		254372A815F54995006E8424 /* RKObjectParameterization.h in Headers */ = {isa = PBXBuildFile; fileRef = 254372A615F54995006E8424 /* RKObjectParameterization.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -798,6 +800,7 @@
 		253477F615FFBD2E002C0E4E /* NSBundle+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSBundle+RKAdditions.h"; path = "Testing/NSBundle+RKAdditions.h"; sourceTree = "<group>"; };
 		2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURLEncodedSerialization.m; sourceTree = "<group>"; };
 		2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKURLEncodedSerialization.h; sourceTree = "<group>"; };
+		2536D1FC167270F100DF9BB0 /* RKRouterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouterTest.m; sourceTree = "<group>"; };
 		254372A615F54995006E8424 /* RKObjectParameterization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectParameterization.h; sourceTree = "<group>"; };
 		254372A715F54995006E8424 /* RKObjectParameterization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectParameterization.m; sourceTree = "<group>"; };
 		254372AA15F54C3F006E8424 /* RKHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -1444,6 +1447,7 @@
 				259AC480162B05C80012D2F9 /* RKObjectRequestOperationTest.m */,
 				2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */,
 				2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */,
+				2536D1FC167270F100DF9BB0 /* RKRouterTest.m */,
 			);
 			name = Network;
 			path = Logic/Network;
@@ -2337,6 +2341,7 @@
 				255F87911656B22D00914D57 /* RKPaginatorTest.m in Sources */,
 				2546A95816628EDD0078E044 /* RKConnectionDescriptionTest.m in Sources */,
 				2543A25D1664FD3100821D5B /* RKResponseDescriptorTest.m in Sources */,
+				2536D1FD167270F100DF9BB0 /* RKRouterTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2484,6 +2489,7 @@
 				255F87921656B22F00914D57 /* RKPaginatorTest.m in Sources */,
 				2546A95916628EDD0078E044 /* RKConnectionDescriptionTest.m in Sources */,
 				2543A25E1664FD3200821D5B /* RKResponseDescriptorTest.m in Sources */,
+				2536D1FE167270F100DF9BB0 /* RKRouterTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
