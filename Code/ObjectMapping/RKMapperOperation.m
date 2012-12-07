@@ -132,12 +132,18 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
         } else {
             NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
         }
+        
         if (NO == [[self.targetObject class] isSubclassOfClass:objectMapping.objectClass]) {
-            NSString *errorMessage = [NSString stringWithFormat:
-                                      @"Expected an object mapping for class of type '%@', provider returned one for '%@'",
-                                      NSStringFromClass([self.targetObject class]), NSStringFromClass(objectMapping.objectClass)];
-            [self addErrorWithCode:RKMappingErrorTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
-            return nil;
+            if ([_mappingsDictionary count] == 1) {
+                NSString *errorMessage = [NSString stringWithFormat:
+                                          @"Expected an object mapping for class of type '%@', provider returned one for '%@'",
+                                          NSStringFromClass([self.targetObject class]), NSStringFromClass(objectMapping.objectClass)];
+                [self addErrorWithCode:RKMappingErrorTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
+                return nil;
+            } else {
+                // There is more than one mapping present. We are likely mapping secondary key paths to new objects
+                destinationObject = [self objectWithMapping:mapping andData:mappableObject];
+            }
         }
     } else {
         destinationObject = [self objectWithMapping:mapping andData:mappableObject];
