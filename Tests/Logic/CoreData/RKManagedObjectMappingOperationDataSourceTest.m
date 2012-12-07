@@ -994,6 +994,16 @@
     assertThatInteger(childrenCount, is(equalToInteger(4)));
 }
 
+- (void)testConnectingToSubentitiesByFetchRequestCache
+{
+    
+}
+
+- (void)testConnectingToSubentitiesByInMemoryCache
+{
+    
+}
+
 // TODO: Import bencharmk utility somehow...
 //- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache
 //{

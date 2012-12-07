@@ -23,7 +23,9 @@
 #import "RKHTTPUtilities.h"
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
-static NSString *RKStringFromIndexSet(NSIndexSet *indexSet) {
+NSString *RKStringFromIndexSet(NSIndexSet *indexSet);
+NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
+{
     NSCParameterAssert(indexSet);
     NSMutableString *string = [NSMutableString string];
 
