@@ -32,6 +32,7 @@
 #import "RKMappingErrors.h"
 #import "RKPaginator.h"
 #import "RKDynamicMapping.h"
+#import "RKRelationshipMapping.h"
 
 #if !__has_feature(objc_arc)
 #error RestKit must be built with ARC.
@@ -82,24 +83,85 @@ static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObject(NSArray *
 }
 
 /**
- Returns `YES` if the given array of `RKResponseDescriptor` objects contains an `RKEntityMapping`.
+ Visits all mappings accessible via relationships or dynamic mapping in an object graph starting from a given mapping.
+ */
+@interface RKMappingGraphVisitor : NSObject
+
+@property (nonatomic, readonly) NSSet *mappings;
+
+- (id)initWithMapping:(RKMapping *)mapping;
+
+@end
+
+@interface RKMappingGraphVisitor ()
+@property (nonatomic, readwrite) NSMutableSet *mutableMappings;
+@end
+
+@implementation RKMappingGraphVisitor
+
+- (id)initWithMapping:(RKMapping *)mapping
+{
+    self = [super init];
+    if (self) {
+        self.mutableMappings = [NSMutableSet set];
+        [self visitMapping:mapping];
+    }
+    return self;
+}
+
+- (NSSet *)mappings
+{
+    return self.mutableMappings;
+}
+
+- (void)visitMapping:(RKMapping *)mapping
+{
+    if ([self.mappings containsObject:mapping]) return;
+    [self.mutableMappings addObject:mapping];
+    
+    if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+        RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)mapping;
+        for (RKMapping *nestedMapping in dynamicMapping.objectMappings) {
+            [self visitMapping:nestedMapping];
+        }
+    } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+        RKObjectMapping *objectMapping = (RKObjectMapping *)mapping;
+        for (RKRelationshipMapping *relationshipMapping in objectMapping.relationshipMappings) {
+            [self visitMapping:relationshipMapping.mapping];
+        }
+    }
+}
+
+@end
+
+/**
+ Returns `YES` if the given array of `RKResponseDescriptor` objects contains an `RKEntityMapping` anywhere in its object graph.
  
  @param responseDescriptor An array of `RKResponseDescriptor` objects.
  @return `YES` if the `mapping` property of any of the response descriptor objects in the given array is an instance of `RKEntityMapping`, else `NO`.
  */
 static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *responseDescriptors)
 {
+    // Visit all mappings accessible from the object graphs of all response descriptors
+    NSMutableSet *accessibleMappings = [NSMutableSet set];
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
-        if ([responseDescriptor.mapping isKindOfClass:[RKEntityMapping class]]) {
+        if (! [accessibleMappings containsObject:responseDescriptor.mapping]) {
+            RKMappingGraphVisitor *graphVisitor = [[RKMappingGraphVisitor alloc] initWithMapping:responseDescriptor.mapping];
+            [accessibleMappings unionSet:graphVisitor.mappings];
+        }
+    }
+    
+    // Enumerate all mappings and search for an `RKEntityMapping`
+    for (RKMapping *mapping in accessibleMappings) {
+        if ([mapping isKindOfClass:[RKEntityMapping class]]) {
             return YES;
         }
-      
-        if ([responseDescriptor.mapping isKindOfClass:[RKDynamicMapping class]]) {
-            RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)responseDescriptor.mapping;
-            for (RKMapping *mapping in dynamicMapping.objectMappings) {
-                if ([mapping isKindOfClass:[RKEntityMapping class]]) {
-                  return YES;
-                }
+        
+        if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+            RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)mapping;
+            if ([dynamicMapping.objectMappings count] == 0) {
+                // Likely means that there is a representation block, assume `YES`
+                return YES;
             }
         }
     }

@@ -24,6 +24,7 @@
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 static NSString *RKStringFromIndexSet(NSIndexSet *indexSet) {
+    NSCParameterAssert(indexSet);
     NSMutableString *string = [NSMutableString string];
 
     NSRange range = NSMakeRange([indexSet firstIndex], 1);
@@ -80,7 +81,7 @@ static NSString *RKStringFromIndexSet(NSIndexSet *indexSet) {
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p pathPattern=%@ keyPath=%@ statusCodes=%@ : %@>",
-            NSStringFromClass([self class]), self, self.pathPattern, self.keyPath, RKStringFromIndexSet(self.statusCodes), self.mapping];
+            NSStringFromClass([self class]), self, self.pathPattern, self.keyPath, self.statusCodes ? RKStringFromIndexSet(self.statusCodes) : self.statusCodes, self.mapping];
 }
 
 - (BOOL)matchesPath:(NSString *)path
