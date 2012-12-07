@@ -46,6 +46,28 @@
  
  Any number of attribute pairs may be specified, but all values must match for the connection to be satisfied and the relationship's value to be set.
  
+ ### Connecting with Collection Values
+ 
+ Connections can be established by a collection of values. For example, imagine that the previously described project representation has been extended to include a list of team members who are working on the project:
+ 
+     { "project":
+        {   "id": 12345,
+            "name": "My Project",
+            "userID": 1,
+            "teamMemberIDs": [1, 2, 3, 4]
+        }
+     }
+ 
+ The 'teamMemberIDs' contains an array specifying the ID's of the `User` objects who are collaborating on the project, which corresponds to a to-many relationship named 'teamMembers' on the `Project` entity. In this case, the 'teamMemberIDs' could be mapped on to an `NSArray` or `NSSet` property on the `Project` entity and then connected:
+ 
+     NSEntityDescription *projectEntity = [NSEntityDescription entityForName:@"Project" inManagedObjectContext:managedObjectContext];
+     NSRelationshipDescription *teamMembers = [projectEntity relationshipsByName][@"teamMembers"]; // To many relationship for the `User` entity
+     RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"teamMemberIDs": @"userID" }];
+ 
+ When evaluating the above JSON, the connection would be established for the 'teamMembers' relationship to the `User` entities whose userID's are 1, 2, 3 or 4.
+ 
+ Note that collections of attribute values are always interpetted as logic OR's, but compound connections are aggregated as a logical AND. For example, if we were to add a second connecting attribute for the "gender" property and include `"gender": "male"` in the JSON, the connection would be made to all `User` managed objects whose ID is 1, 2, 3, OR 4 AND whose gender is "male".
+ 
  ## Key Path Connections
  
  A key path connection is established by evaluating the key path of the connection against the managed object being connected. The returned value has type transformation applied and is then assigned to the relationship.
