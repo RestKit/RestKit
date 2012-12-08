@@ -175,7 +175,7 @@
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 
 /**
- An object implementing the `RKManagedObjectCaching` protocol to be used for retrieving existing `NSManagedObject` instances by primary key. If `nil`, existing object cannot be retrieved and new objects will be created for all mappable content within the response data, likely resulting in the creation of duplicate objects.
+ An object implementing the `RKManagedObjectCaching` protocol to be used for retrieving existing `NSManagedObject` instances by identification attributes. If `nil`, existing object cannot be retrieved and new objects will be created for all mappable content within the response data, likely resulting in the creation of duplicate objects.
  
  @see `RKManagedObjectCaching`
  */

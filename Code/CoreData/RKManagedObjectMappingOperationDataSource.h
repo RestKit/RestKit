@@ -24,7 +24,7 @@
 @protocol RKManagedObjectCaching;
 
 /**
- The `RKManagedObjectMappingOperationDataSource` class provides support for performing object mapping operations where the mapped objects exist within a Core Data managed object context. The class is responsible for finding exist managed object instances by primary key, instantiating new managed objects, and connecting relationships for mapped objects.
+ The `RKManagedObjectMappingOperationDataSource` class provides support for performing object mapping operations where the mapped objects exist within a Core Data managed object context. The class is responsible for finding exist managed object instances by the identification attributes, instantiating new managed objects, and connecting relationships for mapped objects.
 
  @see `RKMappingOperationDataSource`
  @see `RKConnectionMapping`
@@ -39,7 +39,7 @@
  Initializes the receiver with a given managed object context and managed object cache.
  
  @param managedObjectContext The managed object context with which to associate the receiver. Cannot be nil.
- @param managedObjectCache The managed object cache used by the receiver to find existing object instances by primary key.
+ @param managedObjectCache The managed object cache used by the receiver to find existing object instances by their identification attributes.
  @return The receiver, initialized with the given managed object context and managed objet cache.
  */
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache;
@@ -54,7 +54,7 @@
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 
 /**
- The managed object cache utilized by the receiver to find existing managed object instances by primary key. A nil managed object cache will result in the insertion of new managed objects for all mapped content.
+ The managed object cache utilized by the receiver to find existing managed object instances by the identification attributes. A nil managed object cache will result in the insertion of new managed objects for all mapped content.
 
  @see `RKFetchRequestManagedObjectCache`
  @see `RKInMemoryManagedObjectCache`

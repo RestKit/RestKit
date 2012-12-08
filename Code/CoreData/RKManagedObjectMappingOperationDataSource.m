@@ -154,7 +154,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     NSDictionary *entityIdentifierAttributes = RKEntityIdentificationAttributesForEntityMappingWithRepresentation(entityMapping, representation);
     if (! self.managedObjectCache) {
         RKLogWarning(@"Performing managed object mapping with a nil managed object cache:\n"
-                      "Unable to update existing object instances by primary key. Duplicate objects may be created.");
+                      "Unable to update existing object instances by identification attributes. Duplicate objects may be created.");
     }
 
     // If we have found the entity identifier attributes, try to find an existing instance to update

@@ -175,12 +175,12 @@
 /**
  The managed object cache associated with the receiver.
 
- The managed object cache is used to accelerate intensive Core Data operations by caching managed objects by their primary key value.
+ The managed object cache is used to accelerate intensive Core Data operations by caching managed objects by one or more attributes.
  
  **Default**: An instance of `RKFetchRequestManagedObjectCache`.
 
  @see `RKManagedObjectCaching`
- @warning A nil managed object cache will result in a store that is unable to uniquely identify existing objects by primary key attribute value and may result in the creation of duplicate objects within the store.
+ @warning A nil managed object cache will result in a store that is unable to uniquely identify existing objects by identification attributes and may result in the creation of duplicate objects within the store.
  */
 @property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;
 
