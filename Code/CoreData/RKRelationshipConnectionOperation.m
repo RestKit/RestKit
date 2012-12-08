@@ -140,15 +140,15 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     id connectionResult = nil;
     if ([self.connection isForeignKeyConnection]) {
         NSDictionary *attributeValues = RKConnectionAttributeValuesWithObject(self.connection, self.managedObject);
-        NSArray *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[self.connection.relationship destinationEntity]
-                                                                    attributeValues:attributeValues
-                                                             inManagedObjectContext:self.managedObjectContext];
-        if (self.connection.predicate) managedObjects = [managedObjects filteredArrayUsingPredicate:self.connection.predicate];
+        NSSet *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[self.connection.relationship destinationEntity]
+                                                                  attributeValues:attributeValues
+                                                           inManagedObjectContext:self.managedObjectContext];
+        if (self.connection.predicate) managedObjects = [managedObjects filteredSetUsingPredicate:self.connection.predicate];
         if ([self.connection.relationship isToMany]) {
             connectionResult = managedObjects;
         } else {
-            if ([managedObjects count] > 1) RKLogWarning(@"Retrieved %ld objects satisfying connection criteria for one-to-one relationship connection: only the first result will be connected.", (long) [managedObjects count]);
-            if ([managedObjects count]) connectionResult = managedObjects[0];
+            if ([managedObjects count] > 1) RKLogWarning(@"Retrieved %ld objects satisfying connection criteria for one-to-one relationship connection: only object will be connected.", (long) [managedObjects count]);
+            if ([managedObjects count]) connectionResult = [managedObjects anyObject];
         }
     } else if ([self.connection isKeyPathConnection]) {
         connectionResult = [self.managedObject valueForKeyPath:self.connection.keyPath];

@@ -58,6 +58,39 @@ static NSError *RKUnprocessableClientErrorFromResponse(NSHTTPURLResponse *respon
     return [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
 }
 
+NSString *RKStringFromIndexSet(NSIndexSet *indexSet); // Defined in RKResponseDescriptor.m
+static NSString *RKMatchFailureDescriptionForResponseDescriptorWithResponse(RKResponseDescriptor *responseDescriptor, NSHTTPURLResponse *response)
+{
+    if (responseDescriptor.statusCodes && ![responseDescriptor.statusCodes containsIndex:response.statusCode]) {
+        return [NSString stringWithFormat:@"response status code %ld is not within the range %@", (long) response.statusCode, RKStringFromIndexSet(responseDescriptor.statusCodes)];
+    }
+    
+    NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(response.URL, responseDescriptor.baseURL);
+    if (responseDescriptor.baseURL && !RKURLIsRelativeToURL(response.URL, responseDescriptor.baseURL)) {
+        // Not relative to the baseURL
+        return [NSString stringWithFormat:@"response URL '%@' is not relative to the baseURL '%@'.", response.URL, responseDescriptor.baseURL];
+    }
+    
+    // Must be a path pattern mismatch
+    return [NSString stringWithFormat:@"response path '%@' did not match the path pattern '%@'.", pathAndQueryString, responseDescriptor.pathPattern];
+}
+
+static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithResponse(NSArray *responseDescriptors, NSHTTPURLResponse *response)
+{
+    NSMutableString *failureReason = [NSMutableString string];
+    [failureReason appendFormat:@"A %ld response was loaded from the URL '%@', which failed to match all (%ld) response descriptors:",
+     (long) response.statusCode, response.URL, (long) [responseDescriptors count]];
+    
+    for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+        [failureReason appendFormat:@"\n  <RKResponseDescriptor: %p baseURL=%@ pathPattern=%@ statusCodes=%@> failed to match: %@",
+         responseDescriptor, responseDescriptor.baseURL, responseDescriptor.pathPattern,
+         responseDescriptor.statusCodes ? RKStringFromIndexSet(responseDescriptor.statusCodes) : responseDescriptor.statusCodes,
+         RKMatchFailureDescriptionForResponseDescriptorWithResponse(responseDescriptor, response)];
+    }
+    
+    return failureReason;
+}
+
 /**
  A serial dispatch queue used for all deserialization of response bodies
  */
@@ -201,7 +234,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
         self.error = error;
         return;
     }
-    if (self.isCancelled) return;
+    if (self.isCancelled) return;        
     
     // Invoke the will map deserialized response block
     if (self.willMapDeserializedResponseBlock) {
@@ -215,7 +248,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     }
 
     // Object map the response
-    self.mappingResult = [self performMappingWithObject:parsedBody error:&error];
+    self.mappingResult = [self performMappingWithObject:parsedBody error:&error];    
     
     // If the response is a client error return either the mapping error or the mapped result to the caller as the error
     if (isClientError) {
@@ -226,6 +259,18 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
             if (! error) error = RKUnprocessableClientErrorFromResponse(self.response);
         }
         self.error = error;
+        return;
+    }
+    
+    // Fail if no response descriptors matched
+    if (error.code == RKMappingErrorNotFound && [self.responseMappingsDictionary count] == 0) {
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: NSLocalizedString(@"No response descriptors match the response loaded.", nil),
+                                    NSLocalizedFailureReasonErrorKey: RKFailureReasonErrorStringForResponseDescriptorsMismatchWithResponse(self.responseDescriptors, self.response),
+                                    RKMappingErrorKeyPathErrorKey: [NSNull null],
+                                    NSURLErrorFailingURLErrorKey: self.response.URL,
+                                    NSURLErrorFailingURLStringErrorKey: [self.response.URL absoluteString],
+                                    NSUnderlyingErrorKey: error};
+        self.error = [[NSError alloc] initWithDomain:RKErrorDomain code:RKMappingErrorNotFound userInfo:userInfo];
         return;
     }
     

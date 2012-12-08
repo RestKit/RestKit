@@ -49,7 +49,7 @@
     [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
 
     RKEntityMapping *tweetMapping = [RKEntityMapping mappingForEntityForName:@"Tweet" inManagedObjectStore:managedObjectStore];
-    userMapping.identificationAttributes = @[ @"statusID" ];
+    tweetMapping.identificationAttributes = @[ @"statusID" ];
     [tweetMapping addAttributeMappingsFromDictionary:@{
      @"id": @"statusID",
      @"created_at": @"createdAt",

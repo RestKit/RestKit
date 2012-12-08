@@ -51,7 +51,7 @@
                                  userInfo:nil];
 }
 
-- (NSArray *)managedObjectsWithEntity:(NSEntityDescription *)entity
+- (NSSet *)managedObjectsWithEntity:(NSEntityDescription *)entity
                       attributeValues:(NSDictionary *)attributeValues
                inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {

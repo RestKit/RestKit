@@ -91,7 +91,7 @@
  @return All matching managed object instances or nil.
  @raise NSInvalidArgumentException Raised if instances of the entity and attribute have not been cached.
  */
-- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context;
+- (NSSet *)objectsForEntity:(NSEntityDescription *)entity withAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context;
 
 ///-----------------------------------------------------------------------------
 // @name Accessing Underlying Caches

@@ -283,6 +283,11 @@ class RestKitTestServer < Sinatra::Base
     status 200
     ' '
   end
+  
+  post '/ComplexUser' do
+    content_type 'application/json'
+    render_fixture('/JSON/ComplexNestedUser.json', :status => 200)
+  end
 
   # start the server if ruby file executed directly
   run! if app_file == $0

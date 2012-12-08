@@ -67,7 +67,7 @@
             airportID = [argsDict objectForKey:@"airport_id"];
             NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Terminal"];
             NSEntityDescription *entity = [NSEntityDescription entityForName:@"Airport" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-            fetchRequest.predicate = [entity predicateForPrimaryKeyAttributeWithValue:airportID];
+            fetchRequest.predicate = [NSPredication predicateWithFormat:@"airportID = %@", @([airportID integerValue])]; // NOTE: Coerced from string to number
             fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES] ];
             return fetchRequest;
         }
@@ -75,7 +75,7 @@
         return nil;
     }];
 
- The above example code defines an `RKFetchRequestBlock` block object that will match an `NSURL` with a relative path matching the pattern `@"/airports/:airport_id/terminals.json"`. If a match is found, the block extracts the `airport_id` key from the matched arguments and uses it to construct an `NSPredicate` for the primary key attribute of `GGAirport` entity. It then constructs an `NSFetchRequest` for the `GGTerminal` entity that will retrieve all the managed objects with an airport ID attribute whose value is equal to `airport_id` encoded within the URL's path.
+ The above example code defines an `RKFetchRequestBlock` block object that will match an `NSURL` with a relative path matching the pattern `@"/airports/:airport_id/terminals.json"`. If a match is found, the block extracts the `airport_id` key from the matched arguments, coerces its value into a number, and uses it to construct an `NSPredicate` for the primary key attribute of `GGAirport` entity. Take note that the value of the 'airport_id' was coerced from an `NSString` to an `NSNumber` -- failure to so would result in a predicate whose value is equal to `airportID == '1234'` vs. `airportID == 1234`, which will prevent fetch requests from evaluating correctly. Once coerced, the value is used to construct a `NSFetchRequest` object for the `GGTerminal` entity that will retrieve all the managed objects with an airport ID attribute whose value is equal to `airport_id` encoded within the URL's path.
 
  In more concrete terms, given the URL `http://restkit.org/airports/1234/terminals.json` the block would return an `NSFetchRequest` equal to:
 

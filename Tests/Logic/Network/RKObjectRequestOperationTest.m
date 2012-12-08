@@ -463,6 +463,31 @@
     expect([requestOperation.mappingResult array]).to.contain(targetObject);
 }
 
+- (void)testErrorReportingForPathPatternMismatch
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromArray:@[@"firstname"]];
+    
+    NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1"];
+    RKResponseDescriptor *responseDescriptor1 = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:@"/users/empty" keyPath:@"firstUser" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    responseDescriptor1.baseURL = baseURL;
+    RKResponseDescriptor *responseDescriptor2 = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:@"/users/empty" keyPath:@"secondUser" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    responseDescriptor2.baseURL = baseURL;
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/users/empty" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor1, responseDescriptor2 ]];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue addOperation:requestOperation];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    expect(requestOperation.error).notTo.beNil();    
+    NSString *failureReason = [[requestOperation.error userInfo] valueForKey:NSLocalizedFailureReasonErrorKey];
+    assertThat(failureReason, containsString(@"A 200 response was loaded from the URL 'http://127.0.0.1:4567/users/empty', which failed to match all (2) response descriptors:"));
+    assertThat(failureReason, containsString(@"failed to match: response URL 'http://127.0.0.1:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
+    assertThat(failureReason, containsString(@"failed to match: response URL 'http://127.0.0.1:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
+}
+
+// Test trailing slash on the baseURL
+
 #pragma mark - Block Tests
 
 - (void)testInvocationOfSuccessBlock
@@ -500,7 +525,6 @@
     [operationQueue addOperation:requestOperation];
     [operationQueue waitUntilAllOperationsAreFinished];
 }
-
 
 #pragma mark - Will Map Data Block
 

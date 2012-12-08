@@ -41,6 +41,12 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
 
+// iOS 5.x compatible proxy attributes
+@property (nonatomic, assign, readwrite) NSNumber *perPageNumber;
+@property (nonatomic, assign, readwrite) NSNumber *currentPageNumber;
+@property (nonatomic, assign, readwrite) NSNumber *pageCountNumber;
+@property (nonatomic, assign, readwrite) NSNumber *objectCountNumber;
+
 @property (nonatomic, copy) void (^successBlock)(RKPaginator *paginator, NSArray *objects, NSUInteger page);
 @property (nonatomic, copy) void (^failureBlock)(RKPaginator *paginator, NSError *error);
 @end
@@ -237,6 +243,48 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 - (void)cancel
 {
     [self.objectRequestOperation cancel];
+}
+
+#pragma mark - iOS 5 proxy attributes
+
+- (NSNumber *)perPageNumber
+{
+    return [NSNumber numberWithUnsignedInteger:self.perPage];
+}
+
+- (void)setPerPageNumber:(NSNumber *)perPageNumber
+{
+    self.perPage = [perPageNumber unsignedIntegerValue];
+}
+
+- (NSNumber *)currentPageNumber
+{
+    return [NSNumber numberWithUnsignedInteger:self.currentPage];
+}
+
+- (void)setCurrentPageNumber:(NSNumber *)currentPageNumber
+{
+    self.currentPage = [currentPageNumber unsignedIntegerValue];
+}
+
+- (NSNumber *)pageCountNumber
+{
+    return [NSNumber numberWithUnsignedInteger:self.pageCount];
+}
+
+- (void)setPageCountNumber:(NSNumber *)pageCountNumber
+{
+    self.pageCount = [pageCountNumber unsignedIntegerValue];
+}
+
+- (NSNumber *)objectCountNumber
+{
+    return [NSNumber numberWithUnsignedInteger:self.objectCount];
+}
+
+- (void)setObjectCountNumber:(NSNumber *)objectCountNumber
+{
+    self.objectCount = [objectCountNumber unsignedIntegerValue];
 }
 
 @end

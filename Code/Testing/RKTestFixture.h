@@ -53,16 +53,6 @@
  */
 + (NSString *)pathForFixture:(NSString *)fixtureName;
 
-#if TARGET_OS_IPHONE
-/**
- Creates and returns an image object by loading the image data from the fixture identified by the specified file name.
-
- @param fixtureName The name of the fixture file.
- @return A new image object for the specified fixture, or nil if the method could not initialize the image from the specified file.
- */
-//+ (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName;
-#endif
-
 /**
  Creates and returns a string object by reading data from the fixture identified by the specified file name using UTF-8 encoding.
 

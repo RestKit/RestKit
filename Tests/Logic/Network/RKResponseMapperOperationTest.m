@@ -200,4 +200,33 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
 }
 
+- (void)testThatResponseDescriptorMismatchesIncludeHelpfulError
+{
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"some\": \"Data\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    NSURL *baseURL =  [NSURL URLWithString:@"http://restkit.org/api/v1/"];
+    
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKResponseDescriptor *responseDescriptor1 = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/users" keyPath:@"this" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor1.baseURL = baseURL;
+    RKResponseDescriptor *responseDescriptor2 = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/users" keyPath:@"that" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor2.baseURL = [NSURL URLWithString:@"http://google.com"];
+    RKResponseDescriptor *responseDescriptor3 = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"users" keyPath:@"that" statusCodes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(202, 5)]];
+    responseDescriptor3.baseURL = baseURL;
+    
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:data responseDescriptors:@[ responseDescriptor1, responseDescriptor2, responseDescriptor3 ]];
+    [mapper start];
+    expect(mapper.error).notTo.beNil();
+    expect([mapper.error code]).to.equal(RKMappingErrorNotFound);
+    NSString *failureReason = [[mapper.error userInfo] valueForKey:NSLocalizedFailureReasonErrorKey];
+    assertThat(failureReason, containsString(@"A 200 response was loaded from the URL 'http://restkit.org/api/v1/users', which failed to match all (3) response descriptors"));
+    assertThat(failureReason, containsString(@"failed to match: response path 'users' did not match the path pattern '/users'."));
+    assertThat(failureReason, containsString(@"failed to match: response URL 'http://restkit.org/api/v1/users' is not relative to the baseURL 'http://google.com'."));
+    assertThat(failureReason, containsString(@"failed to match: response status code 200 is not within the range 202-206"));
+    
+    NSDictionary *expectedMappingsDictionary = @{};
+    expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
+}
+
 @end

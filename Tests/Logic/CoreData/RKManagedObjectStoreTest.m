@@ -251,4 +251,24 @@
 }
 #endif
 
+- (void)testResetPersistentStoresDoesNotTriggerDeadlock
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSManagedObject *managedObject1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    NSManagedObject *managedObject2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    [fetchRequest setSortDescriptors:@[ [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES] ]];
+    NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:managedObjectStore.mainQueueManagedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    NSError *error = nil;
+    [fetchedResultsController performFetch:&error];
+    BOOL success = [managedObjectStore resetPersistentStores:&error];
+    expect(success).to.equal(YES);
+    expect(error).to.beNil();
+    [fetchedResultsController performFetch:&error];
+    [managedObject1 setValue:@"Blake" forKey:@"name"];
+    [managedObject2.managedObjectContext performBlockAndWait:^{
+        [managedObject2 setValue:@"Blake" forKey:@"name"];
+    }];
+}
+
 @end

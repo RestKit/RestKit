@@ -24,12 +24,27 @@
 #import "RKMappingResult.h"
 
 /**
- Instances of RKPaginator retrieve paginated collections of mappable data
- from remote systems via HTTP. Paginators perform GET requests and use a patterned
- URL to construct a full URL reflecting the state of the paginator. Paginators rely
- on an instance of RKObjectMappingProvider to determine how to perform object mapping
- on the retrieved data. Paginators can load Core Data backed models provided that an
- instance of RKManagedObjectStore is assigned to the paginator.
+ Instances of `RKPaginator` retrieve paginated collections of mappable data from remote systems via HTTP. Paginators perform GET requests and use a patterned URL to construct a full URL reflecting the state of the paginator. Paginators rely on an instance of RKObjectMappingProvider to determine how to perform object mapping on the retrieved data. Paginators can load Core Data backed models provided that an instance of RKManagedObjectStore is assigned to the paginator.
+ 
+ ## Configuring Pagination Mapping
+ 
+ The paginator must be configured with a `paginationMapping` specifying how configuration metadata is to be mapped out of the response payload. The configured mapping must have an `objectClass` of `RKPaginator` and should include attribute mappings for the `currentPage`, `pageCount`, `perPage`, and `objectCount`. For example, given a paginated resource loaded from '/articles?page=1' with the followibg JSON:
+ 
+    { "pagination": { "per_page": 10, "total_pages": 25, "total_objects": 250 }, "articles": [ // Array of articles ] }
+ 
+ The pagination mapping would be configured as:
+ 
+    RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKPaginator class]];
+    [paginationMapping addAttributeMappingsFromDictionary:@{
+        @"pagination.per_page",        @"perPage",
+        @"pagination.total_pages",     @"pageCount",
+        @"pagination.total_objects",   @"objectCount",
+    }];
+ 
+ ## iOS 5 Compatibility Caveats
+ 
+ The paginator is compatible with iOS 5.x through the use of proxy attributes. In iOS 6.0 and greater, key-value coding supports the automatic boxing and unboxing of primitive values. This enables direct mapping configuration for the `currentPage`, `pageCount`, `perPage`, and `objectCount` attributes. Under iOS 5, where autoboxing is not available, mapping configuration must target special proxy attributes instead. For each of the above properties, a private `NSNumber` property is implemented by the class. Each proxy property has 'Number' appended as a suffix to the property name: `currentPageNumber`, `pageCountNumber`, `perPageNumber`, and `objectCountNumber`.
+ 
  */
 @interface RKPaginator : NSObject
 
@@ -109,6 +124,8 @@
 /**
  The object mapping defining how pagination metadata is to be mapped from a paginated response onto the paginator object.
  
+ See the documentation in the "Configuring Pagination Mapping" section for details about the pagination mapping.
+ 
  @warning The `objectClass` of the given mapping must be `RKPaginator`.
  */
 @property (nonatomic, strong) RKObjectMapping *paginationMapping;
@@ -160,7 +177,7 @@
  Returns the number of pages in the total resource collection.
 
  @return A count of the number of pages in the resource collection.
- @exception NSInternalInconsistencyException Raised if hasPageCount is `NO`.
+ @exception NSInternalInconsistencyException Raised if `hasPageCount` is `NO`.
  */
 @property (nonatomic, readonly) NSUInteger pageCount;
 
@@ -168,7 +185,7 @@
  Returns the total number of objects in the collection
 
  @return A count of the number of objects in the resource collection.
- @exception NSInternalInconsistencyException Raised if hasObjectCount is `NO`.
+ @exception NSInternalInconsistencyException Raised if `hasObjectCount` is `NO`.
  */
 @property (nonatomic, readonly) NSUInteger objectCount;
 

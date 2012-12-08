@@ -36,7 +36,7 @@ NSString * const RKEntityIdentificationAttributesUserInfoKey = @"RKEntityIdentif
 
 static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDescription *entity)
 {
-    id userInfoValue = [entity userInfo][RKEntityIdentificationAttributesUserInfoKey];
+    id userInfoValue = [[entity userInfo] valueForKey:RKEntityIdentificationAttributesUserInfoKey];
     if (userInfoValue) {
         NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
         NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
@@ -265,6 +265,19 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     Class propertyClass = [super classForProperty:propertyName];
     if (! propertyClass) {
         propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:propertyName ofEntity:self.entity];
+    }
+
+    return propertyClass;
+}
+
+- (Class)classForKeyPath:(NSString *)keyPath
+{
+    NSArray *components = [keyPath componentsSeparatedByString:@"."];
+    Class propertyClass = self.objectClass;
+    for (NSString *property in components) {
+        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass];
+        if (! propertyClass) propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofEntity:self.entity];
+        if (! propertyClass) break;
     }
 
     return propertyClass;

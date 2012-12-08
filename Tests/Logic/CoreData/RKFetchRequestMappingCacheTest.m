@@ -30,10 +30,10 @@
     reginald.railsID = [NSNumber numberWithInt:123456];
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
     
-    NSArray *managedObjects = [cache managedObjectsWithEntity:entity
+    NSSet *managedObjects = [cache managedObjectsWithEntity:entity
                                               attributeValues:@{ @"railsID": @123456 }
                                        inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    NSArray *cats = @[ reginald ];
+    NSSet *cats = [NSSet setWithObject:reginald];
     expect(managedObjects).to.equal(cats);
 }
 
@@ -50,10 +50,10 @@
     birthday.eventID = @"e-1234-a8-b12";
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
     
-    NSArray *managedObjects = [cache managedObjectsWithEntity:entity
+    NSSet *managedObjects = [cache managedObjectsWithEntity:entity
                                               attributeValues:@{ @"eventID": @"e-1234-a8-b12" }
                                        inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    NSArray *birthdays = @[ birthday ];
+    NSSet *birthdays = [NSSet setWithObject:birthday];
     expect(managedObjects).to.equal(birthdays);
 }
 

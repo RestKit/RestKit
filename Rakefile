@@ -166,7 +166,7 @@ namespace :docs do
     run(command)
     
     if $?.exitstatus == 0
-      command = "rsync -rvpPe ssh Docs/API/publish/*.xar #{destination}"
+      command = "rsync -rvpPe ssh Docs/API/publish/* #{destination}"
       run(command)
     end
   end

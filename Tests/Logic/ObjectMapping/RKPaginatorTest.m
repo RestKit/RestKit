@@ -350,4 +350,24 @@ static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_pag
     assertThatBool([mockPaginator hasPreviousPage], is(equalToBool(NO)));
 }
 
+- (void)testProxyAttributes
+{
+    RKPaginator *paginator = [RKPaginator new];
+    [paginator setValue:@(12345) forKey:@"pageCountNumber"];
+    expect(paginator.pageCount).to.equal(12345);
+    expect([paginator valueForKey:@"pageCountNumber"]).to.equal(12345);
+    
+    [paginator setValue:@(1) forKey:@"currentPageNumber"];
+    expect(paginator.currentPage).to.equal(1);
+    expect([paginator valueForKey:@"currentPageNumber"]).to.equal(1);
+    
+    [paginator setValue:@(25) forKey:@"objectCountNumber"];
+    expect(paginator.objectCount).to.equal(25);
+    expect([paginator valueForKey:@"objectCountNumber"]).to.equal(25);
+    
+    [paginator setValue:@(10) forKey:@"perPageNumber"];
+    expect(paginator.perPage).to.equal(10);
+    expect([paginator valueForKey:@"perPageNumber"]).to.equal(10);
+}
+
 @end
