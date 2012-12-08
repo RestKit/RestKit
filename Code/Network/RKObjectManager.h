@@ -36,9 +36,21 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Object request operations model the lifecycle of an object mapped HTTP request from start to finish. They are initialized with a fully configured `NSURLRequest` object and a set of `RKResponseDescriptor` objects that specify how an HTTP response is to be mapped into local domain objects. Object request operations may be constructed as standalone objects, but are often constructed through an `RKObjectManager` object. The object request operation encapsulates the functionality of two underlying operations that perform the bulk of the work. The HTTP request and response loading is handled by an `RKHTTPRequestOperation`, which is responsible for the HTTP transport details. Once a response has been successfully loaded, the object request operation starts an `RKResponseMapperOperation` that is responsible for handling the mapping of the response body. When working with Core Data, the `RKManagedObjectRequestOperation` class is used. The object manager encapsulates the Core Data configuration details and provides an interface that will return the appropriate object request operation for a request through the `appropriateObjectRequestOperationWithObject:method:path:parameters:` method.
  
- ## The Base URL and Path Patterns
+ ## Base URL, Relative Paths and Path Patterns
  
  Each object manager is configured with a base URL that defines the URL that all request sent through the manager will be relative to. The base URL is configured directly through the `managerWithBaseURL:` method or is inherited from an AFNetworking `AFHTTPClient` object if the manager is initialized via the `initWithHTTPClient:` method. The base URL can point directly at the root of a URL or may include a path.
+ 
+ Many of the methods of the object manager accept a path argument, either directly or in the form of a path pattern. Whenever a path is provided to the object manager directly, as part of a request or response descriptor (see "Request and Response Descriptors"), or via a route (see the "Routing" section), the path is used to construct an `NSURL` object with `[NSURL URLWithString:relativeToURL:]`. The rules for the evaluation of a relative URL can at times be surprising and many configuration errors result from incorrectly configuring the `baseURL` and relative paths thereof. For reference, here are some examples borrowed from the AFNetworking documentation detailing how base URL's and relative paths interact:
+ 
+     NSURL *baseURL = [NSURL URLWithString:@"http://example.com/v1/"];
+     [NSURL URLWithString:@"foo" relativeToURL:baseURL];                  // http://example.com/v1/foo
+     [NSURL URLWithString:@"foo?bar=baz" relativeToURL:baseURL];          // http://example.com/v1/foo?bar=baz
+     [NSURL URLWithString:@"/foo" relativeToURL:baseURL];                 // http://example.com/foo
+     [NSURL URLWithString:@"foo/" relativeToURL:baseURL];                 // http://example.com/v1/foo
+     [NSURL URLWithString:@"/foo/" relativeToURL:baseURL];                // http://example.com/foo/
+     [NSURL URLWithString:@"http://example2.com/" relativeToURL:baseURL]; // http://example2.com/
+ 
+ Keep these rules in mind when providing relative paths to the object manager.
  
  Path patterns are a common unit of abstraction in RestKit for describing the path portion of URL's. When working with API's, there is typically one or more dynamic portions of the URL that correspond to primary keys or other identifying resource attributes. For example, a blogging application may represent articles in a URL structure such as '/articles/1234' and comments about an article might appear at '/articles/1234/comments'. These path structures could be represented as the path patterns '/articles/:articleID' and '/articles/:articleID/comments', substituing the dynamic key ':articleID' in place of the primary key of in the path. These keys can be used to interpolate a path with an object's property values using key-value coding or be used to match a string.
  
