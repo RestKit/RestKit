@@ -69,7 +69,22 @@
 
 /**
  The object or collection of objects that was connected by the operation.
+ 
+ The connected object will either be `nil`, indicating that the relationship could not be connected, a single `NSManagedObject` object (if the relationship is one-to-one), or an array of `NSManagedObject` objects (if the relationship is one-to-many).
  */
 @property (nonatomic, strong, readonly) id connectedValue;
+
+///-----------------------------------
+/// @name Setting the Connection Block
+///-----------------------------------
+
+/**
+ Sets a block to be executed on the operation attempted to establish the connection.
+ 
+ Unlike the block set with `setCompletionBlock:`, this block is executed during the body of the operation within the queue of the managed object context in which the connection was established. This means that it is safe to executed both the `connectedValue` and `managedObject` directly within the body of the block.
+ 
+ @param block A block object to be executed when the connection is evaluated. The block accepts two arguments: the operation itself and the value, if any, that was set for the relationship targetted by the connection description.
+ */
+- (void)setConnectionBlock:(void (^)(RKRelationshipConnectionOperation *operation, id connectedValue))block;
 
 @end
