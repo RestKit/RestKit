@@ -27,6 +27,8 @@
 #import "RKLog.h"
 
 // Core Data
+#import "RKConnectionDescription.h"
+#import "RKConnectionTestExpectation.h"
 #import "RKFetchRequestManagedObjectCache.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 
@@ -122,7 +124,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 
 // Method Definitions for old compilers
 - (void)performMapping;
-- (void)verifyExpectation:(RKMappingTestExpectation *)expectation;
+- (void)verifyExpectation:(RKPropertyMappingTestExpectation *)expectation;
 
 @end
 
@@ -145,55 +147,43 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         self.mapping = mapping;
         self.expectations = [NSMutableArray new];
         self.events = [NSMutableArray new];
-        self.verifiesOnExpect = NO;
         self.performedMapping = NO;
     }
 
     return self;
 }
 
-- (void)addExpectation:(RKMappingTestExpectation *)expectation
+- (void)addExpectation:(id)expectation
 {
-    [self.expectations addObject:expectation];
-
-    if (self.verifiesOnExpect) {
-        [self performMapping];
-        [self verifyExpectation:expectation];
+    NSParameterAssert(expectation);
+    if (![expectation isKindOfClass:[RKPropertyMappingTestExpectation class]] && ![expectation isKindOfClass:[RKConnectionTestExpectation class]]) {
+        [NSException raise:NSInvalidArgumentException
+                    format:@"Invalid expectation: expected an object of type `%@` or `%@`, but instead got a `%@`",
+                           [RKPropertyMappingTestExpectation class], [RKConnectionTestExpectation class], expectation];
     }
+    [self.expectations addObject:expectation];
 }
 
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
-{
-    [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath]];
-}
-
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withValue:(id)value
-{
-    [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath value:value]];
-}
-
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(RKMappingTestExpectationEvaluationBlock)evaluationBlock
-{
-    [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath evaluationBlock:evaluationBlock]];
-}
-
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKMapping *)mapping
-{
-    [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:mapping]];
-}
-
-- (RKMappingTestEvent *)eventMatchingKeyPathsForExpectation:(RKMappingTestExpectation *)expectation
+- (RKMappingTestEvent *)eventMatchingExpectation:(id)expectation
 {
     for (RKMappingTestEvent *event in [self.events copy]) {
-        if ([event.sourceKeyPath isEqualToString:expectation.sourceKeyPath] && [event.destinationKeyPath isEqualToString:expectation.destinationKeyPath]) {
-            return event;
+        if ([expectation isKindOfClass:[RKPropertyMappingTestExpectation class]]) {
+            RKPropertyMappingTestExpectation *propertyExpectation = (RKPropertyMappingTestExpectation *) expectation;
+            if ([event.sourceKeyPath isEqualToString:propertyExpectation.sourceKeyPath] && [event.destinationKeyPath isEqualToString:propertyExpectation.destinationKeyPath]) {
+                return event;
+            }
+        } else if ([expectation isKindOfClass:[RKConnectionTestExpectation class]]) {
+            RKConnectionTestExpectation *connectionExpectation = (RKConnectionTestExpectation *) expectation;
+            if ([[event.connection.relationship name] isEqualToString:connectionExpectation.relationshipName]) {
+                return event;
+            }
         }
     }
 
     return nil;
 }
 
-- (NSError *)errorForExpectation:(RKMappingTestExpectation *)expectation
+- (NSError *)errorForExpectation:(RKPropertyMappingTestExpectation *)expectation
                         withCode:(NSInteger)errorCode
                         userInfo:(NSDictionary *)userInfo
                      description:(NSString *)description
@@ -205,90 +195,123 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     return [NSError errorWithDomain:RKMappingTestErrorDomain code:errorCode userInfo:fullUserInfo];
 }
 
-- (BOOL)event:(RKMappingTestEvent *)event satisfiesExpectation:(RKMappingTestExpectation *)expectation error:(NSError **)error
+- (BOOL)event:(RKMappingTestEvent *)event satisfiesExpectation:(id)expectation error:(NSError **)error
 {
     BOOL success;
 
     NSDictionary *userInfo = @{ RKMappingTestEventErrorKey : event,
                                 RKMappingTestExpectationErrorKey : expectation };
-    if (expectation.evaluationBlock) {
-        // Let the expectation block evaluate the match
-        NSError *blockError = nil;
-        success = expectation.evaluationBlock(expectation, event.propertyMapping, event.value, &blockError);
-
-        if (! success) {
-            if (blockError) {
-                // If the block has given us an error, use the reason
-                NSMutableDictionary *mutableUserInfo = [userInfo mutableCopy];
-                [mutableUserInfo setValue:blockError forKey:NSUnderlyingErrorKey];
-                NSString *reason = [NSString stringWithFormat:@"expected to %@ with value %@ '%@', but it did not",
-                                         expectation, [event.value class], event.value];
-                *error = [self errorForExpectation:expectation
-                                          withCode:RKMappingTestEvaluationBlockError
-                                          userInfo:mutableUserInfo
-                                       description:[blockError localizedDescription]
-                                            reason:reason];
-
-                *error = blockError;
-            } else {
-                NSString *description = [NSString stringWithFormat:@"evaluation block returned `NO` for %@ value '%@'", [event.value class], event.value];
-                NSString *reason = [NSString stringWithFormat:@"expected to %@ with value %@ '%@', but it did not",
-                                         expectation, [event.value class], event.value];
-                *error = [self errorForExpectation:expectation
-                                          withCode:RKMappingTestEvaluationBlockError
-                                          userInfo:userInfo
-                                       description:description
-                                            reason:reason];
-            }
-        }
-    } else if (expectation.value) {
-        // Use RestKit comparison magic to match values
-        success = RKObjectIsEqualToObject(event.value, expectation.value);
-
-        if (! success) {
-            NSString *description = [NSString stringWithFormat:@"mapped to unexpected %@ value '%@'", [event.value class], event.value];
-            NSString *reason = [NSString stringWithFormat:@"expected to %@, but instead got %@ '%@'",
-                                     expectation, [event.value class], event.value];
-            if (error) *error = [self errorForExpectation:expectation
-                                                 withCode:RKMappingTestEvaluationBlockError
-                                                 userInfo:userInfo
-                                              description:description
-                                                   reason:reason];
-        }
-    } else if (expectation.mapping) {
-        if ([event.propertyMapping isKindOfClass:[RKRelationshipMapping class]]) {
-            // Check the mapping that was used to map the relationship
-            RKMapping *relationshipMapping = [(RKRelationshipMapping *)event.propertyMapping mapping];
-            success = [relationshipMapping isEqualToMapping:expectation.mapping];
-
+    if ([expectation isKindOfClass:[RKPropertyMappingTestExpectation class]]) {
+        RKPropertyMappingTestExpectation *propertyExpectation = (RKPropertyMappingTestExpectation *)expectation;
+        if (propertyExpectation.evaluationBlock) {
+            // Let the expectation block evaluate the match
+            NSError *blockError = nil;
+            success = propertyExpectation.evaluationBlock(expectation, event.propertyMapping, event.value, &blockError);
+            
             if (! success) {
-                NSString *description = [NSString stringWithFormat:@"mapped using unexpected mapping: %@", relationshipMapping];
-                NSString *reason = [NSString stringWithFormat:@"expected to %@, but was instead mapped using: %@",
-                                         expectation, relationshipMapping];
+                if (blockError) {
+                    // If the block has given us an error, use the reason
+                    NSMutableDictionary *mutableUserInfo = [userInfo mutableCopy];
+                    [mutableUserInfo setValue:blockError forKey:NSUnderlyingErrorKey];
+                    NSString *reason = [NSString stringWithFormat:@"expected to %@ with value %@ '%@', but it did not",
+                                        expectation, [event.value class], event.value];
+                    *error = [self errorForExpectation:expectation
+                                              withCode:RKMappingTestEvaluationBlockError
+                                              userInfo:mutableUserInfo
+                                           description:[blockError localizedDescription]
+                                                reason:reason];
+                    
+                    *error = blockError;
+                } else {
+                    NSString *description = [NSString stringWithFormat:@"evaluation block returned `NO` for %@ value '%@'", [event.value class], event.value];
+                    NSString *reason = [NSString stringWithFormat:@"expected to %@ with value %@ '%@', but it did not",
+                                        expectation, [event.value class], event.value];
+                    *error = [self errorForExpectation:expectation
+                                              withCode:RKMappingTestEvaluationBlockError
+                                              userInfo:userInfo
+                                           description:description
+                                                reason:reason];
+                }
+            }
+        } else if (propertyExpectation.value) {
+            // Use RestKit comparison magic to match values
+            success = RKObjectIsEqualToObject(event.value, propertyExpectation.value);
+            
+            if (! success) {
+                NSString *description = [NSString stringWithFormat:@"mapped to unexpected %@ value '%@'", [event.value class], event.value];
+                NSString *reason = [NSString stringWithFormat:@"expected to %@, but instead got %@ '%@'",
+                                    expectation, [event.value class], event.value];
                 if (error) *error = [self errorForExpectation:expectation
                                                      withCode:RKMappingTestEvaluationBlockError
                                                      userInfo:userInfo
                                                   description:description
                                                        reason:reason];
             }
+        } else if (propertyExpectation.mapping) {
+            if ([event.propertyMapping isKindOfClass:[RKRelationshipMapping class]]) {
+                // Check the mapping that was used to map the relationship
+                RKMapping *relationshipMapping = [(RKRelationshipMapping *)event.propertyMapping mapping];
+                success = [relationshipMapping isEqualToMapping:propertyExpectation.mapping];
+                
+                if (! success) {
+                    NSString *description = [NSString stringWithFormat:@"mapped using unexpected mapping: %@", relationshipMapping];
+                    NSString *reason = [NSString stringWithFormat:@"expected to %@, but was instead mapped using: %@",
+                                        expectation, relationshipMapping];
+                    if (error) *error = [self errorForExpectation:expectation
+                                                         withCode:RKMappingTestValueInequalityError
+                                                         userInfo:userInfo
+                                                      description:description
+                                                           reason:reason];
+                }
+            } else {
+                NSString *description = [NSString stringWithFormat:@"expected a property mapping of type `RKRelationshipMapping` but instead got a `%@`", [propertyExpectation.mapping class]];
+                NSString *reason = [NSString stringWithFormat:@"expected to %@, but instead of a `RKRelationshipMapping` got a `%@`",
+                                    expectation, [propertyExpectation.mapping class]];
+                if (error) *error = [self errorForExpectation:expectation
+                                                     withCode:RKMappingTestMappingMismatchError
+                                                     userInfo:userInfo
+                                                  description:description
+                                                       reason:reason];
+                
+                // Error message here that a relationship was not mapped!!!
+                return NO;
+            }
         } else {
-            NSString *description = [NSString stringWithFormat:@"expected a property mapping of type `RKRelationshipMapping` but instead got a `%@`", [expectation.mapping class]];
-            NSString *reason = [NSString stringWithFormat:@"expected to %@, but instead of a `RKRelationshipMapping` got a `%@`",
-                                     expectation, [expectation.mapping class]];
-            if (error) *error = [self errorForExpectation:expectation
-                                                 withCode:RKMappingTestEvaluationBlockError
-                                                 userInfo:userInfo
-                                              description:description
-                                                   reason:reason];
-
-            // Error message here that a relationship was not mapped!!!
-            return NO;
+            // We only wanted to know that a mapping occured between the keyPaths
+            success = YES;
         }
-    } else {
-        // We only wanted to know that a mapping occured between the keyPaths
-        success = YES;
+    } else if ([expectation isKindOfClass:[RKConnectionTestExpectation class]]) {
+        RKConnectionTestExpectation *connectionExpectation = (RKConnectionTestExpectation *)expectation;
+        RKConnectionDescription *connection = event.connection;
+        id expectedValue = connectionExpectation.value;
+        id connectedValue = event.value;
+        
+        // Check that the connection attributes match
+        if (connectionExpectation.attributes) {
+            RKMappingTestCondition([connectionExpectation.attributes isEqualToDictionary:event.connection.attributes], RKMappingTestValueInequalityError, error, @"established connection using unexpected attributes: %@", event.connection.attributes);
+        }
+    
+        // Wrong objects
+        if (expectedValue) {
+            RKMappingTestCondition(connectedValue, RKMappingTestValueInequalityError, error, @"unexpectedly connected to nil object set (%@)", connectedValue);
+            
+            if ([connectedValue isKindOfClass:[NSManagedObject class]] && [connectionExpectation.value isKindOfClass:[NSManagedObject class]]) {
+                // Do a managed object ID comparison
+                RKMappingTestCondition([[connectedValue objectID] isEqual:[expectedValue objectID]], RKMappingTestValueInequalityError, error, @"connected to unexpected managed object: %@", connectedValue);
+            } else {
+                // If we are connecting to a collection of managed objects, do a comparison of object IDs
+                if (RKObjectIsCollectionContainingOnlyManagedObjects(connectedValue) && RKObjectIsCollectionContainingOnlyManagedObjects(expectedValue)) {
+                    RKMappingTestCondition(RKObjectIsEqualToObject([connectedValue valueForKeyPath:@"objectID"], [expectedValue valueForKeyPath:@"objectID"]), RKMappingTestValueInequalityError, error, @"connected to unexpected %@ value '%@'", [connectedValue class], connectedValue);
+                } else {
+                    RKMappingTestCondition(RKObjectIsEqualToObject(connectedValue, expectedValue), RKMappingTestValueInequalityError, error, @"connected to unexpected %@ value '%@'", [connectedValue class], connectedValue);
+                }
+            }
+        } else {
+            RKMappingTestCondition(connectedValue == nil, RKMappingTestValueInequalityError, error, @"unexpectedly connected to non-nil object set (%@)", connectedValue);
+        }
+        
+        return YES;
     }
-
     return success;
 }
 
@@ -342,9 +365,9 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     }
 }
 
-- (void)verifyExpectation:(RKMappingTestExpectation *)expectation
+- (void)verifyExpectation:(RKPropertyMappingTestExpectation *)expectation
 {
-    RKMappingTestEvent *event = [self eventMatchingKeyPathsForExpectation:expectation];
+    RKMappingTestEvent *event = [self eventMatchingExpectation:expectation];
     if (event) {
         // Found a matching event, check if it satisfies the expectation
         NSError *error = nil;
@@ -359,7 +382,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     } else {
         // No match
         [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@, but did not.",
-         [self description], [expectation mappingDescription]];
+         [self description], [expectation summary]];
     }
 }
 
@@ -367,7 +390,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 {
     [self performMapping];
 
-    for (RKMappingTestExpectation *expectation in self.expectations) {
+    for (RKPropertyMappingTestExpectation *expectation in self.expectations) {
         [self verifyExpectation:expectation];
     }
 }
@@ -378,18 +401,20 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 {
     [self performMapping];
 
-    for (RKMappingTestExpectation *expectation in self.expectations) {
+    for (RKPropertyMappingTestExpectation *expectation in self.expectations) {
         if (! [self evaluateExpectation:expectation error:nil]) return NO;
     }
 
     return YES;
 }
 
-- (BOOL)evaluateExpectation:(RKMappingTestExpectation *)expectation error:(NSError **)error
+- (BOOL)evaluateExpectation:(id)expectation error:(NSError **)error
 {
+    NSParameterAssert(expectation);
+    NSAssert([expectation isKindOfClass:[RKPropertyMappingTestExpectation class]] || [expectation isKindOfClass:[RKConnectionTestExpectation class]], @"Must be an instance of `RKPropertyMappingTestExpectation` or `RKConnectionTestExpectation`");
     [self performMapping];
 
-    RKMappingTestEvent *event = [self eventMatchingKeyPathsForExpectation:expectation];
+    RKMappingTestEvent *event = [self eventMatchingExpectation:expectation];
     if (event) {
         if (! [self event:event satisfiesExpectation:expectation error:error]) {
             return NO;
@@ -398,8 +423,8 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         if (error) {
             NSDictionary *userInfo = @{
             RKMappingTestExpectationErrorKey : expectation,
-            NSLocalizedDescriptionKey        : [NSString stringWithFormat:@"expected to %@, but did not.", [expectation mappingDescription]],
-            NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"%@: %@, but did not.", [self description], [expectation mappingDescription]]
+            NSLocalizedDescriptionKey        : [NSString stringWithFormat:@"expected to %@, but did not.", [expectation summary]],
+            NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:@"%@: %@, but did not.", [self description], [expectation summary]]
             };
             *error = [NSError errorWithDomain:RKMappingTestErrorDomain code:RKMappingTestUnsatisfiedExpectationError userInfo:userInfo];
         };

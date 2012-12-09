@@ -18,10 +18,10 @@
 //  limitations under the License.
 //
 
-#import "RKMappingTestExpectation.h"
+#import "RKPropertyMappingTestExpectation.h"
 #import "RKPropertyMapping.h"
 
-@interface RKMappingTestExpectation ()
+@interface RKPropertyMappingTestExpectation ()
 @property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
 @property (nonatomic, copy, readwrite) NSString *destinationKeyPath;
 @property (nonatomic, strong, readwrite) id value;
@@ -29,20 +29,20 @@
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @end
 
-@implementation RKMappingTestExpectation
+@implementation RKPropertyMappingTestExpectation
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
++ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
 {
-    RKMappingTestExpectation *expectation = [self new];
+    RKPropertyMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
 
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value
++ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value
 {
-    RKMappingTestExpectation *expectation = [self new];
+    RKPropertyMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
     expectation.value = value;
@@ -50,9 +50,9 @@
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock
++ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock
 {
-    RKMappingTestExpectation *expectation = [self new];
+    RKPropertyMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
     expectation.evaluationBlock = evaluationBlock;
@@ -60,9 +60,9 @@
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping
++ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping
 {
-    RKMappingTestExpectation *expectation = [self new];
+    RKPropertyMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
     expectation.mapping = mapping;
@@ -70,7 +70,7 @@
     return expectation;
 }
 
-- (NSString *)mappingDescription
+- (NSString *)summary
 {
     return [NSString stringWithFormat:@"map '%@' to '%@'", self.sourceKeyPath, self.destinationKeyPath];
 }
@@ -88,7 +88,7 @@
                 self.sourceKeyPath, self.destinationKeyPath, self.mapping];
     }
 
-    return [self mappingDescription];
+    return [self summary];
 }
 
 @end

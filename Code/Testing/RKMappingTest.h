@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "RKMappingOperation.h"
-#import "RKMappingTestExpectation.h"
+#import "RKPropertyMappingTestExpectation.h"
 
 @protocol RKMappingOperationDataSource, RKManagedObjectCaching;
 
@@ -45,9 +45,27 @@ extern NSString * const RKMappingTestVerificationFailureException;
 enum {
     RKMappingTestUnsatisfiedExpectationError,   // An expected mapping event did not occur
     RKMappingTestEvaluationBlockError,          // An evaluation block returned `NO` when evaluating a mapping event
-    RKMappingTestValueInequalityError,          // A mapped value was not equal to the expected value
+    RKMappingTestValueInequalityError,          // A value was not equal to the expected value
     RKMappingTestMappingMismatchError,          // A mapping occurred using an unexpected `RKObjectMapping` object
 };
+
+/**
+ @define RKMappingTestExpectationTestCondition
+ @abstract Tests a condition and returns `NO` and error if it is not true.
+ @discussion This is a useful macro when constructing mapping test evaluation blocks. It will test a condition and return `NO` as well as construct an error. This is meant to be used **only** within the body of a `RKMappingTestExpectationEvaluationBlock` object.
+ @param condition The condition to test.
+ @param errorCode An error code in the RKMappingTestErrorDomain indicating the nature of the failure.
+ @param error The NSError object to put the error string into. May be nil, but should usually be the error parameter from the expectation evaluation block.
+ @param ... A string describing the error.
+ */
+#define RKMappingTestCondition(condition, errorCode, error, ...) ({ \
+if (!(condition)) { \
+if (error) { \
+*error = [NSError errorWithDomain:RKMappingTestErrorDomain code:errorCode userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:__VA_ARGS__], NSLocalizedDescriptionKey, nil]]; \
+} \
+return NO; \
+} \
+})
 
 /**
  The `RKMappingTestEvent` object for the mapping event which failed to satify the expectation.
@@ -89,59 +107,29 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  */
 - (id)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
 
-///---------------------------
-/// @name Setting Expectations
-///---------------------------
-
-/**
- Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object.
-
- @param sourceKeyPath A key path on the sourceObject that should be mapped from.
- @param destinationKeyPath A key path on the destinationObject that should be mapped to.
- @see `RKMappingTestExpectation`
- */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
-
-/**
- Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object with a given value.
-
- @param sourceKeyPath A key path on the sourceObject that should be mapped from.
- @param destinationKeyPath A key path on the destinationObject that should be mapped from.
- @param value A value that is expected to be assigned to destinationKeyPath on the destinationObject.
- @see `RKMappingTestExpectation`
- */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withValue:(id)value;
-
-/**
- Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object with a value that passes a given test block.
-
- @param sourceKeyPath A key path on the sourceObject that should be mapped from.
- @param destinationKeyPath A key path on the destinationObject that should be mapped to.
- @param evaluationBlock A block with which to evaluate the success of the mapping.
- @see `RKMappingTestExpectation`
- */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(RKMappingTestExpectationEvaluationBlock)evaluationBlock;
-
-/**
- Creates and adds an expectation that a key path on the source object will be mapped to a new key path on the destination object using the given object mapping.
-
- @param sourceKeyPath A key path on the sourceObject that should be mapped from.
- @param destinationKeyPath A key path on the destinationObject that should be mapped to.
- @param mapping An object mapping that should be used for mapping the source key path.
- @see `RKMappingTestExpectation`
- */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKMapping *)mapping;
+///----------------------------
+/// @name Managing Expectations
+///----------------------------
 
 /**
  Adds an expectation to the receiver to be evaluated during verification.
 
- If the receiver has been configured with `verifiesOnExpect = YES`, the mapping operation is performed immediately and the expectation is evaluated.
-
- @param expectation An expectation object to evaluate during test verification.
+ @param expectation An expectation object to evaluate during test verification. Must be an instance of `RKPropertyMappingTestExpectation` or `RKConnectionTestExpectation`.
  @see `RKMappingTestExpectation`
  @see `verifiesOnExpect`
  */
-- (void)addExpectation:(RKMappingTestExpectation *)expectation;
+- (void)addExpectation:(id)expectation;
+
+/**
+ Evaluates the given expectation against the mapping test and returns a Boolean value indicating if the expectation is met by the receiver.
+ 
+ Invocation of this method will implicitly invoke `performMapping` if the mapping has not yet been performed.
+ 
+ @param expectation The expectation to evaluate against the receiver. Must be an intance of either `RKPropertyMappingTestExpectation` or `RKConnectionTestExpectation`.
+ @param error A pointer to an `NSError` object to be set describing the failure in the event that the expectation is not met.
+ @return `YES` if the expectation is met, else `NO`.
+ */
+- (BOOL)evaluateExpectation:(id)expectation error:(NSError **)error;
 
 ///------------------------
 /// @name Verifying Results
@@ -169,17 +157,6 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  @return `YES` if all expectations were met, else `NO`.
  */
 - (BOOL)evaluate;
-
-/**
- Evaluates the given expectation against the mapping test and returns a Boolean value indicating if the expectation is met by the receiver.
-
- Invocation of this method will implicitly invoke `performMapping` if the mapping has not yet been performed.
-
- @param expectation The expectation to evaluate against the receiver.
- @param error A pointer to an `NSError` object to be set describing the failure in the event that the expectation is not met.
- @return `YES` if the expectation is met, else `NO`.
- */
-- (BOOL)evaluateExpectation:(RKMappingTestExpectation *)expectation error:(NSError **)error;
 
 ///-------------------------
 /// @name Test Configuration
@@ -217,13 +194,6 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  @see `mappingOperationDataSource`
  */
 @property (nonatomic, strong, readonly) id destinationObject;
-
-/**
- A Boolean value that determines if expectations should be verified immediately when added to the receiver.
-
- **Default**: `NO`
- */
-@property (nonatomic, assign) BOOL verifiesOnExpect;
 
 ///----------------------------
 /// @name Core Data Integration

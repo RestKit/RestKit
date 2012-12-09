@@ -32,10 +32,10 @@
 		25055B8914EEF32A00B9C4DD /* RKTestFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8214EEF32A00B9C4DD /* RKTestFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25055B8A14EEF32A00B9C4DD /* RKTestFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8314EEF32A00B9C4DD /* RKTestFactory.m */; };
 		25055B8B14EEF32A00B9C4DD /* RKTestFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8314EEF32A00B9C4DD /* RKTestFactory.m */; };
-		25055B8F14EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25055B9014EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25055B9114EEF40000B9C4DD /* RKMappingTestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */; };
-		25055B9214EEF40000B9C4DD /* RKMappingTestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */; };
+		25055B8F14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8D14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25055B9014EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8D14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25055B9114EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8E14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m */; };
+		25055B9214EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8E14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m */; };
 		25055B9314EEFEC800B9C4DD /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D1614564E810060A5C5 /* libRestKit.a */; };
 		2506759F162DEA25003210B0 /* RKEntityMappingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FC91456F2330060A5C5 /* RKEntityMappingTest.m */; };
 		250675A1162DEA27003210B0 /* RKEntityMappingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FC91456F2330060A5C5 /* RKEntityMappingTest.m */; };
@@ -479,6 +479,10 @@
 		25A763E215C72B9D00A9DF31 /* RKSearchTokenizerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763E015C72B9D00A9DF31 /* RKSearchTokenizerTest.m */; };
 		25A763E515C7424500A9DF31 /* RKSearchIndexerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763E415C7424500A9DF31 /* RKSearchIndexerTest.m */; };
 		25A763E615C7424500A9DF31 /* RKSearchIndexerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763E415C7424500A9DF31 /* RKSearchIndexerTest.m */; };
+		25A8C2341673BD480014D9A6 /* RKConnectionTestExpectation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A8C2321673BD480014D9A6 /* RKConnectionTestExpectation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25A8C2351673BD480014D9A6 /* RKConnectionTestExpectation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A8C2321673BD480014D9A6 /* RKConnectionTestExpectation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25A8C2361673BD480014D9A6 /* RKConnectionTestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A8C2331673BD480014D9A6 /* RKConnectionTestExpectation.m */; };
+		25A8C2371673BD480014D9A6 /* RKConnectionTestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A8C2331673BD480014D9A6 /* RKConnectionTestExpectation.m */; };
 		25AA23D015AF2920006EF62D /* RKManagedObjectMappingOperationDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */; };
 		25AA23D115AF2920006EF62D /* RKManagedObjectMappingOperationDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */; };
 		25AA23D815AF5085006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */; };
@@ -619,8 +623,8 @@
 		25055B8114EEF32A00B9C4DD /* RKMappingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingTest.m; path = Testing/RKMappingTest.m; sourceTree = "<group>"; };
 		25055B8214EEF32A00B9C4DD /* RKTestFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestFactory.h; path = Testing/RKTestFactory.h; sourceTree = "<group>"; };
 		25055B8314EEF32A00B9C4DD /* RKTestFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestFactory.m; path = Testing/RKTestFactory.m; sourceTree = "<group>"; };
-		25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKMappingTestExpectation.h; path = Testing/RKMappingTestExpectation.h; sourceTree = "<group>"; };
-		25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingTestExpectation.m; path = Testing/RKMappingTestExpectation.m; sourceTree = "<group>"; };
+		25055B8D14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKPropertyMappingTestExpectation.h; path = Testing/RKPropertyMappingTestExpectation.h; sourceTree = "<group>"; };
+		25055B8E14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKPropertyMappingTestExpectation.m; path = Testing/RKPropertyMappingTestExpectation.m; sourceTree = "<group>"; };
 		25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEntityDescription+RKAdditionsTest.m"; sourceTree = "<group>"; };
 		2507C325161BD5C700EA71FF /* RKTestHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestHelpers.h; path = Testing/RKTestHelpers.h; sourceTree = "<group>"; };
 		2507C326161BD5C700EA71FF /* RKTestHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestHelpers.m; path = Testing/RKTestHelpers.m; sourceTree = "<group>"; };
@@ -878,6 +882,8 @@
 		25A763DA15C7240100A9DF31 /* RKSearchTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTokenizer.m; sourceTree = "<group>"; };
 		25A763E015C72B9D00A9DF31 /* RKSearchTokenizerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTokenizerTest.m; sourceTree = "<group>"; };
 		25A763E415C7424500A9DF31 /* RKSearchIndexerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchIndexerTest.m; sourceTree = "<group>"; };
+		25A8C2321673BD480014D9A6 /* RKConnectionTestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKConnectionTestExpectation.h; path = Testing/RKConnectionTestExpectation.h; sourceTree = "<group>"; };
+		25A8C2331673BD480014D9A6 /* RKConnectionTestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKConnectionTestExpectation.m; path = Testing/RKConnectionTestExpectation.m; sourceTree = "<group>"; };
 		25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingOperationDataSource.m; sourceTree = "<group>"; };
 		25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingOperationDataSourceTest.m; sourceTree = "<group>"; };
 		25AFF8F015B4CF1F0051877F /* RKMappingErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RKMappingErrors.h; sourceTree = "<group>"; };
@@ -1540,8 +1546,10 @@
 				252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */,
 				25055B8014EEF32A00B9C4DD /* RKMappingTest.h */,
 				25055B8114EEF32A00B9C4DD /* RKMappingTest.m */,
-				25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */,
-				25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */,
+				25055B8D14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h */,
+				25055B8E14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m */,
+				25A8C2321673BD480014D9A6 /* RKConnectionTestExpectation.h */,
+				25A8C2331673BD480014D9A6 /* RKConnectionTestExpectation.m */,
 				25C954A415542A47005C9E08 /* RKTestConstants.m */,
 				2507C325161BD5C700EA71FF /* RKTestHelpers.h */,
 				2507C326161BD5C700EA71FF /* RKTestHelpers.m */,
@@ -1716,7 +1724,7 @@
 				25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */,
 				25055B8414EEF32A00B9C4DD /* RKMappingTest.h in Headers */,
 				25055B8814EEF32A00B9C4DD /* RKTestFactory.h in Headers */,
-				25055B8F14EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */,
+				25055B8F14EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h in Headers */,
 				25EC1A3914F72B0900C3CF3F /* RKFetchRequestManagedObjectCache.h in Headers */,
 				25EC1A3D14F72B2800C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
 				25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
@@ -1777,6 +1785,7 @@
 				25CDA0DC161E7ED400F583F3 /* RKISO8601DateFormatter.h in Headers */,
 				25E88C88165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */,
 				25019495166406E30081D68A /* RKValueTransformers.h in Headers */,
+				25A8C2341673BD480014D9A6 /* RKConnectionTestExpectation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1817,7 +1826,7 @@
 				25FABED314E3796C00E609E7 /* RKTestNotificationObserver.h in Headers */,
 				25055B8514EEF32A00B9C4DD /* RKMappingTest.h in Headers */,
 				25055B8914EEF32A00B9C4DD /* RKTestFactory.h in Headers */,
-				25055B9014EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */,
+				25055B9014EEF40000B9C4DD /* RKPropertyMappingTestExpectation.h in Headers */,
 				25EC1A3A14F72B0A00C3CF3F /* RKFetchRequestManagedObjectCache.h in Headers */,
 				25EC1A3E14F72B2900C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
 				25EC1A6514F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
@@ -1880,6 +1889,7 @@
 				255893E3166BA6A20010C70B /* RKObjectParameterization.h in Headers */,
 				255893E4166BA7400010C70B /* RestKit-Prefix.pch in Headers */,
 				255893E5166BA7700010C70B /* RKTestFixture.h in Headers */,
+				25A8C2351673BD480014D9A6 /* RKConnectionTestExpectation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2229,7 +2239,7 @@
 				25CA7A8F14EC570200888FF8 /* RKMapping.m in Sources */,
 				25055B8614EEF32A00B9C4DD /* RKMappingTest.m in Sources */,
 				25055B8A14EEF32A00B9C4DD /* RKTestFactory.m in Sources */,
-				25055B9114EEF40000B9C4DD /* RKMappingTestExpectation.m in Sources */,
+				25055B9114EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m in Sources */,
 				25EC1A3B14F72B1300C3CF3F /* RKFetchRequestManagedObjectCache.m in Sources */,
 				25EC1A3F14F72B3100C3CF3F /* RKInMemoryManagedObjectCache.m in Sources */,
 				257ABAB215112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.m in Sources */,
@@ -2279,6 +2289,7 @@
 				25CDA0DE161E7ED400F583F3 /* RKISO8601DateFormatter.m in Sources */,
 				25E88C8A165C5CC30042ABD0 /* RKConnectionDescription.m in Sources */,
 				25019497166406E30081D68A /* RKValueTransformers.m in Sources */,
+				25A8C2361673BD480014D9A6 /* RKConnectionTestExpectation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2377,7 +2388,7 @@
 				25CA7A9114EC5C2D00888FF8 /* RKTestFixture.m in Sources */,
 				25055B8714EEF32A00B9C4DD /* RKMappingTest.m in Sources */,
 				25055B8B14EEF32A00B9C4DD /* RKTestFactory.m in Sources */,
-				25055B9214EEF40000B9C4DD /* RKMappingTestExpectation.m in Sources */,
+				25055B9214EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m in Sources */,
 				25EC1A3C14F72B1400C3CF3F /* RKFetchRequestManagedObjectCache.m in Sources */,
 				25EC1A4014F72B3300C3CF3F /* RKInMemoryManagedObjectCache.m in Sources */,
 				257ABAB315112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.m in Sources */,
@@ -2427,6 +2438,7 @@
 				25CDA0DF161E7ED400F583F3 /* RKISO8601DateFormatter.m in Sources */,
 				25E88C8B165C5CC30042ABD0 /* RKConnectionDescription.m in Sources */,
 				25019498166406E30081D68A /* RKValueTransformers.m in Sources */,
+				25A8C2371673BD480014D9A6 /* RKConnectionTestExpectation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

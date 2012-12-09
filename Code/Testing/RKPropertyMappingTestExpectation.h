@@ -1,5 +1,5 @@
 //
-//  RKMappingTestExpectation.h
+//  RKPropertyMappingTestExpectation.h
 //  RestKit
 //
 //  Created by Blake Watters on 2/17/12.
@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-@class RKMapping, RKPropertyMapping, RKMappingTestExpectation;
+@class RKMapping, RKPropertyMapping, RKPropertyMappingTestExpectation;
 
 /**
  @typedef RKMappingTestExpectationEvaluationBlock
@@ -28,35 +28,18 @@
  @param mappedValue The value that was mapped.
  @param error A pointer to an error object that is to be set in the event that the expectation evaluates negatively. If left to `nil`, a generic error will be generated.
  */
-typedef BOOL (^RKMappingTestExpectationEvaluationBlock)(RKMappingTestExpectation *expectation, RKPropertyMapping *mapping, id mappedValue, NSError **error);
-
-/**
- @define RKMappingTestExpectationTestCondition
- @abstract Tests a condition and returns `NO` and error if it is not true.
- @discussion This is a useful macro when constructing mapping test evaluation blocks. It will test a condition and return `NO` as well as construct an error. This is meant to be used **only** within the body of a `RKMappingTestExpectationEvaluationBlock` object.
- @param condition The condition to test.
- @param error The NSError object to put the error string into. May be nil, but should usually be the error parameter from the expectation evaluation block.
- @param ... A string describing the error.
- */
-#define RKMappingTestExpectationTestCondition(condition, error, ...) ({ \
-if (!(condition)) { \
-if (error) { \
-*error = [NSError errorWithDomain:RKMappingTestErrorDomain code:RKMappingTestEvaluationBlockError userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:__VA_ARGS__], NSLocalizedDescriptionKey, nil]]; \
-} \
-return NO; \
-} \
-})
+typedef BOOL (^RKMappingTestExpectationEvaluationBlock)(RKPropertyMappingTestExpectation *expectation, RKPropertyMapping *mapping, id mappedValue, NSError **error);
 
 /**
  An `RKMappingTestExpectation` object defines an expected mapping event that should occur during the execution of a `RKMappingTest`.
 
  @see `RKMappingTest`
  */
-@interface RKMappingTestExpectation : NSObject
+@interface RKPropertyMappingTestExpectation : NSObject
 
-///-----------------------------------------------------------------------------
+///----------------------------
 /// @name Creating Expectations
-///-----------------------------------------------------------------------------
+///----------------------------
 
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be mapped to another key path on a destination object. The value mapped is not evaluated.
@@ -65,7 +48,7 @@ return NO; \
  @param destinationKeyPath A key path on the destination object that should be mapped onto.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath.
  */
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath;
++ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath;
 
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be mapped to another key path on a destination object with a given value.
@@ -75,7 +58,7 @@ return NO; \
  @param value The value that is expected to be assigned to the destination object at destinationKeyPath.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath with value.
  */
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value;
++ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value;
 
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be mapped to another key path on a destinaton object and that the attribute mapping and value should evaluate to true with a given block.
@@ -85,7 +68,7 @@ return NO; \
  @param evaluationBlock A block with which to evaluate the success of the mapping.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath with value.
  */
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock;
++ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock;
 
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be mapped to another key path on a destinaton object using a specific object mapping for the relationship.
@@ -95,11 +78,11 @@ return NO; \
  @param mapping An object mapping that is expected to be used for mapping the nested relationship.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath using a specific object mapping.
  */
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping;
++ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping;
 
-///-----------------------------------------------------------------------------
+///-------------------------
 /// @name Expectation Values
-///-----------------------------------------------------------------------------
+///-------------------------
 
 /**
  Returns a keyPath on the source object that a value should be mapped from.
@@ -133,6 +116,6 @@ return NO; \
 
  @return A string describing the expected sourceKeyPath to destinationKeyPath mapping.
  */
-- (NSString *)mappingDescription;
+- (NSString *)summary;
 
 @end
