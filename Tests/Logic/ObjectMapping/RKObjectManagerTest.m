@@ -622,6 +622,15 @@
     expect([requestOperation.mappingResult array]).to.haveCountOf(2);
 }
 
+- (void)testThatAppropriateObjectRequestOperationReturnsManagedObjectRequestOperationForManagedObjectWithNoResponseDescriptors
+{
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+    manager.managedObjectStore = [RKTestFactory managedObjectStore];
+    NSManagedObject *managedObject = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:manager.managedObjectStore.mainQueueManagedObjectContext];
+    RKObjectRequestOperation *objectRequestOperation = [manager appropriateObjectRequestOperationWithObject:managedObject method:RKRequestMethodPOST path:@"/something" parameters:nil];
+    expect(objectRequestOperation).to.beInstanceOf([RKManagedObjectRequestOperation class]);
+}
+
 //- (void)testShouldHandleConnectionFailures
 //{
 //    NSString *localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
