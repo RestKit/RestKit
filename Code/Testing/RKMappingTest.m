@@ -190,8 +190,8 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                           reason:(NSString *)reason
 {
     NSMutableDictionary *fullUserInfo = [userInfo mutableCopy];
-    fullUserInfo[NSLocalizedDescriptionKey] = description;
-    fullUserInfo[NSLocalizedFailureReasonErrorKey] = reason;
+    [fullUserInfo setObject:description forKey:NSLocalizedDescriptionKey];
+    [fullUserInfo setObject:reason forKey:NSLocalizedFailureReasonErrorKey];
     return [NSError errorWithDomain:RKMappingTestErrorDomain code:errorCode userInfo:fullUserInfo];
 }
 

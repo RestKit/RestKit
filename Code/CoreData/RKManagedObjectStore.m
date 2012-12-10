@@ -125,7 +125,7 @@ static RKManagedObjectStore *defaultStore = nil;
     NSDictionary *options = nil;
     if (nilOrOptions) {
         NSMutableDictionary *mutableOptions = [nilOrOptions mutableCopy];
-        mutableOptions[RKSQLitePersistentStoreSeedDatabasePathOption] = seedPath ?: [NSNull null];
+        [mutableOptions setObject:(seedPath ?: [NSNull null]) forKey:RKSQLitePersistentStoreSeedDatabasePathOption];
         options = mutableOptions;
     } else {
         options = @{ RKSQLitePersistentStoreSeedDatabasePathOption: (seedPath ?: [NSNull null]),
