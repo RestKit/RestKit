@@ -48,7 +48,7 @@ static NSString *RKCacheKeyForEntityWithAttributeValues(NSEntityDescription *ent
     NSArray *sortedAttributes = [[attributeValues allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     NSMutableArray *sortedValues = [NSMutableArray arrayWithCapacity:[sortedAttributes count]];
     [sortedAttributes enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
-        id cacheKeyValue = RKCacheKeyValueForEntityAttributeWithValue(entity, attributeName, attributeValues[attributeName]);
+        id cacheKeyValue = RKCacheKeyValueForEntityAttributeWithValue(entity, attributeName, [attributeValues objectForKey:attributeName]);
         [sortedValues addObject:cacheKeyValue];
     }];
     

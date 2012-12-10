@@ -40,13 +40,15 @@ NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSU
     return fetchRequests;
 }
 
+// RKManagedObjectOrArrayOfManagedObjectsInContext(id managedObjectOrArrayOfManagedObjects, NSManagedObjectContext *managedObjectContext);
+// Find the key paths for all entity mappings in the graph whose parent objects are not other managed objects
+
 static NSDictionary *RKDictionaryOfManagedObjectsInContextFromDictionaryOfManagedObjects(NSDictionary *dictionaryOfManagedObjects, NSManagedObjectContext *managedObjectContext)
 {
     NSMutableDictionary *newDictionary = [[NSMutableDictionary alloc] initWithCapacity:[dictionaryOfManagedObjects count]];
     [managedObjectContext performBlockAndWait:^{
-        NSError *error = nil;
-        for (NSString *key in dictionaryOfManagedObjects) {
-            id value = dictionaryOfManagedObjects[key];
+        __block NSError *error = nil;
+        [dictionaryOfManagedObjects enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
             if ([value isKindOfClass:[NSArray class]]) {
                 NSMutableArray *newValue = [[NSMutableArray alloc] initWithCapacity:[value count]];
                 for (__strong id object in value) {
@@ -64,7 +66,7 @@ static NSDictionary *RKDictionaryOfManagedObjectsInContextFromDictionaryOfManage
             }
             
             [newDictionary setValue:value forKey:key];
-        }
+        }];
     }];
     
     return newDictionary;

@@ -242,7 +242,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
         NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:[connectionSpecifier count]];
         for (NSString *sourceAttribute in connectionSpecifier) {
             NSString *destinationAttribute = [self transformSourceKeyPath:sourceAttribute];
-            attributes[sourceAttribute] = destinationAttribute;
+            [attributes setObject:destinationAttribute forKey:sourceAttribute];
         }
         connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:attributes];
     } else if ([connectionSpecifier isKindOfClass:[NSDictionary class]]) {
