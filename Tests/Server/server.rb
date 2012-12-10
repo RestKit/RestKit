@@ -87,7 +87,18 @@ class RestKitTestServer < Sinatra::Base
   delete '/humans/204' do
     status 204
     content_type 'application/json'
-    "{}"
+  end
+  
+  delete '/humans/empty' do
+    status 200
+    content_type 'application/json'
+    ""
+  end
+  
+  delete '/humans/success' do
+    status 200
+    content_type 'application/json'
+    {:humans => {:status => 'OK'}}.to_json
   end
 
   post '/echo_params' do

@@ -282,7 +282,6 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         }
     } else if ([expectation isKindOfClass:[RKConnectionTestExpectation class]]) {
         RKConnectionTestExpectation *connectionExpectation = (RKConnectionTestExpectation *)expectation;
-        RKConnectionDescription *connection = event.connection;
         id expectedValue = connectionExpectation.value;
         id connectedValue = event.value;
         

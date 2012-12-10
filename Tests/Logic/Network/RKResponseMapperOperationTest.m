@@ -47,6 +47,18 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     expect(mapper.error).to.beNil();
 }
 
+- (void)testMappingANilDataIsSucessful
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    NSURL *URL = [NSURL URLWithString:@"http://restkit.org"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:nil responseDescriptors:@[responseDescriptor]];
+    mapper.treatsEmptyResponseAsSuccess = YES;
+    [mapper start];
+    expect(mapper.error).to.beNil();
+}
+
 #pragma mark - Error Status Codes
 
 // 422, no content

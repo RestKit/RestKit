@@ -23,6 +23,7 @@
 #import "RKMIMETypeSerialization.h"
 #import "RKHTTPUtilities.h"
 #import "RKLog.h"
+#import "RKMappingErrors.h"
 
 #import <Availability.h>
 
@@ -283,7 +284,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     
     // If there is no mapping result but no error, there was no mapping to be performed,
     // which we do not treat as an error condition
-    if (! mappingResult && error) {
+    if (! mappingResult && error && !([self.HTTPRequestOperation.request.HTTPMethod isEqualToString:@"DELETE"] && error.code == RKMappingErrorNotFound)) {
         self.error = error;
         return;
     }
