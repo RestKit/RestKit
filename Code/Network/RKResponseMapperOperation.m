@@ -289,7 +289,11 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     self.mapperOperation = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     self.mapperOperation.mappingOperationDataSource = dataSource;
-    self.mapperOperation.targetObject = self.targetObject;
+    if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
+        self.mapperOperation.targetObject = self.targetObject;
+    } else {
+        RKLogInfo(@"Non-successful status code encountered: performing mapping with nil target object.");
+    }
     [self.mapperOperation start];
     if (error) *error = self.mapperOperation.error;
     return self.mapperOperation.mappingResult;
@@ -356,7 +360,7 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
                 RKLogTrace(@"Mapping HTTP response to nil target object...");
             }
         } else {
-            RKLogInfo(@"Non-successful state code encountered: performing mapping with nil target object.");
+            RKLogInfo(@"Non-successful status code encountered: performing mapping with nil target object.");
         }
 
         [self.mapperOperation start];
