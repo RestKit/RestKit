@@ -312,7 +312,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 @property (nonatomic, strong) NSString *requestSerializationMIMEType;
 
 /**
- Sets a default header on the HTTP cleitn for the HTTP "Accept" header to specify the preferred serialization format for retrieved data.
+ Sets a default header on the HTTP client for the HTTP "Accept" header to specify the preferred serialization format for retrieved data.
  
  This method is a convenience method whose implementation is equivalent to the following example code:
  

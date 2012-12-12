@@ -367,6 +367,8 @@
 		2548AC6E162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */; };
 		2549D646162B376F003DD135 /* RKRequestDescriptorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */; };
 		2549D647162B376F003DD135 /* RKRequestDescriptorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */; };
+		2551338F167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2551338E167838590017E4B6 /* RKHTTPRequestOperationTest.m */; };
+		25513390167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2551338E167838590017E4B6 /* RKHTTPRequestOperationTest.m */; };
 		25565956161FC3C300F5BB20 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25565955161FC3C300F5BB20 /* CoreServices.framework */; };
 		25565959161FC3CD00F5BB20 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */; };
 		25565965161FDD8800F5BB20 /* RKResponseMapperOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */; };
@@ -827,6 +829,7 @@
 		2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectRequestOperationTest.m; sourceTree = "<group>"; };
 		2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestDescriptorTest.m; sourceTree = "<group>"; };
 		254A62BF14AD591C00939BEE /* RKPaginatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPaginatorTest.m; sourceTree = "<group>"; };
+		2551338E167838590017E4B6 /* RKHTTPRequestOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHTTPRequestOperationTest.m; sourceTree = "<group>"; };
 		25565955161FC3C300F5BB20 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		25565964161FDD8800F5BB20 /* RKResponseMapperOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseMapperOperationTest.m; sourceTree = "<group>"; };
@@ -1454,6 +1457,7 @@
 				2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */,
 				2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */,
 				2536D1FC167270F100DF9BB0 /* RKRouterTest.m */,
+				2551338E167838590017E4B6 /* RKHTTPRequestOperationTest.m */,
 			);
 			name = Network;
 			path = Logic/Network;
@@ -2353,6 +2357,7 @@
 				2546A95816628EDD0078E044 /* RKConnectionDescriptionTest.m in Sources */,
 				2543A25D1664FD3100821D5B /* RKResponseDescriptorTest.m in Sources */,
 				2536D1FD167270F100DF9BB0 /* RKRouterTest.m in Sources */,
+				2551338F167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2502,6 +2507,7 @@
 				2546A95916628EDD0078E044 /* RKConnectionDescriptionTest.m in Sources */,
 				2543A25E1664FD3200821D5B /* RKResponseDescriptorTest.m in Sources */,
 				2536D1FE167270F100DF9BB0 /* RKRouterTest.m in Sources */,
+				25513390167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

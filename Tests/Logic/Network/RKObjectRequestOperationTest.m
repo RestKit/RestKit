@@ -334,7 +334,6 @@
 
 - (void)testMappingResponseWithDynamicMatchForResponseDescriptorPathPattern
 {
-
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     [userMapping addAttributeMappingsFromArray:@[@"firstname"]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:@"/JSON/:name\\.json" keyPath:@"data.STUser" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
@@ -543,6 +542,36 @@
     RKTestComplexUser *user = [requestOperation.mappingResult firstObject];
     expect(user).notTo.beNil();
     expect(user.email).to.equal(@"blake@restkit.org");
+}
+
+- (void)testThatLoadingAnUnexpectedContentTypeReturnsCorrectErrorMessage
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromArray:@[@"firstname"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:@"/JSON/ComplexNestedUser.json" keyPath:@"data.STUser" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/XML/channels.xml" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).notTo.beNil();
+    expect([requestOperation.error localizedDescription]).to.equal(@"Expected content type {(\n    \"application/json\",\n    \"application/x-www-form-urlencoded\"\n)}, got application/xml");
+}
+
+- (void)testThatLoadingAnUnexpectedStatusCodeReturnsCorrectErrorMessage
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromArray:@[@"firstname"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:@"/JSON/ComplexNestedUser.json" keyPath:@"data.STUser" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/503" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).notTo.beNil();
+    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299,400-499), got 503");
 }
 
 @end
