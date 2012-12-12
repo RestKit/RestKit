@@ -243,7 +243,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  Creates and returns a new `RKObjectManager` object initialized with a new `AFHTTPClient` object that was in turn initialized with the given base URL. The RestKit defaults are applied to the object manager.
  
- When initialized with a base URL, the returned object manager will have a `requestSerializationMIMEType` with the value of `RKMIMETypeFormURLEncoded` and a default value for the 'Accept' header set to `RKMIMETypeJSON`.
+ When initialized with a base URL, the returned object manager will have a `requestSerializationMIMEType` with the value of `RKMIMETypeFormURLEncoded` and the underlying `HTTPClient` will have a default value for the 'Accept' header set to `RKMIMETypeJSON`, and the `AFJSONRequestOperation` class will be registered.
  
  @param baseURL The base URL with which to initialize the `AFHTTPClient` object
  @return A new `RKObjectManager` initialized with an `AFHTTPClient` that was initialized with the given baseURL.
@@ -312,9 +312,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 @property (nonatomic, strong) NSString *requestSerializationMIMEType;
 
 /**
- The value for the HTTP "Accept" header to specify the preferred serialization format for retrieved data.
-
- If the receiver was initialized with an `AFHTTPClient`, then the value of the 'Accept' header is deferred to the client. If initialized directly with a baseURL, the default value is `RKMIMETypeJSON`, which is equal to the string `@"application/json"`. A value of `nil` will prevent the object manager from explicitly setting a value for the "Accept" header.
+ Sets a default header on the HTTP cleitn for the HTTP "Accept" header to specify the preferred serialization format for retrieved data.
+ 
+ This method is a convenience method whose implementation is equivalent to the following example code:
+ 
+    [manager.HTTPClient setDefaultHeader:@"Accept" value:MIMEType];
 
  @param MIMEType The MIME Type to set as the value for the HTTP "Accept" header.
  */

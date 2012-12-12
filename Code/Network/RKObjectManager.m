@@ -197,7 +197,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 @property (nonatomic, strong) NSMutableArray *mutableRequestDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableResponseDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableFetchRequestBlocks;
-@property (nonatomic, strong) NSString *acceptHeaderValue;
 @property (nonatomic) Class HTTPOperationClass;
 @end
 
@@ -237,16 +236,15 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
     RKObjectManager *manager = [[self alloc] initWithHTTPClient:[AFHTTPClient clientWithBaseURL:baseURL]];
-    manager.acceptHeaderValue = RKMIMETypeJSON;
+    [manager.HTTPClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+    [manager setAcceptHeaderWithMIMEType:RKMIMETypeJSON];
     manager.requestSerializationMIMEType = RKMIMETypeFormURLEncoded;
     return manager;
 }
 
-// NOTE: This implementation could just use the default headers on AFHTTPClient, but this
-// feels less intrusive.
 - (void)setAcceptHeaderWithMIMEType:(NSString *)MIMEType;
 {
-    self.acceptHeaderValue = MIMEType;
+    [self.HTTPClient setDefaultHeader:@"Accept" value:MIMEType];
 }
 
 - (NSURL *)baseURL
@@ -256,9 +254,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 - (NSDictionary *)defaultHeaders
 {
-    NSMutableDictionary *defaultHeaders = [self.HTTPClient.defaultHeaders mutableCopy];
-    if (self.acceptHeaderValue) [defaultHeaders setValue:self.acceptHeaderValue forKey:@"Accept"];
-    return defaultHeaders;
+    return self.HTTPClient.defaultHeaders;
 }
 
 #pragma mark - Building Requests
@@ -282,7 +278,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 	} else {
         request = [self.HTTPClient requestWithMethod:method path:path parameters:parameters];
     }
-    if (self.acceptHeaderValue) [request setValue:self.acceptHeaderValue forHTTPHeaderField:@"Accept"];
 
 	return request;
 }
@@ -353,8 +348,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         requestParameters = parameters;
     }
     NSMutableURLRequest *multipartRequest = [self.HTTPClient multipartFormRequestWithMethod:stringMethod path:requestPath parameters:requestParameters constructingBodyWithBlock:block];
-    if (self.acceptHeaderValue) [multipartRequest setValue:self.acceptHeaderValue forHTTPHeaderField:@"Accept"];
-
     return multipartRequest;
 }
 
