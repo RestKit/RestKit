@@ -383,7 +383,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 /////////////////////////////////////////////////////////////////////////////
 
 static NSMutableArray *defaultDateFormatters = nil;
-static NSDateFormatter *preferredDateFormatter = nil;
+static NSFormatter *preferredDateFormatter = nil;
 
 @implementation RKObjectMapping (DateAndTimeFormatting)
 
@@ -440,11 +440,10 @@ static NSDateFormatter *preferredDateFormatter = nil;
 + (NSFormatter *)preferredDateFormatter
 {
     if (!preferredDateFormatter) {
-        // A date formatter that matches the output of [NSDate description]
-        preferredDateFormatter = [NSDateFormatter new];
-        [preferredDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss Z"];
-        preferredDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        preferredDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        RKISO8601DateFormatter *iso8601Formatter = [[RKISO8601DateFormatter alloc] init];
+        iso8601Formatter.defaultTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        iso8601Formatter.includeTime = YES;
+        preferredDateFormatter = iso8601Formatter;
     }
 
     return preferredDateFormatter;
