@@ -10,6 +10,7 @@
 #import "RKManagedObjectRequestOperation.h"
 #import "RKEntityMapping.h"
 #import "RKHuman.h"
+#import "RKTestUser.h"
 #import "RKMappingErrors.h"
 
 @interface RKManagedObjectRequestOperation ()
@@ -147,7 +148,7 @@
     expect(managedObjectRequestOperation.mappingResult).notTo.beNil();
     NSArray *mappedObjects = [managedObjectRequestOperation.mappingResult array];
     expect(mappedObjects).to.haveCountOf(1);
-    expect(mappedObjects[0]).to.equal(human);
+    expect([mappedObjects[0] objectID]).to.equal([human objectID]);
 }
 
 - (void)testThatInvalidObjectFailingManagedObjectContextSaveFailsOperation
@@ -270,5 +271,30 @@
     expect(managedObjectRequestOperation.error).to.beNil();
     expect([human hasBeenDeleted]).to.equal(YES);
 }
+
+- (void)testThatManagedObjectMappedAsTheRelationshipOfNonManagedObjectsAreRefetchedFromTheParentContext
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favorite_cat" toKeyPath:@"friends" withMapping:entityMapping]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
+    RKTestUser *testUser = [managedObjectRequestOperation.mappingResult firstObject];
+    expect([[testUser.friends lastObject] managedObjectContext]).to.equal(managedObjectStore.persistentStoreManagedObjectContext);
+}
+
+// TODO: Test with dynamic mapping
+// TODO: Test with nil root key path
+// TODO: Test with NSSet
+// TODO: Test with NSOrderedSet
+// TODO: Test with NSSet
 
 @end
