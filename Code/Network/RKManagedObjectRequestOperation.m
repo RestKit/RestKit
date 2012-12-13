@@ -355,7 +355,9 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     NSDictionary *mappingResultDictionary = result.dictionary;
     for (NSString *keyPath in keyPaths) {
         id managedObjects = [mappingResultDictionary valueForKeyPath:keyPath];
-        if ([managedObjects isKindOfClass:[NSManagedObject class]]) {
+        if (! managedObjects) {
+            continue;
+        } else if ([managedObjects isKindOfClass:[NSManagedObject class]]) {
             [managedObjectsInMappingResult addObject:managedObjects];
         } else if ([managedObjects isKindOfClass:[NSSet class]]) {
             [managedObjectsInMappingResult unionSet:managedObjects];
