@@ -78,9 +78,15 @@ NSRange RKStatusCodeRangeForClass(RKStatusCodeClass statusCodeClass);
  */
 NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
 
-// TODO: Implement these guys...
-//NSString * RKStringFromStatusCode(NSInteger statusCode);
-//NSInteger RKStatusCodeFromString(NSString *statusCode);
+/**
+ Returns string representation of a given HTTP status code.
+ 
+ The list of supported status codes was built from http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+ 
+ @param statusCode The HTTP status code to return a string from.
+ @return A string representation of the given status code.
+ */
+NSString *RKStringFromStatusCode(NSInteger statusCode);
 
 /**
  Parse HTTP Date: http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1

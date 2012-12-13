@@ -147,17 +147,19 @@ static NSString *RKStringDescribingStream(NSStream *stream)
 - (void)HTTPOperationDidFinish:(NSNotification *)notification
 {
     RKHTTPRequestOperation *operation = [notification object];
+    NSString *statusCodeString = RKStringFromStatusCode([operation.response statusCode]);
+    NSString *statusCodeFragment = statusCodeString ? [NSString stringWithFormat:@"(%ld %@)", (long)[operation.response statusCode], statusCodeString] : [NSString stringWithFormat:@"(%ld)", (long)[operation.response statusCode]];
     if (operation.error) {
         if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogError(@"%@ '%@' (%ld):\nerror=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], operation.error, operation.responseString);
+            RKLogError(@"%@ '%@' %@:\nerror=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeFragment, operation.error, operation.responseString);
         } else {
-          RKLogError(@"%@ '%@' (%ld): %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], operation.error);
+          RKLogError(@"%@ '%@' %@: %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeFragment, operation.error);
         }
     } else {
         if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogTrace(@"%@ '%@' (%ld):\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode], [operation.response allHeaderFields], RKLogTruncateString(operation.responseString));
+            RKLogTrace(@"%@ '%@' %@:\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeFragment, [operation.response allHeaderFields], RKLogTruncateString(operation.responseString));
         } else {
-            RKLogInfo(@"%@ '%@' (%ld)", [operation.request HTTPMethod], [[operation.request URL] absoluteString], (long)[operation.response statusCode]);
+            RKLogInfo(@"%@ '%@' %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeFragment);
         }
     }
 }
