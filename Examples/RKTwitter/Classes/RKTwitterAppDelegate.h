@@ -8,9 +8,5 @@
 
 #import <UIKit/UIKit.h>
 
-
-@interface RKTwitterAppDelegate : NSObject <UIApplicationDelegate> {
-}
-
+@interface RKTwitterAppDelegate : UIResponder <UIApplicationDelegate>
 @end
-
