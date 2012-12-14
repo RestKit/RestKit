@@ -21,6 +21,9 @@
 
 - (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
+    NSParameterAssert(keyPath);
+    NSParameterAssert(expectedValue);
+    NSParameterAssert(objectMapping);
     self = [super init];
     if (self) {
         self.keyPath = keyPath;
@@ -33,7 +36,9 @@
 
 - (BOOL)matches:(id)object
 {
-    return RKObjectIsEqualToObject([object valueForKeyPath:self.keyPath], self.expectedValue);
+    id value = [object valueForKeyPath:self.keyPath];
+    if (value == nil) return NO;
+    return RKObjectIsEqualToObject(value, self.expectedValue);
 }
 
 - (NSString *)description
