@@ -341,12 +341,17 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 - (BOOL)deleteLocalObjectsMissingFromMappingResult:(RKMappingResult *)result atKeyPaths:(NSSet *)keyPaths error:(NSError **)error
 {
     if (! self.deletesOrphanedObjects) {
-        RKLogDebug(@"Skipping deletion of orphaned objects: deletesOrphanedObjects=NO");
+        RKLogDebug(@"Skipping deletion of orphaned objects: disabled as deletesOrphanedObjects=NO");
         return YES;
     }
 
     if (! [[self.HTTPRequestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
-        RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
+        RKLogDebug(@"Skipping deletion of orphaned objects: only performed for GET requests.");
+        return YES;
+    }
+    
+    if (self.HTTPRequestOperation.wasNotModified) {
+        RKLogDebug(@"Skipping deletion of orphaned objects: 304 (Not Modified) status code encountered");
         return YES;
     }
 
@@ -370,6 +375,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 
     NSSet *localObjects = [self localObjectsFromFetchRequestsMatchingRequestURL:error];
     if (! localObjects) return NO;
+    RKLogDebug(@"Checking mappings result of %ld objects for %ld potentially orphaned local objects...", (long) [managedObjectsInMappingResult count], (long) [localObjects count]);
     for (id object in localObjects) {
         if (NO == [managedObjectsInMappingResult containsObject:object]) {
             RKLogDebug(@"Deleting orphaned object %@: not found in result set and expected at this URL", object);
