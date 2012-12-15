@@ -1,0 +1,446 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2583C49C15D96D4000E05CAE /* contacts.json in Resources */ = {isa = PBXBuildFile; fileRef = 2583C49B15D96D4000E05CAE /* contacts.json */; };
+		259C7FFB15D20B5600F447D2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C7FFA15D20B5600F447D2 /* UIKit.framework */; };
+		259C7FFD15D20B5600F447D2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C7FFC15D20B5600F447D2 /* Foundation.framework */; };
+		259C7FFF15D20B5600F447D2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C7FFE15D20B5600F447D2 /* CoreGraphics.framework */; };
+		259C800515D20B5600F447D2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 259C800315D20B5600F447D2 /* InfoPlist.strings */; };
+		259C800715D20B5600F447D2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 259C800615D20B5600F447D2 /* main.m */; };
+		259C800B15D20B5600F447D2 /* RKSAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 259C800A15D20B5600F447D2 /* RKSAppDelegate.m */; };
+		259C800E15D20B5600F447D2 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 259C800C15D20B5600F447D2 /* MainStoryboard.storyboard */; };
+		259C801115D20B5600F447D2 /* RKSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 259C801015D20B5600F447D2 /* RKSViewController.m */; };
+		259C802E15D20BAA00F447D2 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C802315D20B7100F447D2 /* libRestKit.a */; };
+		259C803415D20BAA00F447D2 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C802F15D20BAA00F447D2 /* CFNetwork.framework */; };
+		259C803515D20BAA00F447D2 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803015D20BAA00F447D2 /* CoreData.framework */; };
+		259C803615D20BAA00F447D2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803115D20BAA00F447D2 /* QuartzCore.framework */; };
+		259C803715D20BAA00F447D2 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803215D20BAA00F447D2 /* Security.framework */; };
+		259C803815D20BAA00F447D2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803315D20BAA00F447D2 /* SystemConfiguration.framework */; };
+		259C803A15D20C3500F447D2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803915D20C3500F447D2 /* MobileCoreServices.framework */; };
+		259C803C15D20C4000F447D2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803B15D20C4000F447D2 /* libxml2.dylib */; };
+		25AA7D1415D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 25AA7D1215D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		259C802215D20B7100F447D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25160D1614564E810060A5C5;
+			remoteInfo = RestKit;
+		};
+		259C802415D20B7100F447D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25160D2614564E820060A5C5;
+			remoteInfo = RestKitTests;
+		};
+		259C802615D20B7100F447D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25160E62145651060060A5C5;
+			remoteInfo = RestKitFramework;
+		};
+		259C802815D20B7100F447D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25160E78145651060060A5C5;
+			remoteInfo = RestKitFrameworkTests;
+		};
+		259C802C15D20B7B00F447D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 25160D1514564E810060A5C5;
+			remoteInfo = RestKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2583C49B15D96D4000E05CAE /* contacts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = contacts.json; sourceTree = "<group>"; };
+		259C7FF615D20B5600F447D2 /* RKSearchExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RKSearchExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		259C7FFA15D20B5600F447D2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		259C7FFC15D20B5600F447D2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		259C7FFE15D20B5600F447D2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		259C800215D20B5600F447D2 /* RKSearchExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RKSearchExample-Info.plist"; sourceTree = "<group>"; };
+		259C800415D20B5600F447D2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		259C800615D20B5600F447D2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		259C800815D20B5600F447D2 /* RKSearchExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RKSearchExample-Prefix.pch"; sourceTree = "<group>"; };
+		259C800915D20B5600F447D2 /* RKSAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKSAppDelegate.h; sourceTree = "<group>"; };
+		259C800A15D20B5600F447D2 /* RKSAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKSAppDelegate.m; sourceTree = "<group>"; };
+		259C800D15D20B5600F447D2 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
+		259C800F15D20B5600F447D2 /* RKSViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKSViewController.h; sourceTree = "<group>"; };
+		259C801015D20B5600F447D2 /* RKSViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKSViewController.m; sourceTree = "<group>"; };
+		259C801715D20B7100F447D2 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../RestKit.xcodeproj; sourceTree = "<group>"; };
+		259C802F15D20BAA00F447D2 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		259C803015D20BAA00F447D2 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		259C803115D20BAA00F447D2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		259C803215D20BAA00F447D2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		259C803315D20BAA00F447D2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		259C803915D20C3500F447D2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		259C803B15D20C4000F447D2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		25AA7D1315D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RKSearchExampleModel.xcdatamodel; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		259C7FF315D20B5600F447D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				259C803C15D20C4000F447D2 /* libxml2.dylib in Frameworks */,
+				259C803A15D20C3500F447D2 /* MobileCoreServices.framework in Frameworks */,
+				259C803415D20BAA00F447D2 /* CFNetwork.framework in Frameworks */,
+				259C803515D20BAA00F447D2 /* CoreData.framework in Frameworks */,
+				259C803615D20BAA00F447D2 /* QuartzCore.framework in Frameworks */,
+				259C803715D20BAA00F447D2 /* Security.framework in Frameworks */,
+				259C803815D20BAA00F447D2 /* SystemConfiguration.framework in Frameworks */,
+				259C802E15D20BAA00F447D2 /* libRestKit.a in Frameworks */,
+				259C7FFF15D20B5600F447D2 /* CoreGraphics.framework in Frameworks */,
+				259C7FFB15D20B5600F447D2 /* UIKit.framework in Frameworks */,
+				259C7FFD15D20B5600F447D2 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		259C7FEB15D20B5600F447D2 = {
+			isa = PBXGroup;
+			children = (
+				259C800015D20B5600F447D2 /* RKSearchExample */,
+				259C7FF915D20B5600F447D2 /* Frameworks */,
+				259C7FF715D20B5600F447D2 /* Products */,
+				259C801715D20B7100F447D2 /* RestKit.xcodeproj */,
+			);
+			sourceTree = "<group>";
+		};
+		259C7FF715D20B5600F447D2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				259C7FF615D20B5600F447D2 /* RKSearchExample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		259C7FF915D20B5600F447D2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				259C803B15D20C4000F447D2 /* libxml2.dylib */,
+				259C803915D20C3500F447D2 /* MobileCoreServices.framework */,
+				259C803015D20BAA00F447D2 /* CoreData.framework */,
+				259C803115D20BAA00F447D2 /* QuartzCore.framework */,
+				259C803215D20BAA00F447D2 /* Security.framework */,
+				259C803315D20BAA00F447D2 /* SystemConfiguration.framework */,
+				259C802F15D20BAA00F447D2 /* CFNetwork.framework */,
+				259C7FFA15D20B5600F447D2 /* UIKit.framework */,
+				259C7FFC15D20B5600F447D2 /* Foundation.framework */,
+				259C7FFE15D20B5600F447D2 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		259C800015D20B5600F447D2 /* RKSearchExample */ = {
+			isa = PBXGroup;
+			children = (
+				2583C49B15D96D4000E05CAE /* contacts.json */,
+				259C800915D20B5600F447D2 /* RKSAppDelegate.h */,
+				259C800A15D20B5600F447D2 /* RKSAppDelegate.m */,
+				259C800C15D20B5600F447D2 /* MainStoryboard.storyboard */,
+				259C800F15D20B5600F447D2 /* RKSViewController.h */,
+				259C801015D20B5600F447D2 /* RKSViewController.m */,
+				25AA7D1215D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld */,
+				259C800115D20B5600F447D2 /* Supporting Files */,
+			);
+			path = RKSearchExample;
+			sourceTree = "<group>";
+		};
+		259C800115D20B5600F447D2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				259C800215D20B5600F447D2 /* RKSearchExample-Info.plist */,
+				259C800315D20B5600F447D2 /* InfoPlist.strings */,
+				259C800615D20B5600F447D2 /* main.m */,
+				259C800815D20B5600F447D2 /* RKSearchExample-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		259C801815D20B7100F447D2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				259C802315D20B7100F447D2 /* libRestKit.a */,
+				259C802515D20B7100F447D2 /* RestKitTests.octest */,
+				259C802715D20B7100F447D2 /* RestKit.framework */,
+				259C802915D20B7100F447D2 /* RestKitFrameworkTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		259C7FF515D20B5600F447D2 /* RKSearchExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 259C801415D20B5600F447D2 /* Build configuration list for PBXNativeTarget "RKSearchExample" */;
+			buildPhases = (
+				259C7FF215D20B5600F447D2 /* Sources */,
+				259C7FF315D20B5600F447D2 /* Frameworks */,
+				259C7FF415D20B5600F447D2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				259C802D15D20B7B00F447D2 /* PBXTargetDependency */,
+			);
+			name = RKSearchExample;
+			productName = RKSearchExample;
+			productReference = 259C7FF615D20B5600F447D2 /* RKSearchExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		259C7FED15D20B5600F447D2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = RKS;
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = "Blake Watters";
+			};
+			buildConfigurationList = 259C7FF015D20B5600F447D2 /* Build configuration list for PBXProject "RKSearchExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 259C7FEB15D20B5600F447D2;
+			productRefGroup = 259C7FF715D20B5600F447D2 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 259C801815D20B7100F447D2 /* Products */;
+					ProjectRef = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				259C7FF515D20B5600F447D2 /* RKSearchExample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		259C802315D20B7100F447D2 /* libRestKit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKit.a;
+			remoteRef = 259C802215D20B7100F447D2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		259C802515D20B7100F447D2 /* RestKitTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitTests.octest;
+			remoteRef = 259C802415D20B7100F447D2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		259C802715D20B7100F447D2 /* RestKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RestKit.framework;
+			remoteRef = 259C802615D20B7100F447D2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		259C802915D20B7100F447D2 /* RestKitFrameworkTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitFrameworkTests.octest;
+			remoteRef = 259C802815D20B7100F447D2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		259C7FF415D20B5600F447D2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				259C800515D20B5600F447D2 /* InfoPlist.strings in Resources */,
+				259C800E15D20B5600F447D2 /* MainStoryboard.storyboard in Resources */,
+				2583C49C15D96D4000E05CAE /* contacts.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		259C7FF215D20B5600F447D2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				259C800715D20B5600F447D2 /* main.m in Sources */,
+				259C800B15D20B5600F447D2 /* RKSAppDelegate.m in Sources */,
+				259C801115D20B5600F447D2 /* RKSViewController.m in Sources */,
+				25AA7D1415D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		259C802D15D20B7B00F447D2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RestKit;
+			targetProxy = 259C802C15D20B7B00F447D2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		259C800315D20B5600F447D2 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				259C800415D20B5600F447D2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		259C800C15D20B5600F447D2 /* MainStoryboard.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				259C800D15D20B5600F447D2 /* en */,
+			);
+			name = MainStoryboard.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		259C801215D20B5600F447D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		259C801315D20B5600F447D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		259C801515D20B5600F447D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "RKSearchExample/RKSearchExample-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
+				INFOPLIST_FILE = "RKSearchExample/RKSearchExample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		259C801615D20B5600F447D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "RKSearchExample/RKSearchExample-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
+				INFOPLIST_FILE = "RKSearchExample/RKSearchExample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		259C7FF015D20B5600F447D2 /* Build configuration list for PBXProject "RKSearchExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				259C801215D20B5600F447D2 /* Debug */,
+				259C801315D20B5600F447D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		259C801415D20B5600F447D2 /* Build configuration list for PBXNativeTarget "RKSearchExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				259C801515D20B5600F447D2 /* Debug */,
+				259C801615D20B5600F447D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		25AA7D1215D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				25AA7D1315D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodel */,
+			);
+			currentVersion = 25AA7D1315D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodel */;
+			path = RKSearchExampleModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 259C7FED15D20B5600F447D2 /* Project object */;
+}

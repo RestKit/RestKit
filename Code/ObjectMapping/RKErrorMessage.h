@@ -3,14 +3,14 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 5/10/11.
-//  Copyright 2011 Two Toasters
-//  
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,15 +21,28 @@
 #import <Foundation/Foundation.h>
 
 /**
- A destination class for mapping simple remote error messages.
+ The `RKErrorMessage` is a simple class used for representing error messages returned by a remote backend system with which the client application is communicating. Error messages are typically returned in a response body in the Client Error class (status code 4xx range).
+
+ ## Error Message Informal Protocol
+
+ The `errorMessage` property method is the sole method of an informal protocol that must be adopted by objects wishing to represent error messages within RestKit. This protocol is by the `RKErrorFromMappingResult` function when constructing `NSError` messages from a mapped response body.
+
+ @see `RKErrorFromMappingResult`
  */
-@interface RKErrorMessage : NSObject {
-    NSString* _errorMessage;
-}
+@interface RKErrorMessage : NSObject
+
+///-----------------------------------
+/// @name Accessing Errror Information
+///-----------------------------------
 
 /**
- The error message string mapped from the response payload
+ The error message to be presented to the user.
  */
-@property (nonatomic, retain) NSString* errorMessage;
+@property (nonatomic, copy) NSString *errorMessage;
+
+/**
+ A dictionary of application specific information that accompanies the error message.
+ */
+@property (nonatomic, copy) NSDictionary *userInfo;
 
 @end
