@@ -520,7 +520,8 @@ Edit your Podfile and add RestKit:
 
 ``` bash
 $ edit Podfile
-platform :ios, '5.0'
+platform :ios, '5.0' 
+# Or platform :osx, '10.7'
 pod 'RestKit', :git => 'https://github.com/RestKit/RestKit.git', :branch => 'development'
 
 # Testing and Search are optional components
