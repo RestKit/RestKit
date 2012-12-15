@@ -6,17 +6,17 @@ PODS:
 - Specta (0.1.6)
 
 DEPENDENCIES:
-- Expecta (from `git://github.com:blakewatters/expecta.git', branch `feature/expect-raise-with-reason')
+- Expecta (from `git://github.com/blakewatters/expecta.git', branch `feature/expect-raise-with-reason')
 - OCHamcrest (= 1.9)
-- OCMock (from `git://github.com:blakewatters/ocmock.git')
+- OCMock (from `git://github.com/blakewatters/ocmock.git')
 - Specta (= 0.1.6)
 
 EXTERNAL SOURCES:
   Expecta:
-    :git: git://github.com:blakewatters/expecta.git
+    :git: git://github.com/blakewatters/expecta.git
     :branch: feature/expect-raise-with-reason
   OCMock:
-    :git: git://github.com:blakewatters/ocmock.git
+    :git: git://github.com/blakewatters/ocmock.git
 
 SPEC CHECKSUMS:
   Expecta: 3ddfc757aeb1e351e12c6f1e21ab631f77178f13
