@@ -522,11 +522,11 @@ Edit your Podfile and add RestKit:
 $ edit Podfile
 platform :ios, '5.0' 
 # Or platform :osx, '10.7'
-pod 'RestKit', :git => 'https://github.com/RestKit/RestKit.git', :branch => 'development'
+pod 'RestKit', '~> 0.20.0pre'
 
 # Testing and Search are optional components
-pod 'RestKit/Testing',  :git => 'https://github.com/RestKit/RestKit.git', :branch => 'development'
-pod 'RestKit/Search',  :git => 'https://github.com/RestKit/RestKit.git', :branch => 'development'
+pod 'RestKit/Testing', '~> 0.20.0pre'
+pod 'RestKit/Search',  '~> 0.20.0pre'
 ```
 
 Install into your project:
