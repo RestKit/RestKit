@@ -171,7 +171,6 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsAtKeyPathsRefet
             } else if ([value isKindOfClass:[NSManagedObject class]]) {
                 // Object becomes nil if deleted
                 value = [value managedObjectContext] ? [managedObjectContext existingObjectWithID:[value objectID] error:&error] : nil;
-                NSCAssert(value, @"Failed to find existing object with ID %@ in context %@: %@", [value objectID], managedObjectContext, error);
             }
             
             RKSetMappedValueForKeyPathInDictionary(value, keyPath, newDictionary);
