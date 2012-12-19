@@ -1288,7 +1288,7 @@
     expect(decodedDictionary).to.equal(expectedValue);
 }
 
-- (void)testShouldMapAFutureDateStringToADate
+- (void)testShouldMapNSDateDistantFutureDateStringToADate
 {
     [RKObjectMapping resetDefaultDateFormatters];
 
@@ -1297,7 +1297,7 @@
     [mapping addPropertyMapping:birthDateMapping];
 
     NSMutableDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
-    [dictionary setObject:@"01/01/4001" forKey:@"birthdate"];
+    [dictionary setObject:@"4001-01-01 00:00:00 +0000" forKey:@"birthdate"];
     RKTestUser *user = [RKTestUser user];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
