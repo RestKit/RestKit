@@ -145,6 +145,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
                                                                   attributeValues:attributeValues
                                                            inManagedObjectContext:self.managedObjectContext];
         if (self.connection.predicate) managedObjects = [managedObjects filteredSetUsingPredicate:self.connection.predicate];
+        if (!self.connection.includesSubentities) managedObjects = [managedObjects filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"entity == %@", [self.connection.relationship destinationEntity]]];
         if ([self.connection.relationship isToMany]) {
             connectionResult = managedObjects;
         } else {

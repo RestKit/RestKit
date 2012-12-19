@@ -32,5 +32,7 @@
 @property (nonatomic, strong) NSNumber *fatherID;
 @property (nonatomic, strong) RKParent *father;
 @property (nonatomic, strong) RKParent *mother;
+@property (nonatomic, strong) NSArray *friendIDs;
+@property (nonatomic, strong) NSSet *friends;
 
 @end

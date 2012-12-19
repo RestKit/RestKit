@@ -145,6 +145,13 @@
 ///----------------------------
 
 /**
+ Returns a Boolean value that determines if the connection includes subentities. If `NO`, then the connection will only be established to objects of exactly the entity specified by the relationship's entity. If `YES`, then the connection will be established to all objects of the relationship's entity and all subentities.
+
+ **Default**: `YES`
+ */
+@property (nonatomic, assign) BOOL includesSubentities;
+
+/**
  An optional predicate for filtering objects to be connected.
  */
 @property (nonatomic, copy) NSPredicate *predicate;

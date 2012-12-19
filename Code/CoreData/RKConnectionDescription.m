@@ -58,6 +58,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     if (self) {
         self.relationship = relationship;
         self.attributes = attributes;
+        self.includesSubentities = YES;
     }
     return self;
 }

@@ -11,6 +11,7 @@
 #import "RKCat.h"
 #import "RKHouse.h"
 #import "RKResident.h"
+#import "RKChild.h"
 #import "RKRelationshipConnectionOperation.h"
 #import "RKFetchRequestManagedObjectCache.h"
 
@@ -205,6 +206,54 @@
     [operation start];
 
     expect([human.friendsInTheOrderWeMet set]).to.beEmpty();
+}
+
+- (void)testConnectingToSubentities
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"Child" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSRelationshipDescription *relationship = [childEntity relationshipsByName][@"friends"];
+    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"friendIDs": @"railsID" }];
+    connection.includesSubentities = YES;
+
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
+    human.railsID = @(12345);
+    RKChild *child = [RKTestFactory insertManagedObjectForEntityForName:@"Child" inManagedObjectContext:nil withProperties:nil];
+    child.railsID = @(12345);
+
+    RKChild *secondChild = [RKTestFactory insertManagedObjectForEntityForName:@"Child" inManagedObjectContext:nil withProperties:nil];
+    secondChild.friendIDs = @[ @(12345) ];
+
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:secondChild connection:connection managedObjectCache:managedObjectCache];
+    [operation start];
+
+    NSSet *expectedFriends = [NSSet setWithObjects:human, child, nil];
+    expect(secondChild.friends).to.equal(expectedFriends);
+}
+
+- (void)testNotConnectingToSubentities
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"Child" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSRelationshipDescription *relationship = [childEntity relationshipsByName][@"friends"];
+    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"friendIDs": @"railsID" }];
+    connection.includesSubentities = NO;
+
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
+    human.railsID = @(12345);
+    RKChild *child = [RKTestFactory insertManagedObjectForEntityForName:@"Child" inManagedObjectContext:nil withProperties:nil];
+    child.railsID = @(12345);
+
+    RKChild *secondChild = [RKTestFactory insertManagedObjectForEntityForName:@"Child" inManagedObjectContext:nil withProperties:nil];
+    secondChild.friendIDs = @[ @(12345) ];
+
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:secondChild connection:connection managedObjectCache:managedObjectCache];
+    [operation start];
+
+    NSSet *expectedFriends = [NSSet setWithObjects:human, nil];
+    expect(secondChild.friends).to.equal(expectedFriends);
 }
 
 @end
