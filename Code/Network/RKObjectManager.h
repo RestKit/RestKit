@@ -85,7 +85,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Once a path pattern has been registered via the routing system, the manager can automatically build full request URL's when given nothing but the object to be sent.
  
- The second use case of path patterns is in the matching of path into a dictionary of attributes. In this case, the path pattern is evaluatd against a string and used to construct an `NSDictionary` object containing the matched key paths, optionally including the values of a query string. This functionality is provided via the `RKPathMatcher` class and is discussed in detail in the accompanying documentation.  
+ The second use case of path patterns is in the matching of path into a dictionary of attributes. In this case, the path pattern is evaluatd against a string and used to construct an `NSDictionary` object containing the matched key paths, optionally including the values of a query string. This functionality is provided via the `RKPathMatcher` class and is discussed in detail in the accompanying documentation.
+ 
+ ### Escaping Path Patterns
+ 
+ Note that path patterns will by default interpret anything prefixed with a period that follows a dynamic path segment as a key path. This can cause an issue if you have a dynamic path segment that is followed by a file extension. For example, a path pattern of '/categories/:categoryID.json' would be erroneously interpretted as containing a dynamic path segment whose value is interpolated from the 'categoryID.json' key path. This key path evaluation behavior can be suppressed by escaping the period preceding the non-dynamic part of the pattern with two leading slashes, as in '/categories/:categoryID\\.json'.
  
  ## Request and Response Descriptors
  
