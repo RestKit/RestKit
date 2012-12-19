@@ -1288,6 +1288,29 @@
     expect(decodedDictionary).to.equal(expectedValue);
 }
 
+- (void)testShouldMapAFutureDateStringToADate
+{
+    [RKObjectMapping resetDefaultDateFormatters];
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
+    [mapping addPropertyMapping:birthDateMapping];
+
+    NSMutableDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
+    [dictionary setObject:@"01/01/4001" forKey:@"birthdate"];
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [dateFormatter setDateFormat:@"MM/dd/yyyy"];
+    assertThat([dateFormatter stringFromDate:user.birthDate], is(equalTo(@"01/01/4001")));
+}
+
 #pragma mark - Relationship Mapping
 
 - (void)testShouldMapANestedObject
