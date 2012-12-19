@@ -287,7 +287,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
 {
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
-    self.mapperOperation = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
+    self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     self.mapperOperation.mappingOperationDataSource = dataSource;
     if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
         self.mapperOperation.targetObject = self.targetObject;
@@ -327,7 +327,7 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     self.operationQueue = [NSOperationQueue new];
     [self.managedObjectContext performBlockAndWait:^{
         // Configure the mapper
-        self.mapperOperation = [[RKMapperOperation alloc] initWithObject:sourceObject mappingsDictionary:self.responseMappingsDictionary];
+        self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
         self.mapperOperation.delegate = self.mapperDelegate;
         
         // Configure a data source to defer execution of connection operations until mapping is complete

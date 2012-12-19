@@ -20,9 +20,9 @@
 
 @interface RKMapperOperation (Private)
 
-- (id)mapObject:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
-- (NSArray *)mapCollection:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
-- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
-- (id)objectWithMapping:(RKMapping *)objectMapping andData:(id)mappableData;
+- (id)mapRepresentation:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
+- (NSArray *)mapRepresentations:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
+- (BOOL)mapRepresentation:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
+- (id)objectForRepresentation:(id)representation withMapping:(RKMapping *)mapping;
 
 @end

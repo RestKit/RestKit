@@ -136,9 +136,19 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     if (self) {
         self.managedObjectContext = managedObjectContext;
         self.managedObjectCache = managedObjectCache;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(updateCacheWithChangesFromContextWillSaveNotification:)
+                                                     name:NSManagedObjectContextWillSaveNotification
+                                                   object:managedObjectContext];
     }
 
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping
@@ -237,6 +247,37 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
     
     return YES;
+}
+
+// NOTE: In theory we should be able to use the userInfo dictionary, but the dictionary was coming in empty (12/18/2012)
+- (void)updateCacheWithChangesFromContextWillSaveNotification:(NSNotification *)notification
+{
+    NSSet *objectsToAdd = [[self.managedObjectContext insertedObjects] setByAddingObjectsFromSet:[self.managedObjectContext updatedObjects]];
+    
+    __block BOOL success;
+    __block NSError *error = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        success = [self.managedObjectContext obtainPermanentIDsForObjects:[objectsToAdd allObjects] error:&error];
+    }];
+    
+    if (! success) {
+        RKLogWarning(@"Failed obtaining permanent managed object ID's for %ld objects: the managed object cache was not updated and duplicate objects may be created.", (long) [objectsToAdd count]);
+        RKLogError(@"Obtaining permanent managed object IDs failed with error: %@", error);
+        return;
+    }
+    
+    // Update the cache
+    if ([self.managedObjectCache respondsToSelector:@selector(didFetchObject:)]) {
+        for (NSManagedObject *managedObject in objectsToAdd) {
+            [self.managedObjectCache didFetchObject:managedObject];
+        }
+    }
+    
+    if ([self.managedObjectCache respondsToSelector:@selector(didDeleteObject::)]) {
+        for (NSManagedObject *managedObject in [self.managedObjectContext deletedObjects]) {
+            [self.managedObjectCache didDeleteObject:managedObject];
+        }
+    }
 }
 
 @end

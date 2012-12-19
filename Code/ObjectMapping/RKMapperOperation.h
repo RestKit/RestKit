@@ -37,7 +37,7 @@
 
  ## Mappings Dictionary
 
- The mappings dictionary describes how to object map the source object. The keys of the dictionary are key paths into the `sourceObject` and the values are `RKMapping` objects describing how to map the representations at the corresponding key path. This dictionary based approach enables a single document to contain an arbitrary number of object representations that can be mapped independently. Consider the following example JSON structure:
+ The mappings dictionary describes how to object map the source object. The keys of the dictionary are key paths into the `representation` and the values are `RKMapping` objects describing how to map the representations at the corresponding key path. This dictionary based approach enables a single document to contain an arbitrary number of object representations that can be mapped independently. Consider the following example JSON structure:
 
     { "tags": [ "hacking", "phreaking" ], "authors": [ "Captain Crunch", "Emmanuel Goldstein" ], "magazine": { "title": "2600 The Hacker Quarterly" } }
 
@@ -52,7 +52,7 @@
 
  ### The NSNull Key
 
- A mapping set for the key `[NSNull null]` value has special significance to the mapper operation. When a mapping is encountered with the a null key, the entire `sourceObject` is processed using the given mapping. This provides support for mapping content that does not have an outer nesting attribute.
+ A mapping set for the key `[NSNull null]` value has special significance to the mapper operation. When a mapping is encountered with the a null key, the entire `representation` is processed using the given mapping. This provides support for mapping content that does not have an outer nesting attribute.
 
  ## Data Source
 
@@ -60,7 +60,7 @@
 
  ## Target Object
 
- If a `targetObject` is configured on the mapper operation, all mapping work on the `sourceObject` will target the specified object. For transient `NSObject` mappings, this ensures that the properties of an existing object are updated rather than an new object being created for the mapped representation. If an array of representations is being processed and a `targetObject` is provided, it must be a mutable collection object else an exception will be raised.
+ If a `targetObject` is configured on the mapper operation, all mapping work on the `representation` will target the specified object. For transient `NSObject` mappings, this ensures that the properties of an existing object are updated rather than an new object being created for the mapped representation. If an array of representations is being processed and a `targetObject` is provided, it must be a mutable collection object else an exception will be raised.
 
  ## Core Data
 
@@ -75,11 +75,11 @@
 /**
  Initializes the operation with a source object and a mappings dictionary.
 
- @param object An `NSDictionary` or `NSArray` of `NSDictionary` object representations to be mapped into local domain objects.
+ @param representation An `NSDictionary` or `NSArray` of `NSDictionary` object representations to be mapped into local domain objects.
  @param mappingsDictionary An `NSDictionary` wherein the keys are mappable key paths in `object` and the values are `RKMapping` objects specifying how the representations at its key path are to be mapped.
  @return The receiver, initialized with the given object and and dictionary of key paths to mappings.
  */
-- (id)initWithObject:(id)object mappingsDictionary:(NSDictionary *)mappingsDictionary;
+- (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary;
 
 ///------------------------------------------
 /// @name Accessing Mapping Result and Errors
@@ -100,14 +100,14 @@
 ///-------------------------------------
 
 /**
- The source object representation against which the mapping is performed.
+ The representation of one or more objects against which the mapping is performed.
 
  Either an `NSDictionary` or an `NSArray` of `NSDictionary` objects.
  */
-@property (nonatomic, strong, readonly) id sourceObject;
+@property (nonatomic, strong, readonly) id representation;
 
 /**
- A dictionary of key paths to `RKMapping` objects specifying how object representations in the `sourceObject` are to be mapped.
+ A dictionary of key paths to `RKMapping` objects specifying how object representations in the `representation` are to be mapped.
 
  Please see the above discussion for in-depth details about the mappings dictionary.
  */
@@ -129,6 +129,8 @@
  The delegate for the mapper operation.
  */
 @property (nonatomic, weak) id<RKMapperOperationDelegate> delegate;
+
+- (BOOL)execute:(NSError **)error;
 
 @end
 
@@ -177,7 +179,7 @@
 
  @param mapper The mapper operation performing the mapping.
  @param dictionaryOrArrayOfDictionaries The `NSDictictionary` or `NSArray` of `NSDictionary` object representations that was found at the `keyPath`.
- @param keyPath The key path that the representation was read from in the `sourceObject`. If the `keyPath` was `[NSNull null]` in the `mappingsDictionary`, it will be given as `nil` to the delegate.
+ @param keyPath The key path that the representation was read from in the `representation`. If the `keyPath` was `[NSNull null]` in the `mappingsDictionary`, it will be given as `nil` to the delegate.
  */
 - (void)mapper:(RKMapperOperation *)mapper didFindRepresentationOrArrayOfRepresentations:(id)dictionaryOrArrayOfDictionaries atKeyPath:(NSString *)keyPath;
 
@@ -194,11 +196,11 @@
 ///----------------------------------------------
 
 /**
- Tells the delegate that the mapper is about to start a mapping operation to map a representation found in the `sourceObject`.
+ Tells the delegate that the mapper is about to start a mapping operation to map a representation found in the `representation`.
 
  @param mapper The mapper operation performing the mapping.
  @param mappingOperation The mapping operation that is about to be started.
- @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `sourceObject`.
+ @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `representation`.
  */
 - (void)mapper:(RKMapperOperation *)mapper willStartMappingOperation:(RKMappingOperation *)mappingOperation forKeyPath:(NSString *)keyPath;
 
@@ -207,7 +209,7 @@
 
  @param mapper The mapper operation performing the mapping.
  @param mappingOperation The mapping operation that has finished.
- @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `sourceObject`.
+ @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `representation`.
  */
 - (void)mapper:(RKMapperOperation *)mapper didFinishMappingOperation:(RKMappingOperation *)mappingOperation forKeyPath:(NSString *)keyPath;
 
@@ -216,7 +218,7 @@
 
  @param mapper The mapper operation performing the mapping.
  @param mappingOperation The mapping operation that has failed.
- @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `sourceObject`.
+ @param keyPath The key path that was mapped. A `nil` key path indicates that the mapping matched the entire `representation`.
  @param error The error that occurred during the execution of the mapping operation.
  */
 - (void)mapper:(RKMapperOperation *)mapper didFailMappingOperation:(RKMappingOperation *)mappingOperation forKeyPath:(NSString *)keyPath withError:(NSError *)error;

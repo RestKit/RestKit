@@ -496,7 +496,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
         [anotherPost setValue:@"Another Post" forKey:@"title"];
         [anotherPost setValue:[NSSet setWithObject:anotherTag] forKey:@"tags"];
         
-        BOOL success = [managedObjectStore.persistentStoreManagedObjectContext save:nil];
+        [managedObjectStore.persistentStoreManagedObjectContext save:nil];
     }];
     
     RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];

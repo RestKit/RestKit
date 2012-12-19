@@ -902,7 +902,7 @@
     [operationQueue setSuspended:YES];
     mappingOperationDataSource.operationQueue = operationQueue;
     [managedObjectContext performBlockAndWait:^{
-        RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:JSON mappingsDictionary:mappingsDictionary];
+        RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
         mapper.mappingOperationDataSource = mappingOperationDataSource;
         [mapper start];
     }];
@@ -945,7 +945,7 @@
     NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
 
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"parents_and_children.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:JSON mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
     mapper.mappingOperationDataSource = mappingOperationDataSource;
     [mapper start];
 
@@ -977,7 +977,7 @@
     NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
 
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"parents_and_children.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:JSON mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
     mapper.mappingOperationDataSource = mappingOperationDataSource;
     [mapper start];
 
@@ -992,6 +992,71 @@
     NSUInteger childrenCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Child" predicate:nil error:nil];
     assertThatInteger(parentCount, is(equalToInteger(2)));
     assertThatInteger(childrenCount, is(equalToInteger(4)));
+}
+
+- (void)testThatMappingObjectsWithTheSameIdentificationAttributesAcrossTwoContextsDoesNotCreateDuplicateObjects
+{
+    // Create an object store
+    // Create 2 contexts with common parent
+    // Create an in memory managed object cache
+    // Map the
+    
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKInMemoryManagedObjectCache *inMemoryCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    managedObjectStore.managedObjectCache = inMemoryCache;
+    NSEntityDescription *humanEntity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
+    [mapping addAttributeMappingsFromArray:@[ @"name", @"railsID" ]];
+    
+    // Create two contexts with common parent
+    NSManagedObjectContext *firstContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    NSManagedObjectContext *secondContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];        
+    
+    // Map into the first context
+    NSDictionary *objectRepresentation = @{ @"name": @"Blake", @"railsID": @(31337) };
+    
+    // Check that the cache contains a value for our identification attributes
+    __block BOOL success;
+    __block NSError *error;
+    [firstContext performBlockAndWait:^{
+        RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:firstContext
+                                                                                                                                          cache:inMemoryCache];
+        RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:objectRepresentation mappingsDictionary:@{ [NSNull null]: mapping }];
+        mapperOperation.mappingOperationDataSource = dataSource;
+        success = [mapperOperation execute:&error];
+        expect(success).to.equal(YES);
+        expect([mapperOperation.mappingResult count]).to.equal(1);
+        
+        [firstContext save:nil];
+    }];
+    
+    // Check that there is an entry in the cache
+    NSSet *objects = [inMemoryCache managedObjectsWithEntity:humanEntity attributeValues:@{ @"railsID": @(31337) } inManagedObjectContext:firstContext];
+    expect(objects).to.haveCountOf(1);
+    
+    // Map into the second context
+    [secondContext performBlockAndWait:^{
+        RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:secondContext
+                                                                                                                                          cache:inMemoryCache];
+        RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:objectRepresentation mappingsDictionary:@{ [NSNull null]: mapping }];
+        mapperOperation.mappingOperationDataSource = dataSource;
+        success = [mapperOperation execute:&error];
+        expect(success).to.equal(YES);
+        expect([mapperOperation.mappingResult count]).to.equal(1);
+        
+        [secondContext save:nil];
+    }];
+    
+    // Now check the count
+    objects = [inMemoryCache managedObjectsWithEntity:humanEntity attributeValues:@{ @"railsID": @(31337) } inManagedObjectContext:secondContext];
+    expect(objects).to.haveCountOf(1);
+    
+    // Now pull the count back from the parent context
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"railsID == 31337"];
+    NSArray *fetchedObjects = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:nil];
+    expect(fetchedObjects).to.haveCountOf(1);
 }
 
 - (void)testConnectingToSubentitiesByFetchRequestCache
