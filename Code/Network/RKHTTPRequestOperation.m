@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#import <objc/runtime.h>
 #import "RKHTTPRequestOperation.h"
 #import "RKLog.h"
 #import "lcl_RK.h"
@@ -126,9 +127,17 @@ static NSString *RKStringDescribingStream(NSStream *stream)
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
+
 - (void)HTTPOperationDidStart:(NSNotification *)notification
 {
     RKHTTPRequestOperation *operation = [notification object];
+    
+    if (![operation isKindOfClass:[AFHTTPRequestOperation class]]) {
+        return;
+    }
+    
+    objc_setAssociatedObject(operation, RKHTTPRequestOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
     if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
         NSString *body = nil;
@@ -147,19 +156,27 @@ static NSString *RKStringDescribingStream(NSStream *stream)
 - (void)HTTPOperationDidFinish:(NSNotification *)notification
 {
     RKHTTPRequestOperation *operation = [notification object];
+    
+    if (![operation isKindOfClass:[AFHTTPRequestOperation class]]) {
+        return;
+    }
+    
+    NSTimeInterval elapsedTime = [[NSDate date] timeIntervalSinceDate:objc_getAssociatedObject(operation, RKHTTPRequestOperationStartDate)];
+    
     NSString *statusCodeString = RKStringFromStatusCode([operation.response statusCode]);
-    NSString *statusCodeFragment = statusCodeString ? [NSString stringWithFormat:@"(%ld %@)", (long)[operation.response statusCode], statusCodeString] : [NSString stringWithFormat:@"(%ld)", (long)[operation.response statusCode]];
+    NSString *elapsedTimeString = [NSString stringWithFormat:@"[%.04f s]", elapsedTime];
+    NSString *statusCodeAndElapsedTime = statusCodeString ? [NSString stringWithFormat:@"(%ld %@) %@", (long)[operation.response statusCode], statusCodeString, elapsedTimeString] : [NSString stringWithFormat:@"(%ld) %@", (long)[operation.response statusCode], elapsedTimeString];
     if (operation.error) {
         if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogError(@"%@ '%@' %@:\nerror=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeFragment, operation.error, operation.responseString);
+            RKLogError(@"%@ '%@' %@:\nerror=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime, operation.error, operation.responseString);
         } else {
-          RKLogError(@"%@ '%@' %@: %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeFragment, operation.error);
+          RKLogError(@"%@ '%@' %@: %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime, operation.error);
         }
     } else {
         if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogTrace(@"%@ '%@' %@:\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeFragment, [operation.response allHeaderFields], RKLogTruncateString(operation.responseString));
+            RKLogTrace(@"%@ '%@' %@:\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime, [operation.response allHeaderFields], RKLogTruncateString(operation.responseString));
         } else {
-            RKLogInfo(@"%@ '%@' %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeFragment);
+            RKLogInfo(@"%@ '%@' %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime);
         }
     }
 }
