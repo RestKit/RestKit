@@ -996,11 +996,6 @@
 
 - (void)testThatMappingObjectsWithTheSameIdentificationAttributesAcrossTwoContextsDoesNotCreateDuplicateObjects
 {
-    // Create an object store
-    // Create 2 contexts with common parent
-    // Create an in memory managed object cache
-    // Map the
-    
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKInMemoryManagedObjectCache *inMemoryCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     managedObjectStore.managedObjectCache = inMemoryCache;

@@ -539,4 +539,42 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(prunedSet).to.equal(expectedSet);
 }
 
+- (void)testThatMappingObjectsWithTheSameIdentificationAttributesAcrossTwoObjectRequestOperationConcurrentlyDoesNotCreateDuplicateObjects
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKInMemoryManagedObjectCache *inMemoryCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    managedObjectStore.managedObjectCache = inMemoryCache;
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID" }];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:@"human" statusCodes:nil];
+    
+    NSURL *URL = [NSURL URLWithString:@"humans/1" relativeToURL:[RKTestFactory baseURL]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    RKManagedObjectRequestOperation *firstOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    firstOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    firstOperation.managedObjectCache = inMemoryCache;
+    RKManagedObjectRequestOperation *secondOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    secondOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    secondOperation.managedObjectCache = inMemoryCache;
+    
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue setMaxConcurrentOperationCount:2];
+    [operationQueue setSuspended:YES];
+    [operationQueue addOperation:firstOperation];
+    [operationQueue addOperation:secondOperation];
+    
+    // Start both operations
+    [operationQueue setSuspended:NO];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    
+    // Now pull the count back from the parent context
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"railsID == 1"];
+    NSArray *fetchedObjects = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:nil];
+    expect(fetchedObjects).to.haveCountOf(1);
+}
+
 @end
