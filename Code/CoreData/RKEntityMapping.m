@@ -36,24 +36,27 @@ NSString * const RKEntityIdentificationAttributesUserInfoKey = @"RKEntityIdentif
 
 static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDescription *entity)
 {
-    id userInfoValue = [[entity userInfo] valueForKey:RKEntityIdentificationAttributesUserInfoKey];
-    if (userInfoValue) {
-        NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
-        NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
-        [attributeNames enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
-            if (! [attributeName isKindOfClass:[NSString class]]) {
-                [NSException raise:NSInvalidArgumentException format:@"Invalid value given in user info key '%@' of entity '%@': expected an `NSString` or `NSArray` of strings, instead got '%@' (%@)", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName, [attributeName class]];
-            }
-            
-            NSAttributeDescription *attribute = [[entity attributesByName] valueForKey:attributeName];
-            if (! attribute) {
-                [NSException raise:NSInvalidArgumentException format:@"Invalid identifier attribute specified in user info key '%@' of entity '%@': no attribue was found with the name '%@'", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName];
-            }
-            
-            [attributes addObject:attribute];
-        }];
-        return attributes;
-    }
+    do {
+        id userInfoValue = [[entity userInfo] valueForKey:RKEntityIdentificationAttributesUserInfoKey];
+        if (userInfoValue) {
+            NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
+            NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
+            [attributeNames enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
+                if (! [attributeName isKindOfClass:[NSString class]]) {
+                    [NSException raise:NSInvalidArgumentException format:@"Invalid value given in user info key '%@' of entity '%@': expected an `NSString` or `NSArray` of strings, instead got '%@' (%@)", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName, [attributeName class]];
+                }
+                
+                NSAttributeDescription *attribute = [[entity attributesByName] valueForKey:attributeName];
+                if (! attribute) {
+                    [NSException raise:NSInvalidArgumentException format:@"Invalid identifier attribute specified in user info key '%@' of entity '%@': no attribue was found with the name '%@'", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName];
+                }
+                
+                [attributes addObject:attribute];
+            }];
+            return attributes;
+        }
+        entity = [entity superentity];
+    } while (entity);
     
     return nil;
 }

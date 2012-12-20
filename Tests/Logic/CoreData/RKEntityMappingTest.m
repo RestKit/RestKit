@@ -504,4 +504,40 @@
     expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
 }
 
+- (void)testEntityIdentifierInferenceSearchesParentEntities
+{
+    NSEntityDescription *entity = [[NSEntityDescription alloc] init];
+    [entity setName:@"Monkey"];
+    NSEntityDescription *parentEntity = [[NSEntityDescription alloc] init];
+    [parentEntity setName:@"Parent"];
+    [parentEntity setSubentities:@[ entity ]];
+    NSAttributeDescription *identifierAttribute = [NSAttributeDescription new];
+    [identifierAttribute setName:@"monkeyID"];
+    [parentEntity setProperties:@[ identifierAttribute ]];
+    NSArray *identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
+    expect(identificationAttributes).notTo.beNil();
+    NSArray *attributeNames = @[ @"monkeyID" ];
+    expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
+}
+
+- (void)testEntityIdentifierInferenceFromUserInfoSearchesParentEntities
+{
+    NSEntityDescription *entity = [[NSEntityDescription alloc] init];
+    [entity setName:@"Monkey"];
+    NSAttributeDescription *identifierAttribute = [NSAttributeDescription new];
+    [identifierAttribute setName:@"monkeyID"]; // We ignore this by specifying the userInfo key
+    NSAttributeDescription *nameAttribute = [NSAttributeDescription new];
+    [nameAttribute setName:@"name"];
+    [entity setProperties:@[ identifierAttribute, nameAttribute ]];
+    [entity setUserInfo:@{ RKEntityIdentificationAttributesUserInfoKey: @"name" }];
+    
+    NSEntityDescription *subentity = [NSEntityDescription new];
+    [subentity setName:@"SubMonkey"];
+    [entity setSubentities:@[ subentity ]];
+    NSArray *identificationAttributes = RKIdentificationAttributesInferredFromEntity(subentity);
+    expect(identificationAttributes).notTo.beNil();
+    NSArray *attributeNames = @[ @"name" ];
+    expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
+}
+
 @end
