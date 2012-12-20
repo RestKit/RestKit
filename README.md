@@ -516,9 +516,11 @@ $ [sudo] gem install cocoapods
 $ pod setup
 ```
 
-Edit your Podfile and add RestKit:
+Change to the directory of your Xcode project, and Create and Edit your Podfile and add RestKit:
 
 ``` bash
+$ cd /path/to/MyProject
+$ touch Podfile
 $ edit Podfile
 platform :ios, '5.0' 
 # Or platform :osx, '10.7'
@@ -533,6 +535,12 @@ Install into your project:
 
 ``` bash
 $ pod install
+```
+
+Open your project in Xcode from the .xcworkspace file (not the usual project file)
+
+``` bash
+$ open MyProject.xcworkspace
 ```
 
 Please note that if your installation fails, it may be because you are installing with a version of Git lower than CocoaPods is expecting. Please ensure that you are running Git **>= 1.8.0** by executing `git --version`. You can get a full picture of the installation details by executing `pod install --verbose`.
