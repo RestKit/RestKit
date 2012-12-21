@@ -45,6 +45,8 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     for (NSString *sourceAttribute in connection.attributes) {
         NSString *destinationAttribute = [connection.attributes objectForKey:sourceAttribute];
         id sourceValue = [managedObject valueForKey:sourceAttribute];
+        if (!sourceValue)
+            return nil;
         [destinationEntityAttributeValues setValue:sourceValue forKey:destinationAttribute];
     }
     return destinationEntityAttributeValues;
@@ -141,6 +143,12 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     id connectionResult = nil;
     if ([self.connection isForeignKeyConnection]) {
         NSDictionary *attributeValues = RKConnectionAttributeValuesWithObject(self.connection, self.managedObject);
+        if (!attributeValues)
+        {
+            RKLogWarning(@"%@ Can not establish a relationship when a source attribute has a nil value. %@", NSStringFromClass([self class]), self.connection);
+            return nil;
+        }
+                         
         NSSet *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[self.connection.relationship destinationEntity]
                                                                   attributeValues:attributeValues
                                                            inManagedObjectContext:self.managedObjectContext];
