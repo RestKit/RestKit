@@ -71,6 +71,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         self.objectCount = NSNotFound;
         self.perPage = RKPaginatorDefaultPerPage;
         self.loaded = NO;
+        self.operationQueue = [NSOperationQueue new];
     }
 
     return self;
@@ -208,11 +209,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         }
     }];
     
-    if (self.operationQueue) {
-        [self.operationQueue addOperation:self.objectRequestOperation];
-    } else {
-        [self.objectRequestOperation start];
-    }
+    [self.operationQueue addOperation:self.objectRequestOperation];
 }
 
 - (void)waitUntilFinished
