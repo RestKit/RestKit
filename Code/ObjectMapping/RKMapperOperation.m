@@ -37,6 +37,18 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
     return ([keyPath isEqual:[NSNull null]]) ? nil : keyPath;
 }
 
+
+static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representation, NSDictionary *mappingsDictionary)
+{
+    NSMutableString *failureReason = [NSMutableString string];
+    [failureReason appendFormat:@"The mapping operation was unable to find any nested object representations at the key paths searched: %@", [[mappingsDictionary allKeys] componentsJoinedByString:@", "]];
+    if ([representation respondsToSelector:@selector(allKeys)]) {
+        [failureReason appendFormat:@"\nThe representation inputted to the mapper was found to contain nested object representations at the following key paths: %@", [[representation allKeys] componentsJoinedByString:@", "]];
+    }
+    [failureReason appendFormat:@"\nThis likely indicates that you have misconfigured the key paths for your mappings."];
+    return failureReason;
+}
+
 @interface RKMapperOperation ()
 
 @property (nonatomic, strong, readwrite) NSError *error;
@@ -365,11 +377,10 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
     // If the content is empty, we don't consider it an error
     BOOL isEmpty = [self.representation respondsToSelector:@selector(count)] && ([self.representation count] == 0);
     if (foundMappable == NO && !isEmpty) {
-        NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                         NSLocalizedString(@"Unable to find any mappings for the given content", nil), NSLocalizedDescriptionKey,
-                                         [NSNull null], RKMappingErrorKeyPathErrorKey,
-                                         self.errors, RKDetailedErrorsKey,
-                                         nil];
+        NSMutableDictionary *userInfo = [@{ NSLocalizedDescriptionKey: NSLocalizedString(@"No mappable object representations were found at the key paths searched.", nil),
+                                            NSLocalizedFailureReasonErrorKey: RKFailureReasonErrorStringForMappingNotFoundError(self.representation, self.mappingsDictionary),
+                                            RKMappingErrorKeyPathErrorKey: [NSNull null],
+                                            RKDetailedErrorsKey: self.errors} mutableCopy];
         NSError *compositeError = [[NSError alloc] initWithDomain:RKErrorDomain code:RKMappingErrorNotFound userInfo:userInfo];
         self.error = compositeError;
         return;

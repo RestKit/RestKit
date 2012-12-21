@@ -595,7 +595,7 @@
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
-    assertThat([mapper.error localizedDescription], is(equalTo(@"Unable to find any mappings for the given content")));
+    assertThat([mapper.error localizedDescription], is(equalTo(@"No mappable object representations were found at the key paths searched.")));
 }
 
 - (void)testShouldAddAnErrorWhenAttemptingToMapACollectionWithoutAnObjectMapping
@@ -604,7 +604,31 @@
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
-    assertThat([mapper.error localizedDescription], is(equalTo(@"Unable to find any mappings for the given content")));
+    assertThat([mapper.error localizedDescription], is(equalTo(@"No mappable object representations were found at the key paths searched.")));
+}
+
+- (void)testThatAnErrorIsSetWithAHelpfulDescriptionWhenNoKeyPathsMatchTheArrayOfObjectsRepresentationBeingMapped
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSDictionary *mappingsDictionary = @{ @"this": mapping1, @"that": mapping2 };
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
+    [mapper start];
+    assertThat([mapper.error localizedDescription], is(equalTo(@"No mappable object representations were found at the key paths searched.")));
+    assertThat([mapper.error localizedFailureReason], is(equalTo(@"The mapping operation was unable to find any nested object representations at the key paths searched: this, that\nThis likely indicates that you have misconfigured the key paths for your mappings.")));
+}
+
+- (void)testThatAnErrorIsSetWithAHelpfulDescriptionWhenNoKeyPathsMatchTheObjectRepresentationBeingMapped
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSDictionary *mappingsDictionary = @{ @"this": mapping1, @"that": mapping2 };
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"RailsUser.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
+    [mapper start];
+    assertThat([mapper.error localizedDescription], is(equalTo(@"No mappable object representations were found at the key paths searched.")));
+    assertThat([mapper.error localizedFailureReason], is(equalTo(@"The mapping operation was unable to find any nested object representations at the key paths searched: this, that\nThe representation inputted to the mapper was found to contain nested object representations at the following key paths: user\nThis likely indicates that you have misconfigured the key paths for your mappings.")));
 }
 
 #pragma mark RKMapperOperationDelegate Tests
