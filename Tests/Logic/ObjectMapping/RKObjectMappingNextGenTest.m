@@ -1321,7 +1321,7 @@
     [mapping addPropertyMapping:birthDateMapping];
 
     NSMutableDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
-    [dictionary setObject:@"4001-01-01 00:00:00 +0000" forKey:@"birthdate"];
+    [dictionary setObject:@"3001-01-01T00:00:00Z" forKey:@"birthdate"];
     RKTestUser *user = [RKTestUser user];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -1332,7 +1332,7 @@
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     [dateFormatter setDateFormat:@"MM/dd/yyyy"];
-    assertThat([dateFormatter stringFromDate:user.birthDate], is(equalTo(@"01/01/4001")));
+    assertThat([dateFormatter stringFromDate:user.birthDate], is(equalTo(@"01/01/3001")));
 }
 
 #pragma mark - Relationship Mapping
