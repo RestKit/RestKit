@@ -215,6 +215,7 @@ RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescrip
 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://restkit.org/articles/888.json"]];
 RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
 operation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+operation.managedObjectCache = managedObjectStore.managedObjectCache;
 [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
   Article *article = [result firstObject];
 	NSLog(@"Mapped the article: %@", article);
@@ -268,6 +269,18 @@ RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithStr
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	// Transport error or server error handled by errorDescriptor
 }];
+```
+
+### Configure Core Data Integration with the Object Manager
+``` objective-c
+NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Store.sqlite"];
+[managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:nil];
+[managedObjectStore createManagedObjectContexts];
+
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
+manager.managedObjectStore = managedObjectStore;
 ```
 
 ### Load a Collection of Objects at a Path
