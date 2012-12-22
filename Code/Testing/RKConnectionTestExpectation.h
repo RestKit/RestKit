@@ -40,7 +40,7 @@
  @param value The value that is expected to be set for the relationship when the connection is established.
  @return A newly constructed connection expectation, initialized with the given relationship name, attributes dictionary, and expected value.
  */
-+ (id)expectationWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value;
++ (instancetype)expectationWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value;
 
 /**
  Initializes the receiver with the given relationship name, attributes dictionary, and value.
@@ -50,7 +50,7 @@
  @param value The value that is expected to be set for the relationship when the connection is established.
  @return The receiver, initialized with the given relationship name, attributes dictionary, and expected value.
  */
-- (id)initWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value;
+- (instancetype)initWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value;
 
 ///------------------------------------
 /// @name Accessing Expectation Details

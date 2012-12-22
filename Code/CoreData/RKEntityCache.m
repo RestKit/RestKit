@@ -27,7 +27,6 @@
 
 @implementation RKEntityCache
 
-
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)context
 {
     NSAssert(context, @"Cannot initialize entity cache with a nil context");
@@ -44,7 +43,6 @@
 {
     return [self initWithManagedObjectContext:nil];
 }
-
 
 - (void)cacheObjectsForEntity:(NSEntityDescription *)entity byAttributes:(NSArray *)attributeNames
 {

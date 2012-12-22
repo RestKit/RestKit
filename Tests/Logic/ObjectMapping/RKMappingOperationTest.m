@@ -434,7 +434,7 @@
     RKObjectMapping *childMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [childMapping addAttributeMappingsFromArray:@[@"name"]];
     
-    RKEntityMapping *parentMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectMapping *parentMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [parentMapping addAttributeMappingsFromArray:@[@"name"]];
     [parentMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"children" toKeyPath:@"friends" withMapping:childMapping]];
     NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };

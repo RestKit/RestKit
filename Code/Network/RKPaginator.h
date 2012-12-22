@@ -56,9 +56,9 @@
  @param responseDescriptors An array of response descriptors describing how to map object representations loaded by object request operations dispatched by the paginator.
  @return The receiver, initialized with the request, pagination mapping, and response descriptors.
  */
-- (id)initWithRequest:(NSURLRequest *)request
-    paginationMapping:(RKObjectMapping *)paginationMapping
-  responseDescriptors:(NSArray *)responseDescriptors;
+- (instancetype)initWithRequest:(NSURLRequest *)request
+              paginationMapping:(RKObjectMapping *)paginationMapping
+            responseDescriptors:(NSArray *)responseDescriptors;
 
 /**
  A URL with a path pattern for building a complete URL from

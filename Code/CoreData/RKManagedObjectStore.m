@@ -45,8 +45,7 @@ static RKManagedObjectStore *defaultStore = nil;
 
 @implementation RKManagedObjectStore
 
-
-+ (RKManagedObjectStore *)defaultStore
++ (instancetype)defaultStore
 {
     return defaultStore;
 }
@@ -58,7 +57,7 @@ static RKManagedObjectStore *defaultStore = nil;
     }
 }
 
-- (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
     self = [super init];
     if (self) {
@@ -74,7 +73,7 @@ static RKManagedObjectStore *defaultStore = nil;
     return self;
 }
 
-- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator
+- (instancetype)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator
 {
     self = [self initWithManagedObjectModel:persistentStoreCoordinator.managedObjectModel];
     if (self) {

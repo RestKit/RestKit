@@ -43,7 +43,7 @@
  @param context The managed object context containing objects to be cached.
  @returns self, initialized with context.
  */
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)context;
+- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)context;
 
 /**
  The managed object context with which the receiver is associated.

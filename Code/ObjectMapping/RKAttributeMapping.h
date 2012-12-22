@@ -55,6 +55,6 @@
  @param destinationKeyPath The key path on the destination object on which to set the mapped data.
  @return A newly created attribute mapping object that is ready to be added to an object mapping.
  */
-+ (RKAttributeMapping *)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
++ (instancetype)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
 
 @end

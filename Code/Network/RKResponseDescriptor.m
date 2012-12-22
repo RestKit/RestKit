@@ -65,10 +65,10 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
 
 @implementation RKResponseDescriptor
 
-+ (RKResponseDescriptor *)responseDescriptorWithMapping:(RKMapping *)mapping
-                                          pathPattern:(NSString *)pathPattern
-                                              keyPath:(NSString *)keyPath
-                                          statusCodes:(NSIndexSet *)statusCodes
++ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
+                                  pathPattern:(NSString *)pathPattern
+                                      keyPath:(NSString *)keyPath
+                                  statusCodes:(NSIndexSet *)statusCodes
 {
     NSParameterAssert(mapping);
     RKResponseDescriptor *mappingDescriptor = [self new];

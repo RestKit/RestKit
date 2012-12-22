@@ -51,12 +51,12 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 @implementation RKObjectMapping
 
-+ (id)mappingForClass:(Class)objectClass
++ (instancetype)mappingForClass:(Class)objectClass
 {
     return [[self alloc] initWithClass:objectClass];
 }
 
-+ (id)requestMapping
++ (instancetype)requestMapping
 {
     return [self mappingForClass:[NSMutableDictionary class]];
 }
@@ -264,7 +264,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     }
 }
 
-- (RKObjectMapping *)inverseMappingAtDepth:(NSInteger)depth
+- (instancetype)inverseMappingAtDepth:(NSInteger)depth
 {
     NSAssert(depth < RKObjectMappingMaximumInverseMappingRecursionDepth, @"Exceeded max recursion level in inverseMapping. This is likely due to a loop in the serialization graph. To break this loop, specify one-way relationships by setting serialize to NO in mapKeyPath:toRelationship:withObjectMapping:serialize:");
     RKObjectMapping *inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -284,7 +284,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     return inverseMapping;
 }
 
-- (RKObjectMapping *)inverseMapping
+- (instancetype)inverseMapping
 {
     return [self inverseMappingAtDepth:0];
 }

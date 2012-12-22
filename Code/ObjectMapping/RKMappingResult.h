@@ -35,7 +35,7 @@
  @param dictionary A dictionary wherein the keys represent mapped key paths and the values represent the objects mapped at those key paths. Cannot be nil.
  @return The receiver, initialized with the given dictionary.
  */
-- (id)initWithDictionary:(NSDictionary *)dictionary;
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
 ///----------------------------------------
 /// @name Retrieving Result Representations

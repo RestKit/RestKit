@@ -65,9 +65,9 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 
 @implementation RKRelationshipConnectionOperation
 
-- (id)initWithManagedObject:(NSManagedObject *)managedObject
-                 connection:(RKConnectionDescription *)connection
-         managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
+- (instancetype)initWithManagedObject:(NSManagedObject *)managedObject
+                           connection:(RKConnectionDescription *)connection
+                   managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
 {
     NSParameterAssert(managedObject);
     NSAssert([managedObject isKindOfClass:[NSManagedObject class]], @"Relationship connection requires an instance of NSManagedObject");

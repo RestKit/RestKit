@@ -130,7 +130,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 
 @implementation RKMappingTest
 
-+ (RKMappingTest *)testForMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
++ (instancetype)testForMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
 {
     return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:destinationObject];
 }

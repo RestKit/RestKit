@@ -231,7 +231,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @return The shared manager instance.
  */
-+ (RKObjectManager *)sharedManager;
++ (instancetype)sharedManager;
 
 /**
  Set the shared instance of the object manager
@@ -252,7 +252,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param baseURL The base URL with which to initialize the `AFHTTPClient` object
  @return A new `RKObjectManager` initialized with an `AFHTTPClient` that was initialized with the given baseURL.
  */
-+ (id)managerWithBaseURL:(NSURL *)baseURL;
++ (instancetype)managerWithBaseURL:(NSURL *)baseURL;
 
 /**
  Initializes the receiver with the given AFNetworking HTTP client object, adopting the network configuration from the client.
@@ -262,7 +262,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param client The AFNetworking HTTP client with which to initialize the receiver.
  @return The receiver, initialized with the given client.
  */
-- (id)initWithHTTPClient:(AFHTTPClient *)client;
+- (instancetype)initWithHTTPClient:(AFHTTPClient *)client;
 
 ///------------------------------------------
 /// @name Accessing Object Manager Properties

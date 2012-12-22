@@ -68,7 +68,7 @@
  @param entity An entity with which to initialize the receiver.
  @returns The receiver, initialized with the given entity.
  */
-- (id)initWithEntity:(NSEntityDescription *)entity;
+- (instancetype)initWithEntity:(NSEntityDescription *)entity;
 
 /**
  A convenience initializer that creates and returns an entity mapping for the entity with the given name in
@@ -83,7 +83,7 @@
  @param managedObjectStore A managed object store containing the managed object model in which an entity with the given name is defined.
  @return A new entity mapping for the entity with the given name in the managed object model of the given managed object store.
  */
-+ (id)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore;
++ (instancetype)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore;
 
 ///---------------------------
 /// @name Accessing the Entity

@@ -42,7 +42,7 @@
  @param destinationKeyPath The key path on the destination object to set the object mapped results.
  @param mapping A mapping object describing how to map the data retrieved from `sourceKeyPath` that is to be set on `destinationKeyPath`.
  */
-+ (RKRelationshipMapping *)relationshipMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)mapping;
++ (instancetype)relationshipMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)mapping;
 
 ///----------------------------------------
 /// @name Accessing the Destination Mapping

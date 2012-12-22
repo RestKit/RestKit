@@ -140,20 +140,20 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 
 @synthesize identificationAttributes = _identificationAttributes;
 
-+ (id)mappingForClass:(Class)objectClass
++ (instancetype)mappingForClass:(Class)objectClass
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must provide a managedObjectStore. Invoke mappingForClass:inManagedObjectStore: instead."]
                                  userInfo:nil];
 }
 
-+ (id)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore
++ (instancetype)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore
 {
     NSEntityDescription *entity = [[managedObjectStore.managedObjectModel entitiesByName] objectForKey:entityName];
     return [[self alloc] initWithEntity:entity];
 }
 
-- (id)initWithEntity:(NSEntityDescription *)entity
+- (instancetype)initWithEntity:(NSEntityDescription *)entity
 {
     NSAssert(entity, @"Cannot initialize an RKEntityMapping without an entity. Maybe you want RKObjectMapping instead?");
     Class objectClass = NSClassFromString([entity managedObjectClassName]);
@@ -167,7 +167,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return self;
 }
 
-- (id)initWithClass:(Class)objectClass
+- (instancetype)initWithClass:(Class)objectClass
 {
     self = [super initWithClass:objectClass];
     if (self) {
