@@ -219,4 +219,18 @@
     expect([mapping.propertyMappingsByDestinationKeyPath allKeys]).to.equal(expectedNames);
 }
 
+- (void)testBreakageOfRecursiveInverseCyclicGraphs
+{
+    RKObjectMapping *parentMapping = [RKObjectMapping mappingForClass:[NSObject class]];
+    [parentMapping addAttributeMappingsFromDictionary:@{ @"first_name": @"firstName", @"last_name": @"lastName" }];
+    RKObjectMapping *childMapping = [RKObjectMapping mappingForClass:[NSObject class]];
+    [childMapping addAttributeMappingsFromDictionary:@{ @"first_name": @"firstName", @"last_name": @"lastName" }];
+    [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
+    [childMapping addRelationshipMappingWithSourceKeyPath:@"parents" mapping:parentMapping];
+    RKObjectMapping *inverseMapping = [parentMapping inverseMapping];
+    expect([inverseMapping propertyMappingsBySourceKeyPath][@"firstName"]).notTo.beNil();
+    expect([inverseMapping propertyMappingsBySourceKeyPath][@"lastName"]).notTo.beNil();
+    expect([inverseMapping propertyMappingsBySourceKeyPath][@"children"]).notTo.beNil();
+}
+
 @end

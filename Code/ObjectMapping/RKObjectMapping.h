@@ -294,9 +294,11 @@
 @property (nonatomic, strong) NSFormatter *preferredDateFormatter;
 
 /**
- Generates an inverse mapping for the rules specified within this object mapping. This can be used to
- quickly generate a corresponding serialization mapping from a configured object mapping. The inverse
- mapping will have the source and destination keyPaths swapped for all attribute and relationship mappings.
+ Generates an inverse mapping for the rules specified within this object mapping. 
+ 
+ This can be used to quickly generate a corresponding serialization mapping from a configured object mapping. The inverse mapping will have the source and destination keyPaths swapped for all attribute and relationship mappings. All mapping configuration and date formatters are copied from the parent to the inverse mapping.
+ 
+ @return A new mapping that will map the inverse of the receiver.
  */
 - (instancetype)inverseMapping;
 
