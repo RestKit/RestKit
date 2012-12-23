@@ -24,8 +24,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@:%p error message = \"%@\" userInfo = %@>",
-            NSStringFromClass([self class]), self, self.errorMessage, self.userInfo];
+    return self.errorMessage;
 }
 
 @end

@@ -14,6 +14,20 @@
 
 NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
 
+@interface RKServerError : NSObject
+@property (nonatomic, copy) NSString *message;
+@property (nonatomic, assign) NSInteger code;
+@end
+
+@implementation RKServerError
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@ (%ld)", self.message, (long) self.code];
+}
+
+@end
+
 @interface RKObjectResponseMapperOperationTest : RKTestCase
 
 @end
@@ -119,6 +133,21 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     expect(mapper.error).notTo.beNil();
     expect(mapper.error.code).to.equal(NSURLErrorBadServerResponse);
     expect([mapper.error localizedDescription]).to.equal(@"Loaded an unprocessable client error response (422)");
+}
+
+- (void)testMappingServerErrorToCustomErrorClass
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKServerError class]];
+    [mapping addAttributeMappingsFromArray:@[ @"code", @"message" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:422]];
+    NSURL *URL = [NSURL URLWithString:@"http://restkit.org"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:422 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"code\": 12345, \"message\": \"This is the error message\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:data responseDescriptors:@[responseDescriptor]];
+    [mapper start];
+    expect(mapper.error).notTo.beNil();
+    expect(mapper.error.code).to.equal(RKMappingErrorFromMappingResult);
+    expect([mapper.error localizedDescription]).to.equal(@"This is the error message (12345)");
 }
 
 #pragma mark - Response Descriptor Matching

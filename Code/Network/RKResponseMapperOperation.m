@@ -37,7 +37,7 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     NSArray *collection = [mappingResult array];
     NSString *description = nil;
     if ([collection count] > 0) {
-        description = [[collection valueForKeyPath:@"errorMessage"] componentsJoinedByString:@", "];
+        description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
     } else {
         RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
     }

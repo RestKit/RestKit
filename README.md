@@ -230,9 +230,10 @@ operation.managedObjectCache = managedObjectStore.managedObjectCache;
 // GET /articles/error.json returns a 422 (Unprocessable Entity)
 // JSON looks like {"errors": "Some Error Has Occurred"}
 
+// You can map errors to any class, but `RKErrorMessage` is included for free
 RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
 // The entire value at the source key path containing the errors maps to the message
-[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"message"]];
+[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"errorMessage"]];
 
 NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError);
 // Any response in the 4xx status code range with an "errors" key path uses this mapping
@@ -241,6 +242,7 @@ RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptor
 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://restkit.org/articles/error.json"]];
 RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[errorDescriptor]];
 [operation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
+    // The `description` method of the class the error is mapped to is used to construct the value of the localizedDescription
 	NSLog(@"Loaded this error: %@", [error localizedDescription]);
 }];
 ```
