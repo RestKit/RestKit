@@ -169,6 +169,34 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     return NO;
 }
 
+static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *responseDescriptors, Class classToBeMapped)
+{
+    // Visit all mappings accessible from the object graphs of all response descriptors
+    NSMutableSet *accessibleMappings = [NSMutableSet set];
+    for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+        if (! [accessibleMappings containsObject:responseDescriptor.mapping]) {
+            RKMappingGraphVisitor *graphVisitor = [[RKMappingGraphVisitor alloc] initWithMapping:responseDescriptor.mapping];
+            [accessibleMappings unionSet:graphVisitor.mappings];
+        }
+    }
+    
+    // Enumerate all mappings and search for a mapping matching the class
+    for (RKMapping *mapping in accessibleMappings) {
+        if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+            if ([[(RKObjectMapping *)mapping objectClass] isSubclassOfClass:classToBeMapped]) return YES;
+        }
+        
+        if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+            RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)mapping;
+            for (RKObjectMapping *mapping in dynamicMapping.objectMappings) {
+                if ([[(RKObjectMapping *)mapping objectClass] isSubclassOfClass:classToBeMapped]) return YES;
+            }
+        }
+    }
+    
+    return NO;
+}
+
 static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParameterEncoding encoding)
 {
     switch (encoding) {
@@ -419,7 +447,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         operation = [self objectRequestOperationWithRequest:request success:nil failure:nil];
     }
     
-    operation.targetObject = object;
+    if (RKDoesArrayOfResponseDescriptorsContainMappingForClass(self.responseDescriptors, [object class])) operation.targetObject = object;
     return operation;
 }
 
