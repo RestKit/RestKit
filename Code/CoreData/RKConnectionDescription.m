@@ -80,7 +80,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     if ([self class] == [RKConnectionDescription class]) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:[NSString stringWithFormat:@"%@ Failed to call designated initializer. "
-                                               "Invoke initWithRelationship:sourceKeyPath:destinationKeyPath:matcher: instead.",
+                                               "Invoke initWithRelationship:attributes: instead.",
                                                NSStringFromClass([self class])]
                                      userInfo:nil];
     }

@@ -256,7 +256,7 @@
     expect(secondChild.friends).to.equal(expectedFriends);
 }
 
-- (void)testConnectionMatcher
+- (void)testConnectionWithSourcePredicate
 {
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     human.sex = @"female";
@@ -271,16 +271,14 @@
     [mapping addConnectionForRelationship:@"cats" connectedBy:@"sex"];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKConnectionDescription *connection = [mapping connectionForRelationship:@"cats"];
-    
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
-    connection.matcher = [[RKDynamicMappingMatcher alloc] initWithKeyPath:@"sex" expectedValue:@"male" objectMapping:catMapping];
+    connection.sourcePredicate = [NSPredicate predicateWithFormat:@"sex == %@", @"male"];
     
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connection:connection managedObjectCache:managedObjectCache];
     [operation start];
     assertThat(human.cats, hasCountOf(0));
 }
 
-- (void)testConnectionPredicate
+- (void)testConnectionWithDestinationPredicate
 {
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     human.sex = @"female";
@@ -294,7 +292,7 @@
     [mapping addConnectionForRelationship:@"cats" connectedBy:@"sex"];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKConnectionDescription *connection = [mapping connectionForRelationship:@"cats"];
-    connection.predicate = [NSPredicate predicateWithFormat:@"birthYear = 2011"];
+    connection.destinationPredicate = [NSPredicate predicateWithFormat:@"birthYear = 2011"];
    
     
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connection:connection managedObjectCache:managedObjectCache];

@@ -139,16 +139,14 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 - (id)findConnected
 {
     id connectionResult = nil;
-    
-    if (self.connection.matcher && ![self.connection.matcher matches:self.managedObject])
-        return nil;
+    if (self.connection.sourcePredicate && ![self.connection.sourcePredicate evaluateWithObject:self.managedObject]) return nil;
     
     if ([self.connection isForeignKeyConnection]) {
         NSDictionary *attributeValues = RKConnectionAttributeValuesWithObject(self.connection, self.managedObject);
         NSSet *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[self.connection.relationship destinationEntity]
                                                                   attributeValues:attributeValues
                                                            inManagedObjectContext:self.managedObjectContext];
-        if (self.connection.predicate) managedObjects = [managedObjects filteredSetUsingPredicate:self.connection.predicate];
+        if (self.connection.destinationPredicate) managedObjects = [managedObjects filteredSetUsingPredicate:self.connection.destinationPredicate];
         if (!self.connection.includesSubentities) managedObjects = [managedObjects filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"entity == %@", [self.connection.relationship destinationEntity]]];
         if ([self.connection.relationship isToMany]) {
             connectionResult = managedObjects;

@@ -19,7 +19,6 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKDynamicMappingMatcher.h"
 
 /**
  The `RKConnectionDescription` class describes a means for connecting a Core Data relationship. Connections can be established either by foreign key, in which case one or more attribute values on the source entity correspond to matching values on the destination entity, or by key path, in which case a key path is evaluated on the object graph to obtain a value for the relationship. Connection objects are used by instances of `RKRelationshipConnectionOperation` to connect a relationship of a given managed object.
@@ -153,13 +152,13 @@
 @property (nonatomic, assign) BOOL includesSubentities;
 
 /**
- An optional predicate for filtering objects to be connected.
+ An optional predicate for conditionally evaluating the connection based on the state of the source object.
  */
-@property (nonatomic, copy) NSPredicate *predicate;
+@property (nonatomic, strong) NSPredicate *sourcePredicate;
 
 /**
- An optional matcher that filters the source object to be connected.
+ An optional predicate for filtering objects to be connected.
  */
-@property (nonatomic, strong) RKDynamicMappingMatcher* matcher;
+@property (nonatomic, copy) NSPredicate *destinationPredicate;
 
 @end
