@@ -532,7 +532,8 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         if ([self isCancelled]) return NO;
         
-        id value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
+        // The nil source keyPath indicates that we want to map directly from the parent representation
+        id value = (relationshipMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
 
         // Track that we applied this mapping
         [mappingsApplied addObject:relationshipMapping];

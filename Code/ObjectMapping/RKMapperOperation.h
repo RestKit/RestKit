@@ -50,9 +50,11 @@
 
  Note that the keys of the dictionary are **key paths**. Deeply nested content can be mapped by specifying the full key path as the key of the mappings dictionary.
 
- ### The NSNull Key
+ ### Mapping the Root Object Representation
 
  A mapping set for the key `[NSNull null]` value has special significance to the mapper operation. When a mapping is encountered with the a null key, the entire `representation` is processed using the given mapping. This provides support for mapping content that does not have an outer nesting attribute.
+ 
+ Note that it is possible to map the same representation with multiple mappings, including a combination of a root key mapping and nested keypaths.
 
  ## Data Source
 

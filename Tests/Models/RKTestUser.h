@@ -9,6 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "RKTestAddress.h"
 
+@interface RKTestCoordinate : NSObject
+@property (nonatomic, assign) double latitude;
+@property (nonatomic, assign) double longitude;
+@end
+
 @interface RKTestUser : NSObject
 
 @property (nonatomic, strong) NSNumber *userID;
@@ -28,6 +33,7 @@
 @property (nonatomic, strong) NSSet *friendsSet;
 @property (nonatomic, strong) NSOrderedSet *friendsOrderedSet;
 @property (nonatomic, strong) NSData *data;
+@property (nonatomic, strong) RKTestCoordinate *coordinate;
 
 + (RKTestUser *)user;
 

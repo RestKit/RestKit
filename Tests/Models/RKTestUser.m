@@ -9,6 +9,9 @@
 #import "RKTestUser.h"
 #import "RKLog.h"
 
+@implementation RKTestCoordinate
+@end
+
 @implementation RKTestUser
 
 + (RKTestUser *)user

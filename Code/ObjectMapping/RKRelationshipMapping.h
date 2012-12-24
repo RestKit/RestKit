@@ -26,6 +26,12 @@
  The `RKRelationshipMapping` class is used to describe relationships of a class in an `RKObjectMapping` or an entity in an `RKEntityMapping` object.
 
  `RKRelationshipMapping` extends `RKPropertyMapping` to describe features specific to relationships, including the `RKMapping` object describing how to map the destination object.
+ 
+ Relationship mappings are described in terms of a source key path, which identifies a key in the parent object representation under which the data for the relationship is nested, and a destination key path, which specifies the key path at which the mapped object is to be assigned on the parent entity. The key-paths of the property mappings of the `RKMapping` object in the relationship mapping are evaluated against the nested object representationship at the source key path.
+ 
+ ## Mapping a Non-nested Relationship from the Parent Representation
+ 
+ It can often be desirable to map data for a relationship directly from the parent object representation, rather than under a nested key path. When a relationship mapping is constructed with a `nil` value for the source key path, then the `RKMapping` object is evaluated against the parent representation.
  */
 @interface RKRelationshipMapping : RKPropertyMapping
 
@@ -38,7 +44,7 @@
 
  The mapping may describe a to-one or a to-many relationship. The appropriate handling of the source representation is deferred until run-time and is determined by performing reflection on the data retrieved from the source object representation by sending a `valueForKeyPath:` message where the key path is the value given in `sourceKeyPath`. If an `NSArray`, `NSSet` or `NSOrderedSet` object is returned, the related object representation is processed as a to-many collection. Otherwise the representation is considered to be a to-one.
 
- @param sourceKeyPath A key path from which to retrieve data in the source object representation that is to be mapped as a relationship.
+ @param sourceKeyPath A key path from which to retrieve data in the source object representation that is to be mapped as a relationship. If `nil`, then the mapping is performed directly against the parent object representation.
  @param destinationKeyPath The key path on the destination object to set the object mapped results.
  @param mapping A mapping object describing how to map the data retrieved from `sourceKeyPath` that is to be set on `destinationKeyPath`.
  */
