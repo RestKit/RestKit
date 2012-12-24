@@ -551,13 +551,10 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:@"human" statusCodes:nil];
     
-//    NSURL *URL = [NSURL URLWithString:@"humans/1" relativeToURL:[RKTestFactory baseURL]];
-    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"text/plain"];
-    NSURL *URL = [NSURL URLWithString:@"http://restkit.org/human_1.json"];
+    NSURL *URL = [NSURL URLWithString:@"humans/1" relativeToURL:[RKTestFactory baseURL]];
+//    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"text/plain"];
+//    NSURL *URL = [NSURL URLWithString:@"http://restkit.org/human_1.json"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-//    [request setCachePolicy:NSURLRequestReturnCacheDataDontLoad];
-//    NSData *JSON = [RKTestFixture dataWithContentsOfFixture:@"1.json"];
-//    [RKTestHelpers cacheResponseForRequest:request withResponseData:JSON];
     
     RKManagedObjectRequestOperation *firstOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     firstOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
