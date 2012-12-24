@@ -139,6 +139,10 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 - (id)findConnected
 {
     id connectionResult = nil;
+    
+    if (self.connection.matcher && ![self.connection.matcher matches:self.managedObject])
+        return nil;
+    
     if ([self.connection isForeignKeyConnection]) {
         NSDictionary *attributeValues = RKConnectionAttributeValuesWithObject(self.connection, self.managedObject);
         NSSet *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[self.connection.relationship destinationEntity]
