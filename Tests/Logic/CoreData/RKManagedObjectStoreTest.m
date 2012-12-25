@@ -271,4 +271,60 @@
     }];
 }
 
+- (void)testCleanupOfExternalStorageDirectoryOnReset
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSPersistentStore *store = [managedObjectStore persistentStoreCoordinator].persistentStores[0];
+    
+    // Check that there is a support directory
+    NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[store.URL lastPathComponent] stringByDeletingPathExtension]];
+    NSURL *supportDirectoryFileURL = [NSURL URLWithString:supportDirectoryName relativeToURL:[store.URL URLByDeletingLastPathComponent]];
+    
+    BOOL isDirectory = NO;
+    BOOL supportDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:[supportDirectoryFileURL path] isDirectory:&isDirectory];
+    expect(supportDirectoryExists).to.equal(YES);
+    expect(isDirectory).to.equal(YES);
+    NSError *error = nil;
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
+    NSDate *creationDate = attributes[NSFileCreationDate];
+    
+    BOOL success = [managedObjectStore resetPersistentStores:&error];
+    expect(success).to.equal(YES);
+    
+    attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
+    NSDate *newCreationDate = attributes[NSFileCreationDate];
+    
+    expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
+}
+
+- (void)testThatPersistentStoreWithLongNameHasExternalStorageResetCorrectly
+{
+    // Create a store with an object to serve as our seed database
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
+    NSError *error = nil;
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"This is the Store.sqlite"];
+    NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    assertThat(persistentStore, is(notNilValue()));
+    [managedObjectStore createManagedObjectContexts];
+
+    // Check that there is a support directory
+    NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[persistentStore.URL lastPathComponent] stringByDeletingPathExtension]];
+    NSString *supportDirectoryPath = [[[[persistentStore URL] path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:supportDirectoryName];
+    
+    BOOL isDirectory = NO;
+    BOOL supportDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:supportDirectoryPath isDirectory:&isDirectory];
+    expect(supportDirectoryExists).to.equal(YES);
+    expect(isDirectory).to.equal(YES);
+    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:supportDirectoryPath error:&error];
+    NSDate *creationDate = attributes[NSFileCreationDate];
+    
+    BOOL success = [managedObjectStore resetPersistentStores:&error];
+    expect(success).to.equal(YES);
+    
+    attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:supportDirectoryPath error:&error];
+    NSDate *newCreationDate = attributes[NSFileCreationDate];
+    
+    expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
+}
+
 @end

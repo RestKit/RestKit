@@ -140,7 +140,7 @@
                                                 error:(NSError **)error;
 
 /**
- Resets the persistent stores in the receiver's persistent store coordinator and recreates them. If a store being reset is backed by a file on disk (such as a SQLite file), the file will be removed prior to recreating the store. If the store was originally created using a seed database, the seed will be recopied to reset the store to its seeded state.
+ Resets the persistent stores in the receiver's persistent store coordinator and recreates them. If a store being reset is backed by a file on disk (such as a SQLite file), the file will be removed prior to recreating the store. If the store was originally created using a seed database, the seed will be recopied to reset the store to its seeded state. If the managed object model uses External Storage for any of its entities, then the external storage directory will be recursively deleted when the store is reset.
 
  @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error object containing the error information. You may specify nil for this parameter if you do not want the error information.
  @return A Boolean value indicating if the reset was successful.
