@@ -1355,6 +1355,26 @@
     assertThat(user.friendsOrderedSet, is(equalTo([NSOrderedSet orderedSetWithObject:@"Jeff" ])));
 }
 
+- (void)testTypeTransformationAtKeyPath
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *websiteMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"this.that" toKeyPath:@"address.addressID"];
+    [mapping addPropertyMapping:websiteMapping];
+    
+    NSDictionary *dictionary = @{ @"this": @{ @"that": @"12345" }};
+    RKTestUser *user = [RKTestUser user];
+    RKTestAddress *address = [RKTestAddress new];
+    user.address = address;
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.address.addressID, is(instanceOf([NSNumber class])));
+    assertThat(user.address.addressID, is(equalTo(@(12345))));
+}
+
 #pragma mark - Relationship Mapping
 
 - (void)testShouldMapANestedObject
