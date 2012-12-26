@@ -1709,10 +1709,182 @@
     [mockUser verify];
 }
 
-- (void)testAppendingLoadedObjectsOntoRelationshipInsteadOfReplacing
+#pragma mark Assignment Policies
+
+- (void)testThatAttemptingToUnionOneToOneRelationshipGeneratesMappingError
 {
-    // Behaviors: Replace, Append, Nullify. AssignmentPolicy
-    // Load the
+    RKTestUser *user = [RKTestUser new];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"address" toKeyPath:@"address" withMapping:addressMapping];
+    relationshipMapping.assignmentPolicy = RKUnionAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"address": @{ @"city": @"NYC" } };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect(error).notTo.beNil();
+    expect(error.code).to.equal(RKMappingErrorInvalidAssignmentPolicy);
+    expect([error localizedDescription]).to.equal(@"Invalid assignment policy: cannot union a one-to-one relationship.");
+}
+
+- (void)testUnionAssignmentPolicyWithSet
+{
+    RKTestUser *user = [RKTestUser new];
+    RKTestUser *friend = [RKTestUser new];
+    friend.name = @"Jeff";
+    user.friendsSet = [NSSet setWithObject:friend];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"friendsSet" toKeyPath:@"friendsSet" withMapping:mapping];
+    relationshipMapping.assignmentPolicy = RKUnionAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"friendsSet": @[ @{ @"name": @"Zach" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([user.friendsSet count]).to.equal(2);
+    NSArray *names = [user.friendsSet valueForKey:@"name"];
+    assertThat(names, hasItems(@"Jeff", @"Zach", nil));
+}
+
+- (void)testUnionAssignmentPolicyWithOrderedSet
+{
+    RKTestUser *user = [RKTestUser new];
+    RKTestUser *friend = [RKTestUser new];
+    friend.name = @"Jeff";
+    user.friendsOrderedSet = [NSOrderedSet orderedSetWithObject:friend];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"friendsOrderedSet" toKeyPath:@"friendsOrderedSet" withMapping:mapping];
+    relationshipMapping.assignmentPolicy = RKUnionAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"friendsOrderedSet": @[ @{ @"name": @"Zach" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([user.friendsOrderedSet count]).to.equal(2);
+    NSArray *names = [user.friendsOrderedSet valueForKey:@"name"];
+    assertThat(names, hasItems(@"Jeff", @"Zach", nil));
+}
+
+- (void)testUnionAssignmentPolicyWithArray
+{
+    RKTestUser *user = [RKTestUser new];
+    RKTestUser *friend = [RKTestUser new];
+    friend.name = @"Jeff";
+    user.friends = [NSArray arrayWithObject:friend];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:mapping];
+    relationshipMapping.assignmentPolicy = RKUnionAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"friends": @[ @{ @"name": @"Zach" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([user.friends count]).to.equal(2);
+    NSArray *names = [user.friends valueForKey:@"name"];
+    assertThat(names, hasItems(@"Jeff", @"Zach", nil));
+}
+
+- (void)testReplacementPolicyForUnmanagedRelationship
+{
+    RKTestUser *user = [RKTestUser new];
+    RKTestUser *friend = [RKTestUser new];
+    friend.name = @"Jeff";
+    user.friends = [NSArray arrayWithObject:friend];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:mapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"friends": @[ @{ @"name": @"Zach" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([user.friends count]).to.equal(1);
+    NSArray *names = [user.friends valueForKey:@"name"];
+    assertThat(names, hasItems(@"Zach", nil));
+}
+
+- (void)testReplacmentPolicyForToManyCoreDataRelationshipDeletesExistingValues
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKCat *existingCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    existingCat.name = @"Lola";
+    human.cats = [NSSet setWithObject:existingCat];
+    
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [entityMapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"name": @"Blake", @"cats": @[ @{ @"name": @"Roy" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([human.cats count]).to.equal(1);
+    NSArray *names = [human.cats valueForKey:@"name"];
+    assertThat(names, hasItems(@"Roy", nil));
+    expect([existingCat isDeleted]).to.equal(YES);
+}
+
+- (void)testReplacmentPolicyForToOneCoreDataRelationshipDeletesExistingValues
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKCat *existingCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    existingCat.name = @"Lola";
+    human.favoriteCat = existingCat;
+    
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"favoriteCat" toKeyPath:@"favoriteCat" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [entityMapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"name": @"Blake", @"favoriteCat": @{ @"name": @"Roy" } };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect(human.favoriteCat.name).to.equal(@"Roy");
+    expect([existingCat isDeleted]).to.equal(YES);
 }
 
 #pragma mark - RKDynamicMapping

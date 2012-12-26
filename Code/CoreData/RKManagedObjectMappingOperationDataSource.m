@@ -29,6 +29,8 @@
 #import "RKRelationshipConnectionOperation.h"
 #import "RKMappingErrors.h"
 #import "RKValueTransformers.h"
+#import "RKRelationshipMapping.h"
+#import "RKObjectUtilities.h"
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
@@ -278,6 +280,32 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             [self.managedObjectCache didDeleteObject:managedObject];
         }
     }
+}
+
+- (BOOL)mappingOperation:(RKMappingOperation *)mappingOperation deleteExistingValueOfRelationshipWithMapping:(RKRelationshipMapping *)relationshipMapping error:(NSError **)error
+{
+    // Validate the assignment policy
+    if (! relationshipMapping.assignmentPolicy == RKReplaceAssignmentPolicy) {
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Unable to satisfy deletion request: Relationship mapping was expected to have an assignment policy of `RKReplaceAssignmentPolicy`, but did not." };
+        NSError *localError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorInvalidAssignmentPolicy userInfo:userInfo];
+        if (error) *error = localError;
+        return NO;
+    }
+    
+    // Delete any managed objects at the destination key path from the context
+    id existingValue = [mappingOperation.destinationObject valueForKeyPath:relationshipMapping.destinationKeyPath];
+    if ([existingValue isKindOfClass:[NSManagedObject class]]) {
+        [self.managedObjectContext deleteObject:existingValue];
+    } else {
+        if (RKObjectIsCollection(existingValue)) {
+            for (NSManagedObject *managedObject in existingValue) {
+                if (! [managedObject isKindOfClass:[NSManagedObject class]]) continue;
+                [self.managedObjectContext deleteObject:managedObject];
+            }
+        }
+    }
+    
+    return YES;
 }
 
 @end

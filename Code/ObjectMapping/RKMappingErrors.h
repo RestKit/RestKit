@@ -30,7 +30,8 @@ enum {
     RKMappingErrorUnableToDetermineMapping     = 1006,     // The mapping operation was unable to obtain a concrete object mapping from a given dynamic mapping
     RKMappingErrorNilDestinationObject         = 1007,     // The mapping operation failed due to a nil destination object.
     RKMappingErrorNilManagedObjectCache        = 1008,     // A managed object cache is required to satisfy the mapping, but none was given.
-    RKMappingErrorMappingDeclined              = 1009      // Mapping was declined by a callback.
+    RKMappingErrorMappingDeclined              = 1009,     // Mapping was declined by a callback.
+    RKMappingErrorInvalidAssignmentPolicy      = 1010,     // The assignment policy for the relationship is invalid.
 };
 
 extern NSString * const RKMappingErrorKeyPathErrorKey; // The key path the error is associated with
