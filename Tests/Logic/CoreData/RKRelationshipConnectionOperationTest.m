@@ -340,4 +340,30 @@
     assertThat(human.cats, hasItems(lola, nil));
 }
 
+- (void)testConnectionOfOptionalRelationshipIsSkippedWhenAllAttributesEvaluateToNil
+{
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
+    
+    RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2011}];
+    asia.sex = @"female";
+    asia.name = @"Asia";
+    RKCat *lola = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2012}];
+    lola.sex = @"female";
+    lola.name = nil;
+    
+    human.cats = [NSSet setWithObject:asia];
+    
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
+    [mapping addConnectionForRelationship:@"cats" connectedBy:@[ @"sex", @"name" ]];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKConnectionDescription *connection = [mapping connectionForRelationship:@"cats"];
+    
+    RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connection:connection managedObjectCache:managedObjectCache];
+    [operation start];
+    
+    // Operation should be skipped due to lack of connectable attributes
+    assertThat(human.cats, hasCountOf(1));
+    assertThat(human.cats, hasItems(asia, nil));
+}
+
 @end
