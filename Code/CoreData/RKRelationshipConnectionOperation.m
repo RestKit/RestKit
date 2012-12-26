@@ -45,9 +45,9 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     for (NSString *sourceAttribute in connection.attributes) {
         NSString *destinationAttribute = [connection.attributes objectForKey:sourceAttribute];
         id sourceValue = [managedObject valueForKey:sourceAttribute];
-        [destinationEntityAttributeValues setValue:sourceValue forKey:destinationAttribute];
+        [destinationEntityAttributeValues setValue:sourceValue ?: [NSNull null] forKey:destinationAttribute];
     }
-    return destinationEntityAttributeValues;
+    return [[destinationEntityAttributeValues allValues] isEqualToArray:@[ [NSNull null] ]] ? nil : destinationEntityAttributeValues;
 }
 
 @interface RKRelationshipConnectionOperation ()
@@ -143,6 +143,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     
     if ([self.connection isForeignKeyConnection]) {
         NSDictionary *attributeValues = RKConnectionAttributeValuesWithObject(self.connection, self.managedObject);
+        if ([attributeValues count] == 0) return nil;
         NSSet *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[self.connection.relationship destinationEntity]
                                                                   attributeValues:attributeValues
                                                            inManagedObjectContext:self.managedObjectContext];
