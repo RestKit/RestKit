@@ -1307,6 +1307,54 @@
     assertThat([dateFormatter stringFromDate:user.birthDate], is(equalTo(@"01/01/3001")));
 }
 
+- (void)testMappingASingularValueToAnArray
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"favoriteColors" ]];
+    
+    NSDictionary *dictionary = @{ @"favoriteColors": @"Blue" };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.favoriteColors, is(equalTo(@[ @"Blue" ])));
+}
+
+- (void)testMappingASingularValueToASet
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"friendsSet" ]];
+    
+    NSDictionary *dictionary = @{ @"friendsSet": @"Jeff" };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.friendsSet, is(equalTo([NSSet setWithObject:@"Jeff" ])));
+}
+
+- (void)testMappingASingularValueToAnOrderedSet
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"friendsOrderedSet" ]];
+    
+    NSDictionary *dictionary = @{ @"friendsOrderedSet": @"Jeff" };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.friendsOrderedSet, is(equalTo([NSOrderedSet orderedSetWithObject:@"Jeff" ])));
+}
+
 #pragma mark - Relationship Mapping
 
 - (void)testShouldMapANestedObject
@@ -1591,6 +1639,12 @@
     NSError *error = nil;
     [operation performMapping:&error];
     [mockUser verify];
+}
+
+- (void)testAppendingLoadedObjectsOntoRelationshipInsteadOfReplacing
+{
+    // Behaviors: Replace, Append, Nullify. AssignmentPolicy
+    // Load the
 }
 
 #pragma mark - RKDynamicMapping

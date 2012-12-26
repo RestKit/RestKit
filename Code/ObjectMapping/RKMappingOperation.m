@@ -71,6 +71,9 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     if ([value isKindOfClass:destinationType]) {
         // No transformation necessary
         return value;
+    } else if (RKClassIsCollection(destinationType) && !RKObjectIsCollection(value)) {
+        // Call ourself recursively with an array value to transform as appropriate
+        return RKTransformedValueWithClass(@[ value ], destinationType, dateToStringValueTransformer);
     } else if ([sourceType isSubclassOfClass:[NSString class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
         // String -> Date
         return [dateToStringValueTransformer transformedValue:value];
