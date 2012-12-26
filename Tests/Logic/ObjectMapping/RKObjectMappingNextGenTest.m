@@ -309,7 +309,6 @@
 
 - (void)testShouldMapWithoutATargetMapping
 {
-    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
     [mapping addPropertyMapping:idMapping];
@@ -1373,6 +1372,55 @@
     
     assertThat(user.address.addressID, is(instanceOf([NSNumber class])));
     assertThat(user.address.addressID, is(equalTo(@(12345))));
+}
+
+- (void)testThatAttributeMappingToAPrimitiveValueFromNullDoesNotCrash
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"age" ]];
+    
+    NSDictionary *dictionary = @{ @"age": [NSNull null] };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    expect(user.age).to.equal(0);
+}
+
+- (void)testThatAttributeMappingToAPrimitiveValueFromUnexpectedObjectTypeDoesNotCrash
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"age" ]];
+    
+    NSDictionary *dictionary = @{ @"age": @{ @"wrong": @"data" }};
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    expect(user.age).to.equal(0);
+}
+
+- (void)testThatMappingNullValueToTransformablePropertyDoesNotGenerateWarning
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromArray:@[ @"catIDs" ]];
+    
+    NSDictionary *dictionary = @{ @"catsIDs": [NSNull null] };
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:humanMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    expect(human.catIDs).to.beNil();
 }
 
 #pragma mark - Relationship Mapping

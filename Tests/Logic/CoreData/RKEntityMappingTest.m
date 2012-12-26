@@ -120,8 +120,8 @@
     assertThat([propertiesByName objectForKey:@"favoriteColors"], is(notNilValue()));
     assertThat([relationshipsByName objectForKey:@"favoriteColors"], is(nilValue()));
 
-    NSDictionary *propertyNamesAndTypes = [[RKPropertyInspector sharedInspector] propertyNamesAndClassesForEntity:entity];
-    assertThat([propertyNamesAndTypes objectForKey:@"favoriteColors"], is(notNilValue()));
+    NSDictionary *propertyNamesAndTypes = [[RKPropertyInspector sharedInspector] propertyInspectionForEntity:entity];
+    assertThat([propertyNamesAndTypes objectForKey:@"favoriteColors"][RKPropertyInspectionKeyValueCodingClassKey], is(notNilValue()));
 }
 
 - (void)testThatMappingAnEmptyArrayOnToAnExistingRelationshipDisassociatesTheRelatedObjects

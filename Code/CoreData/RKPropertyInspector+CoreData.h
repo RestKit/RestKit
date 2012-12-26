@@ -31,7 +31,7 @@
  @param entity The entity to retrieve the properties names and classes of.
  @return A dictionary containing the names and classes of the given entity.
  */
-- (NSDictionary *)propertyNamesAndClassesForEntity:(NSEntityDescription *)entity;
+- (NSDictionary *)propertyInspectionForEntity:(NSEntityDescription *)entity;
 
 /**
  Returns the class used to represent the property with the given name on the given entity.

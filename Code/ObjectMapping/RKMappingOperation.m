@@ -151,6 +151,16 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     return nil;
 }
 
+// Returns the appropriate value for `nil` value of a primitive type
+static id RKPrimitiveValueForNilValueOfClass(Class keyValueCodingClass)
+{
+    if ([keyValueCodingClass isSubclassOfClass:[NSNumber class]]) {
+        return @(0);
+    } else {
+        return nil;
+    }
+}
+
 // Key comes from: [[_nestedAttributeSubstitution allKeys] lastObject]] AND [[_nestedAttributeSubstitution allValues] lastObject];
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings);
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings)
@@ -229,17 +239,12 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
 {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     RKDateToStringValueTransformer *transformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
-    id transformedValue = RKTransformedValueWithClass(value, destinationType, transformer);
+    id transformedValue = RKTransformedValueWithClass(value, destinationType, transformer);        
     if (transformedValue != value) return transformedValue;
     
     RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
 
     return nil;
-}
-
-- (BOOL)isValue:(id)sourceValue equalToValue:(id)destinationValue
-{
-    return RKObjectIsEqualToObject(sourceValue, destinationValue);
 }
 
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString *)keyPath
@@ -290,7 +295,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
         return [self validateValue:value atKeyPath:keyPath];
     }
 
-    if (! [self isValue:*value equalToValue:currentValue]) {
+    if (! RKObjectIsEqualToObject(*value, currentValue)) {
         // Validate value for key
         return [self validateValue:value atKeyPath:keyPath];
     }
@@ -347,6 +352,16 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     if (type && NO == [[value class] isSubclassOfClass:type]) {
         value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
     }
+    
+    // If we have a nil value for a primitive property, we need to coerce it into a KVC usable value or bail out
+    if (value == nil && RKPropertyInspectorIsPropertyAtKeyPathOfObjectPrimitive(attributeMapping.destinationKeyPath, self.destinationObject)) {
+        RKLogDebug(@"Detected `nil` value transformation for primitive property at keyPath '%@'", attributeMapping.destinationKeyPath);
+        value = RKPrimitiveValueForNilValueOfClass(type);
+        if (! value) {
+            RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- Unable to transform `nil` into primitive value representation", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
+            return;
+        }
+    }
 
     RKSetIntermediateDictionaryValuesOnObjectForKeyPath(self.destinationObject, attributeMapping.destinationKeyPath);
     
@@ -384,13 +399,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
             continue;
         }
 
-        id value = nil;
-        if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
-            value = self.sourceObject;
-        } else {
-            value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
-        }
-
+        id value = (attributeMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if (value) {
             appliedMappings = YES;
             [self applyAttributeMapping:attributeMapping withValue:value];

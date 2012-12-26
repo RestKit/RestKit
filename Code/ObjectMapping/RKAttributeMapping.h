@@ -51,7 +51,7 @@
  mapped and attempts to transform the source content into the type of the desination property specified by the mapping. In this case,
  an NSDateFormatter object would be used to process the inbound `NSString` into an outbound `NSDate` object.
 
- @param sourceKeyPath The key path on the source object from which to read the data being mapped.
+ @param sourceKeyPath The key path on the source object from which to read the data being mapped. If `nil`, then the entire source object representation is mapped to the specified destination attribute.
  @param destinationKeyPath The key path on the destination object on which to set the mapped data.
  @return A newly created attribute mapping object that is ready to be added to an object mapping.
  */

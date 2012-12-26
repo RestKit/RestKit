@@ -34,6 +34,7 @@
 @property (nonatomic, strong) NSOrderedSet *friendsOrderedSet;
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, strong) RKTestCoordinate *coordinate;
+@property (nonatomic, assign) NSInteger age;
 
 + (RKTestUser *)user;
 

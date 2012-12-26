@@ -27,6 +27,10 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitObjectMapping
 
+NSString * const RKPropertyInspectionNameKey = @"name";
+NSString * const RKPropertyInspectionKeyValueCodingClassKey = @"keyValueCodingClass";
+NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
+
 @implementation RKPropertyInspector
 
 + (RKPropertyInspector *)sharedInspector
@@ -44,22 +48,21 @@
 {
     self = [super init];
     if (self) {
-        _propertyNamesToTypesCache = [[NSCache alloc] init];
+        _inspectionCache = [[NSCache alloc] init];
     }
 
     return self;
 }
 
-- (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass
+- (NSDictionary *)propertyInspectionForClass:(Class)objectClass
 {
-    NSMutableDictionary *propertyNames = [_propertyNamesToTypesCache objectForKey:theClass];
-    if (propertyNames) {
-        return propertyNames;
-    }
-    propertyNames = [NSMutableDictionary dictionary];
+    NSMutableDictionary *inspection = [_inspectionCache objectForKey:objectClass];
+    if (inspection) return inspection;
+    
+    inspection = [NSMutableDictionary dictionary];
 
     //include superclass properties
-    Class currentClass = theClass;
+    Class currentClass = objectClass;
     while (currentClass != nil) {
         // Get the raw list of properties
         unsigned int outCount = 0;
@@ -75,9 +78,20 @@
                 if (attr) {
                     Class aClass = RKKeyValueCodingClassFromPropertyAttributes(attr);
                     if (aClass) {
-                        NSString *propNameObj = [[NSString alloc] initWithCString:propName encoding:NSUTF8StringEncoding];
-                        if (propNameObj) {
-                            [propertyNames setObject:aClass forKey:propNameObj];
+                        NSString *propNameString = [[NSString alloc] initWithCString:propName encoding:NSUTF8StringEncoding];
+                        if (propNameString) {
+                            BOOL isPrimitive = NO;
+                            if (attr) {
+                                const char *typeIdentifierLoc = strchr(attr, 'T');
+                                if (typeIdentifierLoc) {
+                                    isPrimitive = (typeIdentifierLoc[1] != '@');
+                                }
+                            }
+                            
+                            NSDictionary *propertyInspection = @{ RKPropertyInspectionNameKey: propNameString,
+                                                                  RKPropertyInspectionKeyValueCodingClassKey: aClass,
+                                                                  RKPropertyInspectionIsPrimitiveKey: @(isPrimitive) };
+                            [inspection setObject:propertyInspection forKey:propNameString];
                         }
                     }
                 }
@@ -88,32 +102,34 @@
         currentClass = [currentClass superclass];
     }
 
-    [_propertyNamesToTypesCache setObject:propertyNames forKey:theClass];
-    RKLogDebug(@"Cached property names and types for Class '%@': %@", NSStringFromClass(theClass), propertyNames);
-    return propertyNames;
+    [_inspectionCache setObject:inspection forKey:objectClass];
+    RKLogDebug(@"Cached property inspection for Class '%@': %@", NSStringFromClass(objectClass), inspection);
+    return inspection;
 }
 
-- (Class)classForPropertyNamed:(NSString *)propertyName ofClass:(Class)objectClass
+- (Class)classForPropertyNamed:(NSString *)propertyName ofClass:(Class)objectClass isPrimitive:(BOOL *)isPrimitive
 {
-    NSDictionary *dictionary = [self propertyNamesAndTypesForClass:objectClass];
-    return [dictionary objectForKey:propertyName];
+    NSDictionary *classInspection = [self propertyInspectionForClass:objectClass];
+    NSDictionary *propertyInspection = [classInspection objectForKey:propertyName];
+    if (isPrimitive) *isPrimitive = [[propertyInspection objectForKey:RKPropertyInspectionIsPrimitiveKey] boolValue];
+    return [propertyInspection objectForKey:RKPropertyInspectionKeyValueCodingClassKey];
 }
 
 @end
 
 
 @interface NSObject (RKPropertyInspection)
-- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath;
+- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath isPrimitive:(BOOL *)isPrimitive;
 @end
 
 @implementation NSObject (RKPropertyInspection)
 
-- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath
+- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath isPrimitive:(BOOL *)isPrimitive
 {
     NSArray *components = [keyPath componentsSeparatedByString:@"."];
     Class propertyClass = [self class];
     for (NSString *property in components) {
-        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass];
+        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass isPrimitive:isPrimitive];
         if (! propertyClass) break;
     }
     
@@ -124,5 +140,12 @@
 
 Class RKPropertyInspectorGetClassForPropertyAtKeyPathOfObject(NSString *keyPath, id object)
 {
-    return [object rk_classForPropertyAtKeyPath:keyPath];
+    return [object rk_classForPropertyAtKeyPath:keyPath isPrimitive:nil];
+}
+
+BOOL RKPropertyInspectorIsPropertyAtKeyPathOfObjectPrimitive(NSString *keyPath, id object)
+{
+    BOOL isPrimitive = NO;
+    [object rk_classForPropertyAtKeyPath:keyPath isPrimitive:&isPrimitive];
+    return isPrimitive;
 }
