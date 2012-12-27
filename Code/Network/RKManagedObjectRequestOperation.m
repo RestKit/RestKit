@@ -38,6 +38,7 @@
 @interface RKNestedManagedObjectKeyPathMappingGraphVisitor : NSObject
 
 @property (nonatomic, readonly) NSSet *keyPaths;
+@property (nonatomic, readonly) NSDictionary* entityMappingDictionary;
 
 - (id)initWithResponseDescriptors:(NSArray *)responseDescriptors;
 
@@ -45,6 +46,7 @@
 
 @interface RKNestedManagedObjectKeyPathMappingGraphVisitor ()
 @property (nonatomic, strong) NSMutableSet *mutableKeyPaths;
+@property (nonatomic, strong) NSMutableDictionary* mutableEntityMappingDictionary;
 @end
 
 @implementation RKNestedManagedObjectKeyPathMappingGraphVisitor
@@ -54,6 +56,7 @@
     self = [self init];
     if (self) {
         self.mutableKeyPaths = [NSMutableSet set];
+        self.mutableEntityMappingDictionary = [NSMutableDictionary dictionary];
         for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
             [self visitMapping:responseDescriptor.mapping atKeyPath:responseDescriptor.keyPath];
         }
@@ -66,11 +69,20 @@
     return self.mutableKeyPaths;
 }
 
+- (NSDictionary*) entityMappingDictionary
+{
+    return self.mutableEntityMappingDictionary;
+}
+
 - (void)visitMapping:(RKMapping *)mapping atKeyPath:(NSString *)keyPath
 {
     id actualKeyPath = keyPath ?: [NSNull null];
     if ([self.keyPaths containsObject:actualKeyPath]) return;    
-    if ([mapping isKindOfClass:[RKEntityMapping class]]) [self.mutableKeyPaths addObject:actualKeyPath];
+    if ([mapping isKindOfClass:[RKEntityMapping class]])
+    {
+        [self.mutableKeyPaths addObject:actualKeyPath];
+        [self.mutableEntityMappingDictionary setObject:mapping forKey:NSStringFromClass([(RKEntityMapping*)mapping objectClass])];
+    }
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
         RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)mapping;
         for (RKMapping *nestedMapping in dynamicMapping.objectMappings) {
@@ -463,6 +475,36 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return _blockSuccess;;
 }
 
+//JIFF ADDITION
+- (void) deleteInsertedOrUpdatedObjectsWithDeletedAttributeAsYes:(NSDictionary*) entityMappingDictionary
+{
+    NSMutableArray *insertedOrUpdatedObjects = [[self.privateContext.insertedObjects allObjects] mutableCopy];
+    NSMutableArray * toBeDeletedObjects = [NSMutableArray array];
+    [insertedOrUpdatedObjects addObjectsFromArray:[self.privateContext.updatedObjects allObjects]];
+    if ([insertedOrUpdatedObjects count] > 0) {
+
+        for (NSManagedObject* obj in insertedOrUpdatedObjects) {
+            RKEntityMapping * mapping = [entityMappingDictionary valueForKey:NSStringFromClass([obj class])];
+            NSString * deletedAttributeName = [mapping deletedAttributeName];
+            if (mapping && deletedAttributeName && ([[obj valueForKeyPath:deletedAttributeName] isEqual:@YES])) {
+                [toBeDeletedObjects addObject:obj];
+            }
+        }
+        if ([toBeDeletedObjects count] > 0) {
+            RKLogDebug(@"Deleting %d objects with deletedAttribute as YES", [toBeDeletedObjects count]);
+            [self.privateContext performBlockAndWait:^{
+                for (NSManagedObject* obj in toBeDeletedObjects) {
+                    [self.privateContext deleteObject:obj];
+                }
+            }];
+        }
+    }
+    return;
+    
+}
+//END OF JIFF ADDITION
+
+
 - (void)willFinish
 {
     BOOL success;
@@ -484,6 +526,8 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
         self.error = error;
         return;
     }
+    
+    [self deleteInsertedOrUpdatedObjectsWithDeletedAttributeAsYes:visitor.entityMappingDictionary];
 
     // Persist our mapped objects
     success = [self obtainPermanentObjectIDsForInsertedObjects:&error];

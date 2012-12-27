@@ -207,6 +207,19 @@
  */
 + (BOOL)isEntityIdentificationInferenceEnabled;
 
+//JIFF ADDITION
+///---------------------------------
+/// @name Tombstone Deletion Support
+///---------------------------------
+
+/**
+ An optional attribute name identified to enable tombstone style deletion. This attribute in the receiver's entity must be of type NSNumber boolean. 
+ 
+ @warning `deleted` and `isDeleted` are properties of `NSManagedObject`. Recommend using different attribute names (eg. is_deleted, deletedState etc). 
+ */
+@property (nonatomic, strong) NSString* deletedAttributeName;
+//END OF JIFF ADDITION
+
 @end
 
 /**
