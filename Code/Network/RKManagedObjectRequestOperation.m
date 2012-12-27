@@ -123,7 +123,17 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
 // When we map the root object, it is returned under the key `[NSNull null]`
 static id RKMappedValueForKeyPathInDictionary(NSString *keyPath, NSDictionary *dictionary)
 {
-    return ([keyPath isEqual:[NSNull null]]) ? [dictionary objectForKey:[NSNull null]] : [dictionary valueForKeyPath:keyPath];
+    @try {
+        return ([keyPath isEqual:[NSNull null]]) ? [dictionary objectForKey:[NSNull null]] : [dictionary valueForKeyPath:keyPath];
+    }
+    @catch (NSException *exception) {
+        if ([[exception name] isEqualToString:NSUndefinedKeyException]) {
+            RKLogWarning(@"Caught undefined key exception for keyPath '%@' in mapping result: This likely indicates an ambiguous keyPath is used across response descriptor or dynamic mappings.", keyPath);
+            return nil;
+        }
+        
+        [exception raise];
+    }
 }
 
 static void RKSetMappedValueForKeyPathInDictionary(id value, NSString *keyPath, NSMutableDictionary *dictionary)
