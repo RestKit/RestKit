@@ -273,18 +273,28 @@
 
 - (void)testCleanupOfExternalStorageDirectoryOnReset
 {
-    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSPersistentStore *store = [managedObjectStore persistentStoreCoordinator].persistentStores[0];
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
+    NSEntityDescription *humanEntity = [managedObjectStore.managedObjectModel entitiesByName][@"Human"];
+    NSAttributeDescription *photoAttribute = [[NSAttributeDescription alloc] init];
+    [photoAttribute setName:@"photo"];
+    [photoAttribute setAttributeType:NSTransformableAttributeType];
+    [photoAttribute setAllowsExternalBinaryDataStorage:YES];
+    NSArray *newProperties = [[humanEntity properties] arrayByAddingObject:photoAttribute];
+    [humanEntity setProperties:newProperties];
+    NSError *error = nil;
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"RKTestsStore.sqlite"];
+    NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    assertThat(persistentStore, is(notNilValue()));
+    [managedObjectStore createManagedObjectContexts];
     
     // Check that there is a support directory
-    NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[store.URL lastPathComponent] stringByDeletingPathExtension]];
-    NSURL *supportDirectoryFileURL = [NSURL URLWithString:supportDirectoryName relativeToURL:[store.URL URLByDeletingLastPathComponent]];
+    NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[persistentStore.URL lastPathComponent] stringByDeletingPathExtension]];
+    NSURL *supportDirectoryFileURL = [NSURL URLWithString:supportDirectoryName relativeToURL:[persistentStore.URL URLByDeletingLastPathComponent]];
     
     BOOL isDirectory = NO;
     BOOL supportDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:[supportDirectoryFileURL path] isDirectory:&isDirectory];
     expect(supportDirectoryExists).to.equal(YES);
     expect(isDirectory).to.equal(YES);
-    NSError *error = nil;
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
     NSDate *creationDate = attributes[NSFileCreationDate];
     
