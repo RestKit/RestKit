@@ -16,9 +16,9 @@ NSDictionary * RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1
         id obj1 = dict1[key2];
         if ([obj1 isKindOfClass:[NSDictionary class]] && [obj2 isKindOfClass:[NSDictionary class]]) {
             NSDictionary *mergedSubdict = RKDictionaryByMergingDictionaryWithDictionary(obj1, obj2);
-            mergedDictionary[key2] = mergedSubdict;
+            [mergedDictionary setValue:mergedSubdict forKey:key2];
         } else {
-            mergedDictionary[key2] = obj2;
+            [mergedDictionary setValue:obj2 forKey:key2];
         }
     }];
     
