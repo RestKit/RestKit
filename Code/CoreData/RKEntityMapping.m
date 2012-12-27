@@ -296,4 +296,14 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return entityIdentificationInferenceEnabled;
 }
 
+//JIFF ADDITION
+- (void)setDeletedAttributeName:(NSString *)deletedAttributeName
+{
+    /* Decided not to raise exception to enable 'simulated' property (using setter & getter) act as the deletedAttributeName. With simulated property enabled, one could create complex criteria for deletion. 
+    NSAttributeDescription *attribute = [[self.entity attributesByName] valueForKey:deletedAttributeName];
+    if (!attribute) [NSException raise:NSInvalidArgumentException format:@"Invalid attribute '%@': no attribute was found for the given name in the '%@' entity.", deletedAttributeName, [self.entity name]];*/
+    
+    _deletedAttributeName = deletedAttributeName;
+}
+//END OF JIFF ADDITION
 @end
