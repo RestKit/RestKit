@@ -183,19 +183,18 @@
     assertThat(mapping.propertyMappingsBySourceKeyPath[@"another"], isNot(nilValue()));
 }
 
-// TODO: Decide about inverse...
-//- (void)testShouldGenerateAnInverseMappings
-//{
-//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-//    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"first_name" toKeyPath:@"firstName"]];
-//    [mapping addAttributeMappingsFromArray:@[@"city", @"state", @"zip"]];
-//    RKObjectMapping *otherMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
-//    [otherMapping addAttributeMappingsFromArray:@[@"street"]];
-//    [mapping mapRelationship:@"address" withMapping:otherMapping];
-//    RKObjectMapping *inverse = [mapping inverseMapping];
-//    assertThat(inverse.objectClass, is(equalTo([NSMutableDictionary class])));
-//    assertThat([inverse mappingForKeyPath:@"firstName"], isNot(nilValue()));
-//}
+- (void)testShouldGenerateAnInverseMappings
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"first_name" toKeyPath:@"firstName"]];
+    [mapping addAttributeMappingsFromArray:@[@"city", @"state", @"zip"]];
+    RKObjectMapping *otherMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    [otherMapping addAttributeMappingsFromArray:@[@"street"]];
+    [mapping addRelationshipMappingWithSourceKeyPath:@"address" mapping:otherMapping];
+    RKObjectMapping *inverse = [mapping inverseMapping];
+    assertThat(inverse.objectClass, is(equalTo([NSMutableDictionary class])));
+    assertThat([inverse propertyMappingsBySourceKeyPath][@"firstName"], isNot(nilValue()));
+}
 
 - (void)testShouldLetYouRetrieveMappingsByAttribute
 {
@@ -228,7 +227,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:mapping];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:mapping];
     assertThatBool(success, is(equalToBool(YES)));
     assertThatInt([user.userID intValue], is(equalToInt(31337)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
@@ -245,13 +244,12 @@
     RKMapperOperation *mapper = [RKMapperOperation new];
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
-    NSArray *users = [mapper mapCollection:userInfo atKeyPath:@"" usingMapping:mapping];
+    NSArray *users = [mapper mapRepresentations:userInfo atKeyPath:@"" usingMapping:mapping];
     assertThatUnsignedInteger([users count], is(equalToInt(3)));
     RKTestUser *blake = [users objectAtIndex:0];
     assertThat(blake.name, is(equalTo(@"Blake Watters")));
 }
 
-// TODO: This doesn't really test anything anymore...
 - (void)testShouldDetermineTheObjectMappingByConsultingTheMappingProviderWhenThereIsATargetObject
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
@@ -259,7 +257,7 @@
     [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     mapper.targetObject = [RKTestUser user];
     [mapper start];
 }
@@ -268,7 +266,7 @@
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:@{[NSNull null] : mapping}];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{[NSNull null] : mapping}];
     NSDictionary *dictionary = [NSDictionary new];
     mapper.targetObject = dictionary;
     [mapper start];
@@ -284,11 +282,8 @@
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addPropertyMapping:nameMapping];
 
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
-
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:@{[NSNull null] : mapping}];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{[NSNull null] : mapping}];
     RKTestUser *user = [RKTestUser user];
     mapper.targetObject = user;
     [mapper start];
@@ -305,11 +300,8 @@
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addPropertyMapping:nameMapping];
 
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
-
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     [mapper start];
     id mappingResult = [mapper.mappingResult firstObject];
     assertThatBool([mappingResult isKindOfClass:[RKTestUser class]], is(equalToBool(YES)));
@@ -317,18 +309,14 @@
 
 - (void)testShouldMapWithoutATargetMapping
 {
-    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
     [mapping addPropertyMapping:idMapping];
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addPropertyMapping:nameMapping];
 
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
-
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     [mapper start];
     RKTestUser *user = [mapper.mappingResult firstObject];
     assertThat(user, is(notNilValue()));
@@ -343,11 +331,9 @@
     [mapping addPropertyMapping:idMapping];
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addPropertyMapping:nameMapping];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     [mapper start];
     NSArray *users = [mapper.mappingResult array];
     assertThatBool([users isKindOfClass:[NSArray class]], is(equalToBool(YES)));
@@ -369,7 +355,7 @@
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeys.json"];
     
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     NSArray *users = [mapper.mappingResult array];
     assertThatBool([users isKindOfClass:[NSArray class]], is(equalToBool(YES)));
@@ -395,7 +381,7 @@
     [mappingsDictionary setObject:mapping forKey:@"users"];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeysWithRelationship.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     RKMappingResult *result = mapper.mappingResult;
     NSArray *users = [result array];
@@ -433,7 +419,7 @@
     [mappingsDictionary setObject:mapping forKey:@"groups"];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeysWithNestedRelationship.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     RKMappingResult *result = mapper.mappingResult;
 
@@ -489,7 +475,7 @@
     [mappingsDictionary setObject:mapping forKey:@"groups"];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeysWithNestedRelationship.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     RKMappingResult *result = mapper.mappingResult;
 
@@ -535,14 +521,12 @@
     [mapping addPropertyMapping:idMapping];
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addPropertyMapping:nameMapping];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     RKTestUser *user = [RKTestUser user];
     user.name = @"Blake Watters";
     user.userID = [NSNumber numberWithInt:123];
 
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:user mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:user mappingsDictionary:@{ [NSNull null]: mapping }];
     [mapper start];
     RKMappingResult *result = mapper.mappingResult;
     NSDictionary *userInfo = [result firstObject];
@@ -561,7 +545,7 @@
     [mappingsDictionary setObject:mapping forKey:@"user"];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"nested_user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     NSDictionary *dictionary = [mapper.mappingResult dictionary];
     assertThatBool([dictionary isKindOfClass:[NSDictionary class]], is(equalToBool(YES)));
@@ -579,11 +563,9 @@
     [mapping addPropertyMapping:idMapping];
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addPropertyMapping:nameMapping];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     mapper.targetObject = [RKTestUser user];
     [mapper start];
     assertThatInteger(mapper.error.code, is(equalToInt(RKMappingErrorTypeMismatch)));
@@ -592,19 +574,42 @@
 - (void)testShouldAddAnErrorWhenAttemptingToMapADictionaryWithoutAnObjectMapping
 {
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{}];
     [mapper start];
-    assertThat([mapper.error localizedDescription], is(equalTo(@"Unable to find any mappings for the given content")));
+    assertThat([mapper.error localizedDescription], is(equalTo(@"No mappable object representations were found at the key paths searched.")));
 }
 
 - (void)testShouldAddAnErrorWhenAttemptingToMapACollectionWithoutAnObjectMapping
 {
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
-    assertThat([mapper.error localizedDescription], is(equalTo(@"Unable to find any mappings for the given content")));
+    assertThat([mapper.error localizedDescription], is(equalTo(@"No mappable object representations were found at the key paths searched.")));
+}
+
+- (void)testThatAnErrorIsSetWithAHelpfulDescriptionWhenNoKeyPathsMatchTheArrayOfObjectsRepresentationBeingMapped
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSDictionary *mappingsDictionary = @{ @"this": mapping1, @"that": mapping2 };
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
+    [mapper start];
+    assertThat([mapper.error localizedDescription], is(equalTo(@"No mappable object representations were found at the key paths searched.")));
+    assertThat([mapper.error localizedFailureReason], is(equalTo(@"The mapping operation was unable to find any nested object representations at the key paths searched: this, that\nThis likely indicates that you have misconfigured the key paths for your mappings.")));
+}
+
+- (void)testThatAnErrorIsSetWithAHelpfulDescriptionWhenNoKeyPathsMatchTheObjectRepresentationBeingMapped
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSDictionary *mappingsDictionary = @{ @"this": mapping1, @"that": mapping2 };
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"RailsUser.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
+    [mapper start];
+    assertThat([mapper.error localizedDescription], is(equalTo(@"No mappable object representations were found at the key paths searched.")));
+    assertThat([mapper.error localizedFailureReason], is(equalTo(@"The mapping operation was unable to find any nested object representations at the key paths searched: this, that\nThe representation inputted to the mapper was found to contain nested object representations at the following key paths: user\nThis likely indicates that you have misconfigured the key paths for your mappings.")));
 }
 
 #pragma mark RKMapperOperationDelegate Tests
@@ -613,11 +618,9 @@
 {
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     [[mockDelegate expect] mapperWillStartMapping:mapper];
     mapper.delegate = mockDelegate;
     [mapper start];
@@ -628,11 +631,9 @@
 {
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     [[mockDelegate stub] mapperWillStartMapping:mapper];
     [[mockDelegate expect] mapperDidFinishMapping:mapper];
     mapper.delegate = mockDelegate;
@@ -644,11 +645,9 @@
 {
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     [[mockDelegate expect] mapper:mapper didFindRepresentationOrArrayOfRepresentations:OCMOCK_ANY atKeyPath:nil];
     mapper.delegate = mockDelegate;
     [mapper start];
@@ -662,7 +661,7 @@
     [mappingsDictionary setObject:mapping forKey:@"users"];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
     [[mockDelegate expect] mapper:mapper didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:@"users"];
     mapper.delegate = mockDelegate;
@@ -676,11 +675,9 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addPropertyMapping:nameMapping];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     [[mockDelegate expect] mapper:mapper didFinishMappingOperation:OCMOCK_ANY forKeyPath:nil];
     mapper.delegate = mockDelegate;
     [mapper start];
@@ -698,11 +695,9 @@
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:NSClassFromString(@"OCPartialMockObject")];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
-    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     RKTestUser *exampleUser = [RKTestUser new];
     id mockObject = [OCMockObject partialMockForObject:exampleUser];
     [[[mockObject expect] andCall:@selector(fakeValidateValue:forKeyPath:error:) onObject:self] validateValue:(id __autoreleasing *)[OCMArg anyPointer] forKeyPath:OCMOCK_ANY error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
@@ -743,7 +738,7 @@
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addPropertyMapping:nameMapping];
 
-    NSMutableDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNull null], @"name", nil];
+    NSDictionary *dictionary = @{ @"name": [NSNull null] };
     RKTestUser *user = [RKTestUser user];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
@@ -1288,6 +1283,146 @@
     expect(decodedDictionary).to.equal(expectedValue);
 }
 
+- (void)testShouldMapNSDateDistantFutureDateStringToADate
+{
+    [RKObjectMapping resetDefaultDateFormatters];
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
+    [mapping addPropertyMapping:birthDateMapping];
+
+    NSMutableDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
+    [dictionary setObject:@"3001-01-01T00:00:00Z" forKey:@"birthdate"];
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [dateFormatter setDateFormat:@"MM/dd/yyyy"];
+    assertThat([dateFormatter stringFromDate:user.birthDate], is(equalTo(@"01/01/3001")));
+}
+
+- (void)testMappingASingularValueToAnArray
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"favoriteColors" ]];
+    
+    NSDictionary *dictionary = @{ @"favoriteColors": @"Blue" };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.favoriteColors, is(equalTo(@[ @"Blue" ])));
+}
+
+- (void)testMappingASingularValueToASet
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"friendsSet" ]];
+    
+    NSDictionary *dictionary = @{ @"friendsSet": @"Jeff" };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.friendsSet, is(equalTo([NSSet setWithObject:@"Jeff" ])));
+}
+
+- (void)testMappingASingularValueToAnOrderedSet
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"friendsOrderedSet" ]];
+    
+    NSDictionary *dictionary = @{ @"friendsOrderedSet": @"Jeff" };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.friendsOrderedSet, is(equalTo([NSOrderedSet orderedSetWithObject:@"Jeff" ])));
+}
+
+- (void)testTypeTransformationAtKeyPath
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *websiteMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"this.that" toKeyPath:@"address.addressID"];
+    [mapping addPropertyMapping:websiteMapping];
+    
+    NSDictionary *dictionary = @{ @"this": @{ @"that": @"12345" }};
+    RKTestUser *user = [RKTestUser user];
+    RKTestAddress *address = [RKTestAddress new];
+    user.address = address;
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.address.addressID, is(instanceOf([NSNumber class])));
+    assertThat(user.address.addressID, is(equalTo(@(12345))));
+}
+
+- (void)testThatAttributeMappingToAPrimitiveValueFromNullDoesNotCrash
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"age" ]];
+    
+    NSDictionary *dictionary = @{ @"age": [NSNull null] };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    expect(user.age).to.equal(0);
+}
+
+- (void)testThatAttributeMappingToAPrimitiveValueFromUnexpectedObjectTypeDoesNotCrash
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"age" ]];
+    
+    NSDictionary *dictionary = @{ @"age": @{ @"wrong": @"data" }};
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    expect(user.age).to.equal(0);
+}
+
+- (void)testThatMappingNullValueToTransformablePropertyDoesNotGenerateWarning
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromArray:@[ @"catIDs" ]];
+    
+    NSDictionary *dictionary = @{ @"catsIDs": [NSNull null] };
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:humanMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    expect(human.catIDs).to.beNil();
+}
+
 #pragma mark - Relationship Mapping
 
 - (void)testShouldMapANestedObject
@@ -1306,7 +1441,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.address, isNot(nilValue()));
@@ -1328,7 +1463,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friends, isNot(nilValue()));
@@ -1351,7 +1486,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsOrderedSet, isNot(nilValue()));
@@ -1371,7 +1506,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friends, isNot(nilValue()));
@@ -1393,7 +1528,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsSet, isNot(nilValue()));
@@ -1416,7 +1551,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsOrderedSet, isNot(nilValue()));
@@ -1448,7 +1583,7 @@
     RKMapperOperation *mapper = [RKMapperOperation new];
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
 }
 
 - (void)testSkippingOfIdenticalObjectsInformsDelegate
@@ -1508,7 +1643,7 @@
 
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser reject] setFriends:OCMOCK_ANY];
-    [mapper mapFromObject:userInfo toObject:mockUser atKeyPath:@"" usingMapping:userMapping];
+    [mapper mapRepresentation:userInfo toObject:mockUser atKeyPath:@"" usingMapping:userMapping];
     [mockUser verify];
 }
 
@@ -1574,6 +1709,184 @@
     [mockUser verify];
 }
 
+#pragma mark Assignment Policies
+
+- (void)testThatAttemptingToUnionOneToOneRelationshipGeneratesMappingError
+{
+    RKTestUser *user = [RKTestUser new];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"address" toKeyPath:@"address" withMapping:addressMapping];
+    relationshipMapping.assignmentPolicy = RKUnionAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"address": @{ @"city": @"NYC" } };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect(error).notTo.beNil();
+    expect(error.code).to.equal(RKMappingErrorInvalidAssignmentPolicy);
+    expect([error localizedDescription]).to.equal(@"Invalid assignment policy: cannot union a one-to-one relationship.");
+}
+
+- (void)testUnionAssignmentPolicyWithSet
+{
+    RKTestUser *user = [RKTestUser new];
+    RKTestUser *friend = [RKTestUser new];
+    friend.name = @"Jeff";
+    user.friendsSet = [NSSet setWithObject:friend];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"friendsSet" toKeyPath:@"friendsSet" withMapping:mapping];
+    relationshipMapping.assignmentPolicy = RKUnionAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"friendsSet": @[ @{ @"name": @"Zach" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([user.friendsSet count]).to.equal(2);
+    NSArray *names = [user.friendsSet valueForKey:@"name"];
+    assertThat(names, hasItems(@"Jeff", @"Zach", nil));
+}
+
+- (void)testUnionAssignmentPolicyWithOrderedSet
+{
+    RKTestUser *user = [RKTestUser new];
+    RKTestUser *friend = [RKTestUser new];
+    friend.name = @"Jeff";
+    user.friendsOrderedSet = [NSOrderedSet orderedSetWithObject:friend];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"friendsOrderedSet" toKeyPath:@"friendsOrderedSet" withMapping:mapping];
+    relationshipMapping.assignmentPolicy = RKUnionAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"friendsOrderedSet": @[ @{ @"name": @"Zach" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([user.friendsOrderedSet count]).to.equal(2);
+    NSArray *names = [user.friendsOrderedSet valueForKey:@"name"];
+    assertThat(names, hasItems(@"Jeff", @"Zach", nil));
+}
+
+- (void)testUnionAssignmentPolicyWithArray
+{
+    RKTestUser *user = [RKTestUser new];
+    RKTestUser *friend = [RKTestUser new];
+    friend.name = @"Jeff";
+    user.friends = [NSArray arrayWithObject:friend];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:mapping];
+    relationshipMapping.assignmentPolicy = RKUnionAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"friends": @[ @{ @"name": @"Zach" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([user.friends count]).to.equal(2);
+    NSArray *names = [user.friends valueForKey:@"name"];
+    assertThat(names, hasItems(@"Jeff", @"Zach", nil));
+}
+
+- (void)testReplacementPolicyForUnmanagedRelationship
+{
+    RKTestUser *user = [RKTestUser new];
+    RKTestUser *friend = [RKTestUser new];
+    friend.name = @"Jeff";
+    user.friends = [NSArray arrayWithObject:friend];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:mapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [mapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"friends": @[ @{ @"name": @"Zach" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([user.friends count]).to.equal(1);
+    NSArray *names = [user.friends valueForKey:@"name"];
+    assertThat(names, hasItems(@"Zach", nil));
+}
+
+- (void)testReplacmentPolicyForToManyCoreDataRelationshipDeletesExistingValues
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKCat *existingCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    existingCat.name = @"Lola";
+    human.cats = [NSSet setWithObject:existingCat];
+    
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [entityMapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"name": @"Blake", @"cats": @[ @{ @"name": @"Roy" } ] };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([human.cats count]).to.equal(1);
+    NSArray *names = [human.cats valueForKey:@"name"];
+    assertThat(names, hasItems(@"Roy", nil));
+    expect([existingCat isDeleted]).to.equal(YES);
+}
+
+- (void)testReplacmentPolicyForToOneCoreDataRelationshipDeletesExistingValues
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKCat *existingCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    existingCat.name = @"Lola";
+    human.favoriteCat = existingCat;
+    
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"favoriteCat" toKeyPath:@"favoriteCat" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [entityMapping addPropertyMapping:relationshipMapping];
+    
+    NSDictionary *dictionary = @{ @"name": @"Blake", @"favoriteCat": @{ @"name": @"Roy" } };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect(human.favoriteCat.name).to.equal(@"Roy");
+    expect([existingCat isDeleted]).to.equal(YES);
+}
+
 #pragma mark - RKDynamicMapping
 
 - (void)testShouldMapASingleObjectDynamically
@@ -1594,10 +1907,10 @@
     }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     Boy *user = [mapper.mappingResult firstObject];
     assertThat(user, is(instanceOf([Boy class])));
@@ -1615,10 +1928,10 @@
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     Boy *user = [mapper.mappingResult firstObject];
     assertThat(user, is(instanceOf([Boy class])));
@@ -1636,10 +1949,10 @@
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"mixed.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     NSArray *objects = [mapper.mappingResult array];
     expect(objects).to.haveCountOf(2);
@@ -1663,10 +1976,10 @@
     [boyMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:dynamicMapping]];;
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"friends.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     Boy *blake = [mapper.mappingResult firstObject];
     NSArray *friends = blake.friends;
@@ -1699,10 +2012,10 @@
     }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"mixed.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     NSArray *boys = [mapper.mappingResult array];
     assertThat(boys, hasCountOf(1));
@@ -1731,10 +2044,10 @@
     [boyMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:dynamicMapping]];;
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"friends.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     [mapper start];
     Boy *blake = [mapper.mappingResult firstObject];
     assertThat(blake, is(notNilValue()));
@@ -1762,11 +2075,11 @@
     }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"];
     Boy *blake = [Boy new];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     mapper.targetObject = blake;
     [mapper start];
     Boy *user = [mapper.mappingResult firstObject];
@@ -1784,11 +2097,11 @@
     }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"];
     Boy *blake = [Boy new];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     mapper.targetObject = blake;
     [mapper start];
     Boy *user = [mapper.mappingResult firstObject];
@@ -1810,11 +2123,11 @@
     }];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:dynamicMapping forKey:@""];
+    [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"];
     Boy *blake = [Boy new];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:userInfo mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
     mapper.targetObject = blake;
     [mapper start];
     Boy *user = [mapper.mappingResult firstObject];
@@ -2048,7 +2361,7 @@
     human2.railsID = [NSNumber numberWithInt:202];
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:array mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:array mappingsDictionary:mappingsDictionary];
     RKFetchRequestManagedObjectCache *managedObjectCache = [[RKFetchRequestManagedObjectCache alloc] init];
     mapper.mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                   cache:managedObjectCache];
@@ -2072,7 +2385,7 @@
     [mapping2 addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"catId" toKeyPath:@"userID"]];
     
     NSDictionary *dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"SameKeyDifferentTargetClasses.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:dictionary mappingsDictionary:@{ @"products": mapping1, @"categories": mapping2 }];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:dictionary mappingsDictionary:@{ @"products": mapping1, @"categories": mapping2 }];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     mapper.mappingOperationDataSource = dataSource;
     [mapper start];
@@ -2080,6 +2393,25 @@
     expect(mapper.error).to.beNil();
     expect(mapper.mappingResult).notTo.beNil();
     expect([mapper.mappingResult array]).to.haveCountOf(4);
+}
+
+- (void)testAggregatingPropertyMappingUsingNilKeyPath
+{
+    NSDictionary *objectRepresentation = @{ @"name": @"Blake", @"latitude": @(125.55), @"longitude": @(200.5) };
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKObjectMapping *coordinateMapping = [RKObjectMapping mappingForClass:[RKTestCoordinate class]];
+    [coordinateMapping addAttributeMappingsFromArray:@[ @"latitude", @"longitude" ]];
+    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"coordinate" withMapping:coordinateMapping]];
+    RKTestUser *user = [RKTestUser new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    mappingOperation.dataSource = dataSource;
+    [mappingOperation start];
+    expect(mappingOperation.error).to.beNil();
+    expect(user.coordinate).notTo.beNil();
+    expect(user.coordinate.latitude).to.equal(125.55);
+    expect(user.coordinate.longitude).to.equal(200.5);
 }
 
 @end

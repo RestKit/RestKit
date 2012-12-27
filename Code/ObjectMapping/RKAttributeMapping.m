@@ -27,9 +27,8 @@
 
 @implementation RKAttributeMapping
 
-+ (RKAttributeMapping *)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
++ (instancetype)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
 {
-    NSParameterAssert(sourceKeyPath);
     NSParameterAssert(destinationKeyPath);
     RKAttributeMapping *attributeMapping = [self new];
     attributeMapping.sourceKeyPath = sourceKeyPath;

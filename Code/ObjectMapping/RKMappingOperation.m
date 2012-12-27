@@ -71,6 +71,9 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     if ([value isKindOfClass:destinationType]) {
         // No transformation necessary
         return value;
+    } else if (RKClassIsCollection(destinationType) && !RKObjectIsCollection(value)) {
+        // Call ourself recursively with an array value to transform as appropriate
+        return RKTransformedValueWithClass(@[ value ], destinationType, dateToStringValueTransformer);
     } else if ([sourceType isSubclassOfClass:[NSString class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
         // String -> Date
         return [dateToStringValueTransformer transformedValue:value];
@@ -148,7 +151,16 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     return nil;
 }
 
-// Applies
+// Returns the appropriate value for `nil` value of a primitive type
+static id RKPrimitiveValueForNilValueOfClass(Class keyValueCodingClass)
+{
+    if ([keyValueCodingClass isSubclassOfClass:[NSNumber class]]) {
+        return @(0);
+    } else {
+        return nil;
+    }
+}
+
 // Key comes from: [[_nestedAttributeSubstitution allKeys] lastObject]] AND [[_nestedAttributeSubstitution allValues] lastObject];
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings);
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings)
@@ -227,17 +239,12 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
 {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     RKDateToStringValueTransformer *transformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
-    id transformedValue = RKTransformedValueWithClass(value, destinationType, transformer);
+    id transformedValue = RKTransformedValueWithClass(value, destinationType, transformer);        
     if (transformedValue != value) return transformedValue;
     
     RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
 
     return nil;
-}
-
-- (BOOL)isValue:(id)sourceValue equalToValue:(id)destinationValue
-{
-    return RKObjectIsEqualToObject(sourceValue, destinationValue);
 }
 
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString *)keyPath
@@ -288,7 +295,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
         return [self validateValue:value atKeyPath:keyPath];
     }
 
-    if (! [self isValue:*value equalToValue:currentValue]) {
+    if (! RKObjectIsEqualToObject(*value, currentValue)) {
         // Validate value for key
         return [self validateValue:value atKeyPath:keyPath];
     }
@@ -345,6 +352,16 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     if (type && NO == [[value class] isSubclassOfClass:type]) {
         value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
     }
+    
+    // If we have a nil value for a primitive property, we need to coerce it into a KVC usable value or bail out
+    if (value == nil && RKPropertyInspectorIsPropertyAtKeyPathOfObjectPrimitive(attributeMapping.destinationKeyPath, self.destinationObject)) {
+        RKLogDebug(@"Detected `nil` value transformation for primitive property at keyPath '%@'", attributeMapping.destinationKeyPath);
+        value = RKPrimitiveValueForNilValueOfClass(type);
+        if (! value) {
+            RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- Unable to transform `nil` into primitive value representation", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
+            return;
+        }
+    }
 
     RKSetIntermediateDictionaryValuesOnObjectForKeyPath(self.destinationObject, attributeMapping.destinationKeyPath);
     
@@ -382,13 +399,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
             continue;
         }
 
-        id value = nil;
-        if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
-            value = self.sourceObject;
-        } else {
-            value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
-        }
-
+        id value = (attributeMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if (value) {
             appliedMappings = YES;
             [self applyAttributeMapping:attributeMapping withValue:value];
@@ -433,10 +444,35 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     return YES;
 }
 
+- (BOOL)applyReplaceAssignmentPolicyForRelationshipMapping:(RKRelationshipMapping *)relationshipMapping
+{
+    if (relationshipMapping.assignmentPolicy == RKReplaceAssignmentPolicy) {
+        if ([self.dataSource respondsToSelector:@selector(mappingOperation:deleteExistingValueOfRelationshipWithMapping:error:)]) {
+            NSError *error = nil;
+            BOOL success = [self.dataSource mappingOperation:self deleteExistingValueOfRelationshipWithMapping:relationshipMapping error:&error];
+            if (! success) {
+                RKLogError(@"Failed to delete existing value of relationship mapped with RKReplaceAssignmentPolicy: %@", error);
+                self.error = error;
+                return NO;
+            }
+        } else {
+            RKLogWarning(@"Requested mapping with `RKReplaceAssignmentPolicy` assignment policy, but the data source does not support it. Mapping has proceeded identically to the `RKSetAssignmentPolicy`.");
+        }
+    }
+    
+    return YES;
+}
+
 - (BOOL)mapOneToOneRelationshipWithValue:(id)value mapping:(RKRelationshipMapping *)relationshipMapping
 {
     // One to one relationship
     RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
+    
+    if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Invalid assignment policy: cannot union a one-to-one relationship." };
+        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorInvalidAssignmentPolicy userInfo:userInfo];
+        return NO;
+    }
 
     id destinationObject = [self destinationObjectForMappingRepresentation:value withMapping:relationshipMapping.mapping];
     if (! destinationObject) {
@@ -447,6 +483,10 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
 
     // If the relationship has changed, set it
     if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
+        if (! [self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
+            return NO;
+        }
+        
         RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
         [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
     } else {
@@ -489,6 +529,14 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
         RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
         RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
     }
+    
+    if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
+        RKLogDebug(@"Mapping relationship with union assignment policy: constructing combined relationship value.");
+        id existingObjects = [self.destinationObject valueForKeyPath:relationshipMapping.destinationKeyPath];
+        NSArray *existingObjectsArray = RKTransformedValueWithClass(existingObjects, [NSArray class], nil);
+        [relationshipCollection addObjectsFromArray:existingObjectsArray];
+    }
+    
     for (id nestedObject in value) {
         id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject withMapping:relationshipMapping.mapping];
         if (! mappableObject) {
@@ -509,6 +557,9 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
 
     // If the relationship has changed, set it
     if ([self shouldSetValue:&valueForRelationship atKeyPath:relationshipMapping.destinationKeyPath]) {
+        if (! [self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
+            return NO;
+        }
         if (! [self mapCoreDataToManyRelationshipValue:valueForRelationship withMapping:relationshipMapping]) {
             RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, valueForRelationship);
             [self.destinationObject setValue:valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath];
@@ -533,7 +584,8 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         if ([self isCancelled]) return NO;
         
-        id value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
+        // The nil source keyPath indicates that we want to map directly from the parent representation
+        id value = (relationshipMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
 
         // Track that we applied this mapping
         [mappingsApplied addObject:relationshipMapping];

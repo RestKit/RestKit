@@ -33,9 +33,9 @@ static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterva
 
 @implementation RKDotNetDateFormatter
 
-+ (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)newTimeZone
++ (instancetype)dotNetDateFormatterWithTimeZone:(NSTimeZone *)newTimeZone
 {
-    RKDotNetDateFormatter *formatter = [[RKDotNetDateFormatter alloc] init];
+    RKDotNetDateFormatter *formatter = [self new];
     if (newTimeZone) formatter.timeZone = newTimeZone;
     return formatter;
 }

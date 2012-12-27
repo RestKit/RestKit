@@ -1,6 +1,6 @@
 # RestKit
 
-RestKit is a modern Objective-C framework for implementing RESTful web services clients on iOS and Mac OS X. It provides a powerful [object mapping]() engine that seamlessly integrates with [Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html) and a simple set of networking primitives for mapping HTTP requests and responses built on top of [AFNetworking](https://github.com/AFNetworking/AFNetworking). It has an elegant, carefully designed set of APIs that make accessing and modeling RESTful resources feel almost magical. For example, here's how to access the Twitter public timeline and turn the JSON contents into an array of Tweet objects:
+RestKit is a modern Objective-C framework for implementing RESTful web services clients on iOS and Mac OS X. It provides a powerful [object mapping](https://github.com/RestKit/RestKit/wiki/Object-mapping) engine that seamlessly integrates with [Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html) and a simple set of networking primitives for mapping HTTP requests and responses built on top of [AFNetworking](https://github.com/AFNetworking/AFNetworking). It has an elegant, carefully designed set of APIs that make accessing and modeling RESTful resources feel almost magical. For example, here's how to access the Twitter public timeline and turn the JSON contents into an array of Tweet objects:
 
 ```  objective-c
 @interface Tweet : NSObject
@@ -29,11 +29,11 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 ## Getting Started
 
 - [Download RestKit](https://github.com/RestKit/RestKit/downloads) and play with the [examples](https://github.com/RestKit/RestKit/tree/development/Examples) for iPhone and Mac OS X
-- First time with RestKit? Read the ["Overview"](#Overview) section below and then check out the ["Getting Acquainted with RestKit"]() tutorial and [Object Mapping Reference](https://github.com/RestKit/RestKit/wiki/Object-mapping) documents in the wiki to jump right in.
-- Upgrading from RestKit 0.9.x or 0.10.x? Read the ["Upgrading to RestKit 0.20.x"]() guide in the wiki
-- Adding RestKit to an existing [AFNetworking]() application? Read the [AFNetworking Integration]() document to learn details about how the frameworks fit together.
-- Review the [source code API documentation](http://restkit.org/api/0.20.0) for a detailed look at the classes and API's in RestKit
-- Still need some help? Get support from [Stack Overflow](), the [RestKit mailing list](http://groups.google.com/group/restkit) or ping us on [Twitter](http://twitter.com/RestKit)
+- First time with RestKit? Read the ["Overview"](#Overview) section below and then check out the ["Getting Acquainted with RestKit"](https://github.com/RestKit/RestKit/wiki/Getting-Acquainted-with-RestKit) tutorial and [Object Mapping Reference](https://github.com/RestKit/RestKit/wiki/Object-mapping) documents in the wiki to jump right in.
+- Upgrading from RestKit 0.9.x or 0.10.x? Read the ["Upgrading to RestKit 0.20.x"](https://github.com/RestKit/RestKit/wiki/Upgrading-from-v0.10.x-to-v0.20.0) guide in the wiki
+- Adding RestKit to an existing [AFNetworking](http://afnetworking.org) application? Read the [AFNetworking Integration](https://github.com/RestKit/RestKit/wiki/AFNetworking-Integration) document to learn details about how the frameworks fit together.
+- Review the [source code API documentation](http://restkit.org/api/latest) for a detailed look at the classes and API's in RestKit. A great place to start is [RKObjectManager](http://restkit.org/api/latest/Classes/RKObjectManager.html).
+- Still need some help? Get support from [Stack Overflow](http://stackoverflow.com/questions/tagged/restkit), the [RestKit mailing list](http://groups.google.com/group/restkit) or ping us on [Twitter](http://twitter.com/RestKit)
 
 ## Overview
 
@@ -56,52 +56,52 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
 <table>
   <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/ObjectMapping/README.md">Object Mapping</a></th></tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectMapping.html">RKObjectMapping</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKObjectMapping.html">RKObjectMapping</a></td>
     <td>Encapsulates configuration for transforming object representations as expressed by key-value coding keypaths.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKAttributeMapping.html">RKAttributeMapping</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKAttributeMapping.html">RKAttributeMapping</a></td>
     <td>Specifies a desired transformation between attributes within an object or entity mapping in terms of a source and destination key path.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKRelationshipMapping.html">RKRelationshipMapping</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKRelationshipMapping.html">RKRelationshipMapping</a></td>
     <td>Specifies a desired mapping of a nested to-one or to-many child objects in in terms of a source and destination key path and an <tt>RKObjectMapping</tt> with which to map the attributes of the child object.</td>
   </tr>  
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKDynamicMapping.html">RKDynamicMapping</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKDynamicMapping.html">RKDynamicMapping</a></td>
     <td>Specifies a flexible mapping in which the decision about which <tt>RKObjectMapping</tt> is to be used to process a given document is deferred to run time.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectMapper.html">RKObjectMapper</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKObjectMapper.html">RKObjectMapper</a></td>
     <td>Provides an interface for mapping a parsed document into a set of local domain objects.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectMappingOperation.html">RKObjectMappingOperation</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKObjectMappingOperation.html">RKObjectMappingOperation</a></td>
     <td>An <tt>NSOperation</tt> that performs a mapping between object representations using an <tt>RKObjectMapping</tt>.</td>
   </tr>  
   <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/Network/README.md">Networking</a></th></tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKRequestDescriptor.html">RKRequestDescriptor</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKRequestDescriptor.html">RKRequestDescriptor</a></td>
     <td>Describes a request that can be sent from the application to a remote web application for a given object type.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKResponseDescriptor.html">RKResponseDescriptor</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKResponseDescriptor.html">RKResponseDescriptor</a></td>
     <td>Describes an object mappable response that may be returned from a remote web application in terms of an object mapping, a key path, a <a href="">SOCKit pattern</a> for matching the URL, and a set of status codes that define the circumstances in which the mapping is appropriate for a given response.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectParameterization.html">RKObjectParameterization</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKObjectParameterization.html">RKObjectParameterization</a></td>
     <td>Performs mapping of a given object into an <tt>NSDictionary</tt> represenation suitable for use as the parameters of an HTTP request.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectRequestOperation.html">RKObjectRequestOperation</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKObjectRequestOperation.html">RKObjectRequestOperation</a></td>
     <td>An <tt>NSOperation</tt> that sends an HTTP request and performs object mapping on the parsed response body using the configurations expressed in a set of <tt>RKResponseDescriptor</tt> objects.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKResponseMapper.html">RKResponseMapperOperation</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKResponseMapper.html">RKResponseMapperOperation</a></td>
     <td>An <tt>NSOperation</tt> that provides support for object mapping an <tt>NSHTTPURLResponse</tt> using a set of <tt>RKResponseDescriptor</tt> objects.</td>
   </tr>  
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKObjectManager.html">RKObjectManager</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKObjectManager.html">RKObjectManager</a></td>
     <td>Captures the common patterns for communicating with a RESTful web application over HTTP using object mapping including:
     	<ul>
     		<li>Centralizing <tt>RKRequestDescriptor</tt> and <tt>RKResponseDescriptor</tt> configurations</li>
@@ -113,32 +113,32 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
     </td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKRouter.html">RKRouter</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKRouter.html">RKRouter</a></td>
     <td>Generates <tt>NSURL</tt> objects from a base URL and a set of <tt>RKRoute</tt> objects describing relative paths used by the application.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKRoute.html">RKRoute</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKRoute.html">RKRoute</a></td>
     <td>Describes a single relative path for a given object type and HTTP method, the relationship of an object, or a symbolic name.</td>
   </tr>
   <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/CoreData/README.md">Core Data</a></th></tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKManagedObjectStore.html">RKManagedObjectStore</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKManagedObjectStore.html">RKManagedObjectStore</a></td>
     <td>Encapsulates Core Data configuration including an <tt>NSManagedObjectModel</tt>, a <tt>NSPersistentStoreCoordinator</tt>, and a pair of <tt>NSManagedObjectContext</tt> objects.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKEntityMapping.html">RKEntityMapping</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKEntityMapping.html">RKEntityMapping</a></td>
     <td>Models a mapping for transforming an object representation into a <tt>NSManagedObject</tt> instance for a given <tt>NSEntityDescription</tt>.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKConnectionDescription.html">RKConnectionDescription</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKConnectionDescription.html">RKConnectionDescription</a></td>
     <td>Describes a mapping for establishing a relationship between Core Data entities using foreign key attributes.</td>
   </tr>  
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKManagedObjectRequestOperation.html">RKManagedObjectRequestOperation</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKManagedObjectRequestOperation.html">RKManagedObjectRequestOperation</a></td>
     <td>An <tt>NSOperation</tt> subclass that sends an HTTP request and performs object mapping on the parsed response body to create <tt>NSManagedObject</tt> instances, establishes relationships between objects using <tt>RKConnectionDescription</tt> objects, and cleans up orphaned objects that no longer exist in the remote backend system.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKManagedObjectImporter.html">RKManagedObjectImporter</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKManagedObjectImporter.html">RKManagedObjectImporter</a></td>
     <td>Provides support for bulk mapping of managed objects using <tt>RKEntityMapping</tt> objects for two use cases:
     	<ol>
     		<li>Bulk importing of parsed documents into an <tt>NSPersistentStore.</tt></li>
@@ -148,24 +148,24 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
   </tr>
   <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/Search/README.md">Search</a></th></tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKSearchIndexer.html">RKSearchIndexer</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKSearchIndexer.html">RKSearchIndexer</a></td>
     <td>Provides support for generating a full-text searchable index within Core Data for string attributes of entities within an application.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKSearchPredicate.html">RKSearchPredicate</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKSearchPredicate.html">RKSearchPredicate</a></td>
     <td>Generates an <tt>NSCompoundPredicate</tt> given a string of text that will search an index built with an <tt>RKSearchIndexer</tt> across any indexed entity.</td>
   </tr>
   <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/Testing/README.md">Testing</a></th></tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKMappingTest.html">RKMappingTest</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKMappingTest.html">RKMappingTest</a></td>
     <td>Provides support for unit testing object mapping configurations given a parsed document and an object or entity mapping. Expectations are configured in terms of expected key path mappings and/or expected transformation results.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKTestFixture.html">RKTestFixture</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKTestFixture.html">RKTestFixture</a></td>
     <td>Provides an interface for easily generating test fixture data for unit testing.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/0.20.0/Classes/RKTestFactory.html">RKTestFactory</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKTestFactory.html">RKTestFactory</a></td>
     <td>Provides support for creating objects for use in testing.</td>
   </tr>
 </table>
@@ -230,9 +230,10 @@ operation.managedObjectCache = managedObjectStore.managedObjectCache;
 // GET /articles/error.json returns a 422 (Unprocessable Entity)
 // JSON looks like {"errors": "Some Error Has Occurred"}
 
+// You can map errors to any class, but `RKErrorMessage` is included for free
 RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
 // The entire value at the source key path containing the errors maps to the message
-[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"message"]];
+[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"errorMessage"]];
 
 NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError);
 // Any response in the 4xx status code range with an "errors" key path uses this mapping
@@ -241,6 +242,7 @@ RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptor
 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://restkit.org/articles/error.json"]];
 RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[errorDescriptor]];
 [operation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
+    // The `description` method of the class the error is mapped to is used to construct the value of the localizedDescription
 	NSLog(@"Loaded this error: %@", [error localizedDescription]);
 }];
 ```
@@ -504,7 +506,7 @@ If you are including the RestKit sources directly into a project that does not y
 
 ### Serialization Formats
 
-RestKit provides a pluggable interface for handling arbitrary serialization formats via the [`RKSerialization`](http://restkit.org/api/0.20.0/Classes/RKSerialization.html) protocol and the [`RKMIMETypeSerialization`](http://restkit.org/api/0.20.0/Classes/RKMIMETypeSerialization.html) class. Out of the box, RestKit supports handling the [JSON](http://www.json.org/) format for serializing and deserializing object representations via the [`NSJSONSerialization`](http://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html) class.
+RestKit provides a pluggable interface for handling arbitrary serialization formats via the [`RKSerialization`](http://restkit.org/api/latest/Classes/RKSerialization.html) protocol and the [`RKMIMETypeSerialization`](http://restkit.org/api/latest/Classes/RKMIMETypeSerialization.html) class. Out of the box, RestKit supports handling the [JSON](http://www.json.org/) format for serializing and deserializing object representations via the [`NSJSONSerialization`](http://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html) class.
 
 #### Additional Serializations
 

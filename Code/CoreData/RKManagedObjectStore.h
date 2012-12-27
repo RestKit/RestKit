@@ -38,9 +38,6 @@
  The managed object context hierarchy is designed to isolate the main thread from disk I/O and avoid deadlocks. Because the primary context manages its own private queue, saving the main queue context will not result in the objects being saved to the persistent store. The primary context must be saved as well for objects to be persisted to disk.
 
  It is also worth noting that because of the parent/child context hierarchy, objects created on the main thread will not obtain permanent managed object ID's even after the primary context has been saved. If you need to refer to the permanent representations of objects created on the main thread after a save, you may ask the main queue context to obtain permanent managed objects for your objects via `obtainPermanentIDsForObjects:error:`. Be warned that when obtaining permanent managed object ID's, you must include all newly created objects that are reachable from the object you are concerned with in the set of objects provided to `obtainPermanentIDsForObjects:error:`. This means any newly created object in a one-to-one or one-to-many relationship must be provided or you will face a crash from the managed object context. This is due to a bug in Core Data still present in iOS5, but fixed in iOS6 (see Open Radar http://openradar.appspot.com/11478919).
-
- @see `NSManagedObjectContext (RKAdditions)`
- @see `NSEntityDescription (RKAdditions)`
  */
 @interface RKManagedObjectStore : NSObject
 
@@ -53,7 +50,7 @@
 
  @return The default managed object store.
  */
-+ (RKManagedObjectStore *)defaultStore;
++ (instancetype)defaultStore;
 
 /**
  Sets the default managed object store for the application.
@@ -79,7 +76,7 @@
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
  
  */
-- (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
 
 /**
  Initializes the receiver with an existing persistent store coordinator.
@@ -91,7 +88,7 @@
  @param persistentStoreCoordinator The persistent store coordinator with which to initialize the receiver.
  @return The receiver, initialized with the managed object model of the given persistent store coordinator and the persistent store coordinator.
  */
-- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
+- (instancetype)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
 
 /**
  Initializes the receiver with a managed object model obtained by merging the models from all of the application's non-framework bundles.
@@ -101,7 +98,7 @@
 
  @warning Obtaining a managed object model by merging all bundles may result in an application error if versioned object models are in use.
  */
-- (id)init;
+- (instancetype)init;
 
 ///-----------------------------------------------------------------------------
 /// @name Configuring Persistent Stores
@@ -143,7 +140,7 @@
                                                 error:(NSError **)error;
 
 /**
- Resets the persistent stores in the receiver's persistent store coordinator and recreates them. If a store being reset is backed by a file on disk (such as a SQLite file), the file will be removed prior to recreating the store. If the store was originally created using a seed database, the seed will be recopied to reset the store to its seeded state.
+ Resets the persistent stores in the receiver's persistent store coordinator and recreates them. If a store being reset is backed by a file on disk (such as a SQLite file), the file will be removed prior to recreating the store. If the store was originally created using a seed database, the seed will be recopied to reset the store to its seeded state. If the managed object model uses External Storage for any of its entities, then the external storage directory will be recursively deleted when the store is reset.
 
  @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error object containing the error information. You may specify nil for this parameter if you do not want the error information.
  @return A Boolean value indicating if the reset was successful.
@@ -151,6 +148,32 @@
  @bug This method will implictly result in the managed object contexts associated with the receiver to be discarded and recreated. Any managed objects or additional child contexts associated with the store will need to be discarded or else exceptions may be raised (i.e. `NSObjectInaccessibleException`).
 
  Also note that care must be taken to cancel/suspend all mapping operations, reset all managed object contexts, and disconnect all `NSFetchedResultController` objects that are associated with managed object contexts using the persistent stores of the receiver before attempting a reset. Failure to completely disconnect usage before calling this method is likely to result in a deadlock.
+ 
+ As an alternative to resetting the persistent store, you may wish to consider simply deleting all managed objects out of the managed object context. If your data set is not very large, this can be a performant operation and is significantly easier to implement correctly. An example implementation for truncating all managed objects from the store is provided below:
+ 
+    NSBlockOpertation *operation = [NSBlockOperation blockOperationWithBlock:^{
+        NSManagedObjectContext *managedObjectContext = [RKManagedObjectStore defaultStore].persistentStoreManagedObjectContext;
+        [managedObjectContext performBlockAndWait:^{
+            NSError *error = nil;
+            for (NSEntityDescription *entity in [RKManagedObjectStore defaultStore].managedObjectModel) {
+                NSFetchRequest *fetchRequest = [NSFetchRequest new];
+                [fetchRequest setEntity:entity];
+                [fetchRequest setIncludesSubentities:NO];
+                NSArray *objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                if (! objects) RKLogWarning(@"Failed execution of fetch request %@: %@", fetchRequest, error);
+                for (NSManagedObject *managedObject in objects) {
+                    [managedObjectContext deleteObject:managedObjectContext];
+                }
+            }
+     
+            BOOL success = [managedObjectContext save:&error];
+            if (!success) RKLogWarning(@"Failed saving managed object context: %@", error);
+            }];
+    }];
+    [operation setCompletionBlock:^{
+        // Do stuff once the truncation is complete
+    }];
+    [operation start];
  */
 - (BOOL)resetPersistentStores:(NSError **)error;
 

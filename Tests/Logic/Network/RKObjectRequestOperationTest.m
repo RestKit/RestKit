@@ -54,7 +54,7 @@
 - (RKResponseDescriptor *)errorResponseDescriptor
 {
     RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
-    [errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"" toKeyPath:@"errorMessage"]];
+    [errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
 
     NSMutableIndexSet *errorCodes = [NSMutableIndexSet indexSet];
     [errorCodes addIndexes:RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError)];

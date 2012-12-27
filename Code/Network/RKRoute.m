@@ -38,7 +38,7 @@
 
 @implementation RKRoute
 
-+ (id)routeWithName:(NSString *)name pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
++ (instancetype)routeWithName:(NSString *)name pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
 {
     NSParameterAssert(name);
     NSParameterAssert(pathPattern);
@@ -49,7 +49,7 @@
     return route;
 }
 
-+ (id)routeWithClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
++ (instancetype)routeWithClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
 {
     NSParameterAssert(objectClass);
     NSParameterAssert(pathPattern);
@@ -60,7 +60,7 @@
     return route;
 }
 
-+ (id)routeWithRelationshipName:(NSString *)relationshipName objectClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
++ (instancetype)routeWithRelationshipName:(NSString *)relationshipName objectClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method
 {
     NSParameterAssert(relationshipName);
     NSParameterAssert(objectClass);

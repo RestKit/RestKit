@@ -29,7 +29,7 @@
 
 @implementation RKRelationshipMapping
 
-+ (RKRelationshipMapping *)relationshipMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)mapping
++ (instancetype)relationshipMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)mapping
 {
     RKRelationshipMapping *relationshipMapping = [self new];
     relationshipMapping.sourceKeyPath = sourceKeyPath;
@@ -38,10 +38,20 @@
     return relationshipMapping;
 }
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.assignmentPolicy = RKSetAssignmentPolicy;
+    }
+    return self;
+}
+
 - (id)copyWithZone:(NSZone *)zone
 {
     RKRelationshipMapping *copy = [super copyWithZone:zone];
     copy.mapping = self.mapping;
+    copy.assignmentPolicy = self.assignmentPolicy;
     return copy;
 }
 

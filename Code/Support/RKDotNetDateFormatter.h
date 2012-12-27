@@ -37,7 +37,7 @@
  @return An autoreleased `RKDotNetDateFormatter` object
  @see dotNetDateFormatter
  */
-+ (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)timeZone;
++ (instancetype)dotNetDateFormatterWithTimeZone:(NSTimeZone *)timeZone;
 
 /**
  Returns an `NSDate` object from an ASP.NET style date string respresentation, as seen in JSON.

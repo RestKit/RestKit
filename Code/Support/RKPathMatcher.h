@@ -40,7 +40,7 @@
  @param pathString The string to evaluate and parse, such as `/districts/tx/upper/?apikey=GC5512354`
  @return An instantiated `RKPathMatcher` without an established pattern.
  */
-+ (RKPathMatcher *)pathMatcherWithPath:(NSString *)pathString;
++ (instancetype)pathMatcherWithPath:(NSString *)pathString;
 
 /**
  Determines if the path string matches the provided pattern, and yields a dictionary with the resulting matched key/value pairs.  Use of this method should be preceded by `pathMatcherWithPath:` Pattern strings should include encoded parameter keys, delimited by a single colon at the beginning of the key name.
@@ -74,7 +74,7 @@
  @param patternString The pattern to use for evaluating, such as `/:entityName/:stateID/:chamber/`
  @return An instantiated `RKPathMatcher` with an established pattern.
  */
-+ (RKPathMatcher *)pathMatcherWithPattern:(NSString *)patternString;
++ (instancetype)pathMatcherWithPattern:(NSString *)patternString;
 
 /**
  Determines if the given path string matches a pattern, and yields a dictionary with the resulting matched key/value pairs.  Use of this method should be preceded by `pathMatcherWithPattern:`.

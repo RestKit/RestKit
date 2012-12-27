@@ -88,7 +88,7 @@
  @param sourceToDestinationEntityAttributes A dictionary specifying how attributes on the source entity correspond to attributes on the destination entity.
  @return The receiver, initialized with the given relationship and attributes.
  */
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)sourceToDestinationEntityAttributes;
+- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)sourceToDestinationEntityAttributes;
 
 /**
  The dictionary of attributes specifying how attributes on the source entity for the relationship correspond to attributes on the destination entity.
@@ -115,7 +115,7 @@
  @param keyPath The key path from which to read the value that is to be set for the relationship.
  @return The receiver, initialized with the given relationship and key path.
  */
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath;
+- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath;
 
 /**
  The key path that is to be evaluated to obtain the value for the relationship.
@@ -145,8 +145,20 @@
 ///----------------------------
 
 /**
+ Returns a Boolean value that determines if the connection includes subentities. If `NO`, then the connection will only be established to objects of exactly the entity specified by the relationship's entity. If `YES`, then the connection will be established to all objects of the relationship's entity and all subentities.
+
+ **Default**: `YES`
+ */
+@property (nonatomic, assign) BOOL includesSubentities;
+
+/**
+ An optional predicate for conditionally evaluating the connection based on the state of the source object.
+ */
+@property (nonatomic, strong) NSPredicate *sourcePredicate;
+
+/**
  An optional predicate for filtering objects to be connected.
  */
-@property (nonatomic, copy) NSPredicate *predicate;
+@property (nonatomic, copy) NSPredicate *destinationPredicate;
 
 @end

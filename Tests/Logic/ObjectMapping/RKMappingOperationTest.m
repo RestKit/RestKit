@@ -434,14 +434,14 @@
     RKObjectMapping *childMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [childMapping addAttributeMappingsFromArray:@[@"name"]];
     
-    RKEntityMapping *parentMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectMapping *parentMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [parentMapping addAttributeMappingsFromArray:@[@"name"]];
     [parentMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"children" toKeyPath:@"friends" withMapping:childMapping]];
     NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
     
     NSOperationQueue *operationQueue = [NSOperationQueue new];
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:JSON mappingsDictionary:mappingsDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
     [operationQueue addOperation:mapper];
     [mapper cancel];
     [operationQueue waitUntilAllOperationsAreFinished];

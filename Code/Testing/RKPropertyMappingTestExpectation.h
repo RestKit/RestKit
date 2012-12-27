@@ -48,7 +48,7 @@ typedef BOOL (^RKMappingTestExpectationEvaluationBlock)(RKPropertyMappingTestExp
  @param destinationKeyPath A key path on the destination object that should be mapped onto.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath.
  */
-+ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath;
++ (instancetype)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath;
 
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be mapped to another key path on a destination object with a given value.
@@ -58,7 +58,7 @@ typedef BOOL (^RKMappingTestExpectationEvaluationBlock)(RKPropertyMappingTestExp
  @param value The value that is expected to be assigned to the destination object at destinationKeyPath.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath with value.
  */
-+ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value;
++ (instancetype)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value;
 
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be mapped to another key path on a destinaton object and that the attribute mapping and value should evaluate to true with a given block.
@@ -68,7 +68,7 @@ typedef BOOL (^RKMappingTestExpectationEvaluationBlock)(RKPropertyMappingTestExp
  @param evaluationBlock A block with which to evaluate the success of the mapping.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath with value.
  */
-+ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock;
++ (instancetype)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock;
 
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be mapped to another key path on a destinaton object using a specific object mapping for the relationship.
@@ -78,7 +78,7 @@ typedef BOOL (^RKMappingTestExpectationEvaluationBlock)(RKPropertyMappingTestExp
  @param mapping An object mapping that is expected to be used for mapping the nested relationship.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath using a specific object mapping.
  */
-+ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping;
++ (instancetype)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping;
 
 ///-------------------------
 /// @name Expectation Values

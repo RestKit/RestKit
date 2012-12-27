@@ -48,7 +48,7 @@
  @param method The request method of the route.
  @return A new named route object with the given name, path pattern and request method.
  */
-+ (id)routeWithName:(NSString *)name pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
++ (instancetype)routeWithName:(NSString *)name pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
 
 /**
  Creates and returns a new class route object with the given object class, path pattern and method.
@@ -58,7 +58,7 @@
  @param method The request method of the route.
  @return A new class route object with the given object class, path pattern and request method.
  */
-+ (id)routeWithClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
++ (instancetype)routeWithClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
 
 /**
  Creates and returns a new relationship route object with the given relationship name, object class, path pattern and method.
@@ -69,7 +69,7 @@
  @param method The request method of the route.
  @return A new class route object with the given object class, path pattern and request method.
  */
-+ (id)routeWithRelationshipName:(NSString *)name objectClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
++ (instancetype)routeWithRelationshipName:(NSString *)name objectClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
 
 ///---------------------------------
 /// @name Accessing Route Attributes

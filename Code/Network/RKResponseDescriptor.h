@@ -41,10 +41,10 @@
  @param statusCodes A set of HTTP status codes for which the mapping is to be used.
  @return A new `RKResponseDescriptor` object.
  */
-+ (RKResponseDescriptor *)responseDescriptorWithMapping:(RKMapping *)mapping
-                                            pathPattern:(NSString *)pathPattern
-                                                keyPath:(NSString *)keyPath
-                                            statusCodes:(NSIndexSet *)statusCodes;
++ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
+                                  pathPattern:(NSString *)pathPattern
+                                      keyPath:(NSString *)keyPath
+                                  statusCodes:(NSIndexSet *)statusCodes;
 
 ///------------------------------------------------------
 /// @name Getting Information About a Response Descriptor

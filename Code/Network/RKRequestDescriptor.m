@@ -52,7 +52,7 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
 
 @implementation RKRequestDescriptor
 
-+ (id)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath
++ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath
 {
     NSParameterAssert(mapping);
     NSParameterAssert(objectClass);

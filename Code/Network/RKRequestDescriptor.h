@@ -46,9 +46,9 @@
  @see [RKObjectMapping requestMapping]
  @warning An exception will be raised if the objectClass of the given mapping is not `[NSMutableDictionary class]`.
  */
-+ (id)requestDescriptorWithMapping:(RKMapping *)mapping
-                       objectClass:(Class)objectClass
-                       rootKeyPath:(NSString *)rootKeyPath;
++ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
+                                 objectClass:(Class)objectClass
+                                 rootKeyPath:(NSString *)rootKeyPath;
 
 ///-----------------------------------------------------
 /// @name Getting Information About a Request Descriptor

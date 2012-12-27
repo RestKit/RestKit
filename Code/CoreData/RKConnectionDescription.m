@@ -44,7 +44,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
 
 @implementation RKConnectionDescription
 
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)attributes
+- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)attributes
 {
     NSParameterAssert(relationship);
     NSParameterAssert(attributes);
@@ -58,11 +58,12 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     if (self) {
         self.relationship = relationship;
         self.attributes = attributes;
+        self.includesSubentities = YES;
     }
     return self;
 }
 
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath
+- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath
 {
     NSParameterAssert(relationship);
     NSParameterAssert(keyPath);
@@ -79,7 +80,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     if ([self class] == [RKConnectionDescription class]) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:[NSString stringWithFormat:@"%@ Failed to call designated initializer. "
-                                               "Invoke initWithRelationship:sourceKeyPath:destinationKeyPath:matcher: instead.",
+                                               "Invoke initWithRelationship:attributes: instead.",
                                                NSStringFromClass([self class])]
                                      userInfo:nil];
     }

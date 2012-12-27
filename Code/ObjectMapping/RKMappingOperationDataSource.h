@@ -20,7 +20,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class RKObjectMapping, RKMappingOperation;
+@class RKObjectMapping, RKMappingOperation, RKRelationshipMapping;
 
 /**
  An object that adopts the `RKMappingOperationDataSource` protocol is responsible for the retrieval or creation of target objects within an `RKMapperOperation` or `RKMappingOperation`. A data source is responsible for meeting the requirements of the underlying data store implementation and must return a key-value coding compliant object instance that can be used as the target object of a mapping operation. It is also responsible for commiting any changes necessary to the underlying data store once a mapping operation has completed its work.
@@ -55,5 +55,15 @@
  @return A Boolean value indicating if the changes for the mapping operation were committed successfully.
  */
 - (BOOL)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation error:(NSError **)error;
+
+/**
+ Tells the data source to delete the existing value for a relationship that has been mapped with an assignment policy of `RKReplaceAssignmentPolicy`.
+ 
+ @param mappingOperation The mapping operation that is executing.
+ @param relationshipMapping The relationship mapping for which the existing value is being replaced.
+ @param error A pointer to an error to be set in the event that the deletion operation could not be completed.
+ @return A Boolean value indicating if the existing objects for the relationship were successfully deleted.
+ */
+- (BOOL)mappingOperation:(RKMappingOperation *)mappingOperation deleteExistingValueOfRelationshipWithMapping:(RKRelationshipMapping *)relationshipMapping error:(NSError **)error;
 
 @end

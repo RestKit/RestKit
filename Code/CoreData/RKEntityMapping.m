@@ -36,24 +36,27 @@ NSString * const RKEntityIdentificationAttributesUserInfoKey = @"RKEntityIdentif
 
 static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDescription *entity)
 {
-    id userInfoValue = [[entity userInfo] valueForKey:RKEntityIdentificationAttributesUserInfoKey];
-    if (userInfoValue) {
-        NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
-        NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
-        [attributeNames enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
-            if (! [attributeName isKindOfClass:[NSString class]]) {
-                [NSException raise:NSInvalidArgumentException format:@"Invalid value given in user info key '%@' of entity '%@': expected an `NSString` or `NSArray` of strings, instead got '%@' (%@)", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName, [attributeName class]];
-            }
-            
-            NSAttributeDescription *attribute = [[entity attributesByName] valueForKey:attributeName];
-            if (! attribute) {
-                [NSException raise:NSInvalidArgumentException format:@"Invalid identifier attribute specified in user info key '%@' of entity '%@': no attribue was found with the name '%@'", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName];
-            }
-            
-            [attributes addObject:attribute];
-        }];
-        return attributes;
-    }
+    do {
+        id userInfoValue = [[entity userInfo] valueForKey:RKEntityIdentificationAttributesUserInfoKey];
+        if (userInfoValue) {
+            NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
+            NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
+            [attributeNames enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
+                if (! [attributeName isKindOfClass:[NSString class]]) {
+                    [NSException raise:NSInvalidArgumentException format:@"Invalid value given in user info key '%@' of entity '%@': expected an `NSString` or `NSArray` of strings, instead got '%@' (%@)", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName, [attributeName class]];
+                }
+                
+                NSAttributeDescription *attribute = [[entity attributesByName] valueForKey:attributeName];
+                if (! attribute) {
+                    [NSException raise:NSInvalidArgumentException format:@"Invalid identifier attribute specified in user info key '%@' of entity '%@': no attribue was found with the name '%@'", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName];
+                }
+                
+                [attributes addObject:attribute];
+            }];
+            return attributes;
+        }
+        entity = [entity superentity];
+    } while (entity);
     
     return nil;
 }
@@ -137,20 +140,20 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 
 @synthesize identificationAttributes = _identificationAttributes;
 
-+ (id)mappingForClass:(Class)objectClass
++ (instancetype)mappingForClass:(Class)objectClass
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must provide a managedObjectStore. Invoke mappingForClass:inManagedObjectStore: instead."]
                                  userInfo:nil];
 }
 
-+ (id)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore
++ (instancetype)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore
 {
     NSEntityDescription *entity = [[managedObjectStore.managedObjectModel entitiesByName] objectForKey:entityName];
     return [[self alloc] initWithEntity:entity];
 }
 
-- (id)initWithEntity:(NSEntityDescription *)entity
+- (instancetype)initWithEntity:(NSEntityDescription *)entity
 {
     NSAssert(entity, @"Cannot initialize an RKEntityMapping without an entity. Maybe you want RKObjectMapping instead?");
     Class objectClass = NSClassFromString([entity managedObjectClassName]);
@@ -164,7 +167,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return self;
 }
 
-- (id)initWithClass:(Class)objectClass
+- (instancetype)initWithClass:(Class)objectClass
 {
     self = [super initWithClass:objectClass];
     if (self) {
@@ -275,7 +278,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     NSArray *components = [keyPath componentsSeparatedByString:@"."];
     Class propertyClass = self.objectClass;
     for (NSString *property in components) {
-        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass];
+        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass isPrimitive:nil];
         if (! propertyClass) propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofEntity:self.entity];
         if (! propertyClass) break;
     }

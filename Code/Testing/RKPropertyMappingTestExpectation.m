@@ -31,7 +31,7 @@
 
 @implementation RKPropertyMappingTestExpectation
 
-+ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
++ (instancetype)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
 {
     RKPropertyMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
@@ -40,7 +40,7 @@
     return expectation;
 }
 
-+ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value
++ (instancetype)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value
 {
     RKPropertyMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
@@ -50,7 +50,7 @@
     return expectation;
 }
 
-+ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock
++ (instancetype)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(RKMappingTestExpectationEvaluationBlock)evaluationBlock
 {
     RKPropertyMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
@@ -60,7 +60,7 @@
     return expectation;
 }
 
-+ (RKPropertyMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping
++ (instancetype)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping
 {
     RKPropertyMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;

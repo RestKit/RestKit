@@ -147,7 +147,7 @@
  @param objectOrDynamicMapping An instance of `RKObjectMapping` or `RKDynamicMapping` defining how the mapping is to be performed.
  @return The receiver, initialized with a source object, a destination object, and a mapping.
  */
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping;
+- (instancetype)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping;
 
 ///--------------------------------------
 /// @name Accessing Mapping Configuration
