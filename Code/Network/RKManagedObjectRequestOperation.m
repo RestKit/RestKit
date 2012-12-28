@@ -35,16 +35,27 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
+/**
+ This class implements Tarjan's algorithm to efficiently visit all nodes within the mapping graph and detect cycles in the graph.
+ 
+ For more details on the algorithm, refer to the Wikipedia page: http://en.wikipedia.org/wiki/Tarjan's_strongly_connected_components_algorithm
+ 
+ The following reference implementations were used when building out an Objective-C implementation:
+ 
+ 1. http://algowiki.net/wiki/index.php?title=Tarjan%27s_algorithm
+ 1. http://www.logarithmic.net/pfh-files/blog/01208083168/sort.py
+ 
+ */
 @interface RKNestedManagedObjectKeyPathMappingGraphVisitor : NSObject
-
 @property (nonatomic, readonly) NSSet *keyPaths;
-
 - (id)initWithResponseDescriptors:(NSArray *)responseDescriptors;
-
 @end
 
 @interface RKNestedManagedObjectKeyPathMappingGraphVisitor ()
 @property (nonatomic, strong) NSMutableSet *mutableKeyPaths;
+@property (nonatomic, strong) NSMutableArray *visitationStack;
+@property (nonatomic, strong) NSMutableDictionary *lowValues;
+@property (nonatomic, strong) NSNumber *numberOfDecriptors;
 @end
 
 @implementation RKNestedManagedObjectKeyPathMappingGraphVisitor
@@ -53,7 +64,11 @@
 {
     self = [self init];
     if (self) {
+        self.numberOfDecriptors = @([responseDescriptors count]);
         self.mutableKeyPaths = [NSMutableSet set];
+        self.visitationStack = [NSMutableArray array];
+        self.lowValues = [NSMutableDictionary dictionary];
+        
         for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
             [self visitMapping:responseDescriptor.mapping atKeyPath:responseDescriptor.keyPath];
         }
@@ -61,28 +76,63 @@
     return self;
 }
 
-- (NSSet *)keyPaths
-{
-    return self.mutableKeyPaths;
-}
-
+// Traverse the mappings graph using Tarjan's algorithm
 - (void)visitMapping:(RKMapping *)mapping atKeyPath:(NSString *)keyPath
 {
-    id actualKeyPath = keyPath ?: [NSNull null];
-    if ([self.keyPaths containsObject:actualKeyPath]) return;    
-    if ([mapping isKindOfClass:[RKEntityMapping class]]) [self.mutableKeyPaths addObject:actualKeyPath];
-    if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-        RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)mapping;
-        for (RKMapping *nestedMapping in dynamicMapping.objectMappings) {
-            [self visitMapping:nestedMapping atKeyPath:keyPath];
-        }
-    } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+    NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:mapping];
+    if ([self.lowValues objectForKey:dictionaryKey]) {
+        // This key path points to a cycle back into the graph
+        if ([mapping isKindOfClass:[RKEntityMapping class]]) [self.mutableKeyPaths addObject:keyPath];
+        return;
+    }
+    
+    NSNumber *lowValue = @([self.lowValues count]);
+    [self.lowValues setObject:lowValue forKey:dictionaryKey];
+    NSUInteger stackPosition = [self.visitationStack count];
+    [self.visitationStack addObject:@{ @"mapping": mapping, @"keyPath": keyPath ?: [NSNull null] }];
+    
+    if ([mapping isKindOfClass:[RKObjectMapping class]]) {
         RKObjectMapping *objectMapping = (RKObjectMapping *)mapping;
         for (RKRelationshipMapping *relationshipMapping in objectMapping.relationshipMappings) {
             NSString *nestedKeyPath = keyPath ? [@[ keyPath, relationshipMapping.destinationKeyPath ] componentsJoinedByString:@"."] : relationshipMapping.destinationKeyPath;
             [self visitMapping:relationshipMapping.mapping atKeyPath:nestedKeyPath];
+            
+            // We want the minimum value
+            NSValue *relationshipKey = [NSValue valueWithNonretainedObject:relationshipMapping.mapping];
+            NSNumber *relationshipLowValue = [self.lowValues objectForKey:relationshipKey];
+            if ([lowValue compare:relationshipLowValue] == NSOrderedDescending) {
+                [self.lowValues setObject:relationshipLowValue forKey:dictionaryKey];
+            }
+        }
+    } else if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+        RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)mapping;
+        for (RKMapping *nestedMapping in dynamicMapping.objectMappings) {
+            [self visitMapping:nestedMapping atKeyPath:keyPath];
         }
     }
+    
+    if ([[self.lowValues objectForKey:dictionaryKey] isEqualToNumber:lowValue]) {
+        NSRange range = NSMakeRange(stackPosition, [self.visitationStack count] - stackPosition);
+        NSArray *mappingDetails = [self.visitationStack subarrayWithRange:range];
+        [self.visitationStack removeObjectsInRange:range];
+        
+        NSArray *mappings = [mappingDetails valueForKey:@"mapping"];
+        for (NSDictionary *dictionary in mappingDetails) {
+            NSString *keyPath = [dictionary objectForKey:@"keyPath"];
+            NSString *mapping = [dictionary objectForKey:@"mapping"];
+            if ([mapping isKindOfClass:[RKEntityMapping class]]) [self.mutableKeyPaths addObject:keyPath];
+        }
+        
+        for (RKMapping *mapping in mappings) {
+            NSValue *relationshipKey = [NSValue valueWithNonretainedObject:mapping];
+            [self.lowValues setObject:self.numberOfDecriptors forKey:relationshipKey];
+        }
+    }
+}
+
+- (NSSet *)keyPaths
+{
+    return self.mutableKeyPaths;
 }
 
 @end
