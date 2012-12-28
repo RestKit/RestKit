@@ -1,0 +1,61 @@
+{
+    "houses": [
+        {
+            "houseID": 1,
+            "city": "New York City",
+            "state": "New York",
+            "owner": {
+                "humanID": 1,
+                "name": "Blake"
+            },
+            "occupants": [
+                {
+                    "humanID": 2,
+                    "name": "John",
+                    "landlord": {
+                        "humanID": 1,
+                        "name": "Blake"
+                    },
+                    "roommates": [
+                        {
+                            "humanID": 3,
+                            "name": "Mary",
+                            "landlord": {
+                                "humanID": 1,
+                                "name": "Blake"
+                            },
+                            "roommates": [
+                                {
+                                    "humanID": 2,
+                                    "name": "John"
+                                },
+                                {
+                                    "humanID": 4,
+                                    "name": "Edward"
+                                }
+                            ]
+                        },
+                        {
+                            "humanID": 4,
+                            "name": "Edward",
+                            "landlord": {
+                                "humanID": 1,
+                                "name": "Blake"
+                            },
+                            "roommates": [
+                                {
+                                    "humanID": 2,
+                                    "name": "John"
+                                },
+                                {
+                                    "humanID": 3,
+                                    "name": "Mary"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
