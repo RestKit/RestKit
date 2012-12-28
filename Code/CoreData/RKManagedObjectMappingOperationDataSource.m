@@ -24,7 +24,7 @@
 #import "RKLog.h"
 #import "RKManagedObjectStore.h"
 #import "RKMappingOperation.h"
-#import "RKDynamicMappingMatcher.h"
+#import "RKObjectMappingMatcher.h"
 #import "RKManagedObjectCaching.h"
 #import "RKRelationshipConnectionOperation.h"
 #import "RKMappingErrors.h"

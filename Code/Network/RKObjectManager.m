@@ -441,7 +441,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                 _blockSuccess = [[object managedObjectContext] obtainPermanentIDsForObjects:@[object] error:&_blockError];
             }];
             if (! _blockSuccess) RKLogWarning(@"Failed to obtain permanent ID for object %@: %@", object, _blockError);
-        }                
+        }
     } else {
         // Non-Core Data operation
         operation = [self objectRequestOperationWithRequest:request success:nil failure:nil];

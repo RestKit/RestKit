@@ -20,7 +20,7 @@
 
 #import "RKEntityMapping.h"
 #import "RKManagedObjectStore.h"
-#import "RKDynamicMappingMatcher.h"
+#import "RKObjectMappingMatcher.h"
 #import "RKPropertyInspector+CoreData.h"
 #import "RKLog.h"
 #import "RKRelationshipMapping.h"
