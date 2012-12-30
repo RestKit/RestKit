@@ -71,6 +71,8 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     if ([value isKindOfClass:destinationType]) {
         // No transformation necessary
         return value;
+    } else if ([destinationType isSubclassOfClass:[NSDictionary class]]) {
+        return [NSMutableDictionary dictionaryWithObject:[NSMutableDictionary dictionary] forKey:value];
     } else if (RKClassIsCollection(destinationType) && !RKObjectIsCollection(value)) {
         // Call ourself recursively with an array value to transform as appropriate
         return RKTransformedValueWithClass(@[ value ], destinationType, dateToStringValueTransformer);
@@ -185,6 +187,15 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     }
     
     return nestedMappings;
+}
+
+static void RKSetValueForObject(id value, id destinationObject)
+{
+    if ([destinationObject isKindOfClass:[NSMutableDictionary class]] && [value isKindOfClass:[NSDictionary class]]) {
+        [destinationObject setDictionary:value];
+    } else {
+        [NSException raise:NSInvalidArgumentException format:@"Unable to set value for destination object of type '%@': no strategy available. %@ to %@", [destinationObject class], value, destinationObject];
+    }
 }
 
 @interface RKMappingOperation ()
@@ -369,7 +380,11 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     if ([self shouldSetValue:&value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
         
-        [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
+        if (attributeMapping.destinationKeyPath) {
+            [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
+        } else {
+            RKSetValueForObject(value, self.destinationObject);
+        }
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate mappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
