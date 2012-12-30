@@ -671,12 +671,12 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [parentMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"humanID": @"railsID" }];
     [parentMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"children" toKeyPath:@"children" withMapping:childMapping]];
     
-    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"invalid" expectedValue:@"whatever" objectMapping:humanMapping]];
-    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"name" expectedValue:@"Blake" objectMapping:parentMapping]];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"invalid" expectedValue:@"whatever" objectMapping:parentMapping]];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"name" expectedValue:@"Blake" objectMapping:humanMapping]];
     
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:dynamicMapping pathPattern:nil keyPath:@"houses.owner" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:dynamicMapping pathPattern:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/nested_self_referential.json" relativeToURL:[RKTestFactory baseURL]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/self_referential.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     RKFetchRequestBlock humanFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];

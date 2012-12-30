@@ -533,7 +533,17 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     
     for (RKMappingGraphVisitation *visitation in visitor.visitations) {
         id objectsAtRoot = [mappingResultDictionary objectForKey:visitation.rootKey];
-        id managedObjects = visitation.keyPath ? [objectsAtRoot valueForKeyPath:visitation.keyPath] : objectsAtRoot;
+        id managedObjects = nil;
+        @try {
+            managedObjects = visitation.keyPath ? [objectsAtRoot valueForKeyPath:visitation.keyPath] : objectsAtRoot;
+        }
+        @catch (NSException *exception) {
+            if ([exception.name isEqualToString:NSUndefinedKeyException]) {
+                RKLogWarning(@"Caught undefined key exception for keyPath '%@' in mapping result: This likely indicates an ambiguous keyPath is used across response descriptor or dynamic mappings.", visitation.keyPath);
+                continue;
+            }
+            [exception raise];
+        }
         [managedObjectsInMappingResult unionSet:RKFlattenCollectionToSet(managedObjects)];
         
         if (visitation.isCyclic) {
