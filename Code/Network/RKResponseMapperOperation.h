@@ -114,6 +114,14 @@
  */
 @property (nonatomic, strong, readonly) NSDictionary *responseMappingsDictionary;
 
+/**
+ Returns an array containing all `RKResponseDescriptor` objects in the configured `responseDescriptors` array that were found to match response.
+ 
+ @see `responseDescriptors`
+ @see `RKResponseDescriptor`
+ */
+@property (nonatomic, strong, readonly) NSArray *matchingResponseDescriptors;
+
 ///--------------------------------
 /// @name Accessing Mapping Results
 ///--------------------------------

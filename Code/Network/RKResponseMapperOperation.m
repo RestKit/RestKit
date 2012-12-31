@@ -110,6 +110,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 @property (nonatomic, strong, readwrite) NSArray *responseDescriptors;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong, readwrite) NSArray *matchingResponseDescriptors;
 @property (nonatomic, strong, readwrite) NSDictionary *responseMappingsDictionary;
 @property (nonatomic, strong) RKMapperOperation *mapperOperation;
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
@@ -133,6 +134,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
         self.response = response;
         self.data = data;
         self.responseDescriptors = responseDescriptors;
+        self.matchingResponseDescriptors = [self buildMatchingResponseDescriptors];
         self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
         self.treatsEmptyResponseAsSuccess = YES;
     }
@@ -163,14 +165,19 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     return object;
 }
 
+- (NSArray *)buildMatchingResponseDescriptors
+{
+    NSIndexSet *indexSet = [self.responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
+        return [responseDescriptor matchesResponse:self.response];
+    }];
+    return [self.responseDescriptors objectsAtIndexes:indexSet];
+}
+
 - (NSDictionary *)buildResponseMappingsDictionary
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    for (RKResponseDescriptor *responseDescriptor in self.responseDescriptors) {
-        if ([responseDescriptor matchesResponse:self.response]) {
-            id key = responseDescriptor.keyPath ? responseDescriptor.keyPath : [NSNull null];
-            [dictionary setObject:responseDescriptor.mapping forKey:key];
-        }
+    for (RKResponseDescriptor *responseDescriptor in self.matchingResponseDescriptors) {
+        [dictionary setObject:responseDescriptor.mapping forKey:(responseDescriptor.keyPath ?: [NSNull null])];
     }
 
     return dictionary;

@@ -60,7 +60,7 @@
  The following reference implementations were used when building out an Objective-C implementation:
  
  1. http://algowiki.net/wiki/index.php?title=Tarjan%27s_algorithm
- 1. http://www.logarithmic.net/pfh-files/blog/01208083168/sort.py
+ 1. http://www.logarithmic.net/pfh-files/blog/01208083168/tarjan.py
  
  */
 @interface RKNestedManagedObjectKeyPathMappingGraphVisitor : NSObject
@@ -69,9 +69,10 @@
 @end
 
 @interface RKNestedManagedObjectKeyPathMappingGraphVisitor ()
+@property (nonatomic, assign) NSUInteger indexCounter;
 @property (nonatomic, strong) NSMutableArray *visitationStack;
-@property (nonatomic, strong) NSMutableDictionary *lowValues;
-@property (nonatomic, strong) NSNumber *numberOfDecriptors;
+@property (nonatomic, strong) NSMutableDictionary *index;
+@property (nonatomic, strong) NSMutableDictionary *lowLinks;
 @property (nonatomic, strong, readwrite) NSMutableArray *visitations;
 @end
 
@@ -81,14 +82,17 @@
 {
     self = [self init];
     if (self) {
-        self.numberOfDecriptors = @([responseDescriptors count]);
+        self.indexCounter = 0;
         self.visitationStack = [NSMutableArray array];
-        self.lowValues = [NSMutableDictionary dictionary];
+        self.index = [NSMutableDictionary dictionary];
+        self.lowLinks = [NSMutableDictionary dictionary];
         self.visitations = [NSMutableArray array];
         
         for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+            self.indexCounter = 0;
             [self.visitationStack removeAllObjects];
-            [self.lowValues removeAllObjects];
+            [self.index removeAllObjects];
+            [self.lowLinks removeAllObjects];
             [self visitMapping:responseDescriptor.mapping atKeyPath:responseDescriptor.keyPath];
         }
     }
@@ -116,11 +120,9 @@
 - (void)visitMapping:(RKMapping *)mapping atKeyPath:(NSString *)keyPath
 {
     NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:mapping];
-    if ([self.lowValues objectForKey:dictionaryKey]) {
-        if (![ mapping isKindOfClass:[RKEntityMapping class]]) return;
-        
-        NSArray *keyPathComponents = [[self.visitationStack valueForKey:@"keyPath"] arrayByAddingObject:keyPath];
-        NSString *keyPath = [[keyPathComponents subarrayWithRange:NSMakeRange(1, [keyPathComponents count] - 1)] componentsJoinedByString:@"."];
+    // If a given mapping already appears within the lowValues, then we have a cycle in the graph
+    if ([self.lowLinks objectForKey:dictionaryKey]) {
+        if (![mapping isKindOfClass:[RKEntityMapping class]]) return;
         
         RKMappingGraphVisitation *cyclicVisitation = [self visitationForMapping:mapping atKeyPath:keyPath];
         cyclicVisitation.cyclic = YES;
@@ -129,55 +131,59 @@
         return;
     }
     
-    NSNumber *lowValue = @([self.lowValues count]);
-    [self.lowValues setObject:lowValue forKey:dictionaryKey];
+    // Track the visit to each node in the graph. Note that we do not pop the stack as we traverse back up
+    [self.index setObject:@(self.indexCounter) forKey:dictionaryKey];
+    [self.lowLinks setObject:@(self.indexCounter) forKey:dictionaryKey];
+    self.indexCounter++;
     
-    NSUInteger stackPosition = [self.visitationStack count];
     RKMappingGraphVisitation *visitation = [self visitationForMapping:mapping atKeyPath:keyPath];
     [self.visitationStack addObject:visitation];
     
     if ([mapping isKindOfClass:[RKObjectMapping class]]) {
         RKObjectMapping *objectMapping = (RKObjectMapping *)mapping;
         for (RKRelationshipMapping *relationshipMapping in objectMapping.relationshipMappings) {
-            [self visitMapping:relationshipMapping.mapping atKeyPath:relationshipMapping.destinationKeyPath];
-            
-            // We want the minimum value
+            // Check if the successor relationship appears in the lowlinks
             NSValue *relationshipKey = [NSValue valueWithNonretainedObject:relationshipMapping.mapping];
-            NSNumber *relationshipLowValue = [self.lowValues objectForKey:relationshipKey];
-            if ([lowValue compare:relationshipLowValue] == NSOrderedDescending) {
-                [self.lowValues setObject:relationshipLowValue forKey:dictionaryKey];
+            NSNumber *relationshipLowValue = [self.lowLinks objectForKey:relationshipKey];
+            if (relationshipLowValue == nil) {
+                // The relationship has not yet been visited, recurse
+                NSString *nestedKeyPath = ([self.visitationStack count] > 1 && keyPath) ? [@[ keyPath, relationshipMapping.destinationKeyPath ] componentsJoinedByString:@"."] : relationshipMapping.destinationKeyPath;
+                [self visitMapping:relationshipMapping.mapping atKeyPath:nestedKeyPath];
+                
+                // Set the lowlink value for parent mapping to the lower value for us or the child mapping we just recursed on
+                NSNumber *lowLinkForMapping = [self.lowLinks objectForKey:dictionaryKey];
+                NSNumber *lowLinkForSuccessor = [self.lowLinks objectForKey:relationshipKey];
+                
+                if ([lowLinkForMapping compare:lowLinkForSuccessor] == NSOrderedDescending) {
+                    [self.lowLinks setObject:lowLinkForSuccessor forKey:dictionaryKey];
+                }
+            } else {
+                // The child mapping is already in the stack, so it is part of a strongly connected component
+                NSNumber *lowLinkForMapping = [self.lowLinks objectForKey:dictionaryKey];
+                NSNumber *indexValueForSuccessor = [self.index objectForKey:relationshipKey];
+                if ([lowLinkForMapping compare:indexValueForSuccessor] == NSOrderedDescending) {
+                    [self.lowLinks setObject:indexValueForSuccessor forKey:dictionaryKey];
+                }
             }
         }
     } else if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-        // Pop the visitation stack to remove the dynamic mapping, since each mapping within the dynamic mapping
-        // is rooted at the same point in the graph
-        [self.visitationStack removeLastObject];
-        
+        // Dynamic mappings appear at the same point in the graph, so we recurse with the same keyPath
         for (RKMapping *nestedMapping in [(RKDynamicMapping *)mapping objectMappings]) {
             [self visitMapping:nestedMapping atKeyPath:keyPath];
         }
     }
     
-    if ([[self.lowValues objectForKey:dictionaryKey] isEqualToNumber:lowValue]) {
-        NSRange range = NSMakeRange(stackPosition, [self.visitationStack count] - stackPosition);
-        NSArray *visitations = [self.visitationStack subarrayWithRange:range];
-        [self.visitationStack removeObjectsInRange:range];
+    // If the current mapping is a root node, then pop the stack to create an SCC
+    NSNumber *lowLinkValueForMapping = [self.lowLinks objectForKey:dictionaryKey];
+    NSNumber *indexValueForMapping = [self.index objectForKey:dictionaryKey];
+    if ([lowLinkValueForMapping isEqualToNumber:indexValueForMapping]) {
+        NSUInteger index = [self.visitationStack indexOfObject:visitation];
+        NSRange removalRange = NSMakeRange(index, [self.visitationStack count] - index);
+        [self.visitationStack removeObjectsInRange:removalRange];
         
-        // Take everything left on the stack
-        NSArray *keyPathComponents = [self.visitationStack valueForKey:@"keyPath"];
-        NSString *nestingKeyPath = ([keyPathComponents count] > 1) ? [[keyPathComponents subarrayWithRange:NSMakeRange(1, [keyPathComponents count] - 1)] componentsJoinedByString:@"."] : nil;
-        
-        [visitations enumerateObjectsUsingBlock:^(RKMappingGraphVisitation *visitation, NSUInteger idx, BOOL *stop) {
-            // If this is an entity mapping, collect the complete key path
-            if ([visitation.mapping isKindOfClass:[RKEntityMapping class]]) {                
-                visitation.keyPath = nestingKeyPath ? [@[ nestingKeyPath, visitation.keyPath ] componentsJoinedByString:@"."] : visitation.keyPath;
-                [self.visitations addObject:visitation];
-            }
-            
-            // Update the low value
-            NSValue *relationshipKey = [NSValue valueWithNonretainedObject:mapping];
-            [self.lowValues setObject:self.numberOfDecriptors forKey:relationshipKey];
-        }];
+        if ([visitation.mapping isKindOfClass:[RKEntityMapping class]]) {
+            [self.visitations addObject:visitation];
+        }
     }
 }
 
@@ -242,10 +248,10 @@ static void RKAddObjectsInGraphWithCyclicKeyPathsToMutableSet(id graph, NSSet *c
  For example, given a set containing: 'this', 'this.that', 'another.one.test', 'another.two.test', 'another.one.test.nested'
  would return: 'this, 'another.one', 'another.two'
  */
-NSOrderedSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
-NSOrderedSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
+NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
+NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
 {
-    NSSet *prunedSet = [setOfKeyPaths objectsPassingTest:^BOOL(NSString *keyPath, BOOL *stop) {
+    return [setOfKeyPaths objectsPassingTest:^BOOL(NSString *keyPath, BOOL *stop) {
         if ([keyPath isEqual:[NSNull null]]) return YES; // Special case the root key path
         NSArray *keyPathComponents = [keyPath componentsSeparatedByString:@"."];
         NSMutableSet *parentKeyPaths = [NSMutableSet set];
@@ -257,12 +263,6 @@ NSOrderedSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
         }
         return YES;
     }];
-    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithSet:prunedSet];
-    if ([orderedSet containsObject:[NSNull null]]) {
-        [orderedSet removeObject:[NSNull null]];
-        [orderedSet setObject:[NSNull null] atIndex:0];
-    }
-    return orderedSet;
 }
 
 static void RKSetMappedValueForKeyPathInDictionary(id value, id rootKey, NSString *keyPath, NSMutableDictionary *dictionary)
@@ -297,32 +297,18 @@ static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managed
 static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRefetchedInContext(NSDictionary *dictionaryOfManagedObjects, NSArray *visitations, NSManagedObjectContext *managedObjectContext)
 {
     if (! [dictionaryOfManagedObjects count]) return dictionaryOfManagedObjects;
+    
     NSMutableDictionary *newDictionary = [dictionaryOfManagedObjects mutableCopy];
     [managedObjectContext performBlockAndWait:^{
         NSSet *rootKeys = [NSSet setWithArray:[visitations valueForKey:@"rootKey"]];
         for (id rootKey in rootKeys) {
-            NSSet *keyPaths = [NSSet setWithArray:[visitations valueForKey:@"keyPath"]];
-            NSOrderedSet *nonNestedKeyPaths = RKSetByRemovingSubkeypathsFromSet(keyPaths);
+            NSArray *visitationsForRootKey = [visitations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"rootKey = %@", rootKey]];
+            NSSet *keyPaths = [visitationsForRootKey valueForKey:@"keyPath"];
+            // If keyPaths contains null, then the root object is a managed object and we only need to refetch it
+            NSSet *nonNestedKeyPaths = ([keyPaths containsObject:[NSNull null]]) ? [NSSet setWithObject:[NSNull null]] : RKSetByRemovingSubkeypathsFromSet(keyPaths);
             
             NSDictionary *mappingResultsAtRootKey = [dictionaryOfManagedObjects objectForKey:rootKey];
             for (NSString *keyPath in nonNestedKeyPaths) {
-                __block BOOL refetched = NO;
-                
-                if (! [keyPath isEqual:[NSNull null]]) {
-                    if ([mappingResultsAtRootKey conformsToProtocol:@protocol(NSFastEnumeration)]) {
-                        // This is a collection
-                        BOOL respondsToSelector = YES;
-                        for (id object in mappingResultsAtRootKey) {
-                            if (! [object respondsToSelector:NSSelectorFromString(keyPath)]) respondsToSelector = NO;
-                        }
-                        
-                        if (! respondsToSelector) continue;
-                    } else {
-                        if (! [mappingResultsAtRootKey respondsToSelector:NSSelectorFromString(keyPath)]) {
-                            continue;
-                        }
-                    }
-                }
                 id value = [keyPath isEqual:[NSNull null]] ? mappingResultsAtRootKey : [mappingResultsAtRootKey valueForKeyPath:keyPath];
                 if (! value) {
                     continue;
@@ -330,10 +316,7 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRe
                     BOOL isMutable = [value isKindOfClass:[NSMutableArray class]];
                     NSMutableArray *newValue = [[NSMutableArray alloc] initWithCapacity:[value count]];
                     for (__strong id object in value) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) {
-                            object = RKRefetchManagedObjectInContext(object, managedObjectContext);
-                            refetched = YES;
-                        }
+                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
                         if (object) [newValue addObject:object];
                     }
                     value = (isMutable) ? newValue : [newValue copy];
@@ -341,10 +324,7 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRe
                     BOOL isMutable = [value isKindOfClass:[NSMutableSet class]];
                     NSMutableSet *newValue = [[NSMutableSet alloc] initWithCapacity:[value count]];
                     for (__strong id object in value) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) {
-                            object = RKRefetchManagedObjectInContext(object, managedObjectContext);
-                            refetched = YES;
-                        }
+                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
                         if (object) [newValue addObject:object];
                     }
                     value = (isMutable) ? newValue : [newValue copy];
@@ -352,25 +332,16 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRe
                     BOOL isMutable = [value isKindOfClass:[NSMutableOrderedSet class]];
                     NSMutableOrderedSet *newValue = [NSMutableOrderedSet orderedSet];
                     [(NSOrderedSet *)value enumerateObjectsUsingBlock:^(id object, NSUInteger index, BOOL *stop) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) {
-                            object = RKRefetchManagedObjectInContext(object, managedObjectContext);
-                            refetched = YES;
-                        }
+                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
                         if (object) [newValue setObject:object atIndex:index];
                     }];
                     value = (isMutable) ? newValue : [newValue copy];
                 } else if ([value isKindOfClass:[NSManagedObject class]]) {
                     value = RKRefetchManagedObjectInContext(value, managedObjectContext);
-                    refetched = YES;
                 }
                 
                 if (value) {
                     RKSetMappedValueForKeyPathInDictionary(value, rootKey, keyPath, newDictionary);
-                    
-                    // If we have refetched the root object, then we are done
-                    if (keyPath == [NSNull null] && refetched) {
-                        break;
-                    }
                 }
             }
         }
@@ -660,7 +631,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     NSError *error = nil;
 
     // Construct a set of key paths to all of the managed objects in the mapping result
-    RKNestedManagedObjectKeyPathMappingGraphVisitor *visitor = [[RKNestedManagedObjectKeyPathMappingGraphVisitor alloc] initWithResponseDescriptors:self.responseDescriptors];
+    RKNestedManagedObjectKeyPathMappingGraphVisitor *visitor = [[RKNestedManagedObjectKeyPathMappingGraphVisitor alloc] initWithResponseDescriptors:self.responseMapperOperation.matchingResponseDescriptors];
 
     // Handle any cleanup
     success = [self deleteTargetObjectIfAppropriate:&error];
