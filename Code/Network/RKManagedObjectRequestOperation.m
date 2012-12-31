@@ -119,19 +119,8 @@
 // Traverse the mappings graph using Tarjan's algorithm
 - (void)visitMapping:(RKMapping *)mapping atKeyPath:(NSString *)keyPath
 {
-    NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:mapping];
-    // If a given mapping already appears within the lowValues, then we have a cycle in the graph
-    if ([self.lowLinks objectForKey:dictionaryKey]) {
-        if (![mapping isKindOfClass:[RKEntityMapping class]]) return;
-        
-        RKMappingGraphVisitation *cyclicVisitation = [self visitationForMapping:mapping atKeyPath:keyPath];
-        cyclicVisitation.cyclic = YES;
-        [self.visitations addObject:cyclicVisitation];
-        
-        return;
-    }
-    
     // Track the visit to each node in the graph. Note that we do not pop the stack as we traverse back up
+    NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:mapping];
     [self.index setObject:@(self.indexCounter) forKey:dictionaryKey];
     [self.lowLinks setObject:@(self.indexCounter) forKey:dictionaryKey];
     self.indexCounter++;
@@ -145,9 +134,9 @@
             // Check if the successor relationship appears in the lowlinks
             NSValue *relationshipKey = [NSValue valueWithNonretainedObject:relationshipMapping.mapping];
             NSNumber *relationshipLowValue = [self.lowLinks objectForKey:relationshipKey];
+            NSString *nestedKeyPath = ([self.visitationStack count] > 1 && keyPath) ? [@[ keyPath, relationshipMapping.destinationKeyPath ] componentsJoinedByString:@"."] : relationshipMapping.destinationKeyPath;
             if (relationshipLowValue == nil) {
                 // The relationship has not yet been visited, recurse
-                NSString *nestedKeyPath = ([self.visitationStack count] > 1 && keyPath) ? [@[ keyPath, relationshipMapping.destinationKeyPath ] componentsJoinedByString:@"."] : relationshipMapping.destinationKeyPath;
                 [self visitMapping:relationshipMapping.mapping atKeyPath:nestedKeyPath];
                 
                 // Set the lowlink value for parent mapping to the lower value for us or the child mapping we just recursed on
@@ -163,6 +152,13 @@
                 NSNumber *indexValueForSuccessor = [self.index objectForKey:relationshipKey];
                 if ([lowLinkForMapping compare:indexValueForSuccessor] == NSOrderedDescending) {
                     [self.lowLinks setObject:indexValueForSuccessor forKey:dictionaryKey];
+                }
+                
+                // Since this mapping already appears in lowLinks, we have a cycle at this point in the graph
+                if ([relationshipMapping.mapping isKindOfClass:[RKEntityMapping class]]) {
+                    RKMappingGraphVisitation *cyclicVisitation = [self visitationForMapping:relationshipMapping.mapping atKeyPath:nestedKeyPath];
+                    cyclicVisitation.cyclic = YES;
+                    [self.visitations addObject:cyclicVisitation];
                 }
             }
         }
