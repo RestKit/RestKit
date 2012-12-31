@@ -163,6 +163,9 @@
             }
         }
     } else if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+        // Pop the dynamic mapping off of the stack so that our children are rooted at the same level
+        [self.visitationStack removeLastObject];
+        
         // Dynamic mappings appear at the same point in the graph, so we recurse with the same keyPath
         for (RKMapping *nestedMapping in [(RKDynamicMapping *)mapping objectMappings]) {
             [self visitMapping:nestedMapping atKeyPath:keyPath];
@@ -174,8 +177,10 @@
     NSNumber *indexValueForMapping = [self.index objectForKey:dictionaryKey];
     if ([lowLinkValueForMapping isEqualToNumber:indexValueForMapping]) {
         NSUInteger index = [self.visitationStack indexOfObject:visitation];
-        NSRange removalRange = NSMakeRange(index, [self.visitationStack count] - index);
-        [self.visitationStack removeObjectsInRange:removalRange];
+        if (index != NSNotFound) {
+            NSRange removalRange = NSMakeRange(index, [self.visitationStack count] - index);
+            [self.visitationStack removeObjectsInRange:removalRange];
+        }
         
         if ([visitation.mapping isKindOfClass:[RKEntityMapping class]]) {
             [self.visitations addObject:visitation];
