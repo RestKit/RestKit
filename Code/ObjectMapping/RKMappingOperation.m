@@ -599,9 +599,32 @@ static void RKSetValueForObject(id value, id destinationObject)
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         if ([self isCancelled]) return NO;
         
+        id value = nil;
+        
         // The nil source keyPath indicates that we want to map directly from the parent representation
-        id value = (relationshipMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
-
+        if (relationshipMapping.sourceKeyPath )
+        {
+            value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
+        }
+        else
+        {
+            value = self.sourceObject;
+            
+            BOOL foundKeyPath = NO;
+            // Make sure at least one attribute has a value (should we check is present instead?)
+            RKObjectMapping *mapping = (RKObjectMapping*)(relationshipMapping.mapping);
+            for (RKPropertyMapping *propertyMapping in mapping.propertyMappings)
+            {
+                if ([self.sourceObject valueForKeyPath:propertyMapping.sourceKeyPath])
+                {
+                    foundKeyPath = YES;
+                    break;
+                }
+            }
+            if (!foundKeyPath)
+                continue;
+        }
+        
         // Track that we applied this mapping
         [mappingsApplied addObject:relationshipMapping];
 
