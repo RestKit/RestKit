@@ -198,6 +198,15 @@ static void RKSetValueForObject(id value, id destinationObject)
     }
 }
 
+// Returns YES if there is a value present for at least one key path in the given collection
+static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPaths)
+{
+    for (NSString *keyPath in keyPaths) {
+        if ([representation valueForKeyPath:keyPath]) return YES;
+    }
+    return NO;
+}
+
 @interface RKMappingOperation ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
@@ -599,8 +608,26 @@ static void RKSetValueForObject(id value, id destinationObject)
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         if ([self isCancelled]) return NO;
         
-        // The nil source keyPath indicates that we want to map directly from the parent representation
-        id value = (relationshipMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
+        id value = nil;
+        if (relationshipMapping.sourceKeyPath) {
+            value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
+        } else {
+            // The nil source keyPath indicates that we want to map directly from the parent representation
+            value = self.sourceObject;
+            RKObjectMapping *objectMapping = nil;
+            
+            if ([relationshipMapping.mapping isKindOfClass:[RKObjectMapping class]]) {
+                objectMapping = (RKObjectMapping *)relationshipMapping.mapping;
+            } else if ([relationshipMapping.mapping isKindOfClass:[RKDynamicMapping class]]) {
+                objectMapping = [(RKDynamicMapping *)relationshipMapping.mapping objectMappingForRepresentation:value];
+            }
+            
+            if (! objectMapping) continue; // Mapping declined
+            NSArray *propertyKeyPaths = [relationshipMapping valueForKeyPath:@"mapping.propertyMappings.sourceKeyPath"];
+            if (! RKObjectContainsValueForKeyPaths(value, propertyKeyPaths)) {
+                continue;
+            }
+        }
 
         // Track that we applied this mapping
         [mappingsApplied addObject:relationshipMapping];
