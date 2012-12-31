@@ -87,6 +87,8 @@
         self.visitations = [NSMutableArray array];
         
         for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+            [self.visitationStack removeAllObjects];
+            [self.lowValues removeAllObjects];
             [self visitMapping:responseDescriptor.mapping atKeyPath:responseDescriptor.keyPath];
         }
     }
@@ -240,10 +242,10 @@ static void RKAddObjectsInGraphWithCyclicKeyPathsToMutableSet(id graph, NSSet *c
  For example, given a set containing: 'this', 'this.that', 'another.one.test', 'another.two.test', 'another.one.test.nested'
  would return: 'this, 'another.one', 'another.two'
  */
-NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
-NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
+NSOrderedSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
+NSOrderedSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
 {
-    return [setOfKeyPaths objectsPassingTest:^BOOL(NSString *keyPath, BOOL *stop) {
+    NSSet *prunedSet = [setOfKeyPaths objectsPassingTest:^BOOL(NSString *keyPath, BOOL *stop) {
         if ([keyPath isEqual:[NSNull null]]) return YES; // Special case the root key path
         NSArray *keyPathComponents = [keyPath componentsSeparatedByString:@"."];
         NSMutableSet *parentKeyPaths = [NSMutableSet set];
@@ -255,6 +257,12 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
         }
         return YES;
     }];
+    NSMutableOrderedSet *orderedSet = [NSMutableOrderedSet orderedSetWithSet:prunedSet];
+    if ([orderedSet containsObject:[NSNull null]]) {
+        [orderedSet removeObject:[NSNull null]];
+        [orderedSet setObject:[NSNull null] atIndex:0];
+    }
+    return orderedSet;
 }
 
 static void RKSetMappedValueForKeyPathInDictionary(id value, id rootKey, NSString *keyPath, NSMutableDictionary *dictionary)
@@ -288,17 +296,33 @@ static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managed
 // Finds the key paths for all entity mappings in the graph whose parent objects are not other managed objects
 static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRefetchedInContext(NSDictionary *dictionaryOfManagedObjects, NSArray *visitations, NSManagedObjectContext *managedObjectContext)
 {
-    if (! [dictionaryOfManagedObjects count]) return dictionaryOfManagedObjects;    
+    if (! [dictionaryOfManagedObjects count]) return dictionaryOfManagedObjects;
     NSMutableDictionary *newDictionary = [dictionaryOfManagedObjects mutableCopy];
     [managedObjectContext performBlockAndWait:^{
-        NSArray *rootKeys = [visitations valueForKey:@"rootKey"];
+        NSSet *rootKeys = [NSSet setWithArray:[visitations valueForKey:@"rootKey"]];
         for (id rootKey in rootKeys) {
-            NSSet *keyPaths = [visitations valueForKey:@"keyPath"];
-            // If keyPaths contains null, then the root object is a managed object and we only need to refetch it
-            NSSet *nonNestedKeyPaths = ([keyPaths containsObject:[NSNull null]]) ? [NSSet setWithObject:[NSNull null]] : RKSetByRemovingSubkeypathsFromSet(keyPaths);
+            NSSet *keyPaths = [NSSet setWithArray:[visitations valueForKey:@"keyPath"]];
+            NSOrderedSet *nonNestedKeyPaths = RKSetByRemovingSubkeypathsFromSet(keyPaths);
             
             NSDictionary *mappingResultsAtRootKey = [dictionaryOfManagedObjects objectForKey:rootKey];
             for (NSString *keyPath in nonNestedKeyPaths) {
+                __block BOOL refetched = NO;
+                
+                if (! [keyPath isEqual:[NSNull null]]) {
+                    if ([mappingResultsAtRootKey conformsToProtocol:@protocol(NSFastEnumeration)]) {
+                        // This is a collection
+                        BOOL respondsToSelector = YES;
+                        for (id object in mappingResultsAtRootKey) {
+                            if (! [object respondsToSelector:NSSelectorFromString(keyPath)]) respondsToSelector = NO;
+                        }
+                        
+                        if (! respondsToSelector) continue;
+                    } else {
+                        if (! [mappingResultsAtRootKey respondsToSelector:NSSelectorFromString(keyPath)]) {
+                            continue;
+                        }
+                    }
+                }
                 id value = [keyPath isEqual:[NSNull null]] ? mappingResultsAtRootKey : [mappingResultsAtRootKey valueForKeyPath:keyPath];
                 if (! value) {
                     continue;
@@ -306,7 +330,10 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRe
                     BOOL isMutable = [value isKindOfClass:[NSMutableArray class]];
                     NSMutableArray *newValue = [[NSMutableArray alloc] initWithCapacity:[value count]];
                     for (__strong id object in value) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);                    
+                        if ([object isKindOfClass:[NSManagedObject class]]) {
+                            object = RKRefetchManagedObjectInContext(object, managedObjectContext);
+                            refetched = YES;
+                        }
                         if (object) [newValue addObject:object];
                     }
                     value = (isMutable) ? newValue : [newValue copy];
@@ -314,7 +341,10 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRe
                     BOOL isMutable = [value isKindOfClass:[NSMutableSet class]];
                     NSMutableSet *newValue = [[NSMutableSet alloc] initWithCapacity:[value count]];
                     for (__strong id object in value) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);                    
+                        if ([object isKindOfClass:[NSManagedObject class]]) {
+                            object = RKRefetchManagedObjectInContext(object, managedObjectContext);
+                            refetched = YES;
+                        }
                         if (object) [newValue addObject:object];
                     }
                     value = (isMutable) ? newValue : [newValue copy];
@@ -322,15 +352,26 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRe
                     BOOL isMutable = [value isKindOfClass:[NSMutableOrderedSet class]];
                     NSMutableOrderedSet *newValue = [NSMutableOrderedSet orderedSet];
                     [(NSOrderedSet *)value enumerateObjectsUsingBlock:^(id object, NSUInteger index, BOOL *stop) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
+                        if ([object isKindOfClass:[NSManagedObject class]]) {
+                            object = RKRefetchManagedObjectInContext(object, managedObjectContext);
+                            refetched = YES;
+                        }
                         if (object) [newValue setObject:object atIndex:index];
                     }];
                     value = (isMutable) ? newValue : [newValue copy];
                 } else if ([value isKindOfClass:[NSManagedObject class]]) {
                     value = RKRefetchManagedObjectInContext(value, managedObjectContext);
+                    refetched = YES;
                 }
                 
-                if (value) RKSetMappedValueForKeyPathInDictionary(value, rootKey, keyPath, newDictionary);
+                if (value) {
+                    RKSetMappedValueForKeyPathInDictionary(value, rootKey, keyPath, newDictionary);
+                    
+                    // If we have refetched the root object, then we are done
+                    if (keyPath == [NSNull null] && refetched) {
+                        break;
+                    }
+                }
             }
         }
     }];
