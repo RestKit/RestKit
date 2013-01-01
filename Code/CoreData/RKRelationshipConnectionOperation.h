@@ -44,7 +44,7 @@
  @param managedObjectCache The managed object cache from which to attempt to fetch a matching object to satisfy the connection.
  @return The receiver, initialized with the given managed object, connection mapping, and managed object cache.
  */
-- (instancetype)initWithManagedObject:(NSManagedObject *)managedObject
+- (id)initWithManagedObject:(NSManagedObject *)managedObject
                            connection:(RKConnectionDescription *)connection
                    managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
 

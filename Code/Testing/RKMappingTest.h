@@ -105,7 +105,7 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  @param destinationObject The destionation object being to.
  @return The receiver, initialized with mapping, sourceObject and destinationObject.
  */
-- (instancetype)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
+- (id)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
 
 ///----------------------------
 /// @name Managing Expectations

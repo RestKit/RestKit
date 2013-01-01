@@ -88,7 +88,7 @@
  @param sourceToDestinationEntityAttributes A dictionary specifying how attributes on the source entity correspond to attributes on the destination entity.
  @return The receiver, initialized with the given relationship and attributes.
  */
-- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)sourceToDestinationEntityAttributes;
+- (id)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)sourceToDestinationEntityAttributes;
 
 /**
  The dictionary of attributes specifying how attributes on the source entity for the relationship correspond to attributes on the destination entity.
@@ -115,7 +115,7 @@
  @param keyPath The key path from which to read the value that is to be set for the relationship.
  @return The receiver, initialized with the given relationship and key path.
  */
-- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath;
+- (id)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath;
 
 /**
  The key path that is to be evaluated to obtain the value for the relationship.

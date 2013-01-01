@@ -35,6 +35,6 @@
  @param managedObjectContext The managed object context with which to initialize the receiver.
  @return The receiver, initialized with the given managed object context.
  */
-- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+- (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 @end

@@ -49,7 +49,7 @@
  @param baseURL The base URL with which to initialize the receiver.
  @return The receiver, initialized with the given base URL.
  */
-- (instancetype)initWithBaseURL:(NSURL *)baseURL;
+- (id)initWithBaseURL:(NSURL *)baseURL;
 
 ///----------------------
 /// @name Generating URLs

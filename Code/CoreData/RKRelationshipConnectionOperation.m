@@ -70,7 +70,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 
 @implementation RKRelationshipConnectionOperation
 
-- (instancetype)initWithManagedObject:(NSManagedObject *)managedObject
+- (id)initWithManagedObject:(NSManagedObject *)managedObject
                            connection:(RKConnectionDescription *)connection
                    managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
 {

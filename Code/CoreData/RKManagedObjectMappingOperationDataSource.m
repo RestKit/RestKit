@@ -130,7 +130,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 @implementation RKManagedObjectMappingOperationDataSource
 
-- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
+- (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
 {
     NSParameterAssert(managedObjectContext);
 

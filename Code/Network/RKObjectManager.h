@@ -262,7 +262,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param client The AFNetworking HTTP client with which to initialize the receiver.
  @return The receiver, initialized with the given client.
  */
-- (instancetype)initWithHTTPClient:(AFHTTPClient *)client;
+- (id)initWithHTTPClient:(AFHTTPClient *)client;
 
 ///------------------------------------------
 /// @name Accessing Object Manager Properties
