@@ -1064,6 +1064,50 @@
     
 }
 
+- (void)testDeletionOfTombstoneRecords
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:entity];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    mapping.deletionPredicate = [NSPredicate predicateWithFormat:@"sex = %@", @"female"];
+
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    human.sex = @"female";
+
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                      cache:nil];
+    NSDictionary *representation = @{ @"name": @"Whatever" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:mapping];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    expect([human isDeleted]).to.equal(YES);
+}
+
+- (void)testDeletionOfTombstoneRecordsInMapperOperation
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:entity];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    mapping.deletionPredicate = [NSPredicate predicateWithFormat:@"sex = %@", @"female"];
+
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    human.sex = @"female";
+
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                      cache:nil];
+    NSDictionary *representation = @{ @"name": @"Whatever" };
+    NSError *error = nil;
+    RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: mapping }];
+    mapperOperation.mappingOperationDataSource = dataSource;
+    BOOL success = [mapperOperation execute:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    expect([human isDeleted]).to.equal(YES);
+}
+
 // TODO: Import bencharmk utility somehow...
 //- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache
 //{

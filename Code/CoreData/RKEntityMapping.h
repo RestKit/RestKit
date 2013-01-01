@@ -177,6 +177,17 @@
  */
 - (RKConnectionDescription *)connectionForRelationship:(id)relationshipOrName;
 
+///------------------------------------
+/// @name Flagging Objects for Deletion
+///------------------------------------
+
+/**
+ A predicate that identifies objects for the receiver's entity that are to be deleted from the local store.
+
+ This property provides support for local deletion of managed objects mapped as a 'tombstone' record from the source representation.
+ */
+@property (nonatomic, copy) NSPredicate *deletionPredicate;
+
 ///------------------------------------------
 /// @name Retrieving Default Attribute Values
 ///------------------------------------------
