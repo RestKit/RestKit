@@ -48,6 +48,10 @@
  */
 @interface RKPaginator : NSObject
 
+///-------------------------------------
+/// @name Initializing Paginator Objects
+///-------------------------------------
+
 /**
  Initializes a RKPaginator object with the a provided patternURL and mappingProvider.
 
@@ -57,8 +61,12 @@
  @return The receiver, initialized with the request, pagination mapping, and response descriptors.
  */
 - (id)initWithRequest:(NSURLRequest *)request
-              paginationMapping:(RKObjectMapping *)paginationMapping
-            responseDescriptors:(NSArray *)responseDescriptors;
+    paginationMapping:(RKObjectMapping *)paginationMapping
+  responseDescriptors:(NSArray *)responseDescriptors;
+
+///-----------------------------
+/// @name Configuring Networking
+///-----------------------------
 
 /**
  A URL with a path pattern for building a complete URL from
@@ -88,6 +96,13 @@
  An optional operation queue on which object request operations constructed by the paginator are to be enqueued for processing.
  */
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
+
+/**
+ The `RKHTTPRequestOperation` subclass to be used for HTTP request operations made by the paginator.
+ 
+ **Default**: `[RKHTTPRequestOperation class]`
+ */
+@property (nonatomic, strong) Class HTTPOperationClass;
 
 ///-----------------------------------
 /// @name Setting the Completion Block

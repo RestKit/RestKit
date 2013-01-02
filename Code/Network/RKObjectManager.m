@@ -555,6 +555,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     paginator.managedObjectCache = self.managedObjectStore.managedObjectCache;
     paginator.fetchRequestBlocks = self.fetchRequestBlocks;
     paginator.operationQueue = self.operationQueue;
+    if (self.HTTPOperationClass) paginator.HTTPOperationClass = self.HTTPOperationClass;
     return paginator;
 }
 

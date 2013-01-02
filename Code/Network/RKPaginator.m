@@ -63,6 +63,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     NSAssert([paginationMapping.objectClass isSubclassOfClass:[RKPaginator class]], @"The paginationMapping must have a target object class of `RKPaginator`");
     self = [super init];
     if (self) {
+        self.HTTPOperationClass = [RKHTTPRequestOperation class];
         self.request = request;
         self.paginationMapping = paginationMapping;
         self.responseDescriptors = responseDescriptors;
@@ -91,6 +92,12 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(self.patternURL, nil);
     NSString *interpolatedString = RKPathFromPatternWithObject(pathAndQueryString, self);
     return [NSURL URLWithString:interpolatedString relativeToURL:self.request.URL];
+}
+
+- (void)setHTTPOperationClass:(Class)operationClass
+{
+    NSAssert(operationClass == nil || [operationClass isSubclassOfClass:[RKHTTPRequestOperation class]], @"The HTTP operation class must be a subclass of `RKHTTPRequestOperation`");
+    _HTTPOperationClass = operationClass;
 }
 
 - (void)setCompletionBlockWithSuccess:(void (^)(RKPaginator *paginator, NSArray *objects, NSUInteger page))success
@@ -159,7 +166,8 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     mutableRequest.URL = self.URL;
 
     if (self.managedObjectContext) {
-        RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
+        RKHTTPRequestOperation *requestOperation = [[self.HTTPOperationClass alloc] initWithRequest:mutableRequest];
+        RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:self.responseDescriptors];
         managedObjectRequestOperation.managedObjectContext = self.managedObjectContext;
         managedObjectRequestOperation.managedObjectCache = self.managedObjectCache;
         managedObjectRequestOperation.fetchRequestBlocks = self.fetchRequestBlocks;
