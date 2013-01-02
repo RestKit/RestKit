@@ -36,9 +36,9 @@
  
     RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKPaginator class]];
     [paginationMapping addAttributeMappingsFromDictionary:@{
-        @"pagination.per_page",        @"perPage",
-        @"pagination.total_pages",     @"pageCount",
-        @"pagination.total_objects",   @"objectCount",
+        @"pagination.per_page":        @"perPage",
+        @"pagination.total_pages":     @"pageCount",
+        @"pagination.total_objects":   @"objectCount",
     }];
  
  ## iOS 5 Compatibility Caveats

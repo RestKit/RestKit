@@ -123,12 +123,6 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     return _currentPage;
 }
 
-- (NSUInteger)pageCount
-{
-    NSAssert([self hasPageCount], @"Page count not available.");
-    return _pageCount;
-}
-
 - (BOOL)hasNextPage
 {
     NSAssert(self.isLoaded, @"Cannot determine hasNextPage: paginator is not loaded.");
