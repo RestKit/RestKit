@@ -654,7 +654,10 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
         return;
     }
     success = [self saveContext:&error];
-    if (! success) self.error = error;
+    if (! success) {
+        self.error = error;
+        return;
+    }
     
     // Refetch all managed objects nested at key paths within the results dictionary before returning
     if (self.mappingResult) {

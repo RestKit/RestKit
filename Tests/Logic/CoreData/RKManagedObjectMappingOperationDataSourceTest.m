@@ -296,6 +296,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:nil];
     id mockOperation = [OCMockObject mockForClass:[RKMappingOperation class]];
+    [[mockOperation stub] destinationObject];
     [[[mockOperation stub] andReturn:mapping] objectMapping];
     NSError *error = nil;
     BOOL success = [dataSource commitChangesForMappingOperation:mockOperation error:&error];

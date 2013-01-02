@@ -13,6 +13,22 @@
 #import "RKTestUser.h"
 #import "RKMappingErrors.h"
 
+@interface RKPost : NSManagedObject
+@end
+
+@implementation RKPost
+
+- (BOOL)validateTitle:(id *)ioValue error:(NSError **)outError {
+    // Don't allow blank titles
+    if ((*ioValue == nil) || ([[(NSString*)*ioValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""])) {        
+        return NO;
+    }
+    
+    return YES;
+}
+
+@end
+
 @interface RKManagedObjectRequestOperation ()
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;
 @end
@@ -447,6 +463,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [tagOnDiferentObject setValue:@"orphaned" forKey:@"name"];
     
     NSManagedObject *otherPost = [NSEntityDescription insertNewObjectForEntityForName:@"Post" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [otherPost setValue:@"Title" forKey:@"title"];
     [otherPost setValue:[NSSet setWithObject:tagOnDiferentObject]  forKey:@"tags"];
     
     RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
@@ -736,6 +753,21 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"railsID == 1"];
     NSArray *fetchedObjects = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:nil];
     expect(fetchedObjects).to.haveCountOf(1);
+}
+
+- (void)testManagedObjectRequestOperationCompletesAndIgnoresInvalidObjects
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
+    [postMapping addAttributeMappingsFromArray:@[ @"title", @"body" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:postMapping pathPattern:nil keyPath:@"posts" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/posts_with_invalid.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
 }
 
 @end

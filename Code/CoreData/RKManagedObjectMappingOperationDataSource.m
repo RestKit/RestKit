@@ -32,6 +32,7 @@
 #import "RKValueTransformers.h"
 #import "RKRelationshipMapping.h"
 #import "RKObjectUtilities.h"
+#import "NSManagedObject+RKAdditions.h"
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
@@ -243,8 +244,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
 
     if (managedObject == nil) {
-        managedObject = [[NSManagedObject alloc] initWithEntity:entity
-                           insertIntoManagedObjectContext:self.managedObjectContext];
+        managedObject = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext];
         [managedObject setValuesForKeysWithDictionary:entityIdentifierAttributes];
 
         if ([self.managedObjectCache respondsToSelector:@selector(didCreateObject:)]) {
@@ -275,6 +275,16 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 {
     if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
         [self emitDeadlockWarningIfNecessary];
+        
+        // Validate unsaved objects
+        if ([mappingOperation.destinationObject isKindOfClass:[NSManagedObject class]] && [(NSManagedObject *)mappingOperation.destinationObject isNew]) {
+            NSError *validationError = nil;
+            if (! [(NSManagedObject *)mappingOperation.destinationObject validateForInsert:&validationError]) {
+                RKLogDebug(@"Unsaved NSManagedObject failed `validateForInsert:` - Deleting object from context: %@", validationError);
+                [self.managedObjectContext deleteObject:mappingOperation.destinationObject];
+                return YES;
+            }
+        }
         
         NSArray *connections = [(RKEntityMapping *)mappingOperation.objectMapping connections];
         if ([connections count] > 0 && self.managedObjectCache == nil) {

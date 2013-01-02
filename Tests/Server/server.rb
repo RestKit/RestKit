@@ -302,6 +302,11 @@ class RestKitTestServer < Sinatra::Base
     content_type 'application/json'
     { :posts => [{:title => 'Post Title', :body => 'Some body.', :tags => [{ :name => 'development' }, { :name => 'restkit' }] }] }.to_json
   end
+  
+  get '/posts_with_invalid.json' do
+    content_type 'application/json'
+    { :posts => [{:title => 'Post Title', :body => 'Some body.'}, {:title => '', :body => 'Some body.'} ] }.to_json
+  end
 
   # start the server if ruby file executed directly
   run! if app_file == $0
