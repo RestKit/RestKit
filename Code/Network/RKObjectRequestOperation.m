@@ -201,6 +201,20 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     }
 }
 
+- (void)setWillMapDeserializedResponseBlock:(id (^)(id))block
+{
+    if (!block) {
+        _willMapDeserializedResponseBlock = nil;
+    } else {
+        __unsafe_unretained id weakSelf = self;
+        _willMapDeserializedResponseBlock = ^id (id deserializedResponse) {
+            id result = block(deserializedResponse);
+            [weakSelf setWillMapDeserializedResponseBlock:nil];
+            return result;
+        };
+    }
+}
+
 - (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {

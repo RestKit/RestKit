@@ -178,20 +178,21 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     
     // Add KVO to ensure notification of loaded state prior to execution of completion block
     [self.objectRequestOperation addObserver:self forKeyPath:@"isFinished" options:0 context:nil];
-    
-    __weak RKPaginator *weakSelf = self;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
     [self.objectRequestOperation setWillMapDeserializedResponseBlock:^id(id deserializedResponseBody) {
         NSError *error = nil;
-        RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:deserializedResponseBody destinationObject:weakSelf mapping:weakSelf.paginationMapping];
+        RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:deserializedResponseBody destinationObject:self mapping:self.paginationMapping];
         BOOL success = [mappingOperation performMapping:&error];
         if (!success) {
-            weakSelf.pageCount = 0;
-            weakSelf.currentPage = 0;
+            self.pageCount = 0;
+            self.currentPage = 0;
             RKLogError(@"Paginator didn't map info to compute page count. Assuming no pages.");
-        } else if (weakSelf.perPage && [weakSelf hasObjectCount]) {
-            float objectCountFloat = weakSelf.objectCount;
-            weakSelf.pageCount = ceilf(objectCountFloat / weakSelf.perPage);
-            RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long)weakSelf.objectCount, (long)weakSelf.pageCount);
+        } else if (self.perPage && [self hasObjectCount]) {
+            float objectCountFloat = self.objectCount;
+            self.pageCount = ceilf(objectCountFloat / self.perPage);
+            RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long)self.objectCount, (long)self.pageCount);
         } else {
             RKLogError(@"Paginator perPage set is 0.");
         }
@@ -199,14 +200,15 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         return deserializedResponseBody;
     }];
     [self.objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        if (weakSelf.successBlock) {
-            weakSelf.successBlock(weakSelf, [mappingResult array], weakSelf.currentPage);
+        if (self.successBlock) {
+            self.successBlock(self, [mappingResult array], self.currentPage);
         }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        if (weakSelf.failureBlock) {
-            weakSelf.failureBlock(weakSelf, error);
+        if (self.failureBlock) {
+            self.failureBlock(self, error);
         }
     }];
+#pragma clang diagnostic pop
     
     if (self.operationQueue) {
         [self.operationQueue addOperation:self.objectRequestOperation];
