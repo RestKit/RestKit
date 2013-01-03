@@ -2786,6 +2786,256 @@
 			};
 			name = Release;
 		};
+		8B0F536016964C5D00C418C6 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Distribution;
+		};
+		8B0F536116964C5D00C418C6 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OBJROOT = "$(SRCROOT)/Build";
+				OTHER_LDFLAGS = "-ObjC";
+				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = ../../Headers/RestKit;
+				SKIP_INSTALL = YES;
+				SYMROOT = "$(SRCROOT)/Build/Products";
+			};
+			name = Distribution;
+		};
+		8B0F536216964C5D00C418C6 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 964648386780496FA49D3DD6 /* Pods.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
+				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
+				OBJROOT = "$(SRCROOT)/Build";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					SenTestingKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = "$(SRCROOT)/Build/Products";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Distribution;
+		};
+		8B0F536316964C5D00C418C6 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				INFOPLIST_FILE = "Resources/PLISTs/RestKitFramework-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = RestKit;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Distribution;
+		};
+		8B0F536416964C5D00C418C6 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 964648386780496FA49D3DD6 /* Pods.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				INFOPLIST_FILE = "Resources/PLISTs/RestKitFrameworkTests-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Distribution;
+		};
+		8B0F536616964C6200C418C6 /* Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Test;
+		};
+		8B0F536716964C6200C418C6 /* Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OBJROOT = "$(SRCROOT)/Build";
+				OTHER_LDFLAGS = "-ObjC";
+				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = ../../Headers/RestKit;
+				SKIP_INSTALL = YES;
+				SYMROOT = "$(SRCROOT)/Build/Products";
+			};
+			name = Test;
+		};
+		8B0F536816964C6200C418C6 /* Test */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 964648386780496FA49D3DD6 /* Pods.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
+				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
+				OBJROOT = "$(SRCROOT)/Build";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					SenTestingKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = "$(SRCROOT)/Build/Products";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Test;
+		};
+		8B0F536916964C6200C418C6 /* Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				FRAMEWORK_VERSION = A;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				INFOPLIST_FILE = "Resources/PLISTs/RestKitFramework-Info.plist";
+				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = RestKit;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Test;
+		};
+		8B0F536A16964C6200C418C6 /* Test */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 964648386780496FA49D3DD6 /* Pods.xcconfig */;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				INFOPLIST_FILE = "Resources/PLISTs/RestKitFrameworkTests-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Test;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2793,6 +3043,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160D3814564E820060A5C5 /* Debug */,
+				8B0F536616964C6200C418C6 /* Test */,
+				8B0F536016964C5D00C418C6 /* Distribution */,
 				25160D3914564E820060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2802,6 +3054,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160D3B14564E820060A5C5 /* Debug */,
+				8B0F536716964C6200C418C6 /* Test */,
+				8B0F536116964C5D00C418C6 /* Distribution */,
 				25160D3C14564E820060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2811,6 +3065,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160D3E14564E820060A5C5 /* Debug */,
+				8B0F536816964C6200C418C6 /* Test */,
+				8B0F536216964C5D00C418C6 /* Distribution */,
 				25160D3F14564E820060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2820,6 +3076,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160E88145651060060A5C5 /* Debug */,
+				8B0F536916964C6200C418C6 /* Test */,
+				8B0F536316964C5D00C418C6 /* Distribution */,
 				25160E89145651060060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2829,6 +3087,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160E8B145651060060A5C5 /* Debug */,
+				8B0F536A16964C6200C418C6 /* Test */,
+				8B0F536416964C5D00C418C6 /* Distribution */,
 				25160E8C145651060060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
