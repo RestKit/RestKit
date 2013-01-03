@@ -32,6 +32,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 // Private interface
 @interface RKPaginator ()
 @property (nonatomic, copy) NSURLRequest *request;
+@property (nonatomic, strong) Class HTTPOperationClass;
 @property (nonatomic, strong) RKObjectRequestOperation *objectRequestOperation;
 @property (nonatomic, copy) NSArray *responseDescriptors;
 @property (nonatomic, assign, readwrite) NSUInteger currentPage;

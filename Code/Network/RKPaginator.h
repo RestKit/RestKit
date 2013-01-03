@@ -98,11 +98,11 @@
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 /**
- The `RKHTTPRequestOperation` subclass to be used for HTTP request operations made by the paginator.
+ Sets the `RKHTTPRequestOperation` subclass to be used when constructing HTTP request operations for requests dispatched by the paginator.
  
  **Default**: `[RKHTTPRequestOperation class]`
  */
-@property (nonatomic, strong) Class HTTPOperationClass;
+- (void)setHTTPOperationClass:(Class)operationClass;
 
 ///-----------------------------------
 /// @name Setting the Completion Block

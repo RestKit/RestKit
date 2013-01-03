@@ -27,6 +27,7 @@
 #import "RKTestUser.h"
 #import "RKObjectMapperTestModel.h"
 #import "RKDynamicMapping.h"
+#import "RKTestAddress.h"
 
 @interface RKSubclassedTestModel : RKObjectMapperTestModel
 @end
@@ -837,5 +838,218 @@
 //    [responseLoader waitForResponse];
 //}
 //
+
+- (void)testPostingAnArrayOfObjectsWhereNoneHaveARootKeyPath
+{
+    RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
+    [firstRequestMapping addAttributeMappingsFromArray:@[ @"name", @"emailAddress" ]];
+    RKObjectMapping *secondRequestMapping = [RKObjectMapping requestMapping];
+    [secondRequestMapping addAttributeMappingsFromArray:@[ @"city", @"state" ]];
+
+    RKRequestDescriptor *firstRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:firstRequestMapping objectClass:[RKTestUser class] rootKeyPath:nil];
+    RKRequestDescriptor *secondRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:secondRequestMapping objectClass:[RKTestAddress class] rootKeyPath:nil];
+
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.emailAddress = @"blake@restkit.org";
+
+    RKTestAddress *address = [RKTestAddress new];
+    address.city = @"New York City";
+    address.state = @"New York";
+
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:firstRequestDescriptor];
+    [objectManager addRequestDescriptor:secondRequestDescriptor];
+
+    NSArray *arrayOfObjects = @[ user, address ];
+    NSURLRequest *request = [objectManager requestWithObject:arrayOfObjects method:RKRequestMethodPOST path:@"/path" parameters:nil];
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    NSArray *expected = @[ @{ @"name": @"Blake", @"emailAddress": @"blake@restkit.org" }, @{ @"city": @"New York City", @"state": @"New York" } ];
+    expect(array).to.equal(expected);
+}
+
+- (void)testPostingAnArrayOfObjectsWhereAllObjectsHaveAnOverlappingRootKeyPath
+{
+    RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
+    [firstRequestMapping addAttributeMappingsFromArray:@[ @"name", @"emailAddress" ]];
+    RKObjectMapping *secondRequestMapping = [RKObjectMapping requestMapping];
+    [secondRequestMapping addAttributeMappingsFromArray:@[ @"city", @"state" ]];
+
+    RKRequestDescriptor *firstRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:firstRequestMapping objectClass:[RKTestUser class] rootKeyPath:@"whatever"];
+    RKRequestDescriptor *secondRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:secondRequestMapping objectClass:[RKTestAddress class] rootKeyPath:@"whatever"];
+
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.emailAddress = @"blake@restkit.org";
+
+    RKTestAddress *address = [RKTestAddress new];
+    address.city = @"New York City";
+    address.state = @"New York";
+
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:firstRequestDescriptor];
+    [objectManager addRequestDescriptor:secondRequestDescriptor];
+
+    NSArray *arrayOfObjects = @[ user, address ];
+    NSURLRequest *request = [objectManager requestWithObject:arrayOfObjects method:RKRequestMethodPOST path:@"/path" parameters:nil];
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    NSDictionary *expected = @{ @"whatever": @[ @{ @"name": @"Blake", @"emailAddress": @"blake@restkit.org" }, @{ @"city": @"New York City", @"state": @"New York" } ] };
+    expect(array).to.equal(expected);
+}
+
+- (void)testPostingAnArrayOfObjectsWithMixedRootKeyPath
+{
+    RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
+    [firstRequestMapping addAttributeMappingsFromArray:@[ @"name", @"emailAddress" ]];
+    RKObjectMapping *secondRequestMapping = [RKObjectMapping requestMapping];
+    [secondRequestMapping addAttributeMappingsFromArray:@[ @"city", @"state" ]];
+
+    RKRequestDescriptor *firstRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:firstRequestMapping objectClass:[RKTestUser class] rootKeyPath:@"this"];
+    RKRequestDescriptor *secondRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:secondRequestMapping objectClass:[RKTestAddress class] rootKeyPath:@"that"];
+
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.emailAddress = @"blake@restkit.org";
+
+    RKTestAddress *address = [RKTestAddress new];
+    address.city = @"New York City";
+    address.state = @"New York";
+
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:firstRequestDescriptor];
+    [objectManager addRequestDescriptor:secondRequestDescriptor];
+
+    NSArray *arrayOfObjects = @[ user, address ];
+    NSURLRequest *request = [objectManager requestWithObject:arrayOfObjects method:RKRequestMethodPOST path:@"/path" parameters:nil];
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    NSDictionary *expected = @{ @"this": @{ @"name": @"Blake", @"emailAddress": @"blake@restkit.org" }, @"that": @{ @"city": @"New York City", @"state": @"New York" } };
+    expect(array).to.equal(expected);
+}
+
+- (void)testPostingAnArrayOfObjectsWithNonNilRootKeyPathAndExtraParameters
+{
+    RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
+    [firstRequestMapping addAttributeMappingsFromArray:@[ @"name", @"emailAddress" ]];
+    RKObjectMapping *secondRequestMapping = [RKObjectMapping requestMapping];
+    [secondRequestMapping addAttributeMappingsFromArray:@[ @"city", @"state" ]];
+
+    RKRequestDescriptor *firstRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:firstRequestMapping objectClass:[RKTestUser class] rootKeyPath:@"this"];
+    RKRequestDescriptor *secondRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:secondRequestMapping objectClass:[RKTestAddress class] rootKeyPath:@"that"];
+
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.emailAddress = @"blake@restkit.org";
+
+    RKTestAddress *address = [RKTestAddress new];
+    address.city = @"New York City";
+    address.state = @"New York";
+
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:firstRequestDescriptor];
+    [objectManager addRequestDescriptor:secondRequestDescriptor];
+
+    NSArray *arrayOfObjects = @[ user, address ];
+    NSURLRequest *request = [objectManager requestWithObject:arrayOfObjects method:RKRequestMethodPOST path:@"/path" parameters:@{ @"extra": @"info" }];
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    NSDictionary *expected = @{ @"this": @{ @"name": @"Blake", @"emailAddress": @"blake@restkit.org" }, @"that": @{ @"city": @"New York City", @"state": @"New York" }, @"extra": @"info" };
+    expect(array).to.equal(expected);
+}
+
+- (void)testPostingNilObjectWithExtraParameters
+{
+    RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
+    [firstRequestMapping addAttributeMappingsFromArray:@[ @"name", @"emailAddress" ]];
+    RKObjectMapping *secondRequestMapping = [RKObjectMapping requestMapping];
+    [secondRequestMapping addAttributeMappingsFromArray:@[ @"city", @"state" ]];
+
+    RKRequestDescriptor *firstRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:firstRequestMapping objectClass:[RKTestUser class] rootKeyPath:@"this"];
+    RKRequestDescriptor *secondRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:secondRequestMapping objectClass:[RKTestAddress class] rootKeyPath:@"that"];
+
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:firstRequestDescriptor];
+    [objectManager addRequestDescriptor:secondRequestDescriptor];
+
+    NSDictionary *parameters = @{ @"this": @"that" };
+    NSURLRequest *request = [objectManager requestWithObject:nil method:RKRequestMethodPOST path:@"/path" parameters:parameters];
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    expect(array).to.equal(parameters);
+}
+
+- (void)testAttemptingToPostAnArrayOfObjectsWithMixtureOfNilAndNonNilRootKeyPathsRaisesError
+{
+    RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
+    [firstRequestMapping addAttributeMappingsFromArray:@[ @"name", @"emailAddress" ]];
+    RKObjectMapping *secondRequestMapping = [RKObjectMapping requestMapping];
+    [secondRequestMapping addAttributeMappingsFromArray:@[ @"city", @"state" ]];
+
+    RKRequestDescriptor *firstRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:firstRequestMapping objectClass:[RKTestUser class] rootKeyPath:nil];
+    RKRequestDescriptor *secondRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:secondRequestMapping objectClass:[RKTestAddress class] rootKeyPath:nil];
+
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.emailAddress = @"blake@restkit.org";
+
+    RKTestAddress *address = [RKTestAddress new];
+    address.city = @"New York City";
+    address.state = @"New York";
+
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:firstRequestDescriptor];
+    [objectManager addRequestDescriptor:secondRequestDescriptor];
+
+    NSArray *arrayOfObjects = @[ user, address ];
+    NSException *caughtException = nil;
+    @try {
+        NSURLRequest __unused *request = [objectManager requestWithObject:arrayOfObjects method:RKRequestMethodPOST path:@"/path" parameters:@{ @"name": @"Foo" }];
+    }
+    @catch (NSException *exception) {
+        caughtException = exception;
+        expect([exception name]).to.equal(NSInvalidArgumentException);
+        expect([exception reason]).to.equal(@"Cannot merge parameters with array of object representations serialized with a nil root key path.");
+    }
+    expect(caughtException).notTo.beNil();
+}
+
+- (void)testThatAttemptingToPostObjectsWithAMixtureOfNilAndNonNilRootKeyPathsRaisesError
+{
+    RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
+    [firstRequestMapping addAttributeMappingsFromArray:@[ @"name", @"emailAddress" ]];
+    RKObjectMapping *secondRequestMapping = [RKObjectMapping requestMapping];
+    [secondRequestMapping addAttributeMappingsFromArray:@[ @"city", @"state" ]];
+
+    RKRequestDescriptor *firstRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:firstRequestMapping objectClass:[RKTestUser class] rootKeyPath:@"bang"];
+    RKRequestDescriptor *secondRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:secondRequestMapping objectClass:[RKTestAddress class] rootKeyPath:nil];
+
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.emailAddress = @"blake@restkit.org";
+
+    RKTestAddress *address = [RKTestAddress new];
+    address.city = @"New York City";
+    address.state = @"New York";
+
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:firstRequestDescriptor];
+    [objectManager addRequestDescriptor:secondRequestDescriptor];
+
+    NSArray *arrayOfObjects = @[ user, address ];
+    NSException *caughtException = nil;
+    @try {
+        NSURLRequest __unused *request = [objectManager requestWithObject:arrayOfObjects method:RKRequestMethodPOST path:@"/path" parameters:nil];
+    }
+    @catch (NSException *exception) {
+        caughtException = exception;
+        expect([exception name]).to.equal(NSInvalidArgumentException);
+        expect([exception reason]).to.equal(@"Invalid request descriptor configuration: The request descriptors specify that multiple objects be serialized at incompatible key paths. Cannot serialize objects at the `nil` root key path in the same request as objects with a non-nil root key path. Please check your request descriptors and try again.");
+    }
+    expect(caughtException).notTo.beNil();
+}
 
 @end
