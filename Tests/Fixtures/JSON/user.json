@@ -26,5 +26,8 @@
             "id": 7,
             "name": "Rachit Shukla"
         }
-    ]
+    ],
+    "created_at": "2011-02-02 07:53:08",
+    "latitude": 12345,
+    "longitude": 56789
 }

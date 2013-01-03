@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#ifdef _COREDATADEFINES_H
+
 #import <Foundation/Foundation.h>
 
 /**
@@ -81,3 +83,5 @@
 - (NSString *)summary;
 
 @end
+
+#endif

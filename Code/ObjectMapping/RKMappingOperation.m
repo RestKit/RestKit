@@ -603,7 +603,6 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
 {
     NSAssert(self.dataSource, @"Cannot perform relationship mapping without a data source");
     NSMutableArray *mappingsApplied = [NSMutableArray array];
-    id destinationObject = nil;
 
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         if ([self isCancelled]) return NO;
@@ -702,7 +701,8 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
 
         // Notify the delegate
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
-            [self.delegate mappingOperation:self didSetValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
+            id setValue = [self.destinationObject valueForKeyPath:relationshipMapping.destinationKeyPath];
+            [self.delegate mappingOperation:self didSetValue:setValue forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
         }
 
         // Fail out if a validation error has occurred

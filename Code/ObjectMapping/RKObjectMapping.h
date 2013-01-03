@@ -376,7 +376,7 @@
 /**
  Returns the preferred date formatter to use when generating NSString representations from NSDate attributes. This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations that do not have a native time construct.
 
- Defaults to an instance of the `RKISO8601DateFormatter` configured with the UTC time-zone. The format string is equal to "YYYY-MM-DDThh:mm:ssTZD"
+ Defaults to an instance of the `RKISO8601DateFormatter` configured with the UTC time-zone. The format string is equal to "yyyy-MM-DDThh:mm:ssTZD"
  
  For details about the ISO-8601 format, see http://www.w3.org/TR/NOTE-datetime
 

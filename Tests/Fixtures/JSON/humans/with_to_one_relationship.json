@@ -1,1 +1,12 @@
-{"human":{"name":"Blake Watters","id":null,"age":28,"favorite_cat":{"name": "Asia"}}}
+{
+    "human": {
+        "name": "Blake Watters",
+        "id": null,
+        "age": 28,
+        "favorite_cat_id": 1234,
+        "favorite_cat": {
+            "name": "Asia",
+            "id": 1234
+        }
+    }
+}

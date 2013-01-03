@@ -18,7 +18,8 @@
 //  limitations under the License.
 //
 
-#import <CoreData/CoreData.h>
+#ifdef _COREDATADEFINES_H
+
 #import "RKConnectionTestExpectation.h"
 #import "RKObjectUtilities.h"
 
@@ -64,3 +65,5 @@
 }
 
 @end
+
+#endif

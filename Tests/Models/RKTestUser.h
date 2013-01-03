@@ -36,6 +36,7 @@
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, strong) RKTestCoordinate *coordinate;
 @property (nonatomic, assign) NSInteger age;
+@property (nonatomic, strong) NSDate *createdAt;
 
 + (RKTestUser *)user;
 

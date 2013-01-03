@@ -223,6 +223,8 @@ operation.managedObjectCache = managedObjectStore.managedObjectCache;
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	NSLog(@"Failed with error: %@", [error localizedDescription]);
 }];
+NSOperationQueue *operationQueue = [NSOperationQueue new];
+[operationQueue addOperation:operation];
 ```
 
 ### Map a Client Error Response to an NSError
