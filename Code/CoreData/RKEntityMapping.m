@@ -20,7 +20,7 @@
 
 #import "RKEntityMapping.h"
 #import "RKManagedObjectStore.h"
-#import "RKDynamicMappingMatcher.h"
+#import "RKObjectMappingMatcher.h"
 #import "RKPropertyInspector+CoreData.h"
 #import "RKLog.h"
 #import "RKRelationshipMapping.h"
@@ -153,7 +153,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return [[self alloc] initWithEntity:entity];
 }
 
-- (instancetype)initWithEntity:(NSEntityDescription *)entity
+- (id)initWithEntity:(NSEntityDescription *)entity
 {
     NSAssert(entity, @"Cannot initialize an RKEntityMapping without an entity. Maybe you want RKObjectMapping instead?");
     Class objectClass = NSClassFromString([entity managedObjectClassName]);
@@ -167,7 +167,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return self;
 }
 
-- (instancetype)initWithClass:(Class)objectClass
+- (id)initWithClass:(Class)objectClass
 {
     self = [super initWithClass:objectClass];
     if (self) {

@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#ifdef _COREDATADEFINES_H
+
 #import <Foundation/Foundation.h>
 
 /**
@@ -50,7 +52,7 @@
  @param value The value that is expected to be set for the relationship when the connection is established.
  @return The receiver, initialized with the given relationship name, attributes dictionary, and expected value.
  */
-- (instancetype)initWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value;
+- (id)initWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value;
 
 ///------------------------------------
 /// @name Accessing Expectation Details
@@ -81,3 +83,5 @@
 - (NSString *)summary;
 
 @end
+
+#endif

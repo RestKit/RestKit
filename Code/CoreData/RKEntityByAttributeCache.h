@@ -46,7 +46,7 @@
  @return The receiver, initialized with the given entity, attribute, and managed object
     context.
  */
-- (instancetype)initWithEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames managedObjectContext:(NSManagedObjectContext *)context;
+- (id)initWithEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames managedObjectContext:(NSManagedObjectContext *)context;
 
 ///-----------------------------
 /// @name Getting Cache Identity

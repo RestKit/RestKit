@@ -154,6 +154,22 @@ static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_pag
     expect(paginator.isLoaded).to.equal(YES);
 }
 
+- (void)testLoadingAPageOfObjectsWithDocumentedPaginationMapping
+{
+    RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKPaginator class]];
+    [paginationMapping addAttributeMappingsFromDictionary:@{
+     @"per_page":        @"perPage",
+     @"total_pages":     @"pageCount",
+     @"total_objects":   @"objectCount",
+     }];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    [paginator loadPage:1];
+    [paginator waitUntilFinished];
+    expect(paginator.isLoaded).to.equal(YES);
+}
+
 - (void)testLoadingPageOfObjectMapsPerPage
 {
     NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
@@ -220,9 +236,7 @@ static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_pag
     } failure:nil];
     [paginator loadPage:1];
     [paginator waitUntilFinished];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        expect(blockObjects).notTo.beNil();
-    });
+    expect(blockObjects).willNot.beNil();
 }
 
 - (void)testOnDidFailWithErrorBlockIsInvokedOnError
@@ -235,9 +249,19 @@ static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_pag
     }];
     [paginator loadPage:999];
     [paginator waitUntilFinished];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        expect(expectedError).notTo.beNil();
-    });
+    expect(expectedError).willNot.beNil();
+}
+
+- (void)testInvocationOfCompletionBlockWithoutWaiting
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    __block NSArray *blockObjects = nil;
+    [paginator setCompletionBlockWithSuccess:^(RKPaginator *paginator, NSArray *objects, NSUInteger page) {
+        blockObjects = objects;
+    } failure:nil];
+    [paginator loadPage:1];
+    expect(blockObjects).willNot.beNil();
 }
 
 - (void)testLoadingNextPageOfObjects

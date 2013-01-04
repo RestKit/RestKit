@@ -68,7 +68,7 @@
  @param entity An entity with which to initialize the receiver.
  @returns The receiver, initialized with the given entity.
  */
-- (instancetype)initWithEntity:(NSEntityDescription *)entity;
+- (id)initWithEntity:(NSEntityDescription *)entity;
 
 /**
  A convenience initializer that creates and returns an entity mapping for the entity with the given name in
@@ -176,6 +176,17 @@
  @return The connection object for the specified relationship or `nil` if none is configured.
  */
 - (RKConnectionDescription *)connectionForRelationship:(id)relationshipOrName;
+
+///------------------------------------
+/// @name Flagging Objects for Deletion
+///------------------------------------
+
+/**
+ A predicate that identifies objects for the receiver's entity that are to be deleted from the local store.
+
+ This property provides support for local deletion of managed objects mapped as a 'tombstone' record from the source representation.
+ */
+@property (nonatomic, copy) NSPredicate *deletionPredicate;
 
 ///------------------------------------------
 /// @name Retrieving Default Attribute Values

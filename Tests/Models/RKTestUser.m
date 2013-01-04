@@ -10,6 +10,13 @@
 #import "RKLog.h"
 
 @implementation RKTestCoordinate
+
+- (BOOL)isEqual:(id)object
+{
+    if (! [object isKindOfClass:[RKTestCoordinate class]]) return NO;
+    return [object latitude] == self.latitude && [object longitude] == self.longitude;
+}
+
 @end
 
 @implementation RKTestUser

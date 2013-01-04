@@ -19,7 +19,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
 #import "RKMappingOperation.h"
 #import "RKPropertyMappingTestExpectation.h"
 
@@ -105,7 +104,7 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  @param destinationObject The destionation object being to.
  @return The receiver, initialized with mapping, sourceObject and destinationObject.
  */
-- (instancetype)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
+- (id)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
 
 ///----------------------------
 /// @name Managing Expectations
@@ -195,6 +194,8 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  */
 @property (nonatomic, strong, readonly) id destinationObject;
 
+#ifdef _COREDATADEFINES_H
+
 ///----------------------------
 /// @name Core Data Integration
 ///----------------------------
@@ -212,5 +213,7 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  If the value of this property is `nil` and the test targets an entity mapping, an instance of `RKFetchRequestManagedObjectCache` will be constructed and used as the cache for the purposes of testing.
  */
 @property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;
+
+#endif // _COREDATADEFINES_H
 
 @end

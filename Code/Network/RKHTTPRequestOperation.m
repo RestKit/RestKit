@@ -210,14 +210,14 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
             if (![self hasAcceptableStatusCode] || ![self hasAcceptableContentType]) {
                 NSMutableDictionary *userInfo = [error.userInfo mutableCopy];
                 
-                if (error.code == NSURLErrorBadServerResponse) {
+                if (error.code == NSURLErrorBadServerResponse && ![self hasAcceptableStatusCode]) {
                     // Replace the NSLocalizedDescriptionKey
                     NSUInteger statusCode = ([self.response isKindOfClass:[NSHTTPURLResponse class]]) ? (NSUInteger)[self.response statusCode] : 200;
-                    [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected status code in (%@), got %d", nil), RKStringFromIndexSet([self acceptableStatusCodes]), statusCode] forKey:NSLocalizedDescriptionKey];
+                    [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected status code in (%@), got %d", nil), RKStringFromIndexSet(self.acceptableStatusCodes ?: [NSMutableIndexSet indexSet]), statusCode] forKey:NSLocalizedDescriptionKey];
                     self.HTTPError = [[NSError alloc] initWithDomain:AFNetworkingErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
-                } else if (error.code == NSURLErrorCannotDecodeContentData) {
+                } else if (error.code == NSURLErrorCannotDecodeContentData && ![self hasAcceptableContentType]) {
                     // Because we have shifted the Acceptable Content Types and Status Codes
-                    [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected content type %@, got %@", nil), [self acceptableContentTypes], [self.response MIMEType]] forKey:NSLocalizedDescriptionKey];
+                    [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected content type %@, got %@", nil), self.acceptableContentTypes, [self.response MIMEType]] forKey:NSLocalizedDescriptionKey];
                     self.HTTPError = [[NSError alloc] initWithDomain:AFNetworkingErrorDomain code:NSURLErrorCannotDecodeContentData userInfo:userInfo];
                 }
             }

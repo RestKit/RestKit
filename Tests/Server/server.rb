@@ -234,8 +234,6 @@ class RestKitTestServer < Sinatra::Base
     current_page = params[:page].to_i
     entries = []
 
-    puts "Params are: #{params.inspect}. CurrentPage = #{current_page}"
-
     case current_page
       when 1
         entries << Person.new('Blake', 29)
@@ -255,7 +253,7 @@ class RestKitTestServer < Sinatra::Base
     end
 
     {:per_page => per_page, :total_entries => total_entries,
-     :current_page => current_page, :entries => entries}.to_json
+     :current_page => current_page, :entries => entries, :total_pages => 3}.to_json
   end
   
   get '/coredata/etag' do
@@ -303,6 +301,11 @@ class RestKitTestServer < Sinatra::Base
   get '/posts.json' do
     content_type 'application/json'
     { :posts => [{:title => 'Post Title', :body => 'Some body.', :tags => [{ :name => 'development' }, { :name => 'restkit' }] }] }.to_json
+  end
+  
+  get '/posts_with_invalid.json' do
+    content_type 'application/json'
+    { :posts => [{:title => 'Post Title', :body => 'Some body.'}, {:title => '', :body => 'Some body.'} ] }.to_json
   end
 
   # start the server if ruby file executed directly

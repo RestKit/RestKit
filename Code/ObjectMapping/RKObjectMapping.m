@@ -175,6 +175,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[self.propertyMappings count]];
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
+        if (! propertyMapping.sourceKeyPath) continue;
         [dictionary setObject:propertyMapping forKey:propertyMapping.sourceKeyPath];
     }
     
@@ -185,6 +186,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[self.propertyMappings count]];
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
+        if (! propertyMapping.destinationKeyPath) continue;
         [dictionary setObject:propertyMapping forKey:propertyMapping.destinationKeyPath];
     }
     
@@ -242,11 +244,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     return [NSString stringWithFormat:@"<%@:%p objectClass=%@ propertyMappings=%@>",
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass), self.propertyMappings];
-}
-
-- (id)mappingForKeyPath:(NSString *)keyPath
-{
-    return [self mappingForSourceKeyPath:keyPath];
 }
 
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
@@ -339,9 +336,9 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:RKObjectMappingNestingAttributeKeyName toKeyPath:attributeName]];
 }
 
-- (RKAttributeMapping *)attributeMappingForKeyOfRepresentation
+- (void)addAttributeMappingToKeyOfRepresentationFromAttribute:(NSString *)attributeName
 {
-    return [self mappingForKeyPath:RKObjectMappingNestingAttributeKeyName];
+    [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeName toKeyPath:RKObjectMappingNestingAttributeKeyName]];
 }
 
 - (RKAttributeMapping *)mappingForAttribute:(NSString *)attributeKey

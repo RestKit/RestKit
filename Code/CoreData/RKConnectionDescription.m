@@ -44,7 +44,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
 
 @implementation RKConnectionDescription
 
-- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)attributes
+- (id)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)attributes
 {
     NSParameterAssert(relationship);
     NSParameterAssert(attributes);
@@ -63,7 +63,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     return self;
 }
 
-- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath
+- (id)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath
 {
     NSParameterAssert(relationship);
     NSParameterAssert(keyPath);

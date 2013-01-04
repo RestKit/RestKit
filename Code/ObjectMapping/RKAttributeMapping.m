@@ -29,7 +29,7 @@
 
 + (instancetype)attributeMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
 {
-    NSParameterAssert(destinationKeyPath);
+    NSAssert(sourceKeyPath || destinationKeyPath, @"Both the source and destination key paths cannot be nil");
     RKAttributeMapping *attributeMapping = [self new];
     attributeMapping.sourceKeyPath = sourceKeyPath;
     attributeMapping.destinationKeyPath = destinationKeyPath;

@@ -242,7 +242,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                 NSString *reason = [NSString stringWithFormat:@"expected to %@, but instead got %@ '%@'",
                                     expectation, [event.value class], event.value];
                 if (error) *error = [self errorForExpectation:expectation
-                                                     withCode:RKMappingTestEvaluationBlockError
+                                                     withCode:RKMappingTestValueInequalityError
                                                      userInfo:userInfo
                                                   description:description
                                                        reason:reason];
@@ -258,7 +258,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                     NSString *reason = [NSString stringWithFormat:@"expected to %@, but was instead mapped using: %@",
                                         expectation, relationshipMapping];
                     if (error) *error = [self errorForExpectation:expectation
-                                                         withCode:RKMappingTestValueInequalityError
+                                                         withCode:RKMappingTestMappingMismatchError
                                                          userInfo:userInfo
                                                       description:description
                                                            reason:reason];
@@ -319,6 +319,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     // If we have been given an explicit data source, use it
     if (self.mappingOperationDataSource) return self.mappingOperationDataSource;
     
+#ifdef _COREDATADEFINES_H
     if ([self.mapping isKindOfClass:[RKEntityMapping class]]) {
         NSAssert(self.managedObjectContext, @"Cannot test an `RKEntityMapping` with a nil managed object context.");
         id<RKManagedObjectCaching> managedObjectCache = self.managedObjectCache ?: [RKFetchRequestManagedObjectCache new];
@@ -332,6 +333,9 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     } else {
         return [RKObjectMappingOperationDataSource new];
     }
+#else
+    return [RKObjectMappingOperationDataSource new];
+#endif
 }
 
 - (void)performMapping
@@ -350,7 +354,8 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         }
         
         // Let the connection operations execute to completion
-        if ([mappingOperation.dataSource isKindOfClass:[RKManagedObjectMappingOperationDataSource class]]) {
+        Class managedObjectMappingOperationDataSourceClass = NSClassFromString(@"RKManagedObjectMappingOperationDataSource");
+        if ([mappingOperation.dataSource isKindOfClass:managedObjectMappingOperationDataSourceClass]) {
             NSOperationQueue *operationQueue = [(RKManagedObjectMappingOperationDataSource *)mappingOperation.dataSource operationQueue];
             if (! [operationQueue isEqual:[NSOperationQueue mainQueue]]) {
                 [operationQueue waitUntilAllOperationsAreFinished];
@@ -410,7 +415,8 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 - (BOOL)evaluateExpectation:(id)expectation error:(NSError **)error
 {
     NSParameterAssert(expectation);
-    NSAssert([expectation isKindOfClass:[RKPropertyMappingTestExpectation class]] || [expectation isKindOfClass:[RKConnectionTestExpectation class]], @"Must be an instance of `RKPropertyMappingTestExpectation` or `RKConnectionTestExpectation`");
+    Class connectionTestExpectation = NSClassFromString(@"RKConnectionTestExpectation");
+    NSAssert([expectation isKindOfClass:[RKPropertyMappingTestExpectation class]] || (connectionTestExpectation && [expectation isKindOfClass:connectionTestExpectation]), @"Must be an instance of `RKPropertyMappingTestExpectation` or `RKConnectionTestExpectation`");
     [self performMapping];
 
     RKMappingTestEvent *event = [self eventMatchingExpectation:expectation];

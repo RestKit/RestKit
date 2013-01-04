@@ -448,6 +448,21 @@
     expect(string).to.equal(@"{\"name\":\"Blake Watters\",\"happy\":false}");
 }
 
+- (void)testSerializingWithDynamicNestingAttribute
+{
+    NSDictionary *object = @{ @"name" : @"blake", @"occupation" : @"Hacker" };
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingToKeyOfRepresentationFromAttribute:@"name"];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"(name).name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"occupation" toKeyPath:@"(name).job"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSDictionary *expected = @{@"blake": @{@"name": @"blake", @"job": @"Hacker"}};
+    expect(parameters).to.equal(expected);
+}
+
 @end
 
 #pragma mark - Dynamic Request Paramterization
@@ -486,8 +501,8 @@ typedef enum {
     [routeMapping addAttributeMappingsFromDictionary:@{ @"airlineID": @"airline_id", @"departureAirportID": @"departure_airport_id", @"arrivalAirportID": @"arrival_airport_id" }];
     
     RKDynamicMapping *flightSearchMapping = [RKDynamicMapping new];
-    [flightSearchMapping setObjectMapping:flightNumberMapping whenValueOfKeyPath:@"mode" isEqualTo:@(RKSearchByFlightNumberMode)];
-    [flightSearchMapping setObjectMapping:routeMapping whenValueOfKeyPath:@"mode" isEqualTo:@(RKSearchByRouteMode)];
+    [flightSearchMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"mode" expectedValue:@(RKSearchByFlightNumberMode) objectMapping:flightNumberMapping]];
+    [flightSearchMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"mode" expectedValue:@(RKSearchByRouteMode) objectMapping:routeMapping]];
     
     RKDynamicParameterizationFlightSearch *flightSearch = [RKDynamicParameterizationFlightSearch new];
     flightSearch.airlineID = @5678;
@@ -525,7 +540,7 @@ typedef enum {
     [concreteMapping addAttributeMappingsFromDictionary:@{ @"departureDate": @"departure_date" }];
     
     RKDynamicMapping *flightSearchMapping = [RKDynamicMapping new];
-    [flightSearchMapping setObjectMapping:concreteMapping whenValueOfKeyPath:@"mode" isEqualTo:@(RKSearchByFlightNumberMode)];
+    [flightSearchMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"mode" expectedValue:@(RKSearchByFlightNumberMode) objectMapping:concreteMapping]];
     
     RKDynamicParameterizationFlightSearch *flightSearch = [RKDynamicParameterizationFlightSearch new];
     flightSearch.airlineID = @5678;

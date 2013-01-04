@@ -32,6 +32,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 // Private interface
 @interface RKPaginator ()
 @property (nonatomic, copy) NSURLRequest *request;
+@property (nonatomic, strong) Class HTTPOperationClass;
 @property (nonatomic, strong) RKObjectRequestOperation *objectRequestOperation;
 @property (nonatomic, copy) NSArray *responseDescriptors;
 @property (nonatomic, assign, readwrite) NSUInteger currentPage;
@@ -63,6 +64,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     NSAssert([paginationMapping.objectClass isSubclassOfClass:[RKPaginator class]], @"The paginationMapping must have a target object class of `RKPaginator`");
     self = [super init];
     if (self) {
+        self.HTTPOperationClass = [RKHTTPRequestOperation class];
         self.request = request;
         self.paginationMapping = paginationMapping;
         self.responseDescriptors = responseDescriptors;
@@ -93,6 +95,12 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     return [NSURL URLWithString:interpolatedString relativeToURL:self.request.URL];
 }
 
+- (void)setHTTPOperationClass:(Class)operationClass
+{
+    NSAssert(operationClass == nil || [operationClass isSubclassOfClass:[RKHTTPRequestOperation class]], @"The HTTP operation class must be a subclass of `RKHTTPRequestOperation`");
+    _HTTPOperationClass = operationClass;
+}
+
 - (void)setCompletionBlockWithSuccess:(void (^)(RKPaginator *paginator, NSArray *objects, NSUInteger page))success
                               failure:(void (^)(RKPaginator *paginator, NSError *error))failure
 {
@@ -121,12 +129,6 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     // Referenced during initial load, so we don't rely on isLoaded.
     NSAssert([self hasCurrentPage], @"Current page has not been initialized.");
     return _currentPage;
-}
-
-- (NSUInteger)pageCount
-{
-    NSAssert([self hasPageCount], @"Page count not available.");
-    return _pageCount;
 }
 
 - (BOOL)hasNextPage
@@ -165,7 +167,8 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     mutableRequest.URL = self.URL;
 
     if (self.managedObjectContext) {
-        RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
+        RKHTTPRequestOperation *requestOperation = [[self.HTTPOperationClass alloc] initWithRequest:mutableRequest];
+        RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:self.responseDescriptors];
         managedObjectRequestOperation.managedObjectContext = self.managedObjectContext;
         managedObjectRequestOperation.managedObjectCache = self.managedObjectCache;
         managedObjectRequestOperation.fetchRequestBlocks = self.fetchRequestBlocks;
@@ -178,20 +181,21 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     
     // Add KVO to ensure notification of loaded state prior to execution of completion block
     [self.objectRequestOperation addObserver:self forKeyPath:@"isFinished" options:0 context:nil];
-    
-    __weak RKPaginator *weakSelf = self;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-retain-cycles"
     [self.objectRequestOperation setWillMapDeserializedResponseBlock:^id(id deserializedResponseBody) {
         NSError *error = nil;
-        RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:deserializedResponseBody destinationObject:weakSelf mapping:weakSelf.paginationMapping];
+        RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:deserializedResponseBody destinationObject:self mapping:self.paginationMapping];
         BOOL success = [mappingOperation performMapping:&error];
         if (!success) {
-            weakSelf.pageCount = 0;
-            weakSelf.currentPage = 0;
+            self.pageCount = 0;
+            self.currentPage = 0;
             RKLogError(@"Paginator didn't map info to compute page count. Assuming no pages.");
-        } else if (weakSelf.perPage && [weakSelf hasObjectCount]) {
-            float objectCountFloat = weakSelf.objectCount;
-            weakSelf.pageCount = ceilf(objectCountFloat / weakSelf.perPage);
-            RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long)weakSelf.objectCount, (long)weakSelf.pageCount);
+        } else if (self.perPage && [self hasObjectCount]) {
+            float objectCountFloat = self.objectCount;
+            self.pageCount = ceilf(objectCountFloat / self.perPage);
+            RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long)self.objectCount, (long)self.pageCount);
         } else {
             RKLogError(@"Paginator perPage set is 0.");
         }
@@ -199,14 +203,15 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         return deserializedResponseBody;
     }];
     [self.objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        if (weakSelf.successBlock) {
-            weakSelf.successBlock(weakSelf, [mappingResult array], weakSelf.currentPage);
+        if (self.successBlock) {
+            self.successBlock(self, [mappingResult array], self.currentPage);
         }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        if (weakSelf.failureBlock) {
-            weakSelf.failureBlock(weakSelf, error);
+        if (self.failureBlock) {
+            self.failureBlock(self, error);
         }
     }];
+#pragma clang diagnostic pop
     
     if (self.operationQueue) {
         [self.operationQueue addOperation:self.objectRequestOperation];

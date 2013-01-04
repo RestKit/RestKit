@@ -51,7 +51,7 @@
 {
     RKObjectMapping *invalidMapping = [RKObjectMapping mappingForClass:[RKRequestDescriptorTest class]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    [dynamicMapping setObjectMapping:invalidMapping whenValueOfKeyPath:@"whatever" isEqualTo:@"whatever"];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"whatever" expectedValue:@"whatever" objectMapping:invalidMapping]];
     
     NSException *exception = nil;
     @try {

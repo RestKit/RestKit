@@ -83,7 +83,7 @@
  @param objectClass The class that the mapping targets. Cannot be `nil`.
  @return The receiver, initialized with the given class.
  */
-- (instancetype)initWithClass:(Class)objectClass;
+- (id)initWithClass:(Class)objectClass;
 
 /**
  Returns an object mapping with an `objectClass` of `NSMutableDictionary`.
@@ -96,9 +96,9 @@
  */
 + (instancetype)requestMapping;
 
-///---------------------------------
-/// @name Managing Property Mappings
-///---------------------------------
+///----------------------------------
+/// @name Accessing Property Mappings
+///----------------------------------
 
 /**
  The aggregate collection of attribute and relationship mappings within this object mapping.
@@ -109,6 +109,7 @@
  Returns the property mappings of the receiver in a dictionary, where the keys are the source key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
  
  @return The property mappings of the receiver in a dictionary, where the keys are the source key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
+ @warning Note this method does not return any property mappings with a `nil` value for the source key path in the dictionary returned.
  */
 @property (nonatomic, readonly) NSDictionary *propertyMappingsBySourceKeyPath;
 
@@ -116,6 +117,7 @@
  Returns the property mappings of the receiver in a dictionary, where the keys are the destination key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
  
  @return The property mappings of the receiver in a dictionary, where the keys are the destination key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
+ @warning Note this method does not return any property mappings with a `nil` value for the source key path in the dictionary returned.
  */
 @property (nonatomic, readonly) NSDictionary *propertyMappingsByDestinationKeyPath;
 
@@ -128,6 +130,24 @@
  The collection of relationship mappings within this object mapping.
  */
 @property (nonatomic, readonly) NSArray *relationshipMappings;
+
+/**
+ Returns the property mapping registered with the receiver with the given source key path.
+ 
+ @param sourceKeyPath The key path to retrieve.
+ */
+- (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath;
+
+/**
+ Returns the property mapping registered with the receiver with the given destinationKeyPath key path.
+ 
+ @param destinationKeyPath The key path to retrieve.
+ */
+- (id)mappingForDestinationKeyPath:(NSString *)destinationKeyPath;
+
+///---------------------------
+/// Managing Property Mappings
+///---------------------------
 
 /**
  Adds a property mapping to the receiver.
@@ -226,14 +246,26 @@
 - (void)addAttributeMappingFromKeyOfRepresentationToAttribute:(NSString *)attributeName;
 
 /**
- Returns the attribute mapping targeting the key of a nested dictionary in the source JSON.
+ Adds an attribute mapping to a dynamic nesting key from an attribute. The mapped attribute name can then be referenced wthin other attribute mappings to map content under the nesting key path.
+ 
+ For example, consider that we wish to map a local user object with the properties 'id', 'firstName' and 'email':
+ 
+    RKUser *user = [RKUser new];
+    user.firstName = @"blake";
+    user.userID = @(1234);
+    user.email = @"blake@restkit.org";
 
- This attribute mapping corresponds to the attributeName configured via `mapKeyOfNestedDictionaryToAttribute:`
-
- @return An attribute mapping for the key of a nested dictionary being mapped or nil
- @see `addAttributeMappingFromKeyOfRepresentationToAttribute:`
+ And we wish to map it into JSON that looks like:
+ 
+    { "blake": { "id": 1234, "email": "blake@restkit.org" } }
+ 
+ We can configure our request mapping to handle this like so:
+ 
+     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+     [mapping addAttributeMappingToKeyOfRepresentationFromAttribute:@"firstName"];
+     [mapping addAttributeMappingsFromDictionary:@{ @"(firstName).userID": @"id", @"(firstName).email": @"email" }];
  */
-- (RKAttributeMapping *)attributeMappingForKeyOfRepresentation;
+- (void)addAttributeMappingToKeyOfRepresentationFromAttribute:(NSString *)attributeName;
 
 ///----------------------------------
 /// @name Configuring Mapping Options
@@ -376,7 +408,7 @@
 /**
  Returns the preferred date formatter to use when generating NSString representations from NSDate attributes. This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations that do not have a native time construct.
 
- Defaults to an instance of the `RKISO8601DateFormatter` configured with the UTC time-zone. The format string is equal to "YYYY-MM-DDThh:mm:ssTZD"
+ Defaults to an instance of the `RKISO8601DateFormatter` configured with the UTC time-zone. The format string is equal to "yyyy-MM-DDThh:mm:ssTZD"
  
  For details about the ISO-8601 format, see http://www.w3.org/TR/NOTE-datetime
 

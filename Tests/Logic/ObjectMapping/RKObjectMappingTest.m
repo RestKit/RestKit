@@ -7,6 +7,8 @@
 //
 
 #import "RKTestEnvironment.h"
+#import "RKTestUser.h"
+#import "RKObjectMappingOperationDataSource.h"
 
 @interface RKObjectMappingTest : RKTestCase
 
@@ -231,6 +233,25 @@
     expect([inverseMapping propertyMappingsBySourceKeyPath][@"firstName"]).notTo.beNil();
     expect([inverseMapping propertyMappingsBySourceKeyPath][@"lastName"]).notTo.beNil();
     expect([inverseMapping propertyMappingsBySourceKeyPath][@"children"]).notTo.beNil();
+}
+
+- (void)testInverseMappingWithNilDestinationKeyPathForAttributeMapping
+{
+    // Map @"Blake" to RKTestUser with name = @"Blake"
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"name"]];
+    
+    RKObjectMapping *inverseMapping = [mapping inverseMapping];
+    
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:user destinationObject:dictionary mapping:inverseMapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    [operation start];
+    
+    expect(operation.destinationObject).to.equal(@{ @"Blake": @{} });
 }
 
 @end

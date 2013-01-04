@@ -223,6 +223,8 @@ operation.managedObjectCache = managedObjectStore.managedObjectCache;
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	NSLog(@"Failed with error: %@", [error localizedDescription]);
 }];
+NSOperationQueue *operationQueue = [NSOperationQueue new];
+[operationQueue addOperation:operation];
 ```
 
 ### Map a Client Error Response to an NSError
@@ -233,7 +235,7 @@ operation.managedObjectCache = managedObjectStore.managedObjectCache;
 // You can map errors to any class, but `RKErrorMessage` is included for free
 RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
 // The entire value at the source key path containing the errors maps to the message
-[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"errorMessage"]];
+[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
 
 NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError);
 // Any response in the 4xx status code range with an "errors" key path uses this mapping
@@ -257,7 +259,7 @@ RKResponseDescriptor *articleDescriptor = [RKResponseDescriptor responseDescript
 
 RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
 // The entire value at the source key path containing the errors maps to the message
-[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:[NSNull null] toKeyPath:@"message"]];
+[errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"message"]];
 NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError);
 // Any response in the 4xx status code range with an "errors" key path uses this mapping
 RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:@"errors" statusCodes:statusCodes];

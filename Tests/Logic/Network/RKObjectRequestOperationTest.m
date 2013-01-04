@@ -91,6 +91,27 @@
     expect(requestOperation.mappingResult).notTo.beNil();
 }
 
+- (void)testSendingAnObjectRequestOperationToAnInvalidHostname
+{
+    NSMutableURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://invalid.is"]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue addOperation:requestOperation];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    
+    expect([requestOperation.error code]).to.equal(NSURLErrorCannotFindHost);
+}
+- (void)testSendingAnObjectRequestOperationToAnBrokenURL
+{
+    NSMutableURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://invalid••™¡.is"]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue addOperation:requestOperation];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    
+    expect([requestOperation.error code]).to.equal(NSURLErrorBadURL);
+}
+
 #pragma mark - Complex JSON
 
 - (void)testShouldLoadAComplexUserObjectWithTargetObject

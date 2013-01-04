@@ -18,6 +18,7 @@
 
 @property (nonatomic, strong) NSNumber *userID;
 @property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *emailAddress;
 @property (nonatomic, strong) NSDate *birthDate;
 @property (nonatomic, strong) NSDate *favoriteDate;
 @property (nonatomic, strong) NSArray *favoriteColors;
@@ -35,6 +36,7 @@
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, strong) RKTestCoordinate *coordinate;
 @property (nonatomic, assign) NSInteger age;
+@property (nonatomic, strong) NSDate *createdAt;
 
 + (RKTestUser *)user;
 

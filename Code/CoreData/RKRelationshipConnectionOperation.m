@@ -24,7 +24,7 @@
 #import "RKEntityMapping.h"
 #import "RKLog.h"
 #import "RKManagedObjectCaching.h"
-#import "RKDynamicMappingMatcher.h"
+#import "RKObjectMappingMatcher.h"
 #import "RKErrors.h"
 #import "RKObjectUtilities.h"
 
@@ -70,7 +70,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 
 @implementation RKRelationshipConnectionOperation
 
-- (instancetype)initWithManagedObject:(NSManagedObject *)managedObject
+- (id)initWithManagedObject:(NSManagedObject *)managedObject
                            connection:(RKConnectionDescription *)connection
                    managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
 {

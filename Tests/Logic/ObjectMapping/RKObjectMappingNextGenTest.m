@@ -1924,8 +1924,8 @@
     RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
-    [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Boy" objectMapping:boyMapping]];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Girl" objectMapping:girlMapping]];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
@@ -1945,8 +1945,8 @@
     RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
-    [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Boy" objectMapping:boyMapping]];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Girl" objectMapping:girlMapping]];
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
     [mappingsDictionary setObject:dynamicMapping forKey:[NSNull null]];
@@ -1971,8 +1971,8 @@
     RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping addAttributeMappingsFromArray:@[@"name"]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
-    [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
-    [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Boy" objectMapping:boyMapping]];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Girl" objectMapping:girlMapping]];
     [boyMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:dynamicMapping]];;
 
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
@@ -2412,6 +2412,23 @@
     expect(user.coordinate).notTo.beNil();
     expect(user.coordinate.latitude).to.equal(125.55);
     expect(user.coordinate.longitude).to.equal(200.5);
+}
+
+- (void)testThatAggregatedRelationshipMappingsAreOnlyAppliedIfThereIsAtLeastOneValueInTheRepresentation
+{
+    NSDictionary *objectRepresentation = @{ @"name": @"Blake" };
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKObjectMapping *coordinateMapping = [RKObjectMapping mappingForClass:[RKTestCoordinate class]];
+    [coordinateMapping addAttributeMappingsFromArray:@[ @"latitude", @"longitude" ]];
+    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"coordinate" withMapping:coordinateMapping]];
+    RKTestUser *user = [RKTestUser new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    mappingOperation.dataSource = dataSource;
+    [mappingOperation start];
+    expect(mappingOperation.error).to.beNil();
+    expect(user.coordinate).to.beNil();
 }
 
 @end

@@ -11,3 +11,7 @@
 #import "RKTestFactory.h"
 #import "RKTestHelpers.h"
 #import "RKMappingTest.h"
+
+#ifdef _COREDATADEFINES_H
+#import "RKConnectionTestExpectation.h"
+#endif
