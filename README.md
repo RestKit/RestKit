@@ -322,7 +322,7 @@ RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorW
 
 RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
 [manager addRequestDescriptor:requestDescriptor];
-[manager addResponseDescriptor:responseDescriptor];
+[manager addResponseDescriptor:articleDescriptor];
 
 Article *article = [Article new];
 article.title = @"Introduction to RestKit";
