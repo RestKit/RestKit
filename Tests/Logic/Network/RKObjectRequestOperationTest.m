@@ -99,7 +99,9 @@
     [operationQueue addOperation:requestOperation];
     [operationQueue waitUntilAllOperationsAreFinished];
     
-    expect([requestOperation.error code]).to.equal(NSURLErrorCannotFindHost);
+    // NOTE: If your ISP provides a redirect page for unknown hosts, you'll get a `NSURLErrorCannotDecodeContentData`
+    NSArray *validErrorCodes = @[ @(NSURLErrorCannotDecodeContentData), @(NSURLErrorCannotFindHost) ];
+    assertThat(validErrorCodes, hasItem(@([requestOperation.error code])));
 }
 - (void)testSendingAnObjectRequestOperationToAnBrokenURL
 {
