@@ -406,10 +406,9 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     if (managedObjectContext) {
         // Create a private context
         NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [privateContext performBlockAndWait:^{
-            privateContext.parentContext = managedObjectContext;
-            privateContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
-        }];
+        [privateContext setParentContext:managedObjectContext];
+        [privateContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+
         self.privateContext = privateContext;
     } else {
         self.privateContext = nil;
