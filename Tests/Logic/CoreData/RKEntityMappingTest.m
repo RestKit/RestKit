@@ -540,4 +540,17 @@
     expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
 }
 
+- (void)testInvokingRequestMappingRaisesHelpfulException
+{
+    NSException *caughtException = nil;
+    @try {
+        [RKEntityMapping requestMapping];
+    }
+    @catch (NSException *exception) {
+        caughtException = exception;
+    }
+    expect(caughtException).notTo.beNil();
+    expect(caughtException.reason).to.equal(@"`requestMapping` is not meant to be invoked on `RKEntityMapping`. You probably want to invoke `[RKObjectMapping requestMapping]`.");
+}
+
 @end

@@ -91,6 +91,29 @@
     expect(requestOperation.mappingResult).notTo.beNil();
 }
 
+- (void)testSendingAnObjectRequestOperationToAnInvalidHostname
+{
+    NSMutableURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://invalid.is"]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue addOperation:requestOperation];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    
+    // NOTE: If your ISP provides a redirect page for unknown hosts, you'll get a `NSURLErrorCannotDecodeContentData`
+    NSArray *validErrorCodes = @[ @(NSURLErrorCannotDecodeContentData), @(NSURLErrorCannotFindHost) ];
+    assertThat(validErrorCodes, hasItem(@([requestOperation.error code])));
+}
+- (void)testSendingAnObjectRequestOperationToAnBrokenURL
+{
+    NSMutableURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://invalid••™¡.is"]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue addOperation:requestOperation];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    
+    expect([requestOperation.error code]).to.equal(NSURLErrorBadURL);
+}
+
 #pragma mark - Complex JSON
 
 - (void)testShouldLoadAComplexUserObjectWithTargetObject

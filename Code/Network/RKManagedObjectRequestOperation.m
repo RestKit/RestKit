@@ -24,6 +24,7 @@
 #import "RKResponseMapperOperation.h"
 #import "RKRequestOperationSubclass.h"
 #import "NSManagedObjectContext+RKAdditions.h"
+#import "NSManagedObject+RKAdditions.h"
 
 // Graph visitor
 #import "RKResponseDescriptor.h"
@@ -406,10 +407,9 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     if (managedObjectContext) {
         // Create a private context
         NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [privateContext performBlockAndWait:^{
-            privateContext.parentContext = managedObjectContext;
-            privateContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
-        }];
+        [privateContext setParentContext:managedObjectContext];
+        [privateContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+
         self.privateContext = privateContext;
     } else {
         self.privateContext = nil;
@@ -581,33 +581,43 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return YES;
 }
 
-- (BOOL)saveContext:(NSError **)error
+- (BOOL)saveContext:(NSManagedObjectContext *)context error:(NSError **)error
 {
     __block BOOL success = YES;
     __block NSError *localError = nil;
-    if ([self.privateContext hasChanges]) {
-        if (self.savesToPersistentStore) {
-            success = [self.privateContext saveToPersistentStore:&localError];
-        } else {
-            [self.privateContext performBlockAndWait:^{
-                success = [self.privateContext save:&localError];
+    if (self.savesToPersistentStore) {
+        success = [context saveToPersistentStore:&localError];
+    } else {
+        [context performBlockAndWait:^{
+            success = [context save:&localError];
+        }];
+    }
+    if (success) {
+        if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
+            [self.managedObjectContext performBlock:^{
+                RKLogDebug(@"Refreshing mapped target object %@ in context %@", self.targetObject, self.managedObjectContext);
+                [self.managedObjectContext refreshObject:self.targetObject mergeChanges:YES];
             }];
         }
-        if (success) {
-            if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
-                [self.managedObjectContext performBlock:^{
-                    RKLogDebug(@"Refreshing mapped target object %@ in context %@", self.targetObject, self.managedObjectContext);
-                    [self.managedObjectContext refreshObject:self.targetObject mergeChanges:YES];
-                }];
-            }
-        } else {
-            if (error) *error = localError;
-            RKLogError(@"Failed saving managed object context %@ %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  self.privateContext);
-            RKLogCoreDataError(localError);
-        }
+    } else {
+        if (error) *error = localError;
+        RKLogError(@"Failed saving managed object context %@ %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  context);
+        RKLogCoreDataError(localError);
     }
 
     return success;
+}
+
+- (BOOL)saveContext:(NSError **)error
+{
+    if ([self.privateContext hasChanges]) {
+        return [self saveContext:self.privateContext error:error];
+    } else if ([self.targetObject isKindOfClass:[NSManagedObject class]] && [(NSManagedObject *)self.targetObject isNew]) {
+        // Object was like POST'd in an unsaved state and we wish to persist
+        return [self saveContext:[self.targetObject managedObjectContext] error:error];
+    }
+
+    return YES;
 }
 
 - (BOOL)obtainPermanentObjectIDsForInsertedObjects:(NSError **)error

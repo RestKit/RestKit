@@ -115,8 +115,15 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     return [[self alloc] initWithClass:objectClass];
 }
 
-+ (instancetype)requestMapping
++ (RKObjectMapping *)requestMapping
 {
+    if (! [self isEqual:[RKObjectMapping class]]) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"`%@` is not meant to be invoked on `%@`. You probably want to invoke `[RKObjectMapping requestMapping]`.",
+                                               NSStringFromSelector(_cmd),
+                                               NSStringFromClass(self)]
+                                     userInfo:nil];
+    }
     return [self mappingForClass:[NSMutableDictionary class]];
 }
 
@@ -175,6 +182,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[self.propertyMappings count]];
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
+        if (! propertyMapping.sourceKeyPath) continue;
         [dictionary setObject:propertyMapping forKey:propertyMapping.sourceKeyPath];
     }
     
@@ -185,6 +193,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[self.propertyMappings count]];
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
+        if (! propertyMapping.destinationKeyPath) continue;
         [dictionary setObject:propertyMapping forKey:propertyMapping.destinationKeyPath];
     }
     
@@ -242,11 +251,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     return [NSString stringWithFormat:@"<%@:%p objectClass=%@ propertyMappings=%@>",
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass), self.propertyMappings];
-}
-
-- (id)mappingForKeyPath:(NSString *)keyPath
-{
-    return [self mappingForSourceKeyPath:keyPath];
 }
 
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
@@ -339,9 +343,9 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:RKObjectMappingNestingAttributeKeyName toKeyPath:attributeName]];
 }
 
-- (RKAttributeMapping *)attributeMappingForKeyOfRepresentation
+- (void)addAttributeMappingToKeyOfRepresentationFromAttribute:(NSString *)attributeName
 {
-    return [self mappingForKeyPath:RKObjectMappingNestingAttributeKeyName];
+    [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeName toKeyPath:RKObjectMappingNestingAttributeKeyName]];
 }
 
 - (RKAttributeMapping *)mappingForAttribute:(NSString *)attributeKey

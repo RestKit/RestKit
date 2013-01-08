@@ -448,6 +448,21 @@
     expect(string).to.equal(@"{\"name\":\"Blake Watters\",\"happy\":false}");
 }
 
+- (void)testSerializingWithDynamicNestingAttribute
+{
+    NSDictionary *object = @{ @"name" : @"blake", @"occupation" : @"Hacker" };
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingToKeyOfRepresentationFromAttribute:@"name"];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"(name).name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"occupation" toKeyPath:@"(name).job"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSDictionary *expected = @{@"blake": @{@"name": @"blake", @"job": @"Hacker"}};
+    expect(parameters).to.equal(expected);
+}
+
 @end
 
 #pragma mark - Dynamic Request Paramterization
