@@ -475,6 +475,8 @@
 		25A226D81618A57500952D72 /* RKObjectUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A226D51618A57500952D72 /* RKObjectUtilities.m */; };
 		25A226D91618A57500952D72 /* RKObjectUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A226D51618A57500952D72 /* RKObjectUtilities.m */; };
 		25A34245147D8AAA0009758D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A34244147D8AAA0009758D /* Security.framework */; };
+		25A73362169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 25A73360169C8C230090A930 /* VersionedModel.xcdatamodeld */; };
+		25A73363169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 25A73360169C8C230090A930 /* VersionedModel.xcdatamodeld */; };
 		25A763DB15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A763DC15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A763DD15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763DA15C7240100A9DF31 /* RKSearchTokenizer.m */; };
@@ -884,6 +886,10 @@
 		25A226D41618A57500952D72 /* RKObjectUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectUtilities.h; sourceTree = "<group>"; };
 		25A226D51618A57500952D72 /* RKObjectUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectUtilities.m; sourceTree = "<group>"; };
 		25A34244147D8AAA0009758D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		25A73361169C8C230090A930 /* VersionedModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VersionedModel.xcdatamodel; sourceTree = "<group>"; };
+		25A73365169C8CD80090A930 /* VersionedModel 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VersionedModel 2.xcdatamodel"; sourceTree = "<group>"; };
+		25A73366169C8CF30090A930 /* VersionedModel 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VersionedModel 3.xcdatamodel"; sourceTree = "<group>"; };
+		25A73367169C8D500090A930 /* VersionedModel 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VersionedModel 4.xcdatamodel"; sourceTree = "<group>"; };
 		25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchTokenizer.h; sourceTree = "<group>"; };
 		25A763DA15C7240100A9DF31 /* RKSearchTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTokenizer.m; sourceTree = "<group>"; };
 		25A763E015C72B9D00A9DF31 /* RKSearchTokenizerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTokenizerTest.m; sourceTree = "<group>"; };
@@ -1447,6 +1453,7 @@
 				251610081456F2330060A5C5 /* RKParent.m */,
 				251610091456F2330060A5C5 /* RKResident.h */,
 				2516100A1456F2330060A5C5 /* RKResident.m */,
+				25A73360169C8C230090A930 /* VersionedModel.xcdatamodeld */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2372,6 +2379,7 @@
 				2551338F167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */,
 				255133CF167AC7600017E4B6 /* RKManagedObjectRequestOperationTest.m in Sources */,
 				25B639CC16961EFA0065EB7B /* RKMappingTestTest.m in Sources */,
+				25A73362169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2523,6 +2531,7 @@
 				2536D1FE167270F100DF9BB0 /* RKRouterTest.m in Sources */,
 				25513390167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */,
 				25B639CD16961EFA0065EB7B /* RKMappingTestTest.m in Sources */,
+				25A73363169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2835,6 +2844,22 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		25A73360169C8C230090A930 /* VersionedModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				25A73365169C8CD80090A930 /* VersionedModel 2.xcdatamodel */,
+				25A73366169C8CF30090A930 /* VersionedModel 3.xcdatamodel */,
+				25A73367169C8D500090A930 /* VersionedModel 4.xcdatamodel */,
+				25A73361169C8C230090A930 /* VersionedModel.xcdatamodel */,
+			);
+			currentVersion = 25A73367169C8D500090A930 /* VersionedModel 4.xcdatamodel */;
+			path = VersionedModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 25160D0D14564E810060A5C5 /* Project object */;
 }

@@ -14,6 +14,12 @@
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 @end
 
+static NSManagedObjectModel *RKManagedObjectModel()
+{
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    return [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+}
+
 @interface RKSearchIndexerTest : RKTestCase
 
 @end
@@ -22,7 +28,7 @@
 
 - (void)testAddingSearchIndexingToEntity
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
@@ -49,7 +55,7 @@
 
 - (void)testAddingSearchIndexingToEntityWithMixtureOfNSAttributeDescriptionAndStringNames
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
@@ -77,7 +83,7 @@
 
 - (void)testAddingSearchIndexingToNonStringAttributeTypeRaisesException
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
@@ -97,7 +103,7 @@
 
 - (void)testAddingSearchIndexingToNonExistantAttributeRaisesException
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
@@ -117,7 +123,7 @@
 
 - (void)testAddingSearchIndexingToTwoEntitiesManipulatesTheSameSearchWordEntity
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *humanEntity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     NSEntityDescription *catEntity = [[managedObjectModel entitiesByName] objectForKey:@"Cat"];
 
@@ -136,7 +142,7 @@
 
 - (void)testIndexingManagedObject
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
@@ -161,7 +167,7 @@
 
 - (void)testIndexingManagedObjectUsingIndexingContext
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
 
@@ -195,7 +201,7 @@
 
 - (void)testIndexingOnManagedObjectContextSave
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
@@ -223,7 +229,7 @@
 
 - (void)testIndexingOnManagedObjectContextSaveUsingIndexingContext
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
 
@@ -268,7 +274,7 @@
 
 - (void)testIndexingChangesInManagedObjectContextWithoutSave
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
@@ -294,7 +300,7 @@
 
 - (void)testIndexingChangesInManagedObjectContextWithoutSaveUsingIndexingContext
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
 
@@ -328,7 +334,7 @@
 
 - (void)testCancellationOfIndexingInAnIndexingContext
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
@@ -370,7 +376,7 @@
 
 - (void)testThatDelegateCanDenyCreationOfSearchWordForWord
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
 
@@ -403,7 +409,7 @@
 
 - (void)testThatDelegateIsInformedWhenSearchWordIsCreated
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
@@ -432,7 +438,7 @@
 
 - (void)testThatDelegateCanBeUsedToFetchExistingSearchWords
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
@@ -463,7 +469,7 @@
 
 - (void)testThatTheDelegateCanDeclineIndexingOfAnObject
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
@@ -490,7 +496,7 @@
 
 - (void)testThatTheDelegateIsNotifiedAfterIndexingHasCompleted
 {
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
