@@ -430,10 +430,31 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see `RKHTTPRequestOperation`
  @warning The given class must inherit from `RKHTTPRequestOperation`, else an exception will be raised.
  */
-- (void)setHTTPOperationClass:(Class)operationClass;
+- (void)setHTTPRequestOperationClass:(Class)operationClass;
+
+/**
+ Attempts to register a subclass of `RKObjectRequestOperation`, adding it to a list of classes that are consulted each time the receiver needs to construct an object request operation with a URL request.
+ 
+ When `objectRequestOperationWithRequest:success:failure:` or `managedObjectRequestOperationWithRequest:managedObjectContext:success:failure:` is invoked, each registered subclass is consulted to see if it can handle the request. The first class to return `YES` when sent a `+ canProcessRequest:` message is used to create an operation using `initWithHTTPRequestOperation:responseDescriptors:`. The HTTP request operation class sent is an `RKHTTPRequestOperation` object whose type is of the class configured by `setHTTPRequestOperationClass:`, with a default value of `RKHTTPRequestOperation`. 
+ 
+ There is no guarantee that all registered classes will be consulted. The object manager will only consider direct subclasses of `RKObjectRequestOperation` when `objectRequestOperationWithRequest:success:failure` is called and will only consider subclasses of `RKManagedObjectRequestOperation` when `managedObjectRequestOperationWithRequest:managedObjectContext:success:failure:` is called. If you wish to map a mixture of managed and unmanaged objects within the same object request operation you must register a `RKManagedObjectRequestOperation` subclass. Classes are consulted in the reverse order of their registration. Attempting to register an already-registered class will move it to the top of the list.
+ 
+ @param operationClass The subclass of `RKObjectRequestOperation` to register.
+ @return `YES` if the given class was registered successfully, else `NO`. The only failure condition is if `operationClass` is not a subclass of `RKObjectRequestOperation`.
+ */
+- (BOOL)registerObjectRequestOperationClass:(Class)operationClass;
+
+/**
+ Unregisters the specified subclass of `RKObjectRequestOperation` from the list of classes consulted when `objectRequestOperationWithRequest:success:failure:` or `managedObjectRequestOperationWithRequest:managedObjectContext:success:failure:` is called.
+ 
+ @param operationClass The subclass of `RKObjectRequestOperation` to register
+ */
+- (void)unregisterObjectRequestOperationClass:(Class)operationClass;
 
 /**
  Creates an `RKObjectRequestOperation` operation with the given request and sets the completion block with the given success and failure blocks.
+ 
+ In order to determine what kind of operation is created, each registered `RKObjectRequestOperation` subclass is consulted (in reverse order of when they were specified) to see if it can handle the specific request. The first class to return `YES` when sent a `canProcessRequest:` message is used to create an operation using `initWithHTTPRequestOperation:responseDescriptors:`. The HTTP request operation is an instance of `RKHTTPRequestOperation` whose type is determined by `setHTTPRequestOperationClass:`.
  
  @param request The request object to be loaded asynchronously during execution of the operation.
  @param success A block object to be executed when the request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
@@ -450,6 +471,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  Creates an `RKManagedObjectRequestOperation` operation with the given request and managed object context, and sets the completion block with the given success and failure blocks.
  
  The given managed object context given will be used as the parent context of the private managed context in which the response is mapped and will be used to fetch the results upon invocation of the success completion block.
+ 
+ In order to determine what kind of operation is created, each registered `RKManagedObjectRequestOperation` subclass is consulted (in reverse order of when they were specified) to see if it can handle the specific request. The first class to return `YES` when sent a `canProcessRequest:` message is used to create an operation using `initWithHTTPRequestOperation:responseDescriptors:`. The HTTP request operation is an instance of `RKHTTPRequestOperation` whose type is determined by `setHTTPRequestOperationClass:`.
  
  @param request The request object to be loaded asynchronously during execution of the operation.
  @param managedObjectContext The managed object context with which to associate the operation. This context will be used as the parent context of a new operation local `NSManagedObjectContext` with the `NSPrivateQueueConcurrencyType` concurrency type. Upon success, the private context will be saved and changes resulting from the object mapping will be 'pushed' to the given context.

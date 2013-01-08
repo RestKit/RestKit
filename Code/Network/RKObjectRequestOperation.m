@@ -117,6 +117,11 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     return responseMappingQueue;
 }
 
++ (BOOL)canProcessRequest:(NSURLRequest *)request
+{
+    return YES;
+}
+
 - (void)dealloc
 {
 #if !OS_OBJECT_USE_OBJC
