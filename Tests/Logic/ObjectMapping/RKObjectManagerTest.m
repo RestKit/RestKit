@@ -429,7 +429,7 @@
 - (void)testRegistrationOfHTTPRequestOperationClass
 {
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    [manager setHTTPRequestOperationClass:[RKTestHTTPRequestOperation class]];
+    [manager registerRequestOperationClass:[RKTestHTTPRequestOperation class]];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/test" relativeToURL:manager.baseURL]];
     RKObjectRequestOperation *operation = [manager objectRequestOperationWithRequest:request success:nil failure:nil];
     expect(operation.HTTPRequestOperation).to.beKindOf([RKTestHTTPRequestOperation class]);
@@ -438,8 +438,8 @@
 - (void)testSettingNilHTTPRequestOperationClassRestoresDefaultHTTPOperationClass
 {
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    [manager setHTTPRequestOperationClass:[RKTestHTTPRequestOperation class]];
-    [manager setHTTPRequestOperationClass:nil];
+    [manager registerRequestOperationClass:[RKTestHTTPRequestOperation class]];
+    [manager unregisterRequestOperationClass:[RKTestHTTPRequestOperation class]];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/test" relativeToURL:manager.baseURL]];
     RKObjectRequestOperation *operation = [manager objectRequestOperationWithRequest:request success:nil failure:nil];
     expect(operation.HTTPRequestOperation).to.beKindOf([RKHTTPRequestOperation class]);
@@ -883,7 +883,7 @@
 - (void)testRegistrationOfObjectRequestOperationClass
 {
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    [manager registerObjectRequestOperationClass:[RKTestObjectRequestOperation class]];
+    [manager registerRequestOperationClass:[RKTestObjectRequestOperation class]];
     NSURL *URL = [NSURL URLWithString:@"/match" relativeToURL:manager.baseURL];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     RKObjectRequestOperation *operation = [manager objectRequestOperationWithRequest:request success:nil failure:nil];
@@ -893,7 +893,7 @@
 - (void)testRegistrationOfObjectRequestOperationClassRespectsSubclassDecisionToProcessRequest
 {
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    [manager registerObjectRequestOperationClass:[RKTestObjectRequestOperation class]];
+    [manager registerRequestOperationClass:[RKTestObjectRequestOperation class]];
     NSURL *URL = [NSURL URLWithString:@"/mismatch" relativeToURL:manager.baseURL];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     RKObjectRequestOperation *operation = [manager objectRequestOperationWithRequest:request success:nil failure:nil];
@@ -905,7 +905,7 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    [manager registerObjectRequestOperationClass:[RKTestManagedObjectRequestOperation class]];
+    [manager registerRequestOperationClass:[RKTestManagedObjectRequestOperation class]];
     NSURL *URL = [NSURL URLWithString:@"/match" relativeToURL:manager.baseURL];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     RKObjectRequestOperation *operation = [manager managedObjectRequestOperationWithRequest:request managedObjectContext:managedObjectStore.mainQueueManagedObjectContext success:nil failure:nil];
@@ -916,7 +916,7 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
-    [manager registerObjectRequestOperationClass:[RKTestManagedObjectRequestOperation class]];
+    [manager registerRequestOperationClass:[RKTestManagedObjectRequestOperation class]];
     NSURL *URL = [NSURL URLWithString:@"/mismatch" relativeToURL:manager.baseURL];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     RKObjectRequestOperation *operation = [manager managedObjectRequestOperationWithRequest:request managedObjectContext:managedObjectStore.mainQueueManagedObjectContext success:nil failure:nil];

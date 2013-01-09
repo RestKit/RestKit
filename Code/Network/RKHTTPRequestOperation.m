@@ -191,6 +191,11 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
 
 @dynamic HTTPError;
 
++ (BOOL)canProcessRequest:(NSURLRequest *)request
+{
+    return YES;
+}
+
 - (BOOL)hasAcceptableStatusCode
 {
     return self.acceptableStatusCodes ? [self.acceptableStatusCodes containsIndex:[self.response statusCode]] : [super hasAcceptableStatusCode];

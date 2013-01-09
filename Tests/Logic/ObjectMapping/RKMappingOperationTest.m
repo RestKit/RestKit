@@ -450,4 +450,19 @@
     expect(mapper.mappingResult).to.beNil();
 }
 
+- (void)testMappingRootKeyToDictionary
+{
+    NSDictionary *representation = @{ @"MyObject": @{ @"ObjectAttribute1": @{} }, @"MyRootString": @"SomeString" };
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"MyRootString": @"MyRootString" }];
+    
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:mapping];
+    mappingOperation.dataSource = dataSource;
+    BOOL success = [mappingOperation performMapping:nil];
+    expect(success).to.equal(YES);
+    expect([mappingOperation.destinationObject isKindOfClass:[NSMutableDictionary class]]).to.equal(YES);
+    expect([mappingOperation.destinationObject valueForKeyPath:@"MyRootString"]).to.equal(@"SomeString");
+}
+
 @end

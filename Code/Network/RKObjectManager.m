@@ -277,8 +277,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 @property (nonatomic, strong) NSMutableArray *mutableRequestDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableResponseDescriptors;
 @property (nonatomic, strong) NSMutableArray *mutableFetchRequestBlocks;
+@property (nonatomic, strong) NSMutableArray *registeredHTTPRequestOperationClasses;
 @property (nonatomic, strong) NSMutableArray *registeredObjectRequestOperationClasses;
-@property (nonatomic) Class HTTPOperationClass;
+@property (nonatomic, strong) NSMutableArray *registeredManagedObjectRequestOperationClasses;
+
 @end
 
 @implementation RKObjectManager
@@ -293,6 +295,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         self.mutableRequestDescriptors = [NSMutableArray new];
         self.mutableResponseDescriptors = [NSMutableArray new];
         self.mutableFetchRequestBlocks = [NSMutableArray new];
+        self.registeredHTTPRequestOperationClasses = [NSMutableArray new];
+        self.registeredManagedObjectRequestOperationClasses = [NSMutableArray new];
         self.registeredObjectRequestOperationClasses = [NSMutableArray new];
         self.requestSerializationMIMEType = RKMIMETypeFromAFHTTPClientParameterEncoding(client.parameterEncoding);        
 
@@ -439,68 +443,55 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return multipartRequest;
 }
 
-- (RKHTTPRequestOperation *)HTTPRequestOperationWithRequest:(NSURLRequest *)request
-{
-    Class operationClass = self.HTTPOperationClass ?: [RKHTTPRequestOperation class];
-    return [[operationClass alloc] initWithRequest:request];
-}
-
 #pragma mark - Registering Subclasses
 
-- (void)setHTTPRequestOperationClass:(Class)operationClass
+- (BOOL)registerRequestOperationClass:(Class)operationClass
 {
-    NSAssert(operationClass == nil || [operationClass isSubclassOfClass:[RKHTTPRequestOperation class]], @"The HTTP operation class must be a subclass of `RKHTTPRequestOperation`");
-    _HTTPOperationClass = operationClass;
-}
-
-- (BOOL)registerObjectRequestOperationClass:(Class)operationClass
-{
-    if (![operationClass isSubclassOfClass:[RKObjectRequestOperation class]]) {
-        return NO;
+    if ([operationClass isSubclassOfClass:[RKManagedObjectRequestOperation class]]) {
+        [self.registeredManagedObjectRequestOperationClasses removeObject:operationClass];
+        [self.registeredManagedObjectRequestOperationClasses insertObject:operationClass atIndex:0];
+        return YES;
+    } else if ([operationClass isSubclassOfClass:[RKObjectRequestOperation class]]) {
+        [self.registeredObjectRequestOperationClasses removeObject:operationClass];
+        [self.registeredObjectRequestOperationClasses insertObject:operationClass atIndex:0];
+        return YES;
+    } else if ([operationClass isSubclassOfClass:[RKHTTPRequestOperation class]]) {
+        [self.registeredHTTPRequestOperationClasses removeObject:operationClass];
+        [self.registeredHTTPRequestOperationClasses insertObject:operationClass atIndex:0];
+        return YES;
     }
     
-    [self.registeredObjectRequestOperationClasses removeObject:operationClass];
-    [self.registeredObjectRequestOperationClasses insertObject:operationClass atIndex:0];
-    
-    return YES;
+    return NO;
 }
 
-- (void)unregisterObjectRequestOperationClass:(Class)operationClass
+- (void)unregisterRequestOperationClass:(Class)operationClass
 {
+    [self.registeredHTTPRequestOperationClasses removeObject:operationClass];
     [self.registeredObjectRequestOperationClasses removeObject:operationClass];
+    [self.registeredManagedObjectRequestOperationClasses removeObject:operationClass];
+}
+
+- (Class)requestOperationClassForRequest:(NSURLRequest *)request fromRegisteredClasses:(NSArray *)registeredClasses
+{
+    Class requestOperationClass = nil;
+    NSEnumerator *enumerator = [registeredClasses reverseObjectEnumerator];
+    while (requestOperationClass = [enumerator nextObject]) {
+        if ([requestOperationClass canProcessRequest:request]) break;
+        requestOperationClass = nil;
+    }    
+    return requestOperationClass;
 }
 
 #pragma mark - Object Request Operations
-
-- (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors managed:(BOOL)isManaged
-{
-    RKHTTPRequestOperation *HTTPRequestOperation = [self HTTPRequestOperationWithRequest:request];
-    RKObjectRequestOperation *operation = nil;
-    Class objectRequestOperationClass = nil;
-    NSEnumerator *enumerator = [self.registeredObjectRequestOperationClasses reverseObjectEnumerator];
-    while (!operation && (objectRequestOperationClass = [enumerator nextObject])) {
-        if ((isManaged && ![objectRequestOperationClass isSubclassOfClass:[RKManagedObjectRequestOperation class]]) ||
-            (!isManaged && [objectRequestOperationClass isSubclassOfClass:[RKManagedObjectRequestOperation class]])) {
-            continue;
-        }
-        
-        if ([objectRequestOperationClass canProcessRequest:request]) {
-            operation = [(RKObjectRequestOperation *)[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:responseDescriptors];
-        }
-    }
-    
-    if (!operation) {
-        objectRequestOperationClass = isManaged ? [RKManagedObjectRequestOperation class] : [RKObjectRequestOperation class];
-        operation = [(RKObjectRequestOperation *)[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:responseDescriptors];
-    }
-    return operation;
-}
 
 - (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
                                                         success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                         failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKObjectRequestOperation *operation = [self objectRequestOperationWithRequest:request responseDescriptors:self.responseDescriptors managed:NO];
+    Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
+    RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request];
+    Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredObjectRequestOperationClasses] ?: [RKObjectRequestOperation class];
+    RKObjectRequestOperation *operation = [[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     return operation;
 }
@@ -510,7 +501,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[self objectRequestOperationWithRequest:request responseDescriptors:self.responseDescriptors managed:YES];
+    Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
+    RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request];
+    Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredManagedObjectRequestOperationClasses] ?: [RKManagedObjectRequestOperation class];
+    RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];        
     [operation setCompletionBlockWithSuccess:success failure:failure];
     operation.managedObjectContext = managedObjectContext ?: self.managedObjectStore.mainQueueManagedObjectContext;
     operation.managedObjectCache = self.managedObjectStore.managedObjectCache;
@@ -660,7 +654,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     paginator.managedObjectCache = self.managedObjectStore.managedObjectCache;
     paginator.fetchRequestBlocks = self.fetchRequestBlocks;
     paginator.operationQueue = self.operationQueue;
-    if (self.HTTPOperationClass) [paginator setHTTPOperationClass:self.HTTPOperationClass];
+    Class HTTPOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses];
+    if (HTTPOperationClass) [paginator setHTTPOperationClass:HTTPOperationClass];
     return paginator;
 }
 
