@@ -932,6 +932,7 @@
 		25F53F381606269400A093BE /* RKRequestOperationSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestOperationSubclass.h; sourceTree = "<group>"; };
 		25FBB850159272DD00955D27 /* RKRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRouter.h; sourceTree = "<group>"; };
 		25FBB851159272DD00955D27 /* RKRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouter.m; sourceTree = "<group>"; };
+		3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = has_many_with_to_one_relationship.json; sourceTree = "<group>"; };
 		41A4EBF715374D1800740BC8 /* redirection.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = redirection.rb; sourceTree = "<group>"; };
 		5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilitiesTest.m; sourceTree = "<group>"; };
 		5CCC295515B7124A0045F0F5 /* RKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMacros.h; sourceTree = "<group>"; };
@@ -1383,6 +1384,7 @@
 			children = (
 				25160FE11456F2330060A5C5 /* 1.json */,
 				25160FE21456F2330060A5C5 /* all.json */,
+				3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */,
 				25160FE31456F2330060A5C5 /* with_to_one_relationship.json */,
 			);
 			path = humans;

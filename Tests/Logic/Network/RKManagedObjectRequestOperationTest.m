@@ -12,6 +12,7 @@
 #import "RKHuman.h"
 #import "RKTestUser.h"
 #import "RKMappingErrors.h"
+#import "RKMappableObject.h"
 
 @interface RKPost : NSManagedObject
 @end
@@ -819,6 +820,27 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     expect([managedObjectRequestOperation isFinished]).will.beTruthy();
     [mockOperation verify];
+}
+
+- (void)testThatRefetchingOfNestedNonManagedAndManagedObjectsWorksWithHasOneRelations
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKObjectMapping *itemMapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favorite_cat" toKeyPath:@"bestFriend" withMapping:entityMapping]];
+    [itemMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"items" toKeyPath:@"hasMany" withMapping:userMapping]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:itemMapping pathPattern:nil keyPath:@"result" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/has_many_with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    RKMappableObject *result = [managedObjectRequestOperation.mappingResult.array lastObject];
+    RKTestUser *user = (RKTestUser *)result.hasMany.anyObject;
+    expect(user.bestFriend.class).to.equal(RKHuman.class);
 }
 
 @end
