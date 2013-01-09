@@ -142,7 +142,7 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
     if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
         NSString *body = nil;
         if ([operation.request HTTPBody]) {
-            body = RKLogTruncateString([NSString stringWithUTF8String:[[operation.request HTTPBody] bytes]]);
+            body = RKLogTruncateString([[NSString alloc] initWithData:[operation.request HTTPBody] encoding:NSUTF8StringEncoding]);
         } else if ([operation.request HTTPBodyStream]) {
             body = RKStringDescribingStream([operation.request HTTPBodyStream]);
         }
