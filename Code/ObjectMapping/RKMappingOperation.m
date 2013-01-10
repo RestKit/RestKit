@@ -290,7 +290,6 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
 
 - (BOOL)shouldSetValue:(id *)value atKeyPath:(NSString *)keyPath
 {
-    NSLog(@"They keyPath is %@ (destinationObject = %@)", keyPath, self.destinationObject);
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null]) {
         currentValue = nil;
