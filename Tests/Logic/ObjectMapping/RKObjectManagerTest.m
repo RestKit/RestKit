@@ -924,4 +924,58 @@
     expect(operation).to.beInstanceOf([RKManagedObjectRequestOperation class]);
 }
 
+- (void)testThatPostingUnsavedObjectWithUnsavedChildrenDoesNotCrash
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSManagedObject *developmentTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [developmentTag setValue:@"development" forKey:@"name"];
+    NSManagedObject *restkitTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [restkitTag setValue:@"restkit" forKey:@"name"];
+
+    NSManagedObject *post = [NSEntityDescription insertNewObjectForEntityForName:@"Post" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [post setValue:@"Post Title" forKey:@"title"];
+    [post setValue:[NSSet setWithObjects:developmentTag, restkitTag, nil]  forKey:@"tags"];
+
+    RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
+    postMapping.identificationAttributes = @[ @"title" ];
+    [postMapping addAttributeMappingsFromArray:@[ @"title", @"body" ]];
+    RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
+    tagMapping.identificationAttributes = @[ @"name" ];
+    [tagMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [postMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"tags" toKeyPath:@"tags" withMapping:tagMapping]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:postMapping pathPattern:nil keyPath:@"post" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+
+    RKObjectMapping *tagRequestMapping = [RKObjectMapping requestMapping];
+    [tagRequestMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKObjectMapping *postRequestMapping = [RKObjectMapping requestMapping];
+    [postRequestMapping addAttributeMappingsFromArray:@[ @"title", @"body" ]];
+    [postRequestMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"tags" toKeyPath:@"tags" withMapping:tagRequestMapping]];
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:postRequestMapping objectClass:[NSManagedObject class] rootKeyPath:nil];
+
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.managedObjectStore = managedObjectStore;
+    [objectManager addResponseDescriptor:responseDescriptor];
+    [objectManager addRequestDescriptor:requestDescriptor];
+
+    expect([post isNew]).to.equal(YES);
+    expect([post.objectID isTemporaryID]).to.equal(YES);
+    expect([developmentTag isNew]).to.equal(YES);
+    expect([developmentTag.objectID isTemporaryID]).to.equal(YES);
+    expect([restkitTag isNew]).to.equal(YES);
+    expect([restkitTag.objectID isTemporaryID]).to.equal(YES);
+
+    __block RKMappingResult *postMappingResult = nil;
+    [objectManager postObject:post path:@"/posts.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        postMappingResult = mappingResult;
+    } failure:nil];
+
+    expect(postMappingResult).willNot.beNil();
+    expect([post isNew]).will.equal(NO);
+    expect([post.objectID isTemporaryID]).will.equal(NO);
+    expect([developmentTag isNew]).will.equal(NO);
+    expect([developmentTag.objectID isTemporaryID]).will.equal(NO);
+    expect([restkitTag isNew]).will.equal(NO);
+    expect([restkitTag.objectID isTemporaryID]).will.equal(NO);
+}
+
 @end

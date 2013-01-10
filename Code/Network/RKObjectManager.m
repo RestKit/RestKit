@@ -271,6 +271,65 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return RKMIMETypeFormURLEncoded;
 }
 
+@interface RKTemporaryManagedObjectVisitor : NSObject
+
++ (NSSet *)temporaryManagedObjectsFromObject:(NSManagedObject *)managedObject;
+
+- (id)initWithManagedObject:(NSManagedObject *)managedObject;
+@property (nonatomic, readonly) NSSet *temporaryObjects;
+@end
+
+@interface RKTemporaryManagedObjectVisitor ()
+@property (nonatomic, strong) NSMutableSet *mutableTemporaryObjects;
+@property (nonatomic, strong) NSMutableSet *mutableVisitedObjects;
+@end
+
+@implementation RKTemporaryManagedObjectVisitor
+
++ (NSSet *)temporaryManagedObjectsFromObject:(NSManagedObject *)managedObject
+{
+    RKTemporaryManagedObjectVisitor *visitor = [[RKTemporaryManagedObjectVisitor alloc] initWithManagedObject:managedObject];
+    return visitor.temporaryObjects;
+}
+
+- (id)initWithManagedObject:(NSManagedObject *)managedObject
+{
+    self = [super init];
+    if (self) {
+        self.mutableVisitedObjects = [NSMutableSet set];
+        self.mutableTemporaryObjects = [NSMutableSet set];
+
+        if ([managedObject.objectID isTemporaryID]) [self.mutableTemporaryObjects addObject:managedObject];
+        [[managedObject.entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationship, BOOL *stop) {
+            [self visitObjectsAtRelationship:relationship ofObject:managedObject];
+        }];
+    }
+    return self;
+}
+
+- (void)visitObjectsAtRelationship:(NSRelationshipDescription *)relationship ofObject:(NSManagedObject *)managedObject
+{
+    if ([self.mutableVisitedObjects containsObject:managedObject]) return;
+    [self.mutableVisitedObjects addObject:managedObject];
+
+    id relatedObjectOrObjects = [managedObject valueForKey:relationship.name];
+    if (relatedObjectOrObjects && ![relationship isToMany]) relatedObjectOrObjects = @[ relatedObjectOrObjects ];
+
+    for (NSManagedObject *relatedObject in relatedObjectOrObjects) {
+        if ([[relatedObject objectID] isTemporaryID]) [self.mutableTemporaryObjects addObject:relatedObject];
+        [[relatedObject.entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationship, BOOL *stop) {
+            [self visitObjectsAtRelationship:relationship ofObject:relatedObject];
+        }];
+    }
+}
+
+- (NSSet *)temporaryObjects
+{
+    return [self.mutableTemporaryObjects copy];
+}
+
+@end
+
 ///////////////////////////////////
 
 @interface RKObjectManager ()
@@ -529,15 +588,19 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         // Construct a Core Data operation
         NSManagedObjectContext *managedObjectContext = [object respondsToSelector:@selector(managedObjectContext)] ? [object managedObjectContext] : self.managedObjectStore.mainQueueManagedObjectContext;
         operation = [self managedObjectRequestOperationWithRequest:request managedObjectContext:managedObjectContext success:nil failure:nil];
-        if ([object isKindOfClass:[NSManagedObject class]] && [[object objectID] isTemporaryID]) {
-            RKLogInfo(@"Asked to perform object request with NSManagedObject with temporary object ID: Obtaining permanent ID before proceeding.");
-            __block BOOL _blockSuccess;
-            __block NSError *_blockError;
-            
-            [[object managedObjectContext] performBlockAndWait:^{
-                _blockSuccess = [[object managedObjectContext] obtainPermanentIDsForObjects:@[object] error:&_blockError];
-            }];
-            if (! _blockSuccess) RKLogWarning(@"Failed to obtain permanent ID for object %@: %@", object, _blockError);
+
+        if ([object isKindOfClass:[NSManagedObject class]]) {
+            NSSet *temporaryObjects = [RKTemporaryManagedObjectVisitor temporaryManagedObjectsFromObject:object];
+            if ([temporaryObjects count]) {
+                RKLogInfo(@"Asked to perform object request for NSManagedObject with temporary object IDs: Obtaining permanent ID before proceeding.");
+                __block BOOL _blockSuccess;
+                __block NSError *_blockError;
+
+                [[object managedObjectContext] performBlockAndWait:^{
+                    _blockSuccess = [[object managedObjectContext] obtainPermanentIDsForObjects:[temporaryObjects allObjects] error:&_blockError];
+                }];
+                if (! _blockSuccess) RKLogWarning(@"Failed to obtain permanent ID for object %@: %@", object, _blockError);
+            }
         }
     } else {
         // Non-Core Data operation
