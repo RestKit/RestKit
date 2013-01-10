@@ -268,7 +268,7 @@ RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptor
 RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 [manager addResponseDescriptorsFromArray:@[ articleDescriptor, errorDescriptor ]];
 
-[manager getObjectsAtPath:@"/articles/555.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult)) {
+[manager getObjectsAtPath:@"/articles/555.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
 	// Handled with articleDescriptor
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	// Transport error or server error handled by errorDescriptor
