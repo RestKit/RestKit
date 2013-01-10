@@ -25,6 +25,8 @@
 #import "RKHTTPUtilities.h"
 #import "RKMIMETypes.h"
 
+extern NSString * const RKErrorDomain;
+
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
@@ -183,53 +185,70 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
 
 @end
 
-@interface AFURLConnectionOperation () <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
+@interface RKHTTPRequestOperation ()
 @property (readwrite, nonatomic, strong) NSError *HTTPError;
 @end
 
 @implementation RKHTTPRequestOperation
-
-@dynamic HTTPError;
 
 + (BOOL)canProcessRequest:(NSURLRequest *)request
 {
     return YES;
 }
 
+// Disable class level Content/Status Code inspection in our superclass
++ (NSSet *)acceptableContentTypes
+{
+    return nil;
+}
+
++ (NSIndexSet *)acceptableStatusCodes
+{
+    return nil;
+}
+
 - (BOOL)hasAcceptableStatusCode
 {
-    return self.acceptableStatusCodes ? [self.acceptableStatusCodes containsIndex:[self.response statusCode]] : [super hasAcceptableStatusCode];
+    if (! self.response) return NO;
+    NSUInteger statusCode = ([self.response isKindOfClass:[NSHTTPURLResponse class]]) ? (NSUInteger)[self.response statusCode] : 200;
+    return self.acceptableStatusCodes ? [self.acceptableStatusCodes containsIndex:statusCode] : [super hasAcceptableStatusCode];
 }
 
 - (BOOL)hasAcceptableContentType
 {
-    return self.acceptableContentTypes ? RKMIMETypeInSet([self.response MIMEType], self.acceptableContentTypes) : [super hasAcceptableContentType];
+    if (! self.response) return NO;
+    NSString *contentType = [self.response MIMEType] ?: @"application/octet-stream";
+    return self.acceptableContentTypes ? RKMIMETypeInSet(contentType, self.acceptableContentTypes) : [super hasAcceptableContentType];
 }
 
+// NOTE: We reimplement this because the AFNetworking implementation keeps Acceptable Status Code/MIME Type at class level
 - (NSError *)error
 {
-    // The first we are invoked, we need to mutate the HTTP error to correct the Content Types and Status Codes returned
-    if (self.response && !self.HTTPError) {
-        NSError *error = [super error];
-        if ([error.domain isEqualToString:AFNetworkingErrorDomain]) {
-            if (![self hasAcceptableStatusCode] || ![self hasAcceptableContentType]) {
-                NSMutableDictionary *userInfo = [error.userInfo mutableCopy];
-                
-                if (error.code == NSURLErrorBadServerResponse && ![self hasAcceptableStatusCode]) {
-                    // Replace the NSLocalizedDescriptionKey
-                    NSUInteger statusCode = ([self.response isKindOfClass:[NSHTTPURLResponse class]]) ? (NSUInteger)[self.response statusCode] : 200;
-                    [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected status code in (%@), got %d", nil), RKStringFromIndexSet(self.acceptableStatusCodes ?: [NSMutableIndexSet indexSet]), statusCode] forKey:NSLocalizedDescriptionKey];
-                    self.HTTPError = [[NSError alloc] initWithDomain:AFNetworkingErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
-                } else if (error.code == NSURLErrorCannotDecodeContentData && ![self hasAcceptableContentType]) {
-                    // Because we have shifted the Acceptable Content Types and Status Codes
-                    [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected content type %@, got %@", nil), self.acceptableContentTypes, [self.response MIMEType]] forKey:NSLocalizedDescriptionKey];
-                    self.HTTPError = [[NSError alloc] initWithDomain:AFNetworkingErrorDomain code:NSURLErrorCannotDecodeContentData userInfo:userInfo];
-                }
+    if (!self.HTTPError && self.response) {
+        if (![self hasAcceptableStatusCode] || ![self hasAcceptableContentType]) {
+            NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+            [userInfo setValue:self.responseString forKey:NSLocalizedRecoverySuggestionErrorKey];
+            [userInfo setValue:[self.request URL] forKey:NSURLErrorFailingURLErrorKey];
+            [userInfo setValue:self.request forKey:AFNetworkingOperationFailingURLRequestErrorKey];
+            [userInfo setValue:self.response forKey:AFNetworkingOperationFailingURLResponseErrorKey];
+            
+            if (![self hasAcceptableStatusCode]) {
+                NSUInteger statusCode = ([self.response isKindOfClass:[NSHTTPURLResponse class]]) ? (NSUInteger)[self.response statusCode] : 200;
+                [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected status code in (%@), got %d", nil), RKStringFromIndexSet(self.acceptableStatusCodes ?: [NSMutableIndexSet indexSet]), statusCode] forKey:NSLocalizedDescriptionKey];
+                self.HTTPError = [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
+            } else if (![self hasAcceptableContentType] && self.response.statusCode != 204) {
+                // NOTE: 204 responses come back as text/plain, which we don't want
+                [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected content type %@, got %@", nil), self.acceptableContentTypes, [self.response MIMEType]] forKey:NSLocalizedDescriptionKey];
+                self.HTTPError = [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorCannotDecodeContentData userInfo:userInfo];
             }
         }
     }
     
-    return [super error];
+    if (self.HTTPError) {
+        return self.HTTPError;
+    } else {
+        return [super error];
+    }
 }
 
 - (BOOL)wasNotModified
