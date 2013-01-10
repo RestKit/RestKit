@@ -303,6 +303,11 @@ class RestKitTestServer < Sinatra::Base
     { :posts => [{:title => 'Post Title', :body => 'Some body.', :tags => [{ :name => 'development' }, { :name => 'restkit' }] }] }.to_json
   end
   
+  post '/posts.json' do
+    content_type 'application/json'
+    { :post => { :title => 'Post Title', :body => 'Some body.', :tags => [{ :name => 'development' }, { :name => 'restkit' }] } }.to_json
+  end
+
   get '/posts_with_invalid.json' do
     content_type 'application/json'
     { :posts => [{:title => 'Post Title', :body => 'Some body.'}, {:title => '', :body => 'Some body.'} ] }.to_json

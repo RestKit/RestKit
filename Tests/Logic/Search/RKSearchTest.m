@@ -19,7 +19,8 @@
 - (void)testSearchingForManagedObjects
 {
     __block NSError *error;
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
     [managedObjectStore addSearchIndexingToEntityForName:@"Cat" onAttributes:@[ @"name" ]];
     [managedObjectStore addInMemoryPersistentStore:&error];

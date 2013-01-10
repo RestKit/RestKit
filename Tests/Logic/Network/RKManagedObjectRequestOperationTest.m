@@ -782,7 +782,9 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     [managedObjectRequestOperation waitUntilFinished];
     expect(managedObjectRequestOperation.error).to.beNil();
-    expect([human isNew]).to.equal(NO);
+    [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        expect([human isNew]).to.equal(NO);
+    }];
 }
 
 @end
