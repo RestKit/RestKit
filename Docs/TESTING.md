@@ -1,13 +1,11 @@
 RestKit Test Environment
 ========================
 
-RestKit ships with a testing infrastructure built around OCUnit and
-a Ruby testing server environment built on Sinatra. To be able to run the
-tests, you need to do a little bit of setup. These instructions are value for **Xcode version 4.3 and higher**.
+RestKit ships with a testing infrastructure built around OCUnit and a Ruby testing server environment built on Sinatra. To be able to run the tests, you need to do a little bit of setup. These instructions are valid for **Xcode version 4.5 and higher**.
 
 1. Install the Xcode **Command Line Tools** by selecting the **Xcode** > **Preferences…** menu and then navigating to the **Downloads** tab, then clicking the **Install** button next to the appropriate entry in the table.
 2. After installation completes, ensure your command line Xcode installation is configured by executing `xcode-select -print-path`. If no path is returned, configure xcode-select by executing `xcode-select -switch /Applications/Xcode.app/Contents/Developer`.
-1. Ensure that you have **Ruby 1.9.2** available. We recommend installation via [RVM](http://beginrescueend.com/rvm/install/) or [Homebrew](http://mxcl.github.com/homebrew/).
+1. Ensure that you have **Ruby 1.9.3** available. We recommend installation via [RVM](http://beginrescueend.com/rvm/install/) or [Homebrew](http://mxcl.github.com/homebrew/).
 1. Install the Ruby Bundler Gem (if necessary): `gem install bundler`
 1. Install the other required Gems via Bundler: `bundle`
 1. Start the Test server: `rake server`
@@ -29,10 +27,8 @@ enable/disable which tests are run by holding down the Option Key when selecting
 
 RestKit includes full support for executing the test suite via the commandline via the excellent [Xcoder](https://github.com/rayh/xcoder) gem. The suite can be run in its entirety or as individual pieces targetting subsets of the suite. Test execution is performed via the `rake` tool. A list of the available test tasks as of this writing (obtained via `rake -T test`) follows:
 
-	rake test                  # Run all the GateGuru tests
+	rake test                  # Run all the RestKit tests
 	rake test:all              # Run all tests for iOS and OS X
-	rake test:application      # Run the application tests for iOS
-	rake test:application:ios  # Run the application tests for iOS
 	rake test:logic            # Run the unit tests for iOS and OS X
 	rake test:logic:ios        # Run the logic tests for iOS
 	rake test:logic:osx        # Run the logic tests for OS X
@@ -68,12 +64,13 @@ configured and there are integration tests that test the full request/response l
 1. Tests are implemented in Objective-C and run inside the Simulator or on the Device.
 1. Test files live in sub-directories under Tests/ appropriate to the layer the code under test belongs to
 1. Tests begin with "test" and should be camel-cased descriptive. i.e. testShouldConsiderA200ResponseSuccessful
-1. Expectations are provided using OCHamcrest. Details of the matchers are available on the [OCHamcrest Github Page](http://jonreid.github.com/OCHamcrest/). Generally the matchers are of the form:
-
-        assertThat([someObject someMethod], is(equalTo(@"some value")));
-    There is a corresponding `isNot` method available as well.
+1. Expectations are provided using [Expecta](https://github.com/petejkim/expecta) and [OCHamcrest](http://jonreid.github.com/OCHamcrest/). Expectations are generally of th form:
+        expect(someObject).to.equal(@"some value"); // Expecta
+        assertThat([someObject someMethod], is(equalTo(@"some value"))); // OCHamcrest
+        
+    There is a corresponding `notTo` and `isNot` method available as well.
 1. The RKTestEnvironment.h header includes a number of helpers for initializing and configuring a clean testing environment.
-1. OCMock is available for mock objects support. See [http://www.mulle-kybernetik.com/software/OCMock/](http://www.mulle-kybernetik.com/software/OCMock/) for details
+1. OCMock is available for mock objects support. See [http://www.mulle-kybernetik.com/software/OCMock/](http://www.mulle-kybernetik.com/software/OCMock/) for details.
 1. RestKit is available for 32bit (iOS) and 64bit (OS X) platforms. This introduces some complexity when working with integer data types as NSInteger
 and NSUInteger are int's on 32bit and long's on 64bit. Cocoa and OC Hamcrest provide helper methods for dealing with these differences. Rather than using the **Int**
 flavor of methods (i.e. `[NSNumber numberWithInt:3]`) use the **Integer** flavor (i.e. `[NSNumber numberWithInteger:]`). This will account for the type differences without
@@ -89,32 +86,35 @@ RestKit ships with a Sinatra powered specs server for testing portions of the co
 with a web service. Sinatra is a simple Ruby DSL for defining web server. See the [Sinatra homepage](http://www.sinatrarb.com/) for more details.
 
 The Test server is built as a modular Sinatra application in the Tests/Server subdirectory of the RestKit distribution. When you are adding new integration test coverage to the library, you may need to add new routes to Sinatra to serve your needs. By convention, these are namespaced by functional unit for simplicity. For example, if we are adding a new
-cacheing component to the application and want to test the functionality, we might add a new route to the Test server at Tests/Server/server.rb like so:
+caching component to the application and want to test the functionality, we might add a new route to the Test server at Tests/Server/server.rb like so:
 
-        get '/cacheing/index' do
-          "OK"
+        get '/author.json' do
+          content_type 'application/json'
+          { :author => { :name => "Blake Watters", :organization => "RestKit" } }.to_json
         end
 
 You now have a functional server-side component to work with. Consult the Sinatra documentation for example on setting
 response headers, MIME types, etc. It's all very simple and low ceremony.
 
-You can now switch to the RestKit sources and look in the Tests directory. Keeping with the cacheing example, we would create a new RKCacheingTest.m file and pull in RKSTestEnvironment.h. From there we can utilize `RKTestResponseLoader` to asynchronously test
-the entire request/response cycle. The response loader essentially spins the run-loop to allow background processing to execute and
-simulate a blocking API. The response, objects, or errors generated by processing the response are made available via properties
-on the RKTestResponseLoader object.
+You can now switch to the RestKit sources and look in the Tests directory. To test our new '/author.json' endpoint, we could create a new test and import "RKTestEnvironment.h" or find an existing test case that matches the functionality we are testing. In this case, we are doing some basic testing of object mapping over HTTP, so we might add the test to 'RKObjectRequestOperationTest.m'. Once we have found a proper home for the test, we can then implement the appropriate code. 
 
-Let's take a look at an example of how to use the response loader to test some functionality:
+RestKit was designed with testability in mind, so in this we would only need to leverage the `RKObjectRequestOperation` and some appropriate matchers. Let's take a look at an example of how to write a basic test:
 
-     - (void)testShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic {
-        RKSpecResponseLoader *loader = [RKTestResponseLoader responseLoader];
-        RKClient *client = [RKTestFactory client];
-        client.username = RKAuthenticationTestUsername;
-        client.password = @"INVALID";
-        [client get:@"/authentication/basic" delegate:loader];
-        [loader waitForResponse];
-        assertThatBool([loader.response isOK], is(equalToBool(NO)));
-        assertThatInt([loader.response statusCode], is(equalToInt(0)));
-        assertThatInt([loader.failureError code], is(equalToInt(NSURLErrorUserCancelledAuthentication)));
+     - (void)testShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic
+     {
+        RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKAuthor class]];
+        [mapping addAttributeMappingsFromArray:@[ @"name", @"organization" ]];
+        NSURL *URL = [NSURL URLWithString:@"/author.json" relativeToURL:[RKTestFactory baseURL]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/author.json" keyPath:@"author" statusCodes:[NSIndexSet indexSetWithIndex:200]];        
+        RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+        [operation start];
+        [operation waitUntilFinished];
+        expect(operation.error).to.beNil();
+        expect(operation.mappingResult).to.haveCountOf(1);
+        RKAuthor *author = [operation.mappingResult firstObject];
+        expect(author.name).to.equal(@"Blake Watters");
+        expect(author.organization).to.equal(@"RestKit");
       }
 
 That's really all there is to it. Consult the existing test code in Tests/ for reference.
