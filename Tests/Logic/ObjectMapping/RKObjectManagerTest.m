@@ -965,16 +965,16 @@
     expect([restkitTag.objectID isTemporaryID]).to.equal(YES);
 
     __block RKMappingResult *postMappingResult = nil;
-    [objectManager postObject:post path:@"/posts.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+    RKManagedObjectRequestOperation *operation = [objectManager appropriateObjectRequestOperationWithObject:post method:RKRequestMethodPOST path:@"/posts.json" parameters:nil];
+    operation.savesToPersistentStore = NO;
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         postMappingResult = mappingResult;
     } failure:nil];
+    [objectManager enqueueObjectRequestOperation:operation];
 
     expect(postMappingResult).willNot.beNil();
-    expect([post isNew]).will.equal(NO);
     expect([post.objectID isTemporaryID]).will.equal(NO);
-    expect([developmentTag isNew]).will.equal(NO);
     expect([developmentTag.objectID isTemporaryID]).will.equal(NO);
-    expect([restkitTag isNew]).will.equal(NO);
     expect([restkitTag.objectID isTemporaryID]).will.equal(NO);
 }
 
