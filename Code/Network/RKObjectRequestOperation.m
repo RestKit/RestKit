@@ -125,9 +125,11 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (void)dealloc
 {
 #if !OS_OBJECT_USE_OBJC
-    if(_failureCallbackQueue) dispatch_release(_failureCallbackQueue);
-    if(_successCallbackQueue) dispatch_release(_successCallbackQueue);
+    if (_failureCallbackQueue) dispatch_release(_failureCallbackQueue);
+    if (_successCallbackQueue) dispatch_release(_successCallbackQueue);
 #endif
+    _failureCallbackQueue = NULL;
+    _successCallbackQueue = NULL;
 }
 
 // Designated initializer
