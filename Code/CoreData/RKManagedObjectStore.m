@@ -184,6 +184,7 @@ static RKManagedObjectStore *defaultStore = nil;
 {
     NSAssert(!self.persistentStoreManagedObjectContext, @"Unable to create managed object contexts: A primary managed object context already exists.");
     NSAssert(!self.mainQueueManagedObjectContext, @"Unable to create managed object contexts: A main queue managed object context already exists.");
+    NSAssert([[self.persistentStoreCoordinator persistentStores] count], @"Cannot create managed object contexts: The persistent store coordinator does not have any persistent stores. This likely means that you forgot to add a persistent store or your attempt to do so failed with an error.");
 
     // Our primary MOC is a private queue concurrency type
     self.persistentStoreManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
