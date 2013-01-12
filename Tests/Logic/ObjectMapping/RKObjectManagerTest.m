@@ -978,4 +978,31 @@
     expect([restkitTag.objectID isTemporaryID]).will.equal(NO);
 }
 
+- (void)testPathMatchingForMultipartRequest
+{
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    NSString *path = @"/api/upload/";
+    
+    NSData *blakePng = [RKTestFixture dataWithContentsOfFixture:@"blake.png"];
+    NSMutableURLRequest *request = [objectManager multipartFormRequestWithObject:nil method:RKRequestMethodPOST path:path parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileData:blakePng
+                                    name:@"file"
+                                fileName:@"blake.png"
+                                mimeType:@"image/png"];
+    }];
+    
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:path keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    RKObjectRequestOperation * operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation];
+    
+    expect([operation isFinished]).will.equal(YES);
+    expect(operation.error).to.beNil();
+    RKTestUser *user = [operation.mappingResult firstObject];
+    expect(user.name).to.equal(@"Blake");
+}
+
 @end

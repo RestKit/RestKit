@@ -204,7 +204,7 @@ class RestKitTestServer < Sinatra::Base
   end
 
   # Expects an uploaded 'file' param
-  post '/upload' do
+  post '/api/upload/' do
     unless params['file']
       status 500
       return "No file parameter was provided"
@@ -214,7 +214,8 @@ class RestKitTestServer < Sinatra::Base
       f.write(params['file'][:tempfile].read)
     end
     status 200
-    "Uploaded successfully to '#{upload_path}'"
+    content_type 'application/json'
+    { :name => "Blake" }.to_json
   end
 
   # Return 200 after a delay
