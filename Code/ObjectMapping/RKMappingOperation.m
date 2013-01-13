@@ -95,8 +95,8 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
         } else if ([destinationType isSubclassOfClass:[NSNumber class]]) {
             // String -> Number
             NSString *lowercasedString = [(NSString *)value lowercaseString];
-            NSSet *trueStrings = [NSSet setWithObjects:@"true", @"t", @"yes", nil];
-            NSSet *booleanStrings = [trueStrings setByAddingObjectsFromSet:[NSSet setWithObjects:@"false", @"f", @"no", nil]];
+            NSSet *trueStrings = [NSSet setWithObjects:@"true", @"t", @"yes", @"y", nil];
+            NSSet *booleanStrings = [trueStrings setByAddingObjectsFromSet:[NSSet setWithObjects:@"false", @"f", @"no", @"n", nil]];
             if ([booleanStrings containsObject:lowercasedString]) {
                 // Handle booleans encoded as Strings
                 return [NSNumber numberWithBool:[trueStrings containsObject:lowercasedString]];
