@@ -34,6 +34,19 @@
 @end
 NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
+
+@interface RKTestDelegateManagedObjectRequestOperation : RKManagedObjectRequestOperation
+@end
+
+@implementation RKTestDelegateManagedObjectRequestOperation
+
+- (void)mapperWillStartMapping:(RKMapperOperation *)mapper
+{
+    // For stubbing
+}
+
+@end
+
 @interface RKManagedObjectRequestOperationTest : RKTestCase
 
 @end
@@ -785,6 +798,23 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
         expect([human isNew]).to.equal(NO);
     }];
+}
+
+- (void)testThatMapperOperationDelegateIsPassedThroughToUnderlyingMapperOperation
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKTestDelegateManagedObjectRequestOperation *managedObjectRequestOperation = [[RKTestDelegateManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    id mockOperation = [OCMockObject partialMockForObject:managedObjectRequestOperation];
+    [[mockOperation expect] mapperWillStartMapping:OCMOCK_ANY];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    [managedObjectRequestOperation start];
+    expect([managedObjectRequestOperation isFinished]).will.beTruthy();
+    [mockOperation verify];
 }
 
 @end

@@ -29,7 +29,6 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
 @end
 
 @interface RKObjectResponseMapperOperationTest : RKTestCase
-
 @end
 
 @implementation RKObjectResponseMapperOperationTest
@@ -291,6 +290,27 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     [mapper start];
     expect(mapper.error).notTo.beNil();
     expect([mapper.error code]).notTo.equal(RKMappingErrorTypeMismatch);
+}
+
+- (void)testThatMapperOperationDelegateIsPassedThroughToUnderlyingMapperOperation
+{
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
+    [[mockDelegate expect] mapperWillStartMapping:OCMOCK_ANY];
+    
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"name\": \"Blake\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    RKTestUser *testUser = [RKTestUser new];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithResponse:response data:data responseDescriptors:@[ responseDescriptor ]];
+    mapper.mapperDelegate = mockDelegate;
+    mapper.targetObject = testUser;
+    [mapper start];    
+    [mockDelegate verify];
 }
 
 @end
