@@ -41,9 +41,9 @@ static NSString *RKDelegateKeyPathFromKeyPath(NSString *keyPath)
 static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representation, NSDictionary *mappingsDictionary)
 {
     NSMutableString *failureReason = [NSMutableString string];
-    [failureReason appendFormat:@"The mapping operation was unable to find any nested object representations at the key paths searched: %@", [[mappingsDictionary allKeys] componentsJoinedByString:@", "]];
+    [failureReason appendFormat:@"The mapping operation was unable to find any nested object representations at the key paths searched: %@", [[[mappingsDictionary allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] componentsJoinedByString:@", "]];
     if ([representation respondsToSelector:@selector(allKeys)]) {
-        [failureReason appendFormat:@"\nThe representation inputted to the mapper was found to contain nested object representations at the following key paths: %@", [[representation allKeys] componentsJoinedByString:@", "]];
+        [failureReason appendFormat:@"\nThe representation inputted to the mapper was found to contain nested object representations at the following key paths: %@", [[[representation allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] componentsJoinedByString:@", "]];
     }
     [failureReason appendFormat:@"\nThis likely indicates that you have misconfigured the key paths for your mappings."];
     return failureReason;

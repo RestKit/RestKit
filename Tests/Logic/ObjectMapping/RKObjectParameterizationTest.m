@@ -162,11 +162,7 @@
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     expect(error).to.beNil();
-    #if TARGET_OS_IPHONE
     expect(string).to.equal(@"key1-form-name=value1&key2-form-name=value2&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&relationship2-form-name[subKey1]=subValue1");
-    #else
-    expect(string).to.equal(@"relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1");
-    #endif
 }
 
 - (void)testShouldSerializeToJSON
@@ -405,7 +401,9 @@
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     expect(error).to.beNil();
-    expect(string).to.equal(@"{\"is_valid\":0,\"name\":\"Whatever\",\"is_boolean\":true}");
+    // Unordered dictionary handling
+    NSArray *serializations = @[ @"{\"is_valid\":0,\"name\":\"Whatever\",\"is_boolean\":true}", @"{\"name\":\"Whatever\",\"is_valid\":0,\"is_boolean\":true}" ];
+    expect(serializations).to.contain(string);
 }
 
 - (void)testParameterizationofBooleanPropertiesFromManagedObjectProperty

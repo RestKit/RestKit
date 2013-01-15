@@ -199,7 +199,11 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation waitUntilFinished];
     expect(managedObjectRequestOperation.error).notTo.beNil();
     expect(managedObjectRequestOperation.mappingResult).to.beNil();
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED
     expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"The operation couldn’t be completed. (Cocoa error 1660.)");
+    #else
+    expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"name is too long.");
+    #endif
 }
 
 #pragma mark - Deletion Response Tests
