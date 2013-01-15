@@ -54,7 +54,11 @@ static RKManagedObjectStore *defaultStore = nil;
 
 + (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore
 {
-    @synchronized(defaultStore) {
+    if (defaultStore) {
+        @synchronized(defaultStore) {
+            defaultStore = managedObjectStore;
+        }
+    } else {
         defaultStore = managedObjectStore;
     }
 }
@@ -184,6 +188,7 @@ static RKManagedObjectStore *defaultStore = nil;
 {
     NSAssert(!self.persistentStoreManagedObjectContext, @"Unable to create managed object contexts: A primary managed object context already exists.");
     NSAssert(!self.mainQueueManagedObjectContext, @"Unable to create managed object contexts: A main queue managed object context already exists.");
+    NSAssert([[self.persistentStoreCoordinator persistentStores] count], @"Cannot create managed object contexts: The persistent store coordinator does not have any persistent stores. This likely means that you forgot to add a persistent store or your attempt to do so failed with an error.");
 
     // Our primary MOC is a private queue concurrency type
     self.persistentStoreManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
@@ -319,7 +324,7 @@ static RKManagedObjectStore *defaultStore = nil;
     // We can only do migrations within a versioned momd
     if (![[momdURL pathExtension] isEqualToString:@"momd"]) {
         NSString *errorDescription = [NSString stringWithFormat:@"Migration failed: Migrations can only be performed to versioned destination models contained in a .momd package. Incompatible destination model given at path '%@'", [momdURL path]];
-        *error = [NSError errorWithDomain:RKErrorDomain code:NSMigrationError userInfo:@{ NSLocalizedDescriptionKey: errorDescription }];
+        if (error) *error = [NSError errorWithDomain:RKErrorDomain code:NSMigrationError userInfo:@{ NSLocalizedDescriptionKey: errorDescription }];
         return NO;
     }
     
@@ -348,7 +353,7 @@ static RKManagedObjectStore *defaultStore = nil;
     // Cannot complete the migration as we can't find a source model
     if (! sourceModel) {
         NSString *errorDescription = [NSString stringWithFormat:@"Migration failed: Unable to find the source managed object model used to create the %@ store at path '%@'", storeType, [storeURL path]];
-        *error = [NSError errorWithDomain:RKErrorDomain code:NSMigrationMissingSourceModelError userInfo:@{ NSLocalizedDescriptionKey: errorDescription }];
+        if (error) *error = [NSError errorWithDomain:RKErrorDomain code:NSMigrationMissingSourceModelError userInfo:@{ NSLocalizedDescriptionKey: errorDescription }];
         return NO;
     }
     
@@ -361,8 +366,11 @@ static RKManagedObjectStore *defaultStore = nil;
         RKLogError(@"%@", *error);
         return NO;
     }
-    
-    NSString *UUID = (__bridge_transfer NSString*)CFUUIDCreateString(kCFAllocatorDefault, CFUUIDCreate(NULL));
+
+    CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
+    NSString *UUID = (__bridge_transfer NSString*)CFUUIDCreateString(kCFAllocatorDefault, uuid);
+    CFRelease(uuid);
+
     NSString *migrationPath = [NSTemporaryDirectory() stringByAppendingFormat:@"Migration-%@.sqlite", UUID];
     NSURL *migrationURL = [NSURL fileURLWithPath:migrationPath];
     

@@ -296,6 +296,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     self.mapperOperation.mappingOperationDataSource = dataSource;
+    self.mapperOperation.delegate = self.mapperDelegate;
     if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
         self.mapperOperation.targetObject = self.targetObject;
     } else {

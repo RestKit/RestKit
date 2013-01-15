@@ -281,7 +281,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 @interface RKTemporaryManagedObjectVisitor ()
 @property (nonatomic, strong) NSMutableSet *mutableTemporaryObjects;
-@property (nonatomic, strong) NSMutableSet *mutableVisitedObjects;
+@property (nonatomic, strong) NSMutableDictionary *mutableVisitedObjectsToRelationships;
 @end
 
 @implementation RKTemporaryManagedObjectVisitor
@@ -296,9 +296,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 {
     self = [super init];
     if (self) {
-        self.mutableVisitedObjects = [NSMutableSet set];
+        self.mutableVisitedObjectsToRelationships = [NSMutableDictionary new];
         self.mutableTemporaryObjects = [NSMutableSet set];
-
+        
         if ([managedObject.objectID isTemporaryID]) [self.mutableTemporaryObjects addObject:managedObject];
         [[managedObject.entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationship, BOOL *stop) {
             [self visitObjectsAtRelationship:relationship ofObject:managedObject];
@@ -309,12 +309,18 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 - (void)visitObjectsAtRelationship:(NSRelationshipDescription *)relationship ofObject:(NSManagedObject *)managedObject
 {
-    if ([self.mutableVisitedObjects containsObject:managedObject]) return;
-    [self.mutableVisitedObjects addObject:managedObject];
-
+    NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:managedObject];
+    NSMutableSet *visitedRelationships = [self.mutableVisitedObjectsToRelationships objectForKey:dictionaryKey];
+    if (!visitedRelationships) {
+        visitedRelationships = [NSMutableSet set];
+        [self.mutableVisitedObjectsToRelationships setObject:visitedRelationships forKey:dictionaryKey];
+    }
+    if ([visitedRelationships containsObject:relationship]) return;
+    [visitedRelationships addObject:relationship];
+    
     id relatedObjectOrObjects = [managedObject valueForKey:relationship.name];
     if (relatedObjectOrObjects && ![relationship isToMany]) relatedObjectOrObjects = @[ relatedObjectOrObjects ];
-
+    
     for (NSManagedObject *relatedObject in relatedObjectOrObjects) {
         if ([[relatedObject objectID] isTemporaryID]) [self.mutableTemporaryObjects addObject:relatedObject];
         [[relatedObject.entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationship, BOOL *stop) {

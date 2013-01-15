@@ -965,17 +965,44 @@
     expect([restkitTag.objectID isTemporaryID]).to.equal(YES);
 
     __block RKMappingResult *postMappingResult = nil;
-    [objectManager postObject:post path:@"/posts.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+    RKManagedObjectRequestOperation *operation = [objectManager appropriateObjectRequestOperationWithObject:post method:RKRequestMethodPOST path:@"/posts.json" parameters:nil];
+    operation.savesToPersistentStore = NO;
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         postMappingResult = mappingResult;
     } failure:nil];
+    [objectManager enqueueObjectRequestOperation:operation];
 
     expect(postMappingResult).willNot.beNil();
-    expect([post isNew]).will.equal(NO);
     expect([post.objectID isTemporaryID]).will.equal(NO);
-    expect([developmentTag isNew]).will.equal(NO);
     expect([developmentTag.objectID isTemporaryID]).will.equal(NO);
-    expect([restkitTag isNew]).will.equal(NO);
     expect([restkitTag.objectID isTemporaryID]).will.equal(NO);
+}
+
+- (void)testPathMatchingForMultipartRequest
+{
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    NSString *path = @"/api/upload/";
+    
+    NSData *blakePng = [RKTestFixture dataWithContentsOfFixture:@"blake.png"];
+    NSMutableURLRequest *request = [objectManager multipartFormRequestWithObject:nil method:RKRequestMethodPOST path:path parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileData:blakePng
+                                    name:@"file"
+                                fileName:@"blake.png"
+                                mimeType:@"image/png"];
+    }];
+    
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:path keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    RKObjectRequestOperation * operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation];
+    
+    expect([operation isFinished]).will.equal(YES);
+    expect(operation.error).to.beNil();
+    RKTestUser *user = [operation.mappingResult firstObject];
+    expect(user.name).to.equal(@"Blake");
 }
 
 @end
