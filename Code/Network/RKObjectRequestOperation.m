@@ -60,12 +60,14 @@ static inline NSString *RKDescriptionForRequest(NSURLRequest *request)
 
 static NSIndexSet *RKAcceptableStatusCodesFromResponseDescriptors(NSArray *responseDescriptors)
 {
+    // If there are no response descriptors or any descriptor matches any status code (expressed by `statusCodes` == `nil`) then we want to accept anything
+    if ([responseDescriptors count] == 0 || [[responseDescriptors valueForKey:@"statusCodes"] containsObject:[NSNull null]]) return nil;
+    
     NSMutableIndexSet *acceptableStatusCodes = [NSMutableIndexSet indexSet];
     [responseDescriptors enumerateObjectsUsingBlock:^(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
         [acceptableStatusCodes addIndexes:responseDescriptor.statusCodes];
     }];
-    // If there are no indexes specified in the response descriptors, then we want to aceept anything
-    return [acceptableStatusCodes count] ? acceptableStatusCodes : nil;
+    return acceptableStatusCodes;
 }
 
 static NSString *RKStringForStateOfObjectRequestOperation(RKObjectRequestOperation *operation)
