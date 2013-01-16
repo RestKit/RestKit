@@ -233,7 +233,7 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
     return self;
 }
 
-- (id)destinationObjectForMappingRepresentation:(id)representation withMapping:(RKMapping *)mapping
+- (id)destinationObjectForMappingRepresentation:(id)representation withMapping:(RKMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
 {
     RKObjectMapping *concreteMapping = nil;
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
@@ -246,7 +246,7 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
         concreteMapping = (RKObjectMapping *)mapping;
     }
     
-    return [self.dataSource mappingOperation:self targetObjectForRepresentation:representation withMapping:concreteMapping];
+    return [self.dataSource mappingOperation:self targetObjectForRepresentation:representation withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
 - (NSDate *)parseDateFromString:(NSString *)string
@@ -498,7 +498,7 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
         return NO;
     }
 
-    id destinationObject = [self destinationObjectForMappingRepresentation:value withMapping:relationshipMapping.mapping];
+    id destinationObject = [self destinationObjectForMappingRepresentation:value withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
     if (! destinationObject) {
         RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, destinationObject);
         return NO;
@@ -562,7 +562,7 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
     }
     
     for (id nestedObject in value) {
-        id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject withMapping:relationshipMapping.mapping];
+        id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
         if (! mappableObject) {
             RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, nestedObject);
             continue;
@@ -755,7 +755,7 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
     RKLogTrace(@"Performing mapping operation: %@", self);
     
     if (! self.destinationObject) {
-        self.destinationObject = [self destinationObjectForMappingRepresentation:self.sourceObject withMapping:self.mapping];
+        self.destinationObject = [self destinationObjectForMappingRepresentation:self.sourceObject withMapping:self.mapping inRelationship:nil];
         if (! self.destinationObject) {
             RKLogDebug(@"Mapping operation failed: Given nil destination object and unable to instantiate a destination object for mapping.");
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Cannot perform a mapping operation with a nil destination object." };

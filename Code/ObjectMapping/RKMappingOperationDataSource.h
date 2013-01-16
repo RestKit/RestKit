@@ -43,7 +43,7 @@
  @param mapping The object mapping to be used to perform a mapping from the representation to the target object.
  @return A key-value coding compliant object to perform the mapping on to.
  */
-- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping;
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping;
 
 @optional
 

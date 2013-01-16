@@ -271,7 +271,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     }
 
     if (objectMapping) {
-        return [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:objectMapping];
+        return [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:objectMapping inRelationship:nil];
     }
 
     return nil;

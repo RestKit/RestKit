@@ -210,7 +210,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationship
 {
     NSAssert(representation, @"Mappable data cannot be nil");
     NSAssert(self.managedObjectContext, @"%@ must be initialized with a managed object context.", [self class]);
@@ -219,16 +219,36 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         return [mapping.objectClass new];
     }
 
-    RKEntityMapping *entityMapping = (RKEntityMapping *)mapping;    
+    RKEntityMapping *entityMapping = (RKEntityMapping *)mapping;
     NSDictionary *entityIdentifierAttributes = RKEntityIdentificationAttributesForEntityMappingWithRepresentation(entityMapping, representation);
     if (! self.managedObjectCache) {
         RKLogWarning(@"Performing managed object mapping with a nil managed object cache:\n"
                       "Unable to update existing object instances by identification attributes. Duplicate objects may be created.");
     }
-
-    // If we have found the entity identification attributes, try to find an existing instance to update
+    
     NSEntityDescription *entity = [entityMapping entity];
     NSManagedObject *managedObject = nil;
+    
+    // If we are mapping within a relationship, try to find an existing object without identifying attributes
+    if (relationship) {
+        id existingObjects = [mappingOperation.destinationObject valueForKeyPath:relationship.destinationKeyPath];
+        if (existingObjects && ![existingObjects respondsToSelector:@selector(count)]) existingObjects = @[ existingObjects ];
+        NSArray *identificationAttributes = [entityMapping.identificationAttributes valueForKey:@"name"];
+        for (NSManagedObject *existingObject in existingObjects) {
+            if (! identificationAttributes) {
+                managedObject = existingObject;
+                break;
+            }
+            
+            NSDictionary *identificationAttributeValues = [existingObject dictionaryWithValuesForKeys:identificationAttributes];
+            if ([[NSSet setWithArray:[identificationAttributeValues allValues]] isEqualToSet:[NSSet setWithObject:[NSNull null]]]) {
+                managedObject = existingObject;
+                break;
+            }
+        }
+    }
+    
+    // If we have found the entity identification attributes, try to find an existing instance to update
     if ([entityIdentifierAttributes count]) {
         NSSet *objects = [self.managedObjectCache managedObjectsWithEntity:entity
                                                            attributeValues:entityIdentifierAttributes
