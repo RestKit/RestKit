@@ -153,7 +153,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(managedObjectRequestOperation.mappingResult).notTo.beNil();
     NSArray *managedObjectContexts = [[managedObjectRequestOperation.mappingResult array] valueForKeyPath:@"@distinctUnionOfObjects.managedObjectContext"];
     expect([managedObjectContexts count]).to.equal(1);
-    expect(managedObjectContexts[0]).to.equal(managedObjectStore.mainQueueManagedObjectContext);
+    expect(managedObjectContexts).to.equal([NSArray arrayWithObject:managedObjectStore.mainQueueManagedObjectContext]);
 }
 
 // 304 'Not Modified'
@@ -830,7 +830,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
     [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favorite_cat" toKeyPath:@"bestFriend" withMapping:entityMapping]];
-    [itemMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"items" toKeyPath:@"hasMany" withMapping:userMapping]];
+    [itemMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"items.human" toKeyPath:@"hasMany" withMapping:userMapping]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:itemMapping pathPattern:nil keyPath:@"result" statusCodes:[NSIndexSet indexSetWithIndex:200]];
 
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/has_many_with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
@@ -840,7 +840,9 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(managedObjectRequestOperation.error).to.beNil();
     RKMappableObject *result = [managedObjectRequestOperation.mappingResult.array lastObject];
     RKTestUser *user = (RKTestUser *)result.hasMany.anyObject;
-    expect(user.bestFriend.class).to.equal(RKHuman.class);
+    NSLog(@"Examining result = %@, with result.hasMany = %@, user = %@ and user.bestFriend(%@) = %@", result, result.hasMany, user, [user.bestFriend class], user.bestFriend);
+    expect(user.bestFriend).to.beInstanceOf([RKHuman class]);
+    expect([user.bestFriend managedObjectContext]).to.equal(managedObjectStore.persistentStoreManagedObjectContext);
 }
 
 @end

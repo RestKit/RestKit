@@ -25,6 +25,7 @@
 #import "RKRequestOperationSubclass.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 #import "NSManagedObject+RKAdditions.h"
+#import "RKObjectUtilities.h"
 
 // Graph visitor
 #import "RKResponseDescriptor.h"
@@ -267,19 +268,6 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
     }];
 }
 
-static void RKSetMappedValueForKeyPathInDictionary(id value, id rootKey, NSString *keyPath, NSMutableDictionary *dictionary)
-{
-    NSCParameterAssert(value);
-    NSCParameterAssert(rootKey);
-    NSCParameterAssert(dictionary);
-    if (keyPath && ![keyPath isEqual:[NSNull null]]) {
-        id valueAtRootKey = [dictionary objectForKey:rootKey];
-        [valueAtRootKey setValue:value forKeyPath:keyPath];
-    } else {
-        [dictionary setObject:value forKey:rootKey];
-    }
-}
-
 // Precondition: Must be called from within the correct context
 static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managedObject, NSManagedObjectContext *managedObjectContext)
 {    
@@ -293,6 +281,41 @@ static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managed
     NSManagedObject *refetchedObject = [managedObjectContext existingObjectWithID:managedObjectID error:&error];
     NSCAssert(refetchedObject, @"Failed to find existing object with ID %@ in context %@: %@", managedObjectID, managedObjectContext, error);
     return refetchedObject;
+}
+
+static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContext *managedObjectContext)
+{
+    if (! value) {
+        return value;
+    } else if ([value isKindOfClass:[NSArray class]]) {
+        BOOL isMutable = [value isKindOfClass:[NSMutableArray class]];
+        NSMutableArray *newValue = [[NSMutableArray alloc] initWithCapacity:[value count]];
+        for (__strong id object in value) {
+            if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
+            if (object) [newValue addObject:object];
+        }
+        value = (isMutable) ? newValue : [newValue copy];
+    } else if ([value isKindOfClass:[NSSet class]]) {
+        BOOL isMutable = [value isKindOfClass:[NSMutableSet class]];
+        NSMutableSet *newValue = [[NSMutableSet alloc] initWithCapacity:[value count]];
+        for (__strong id object in value) {
+            if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
+            if (object) [newValue addObject:object];
+        }
+        value = (isMutable) ? newValue : [newValue copy];
+    } else if ([value isKindOfClass:[NSOrderedSet class]]) {
+        BOOL isMutable = [value isKindOfClass:[NSMutableOrderedSet class]];
+        NSMutableOrderedSet *newValue = [NSMutableOrderedSet orderedSet];
+        [(NSOrderedSet *)value enumerateObjectsUsingBlock:^(id object, NSUInteger index, BOOL *stop) {
+            if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
+            if (object) [newValue setObject:object atIndex:index];
+        }];
+        value = (isMutable) ? newValue : [newValue copy];
+    } else if ([value isKindOfClass:[NSManagedObject class]]) {
+        value = RKRefetchManagedObjectInContext(value, managedObjectContext);
+    }
+    
+    return value;
 }
 
 // Finds the key paths for all entity mappings in the graph whose parent objects are not other managed objects
@@ -309,41 +332,29 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRe
             // If keyPaths contains null, then the root object is a managed object and we only need to refetch it
             NSSet *nonNestedKeyPaths = ([keyPaths containsObject:[NSNull null]]) ? [NSSet setWithObject:[NSNull null]] : RKSetByRemovingSubkeypathsFromSet(keyPaths);
             
-            NSDictionary *mappingResultsAtRootKey = [dictionaryOfManagedObjects objectForKey:rootKey];
+            NSDictionary *mappingResultsAtRootKey = [newDictionary objectForKey:rootKey];
             for (NSString *keyPath in nonNestedKeyPaths) {
-                id value = [keyPath isEqual:[NSNull null]] ? mappingResultsAtRootKey : [mappingResultsAtRootKey valueForKeyPath:keyPath];
-                if (! value) {
-                    continue;
-                } else if ([value isKindOfClass:[NSArray class]]) {
-                    BOOL isMutable = [value isKindOfClass:[NSMutableArray class]];
-                    NSMutableArray *newValue = [[NSMutableArray alloc] initWithCapacity:[value count]];
-                    for (__strong id object in value) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
-                        if (object) [newValue addObject:object];
+                id value = nil;
+                if ([keyPath isEqual:[NSNull null]]) {
+                    value = RKRefetchedValueInManagedObjectContext(mappingResultsAtRootKey, managedObjectContext);
+                    if (value) [newDictionary setObject:value forKey:rootKey];
+                } else {
+                    NSMutableArray *keyPathComponents = [[keyPath componentsSeparatedByString:@"."] mutableCopy];
+                    NSString *destinationKey = [keyPathComponents lastObject];
+                    [keyPathComponents removeLastObject];
+                    id sourceObject = [keyPathComponents count] ? [mappingResultsAtRootKey valueForKeyPath:[keyPathComponents componentsJoinedByString:@"."]] : mappingResultsAtRootKey;
+                    if (RKObjectIsCollection(sourceObject)) {
+                        // This is a to-many relationship, we want to refetch each item at the keyPath
+                        for (id nestedObject in sourceObject) {
+                            // Refetch this object. Set it on the destination.
+                            NSManagedObject *managedObject = [nestedObject valueForKey:destinationKey];
+                            [nestedObject setValue:RKRefetchedValueInManagedObjectContext(managedObject, managedObjectContext) forKey:destinationKey];
+                        }
+                    } else {
+                        // This is a singular relationship. We want to refetch the object and set it directly.
+                        id valueToRefetch = [sourceObject valueForKey:destinationKey];
+                        [sourceObject setValue:RKRefetchedValueInManagedObjectContext(valueToRefetch, managedObjectContext) forKey:destinationKey];
                     }
-                    value = (isMutable) ? newValue : [newValue copy];
-                } else if ([value isKindOfClass:[NSSet class]]) {
-                    BOOL isMutable = [value isKindOfClass:[NSMutableSet class]];
-                    NSMutableSet *newValue = [[NSMutableSet alloc] initWithCapacity:[value count]];
-                    for (__strong id object in value) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
-                        if (object) [newValue addObject:object];
-                    }
-                    value = (isMutable) ? newValue : [newValue copy];
-                } else if ([value isKindOfClass:[NSOrderedSet class]]) {
-                    BOOL isMutable = [value isKindOfClass:[NSMutableOrderedSet class]];
-                    NSMutableOrderedSet *newValue = [NSMutableOrderedSet orderedSet];
-                    [(NSOrderedSet *)value enumerateObjectsUsingBlock:^(id object, NSUInteger index, BOOL *stop) {
-                        if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
-                        if (object) [newValue setObject:object atIndex:index];
-                    }];
-                    value = (isMutable) ? newValue : [newValue copy];
-                } else if ([value isKindOfClass:[NSManagedObject class]]) {
-                    value = RKRefetchManagedObjectInContext(value, managedObjectContext);
-                }
-                
-                if (value) {
-                    RKSetMappedValueForKeyPathInDictionary(value, rootKey, keyPath, newDictionary);
                 }
             }
         }
