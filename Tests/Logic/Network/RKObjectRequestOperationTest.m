@@ -54,9 +54,6 @@
 
 - (RKResponseDescriptor *)responseDescriptorForComplexUser
 {
-//    NSMutableDictionary *mappingDictionary = [NSMutableDictionary dictionary];
-//    [mappingsDictionary setObject:userMapping forKey:@"data.STUser"];
-//    return provider;
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     [userMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
 
@@ -606,7 +603,7 @@
     [requestOperation waitUntilFinished];
     
     expect(requestOperation.error).notTo.beNil();
-    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299,400-499), got 503");
+    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299), got 503");
 }
 
 - (void)testThatMapperOperationDelegateIsPassedThroughToUnderlyingMapperOperation

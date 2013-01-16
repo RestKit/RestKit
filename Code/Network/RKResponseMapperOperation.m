@@ -91,6 +91,17 @@ static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithRes
     return failureReason;
 }
 
+static NSIndexSet *RKErrorStatusCodes()
+{
+    static NSIndexSet *errorStatusCodes = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        errorStatusCodes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(400, 200)];
+    });
+    
+    return errorStatusCodes;
+}
+
 /**
  A serial dispatch queue used for all deserialization of response bodies
  */
@@ -211,10 +222,10 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 {
     if (self.isCancelled) return;
 
-    BOOL isClientError = NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassClientError));
-
+    BOOL isErrorStatusCode = [RKErrorStatusCodes() containsIndex:self.response.statusCode];
+    
     // If we are an error response and empty, we emit an error that the content is unmappable
-    if (isClientError && [self hasEmptyResponse]) {
+    if (isErrorStatusCode && [self hasEmptyResponse]) {
         self.error = RKUnprocessableClientErrorFromResponse(self.response);
         return;
     }
@@ -258,7 +269,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     self.mappingResult = [self performMappingWithObject:parsedBody error:&error];    
     
     // If the response is a client error return either the mapping error or the mapped result to the caller as the error
-    if (isClientError) {
+    if (isErrorStatusCode) {
         if ([self.mappingResult count] > 0) {
             error = RKErrorFromMappingResult(self.mappingResult);
         } else {

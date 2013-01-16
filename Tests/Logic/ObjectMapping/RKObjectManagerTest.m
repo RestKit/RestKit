@@ -1105,4 +1105,21 @@
     expect(tagsCount).to.equal(2);
 }
 
+- (void)testMappingErrorsFromFiveHundredStatusCodeRange
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassServerError);
+    RKObjectMapping *errorResponseMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorResponseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
+    [objectManager addResponseDescriptor:[RKResponseDescriptor responseDescriptorWithMapping:errorResponseMapping pathPattern:nil keyPath:@"errors" statusCodes:statusCodes]];
+    
+    __block NSError *error = nil;
+    [objectManager getObjectsAtPath:@"/fail" parameters:nil success:nil failure:^(RKObjectRequestOperation *operation, NSError *blockError) {
+        error = blockError;
+    }];
+    
+    expect(error).willNot.beNil();
+    expect([error localizedDescription]).to.equal(@"error1, error2");
+}
+
 @end
