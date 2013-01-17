@@ -967,6 +967,42 @@
     assertThatBool([[user isDeveloper] boolValue], is(equalToBool(NO)));
 }
 
+- (void)testShouldMapAYCharacterStringToANumberBool
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *websiteMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"is_developer" toKeyPath:@"isDeveloper"];
+    [mapping addPropertyMapping:websiteMapping];
+    
+    NSDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
+    RKTestUser *user = [RKTestUser user];
+    [dictionary setValue:@"y" forKey:@"is_developer"];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThatBool([[user isDeveloper] boolValue], is(equalToBool(YES)));
+}
+
+- (void)testShouldMapANCharacterStringToANumberBool
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *websiteMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"is_developer" toKeyPath:@"isDeveloper"];
+    [mapping addPropertyMapping:websiteMapping];
+    
+    NSDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
+    RKTestUser *user = [RKTestUser user];
+    [dictionary setValue:@"n" forKey:@"is_developer"];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThatBool([[user isDeveloper] boolValue], is(equalToBool(NO)));
+}
+
 - (void)testShouldMapAStringToANumber
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
