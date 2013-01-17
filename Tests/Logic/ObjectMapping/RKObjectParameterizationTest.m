@@ -461,6 +461,24 @@
     expect(parameters).to.equal(expected);
 }
 
+- (void)testParameterizationOfCoreDataEntityWithDateToNestedKeypath
+{
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
+    human.birthday = [NSDate dateWithTimeIntervalSince1970:0];
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"birthday" toKeyPath:@"nestedPath.birthday"]];
+    
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:human requestDescriptor:requestDescriptor error:&error];
+    
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    expect(error).to.beNil();
+    expect(string).to.equal(@"{\"nestedPath\":{\"birthday\":\"1970-01-01T00:00:00Z\"}}");
+}
+
 @end
 
 #pragma mark - Dynamic Request Paramterization
