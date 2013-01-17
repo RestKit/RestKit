@@ -88,7 +88,7 @@ static NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *o
  
  */
 @interface RKNestedManagedObjectKeyPathMappingGraphVisitor : NSObject
-@property (nonatomic, readonly, strong) NSMutableArray *visitations;
+@property (nonatomic, readonly, strong) NSMutableSet *visitations;
 - (id)initWithResponseDescriptors:(NSArray *)responseDescriptors;
 @end
 
@@ -97,7 +97,7 @@ static NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *o
 @property (nonatomic, strong) NSMutableArray *visitationStack;
 @property (nonatomic, strong) NSMutableDictionary *index;
 @property (nonatomic, strong) NSMutableDictionary *lowLinks;
-@property (nonatomic, strong, readwrite) NSMutableArray *visitations;
+@property (nonatomic, strong, readwrite) NSMutableSet *visitations;
 @end
 
 @implementation RKNestedManagedObjectKeyPathMappingGraphVisitor
@@ -110,7 +110,7 @@ static NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *o
         self.visitationStack = [NSMutableArray array];
         self.index = [NSMutableDictionary dictionary];
         self.lowLinks = [NSMutableDictionary dictionary];
-        self.visitations = [NSMutableArray array];
+        self.visitations = [NSMutableSet set];
         
         for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
             self.indexCounter = 0;
@@ -150,7 +150,7 @@ static NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *o
     self.indexCounter++;
     
     RKMappingGraphVisitation *visitation = [self visitationForMapping:mapping atKeyPath:keyPath];
-    [self.visitationStack addObject:visitation];
+    [self.visitationStack addObject:visitation];    
     
     if ([mapping isKindOfClass:[RKObjectMapping class]]) {
         RKObjectMapping *objectMapping = (RKObjectMapping *)mapping;
@@ -205,12 +205,15 @@ static NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *o
         NSUInteger index = [self.visitationStack indexOfObject:visitation];
         if (index != NSNotFound) {
             NSRange removalRange = NSMakeRange(index, [self.visitationStack count] - index);
+            // Add any managed objects visited earlier in the graph
+            NSArray *poppedVisitations = [self.visitationStack subarrayWithRange:removalRange];
             [self.visitationStack removeObjectsInRange:removalRange];
+            for (RKMappingGraphVisitation *poppedVisitation in poppedVisitations) {
+                if ([poppedVisitation.mapping isKindOfClass:[RKEntityMapping class]]) [self.visitations addObject:poppedVisitation];
+            }
         }
         
-        if ([visitation.mapping isKindOfClass:[RKEntityMapping class]]) {
-            [self.visitations addObject:visitation];
-        }
+        if ([visitation.mapping isKindOfClass:[RKEntityMapping class]]) [self.visitations addObject:visitation];
     }
 }
 
@@ -340,16 +343,17 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
 }
 
 // Finds the key paths for all entity mappings in the graph whose parent objects are not other managed objects
-static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRefetchedInContext(NSDictionary *dictionaryOfManagedObjects, NSArray *visitations, NSManagedObjectContext *managedObjectContext)
+static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInVisitationsRefetchedInContext(NSDictionary *dictionaryOfManagedObjects, NSSet *visitations, NSManagedObjectContext *managedObjectContext)
 {
     if (! [dictionaryOfManagedObjects count]) return dictionaryOfManagedObjects;
     
     NSMutableDictionary *newDictionary = [dictionaryOfManagedObjects mutableCopy];
     [managedObjectContext performBlockAndWait:^{
-        NSSet *rootKeys = [NSSet setWithArray:[visitations valueForKey:@"rootKey"]];
+        NSSet *rootKeys = [visitations valueForKey:@"rootKey"];
         for (id rootKey in rootKeys) {
-            NSArray *visitationsForRootKey = [visitations filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"rootKey = %@", rootKey]];
-            NSSet *keyPaths = [visitationsForRootKey valueForKey:@"keyPath"];
+            NSSet *visitationsForRootKey = [visitations filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"rootKey = %@", rootKey]];
+            // NOTE: We coerce the set into an array because `valueForKey:` returns a set without `[NSNull null]`
+            NSSet *keyPaths = [[visitationsForRootKey allObjects] valueForKey:@"keyPath"];
             // If keyPaths contains null, then the root object is a managed object and we only need to refetch it
             NSSet *nonNestedKeyPaths = ([keyPaths containsObject:[NSNull null]]) ? [NSSet setWithObject:[NSNull null]] : RKSetByRemovingSubkeypathsFromSet(keyPaths);
             

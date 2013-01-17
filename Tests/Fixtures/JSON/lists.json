@@ -1,0 +1,40 @@
+{
+    "lists": [
+        {
+            "name": "First List",
+            "author": {
+                "name": "Blake"
+            },
+            "entries": [
+                {
+                    "name": "First List Entry"
+                }
+            ]
+        },
+        {
+            "name": "Second List",
+            "author": {
+                "name": "Blake"
+            },
+            "entries": [
+                {
+                    "name": "Second List Entry"
+                }
+            ]
+        },
+        {
+            "name": "Third List",
+            "author": {
+                "name": "Sarah"
+            },
+            "entries": [
+                {
+                    "name": "Third List Entry",
+                    "relatedList": {
+                        "name": "First List"
+                    }
+                }
+            ]
+        }
+    ]
+}
