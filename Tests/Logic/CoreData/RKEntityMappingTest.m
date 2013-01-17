@@ -124,6 +124,40 @@
     assertThat([propertyNamesAndTypes objectForKey:@"favoriteColors"][RKPropertyInspectionKeyValueCodingClassKey], is(notNilValue()));
 }
 
+- (void)testMappingAnArrayToATransformableWithoutABackingManagedObjectSubclass
+{
+    NSManagedObjectModel *model = [NSManagedObjectModel new];
+    NSEntityDescription *entity = [NSEntityDescription new];
+    [entity setName:@"TransformableEntity"];
+    NSAttributeDescription *transformableAttribute = [NSAttributeDescription new];
+    [transformableAttribute setName:@"transformableURLs"];
+    [transformableAttribute setAttributeType:NSTransformableAttributeType];
+    [entity setProperties:@[ transformableAttribute ]];
+    [model setEntities:@[ entity ]];
+    
+    RKEntityMapping *entityMapping = [[RKEntityMapping alloc] initWithEntity:entity];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"URLs": @"transformableURLs" }];
+    
+    NSArray *URLs = @[ @"http://restkit.org", @"http://gateguruapp.com" ];
+    NSDictionary *representation = @{ @"URLs": URLs };
+    
+    NSError *error = nil;
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    [managedObjectStore createPersistentStoreCoordinator];
+    [managedObjectStore addInMemoryPersistentStore:&error];
+    [managedObjectStore createManagedObjectContexts];
+    
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    BOOL success = [operation performMapping:&error];
+    expect(success).to.equal(YES);
+    expect(operation.destinationObject).notTo.beNil();
+    
+    NSArray *mappedURLs = [operation.destinationObject valueForKey:@"transformableURLs"];
+    expect(mappedURLs).to.equal(URLs);
+}
+
 - (void)testThatMappingAnEmptyArrayOnToAnExistingRelationshipDisassociatesTheRelatedObjects
 {
     RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:@{ @"name": @"Blake" }];
