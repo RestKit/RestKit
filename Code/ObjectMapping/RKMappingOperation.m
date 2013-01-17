@@ -163,7 +163,7 @@ static id RKPrimitiveValueForNilValueOfClass(Class keyValueCodingClass)
     }
 }
 
-// Key comes from: [[_nestedAttributeSubstitution allKeys] lastObject]] AND [[_nestedAttributeSubstitution allValues] lastObject];
+// Key comes from: [[_nestedAttributeSubstitution allKeys] lastObject] AND [[_nestedAttributeSubstitution allValues] lastObject];
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings);
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings)
 {

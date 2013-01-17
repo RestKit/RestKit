@@ -396,6 +396,33 @@
     expect(object).to.equal(human);
 }
 
+- (void)testRetrievalOfTargetObjectWithDynamicNestingKeyMappingInWhichIdentifierAttributeIsNotTheDynamicNestingKey
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
+    [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
+    [mapping addAttributeMappingsFromDictionary:@{ @"(name).id": @"railsID" }];
+    
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    human.name = @"Blake";
+    human.railsID = @(12345);
+    [managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    
+    NSError *error = nil;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
+    expect(count).to.beGreaterThan(0);
+    
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                      cache:managedObjectStore.managedObjectCache];
+    NSDictionary *representation = @{ @"Blake": @{ @"id": @"12345" } };
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
+    expect(object).notTo.beNil();
+    expect(object).to.equal(human);
+}
+
 - (void)testRetrievalOfTargetObjectInWhichIdentifierAttributeIsCompoundAndOneAttributeIsTheDynamicNestingKey
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
