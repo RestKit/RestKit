@@ -37,10 +37,27 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
+static NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *objectMapping, RKObjectMapping *inMapping)
+{
+    for (RKRelationshipMapping *nestedRelationship in inMapping.relationshipMappings) {
+        if (nestedRelationship.mapping == objectMapping) {
+            return nestedRelationship.destinationKeyPath;
+        } else {
+            if ([nestedRelationship.mapping isKindOfClass:[RKObjectMapping class]]) {
+                NSString *childKeyPath = RKKeyPathToCyclicReferenceToMappingInMapping(objectMapping, (RKObjectMapping *)nestedRelationship.mapping);
+                if (childKeyPath) return [nestedRelationship.destinationKeyPath stringByAppendingFormat:@".%@", childKeyPath];
+            }
+        }
+    }
+    
+    return nil;
+}
+
 @interface RKMappingGraphVisitation : NSObject
 @property (nonatomic, strong) id rootKey; // Will be [NSNull null] or a string value
 @property (nonatomic, strong) NSString *keyPath;
-@property (nonatomic, assign, getter = isCyclic) BOOL cyclic;
+@property (nonatomic, strong) NSString *cyclicKeyPath;
+@property (nonatomic, readonly) BOOL isCyclic;
 @property (nonatomic, strong) RKMapping *mapping;
 @end
 
@@ -50,6 +67,11 @@
 {
     return [NSString stringWithFormat:@"<%@: %p rootKey=%@ keyPath=%@ isCylic=%@ mapping=%@>",
             [self class], self, self.rootKey, self.keyPath, self.isCyclic ? @"YES" : @"NO", self.mapping];
+}
+
+- (BOOL)isCyclic
+{
+    return self.cyclicKeyPath != nil;
 }
 
 @end
@@ -158,8 +180,10 @@
                 
                 // Since this mapping already appears in lowLinks, we have a cycle at this point in the graph
                 if ([relationshipMapping.mapping isKindOfClass:[RKEntityMapping class]]) {
+                    // The mapping of the relationship cycles back to itself. We need to determine the key path for the cycle and save it for later traversal.
+                    NSString *keyPathToRelationshipCycle = RKKeyPathToCyclicReferenceToMappingInMapping((RKEntityMapping *)relationshipMapping.mapping, (RKEntityMapping *)relationshipMapping.mapping);
                     RKMappingGraphVisitation *cyclicVisitation = [self visitationForMapping:relationshipMapping.mapping atKeyPath:nestedKeyPath];
-                    cyclicVisitation.cyclic = YES;
+                    cyclicVisitation.cyclicKeyPath = keyPathToRelationshipCycle;
                     [self.visitations addObject:cyclicVisitation];
                 }
             }
@@ -228,20 +252,17 @@ static NSSet *RKFlattenCollectionToSet(id collection)
 }
 
 /**
- Traverses a set of cyclic key paths within the mapping result. Because these relationships are cyclic, we continue collecting managed objects and traversing until the values returned by the key path are a complete subset of all objects already in the set.
+ Traverses a cyclic key path within the mapping result. Because the relationship is cyclic, we continue collecting managed objects and traversing until the values returned by the key path are a complete subset of all objects already in the set.
  */
-static void RKAddObjectsInGraphWithCyclicKeyPathsToMutableSet(id graph, NSSet *cyclicKeyPaths, NSMutableSet *mutableSet)
+static void RKAddObjectsInGraphWithCyclicKeyPathToMutableSet(id graph, NSString *cyclicKeyPath, NSMutableSet *mutableSet)
 {
-    if ([graph respondsToSelector:@selector(count)] && [graph count] == 0) return;
-    
-    for (NSString *cyclicKeyPath in cyclicKeyPaths) {
-        NSSet *objectsAtCyclicKeyPath = RKFlattenCollectionToSet([graph valueForKeyPath:cyclicKeyPath]);
-        if ([objectsAtCyclicKeyPath count] == 0 || [objectsAtCyclicKeyPath isEqualToSet:[NSSet setWithObject:[NSNull null]]]) continue;
-        if (! [objectsAtCyclicKeyPath isSubsetOfSet:mutableSet]) {
-            [mutableSet unionSet:objectsAtCyclicKeyPath];
-            for (id nestedValue in objectsAtCyclicKeyPath) {
-                RKAddObjectsInGraphWithCyclicKeyPathsToMutableSet(nestedValue, cyclicKeyPaths, mutableSet);
-            }
+    if ([graph respondsToSelector:@selector(count)] && [graph count] == 0) return;    
+    NSSet *objectsAtCyclicKeyPath = RKFlattenCollectionToSet([graph valueForKeyPath:cyclicKeyPath]);
+    if ([objectsAtCyclicKeyPath count] == 0 || [objectsAtCyclicKeyPath isEqualToSet:[NSSet setWithObject:[NSNull null]]]) return;
+    if (! [objectsAtCyclicKeyPath isSubsetOfSet:mutableSet]) {
+        [mutableSet unionSet:objectsAtCyclicKeyPath];
+        for (id nestedValue in objectsAtCyclicKeyPath) {
+            RKAddObjectsInGraphWithCyclicKeyPathToMutableSet(nestedValue, cyclicKeyPath, mutableSet);
         }
     }
 }
@@ -568,13 +589,11 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
             }
             [exception raise];
         }
-        [managedObjectsInMappingResult unionSet:RKFlattenCollectionToSet(managedObjects)];
+        NSSet *flattenedSet = RKFlattenCollectionToSet(managedObjects);
+        [managedObjectsInMappingResult unionSet:flattenedSet];
         
-        if (visitation.isCyclic) {
-            NSSet *cyclicKeyPaths = [NSSet setWithArray:[visitation valueForKeyPath:@"mapping.relationshipMappings.destinationKeyPath"]];
-            [managedObjectsInMappingResult unionSet:RKFlattenCollectionToSet(managedObjects)];
-            RKAddObjectsInGraphWithCyclicKeyPathsToMutableSet(managedObjects, cyclicKeyPaths, managedObjectsInMappingResult);
-        }
+        // Traverse the cyclic keyPath if necessary
+        if (visitation.isCyclic) RKAddObjectsInGraphWithCyclicKeyPathToMutableSet(flattenedSet, visitation.cyclicKeyPath, managedObjectsInMappingResult);
     }
 
     NSSet *localObjects = [self localObjectsFromFetchRequestsMatchingRequestURL:error];
