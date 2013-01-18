@@ -62,63 +62,6 @@
 }
 @end
 
-static NSString *RKKeyPathByDeletingLastComponent(NSString *keyPath)
-{
-    NSArray *keyPathComponents = [keyPath componentsSeparatedByString:@"."];
-    return ([keyPathComponents count] > 1) ? [[keyPathComponents subarrayWithRange:NSMakeRange(0, [keyPathComponents count] - 1)] componentsJoinedByString:@"."] : nil;
-}
-
-NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL)
-{
-    NSMutableArray *fetchRequests = [NSMutableArray array];
-    NSFetchRequest *fetchRequest = nil;
-    for (RKFetchRequestBlock block in [fetchRequestBlocks reverseObjectEnumerator]) {
-        fetchRequest = block(URL);
-        if (fetchRequest) [fetchRequests addObject:fetchRequest];
-    }
-    return fetchRequests;
-}
-
-static NSSet *RKFlattenCollectionToSet(id collection)
-{
-    NSMutableSet *mutableSet = [NSMutableSet set];
-    if ([collection conformsToProtocol:@protocol(NSFastEnumeration)]) {
-        for (id nestedObject in collection) {
-            if ([nestedObject conformsToProtocol:@protocol(NSFastEnumeration)]) {
-                if ([nestedObject isKindOfClass:[NSArray class]]) {
-                    [mutableSet unionSet:RKFlattenCollectionToSet([NSSet setWithArray:nestedObject])];
-                } else if ([nestedObject isKindOfClass:[NSSet class]]) {
-                    [mutableSet unionSet:RKFlattenCollectionToSet(nestedObject)];
-                } else if ([nestedObject isKindOfClass:[NSOrderedSet class]]) {
-                    [mutableSet unionSet:RKFlattenCollectionToSet([(NSOrderedSet *)nestedObject set])];
-                }
-            } else {
-                [mutableSet addObject:nestedObject];
-            }
-        }
-    } else if (collection) {
-        [mutableSet addObject:collection];
-    }
-    
-    return mutableSet;
-}
-
-/**
- Traverses a cyclic key path within the mapping result. Because the relationship is cyclic, we continue collecting managed objects and traversing until the values returned by the key path are a complete subset of all objects already in the set.
- */
-static void RKAddObjectsInGraphWithCyclicKeyPathToMutableSet(id graph, NSString *cyclicKeyPath, NSMutableSet *mutableSet)
-{
-    if ([graph respondsToSelector:@selector(count)] && [graph count] == 0) return;    
-    NSSet *objectsAtCyclicKeyPath = RKFlattenCollectionToSet([graph valueForKeyPath:cyclicKeyPath]);
-    if ([objectsAtCyclicKeyPath count] == 0 || [objectsAtCyclicKeyPath isEqualToSet:[NSSet setWithObject:[NSNull null]]]) return;
-    if (! [objectsAtCyclicKeyPath isSubsetOfSet:mutableSet]) {
-        [mutableSet unionSet:objectsAtCyclicKeyPath];
-        for (id nestedValue in objectsAtCyclicKeyPath) {
-            RKAddObjectsInGraphWithCyclicKeyPathToMutableSet(nestedValue, cyclicKeyPath, mutableSet);
-        }
-    }
-}
-
 /**
  Returns the set of keys containing the outermost nesting keypath for all children.
  For example, given a set containing: 'this', 'this.that', 'another.one.test', 'another.two.test', 'another.one.test.nested'
@@ -143,7 +86,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
 
 // Precondition: Must be called from within the correct context
 static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managedObject, NSManagedObjectContext *managedObjectContext)
-{    
+{
     NSManagedObjectID *managedObjectID = [managedObject objectID];
     if (! [managedObject managedObjectContext]) return nil; // Object has been deleted
     if ([managedObjectID isTemporaryID]) {
@@ -191,16 +134,69 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     return value;
 }
 
-// Finds the key paths for all entity mappings in the graph whose parent objects are not other managed objects
-static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInMappingEventsRefetchedInContext(NSDictionary *dictionaryOfManagedObjects, NSArray *events, NSManagedObjectContext *managedObjectContext)
+/**
+ This is an NSProxy object that stands in for the mapping result and provides support for refetching the results on demand. This enables us to defer the refetching until someone accesses the results directly. For managed object request operations that do not use the mapping result (such as those used in conjunction with a NSFetchedResultsController), the refetching will be skipped entirely.
+ */
+@interface RKRefetchingMappingResult : NSProxy
+
+- (id)initWithMappingResult:(RKMappingResult *)mappingResult
+       managedObjectContext:(NSManagedObjectContext *)managedObjectContext
+        entityMappingEvents:(NSArray *)entityMappingEvents;
+@end
+
+@interface RKRefetchingMappingResult ()
+@property (nonatomic, strong) RKMappingResult *mappingResult;
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong) NSArray *entityMappingEvents;
+@property (nonatomic, assign) BOOL refetched;
+@end
+
+@implementation RKRefetchingMappingResult
+
++ (NSString *)description
 {
-    if (! [dictionaryOfManagedObjects count]) return dictionaryOfManagedObjects;
+    return [[super description] stringByAppendingString:@"_RKRefetchingMappingResult"];
+}
+
+- (id)initWithMappingResult:(RKMappingResult *)mappingResult
+       managedObjectContext:(NSManagedObjectContext *)managedObjectContext
+        entityMappingEvents:(NSArray *)entityMappingEvents;
+{
+    self.mappingResult = mappingResult;
+    self.managedObjectContext = managedObjectContext;
+    self.entityMappingEvents = entityMappingEvents;
+    return self;
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
+{
+    return [self.mappingResult methodSignatureForSelector:selector];
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation
+{
+    if (! self.refetched) {
+        self.mappingResult = [self refetchedMappingResult];
+        self.refetched = YES;
+    }
+    [invocation invokeWithTarget:self.mappingResult];
+}
+
+- (NSString *)description
+{
+    return [self.mappingResult description];
+}
+
+- (RKMappingResult *)refetchedMappingResult
+{
+    NSAssert(!self.refetched, @"Mapping result should only be refetched once");
+    if (! [self.mappingResult count]) return self.mappingResult;
     
-    NSMutableDictionary *newDictionary = [dictionaryOfManagedObjects mutableCopy];
-    [managedObjectContext performBlockAndWait:^{
-        NSSet *rootKeys = [NSSet setWithArray:[events valueForKey:@"rootKey"]];
+    NSMutableDictionary *newDictionary = [self.mappingResult.dictionary mutableCopy];
+    [self.managedObjectContext performBlockAndWait:^{
+        NSSet *rootKeys = [NSSet setWithArray:[self.entityMappingEvents valueForKey:@"rootKey"]];
         for (id rootKey in rootKeys) {
-            NSArray *eventsForRootKey = [events filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"rootKey = %@", rootKey]];
+            NSArray *eventsForRootKey = [self.entityMappingEvents filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"rootKey = %@", rootKey]];
             NSSet *keyPaths = [NSSet setWithArray:[eventsForRootKey valueForKey:@"keyPath"]];
             // If keyPaths contains null, then the root object is a managed object and we only need to refetch it
             NSSet *nonNestedKeyPaths = ([keyPaths containsObject:[NSNull null]]) ? [NSSet setWithObject:[NSNull null]] : RKSetByRemovingSubkeypathsFromSet(keyPaths);
@@ -209,7 +205,7 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInMappingEvents
             for (NSString *keyPath in nonNestedKeyPaths) {
                 id value = nil;
                 if ([keyPath isEqual:[NSNull null]]) {
-                    value = RKRefetchedValueInManagedObjectContext(mappingResultsAtRootKey, managedObjectContext);
+                    value = RKRefetchedValueInManagedObjectContext(mappingResultsAtRootKey, self.managedObjectContext);
                     if (value) [newDictionary setObject:value forKey:rootKey];
                 } else {
                     NSMutableArray *keyPathComponents = [[keyPath componentsSeparatedByString:@"."] mutableCopy];
@@ -221,19 +217,62 @@ static NSDictionary *RKDictionaryFromDictionaryWithManagedObjectsInMappingEvents
                         for (id nestedObject in sourceObject) {
                             // Refetch this object. Set it on the destination.
                             NSManagedObject *managedObject = [nestedObject valueForKey:destinationKey];
-                            [nestedObject setValue:RKRefetchedValueInManagedObjectContext(managedObject, managedObjectContext) forKey:destinationKey];
+                            [nestedObject setValue:RKRefetchedValueInManagedObjectContext(managedObject, self.managedObjectContext) forKey:destinationKey];
                         }
                     } else {
                         // This is a singular relationship. We want to refetch the object and set it directly.
                         id valueToRefetch = [sourceObject valueForKey:destinationKey];
-                        [sourceObject setValue:RKRefetchedValueInManagedObjectContext(valueToRefetch, managedObjectContext) forKey:destinationKey];
+                        [sourceObject setValue:RKRefetchedValueInManagedObjectContext(valueToRefetch, self.managedObjectContext) forKey:destinationKey];
                     }
                 }
             }
         }
     }];
     
-    return newDictionary;
+    return [[RKMappingResult alloc] initWithDictionary:newDictionary];
+}
+
+@end
+
+static NSString *RKKeyPathByDeletingLastComponent(NSString *keyPath)
+{
+    NSArray *keyPathComponents = [keyPath componentsSeparatedByString:@"."];
+    return ([keyPathComponents count] > 1) ? [[keyPathComponents subarrayWithRange:NSMakeRange(0, [keyPathComponents count] - 1)] componentsJoinedByString:@"."] : nil;
+}
+
+NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL)
+{
+    NSMutableArray *fetchRequests = [NSMutableArray array];
+    NSFetchRequest *fetchRequest = nil;
+    for (RKFetchRequestBlock block in [fetchRequestBlocks reverseObjectEnumerator]) {
+        fetchRequest = block(URL);
+        if (fetchRequest) [fetchRequests addObject:fetchRequest];
+    }
+    return fetchRequests;
+}
+
+static NSSet *RKFlattenCollectionToSet(id collection)
+{
+    NSMutableSet *mutableSet = [NSMutableSet set];
+    if ([collection conformsToProtocol:@protocol(NSFastEnumeration)]) {
+        for (id nestedObject in collection) {
+            if ([nestedObject conformsToProtocol:@protocol(NSFastEnumeration)]) {
+                if ([nestedObject isKindOfClass:[NSArray class]]) {
+                    [mutableSet unionSet:RKFlattenCollectionToSet([NSSet setWithArray:nestedObject])];
+                } else if ([nestedObject isKindOfClass:[NSSet class]]) {
+                    [mutableSet unionSet:RKFlattenCollectionToSet(nestedObject)];
+                } else if ([nestedObject isKindOfClass:[NSOrderedSet class]]) {
+                    [mutableSet unionSet:RKFlattenCollectionToSet([(NSOrderedSet *)nestedObject set])];
+                }
+            } else {
+                [mutableSet addObject:nestedObject];
+            }
+        }
+    } else if (collection) {
+        [mutableSet addObject:collection];
+    }
+    
+    return mutableSet;
 }
 
 static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *responseDescriptors)
@@ -538,8 +577,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     
     // Refetch all managed objects nested at key paths within the results dictionary before returning
     if (self.mappingResult) {
-        NSDictionary *resultsDictionaryFromOriginalContext = RKDictionaryFromDictionaryWithManagedObjectsInMappingEventsRefetchedInContext([self.mappingResult dictionary], self.entityMappingEvents, self.managedObjectContext);
-        self.mappingResult = [[RKMappingResult alloc] initWithDictionary:resultsDictionaryFromOriginalContext];
+        self.mappingResult = (RKMappingResult *)[[RKRefetchingMappingResult alloc] initWithMappingResult:self.mappingResult managedObjectContext:self.managedObjectContext entityMappingEvents:self.entityMappingEvents];
     }
 }
 
