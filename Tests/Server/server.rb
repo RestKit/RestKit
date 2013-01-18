@@ -202,6 +202,11 @@ class RestKitTestServer < Sinatra::Base
     content_type 'application/json'
     render_fixture('/JSON/errors.json', :status => 500)
   end
+  
+  get '/500' do
+    status 500
+    content_type 'application/json'
+  end
 
   # Expects an uploaded 'file' param
   post '/api/upload/' do

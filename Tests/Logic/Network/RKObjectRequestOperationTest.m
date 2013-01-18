@@ -650,4 +650,21 @@
     expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
 }
 
+- (void)testFiveHundredErrorWithEmptyResponse
+{
+    RKObjectMapping *errorResponseMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorResponseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
+    RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:errorResponseMapping pathPattern:nil keyPath:@"errors" statusCodes:nil];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    RKResponseDescriptor *userDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:@"user" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/500" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ userDescriptor, errorDescriptor ]];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).willNot.beNil();
+    expect([requestOperation.error localizedDescription]).to.equal(@"Loaded an unprocessable response (500) with content type 'application/json'");
+}
+
 @end
