@@ -92,6 +92,14 @@
  ## 304 'Not Modified' Responses
  
  In the event that a managed object request operation loads a 304 'Not Modified' response for an HTTP request no object mapping is performed as Core Data is assumed to contain a managed object representation of the resource requested. No object mapping is performed on the cached response body, making a cache hit for a managed object request operation a very lightweight operation. To build the mapping result returned to the caller, all of the fetch request blocks matching the request URL will be invoked and each fetch request returned is executed against the managed object context and the objects returned are added to the mapping result. Please note that all managed objects returned in the mapping result for a 'Not Modified' response will be returned under the `[NSNull null]` key path.
+ 
+ ## Subclassing Notes
+ 
+ This class relies on the following `RKMapperOperationDelegate` method methods to do its work:
+ 
+ 1. `mapperDidFinishMapping:`
+ 
+ If you subclass `RKManagedObjectRequestOperation` and implement any of the above methods then you must call the superclass implementation.
 
  ## Limitations and Caveats
 

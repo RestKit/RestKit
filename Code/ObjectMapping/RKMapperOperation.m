@@ -56,7 +56,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 @property (nonatomic, strong) NSMutableArray *mappingErrors;
 @property (nonatomic, strong) id representation;
 @property (nonatomic, strong, readwrite) NSDictionary *mappingsDictionary;
-
+@property (nonatomic, strong) NSMutableDictionary *mutableMappingInfo;
 @end
 
 @implementation RKMapperOperation
@@ -67,11 +67,15 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     if (self) {
         self.representation = representation;
         self.mappingsDictionary = mappingsDictionary;
-        self.mappingErrors = [NSMutableArray new];
         self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
 
     return self;
+}
+
+- (NSDictionary *)mappingInfo
+{
+    return self.mutableMappingInfo;
 }
 
 #pragma mark - Errors
@@ -249,6 +253,14 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             [self.delegate mapper:self didFinishMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
         }
         
+        id infoKey = keyPath ?: [NSNull null];
+        NSMutableDictionary *infoForKeyPath = [[self.mutableMappingInfo objectForKey:infoKey] mutableCopy];
+        if (infoForKeyPath) {
+            [infoForKeyPath addEntriesFromDictionary:mappingOperation.mappingInfo];
+            [self.mappingInfo setValue:infoForKeyPath forKey:infoKey];
+        } else {
+            [self.mappingInfo setValue:mappingOperation.mappingInfo forKey:infoKey];
+        }
         return YES;
     }
 }
@@ -356,6 +368,8 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     NSAssert(self.mappingsDictionary, @"Cannot perform object mapping without a dictionary of mappings");
     
     if ([self isCancelled]) return;
+    self.mutableMappingInfo = [NSMutableDictionary dictionary];
+    self.mappingErrors = [NSMutableArray new];
 
     RKLogDebug(@"Executing mapping operation for representation: %@\n and targetObject: %@", self.representation, self.targetObject);
 

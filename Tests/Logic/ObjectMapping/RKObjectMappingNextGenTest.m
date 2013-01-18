@@ -684,6 +684,77 @@
     [mockDelegate verify];
 }
 
+- (void)testMappingConstructsMappingInfoDictionaryWithAttributeInfo
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    NSDictionary *representation = @{ @"name": @"Blake Watters" };
+    RKTestUser *user = [RKTestUser new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:user mapping:mapping];
+    [mappingOperation start];
+    expect(mappingOperation.mappingInfo).notTo.beNil();
+    RKPropertyMapping *nameMapping = mappingOperation.mappingInfo[@"name"];
+    expect(nameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
+}
+
+- (void)testMappingConstructsMappingInfoDictionaryWithMergedRelationshipInfo
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [mapping addRelationshipMappingWithSourceKeyPath:@"friends" mapping:mapping];
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"} ] };
+    RKTestUser *user = [RKTestUser new];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:user mapping:mapping];
+    mappingOperation.dataSource = dataSource;
+    [mappingOperation start];
+    expect(mappingOperation.mappingInfo).notTo.beNil();
+    RKPropertyMapping *friendsMapping = mappingOperation.mappingInfo[@"friends"];
+    RKPropertyMapping *nameMapping = mappingOperation.mappingInfo[@"name"];
+    RKPropertyMapping *nestedNameMapping = mappingOperation.mappingInfo[@"friends.name"];
+    expect(nameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
+    expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
+    expect(nestedNameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
+}
+
+- (void)testThatMappingHasManyDoesNotDuplicateRelationshipMappingInMappingInfo
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [mapping addRelationshipMappingWithSourceKeyPath:@"friends" mapping:mapping];
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"}, @{ @"name": @"Dan Gellert" } ] };
+    RKTestUser *user = [RKTestUser new];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:user mapping:mapping];
+    mappingOperation.dataSource = dataSource;
+    [mappingOperation start];
+    expect(mappingOperation.mappingInfo).notTo.beNil();
+    RKPropertyMapping *friendsMapping = mappingOperation.mappingInfo[@"friends"];
+    expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
+}
+
+- (void)testThatDynamicMappingCoalescesObjectClassesInMappingInfo
+{
+    // use a dynamic mapping with 2 classes, should have an objectClass as an array containing both
+}
+
+- (void)testMapperOperationAggregatesMappingInfoFromChildOperations
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [mapping addRelationshipMappingWithSourceKeyPath:@"friends" mapping:mapping];
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"}, @{ @"name": @"Dan Gellert" } ] };
+    RKTestUser *user = [RKTestUser new];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: mapping }];
+    mapperOperation.targetObject = user;
+    mapperOperation.mappingOperationDataSource = dataSource;
+    [mapperOperation start];
+    expect(mapperOperation.mappingInfo).notTo.beNil();
+    RKPropertyMapping *friendsMapping = mapperOperation.mappingInfo[[NSNull null]][@"friends"];
+    expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
+}
+
 - (BOOL)fakeValidateValue:(inout id *)ioValue forKeyPath:(NSString *)inKey error:(out NSError **)outError
 {
     *outError = [NSError errorWithDomain:RKErrorDomain code:1234 userInfo:nil];
