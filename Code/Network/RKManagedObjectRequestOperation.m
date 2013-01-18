@@ -37,14 +37,18 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
-static NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *objectMapping, RKObjectMapping *inMapping)
+NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *objectMapping, RKObjectMapping *inMapping, NSMutableSet *visitedRelationships);
+NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *objectMapping, RKObjectMapping *inMapping, NSMutableSet *visitedRelationships)
 {
     for (RKRelationshipMapping *nestedRelationship in inMapping.relationshipMappings) {
+        if ([visitedRelationships containsObject:nestedRelationship]) continue;
+        [visitedRelationships addObject:nestedRelationship];
+        
         if (nestedRelationship.mapping == objectMapping) {
             return nestedRelationship.destinationKeyPath;
         } else {
             if ([nestedRelationship.mapping isKindOfClass:[RKObjectMapping class]]) {
-                NSString *childKeyPath = RKKeyPathToCyclicReferenceToMappingInMapping(objectMapping, (RKObjectMapping *)nestedRelationship.mapping);
+                NSString *childKeyPath = RKKeyPathToCyclicReferenceToMappingInMapping(objectMapping, (RKObjectMapping *)nestedRelationship.mapping, visitedRelationships);
                 if (childKeyPath) return [nestedRelationship.destinationKeyPath stringByAppendingFormat:@".%@", childKeyPath];
             }
         }
@@ -181,7 +185,8 @@ static NSString *RKKeyPathToCyclicReferenceToMappingInMapping(RKObjectMapping *o
                 // Since this mapping already appears in lowLinks, we have a cycle at this point in the graph
                 if ([relationshipMapping.mapping isKindOfClass:[RKEntityMapping class]]) {
                     // The mapping of the relationship cycles back to itself. We need to determine the key path for the cycle and save it for later traversal.
-                    NSString *keyPathToRelationshipCycle = RKKeyPathToCyclicReferenceToMappingInMapping((RKEntityMapping *)relationshipMapping.mapping, (RKEntityMapping *)relationshipMapping.mapping);
+                    NSMutableSet *visitedSets = [NSMutableSet set];
+                    NSString *keyPathToRelationshipCycle = RKKeyPathToCyclicReferenceToMappingInMapping((RKEntityMapping *)relationshipMapping.mapping, (RKEntityMapping *)relationshipMapping.mapping, visitedSets);
                     RKMappingGraphVisitation *cyclicVisitation = [self visitationForMapping:relationshipMapping.mapping atKeyPath:nestedKeyPath];
                     cyclicVisitation.cyclicKeyPath = keyPathToRelationshipCycle;
                     [self.visitations addObject:cyclicVisitation];
