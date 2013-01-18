@@ -431,17 +431,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     
     for (RKEntityMappingEvent *event in self.entityMappingEvents) {
         id objectsAtRoot = [mappingResultDictionary objectForKey:event.rootKey];
-        id managedObjects = nil;
-        @try {
-            managedObjects = event.keyPath ? [objectsAtRoot valueForKeyPath:event.keyPath] : objectsAtRoot;
-        }
-        @catch (NSException *exception) {
-            if ([exception.name isEqualToString:NSUndefinedKeyException]) {
-                RKLogWarning(@"Caught undefined key exception for keyPath '%@' in mapping result: This likely indicates an ambiguous keyPath is used across response descriptor or dynamic mappings.", event.keyPath);
-                continue;
-            }
-            [exception raise];
-        }
+        id managedObjects = event.keyPath ? [objectsAtRoot valueForKeyPath:event.keyPath] : objectsAtRoot;
         NSSet *flattenedSet = RKFlattenCollectionToSet(managedObjects);
         [managedObjectsInMappingResult unionSet:flattenedSet];
     }
