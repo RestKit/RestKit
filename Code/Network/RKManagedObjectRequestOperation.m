@@ -321,6 +321,8 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 
     if ([targetObject isKindOfClass:[NSManagedObject class]]) {
         self.targetObjectID = [targetObject objectID];
+    } else {
+        self.targetObjectID = nil;
     }
 }
 
