@@ -103,7 +103,8 @@
 
  ## Limitations and Caveats
 
- @warning `RKManagedObjectRequestOperation` **does NOT** support object mapping that targets an `NSManagedObjectContext` with a `concurrencyType` of `NSConfinementConcurrencyType`.
+ 1. `RKManagedObjectRequestOperation` **does NOT** support object mapping that targets an `NSManagedObjectContext` with a `concurrencyType` of `NSConfinementConcurrencyType`.
+ 1. `RKManagedObjectRequestOperation` can become deadlocked if configured to perform mapping onto an `NSManagedObjectContext` with the `NSMainQueueConcurrencyType` and is invoked synchronously from the main thread via `start` or an attempt is made to await completion of the operation via `waitUntilFinished`. This occurs because managed object contexts with the `NSMainQueueConcurrencyType` are dependent upon the execution of the main thread's run loop to perform their work and `waitUntilFinished` blocks the calling thread, leading to a deadlock when called from the main thread. Rather than awaiting completion of the operation via `waitUntilFinishes`, consider using a completion block, key-value observation, or spinning the run-loop via `[[NSRunLoop currentRunLoop] runUntilDate:]`.
 
  @see `RKObjectRequestOperation`
  @see `RKEntityMapping`
