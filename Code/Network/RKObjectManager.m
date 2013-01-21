@@ -271,71 +271,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return RKMIMETypeFormURLEncoded;
 }
 
-@interface RKTemporaryManagedObjectVisitor : NSObject
-
-+ (NSSet *)temporaryManagedObjectsFromObject:(NSManagedObject *)managedObject;
-
-- (id)initWithManagedObject:(NSManagedObject *)managedObject;
-@property (nonatomic, readonly) NSSet *temporaryObjects;
-@end
-
-@interface RKTemporaryManagedObjectVisitor ()
-@property (nonatomic, strong) NSMutableSet *mutableTemporaryObjects;
-@property (nonatomic, strong) NSMutableDictionary *mutableVisitedObjectsToRelationships;
-@end
-
-@implementation RKTemporaryManagedObjectVisitor
-
-+ (NSSet *)temporaryManagedObjectsFromObject:(NSManagedObject *)managedObject
-{
-    RKTemporaryManagedObjectVisitor *visitor = [[RKTemporaryManagedObjectVisitor alloc] initWithManagedObject:managedObject];
-    return visitor.temporaryObjects;
-}
-
-- (id)initWithManagedObject:(NSManagedObject *)managedObject
-{
-    self = [super init];
-    if (self) {
-        self.mutableVisitedObjectsToRelationships = [NSMutableDictionary new];
-        self.mutableTemporaryObjects = [NSMutableSet set];
-        
-        if ([managedObject.objectID isTemporaryID]) [self.mutableTemporaryObjects addObject:managedObject];
-        [[managedObject.entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationship, BOOL *stop) {
-            [self visitObjectsAtRelationship:relationship ofObject:managedObject];
-        }];
-    }
-    return self;
-}
-
-- (void)visitObjectsAtRelationship:(NSRelationshipDescription *)relationship ofObject:(NSManagedObject *)managedObject
-{
-    NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:managedObject];
-    NSMutableSet *visitedRelationships = [self.mutableVisitedObjectsToRelationships objectForKey:dictionaryKey];
-    if (!visitedRelationships) {
-        visitedRelationships = [NSMutableSet set];
-        [self.mutableVisitedObjectsToRelationships setObject:visitedRelationships forKey:dictionaryKey];
-    }
-    if ([visitedRelationships containsObject:relationship]) return;
-    [visitedRelationships addObject:relationship];
-    
-    id relatedObjectOrObjects = [managedObject valueForKey:relationship.name];
-    if (relatedObjectOrObjects && ![relationship isToMany]) relatedObjectOrObjects = @[ relatedObjectOrObjects ];
-    
-    for (NSManagedObject *relatedObject in relatedObjectOrObjects) {
-        if ([[relatedObject objectID] isTemporaryID]) [self.mutableTemporaryObjects addObject:relatedObject];
-        [[relatedObject.entity relationshipsByName] enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationship, BOOL *stop) {
-            [self visitObjectsAtRelationship:relationship ofObject:relatedObject];
-        }];
-    }
-}
-
-- (NSSet *)temporaryObjects
-{
-    return [self.mutableTemporaryObjects copy];
-}
-
-@end
-
 ///////////////////////////////////
 
 @interface RKObjectManager ()
@@ -596,7 +531,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         operation = [self managedObjectRequestOperationWithRequest:request managedObjectContext:managedObjectContext success:nil failure:nil];
 
         if ([object isKindOfClass:[NSManagedObject class]]) {
-            NSSet *temporaryObjects = [RKTemporaryManagedObjectVisitor temporaryManagedObjectsFromObject:object];
+            static NSPredicate *temporaryObjectsPredicate = nil;
+            if (! temporaryObjectsPredicate) temporaryObjectsPredicate = [NSPredicate predicateWithFormat:@"objectID.isTemporaryID == YES"];
+            NSSet *temporaryObjects = [[managedObjectContext insertedObjects] filteredSetUsingPredicate:temporaryObjectsPredicate];
             if ([temporaryObjects count]) {
                 RKLogInfo(@"Asked to perform object request for NSManagedObject with temporary object IDs: Obtaining permanent ID before proceeding.");
                 __block BOOL _blockSuccess;

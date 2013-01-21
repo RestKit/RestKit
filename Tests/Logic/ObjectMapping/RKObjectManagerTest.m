@@ -1005,4 +1005,121 @@
     expect(user.name).to.equal(@"Blake");
 }
 
+- (void)testPostingTemporaryObjectThatDoesNotExistInCacheDoesNotCreateDuplicatesWithFetchRequestCache
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    managedObjectStore.managedObjectCache = managedObjectCache;
+    
+    NSEntityDescription *entity = [managedObjectStore.managedObjectModel entitiesByName][@"Human"];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.identificationAttributes = @[ @"railsID" ];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID", @"name": @"name" }];
+    
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    [childContext setParentContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:childContext];
+    
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    objectManager.managedObjectStore = managedObjectStore;
+    [objectManager addResponseDescriptor:[RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:@"/humans" keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:201]]];
+    __block RKMappingResult *mappingResult = nil;
+    [objectManager postObject:human path:@"/humans" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    
+    expect(mappingResult).willNot.beNil();
+    
+    expect([[human objectID] isTemporaryID]).to.beFalsy();
+    
+    NSSet *managedObjects = [managedObjectCache managedObjectsWithEntity:entity attributeValues:@{ @"railsID": @(1) } inManagedObjectContext:childContext];
+    expect(managedObjects).to.haveCountOf(1);
+    
+    [objectManager postObject:human path:@"/humans" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    
+    expect(mappingResult).willNot.beNil();
+    managedObjects = [managedObjectCache managedObjectsWithEntity:entity attributeValues:@{ @"railsID": @(1) } inManagedObjectContext:childContext];
+    expect(managedObjects).to.haveCountOf(1);
+}
+
+- (void)testPostingTemporaryObjectWithChildObjectsThatDoesNotExistInCacheDoesNotCreateDuplicatesWithFetchRequestCache
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    managedObjectStore.managedObjectCache = managedObjectCache;
+    
+    NSManagedObject *developmentTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [developmentTag setValue:@"development" forKey:@"name"];
+    NSManagedObject *restkitTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [restkitTag setValue:@"restkit" forKey:@"name"];
+    
+    NSManagedObject *post = [NSEntityDescription insertNewObjectForEntityForName:@"Post" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [post setValue:@"Post Title" forKey:@"title"];
+    [post setValue:[NSSet setWithObjects:developmentTag, restkitTag, nil]  forKey:@"tags"];
+    
+    RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
+    postMapping.identificationAttributes = @[ @"title" ];
+    [postMapping addAttributeMappingsFromArray:@[ @"title", @"body" ]];
+    RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
+    [tagMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"tags" toKeyPath:@"tags" withMapping:tagMapping];
+    [postMapping addPropertyMapping:relationshipMapping];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:postMapping pathPattern:nil keyPath:@"post" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    RKObjectMapping *tagRequestMapping = [RKObjectMapping requestMapping];
+    [tagRequestMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKObjectMapping *postRequestMapping = [RKObjectMapping requestMapping];
+    [postRequestMapping addAttributeMappingsFromArray:@[ @"title", @"body" ]];
+    [postRequestMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"tags" toKeyPath:@"tags" withMapping:tagRequestMapping]];
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:postRequestMapping objectClass:[NSManagedObject class] rootKeyPath:nil];
+    
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.managedObjectStore = managedObjectStore;
+    [objectManager addResponseDescriptor:responseDescriptor];
+    [objectManager addRequestDescriptor:requestDescriptor];
+    
+    expect([post isNew]).to.equal(YES);
+    expect([post.objectID isTemporaryID]).to.equal(YES);
+    expect([developmentTag isNew]).to.equal(YES);
+    expect([developmentTag.objectID isTemporaryID]).to.equal(YES);
+    expect([restkitTag isNew]).to.equal(YES);
+    expect([restkitTag.objectID isTemporaryID]).to.equal(YES);
+    
+    __block RKMappingResult *postMappingResult = nil;
+    RKManagedObjectRequestOperation *operation = [objectManager appropriateObjectRequestOperationWithObject:post method:RKRequestMethodPOST path:@"/posts.json" parameters:nil];
+    operation.savesToPersistentStore = NO;
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        postMappingResult = mappingResult;
+    } failure:nil];
+    [objectManager enqueueObjectRequestOperation:operation];
+    
+    expect(postMappingResult).willNot.beNil();
+    expect([post.objectID isTemporaryID]).will.equal(NO);
+    expect([developmentTag.objectID isTemporaryID]).will.equal(NO);
+    expect([restkitTag.objectID isTemporaryID]).will.equal(NO);
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Tag"];
+    NSUInteger tagsCount = [objectManager.managedObjectStore.mainQueueManagedObjectContext countForFetchRequest:fetchRequest error:nil];
+    expect(tagsCount).to.equal(2);
+}
+
+- (void)testMappingErrorsFromFiveHundredStatusCodeRange
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassServerError);
+    RKObjectMapping *errorResponseMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorResponseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
+    [objectManager addResponseDescriptor:[RKResponseDescriptor responseDescriptorWithMapping:errorResponseMapping pathPattern:nil keyPath:@"errors" statusCodes:statusCodes]];
+    
+    __block NSError *error = nil;
+    [objectManager getObjectsAtPath:@"/fail" parameters:nil success:nil failure:^(RKObjectRequestOperation *operation, NSError *blockError) {
+        error = blockError;
+    }];
+    
+    expect(error).willNot.beNil();
+    expect([error localizedDescription]).to.equal(@"error1, error2");
+}
+
 @end

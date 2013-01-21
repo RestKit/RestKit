@@ -465,4 +465,28 @@
 // trying to lookup with empty dictionary
 // using weird attribute types as cache keys
 
+- (void)testEvictionOfArrayOfIdentifierAttributes
+{
+    // Put some objects into the cache
+    // Delete them
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
+    human1.railsID = [NSNumber numberWithInteger:12345];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
+    human2.railsID = [NSNumber numberWithInteger:56789];
+    [self.managedObjectContext save:nil];
+
+    [self.cache addObject:human1];
+    [self.cache addObject:human2];
+
+    self.cache.monitorsContextForChanges = NO;
+
+    NSDictionary *attributeValues = @{ @"railsID" : @[ human1.railsID, human2.railsID ] };
+
+    [self.managedObjectContext deleteObject:human1];
+    [self.managedObjectContext deleteObject:human2];
+    [self.managedObjectContext save:nil];
+
+    [self.cache objectsWithAttributeValues:attributeValues inContext:self.managedObjectContext];
+}
+
 @end

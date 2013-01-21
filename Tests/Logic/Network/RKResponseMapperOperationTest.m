@@ -87,7 +87,7 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     [mapper start];
     expect(mapper.error).notTo.beNil();
     expect(mapper.error.code).to.equal(NSURLErrorBadServerResponse);
-    expect([mapper.error localizedDescription]).to.equal(@"Loaded an unprocessable client error response (422)");
+    expect([mapper.error localizedDescription]).to.equal(@"Loaded an unprocessable error response (422)");
 }
 
 // 422, with mappable error payload
@@ -118,7 +118,7 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     [mapper start];
     expect(mapper.error).notTo.beNil();
     expect(mapper.error.code).to.equal(NSURLErrorBadServerResponse);
-    expect([mapper.error localizedDescription]).to.equal(@"Loaded an unprocessable client error response (422)");
+    expect([mapper.error localizedDescription]).to.equal(@"Loaded an unprocessable error response (422)");
 }
 
 // 422, empty JSON dictionary, no response descriptors
@@ -131,7 +131,7 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     [mapper start];
     expect(mapper.error).notTo.beNil();
     expect(mapper.error.code).to.equal(NSURLErrorBadServerResponse);
-    expect([mapper.error localizedDescription]).to.equal(@"Loaded an unprocessable client error response (422)");
+    expect([mapper.error localizedDescription]).to.equal(@"Loaded an unprocessable error response (422)");
 }
 
 - (void)testMappingServerErrorToCustomErrorClass

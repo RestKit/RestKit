@@ -278,7 +278,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     expect(success).to.beTruthy();
     expect(resourceValue).to.equal(@(YES));
 }
-#endif
+
 
 - (void)testResetPersistentStoresDoesNotTriggerDeadlock
 {
@@ -299,6 +299,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
         [managedObject2 setValue:@"Blake" forKey:@"name"];
     }];
 }
+#endif
 
 - (void)testCleanupOfExternalStorageDirectoryOnReset
 {
@@ -344,6 +345,13 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
     NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    NSEntityDescription *humanEntity = [managedObjectStore.managedObjectModel entitiesByName][@"Human"];
+    NSAttributeDescription *photoAttribute = [[NSAttributeDescription alloc] init];
+    [photoAttribute setName:@"photo"];
+    [photoAttribute setAttributeType:NSTransformableAttributeType];
+    [photoAttribute setAllowsExternalBinaryDataStorage:YES];
+    NSArray *newProperties = [[humanEntity properties] arrayByAddingObject:photoAttribute];
+    [humanEntity setProperties:newProperties];
     NSError *error = nil;
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"This is the Store.sqlite"];
     NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];

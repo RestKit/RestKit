@@ -48,11 +48,22 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     return error;
 }
 
-static NSError *RKUnprocessableClientErrorFromResponse(NSHTTPURLResponse *response)
+static NSIndexSet *RKErrorStatusCodes()
 {
-    NSCAssert(NSLocationInRange(response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassClientError)), @"Expected response status code to be in the 400-499 range, instead got %ld", (long) response.statusCode);
+    static NSIndexSet *errorStatusCodes = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        errorStatusCodes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(400, 200)];
+    });
+    
+    return errorStatusCodes;
+}
+
+static NSError *RKUnprocessableErrorFromResponse(NSHTTPURLResponse *response)
+{
+    NSCAssert([RKErrorStatusCodes() containsIndex:response.statusCode], @"Expected response status code to be in the 400-599 range, instead got %ld", (long) response.statusCode);
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable client error response (%ld)", (long) response.statusCode] forKey:NSLocalizedDescriptionKey];
+    [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable error response (%ld)", (long) response.statusCode] forKey:NSLocalizedDescriptionKey];
     [userInfo setValue:[response URL] forKey:NSURLErrorFailingURLErrorKey];
     
     return [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
@@ -211,11 +222,11 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 {
     if (self.isCancelled) return;
 
-    BOOL isClientError = NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassClientError));
-
+    BOOL isErrorStatusCode = [RKErrorStatusCodes() containsIndex:self.response.statusCode];
+    
     // If we are an error response and empty, we emit an error that the content is unmappable
-    if (isClientError && [self hasEmptyResponse]) {
-        self.error = RKUnprocessableClientErrorFromResponse(self.response);
+    if (isErrorStatusCode && [self hasEmptyResponse]) {
+        self.error = RKUnprocessableErrorFromResponse(self.response);
         return;
     }
 
@@ -258,12 +269,12 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     self.mappingResult = [self performMappingWithObject:parsedBody error:&error];    
     
     // If the response is a client error return either the mapping error or the mapped result to the caller as the error
-    if (isClientError) {
+    if (isErrorStatusCode) {
         if ([self.mappingResult count] > 0) {
             error = RKErrorFromMappingResult(self.mappingResult);
         } else {
             // We encountered a client error that we could not map, throw unprocessable error
-            if (! error) error = RKUnprocessableClientErrorFromResponse(self.response);
+            if (! error) error = RKUnprocessableErrorFromResponse(self.response);
         }
         self.error = error;
         return;

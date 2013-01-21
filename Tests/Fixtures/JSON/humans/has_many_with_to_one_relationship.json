@@ -1,0 +1,18 @@
+{
+   "result" : {
+      "items" : [
+         {
+            "human" : {
+               "age" : 23,
+               "favorite_cat" : {
+                  "id" : 4321,
+                  "name" : "Hank"
+               },
+               "favorite_cat_id" : 4321,
+               "id" : 23,
+               "name" : "Blake Watters"
+            }
+         }
+      ]
+   }
+}

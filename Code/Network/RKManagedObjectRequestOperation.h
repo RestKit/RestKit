@@ -92,10 +92,19 @@
  ## 304 'Not Modified' Responses
  
  In the event that a managed object request operation loads a 304 'Not Modified' response for an HTTP request no object mapping is performed as Core Data is assumed to contain a managed object representation of the resource requested. No object mapping is performed on the cached response body, making a cache hit for a managed object request operation a very lightweight operation. To build the mapping result returned to the caller, all of the fetch request blocks matching the request URL will be invoked and each fetch request returned is executed against the managed object context and the objects returned are added to the mapping result. Please note that all managed objects returned in the mapping result for a 'Not Modified' response will be returned under the `[NSNull null]` key path.
+ 
+ ## Subclassing Notes
+ 
+ This class relies on the following `RKMapperOperationDelegate` method methods to do its work:
+ 
+ 1. `mapperDidFinishMapping:`
+ 
+ If you subclass `RKManagedObjectRequestOperation` and implement any of the above methods then you must call the superclass implementation.
 
  ## Limitations and Caveats
 
- @warning `RKManagedObjectRequestOperation` **does NOT** support object mapping that targets an `NSManagedObjectContext` with a `concurrencyType` of `NSConfinementConcurrencyType`.
+ 1. `RKManagedObjectRequestOperation` **does NOT** support object mapping that targets an `NSManagedObjectContext` with a `concurrencyType` of `NSConfinementConcurrencyType`.
+ 1. `RKManagedObjectRequestOperation` can become deadlocked if configured to perform mapping onto an `NSManagedObjectContext` with the `NSMainQueueConcurrencyType` and is invoked synchronously from the main thread via `start` or an attempt is made to await completion of the operation via `waitUntilFinished`. This occurs because managed object contexts with the `NSMainQueueConcurrencyType` are dependent upon the execution of the main thread's run loop to perform their work and `waitUntilFinished` blocks the calling thread, leading to a deadlock when called from the main thread. Rather than awaiting completion of the operation via `waitUntilFinishes`, consider using a completion block, key-value observation, or spinning the run-loop via `[[NSRunLoop currentRunLoop] runUntilDate:]`.
 
  @see `RKObjectRequestOperation`
  @see `RKEntityMapping`

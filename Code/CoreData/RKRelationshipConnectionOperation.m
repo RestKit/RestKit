@@ -162,7 +162,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
         if ([self.connection.relationship isToMany]) {
             connectionResult = managedObjects;
         } else {
-            if ([managedObjects count] > 1) RKLogWarning(@"Retrieved %ld objects satisfying connection criteria for one-to-one relationship connection: only object will be connected.", (long) [managedObjects count]);
+            if ([managedObjects count] > 1) RKLogWarning(@"Retrieved %ld objects satisfying connection criteria for one-to-one relationship connection: only one object will be connected.", (long) [managedObjects count]);
             if ([managedObjects count]) connectionResult = [managedObjects anyObject];
         }
     } else if ([self.connection isKeyPathConnection]) {

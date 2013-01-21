@@ -23,7 +23,8 @@
 
 @implementation RKObjectMappingOperationDataSource
 
-- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation
+           withMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
 {
     return [mapping.objectClass new];
 }
