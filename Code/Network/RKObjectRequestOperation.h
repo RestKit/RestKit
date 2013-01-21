@@ -168,6 +168,17 @@
  */
 - (void)setWillMapDeserializedResponseBlock:(id (^)(id deserializedResponseBody))block;
 
+///-----------------------------------------------------
+/// @name Determining Whether a Request Can Be Processed
+///-----------------------------------------------------
+
+/**
+ Returns a Boolean value determining whether or not the class can process the specified request.
+ 
+ @param request The request that is determined to be supported or not supported for this class.
+ */
++ (BOOL)canProcessRequest:(NSURLRequest *)request;
+
 ///-------------------------------------------
 /// @name Accessing the Response Mapping Queue
 ///-------------------------------------------

@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'xcoder'
 require 'restkit/rake'
-require 'ruby-debug'
+require 'debugger'
 
 RestKit::Rake::ServerTask.new do |t|
   t.port = 4567
@@ -23,9 +23,9 @@ namespace :test do
   namespace :logic do
     desc "Run the logic tests for iOS"
     task :ios => :kill_simulator do
-      config = Xcode.project(:RestKit).target(:RestKitTests).config(:Debug)
+      config = Xcode.workspace(:RestKit).scheme(:RestKitTests)
       builder = config.builder
-      build_dir = File.dirname(config.target.project.path) + '/Build'
+      build_dir = File.dirname(config.parent.workspace_root) + '/Build'
       builder.symroot = build_dir + '/Products'
       builder.objroot = build_dir
     	builder.test(:sdk => 'iphonesimulator')
@@ -33,9 +33,9 @@ namespace :test do
     
     desc "Run the logic tests for OS X"
     task :osx do
-      config = Xcode.project(:RestKit).target(:RestKitFrameworkTests).config(:Debug)
+      config = Xcode.workspace(:RestKit).scheme(:RestKitFrameworkTests)
       builder = config.builder
-      build_dir = File.dirname(config.target.project.path) + '/Build'
+      build_dir = File.dirname(config.parent.workspace_root) + '/Build'
       builder.symroot = build_dir + '/Products'
       builder.objroot = build_dir
     	builder.test(:sdk => 'macosx')
@@ -45,31 +45,12 @@ namespace :test do
   desc "Run the unit tests for iOS and OS X"
   task :logic => ['logic:ios', 'logic:osx']
   
-  namespace :application do
-    desc "Run the application tests for iOS"
-    task :ios => :kill_simulator do
-      config = Xcode.project(:RKApplicationTests).target('Application Tests').config(:Debug)
-      builder = config.builder
-      build_dir = File.dirname(config.target.project.path) + '/Build'
-      builder.symroot = build_dir + '/Products'
-      builder.objroot = build_dir
-    	builder.test(:sdk => 'iphonesimulator')
-    end
-  end
-  
-  desc "Run the application tests for iOS"
-  task :application => 'application:ios'
-  
   desc "Run all tests for iOS and OS X"
   task :all do
     Rake.application.invoke_task("test:logic")
     unit_status = $?.exitstatus
-    puts "\033[0;33m!! Warning: RestKit application tests are disabled!!"
-    # Rake.application.invoke_task("test:application")
-    integration_status = $?.exitstatus
     puts "\033[0;31m!! Unit Tests failed with exit status of #{unit_status}" if unit_status != 0
-    puts "\033[0;31m!! Integration Tests failed with exit status of #{integration_status}" if integration_status != 0
-    puts "\033[0;32m** All Tests executed successfully" if unit_status == 0 && integration_status == 0
+    puts "\033[0;32m** All Tests executed successfully" if unit_status == 0 #&& integration_status == 0
   end
 end
 
@@ -100,10 +81,9 @@ end
 
 desc "Build RestKit for iOS and Mac OS X"
 task :build do
-  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphonesimulator5.0 clean build")
-  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphoneos clean build")
-  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk macosx10.6 clean build")
-  run("xcodebuild -workspace Examples/RKCatalog/RKCatalog.xcodeproj/project.xcworkspace -scheme RKCatalog -sdk iphoneos clean build")
+  run("xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphonesimulator5.0 clean build")
+  run("xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphoneos clean build")
+  run("xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk macosx10.6 clean build")
 end
 
 desc "Generate documentation via appledoc"
@@ -175,7 +155,7 @@ end
 namespace :build do
   desc "Build all Example projects to ensure they are building properly"
   task :examples do
-    ios_sdks = %w{iphoneos iphonesimulator5.0}
+    ios_sdks = %w{iphoneos iphonesimulator5.0 iphonesimulator6.0}
     osx_sdks = %w{macosx}
     osx_projects = %w{RKMacOSX}
     
@@ -198,26 +178,4 @@ end
 desc "Validate a branch is ready for merging by checking for common issues"
 task :validate => [:build, 'docs:check', 'uispec:all'] do  
   puts "Project state validated successfully. Proceed with merge."
-end
-
-namespace :payload do
-  task :generate do
-    require 'json'
-    require 'faker'
-    
-    ids = (1..25).to_a
-    child_ids = (50..100).to_a
-    child_counts = (10..25).to_a
-    hash = ids.inject({'parents' => []}) do |hash, parent_id|
-      child_count = child_counts.sample
-      children = (0..child_count).collect do
-        {'name' => Faker::Name.name, 'childID' => child_ids.sample}
-      end
-      parent = {'parentID' => parent_id, 'name' => Faker::Name.name, 'children' => children}
-      hash['parents'] << parent
-      hash
-    end
-    File.open('payload.json', 'w+') { |f| f << hash.to_json }
-    puts "Generated payload at: payload.json"
-  end
 end

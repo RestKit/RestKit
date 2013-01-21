@@ -96,7 +96,7 @@
 {
     NSParameterAssert(entity);
     NSParameterAssert(attributeNames);
-    for (RKEntityByAttributeCache *cache in self.attributeCaches) {
+    for (RKEntityByAttributeCache *cache in [self.attributeCaches copy]) {
         if ([cache.entity isEqual:entity] && [cache.attributes isEqualToArray:attributeNames]) {
             return cache;
         }
@@ -109,7 +109,7 @@
 {
     NSAssert(entity, @"Cannot retrieve attribute caches for a nil entity");
     NSMutableSet *set = [NSMutableSet set];
-    for (RKEntityByAttributeCache *cache in self.attributeCaches) {
+    for (RKEntityByAttributeCache *cache in [self.attributeCaches copy]) {
         if ([cache.entity isEqual:entity]) {
             [set addObject:cache];
         }

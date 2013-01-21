@@ -202,9 +202,14 @@ class RestKitTestServer < Sinatra::Base
     content_type 'application/json'
     render_fixture('/JSON/errors.json', :status => 500)
   end
+  
+  get '/500' do
+    status 500
+    content_type 'application/json'
+  end
 
   # Expects an uploaded 'file' param
-  post '/upload' do
+  post '/api/upload/' do
     unless params['file']
       status 500
       return "No file parameter was provided"
@@ -214,7 +219,8 @@ class RestKitTestServer < Sinatra::Base
       f.write(params['file'][:tempfile].read)
     end
     status 200
-    "Uploaded successfully to '#{upload_path}'"
+    content_type 'application/json'
+    { :name => "Blake" }.to_json
   end
 
   # Return 200 after a delay
@@ -303,6 +309,11 @@ class RestKitTestServer < Sinatra::Base
     { :posts => [{:title => 'Post Title', :body => 'Some body.', :tags => [{ :name => 'development' }, { :name => 'restkit' }] }] }.to_json
   end
   
+  post '/posts.json' do
+    content_type 'application/json'
+    { :post => { :title => 'Post Title', :body => 'Some body.', :tags => [{ :name => 'development' }, { :name => 'restkit' }] } }.to_json
+  end
+
   get '/posts_with_invalid.json' do
     content_type 'application/json'
     { :posts => [{:title => 'Post Title', :body => 'Some body.'}, {:title => '', :body => 'Some body.'} ] }.to_json

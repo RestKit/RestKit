@@ -195,10 +195,21 @@
  */
 @property (nonatomic, weak) id<RKMappingOperationDataSource> dataSource;
 
+///--------------------------------
+/// @name Accessing Mapping Details
+///--------------------------------
+
 /**
  The error, if any, that occurred during the execution of the mapping operation.
  */
 @property (nonatomic, strong, readonly) NSError *error;
+
+/**
+ Returns a dictionary containing information about the mappings applied during the execution of the operation. The keys of the dictionary are keyPaths into the `destinationObject` for values that were mapped and the values are the corresponding `RKPropertyMapping` objects used to perform the mapping.
+ 
+ Mapping info is aggregated for all child mapping operations executed for relationships.
+ */
+@property (nonatomic, readonly) NSDictionary *mappingInfo;
 
 ///-------------------------
 /// @name Performing Mapping

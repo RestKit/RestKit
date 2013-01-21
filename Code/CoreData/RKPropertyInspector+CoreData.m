@@ -59,14 +59,17 @@
             Class managedObjectClass = objc_getClass(className);
 
             objc_property_t prop = class_getProperty(managedObjectClass, propertyName);
-
-            const char *attr = property_getAttributes(prop);
-            Class destinationClass = RKKeyValueCodingClassFromPropertyAttributes(attr);
-            if (destinationClass) {
-                NSDictionary *propertyInspection = @{ RKPropertyInspectionNameKey: name,
-                                                      RKPropertyInspectionKeyValueCodingClassKey: destinationClass,
-                                                      RKPropertyInspectionIsPrimitiveKey: @(NO) };
-                [entityInspection setObject:propertyInspection forKey:name];
+            
+            // Property is not defined in the Core Data model -- we cannot infer any details about the destination type
+            if (prop) {
+                const char *attr = property_getAttributes(prop);
+                Class destinationClass = RKKeyValueCodingClassFromPropertyAttributes(attr);
+                if (destinationClass) {
+                    NSDictionary *propertyInspection = @{ RKPropertyInspectionNameKey: name,
+                                                          RKPropertyInspectionKeyValueCodingClassKey: destinationClass,
+                                                          RKPropertyInspectionIsPrimitiveKey: @(NO) };
+                    [entityInspection setObject:propertyInspection forKey:name];
+                }
             }
         }
     }
@@ -88,8 +91,11 @@
         } else {
             NSEntityDescription *destinationEntity = [relationshipDescription destinationEntity];
             Class destinationClass = NSClassFromString([destinationEntity managedObjectClassName]);
+            if (! destinationClass) {
+                RKLogWarning(@"Retrieved `Nil` value for class named '%@': This likely indicates that the class is invalid or does not exist in the current target.", [destinationEntity managedObjectClassName]);
+            }
             NSDictionary *propertyInspection = @{ RKPropertyInspectionNameKey: name,
-                                                  RKPropertyInspectionKeyValueCodingClassKey: destinationClass,
+                                                  RKPropertyInspectionKeyValueCodingClassKey: destinationClass ?: [NSNull null],
                                                   RKPropertyInspectionIsPrimitiveKey: @(NO) };
             [entityInspection setObject:propertyInspection forKey:name];
         }

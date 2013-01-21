@@ -41,7 +41,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:[NSDictionary dictionary] withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:[NSDictionary dictionary] withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat([object class], is(equalTo([RKMappableObject class])));
 }
@@ -55,7 +55,7 @@
     mapping.identificationAttributes = @[ @"railsID" ];
     
     NSDictionary *data = [NSDictionary dictionary];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(instanceOf([RKHuman class])));
 }
@@ -68,7 +68,7 @@
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     
     NSDictionary *data = [NSDictionary dictionary];    
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(instanceOf([RKHuman class])));
 }
@@ -83,7 +83,7 @@
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNull null] forKey:@"id"];    
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(instanceOf([RKHuman class])));
 }
@@ -110,7 +110,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
 }
@@ -137,7 +137,7 @@
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:nestedDictionary withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:nestedDictionary withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
 }
@@ -164,7 +164,7 @@
     NSDictionary *representation = @{ @"monkey": @{ @"created_at": createdAtString } };
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
 }
@@ -192,7 +192,7 @@
     NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];    
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];    
-    NSManagedObject *object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping];
+    NSManagedObject *object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     expect([object managedObjectContext]).to.equal(managedObjectStore.persistentStoreManagedObjectContext);
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
@@ -221,7 +221,7 @@
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:nestedDictionary withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:nestedDictionary withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
 }
@@ -248,7 +248,7 @@
     NSDictionary *representation = @{ @"monkey": @{ @"created_at": createdAtString } };
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
 }
@@ -279,7 +279,7 @@
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    RKHuman *object = [dataSource mappingOperation:nil targetObjectForRepresentation:nestedDictionary withMapping:mapping];
+    RKHuman *object = [dataSource mappingOperation:nil targetObjectForRepresentation:nestedDictionary withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
     assertThatInteger([object.railsID integerValue], is(equalToInteger(12345)));
@@ -333,7 +333,7 @@
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
 }
@@ -364,7 +364,7 @@
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
 }
@@ -391,7 +391,34 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     NSDictionary *representation = @{ @"Blake": @{ @"id": @"12345" } };
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
+    expect(object).notTo.beNil();
+    expect(object).to.equal(human);
+}
+
+- (void)testRetrievalOfTargetObjectWithDynamicNestingKeyMappingInWhichIdentifierAttributeIsNotTheDynamicNestingKey
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
+    [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
+    [mapping addAttributeMappingsFromDictionary:@{ @"(name).id": @"railsID" }];
+    
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    human.name = @"Blake";
+    human.railsID = @(12345);
+    [managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    
+    NSError *error = nil;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
+    expect(count).to.beGreaterThan(0);
+    
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                      cache:managedObjectStore.managedObjectCache];
+    NSDictionary *representation = @{ @"Blake": @{ @"id": @"12345" } };
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
 }
@@ -418,7 +445,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     NSDictionary *representation = @{ @"Blake": @{ @"id": @"12345" } };
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
 }
@@ -445,7 +472,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     NSDictionary *representation = @{ @"Blake": @{ @"id": @"12345" } };
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
 }
@@ -479,7 +506,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human1);
 }

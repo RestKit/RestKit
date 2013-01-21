@@ -226,7 +226,6 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 
 - (NSSet *)objectsWithAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
 {
-    // TODO: Assert that the attribute values contains all of the cache attributes!!!
     NSMutableSet *objects = [NSMutableSet set];
     NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
     for (NSString *cacheKey in cacheKeys) {
@@ -281,10 +280,12 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 {
     @synchronized(self.cacheKeysToObjectIDs) {
         if (attributeValues && [attributeValues count]) {
-            NSString *cacheKey = RKCacheKeyForEntityWithAttributeValues(self.entity, attributeValues);
-            NSMutableArray *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
-            if (objectIDs && [objectIDs containsObject:objectID]) {
-                [objectIDs removeObject:objectID];
+            NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
+            for (NSString *cacheKey in cacheKeys) {
+                NSMutableArray *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
+                if (objectIDs && [objectIDs containsObject:objectID]) {
+                    [objectIDs removeObject:objectID];
+                }
             }
         } else {
             RKLogWarning(@"Unable to remove object for object ID %@: empty values dictionary for attributes '%@'", objectID, self.attributes);

@@ -22,6 +22,18 @@
 
 @end
 
+@interface RKMapperTestObjectRequestOperation : RKObjectRequestOperation
+@end
+
+@implementation RKMapperTestObjectRequestOperation
+
+- (void)mapperWillStartMapping:(RKMapperOperation *)mapper
+{
+    // Used for stubbing
+}
+
+@end
+
 @implementation RKTestComplexUser
 @end
 
@@ -42,9 +54,6 @@
 
 - (RKResponseDescriptor *)responseDescriptorForComplexUser
 {
-//    NSMutableDictionary *mappingDictionary = [NSMutableDictionary dictionary];
-//    [mappingsDictionary setObject:userMapping forKey:@"data.STUser"];
-//    return provider;
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     [userMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
 
@@ -99,7 +108,9 @@
     [operationQueue addOperation:requestOperation];
     [operationQueue waitUntilAllOperationsAreFinished];
     
-    expect([requestOperation.error code]).to.equal(NSURLErrorCannotFindHost);
+    // NOTE: If your ISP provides a redirect page for unknown hosts, you'll get a `NSURLErrorCannotDecodeContentData`
+    NSArray *validErrorCodes = @[ @(NSURLErrorCannotDecodeContentData), @(NSURLErrorCannotFindHost) ];
+    assertThat(validErrorCodes, hasItem(@([requestOperation.error code])));
 }
 - (void)testSendingAnObjectRequestOperationToAnBrokenURL
 {
@@ -592,7 +603,68 @@
     [requestOperation waitUntilFinished];
     
     expect(requestOperation.error).notTo.beNil();
-    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299,400-499), got 503");
+    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299), got 503");
+}
+
+- (void)testThatMapperOperationDelegateIsPassedThroughToUnderlyingMapperOperation
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/ComplexNestedUser.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKMapperTestObjectRequestOperation *requestOperation = [[RKMapperTestObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
+    id mockOperation = [OCMockObject partialMockForObject:requestOperation];
+    [[mockOperation expect] mapperWillStartMapping:OCMOCK_ANY];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
+    [mockOperation verify];
+}
+
+- (void)testMappingErrorsFromFiveHundredStatusCodeRange
+{
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassServerError);
+    RKObjectMapping *errorResponseMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorResponseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:errorResponseMapping pathPattern:nil keyPath:@"errors" statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/fail" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).willNot.beNil();
+    expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
+}
+
+- (void)testMappingErrorsWithNilStatusCodesAndTwoHundredDescriptorRegistered
+{
+    RKObjectMapping *errorResponseMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorResponseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
+    RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:errorResponseMapping pathPattern:nil keyPath:@"errors" statusCodes:nil];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    RKResponseDescriptor *userDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:@"user" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/fail" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ userDescriptor, errorDescriptor ]];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).willNot.beNil();
+    expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
+}
+
+- (void)testFiveHundredErrorWithEmptyResponse
+{
+    RKObjectMapping *errorResponseMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorResponseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
+    RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:errorResponseMapping pathPattern:nil keyPath:@"errors" statusCodes:nil];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    RKResponseDescriptor *userDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:@"user" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/500" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ userDescriptor, errorDescriptor ]];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).willNot.beNil();
+    expect([requestOperation.error localizedDescription]).to.equal(@"Loaded an unprocessable response (500) with content type 'application/json'");
 }
 
 @end

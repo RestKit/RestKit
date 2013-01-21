@@ -54,23 +54,6 @@ static BOOL RKEntityMappingIsIdentifiedByNestingAttribute(RKEntityMapping *entit
     return NO;
 }
 
-// We always need to map the dynamic nesting attribute first so that sub-key attribute mappings apply cleanly
-static NSArray *RKEntityIdentificationAttributesInMappingOrder(RKEntityMapping *entityMapping)
-{
-    NSMutableArray *orderedAttributes = [NSMutableArray arrayWithCapacity:[[entityMapping identificationAttributes] count]];
-    for (NSAttributeDescription *attribute in [entityMapping identificationAttributes]) {
-        RKAttributeMapping *attributeMapping = [[entityMapping propertyMappingsByDestinationKeyPath] objectForKey:[attribute name]];
-        if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
-            // We want to map the nesting attribute first
-            [orderedAttributes insertObject:attribute atIndex:0];
-        } else {
-            [orderedAttributes addObject:attribute];
-        }
-    }
-    
-    return orderedAttributes;
-}
-
 static id RKValueForAttributeMappingInRepresentation(RKAttributeMapping *attributeMapping, NSDictionary *representation)
 {
     if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
@@ -96,25 +79,23 @@ static NSDictionary *RKEntityIdentificationAttributesForEntityMappingWithReprese
 {
     RKDateToStringValueTransformer *dateToStringTransformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:entityMapping.preferredDateFormatter
                                                                                                              stringToDateFormatters:entityMapping.dateFormatters];
-    NSArray *orderedAttributes = RKEntityIdentificationAttributesInMappingOrder(entityMapping);
-    BOOL containsNestingAttribute = RKEntityMappingIsIdentifiedByNestingAttribute(entityMapping);
-    __block NSArray *attributeMappings = entityMapping.attributeMappings;
-    if (containsNestingAttribute) RKLogDebug(@"Detected use of nested dictionary key as identifying attribute");
-
-    NSMutableDictionary *entityIdentifierAttributes = [NSMutableDictionary dictionaryWithCapacity:[orderedAttributes count]];
-    [orderedAttributes enumerateObjectsUsingBlock:^(NSAttributeDescription *attribute, NSUInteger idx, BOOL *stop) {
+    NSArray *attributeMappings = entityMapping.attributeMappings;
+    
+    // If the representation is mapped with a nesting attribute, we must apply the nesting value to the representation before constructing the identification attributes
+    RKAttributeMapping *nestingAttributeMapping = [[entityMapping propertyMappingsBySourceKeyPath] objectForKey:RKObjectMappingNestingAttributeKeyName];
+    if (nestingAttributeMapping) {
+        Class attributeClass = [entityMapping classForProperty:nestingAttributeMapping.destinationKeyPath];
+        id attributeValue = RKTransformedValueWithClass([[representation allKeys] lastObject], attributeClass, dateToStringTransformer);
+        attributeMappings = RKApplyNestingAttributeValueToMappings(nestingAttributeMapping.destinationKeyPath, attributeValue, attributeMappings);
+    }
+    
+    // Map the identification attributes
+    NSMutableDictionary *entityIdentifierAttributes = [NSMutableDictionary dictionaryWithCapacity:[entityMapping.identificationAttributes count]];
+    [entityMapping.identificationAttributes enumerateObjectsUsingBlock:^(NSAttributeDescription *attribute, NSUInteger idx, BOOL *stop) {
         RKAttributeMapping *attributeMapping = RKAttributeMappingForNameInMappings([attribute name], attributeMappings);
         Class attributeClass = [entityMapping classForProperty:[attribute name]];
-        id attributeValue = nil;
-        if (containsNestingAttribute && idx == 0) {
-            // This is the nesting attribute
-            attributeValue = RKTransformedValueWithClass([[representation allKeys] lastObject], attributeClass, dateToStringTransformer);
-            attributeMappings = RKApplyNestingAttributeValueToMappings([attribute name], attributeValue, attributeMappings);
-        } else {
-            id sourceValue = RKValueForAttributeMappingInRepresentation(attributeMapping, representation);
-            attributeValue = RKTransformedValueWithClass(sourceValue, attributeClass, dateToStringTransformer);
-        }
-        
+        id sourceValue = RKValueForAttributeMappingInRepresentation(attributeMapping, representation);
+        id attributeValue = RKTransformedValueWithClass(sourceValue, attributeClass, dateToStringTransformer);
         [entityIdentifierAttributes setObject:attributeValue ?: [NSNull null] forKey:[attribute name]];
     }];
     
@@ -210,7 +191,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationship
 {
     NSAssert(representation, @"Mappable data cannot be nil");
     NSAssert(self.managedObjectContext, @"%@ must be initialized with a managed object context.", [self class]);
@@ -219,16 +200,36 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         return [mapping.objectClass new];
     }
 
-    RKEntityMapping *entityMapping = (RKEntityMapping *)mapping;    
+    RKEntityMapping *entityMapping = (RKEntityMapping *)mapping;
     NSDictionary *entityIdentifierAttributes = RKEntityIdentificationAttributesForEntityMappingWithRepresentation(entityMapping, representation);
     if (! self.managedObjectCache) {
         RKLogWarning(@"Performing managed object mapping with a nil managed object cache:\n"
                       "Unable to update existing object instances by identification attributes. Duplicate objects may be created.");
     }
-
-    // If we have found the entity identification attributes, try to find an existing instance to update
+    
     NSEntityDescription *entity = [entityMapping entity];
     NSManagedObject *managedObject = nil;
+    
+    // If we are mapping within a relationship, try to find an existing object without identifying attributes
+    if (relationship) {
+        id existingObjects = [mappingOperation.destinationObject valueForKeyPath:relationship.destinationKeyPath];
+        if (existingObjects && ![existingObjects respondsToSelector:@selector(count)]) existingObjects = @[ existingObjects ];
+        NSArray *identificationAttributes = [entityMapping.identificationAttributes valueForKey:@"name"];
+        for (NSManagedObject *existingObject in existingObjects) {
+            if (! identificationAttributes) {
+                managedObject = existingObject;
+                break;
+            }
+            
+            NSDictionary *identificationAttributeValues = [existingObject dictionaryWithValuesForKeys:identificationAttributes];
+            if ([[NSSet setWithArray:[identificationAttributeValues allValues]] isEqualToSet:[NSSet setWithObject:[NSNull null]]]) {
+                managedObject = existingObject;
+                break;
+            }
+        }
+    }
+    
+    // If we have found the entity identification attributes, try to find an existing instance to update
     if ([entityIdentifierAttributes count]) {
         NSSet *objects = [self.managedObjectCache managedObjectsWithEntity:entity
                                                            attributeValues:entityIdentifierAttributes

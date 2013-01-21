@@ -94,7 +94,7 @@
  @see `RKObjectParameterization`
  @see `RKObjectManager`
  */
-+ (instancetype)requestMapping;
++ (RKObjectMapping *)requestMapping;
 
 ///----------------------------------
 /// @name Accessing Property Mappings

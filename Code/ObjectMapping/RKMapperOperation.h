@@ -97,6 +97,11 @@
  */
 @property (nonatomic, strong, readonly) RKMappingResult *mappingResult;
 
+/**
+ Returns a dictionary containing information about the mappings applied during the execution of the operation. The keys of the dictionary are keyPaths into the `mappingResult` for values that were mapped and the values are the corresponding `RKPropertyMapping` objects used to perform the mapping.
+ */
+@property (nonatomic, readonly) NSDictionary *mappingInfo;
+
 ///-------------------------------------
 /// @name Managing Mapping Configuration
 ///-------------------------------------
@@ -132,13 +137,23 @@
  */
 @property (nonatomic, weak) id<RKMapperOperationDelegate> delegate;
 
+///------------------------------
+/// @name Executing the Operation
+///------------------------------
+
+/**
+ Executes the mapper operation to completion.
+ 
+ @param error A pointer to an `NSError` object to set in the event an error occurs during execution.
+ @return A Boolean value that indicates if the operation completed successfully.
+ */
 - (BOOL)execute:(NSError **)error;
 
 @end
 
-///--------------------------------------
+///--------------------------------
 /// @name Mapper Operation Delegate
-///--------------------------------------
+///--------------------------------
 
 /**
  Objects wishing to act as the delegate for `RKMapperOperation` objects must adopt the `RKMapperOperationDelegate` protocol. The protocol provides a rich set of optional callback methods that provides insight into the lifecycle of a mapper operation.

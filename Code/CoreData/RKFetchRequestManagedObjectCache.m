@@ -17,13 +17,19 @@
 #define RKLogComponent RKlcl_cRestKitCoreData
 
 /*
- NOTE: At the moment this cache key assume that the structure of the values for each key in the `attributeValues` in constant
- i.e. if you have `userID`, it will always be a single value, or `userIDs` will always be an array.
- It will need to be reimplemented if changes in attribute values occur during the life of a single cache
+ This function computes a cache key given a dictionary of attribute values. Each attribute name is used as a fragment within the aggregate cache key. A suffix qualifier is appended that differentiates singular vs. collection attribute values so that '==' and 'IN' predicates are computed appropriately.
  */
-static NSString *RKPredicateCacheKeyForAttributes(NSArray *attributeNames)
+static NSString *RKPredicateCacheKeyForAttributeValues(NSDictionary *attributesValues)
 {
-    return [[attributeNames sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] componentsJoinedByString:@":"];
+    NSArray *sortedKeys = [[attributesValues allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    NSMutableArray *keyFragments = [NSMutableArray array];
+    for (NSString *attributeName in sortedKeys) {
+        id value = [attributesValues objectForKey:attributeName];
+        char suffix = ([value respondsToSelector:@selector(count)]) ? '+' : '.';
+        NSString *attributeKey = [NSString stringWithFormat:@"%@%c", attributeName, suffix];
+        [keyFragments addObject:attributeKey];
+    }
+    return [keyFragments componentsJoinedByString:@":"];
 }
 
 // NOTE: We build a dynamic format string here because `NSCompoundPredicate` does not support use of substiution variables
@@ -65,7 +71,7 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
     NSAssert(attributeValues, @"Cannot retrieve cached objects without attribute values to identify them with.");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a nil context");
     
-    NSString *predicateCacheKey = RKPredicateCacheKeyForAttributes([attributeValues allKeys]);
+    NSString *predicateCacheKey = RKPredicateCacheKeyForAttributeValues(attributeValues);
     NSPredicate *substitutionPredicate = [self.predicateCache objectForKey:predicateCacheKey];
     if (! substitutionPredicate) {
         substitutionPredicate = RKPredicateWithSubsitutionVariablesForAttributeValues(attributeValues);
