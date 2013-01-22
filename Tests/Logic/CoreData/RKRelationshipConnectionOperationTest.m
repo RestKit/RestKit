@@ -97,7 +97,7 @@
 {
     NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"Human"];
     NSRelationshipDescription *relationship = [entity relationshipsByName][@"landlord"];
-    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship keyPath:@"residence.owner"];
+    RKConnectionDescription *connection = [[RKKeyPathConnectionDescription alloc] initWithRelationship:relationship keyPath:@"residence.owner"];
 
     RKHuman *tenant = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     RKHuman *homeowner = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
@@ -116,7 +116,7 @@
 {
     NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"Human"];
     NSRelationshipDescription *relationship = [entity relationshipsByName][@"roommates"];
-    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship keyPath:@"house.residents"];
+    RKConnectionDescription *connection = [[RKKeyPathConnectionDescription alloc] initWithRelationship:relationship keyPath:@"house.residents"];
 
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     RKHouse *house = [RKTestFactory insertManagedObjectForEntityForName:@"House" inManagedObjectContext:nil withProperties:nil];
@@ -138,7 +138,7 @@
 {
     NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"Human"];
     NSRelationshipDescription *relationship = [entity relationshipsByName][@"friends"];
-    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship keyPath:@"housesResidedAt.ownersInChronologicalOrder"];
+    RKConnectionDescription *connection = [[RKKeyPathConnectionDescription alloc] initWithRelationship:relationship keyPath:@"housesResidedAt.ownersInChronologicalOrder"];
 
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
 
@@ -168,7 +168,7 @@
 {
     NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"Human"];
     NSRelationshipDescription *relationship = [entity relationshipsByName][@"friendsInTheOrderWeMet"];
-    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship keyPath:@"housesResidedAt.ownersInChronologicalOrder"];
+    RKConnectionDescription *connection = [[RKKeyPathConnectionDescription alloc] initWithRelationship:relationship keyPath:@"housesResidedAt.ownersInChronologicalOrder"];
 
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
 
@@ -197,7 +197,7 @@
 {
     NSEntityDescription *entity = [[[RKTestFactory managedObjectStore] managedObjectModel] entitiesByName][@"Human"];
     NSRelationshipDescription *relationship = [entity relationshipsByName][@"friendsInTheOrderWeMet"];
-    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship keyPath:@"housesResidedAt.ownersInChronologicalOrder"];
+    RKConnectionDescription *connection = [[RKKeyPathConnectionDescription alloc] initWithRelationship:relationship keyPath:@"housesResidedAt.ownersInChronologicalOrder"];
 
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
 
@@ -213,7 +213,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"Child" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSRelationshipDescription *relationship = [childEntity relationshipsByName][@"friends"];
-    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"friendIDs": @"railsID" }];
+    RKConnectionDescription *connection = [[RKForeignKeyConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"friendIDs": @"railsID" }];
     connection.includesSubentities = YES;
 
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
@@ -237,7 +237,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"Child" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSRelationshipDescription *relationship = [childEntity relationshipsByName][@"friends"];
-    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"friendIDs": @"railsID" }];
+    RKConnectionDescription *connection = [[RKForeignKeyConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"friendIDs": @"railsID" }];
     connection.includesSubentities = NO;
 
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];

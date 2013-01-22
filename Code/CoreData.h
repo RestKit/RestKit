@@ -27,6 +27,7 @@
 #import "RKManagedObjectCaching.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKFetchRequestManagedObjectCache.h"
+#import "RKConnectionDescriptionFactory.h"
 
 #import "RKPropertyInspector+CoreData.h"
 #import "NSManagedObjectContext+RKAdditions.h"

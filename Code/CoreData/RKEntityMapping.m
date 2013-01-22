@@ -162,6 +162,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     if (self) {
         self.entity = entity;
         if ([RKEntityMapping isEntityIdentificationInferenceEnabled]) self.identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
+        [self commonInit];
     }
 
     return self;
@@ -172,9 +173,15 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     self = [super initWithClass:objectClass];
     if (self) {
         self.mutableConnections = [NSMutableArray array];
+        [self commonInit];
     }
 
     return self;
+}
+
+- (void)commonInit
+{
+    _connectionFactory = [RKConnectionDescriptionFactory sharedInstance];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -240,16 +247,16 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     if ([connectionSpecifier isKindOfClass:[NSString class]]) {
         NSString *sourceAttribute = connectionSpecifier;
         NSString *destinationAttribute = [self transformSourceKeyPath:sourceAttribute];
-        connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ sourceAttribute: destinationAttribute }];
+        connection = [_connectionFactory connectionWithRelationship:relationship attributes:@{ sourceAttribute: destinationAttribute }];
     } else if ([connectionSpecifier isKindOfClass:[NSArray class]]) {
         NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:[connectionSpecifier count]];
         for (NSString *sourceAttribute in connectionSpecifier) {
             NSString *destinationAttribute = [self transformSourceKeyPath:sourceAttribute];
             [attributes setObject:destinationAttribute forKey:sourceAttribute];
         }
-        connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:attributes];
+        connection = [_connectionFactory connectionWithRelationship:relationship attributes:attributes];
     } else if ([connectionSpecifier isKindOfClass:[NSDictionary class]]) {
-        connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:connectionSpecifier];
+        connection = [_connectionFactory connectionWithRelationship:relationship attributes:connectionSpecifier];
     } else {
         [NSException raise:NSInvalidArgumentException format:@"Connections can only be described using `NSString`, `NSArray`, or `NSDictionary` objects. Instead, got: %@", connectionSpecifier];
     }

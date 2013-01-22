@@ -1,9 +1,9 @@
 //
-//  ObjectMapping.h
+//  RKConnectionDescriptionSubclass.h
 //  RestKit
 //
-//  Created by Blake Watters on 9/30/10.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Created by Marius Rackwitz on 21.01.13.
+//  Copyright (c) 2013 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@
 //  limitations under the License.
 //
 
-#import "RKObjectManager.h"
-#import "RKObjectMapping.h"
-#import "RKAttributeMapping.h"
-#import "RKRelationshipMapping.h"
-#import "RKObjectParameterization.h"
-#import "RKMappingResult.h"
-#import "RKMapperOperation.h"
-#import "RKDynamicMapping.h"
+#import "RKConnectionDescription.h"
+
+/*
+ The extensions to the `RKConnectionDescription` class declared here are to be used by subclasses implementations only. Code that uses `RKConnectionDescription` objects must never call these methods.
+ */
+@interface RKConnectionDescription ()
+
+@property (nonatomic, strong, readwrite) NSRelationshipDescription *relationship;
+
+@end

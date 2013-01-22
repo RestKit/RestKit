@@ -20,6 +20,7 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 #import "RKObjectMapping.h"
+#import "RKObjectMappingSubclass.h"
 #import "RKRelationshipMapping.h"
 #import "RKPropertyInspector.h"
 #import "RKLog.h"
@@ -36,10 +37,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
 
 static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyTransformationBlock = nil;
-
-@interface RKObjectMapping (Copying)
-- (void)copyPropertiesFromMapping:(RKObjectMapping *)mapping;
-@end
 
 @interface RKMappingInverter : NSObject
 @property (nonatomic, strong) RKObjectMapping *mapping;
@@ -68,7 +65,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     RKObjectMapping *inverseMapping = [self.invertedMappings objectForKey:dictionaryKey];
     if (inverseMapping) return inverseMapping;
     
-    inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    inverseMapping = [self.mapping.class mappingForClass:[NSMutableDictionary class]];
     [self.invertedMappings setObject:inverseMapping forKey:dictionaryKey];
     [inverseMapping copyPropertiesFromMapping:mapping];
     

@@ -20,7 +20,7 @@
 
 #import <CoreData/CoreData.h>
 #import "RKObjectMapping.h"
-#import "RKConnectionDescription.h"
+#import "RKConnectionDescriptionFactory.h"
 #import "RKMacros.h"
 
 @class RKManagedObjectStore;
@@ -122,6 +122,11 @@
 /**
  Returns the array of `RKConnectionDescripton` objects configured for connecting relationships during object mapping.
  */
+@property (nonatomic, retain) RKConnectionDescriptionFactory *connectionFactory;
+
+/**
+ Returns the array of `RKConnectionDescripton` objects configured for connecting relationships during object mapping.
+ */
 @property (nonatomic, copy, readonly) NSArray *connections;
 
 /**
@@ -155,7 +160,7 @@
  
  When the connection is attempted to be established by an instance of `RKRelationshipConnectionOperation`, the value for the 'userID' attribute will be read from the Project (in this case, @1234) and the managed object context will be searched for a managed object for the 'User' entity with a corresponding value for its 'userID' attribute.
  
- When the `connectionSpecifier` is an `NSArray` object, it is interpretted as containing the names of attributes in the specified relationship's entity. Just as with a stirng value, the corresponding destination attributes are determined by invoking the source to destination key transformation block or they are assumed to have matching names.
+ When the `connectionSpecifier` is an `NSArray` object, it is interpretted as containing the names of attributes in the specified relationship's entity. Just as with a string value, the corresponding destination attributes are determined by invoking the source to destination key transformation block or they are assumed to have matching names.
  
  When the `connectionSpecifier` is an `NSDictionary` object, the keys are interpretted as containing the names of attributes on the source entity the values are interpretted as the names of attributes on the destination entity. For example:
     

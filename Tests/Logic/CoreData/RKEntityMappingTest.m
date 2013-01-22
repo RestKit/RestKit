@@ -232,7 +232,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *humanEntityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanEntityMapping addConnectionForRelationship:@"favoriteCat" connectedBy:@"favoriteCatID"];
-    RKConnectionDescription *connection = [humanEntityMapping connectionForRelationship:@"favoriteCat"];
+    RKForeignKeyConnectionDescription *connection = (RKForeignKeyConnectionDescription *)[humanEntityMapping connectionForRelationship:@"favoriteCat"];
     NSDictionary *expectedAttributes = @{ @"favoriteCatID": @"favoriteCatID" };
     expect(connection.attributes).to.equal(expectedAttributes);
 }
@@ -245,7 +245,7 @@
         return @"age";
     }];
     [humanEntityMapping addConnectionForRelationship:@"favoriteCat" connectedBy:@"favoriteCatID"];
-    RKConnectionDescription *connection = [humanEntityMapping connectionForRelationship:@"favoriteCat"];
+    RKForeignKeyConnectionDescription *connection = (RKForeignKeyConnectionDescription *)[humanEntityMapping connectionForRelationship:@"favoriteCat"];
     NSDictionary *expectedAttributes = @{ @"favoriteCatID": @"age" };
     expect(connection.attributes).to.equal(expectedAttributes);
 }
@@ -255,7 +255,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *humanEntityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanEntityMapping addConnectionForRelationship:@"cats" connectedBy:@[ @"railsID", @"name" ]];
-    RKConnectionDescription *connection = [humanEntityMapping connectionForRelationship:@"cats"];
+    RKForeignKeyConnectionDescription *connection = (RKForeignKeyConnectionDescription *)[humanEntityMapping connectionForRelationship:@"cats"];
     NSDictionary *expectedAttributes = @{ @"railsID": @"railsID", @"name": @"name" };
     expect(connection.attributes).to.equal(expectedAttributes);
 }
@@ -270,7 +270,7 @@
         else return sourceKey;
     }];
     [humanEntityMapping addConnectionForRelationship:@"cats" connectedBy:@[ @"railsID", @"name" ]];
-    RKConnectionDescription *connection = [humanEntityMapping connectionForRelationship:@"cats"];
+    RKForeignKeyConnectionDescription *connection = (RKForeignKeyConnectionDescription *)[humanEntityMapping connectionForRelationship:@"cats"];
     NSDictionary *expectedAttributes = @{ @"railsID": @"age", @"name": @"color" };
     expect(connection.attributes).to.equal(expectedAttributes);
 }
@@ -280,7 +280,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *humanEntityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanEntityMapping addConnectionForRelationship:@"cats" connectedBy:@{ @"railsID": @"railsID", @"name": @"name" }];
-    RKConnectionDescription *connection = [humanEntityMapping connectionForRelationship:@"cats"];
+    RKForeignKeyConnectionDescription *connection = (RKForeignKeyConnectionDescription *)[humanEntityMapping connectionForRelationship:@"cats"];
     NSDictionary *expectedAttributes = @{ @"railsID": @"railsID", @"name": @"name" };
     expect(connection.attributes).to.equal(expectedAttributes);
 }

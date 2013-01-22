@@ -30,27 +30,27 @@
 
 - (void)testInitWithNilRelationshipRaisesError
 {
-    expect(^{ RKConnectionDescription __unused *connection = [[RKConnectionDescription alloc] initWithRelationship:nil attributes:@{ @"catID": @"catID" }]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Invalid parameter not satisfying: relationship");
+    expect(^{ RKConnectionDescription __unused *connection = [[RKForeignKeyConnectionDescription alloc] initWithRelationship:nil attributes:@{ @"catID": @"catID" }]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Invalid parameter not satisfying: relationship");
 }
 
 - (void)testInitWithNilAttributesRaisesError
 {
-    expect(^{ RKConnectionDescription __unused *connection = [[RKConnectionDescription alloc] initWithRelationship:self.relationship attributes:nil]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Invalid parameter not satisfying: attributes");
+    expect(^{ RKConnectionDescription __unused *connection = [[RKForeignKeyConnectionDescription alloc] initWithRelationship:self.relationship attributes:nil]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Invalid parameter not satisfying: attributes");
 }
 
 - (void)testInitWithEmptyAttributesDictionaryRaisesError
 {
-    expect(^{ RKConnectionDescription __unused *connection = [[RKConnectionDescription alloc] initWithRelationship:self.relationship attributes:@{}]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Cannot connect a relationship without at least one pair of attributes describing the connection");
+    expect(^{ RKConnectionDescription __unused *connection = [[RKForeignKeyConnectionDescription alloc] initWithRelationship:self.relationship attributes:@{}]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Cannot connect a relationship without at least one pair of attributes describing the connection");
 }
 
 - (void)testInitWithAttributeThatDoesNotExistInEntityRaisesError
 {
-    expect(^{ RKConnectionDescription __unused *connection = [[RKConnectionDescription alloc] initWithRelationship:self.relationship attributes:@{ @"invalidID": @"catID" }]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Cannot connect relationship: invalid attributes given for source entity 'Human': invalidID");
+    expect(^{ RKConnectionDescription __unused *connection = [[RKForeignKeyConnectionDescription alloc] initWithRelationship:self.relationship attributes:@{ @"invalidID": @"catID" }]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Cannot connect relationship: invalid attributes given for source entity 'Human': invalidID");
 }
 
 - (void)testInitWithAttributeThatDoesNotExistInDestinationEntityRaisesError
 {
-    expect(^{ RKConnectionDescription __unused *connection = [[RKConnectionDescription alloc] initWithRelationship:self.relationship attributes:@{ @"favoriteCatID": @"invalid" }]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Cannot connect relationship: invalid attributes given for destination entity 'Cat': invalid");
+    expect(^{ RKConnectionDescription __unused *connection = [[RKForeignKeyConnectionDescription alloc] initWithRelationship:self.relationship attributes:@{ @"favoriteCatID": @"invalid" }]; }).to.raiseWithReason(NSInternalInconsistencyException, @"Cannot connect relationship: invalid attributes given for destination entity 'Cat': invalid");
 }
 
 @end

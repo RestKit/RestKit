@@ -290,7 +290,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:entity];
-    RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:entity.relationshipsByName[@"favoriteCat"] attributes:@{ @"railsID": @"railsID" }];
+    RKConnectionDescription *connection = [[RKForeignKeyConnectionDescription alloc] initWithRelationship:entity.relationshipsByName[@"favoriteCat"] attributes:@{ @"railsID": @"railsID" }];
     [mapping addConnection:connection];
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
