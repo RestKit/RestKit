@@ -39,6 +39,8 @@
 @property (nonatomic, strong) RKTestCoordinate *coordinate;
 @property (nonatomic, assign) NSInteger age;
 @property (nonatomic, strong) NSDate *createdAt;
+@property (nonatomic, assign) NSInteger position;
+@property (nonatomic, strong) RKTestUser *friend;
 
 + (RKTestUser *)user;
 

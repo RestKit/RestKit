@@ -27,6 +27,7 @@
 #import "RKResponseMapperOperation.h"
 #import "RKMappingErrors.h"
 #import "RKMIMETypeSerialization.h"
+#import "RKDictionaryUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -116,6 +117,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 }
 
 @interface RKResponseMapperOperation ()
+@property (nonatomic, strong, readwrite) NSURLRequest *request;
 @property (nonatomic, strong, readwrite) NSHTTPURLResponse *response;
 @property (nonatomic, strong, readwrite) NSData *data;
 @property (nonatomic, strong, readwrite) NSArray *responseDescriptors;
@@ -135,19 +137,25 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 
 @implementation RKResponseMapperOperation
 
-- (id)initWithResponse:(NSHTTPURLResponse *)response data:(NSData *)data responseDescriptors:(NSArray *)responseDescriptors
+- (id)initWithRequest:(NSURLRequest *)request
+             response:(NSHTTPURLResponse *)response
+                 data:(NSData *)data
+  responseDescriptors:(NSArray *)responseDescriptors;
 {
+    NSParameterAssert(request);
     NSParameterAssert(response);
     NSParameterAssert(responseDescriptors);
     
     self = [super init];
     if (self) {
+        self.request = request;
         self.response = response;
         self.data = data;
         self.responseDescriptors = responseDescriptors;
         self.matchingResponseDescriptors = [self buildMatchingResponseDescriptors];
         self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
         self.treatsEmptyResponseAsSuccess = YES;
+        self.mappingMetadata = @{}; // Initialize the metadata
     }
 
     return self;
@@ -210,6 +218,13 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 
     NSUInteger length = [self.data length];
     return (length == 0 || (length == 1 && [self.data isEqualToData:whitespaceData]));
+}
+
+- (void)setMappingMetadata:(NSDictionary *)mappingMetadata
+{
+    NSDictionary *HTTPMetadata = @{ @"HTTP": @{ @"request":  @{ @"URL": self.request.URL, @"method": self.request.HTTPMethod, @"headers": [self.request allHTTPHeaderFields] ?: @{} },
+                                                @"response": @{ @"URL": self.response.URL, @"headers": [self.response allHeaderFields] ?: @{} } } };
+    _mappingMetadata = RKDictionaryByMergingDictionaryWithDictionary(HTTPMetadata, mappingMetadata);
 }
 
 - (void)cancel
@@ -308,6 +323,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     self.mapperOperation.mappingOperationDataSource = dataSource;
     self.mapperOperation.delegate = self.mapperDelegate;
+    self.mapperOperation.metadata = self.mappingMetadata;
     if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
         self.mapperOperation.targetObject = self.targetObject;
     } else {
@@ -348,6 +364,7 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         // Configure the mapper
         self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
         self.mapperOperation.delegate = self.mapperDelegate;
+        self.mapperOperation.metadata = self.mappingMetadata;
         
         // Configure a data source to defer execution of connection operations until mapping is complete
         RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext

@@ -43,12 +43,12 @@
 /**
  A key path on the source object from which to get information that is to be mapped onto the destination object.
  */
-@property (nonatomic, strong, readonly) NSString *sourceKeyPath;
+@property (nonatomic, copy, readonly) NSString *sourceKeyPath;
 
 /**
  A key path on the destination object on which to set information that has been mapped from the source object.
  */
-@property (nonatomic, strong, readonly) NSString *destinationKeyPath;
+@property (nonatomic, copy, readonly) NSString *destinationKeyPath;
 
 ///----------------------------------
 /// @name Comparing Property Mappings

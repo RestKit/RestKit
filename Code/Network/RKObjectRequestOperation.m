@@ -255,10 +255,12 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
     // Spin up an RKObjectResponseMapperOperation
-    self.responseMapperOperation = [[RKObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
-                                                                                        data:self.HTTPRequestOperation.responseData
-                                                                         responseDescriptors:self.responseDescriptors];
+    self.responseMapperOperation = [[RKObjectResponseMapperOperation alloc] initWithRequest:self.HTTPRequestOperation.request
+                                                                                   response:self.HTTPRequestOperation.response
+                                                                                       data:self.HTTPRequestOperation.responseData
+                                                                        responseDescriptors:self.responseDescriptors];
     self.responseMapperOperation.targetObject = self.targetObject;
+    self.responseMapperOperation.mappingMetadata = self.mappingMetadata;
     self.responseMapperOperation.mapperDelegate = self;
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];

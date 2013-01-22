@@ -35,6 +35,10 @@
  
  If the HTTP request returned a response in the Client Error (400-499 range) or Server Error (500-599 range) class and an appropriate `RKResponseDescriptor` is provided to perform mapping on the response, then the object mapping result is considered to contain a server returned error. In this case, an `NSError` object is created in the `RKErrorDomain` with an error code of `RKMappingErrorFromMappingResult` and the object request operation is failed. In the event that an a response is returned in an error class and no `RKResponseDescriptor` has been provided to the operation to handle it, then an `NSError` object in the `AFNetworkingErrorDomain` with an error code of `NSURLErrorBadServerResponse` will be returned by the underlying `RKHTTPRequestOperation` indicating that an unexpected status code was returned. 
  
+ ## Metadata Mapping
+
+ The `RKObjectRequestOperation` class provides support for metadata mapping via the `mappingMetadata` property. This optional dictionary of user supplied information is made available to the mapping operations executed when processing the HTTP response loaded by an object request operation. More details about the metadata mapping architecture is available on the `RKMappingOperation` documentation.
+
  ## Prioritization and Cancellation
  
  Object request operations support prioritization and cancellation of the underlying `RKHTTPRequestOperation` and `RKResponseMapperOperation` operations that perform the network transport and object mapping duties on their behalf. The queue priority of the object request operation, as set via the `[NSOperation setQueuePriority:]` method, is applied to the underlying response mapping operation when it is enqueued onto the `responseMappingQueue`. If the object request operation is cancelled, then the underlying HTTP request operation and response mapping operation are also cancelled.
@@ -106,6 +110,11 @@
  @see `[RKObjectResponseMapperOperation targetObject]`
  */
 @property (nonatomic, strong) id targetObject;
+
+/**
+ An optional dictionary of metadata to make available to mapping operations executed while processing the HTTP response loaded by the receiver.
+ */
+@property (nonatomic, copy) NSDictionary *mappingMetadata;
 
 ///----------------------------------
 /// @name Accessing Operation Results
