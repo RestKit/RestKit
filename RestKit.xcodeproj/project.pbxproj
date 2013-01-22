@@ -949,6 +949,7 @@
 		712B4F8016ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKConnectionDescriptionFactory.h; sourceTree = "<group>"; };
 		712B4F8116ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKConnectionDescriptionFactory.m; sourceTree = "<group>"; };
 		712B4F8516ADCD6000F7ED03 /* RKObjectMappingSubclass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingSubclass.h; sourceTree = "<group>"; };
+		712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKEntityMappingSubclass.h; sourceTree = "<group>"; };
 		71C59B8B16ADC67100A61565 /* RKForeignKeyConnectionDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKForeignKeyConnectionDescription.h; sourceTree = "<group>"; };
 		71C59B8C16ADC67100A61565 /* RKForeignKeyConnectionDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKForeignKeyConnectionDescription.m; sourceTree = "<group>"; };
 		71C59B9016ADC6A400A61565 /* RKKeyPathConnectionDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKKeyPathConnectionDescription.h; sourceTree = "<group>"; };
@@ -1726,6 +1727,7 @@
 				71C59B8916ADC63D00A61565 /* ConnectionDescription */,
 				25160D4C145650490060A5C5 /* RKEntityMapping.h */,
 				25160D4D145650490060A5C5 /* RKEntityMapping.m */,
+				712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */,
 				258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */,
 				25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */,
 			);
