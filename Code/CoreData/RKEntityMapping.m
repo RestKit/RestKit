@@ -19,6 +19,8 @@
 //
 
 #import "RKEntityMapping.h"
+#import "RKObjectMappingSubclass.h"
+#import "RKEntityMappingSubclass.h"
 #import "RKManagedObjectStore.h"
 #import "RKObjectMappingMatcher.h"
 #import "RKPropertyInspector+CoreData.h"
@@ -126,15 +128,6 @@ NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entit
 }
 
 static BOOL entityIdentificationInferenceEnabled = YES;
-
-@interface RKObjectMapping (Private)
-- (NSString *)transformSourceKeyPath:(NSString *)keyPath;
-@end
-
-@interface RKEntityMapping ()
-@property (nonatomic, weak, readwrite) Class objectClass;
-@property (nonatomic, strong) NSMutableArray *mutableConnections;
-@end
 
 @implementation RKEntityMapping
 

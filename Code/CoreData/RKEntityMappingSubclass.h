@@ -1,8 +1,8 @@
 //
-//  RKObjectMappingSubclass.h
+//  RKEntityMappingSubclass.h
 //  RestKit
 //
-//  Created by Marius Rackwitz on 21.01.13.
+//  Created by Marius Rackwitz on 22.01.13.
 //  Copyright (c) 2013 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,11 +19,11 @@
 //
 
 /**
- The extensions to the `RKObjectMapping` class declared in the `ForSubclassEyesOnly` category are to be used by subclasses implementations only. Code that uses `RKObjectMapping` objects must never call these methods.
+ The extensions to the `RKEntityMapping` class declared here are to be used by subclasses implementations only. Code that uses `RKEntityMapping` objects must never call these methods.
  */
-@interface RKObjectMapping (ForSubclassEyesOnly)
+@interface RKEntityMapping ()
 
-- (NSString *)transformSourceKeyPath:(NSString *)keyPath;
-- (void)copyPropertiesFromMapping:(RKObjectMapping *)mapping;
+@property (nonatomic, weak, readwrite) Class objectClass;
+@property (nonatomic, strong) NSMutableArray *mutableConnections;
 
 @end
