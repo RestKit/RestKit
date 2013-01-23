@@ -180,8 +180,10 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 - (id)copyWithZone:(NSZone *)zone
 {
     RKEntityMapping *copy = [super copyWithZone:zone];
+    copy.entity = self.entity;
     copy.identificationAttributes = self.identificationAttributes;
     copy.identificationPredicate = self.identificationPredicate;
+    copy.deletionPredicate = self.deletionPredicate;
     
     for (RKConnectionDescription *connection in self.connections) {
         [copy addConnection:[connection copy]];
