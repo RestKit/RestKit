@@ -396,7 +396,7 @@ NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormReq
                             mimeType:@"image/png"];
 }];
 
-RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequesOperationWithRequest:request success:nil failure:nil];
+RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request success:nil failure:nil];
 [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
 ```
 
