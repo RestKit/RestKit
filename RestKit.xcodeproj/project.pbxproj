@@ -571,21 +571,21 @@
 		5C927E151608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5CCC295715B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		712B4F8216ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8016ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h */; };
+		712B4F8216ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8016ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		712B4F8316ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 712B4F8116ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m */; };
 		712B509716AEE65500F7ED03 /* RKConnectionDescriptionSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9616ADC71800A61565 /* RKConnectionDescriptionSubclass.h */; };
-		712B509916AEE65600F7ED03 /* RKConnectionDescriptionSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9616ADC71800A61565 /* RKConnectionDescriptionSubclass.h */; };
+		712B509916AEE65600F7ED03 /* RKConnectionDescriptionSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9616ADC71800A61565 /* RKConnectionDescriptionSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		712B509A16AEE65F00F7ED03 /* RKConnectionDescriptionFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8016ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h */; };
 		712B509B16AEE66A00F7ED03 /* RKConnectionDescriptionFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 712B4F8116ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m */; };
 		712B509C16AEE67700F7ED03 /* RKForeignKeyConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C59B8C16ADC67100A61565 /* RKForeignKeyConnectionDescription.m */; };
-		712B509D16AEE68000F7ED03 /* RKEntityMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */; };
+		712B509D16AEE68000F7ED03 /* RKEntityMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		712B509E16AEE68100F7ED03 /* RKEntityMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */; };
 		712B509F16AEE69500F7ED03 /* RKObjectMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8516ADCD6000F7ED03 /* RKObjectMappingSubclass.h */; };
-		712B50A016AEE69600F7ED03 /* RKObjectMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8516ADCD6000F7ED03 /* RKObjectMappingSubclass.h */; };
-		71C59B8D16ADC67200A61565 /* RKForeignKeyConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B8B16ADC67100A61565 /* RKForeignKeyConnectionDescription.h */; };
+		712B50A016AEE69600F7ED03 /* RKObjectMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8516ADCD6000F7ED03 /* RKObjectMappingSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		71C59B8D16ADC67200A61565 /* RKForeignKeyConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B8B16ADC67100A61565 /* RKForeignKeyConnectionDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		71C59B8E16ADC67200A61565 /* RKForeignKeyConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C59B8C16ADC67100A61565 /* RKForeignKeyConnectionDescription.m */; };
 		71C59B8F16ADC67B00A61565 /* RKForeignKeyConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B8B16ADC67100A61565 /* RKForeignKeyConnectionDescription.h */; };
-		71C59B9216ADC6A600A61565 /* RKKeyPathConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9016ADC6A400A61565 /* RKKeyPathConnectionDescription.h */; };
+		71C59B9216ADC6A600A61565 /* RKKeyPathConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9016ADC6A400A61565 /* RKKeyPathConnectionDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		71C59B9316ADC6A600A61565 /* RKKeyPathConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9016ADC6A400A61565 /* RKKeyPathConnectionDescription.h */; };
 		71C59B9416ADC6A600A61565 /* RKKeyPathConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C59B9116ADC6A500A61565 /* RKKeyPathConnectionDescription.m */; };
 		71C59B9516ADC6A600A61565 /* RKKeyPathConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C59B9116ADC6A500A61565 /* RKKeyPathConnectionDescription.m */; };
@@ -1844,15 +1844,15 @@
 				25A226D61618A57500952D72 /* RKObjectUtilities.h in Headers */,
 				2507C327161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 				25CDA0DC161E7ED400F583F3 /* RKISO8601DateFormatter.h in Headers */,
-				25E88C88165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */,
-				25019495166406E30081D68A /* RKValueTransformers.h in Headers */,
-				25A8C2341673BD480014D9A6 /* RKConnectionTestExpectation.h in Headers */,
 				71C59B8D16ADC67200A61565 /* RKForeignKeyConnectionDescription.h in Headers */,
 				71C59B9216ADC6A600A61565 /* RKKeyPathConnectionDescription.h in Headers */,
 				712B4F8216ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h in Headers */,
 				712B509916AEE65600F7ED03 /* RKConnectionDescriptionSubclass.h in Headers */,
 				712B509D16AEE68000F7ED03 /* RKEntityMappingSubclass.h in Headers */,
 				712B50A016AEE69600F7ED03 /* RKObjectMappingSubclass.h in Headers */,
+				25E88C88165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */,
+				25019495166406E30081D68A /* RKValueTransformers.h in Headers */,
+				25A8C2341673BD480014D9A6 /* RKConnectionTestExpectation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
