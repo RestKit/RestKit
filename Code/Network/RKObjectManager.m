@@ -533,7 +533,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         if ([object isKindOfClass:[NSManagedObject class]]) {
             static NSPredicate *temporaryObjectsPredicate = nil;
             if (! temporaryObjectsPredicate) temporaryObjectsPredicate = [NSPredicate predicateWithFormat:@"objectID.isTemporaryID == YES"];
-            NSSet *temporaryObjects = [[managedObjectContext insertedObjects] filteredSetUsingPredicate:temporaryObjectsPredicate];
+            NSSet *potentiallyTemporaryObjects = (object && [[object objectID] isTemporaryID]) ? [[managedObjectContext insertedObjects] setByAddingObject:object] : [managedObjectContext insertedObjects];
+            NSSet *temporaryObjects = [potentiallyTemporaryObjects filteredSetUsingPredicate:temporaryObjectsPredicate];
             if ([temporaryObjects count]) {
                 RKLogInfo(@"Asked to perform object request for NSManagedObject with temporary object IDs: Obtaining permanent ID before proceeding.");
                 __block BOOL _blockSuccess;

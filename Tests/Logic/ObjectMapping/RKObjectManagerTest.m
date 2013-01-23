@@ -188,7 +188,6 @@
     expect([manager requestSerializationMIMEType]).to.equal(RKMIMETypeFormURLEncoded);
 }
 
-// TODO: Move to Core Data specific spec file...
 - (void)testShouldUpdateACoreDataBackedTargetObject
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
@@ -1120,6 +1119,28 @@
     
     expect(error).willNot.beNil();
     expect([error localizedDescription]).to.equal(@"error1, error2");
+}
+
+- (void)testPostingATemporaryObjectThatHasJustBeenSaved
+{
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
+    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext];
+    temporaryHuman.name = @"My Name";
+    expect([temporaryHuman.objectID isTemporaryID]).to.equal(YES);
+    NSError *error = nil;
+    BOOL success = [temporaryHuman.managedObjectContext saveToPersistentStore:&error];
+    expect(success).to.equal(YES);
+    expect([temporaryHuman.objectID isTemporaryID]).to.equal(YES); // Still temporary because the permanent ID has not yet been merged
+    
+    RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    expect([operation isFinished]).will.equal(YES);
+    
+    expect(operation.mappingResult).notTo.beNil();
+    expect([operation.mappingResult array]).notTo.beEmpty();
+    RKHuman *human = (RKHuman *)[[operation.mappingResult array] objectAtIndex:0];
+    expect(human.objectID).to.equal(temporaryHuman.objectID);
+    expect(human.railsID).to.equal(1);
 }
 
 @end
