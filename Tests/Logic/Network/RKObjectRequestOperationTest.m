@@ -667,4 +667,42 @@
     expect([requestOperation.error localizedDescription]).to.equal(@"Loaded an unprocessable response (500) with content type 'application/json'");
 }
 
+- (void)testThatAnObjectRequestOperationSentWithEmptyMappingInResponseDescriptorsIsConsideredSuccessful
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    RKTestComplexUser *user = [RKTestComplexUser new];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"POST";
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    requestOperation.targetObject = user;
+    [requestOperation start];
+    expect(requestOperation.error).to.beNil();
+    expect(requestOperation.mappingResult).notTo.beNil();
+}
+
+- (void)testThatAnObjectRequestOperationSentWithEmptyMappingInResponseDescriptorsTo5xxEndpointIsConsideredSuccessful
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    RKTestComplexUser *user = [RKTestComplexUser new];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/fail" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"POST";
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    requestOperation.targetObject = user;
+    [requestOperation start];
+    expect(requestOperation.error).notTo.beNil();
+    expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299), got 500");
+}
+
 @end

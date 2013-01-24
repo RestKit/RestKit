@@ -320,6 +320,11 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     [super setTargetObject:targetObject];
 
     if ([targetObject isKindOfClass:[NSManagedObject class]]) {
+        if ([[targetObject objectID] isTemporaryID]) {
+            NSError *error = nil;
+            BOOL success = [[targetObject managedObjectContext] obtainPermanentIDsForObjects:@[ targetObject ] error:&error];
+            if (! success) RKLogWarning(@"Failed to obtain permanent objectID for targetObject: %@ (%ld)", [error localizedDescription], (long) error.code);
+        }
         self.targetObjectID = [targetObject objectID];
     } else {
         self.targetObjectID = nil;

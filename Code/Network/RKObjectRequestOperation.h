@@ -29,7 +29,7 @@
  
  ## Acceptable Content Types and Status Codes
  
- Instances of `RKObjectRequestOperation` determine the acceptability of status codes and content types differently than is typical for `AFNetworking` derived network opertations. The `RKHTTPRequestOperation` (which is a subclass of the AFNetworking `AFHTTPRequestOperation` class) supports the dynamic assigning of acceptable status codes and content types. This facility is utilized during the configuration of the network operation for an object request operation. The set of acceptable content types is determined by consulting the `RKMIMETypeSerialization` via an invocation of `[RKMIMETypeSerialization registeredMIMETypes]`. The `registeredMIMETypes` method returns an `NSSet` containing either `NSString` or `NSRegularExpression` objects that specify the content types for which `RKSerialization` classes have been registered to handle. The set of acceptable status codes is determined by aggregating the value of the `statusCodes` property from all registered `RKResponseDescriptor` objects.
+ Instances of `RKObjectRequestOperation` determine the acceptability of status codes and content types differently than is typical for `AFNetworking` derived network opertations. The `RKHTTPRequestOperation` (which is a subclass of the AFNetworking `AFHTTPRequestOperation` class) supports the dynamic assignment of acceptable status codes and content types. This facility is utilized during the configuration of the network operation for an object request operation. The set of acceptable content types is determined by consulting the `RKMIMETypeSerialization` via an invocation of `[RKMIMETypeSerialization registeredMIMETypes]`. The `registeredMIMETypes` method returns an `NSSet` containing either `NSString` or `NSRegularExpression` objects that specify the content types for which `RKSerialization` classes have been registered to handle. The set of acceptable status codes is determined by aggregating the value of the `statusCodes` property from all registered `RKResponseDescriptor` objects.
  
  ## Error Mapping
  
@@ -95,6 +95,8 @@
 
 /**
  The array of `RKResponseDescriptor` objects that specify how the deserialized `responseData` is to be object mapped.
+ 
+ The response descriptors define the acceptable HTTP Status Codes of the receiver.
  */
 @property (nonatomic, strong, readonly) NSArray *responseDescriptors;
 
@@ -112,7 +114,7 @@
 /**
  The mapping result returned by the underlying `RKObjectResponseMapperOperation`.
  
- This property is `nil` if the operation is failed due to a network transport error.
+ This property is `nil` if the operation is failed due to a network transport error or no mapping was peformed on the response.
  */
 @property (nonatomic, strong, readonly) RKMappingResult *mappingResult;
 
