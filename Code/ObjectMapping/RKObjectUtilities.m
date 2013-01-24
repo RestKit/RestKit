@@ -67,7 +67,7 @@ BOOL RKObjectIsCollectionContainingOnlyManagedObjects(id object)
     Class managedObjectClass = NSClassFromString(@"NSManagedObject");
     if (! managedObjectClass) return NO;
     for (id instance in object) {
-        if (! [object isKindOfClass:managedObjectClass]) return NO;
+        if (! [instance isKindOfClass:managedObjectClass]) return NO;
     }
     return YES;
 }
