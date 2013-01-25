@@ -565,8 +565,15 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 - (NSURL *)URLWithRoute:(RKRoute *)route object:(id)object interpolatedParameters:(NSDictionary **)interpolatedParameters
 {
-    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:route.pathPattern];
-    NSString *path = [pathMatcher pathFromObject:object addingEscapes:route.shouldEscapePath interpolatedParameters:interpolatedParameters];
+    NSString *path = nil;
+    if (object) {
+        RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:route.pathPattern];
+        path = [pathMatcher pathFromObject:object addingEscapes:route.shouldEscapePath interpolatedParameters:interpolatedParameters];
+    } else {
+        // When there is no object, the path pattern is our complete path
+        path = route.pathPattern;
+        if (interpolatedParameters) *interpolatedParameters = @{};
+    }
     return [NSURL URLWithString:path relativeToURL:self.baseURL];
 }
 
