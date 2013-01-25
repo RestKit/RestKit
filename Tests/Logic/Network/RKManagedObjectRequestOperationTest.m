@@ -13,22 +13,7 @@
 #import "RKTestUser.h"
 #import "RKMappingErrors.h"
 #import "RKMappableObject.h"
-
-@interface RKPost : NSManagedObject
-@end
-
-@implementation RKPost
-
-- (BOOL)validateTitle:(id *)ioValue error:(NSError **)outError {
-    // Don't allow blank titles
-    if ((*ioValue == nil) || ([[(NSString*)*ioValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""])) {        
-        return NO;
-    }
-    
-    return YES;
-}
-
-@end
+#import "RKPost.h"
 
 @interface RKManagedObjectRequestOperation ()
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;

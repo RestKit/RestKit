@@ -237,7 +237,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 - (void)addConnectionForRelationship:(id)relationshipOrName connectedBy:(id)connectionSpecifier
 {
     NSRelationshipDescription *relationship = [relationshipOrName isKindOfClass:[NSRelationshipDescription class]] ? relationshipOrName : [[self.entity relationshipsByName] valueForKey:relationshipOrName];
-    NSAssert(relationship, @"No relatiobship was found named '%@' in the '%@' entity", relationshipOrName, [self.entity name]);
+    NSAssert(relationship, @"No relationship was found named '%@' in the '%@' entity", relationshipOrName, [self.entity name]);
     RKConnectionDescription *connection = nil;
     if ([connectionSpecifier isKindOfClass:[NSString class]]) {
         NSString *sourceAttribute = connectionSpecifier;

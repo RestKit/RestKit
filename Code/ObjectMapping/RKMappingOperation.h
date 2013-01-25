@@ -155,7 +155,7 @@
     NSError *error = nil;
     BOOL success = [mappingOperation execute:&error];
 
- Note the use of the special keyPath `@"@metadata.URL"`. The `@metdata` prefix indicates that the property is to be mapped from the metadata dictionary instead of from the source object representation. If any relationships were mapped, it would have access to this same metadata information as well.
+ Note the use of the special keyPath `@"@metadata.URL"`. The `@metadata` prefix indicates that the property is to be mapped from the metadata dictionary instead of from the source object representation. If any relationships were mapped, it would have access to this same metadata information as well.
 
  In addition to any metadata provided to the mapping operation via the `metadata` property, the operation itself makes the following metadata key paths available for mapping:
 
