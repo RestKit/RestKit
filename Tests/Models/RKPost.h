@@ -9,5 +9,5 @@
 #import <CoreData/CoreData.h>
 
 @interface RKPost : NSManagedObject
-
+@property (nonatomic, strong) NSSet *tags;
 @end

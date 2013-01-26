@@ -105,6 +105,22 @@ static NSDictionary *RKEntityIdentificationAttributesForEntityMappingWithReprese
     return entityIdentifierAttributes;
 }
 
+static id RKMutableCollectionValueWithObjectForKeyPath(id object, NSString *keyPath)
+{
+    id value = [object valueForKeyPath:keyPath];
+    if ([value isKindOfClass:[NSArray class]]) {
+        return [object mutableArrayValueForKeyPath:keyPath];
+    } else if ([value isKindOfClass:[NSSet class]]) {
+        return [object mutableSetValueForKeyPath:keyPath];
+    } else if ([value isKindOfClass:[NSOrderedSet class]]) {
+        return [object mutableOrderedSetValueForKeyPath:keyPath];
+    } else if (value) {
+        return [NSMutableArray arrayWithObject:value];
+    }
+    
+    return nil;
+}
+
 @interface RKManagedObjectDeletionOperation : NSOperation
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
@@ -215,12 +231,12 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     
     // If we are mapping within a relationship, try to find an existing object without identifying attributes
     if (relationship) {
-        id existingObjects = [mappingOperation.destinationObject valueForKeyPath:relationship.destinationKeyPath];
-        if (existingObjects && ![existingObjects respondsToSelector:@selector(count)]) existingObjects = @[ existingObjects ];
+        id mutableArrayOrSetValueForExistingObjects = RKMutableCollectionValueWithObjectForKeyPath(mappingOperation.destinationObject, relationship.destinationKeyPath);
         NSArray *identificationAttributes = [entityMapping.identificationAttributes valueForKey:@"name"];
-        for (NSManagedObject *existingObject in existingObjects) {
+        for (NSManagedObject *existingObject in mutableArrayOrSetValueForExistingObjects) {
             if (! identificationAttributes) {
                 managedObject = existingObject;
+                [mutableArrayOrSetValueForExistingObjects removeObject:managedObject];
                 break;
             }
             

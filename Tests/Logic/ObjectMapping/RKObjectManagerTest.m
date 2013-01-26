@@ -1105,6 +1105,33 @@
     expect(tagsCount).to.equal(2);
 }
 
+- (void)testThatMappingAToManyRelationshipOnAnExistingSetOfObjectsDoesNotReuseTheFirstObjectInTheCollection
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
+    [postMapping addAttributeMappingsFromDictionary:@{ @"title": @"title" }];
+    RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
+    [tagMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    [postMapping addRelationshipMappingWithSourceKeyPath:@"tags" mapping:tagMapping];
+    NSDictionary *representation = @{ @"title": @"The Post", @"tags": @[ @{ @"name": @"first" }, @{ @"name": @"second" } ] };
+    RKFetchRequestManagedObjectCache *fetchRequestCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:fetchRequestCache];
+    RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: postMapping }];
+    mapperOperation.mappingOperationDataSource = dataSource;
+    NSError *error = nil;
+    BOOL success = [mapperOperation execute:&error];
+    expect(success).to.beTruthy();
+    RKPost *post = [mapperOperation.mappingResult firstObject];
+    expect(post.tags).to.haveCountOf(2);
+    
+    mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: postMapping }];
+    mapperOperation.mappingOperationDataSource = dataSource;
+    success = [mapperOperation execute:&error];
+    expect(success).to.beTruthy();
+    post = [mapperOperation.mappingResult firstObject];
+    expect(post.tags).to.haveCountOf(2);
+}
+
 - (void)testMappingErrorsFromFiveHundredStatusCodeRange
 {
     RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];    
