@@ -316,7 +316,8 @@ static BOOL RKIsMetadataKVCInvocation(NSInvocation *invocation)
         concreteMapping = (RKObjectMapping *)mapping;
     }
     
-    return [self.dataSource mappingOperation:self targetObjectForRepresentation:representation withMapping:concreteMapping inRelationship:relationshipMapping];
+    NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
+    return [self.dataSource mappingOperation:self targetObjectForRepresentation:dictionaryRepresentation withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
 - (NSDate *)parseDateFromString:(NSString *)string

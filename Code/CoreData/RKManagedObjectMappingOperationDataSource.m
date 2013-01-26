@@ -77,6 +77,9 @@ static RKAttributeMapping *RKAttributeMappingForNameInMappings(NSString *name, N
  */
 static NSDictionary *RKEntityIdentificationAttributesForEntityMappingWithRepresentation(RKEntityMapping *entityMapping, NSDictionary *representation)
 {
+    NSCParameterAssert(entityMapping);
+    NSCAssert([representation isKindOfClass:[NSDictionary class]], @"Expected a dictionary representation");
+    
     RKDateToStringValueTransformer *dateToStringTransformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:entityMapping.preferredDateFormatter
                                                                                                              stringToDateFormatters:entityMapping.dateFormatters];
     NSArray *attributeMappings = entityMapping.attributeMappings;

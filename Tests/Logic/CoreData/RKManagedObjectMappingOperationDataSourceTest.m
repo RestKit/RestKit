@@ -1209,4 +1209,38 @@
 //    assertThatInteger(childrenCount, is(equalToInteger(51)));
 //}
 
+- (void)testMappingIdentificationAttributesFromElementsOnAnArray
+{
+    NSDictionary *representation = @{
+        @"userSessions": @{
+            @"name": @"Mr. User",
+            @"identification": @54321,
+            @"catIDs": @[ @"418", @"419", @"431",@"441", @"457", @"486", @"504" ]
+        }
+    };
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    catMapping.identificationAttributes = @[ @"railsID" ];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"railsID"]];
+     
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"identification" toKeyPath:@"railsID"]];
+    [humanMapping setIdentificationAttributes:@[ @"railsID" ]];
+    [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"catIDs" toKeyPath:@"cats" withMapping:catMapping]];
+    
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ @"userSessions": humanMapping }];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+    [mapper start];
+    
+    RKHuman *human = [mapper.mappingResult firstObject];
+    expect(human).notTo.beNil();
+    expect(human.railsID).to.equal(@54321);
+    expect(human.cats).to.haveCountOf(7);
+    NSSet *expectedIDs = [NSSet setWithArray:@[ @418, @419, @431, @441, @457, @486, @504 ]];
+    expect([human.cats valueForKey:@"railsID"]).to.equal(expectedIDs);
+}
+
 @end
