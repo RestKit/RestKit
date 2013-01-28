@@ -651,7 +651,7 @@ static BOOL RKIsMetadataKVCInvocation(NSInvocation *invocation)
     
     if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
         RKLogDebug(@"Mapping relationship with union assignment policy: constructing combined relationship value.");
-        id existingObjects = [self.destinationObject valueForKeyPath:relationshipMapping.destinationKeyPath];
+        id existingObjects = [self.destinationObject valueForKeyPath:relationshipMapping.destinationKeyPath] ?: @[];
         NSArray *existingObjectsArray = RKTransformedValueWithClass(existingObjects, [NSArray class], nil);
         [relationshipCollection addObjectsFromArray:existingObjectsArray];
     }
