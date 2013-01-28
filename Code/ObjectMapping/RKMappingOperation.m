@@ -912,7 +912,7 @@ static BOOL RKIsMetadataKVCInvocation(NSInvocation *invocation)
             [self.delegate mappingOperation:self didFailWithError:self.error];
         }
 
-        RKLogError(@"Failed mapping operation: %@", [self.error localizedDescription]);
+        RKLogDebug(@"Failed mapping operation: %@", [self.error localizedDescription]);
     } else {
         RKLogDebug(@"Finished mapping operation successfully...");
     }
