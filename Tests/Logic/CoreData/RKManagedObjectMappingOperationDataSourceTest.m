@@ -1286,4 +1286,36 @@
     expect(catsWithID419).to.haveCountOf(1);
 }
 
+- (void)testManagedObjectsMappedWithRequiredRelationshipsThatAreSetByConnectionsAreNotPrematurelyDeleted
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [NSOperationQueue new];
+    
+    NSManagedObject *cat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [cat setValue:@(12345) forKey:@"railsID"];
+    
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"requiredCatID": @(12345) };
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    catMapping.identificationAttributes = @[ @"railsID" ];
+    
+    RKEntityMapping *strictHumanMapping = [RKEntityMapping mappingForEntityForName:@"StrictHuman" inManagedObjectStore:managedObjectStore];
+    [strictHumanMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    [strictHumanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"requiredCatID" toKeyPath:@"favoriteCatID"]];
+    [strictHumanMapping addConnectionForRelationship:@"requiredCat" connectedBy:@{ @"favoriteCatID": @"railsID" }];
+    
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: strictHumanMapping }];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+    [mapper start];
+    [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
+    
+    RKHuman *blake = [mapper.mappingResult firstObject];
+    expect(blake.name).to.equal(@"Blake Watters");
+    expect(blake.managedObjectContext).notTo.beNil();
+    expect([blake isDeleted]).to.beFalsy();
+    expect([blake valueForKey:@"requiredCat"]).to.equal(cat);
+}
+
 @end

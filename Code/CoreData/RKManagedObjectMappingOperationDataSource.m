@@ -123,6 +123,20 @@ static id RKMutableCollectionValueWithObjectForKeyPath(id object, NSString *keyP
     return nil;
 }
 
+static BOOL RKDeleteInvalidNewManagedObject(NSManagedObject *managedObject)
+{
+    if ([managedObject isKindOfClass:[NSManagedObject class]] && [managedObject managedObjectContext] && [managedObject isNew]) {
+        NSError *validationError = nil;
+        if (! [managedObject validateForInsert:&validationError]) {
+            RKLogDebug(@"Unsaved NSManagedObject failed `validateForInsert:` - Deleting object from context: %@", validationError);
+            [managedObject.managedObjectContext deleteObject:managedObject];
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
 @interface RKManagedObjectDeletionOperation : NSOperation
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
@@ -296,17 +310,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 - (BOOL)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation error:(NSError **)error
 {
     if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
-        [self emitDeadlockWarningIfNecessary];
-        
-        // Validate unsaved objects
-        if ([mappingOperation.destinationObject isKindOfClass:[NSManagedObject class]] && [(NSManagedObject *)mappingOperation.destinationObject isNew]) {
-            NSError *validationError = nil;
-            if (! [(NSManagedObject *)mappingOperation.destinationObject validateForInsert:&validationError]) {
-                RKLogDebug(@"Unsaved NSManagedObject failed `validateForInsert:` - Deleting object from context: %@", validationError);
-                [self.managedObjectContext deleteObject:mappingOperation.destinationObject];
-                return YES;
-            }
-        }
+        [self emitDeadlockWarningIfNecessary];                
         
         NSArray *connections = [(RKEntityMapping *)mappingOperation.objectMapping connections];
         if ([connections count] > 0 && self.managedObjectCache == nil) {
@@ -315,7 +319,16 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             if (error) *error = localError;
             return NO;
         }
-
+        
+        // Delete the object immediately if there are no connections that may make it valid
+        if ([connections count] == 0 && RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject)) return YES;
+        
+        // Attempt to establish the connections and delete the object if its invalid once we are done
+        NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
+        NSBlockOperation *deletionOperation = [NSBlockOperation blockOperationWithBlock:^{
+            RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject);
+        }];
+        
         for (RKConnectionDescription *connection in connections) {
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connection:connection managedObjectCache:self.managedObjectCache];
             [operation setConnectionBlock:^(RKRelationshipConnectionOperation *operation, id connectedValue) {
@@ -330,10 +343,13 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
                 }
             }];
             if (self.parentOperation) [operation addDependency:self.parentOperation];
-            NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
+            [deletionOperation addDependency:operation];
             [operationQueue addOperation:operation];
             RKLogTrace(@"Enqueued %@ dependent upon parent operation %@ to operation queue %@", operation, self.parentOperation, operationQueue);
         }
+        
+        // Enqueue our deletion operation for execution after all the connections
+        [operationQueue addOperation:deletionOperation];
 
         // Handle tombstone deletion by predicate
         if ([(RKEntityMapping *)mappingOperation.objectMapping deletionPredicate]) {
