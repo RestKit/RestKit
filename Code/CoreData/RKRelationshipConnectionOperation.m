@@ -32,7 +32,8 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
-static id RKMutableSetValueForRelationship(NSRelationshipDescription *relationship)
+id RKMutableSetValueForRelationship(NSRelationshipDescription *relationship);
+id RKMutableSetValueForRelationship(NSRelationshipDescription *relationship)
 {
     if (! [relationship isToMany]) return nil;
     return [relationship isOrdered] ? [NSMutableOrderedSet orderedSet] : [NSMutableSet set];

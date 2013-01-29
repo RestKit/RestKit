@@ -363,6 +363,8 @@
 		2548AC6E162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */; };
 		2549D646162B376F003DD135 /* RKRequestDescriptorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */; };
 		2549D647162B376F003DD135 /* RKRequestDescriptorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */; };
+		2550DA2316B1FB62005A0CB8 /* RKPost.m in Sources */ = {isa = PBXBuildFile; fileRef = 2550DA2216B1FB62005A0CB8 /* RKPost.m */; };
+		2550DA2416B1FB62005A0CB8 /* RKPost.m in Sources */ = {isa = PBXBuildFile; fileRef = 2550DA2216B1FB62005A0CB8 /* RKPost.m */; };
 		2551338F167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2551338E167838590017E4B6 /* RKHTTPRequestOperationTest.m */; };
 		25513390167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2551338E167838590017E4B6 /* RKHTTPRequestOperationTest.m */; };
 		255133CF167AC7600017E4B6 /* RKManagedObjectRequestOperationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */; };
@@ -828,6 +830,8 @@
 		2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectRequestOperationTest.m; sourceTree = "<group>"; };
 		2549D645162B376F003DD135 /* RKRequestDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestDescriptorTest.m; sourceTree = "<group>"; };
 		254A62BF14AD591C00939BEE /* RKPaginatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPaginatorTest.m; sourceTree = "<group>"; };
+		2550DA2116B1FB62005A0CB8 /* RKPost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPost.h; sourceTree = "<group>"; };
+		2550DA2216B1FB62005A0CB8 /* RKPost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPost.m; sourceTree = "<group>"; };
 		2551338E167838590017E4B6 /* RKHTTPRequestOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHTTPRequestOperationTest.m; sourceTree = "<group>"; };
 		25565955161FC3C300F5BB20 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		25565958161FC3CD00F5BB20 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
@@ -1447,6 +1451,8 @@
 				251610091456F2330060A5C5 /* RKResident.h */,
 				2516100A1456F2330060A5C5 /* RKResident.m */,
 				25A73360169C8C230090A930 /* VersionedModel.xcdatamodeld */,
+				2550DA2116B1FB62005A0CB8 /* RKPost.h */,
+				2550DA2216B1FB62005A0CB8 /* RKPost.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2327,6 +2333,7 @@
 				25B639CC16961EFA0065EB7B /* RKMappingTestTest.m in Sources */,
 				25A73362169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */,
 				25A9827516A5FF4F0088A3CA /* RKConnectionDescriptionTest.m in Sources */,
+				2550DA2316B1FB62005A0CB8 /* RKPost.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2479,6 +2486,7 @@
 				25513390167838590017E4B6 /* RKHTTPRequestOperationTest.m in Sources */,
 				25B639CD16961EFA0065EB7B /* RKMappingTestTest.m in Sources */,
 				25A73363169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */,
+				2550DA2416B1FB62005A0CB8 /* RKPost.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

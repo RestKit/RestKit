@@ -22,8 +22,8 @@
 #import "RKMapping.h"
 
 @interface RKRelationshipMapping ()
-@property (nonatomic, strong, readwrite) NSString *sourceKeyPath;
-@property (nonatomic, strong, readwrite) NSString *destinationKeyPath;
+@property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
+@property (nonatomic, copy, readwrite) NSString *destinationKeyPath;
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @end
 

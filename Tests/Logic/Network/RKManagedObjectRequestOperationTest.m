@@ -13,22 +13,7 @@
 #import "RKTestUser.h"
 #import "RKMappingErrors.h"
 #import "RKMappableObject.h"
-
-@interface RKPost : NSManagedObject
-@end
-
-@implementation RKPost
-
-- (BOOL)validateTitle:(id *)ioValue error:(NSError **)outError {
-    // Don't allow blank titles
-    if ((*ioValue == nil) || ([[(NSString*)*ioValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""])) {        
-        return NO;
-    }
-    
-    return YES;
-}
-
-@end
+#import "RKPost.h"
 
 @interface RKManagedObjectRequestOperation ()
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;
@@ -1032,6 +1017,24 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(managedObjectRequestOperation.error).to.beNil();
     RKHuman *result = [managedObjectRequestOperation.mappingResult.array lastObject];
     expect(managedObjectRequestOperation.managedObjectContext).to.equal(result.managedObjectContext);
+}
+
+- (void)testMappingMetadataConfiguredOnTheOperation
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"@metadata.nickName": @"nickName" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.mappingMetadata = @{ @"nickName": @"Big Sleezy" };
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    expect(managedObjectRequestOperation.mappingResult).notTo.beNil();
+    RKHuman *human = [managedObjectRequestOperation.mappingResult firstObject];
+    expect(human.nickName).to.equal(@"Big Sleezy");
 }
 
 @end

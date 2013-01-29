@@ -87,7 +87,7 @@
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
     RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/people/:name/:age"];
-    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES interpolatedParameters:nil];
     expect(interpolatedPath).notTo.beNil();
     NSString *expectedPath = @"/people/CuddleGuts/6";
     expect(interpolatedPath).to.equal(expectedPath);
@@ -98,7 +98,7 @@
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
     RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/people/:group/:name?password=:password"];
-    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:YES interpolatedParameters:nil];
     expect(interpolatedPath).notTo.beNil();
     NSString *expectedPath = @"/people/15/Joe%20Bob%20Briggs?password=JUICE%7CBOX%26121";
     expect(interpolatedPath).to.equal(expectedPath);
@@ -109,7 +109,7 @@
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
     RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/people/:group/:name?password=:password"];
-    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:NO];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:NO interpolatedParameters:nil];
     expect(interpolatedPath).notTo.beNil();
     NSString *expectedPath = @"/people/15/Joe Bob Briggs?password=JUICE|BOX&121";
     expect(interpolatedPath).to.equal(expectedPath);
@@ -119,7 +119,7 @@
 {
     NSDictionary *arguments = [NSDictionary dictionaryWithObjectsAndKeys:@"Resources", @"filename", nil];
     RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/directory/:filename\\.json"];
-    NSString *interpolatedPath = [matcher pathFromObject:arguments addingEscapes:YES];
+    NSString *interpolatedPath = [matcher pathFromObject:arguments addingEscapes:YES interpolatedParameters:nil];
     expect(interpolatedPath).notTo.beNil();
     NSString *expectedPath = @"/directory/Resources.json";
     expect(interpolatedPath).to.equal(expectedPath);

@@ -202,6 +202,15 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Please see the documentation for `RKRouter`, `RKRouteSet`, and `RKRoute` for more details about the routing classes.
  
+ ## Metadata Mapping
+ 
+ The `RKObjectManager` class has integrated support for metadata mapping. Metdata mapping enables the object mapping of supplemental information external to the object representation loaded via an HTTP response. Object request operations constructed by the manager make the following metadata key paths available for mapping:
+ 
+ 1. `@metadata.routing.parameters` - A dictionary whose keys are the key paths matched from the path pattern of the `RKRoute` object used to construct the request URL and whose values are taken by evaluating the key path against the object interpolated with the route. Only available when routing was used to construct the request URL.
+ 1. `@metadata.routing.route` - The route object used to construct the request URL.
+ 
+ Please refer to the documentation accompanying `RKMappingOperation` for more details on metadata mapping.
+ 
  ## Core Data
  
  RestKit features deep integration with Apple's Core Data persistence framework. The object manager provides access to this integration by creating `RKManagedObjectRequestOperation` objects when an attempt is made to interact with a resource that has been mapped using an `RKEntityMapping`. To utilize the Core Data integration, the object manager must be provided with a fully configured `RKManagedObjectStore` object. The `RKManagedObjectStore` provides access to the `NSManagedObjectModel` and `NSManagedObjectContext` objects required to peform object mapping that targets a Core Data entity.

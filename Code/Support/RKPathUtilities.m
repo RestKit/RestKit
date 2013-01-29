@@ -97,7 +97,7 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
 {
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
-    return [matcher pathFromObject:object addingEscapes:NO];
+    return [matcher pathFromObject:object addingEscapes:NO interpolatedParameters:nil];
 }
 
 static NSDictionary *RKDictionaryOfFileExtensionsToMIMETypes()

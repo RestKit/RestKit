@@ -25,6 +25,7 @@
 #import "RKResponseDescriptor.h"
 #import "RKDynamicMapping.h"
 #import "RKLog.h"
+#import "RKDictionaryUtilities.h"
 
 NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 
@@ -123,7 +124,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
     if ([object respondsToSelector:@selector(countForObject:)] && [object count] > 0) {
         if ([object countForObject:[NSNull null]] == [object count]) {
-            RKLogDebug(@"Found a collection containing only NSNull values, considering the collection unmappable...");
+            RKLogDebug(@"Found a collection containing only `NSNull` values, considering the collection unmappable...");
             return YES;
         }
     }
@@ -167,7 +168,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     }
 
     if (mapping && destinationObject) {
-        BOOL success = [self mapRepresentation:representation toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
+        BOOL success = [self mapRepresentation:representation toObject:destinationObject atKeyPath:keyPath usingMapping:mapping metadata:self.metadata];
         if (success) {
             return destinationObject;
         }
@@ -211,23 +212,21 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
         return nil;
     }
 
-    for (id mappableObject in objectsToMap) {
+    [objectsToMap enumerateObjectsUsingBlock:^(id mappableObject, NSUInteger index, BOOL *stop) {
         id destinationObject = [self objectForRepresentation:mappableObject withMapping:mapping];
-        if (! destinationObject) {
-            continue;
+        if (destinationObject) {
+            BOOL success = [self mapRepresentation:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping metadata:@{ @"mapping": @{ @"collectionIndex": @(index) } }];
+            if (success) {
+                [mappedObjects addObject:destinationObject];
+            }
         }
-
-        BOOL success = [self mapRepresentation:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
-        if (success) {
-            [mappedObjects addObject:destinationObject];
-        }
-    }
+    }];
 
     return mappedObjects;
 }
 
 // The workhorse of this entire process. Emits object loading operations
-- (BOOL)mapRepresentation:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping
+- (BOOL)mapRepresentation:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping metadata:(NSDictionary *)metadata
 {
     NSAssert(destinationObject != nil, @"Cannot map without a target object to assign the results to");
     NSAssert(mappableObject != nil, @"Cannot map without a collection of attributes");
@@ -235,8 +234,13 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
     RKLogDebug(@"Asked to map source object %@ with mapping %@", mappableObject, mapping);
 
+    // Merge the metadata for the mapping operation
+    NSDictionary *mapperMetadata = RKDictionaryByMergingDictionaryWithDictionary(metadata, @{ @"mapping": @{ @"rootKeyPath": keyPath } });
+    NSDictionary *operationMetadata = RKDictionaryByMergingDictionaryWithDictionary(self.metadata, mapperMetadata);
+
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject mapping:mapping];
     mappingOperation.dataSource = self.mappingOperationDataSource;
+    mappingOperation.metadata = operationMetadata;
     if ([self.delegate respondsToSelector:@selector(mapper:willStartMappingOperation:forKeyPath:)]) {
         [self.delegate mapper:self willStartMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
     }

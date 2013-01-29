@@ -21,8 +21,8 @@
 #import "RKAttributeMapping.h"
 
 @interface RKAttributeMapping ()
-@property (nonatomic, strong, readwrite) NSString *sourceKeyPath;
-@property (nonatomic, strong, readwrite) NSString *destinationKeyPath;
+@property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
+@property (nonatomic, copy, readwrite) NSString *destinationKeyPath;
 @end
 
 @implementation RKAttributeMapping

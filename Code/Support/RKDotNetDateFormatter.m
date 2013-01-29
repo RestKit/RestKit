@@ -96,7 +96,7 @@ static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterva
 - (NSString *)millisecondsFromString:(NSString *)string
 {
     if (!string) return nil;
-    NSTextCheckingResult *match = [self.dotNetExpression firstMatchInString:string options:NSMatchingCompleted range:NSMakeRange(0, [string length])];
+    NSTextCheckingResult *match = [self.dotNetExpression firstMatchInString:string options:NSMatchingReportCompletion range:NSMakeRange(0, [string length])];
     if (!match) return nil;
     NSRange millisecRange = [match rangeAtIndex:1];
     if (!RKDotNetDateFormatterIsValidRange(millisecRange)) return nil;

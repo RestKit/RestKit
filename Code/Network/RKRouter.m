@@ -79,7 +79,7 @@
 {
     if (! object) return route.pathPattern;
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:route.pathPattern];
-    return [pathMatcher pathFromObject:object addingEscapes:route.shouldEscapePath];
+    return [pathMatcher pathFromObject:object addingEscapes:route.shouldEscapePath interpolatedParameters:nil];
 }
 
 @end
