@@ -1243,4 +1243,47 @@
     expect([human.cats valueForKey:@"railsID"]).to.equal(expectedIDs);
 }
 
+- (void)testMappingIdentificationAttributesFromElementsOnAnArrayDoesNotDuplicateManagedObjects
+{
+    NSDictionary *representation = @{ @"userSessions": @{ @"name": @"Mr. User",
+                                                          @"identification": @54321,
+                                                          @"catIDs": @[ @"418", @"419", @"431",@"441", @"457", @"486", @"504" ] } };
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+
+    NSManagedObject *cat1 = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [cat1 setValue:@(418) forKey:@"railsID"];
+    NSManagedObject *cat2 = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [cat2 setValue:@(419) forKey:@"railsID"];
+
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    catMapping.identificationAttributes = @[ @"railsID" ];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"railsID"]];
+
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"identification" toKeyPath:@"railsID"]];
+    [humanMapping setIdentificationAttributes:@[ @"railsID" ]];
+    [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"catIDs" toKeyPath:@"cats" withMapping:catMapping]];
+
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ @"userSessions": humanMapping }];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+    [mapper start];
+
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Cat"];
+    [fetchRequest setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"railsID" ascending:YES]]];
+
+    NSPredicate *catOnePredicate  = [NSPredicate predicateWithFormat:@"railsID == 418"];
+    [fetchRequest setPredicate:catOnePredicate];
+    NSArray *catsWithID418 = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:NULL];
+
+    NSPredicate *catTwoPredicate = [NSPredicate predicateWithFormat:@"railsID == 419"];
+    [fetchRequest setPredicate:catTwoPredicate];
+    NSArray *catsWithID419 = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:NULL];
+
+    expect(catsWithID418).to.haveCountOf(1);
+    expect(catsWithID419).to.haveCountOf(1);
+}
+
 @end

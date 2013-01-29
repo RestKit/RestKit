@@ -58,6 +58,8 @@ static id RKValueForAttributeMappingInRepresentation(RKAttributeMapping *attribu
 {
     if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
         return [[representation allKeys] lastObject];
+    } else if (attributeMapping.sourceKeyPath == nil){
+        return [representation objectForKey:[NSNull null]];
     } else {
         return [representation valueForKeyPath:attributeMapping.sourceKeyPath];
     }
