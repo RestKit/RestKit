@@ -28,6 +28,7 @@
 
 // Core Data
 #import "RKConnectionDescription.h"
+#import "RKForeignKeyConnectionDescription.h"
 #import "RKConnectionTestExpectation.h"
 #import "RKFetchRequestManagedObjectCache.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
@@ -97,12 +98,12 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         return [NSString stringWithFormat:@"%@ mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@>", [self class],
                 self.sourceKeyPath, self.destinationKeyPath, self.value];
     } else if (self.connection) {
-        if ([self.connection isForeignKeyConnection]) {
+        if ([self.connection isKindOfClass:[RKForeignKeyConnectionDescription class]]) {
             return [NSString stringWithFormat:@"%@ connected Relationship '%@' using attributes '%@' to value: %@>", [self class],
-                    [self.connection.relationship name], [self.connection.attributes valueForKey:@"name"], self.value];
-        } else if ([self.connection isKeyPathConnection]) {
+                    [self.connection.relationship name], [((RKForeignKeyConnectionDescription *)self.connection).attributes valueForKey:@"name"], self.value];
+        } else if ([self.connection isKindOfClass:[RKKeyPathConnectionDescription class]]) {
             return [NSString stringWithFormat:@"%@ connected Relationship '%@' using keyPath '%@' to value: %@>", [self class],
-                    [self.connection.relationship name], self.connection.keyPath, self.value];
+                    [self.connection.relationship name], ((RKKeyPathConnectionDescription *)self.connection).keyPath, self.value];
         }
     }
     
@@ -287,7 +288,8 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         
         // Check that the connection attributes match
         if (connectionExpectation.attributes) {
-            RKMappingTestCondition([connectionExpectation.attributes isEqualToDictionary:event.connection.attributes], RKMappingTestValueInequalityError, error, @"established connection using unexpected attributes: %@", event.connection.attributes);
+            NSDictionary* attributes = ((RKForeignKeyConnectionDescription *)event.connection).attributes;
+            RKMappingTestCondition([connectionExpectation.attributes isEqualToDictionary:attributes], RKMappingTestValueInequalityError, error, @"established connection using unexpected attributes: %@", attributes);
         }
     
         // Wrong objects

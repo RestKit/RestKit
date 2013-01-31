@@ -573,6 +573,24 @@
 		5C927E151608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5CCC295715B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		712B4F8216ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8016ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		712B4F8316ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 712B4F8116ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m */; };
+		712B509716AEE65500F7ED03 /* RKConnectionDescriptionSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9616ADC71800A61565 /* RKConnectionDescriptionSubclass.h */; };
+		712B509916AEE65600F7ED03 /* RKConnectionDescriptionSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9616ADC71800A61565 /* RKConnectionDescriptionSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		712B509A16AEE65F00F7ED03 /* RKConnectionDescriptionFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8016ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h */; };
+		712B509B16AEE66A00F7ED03 /* RKConnectionDescriptionFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 712B4F8116ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m */; };
+		712B509C16AEE67700F7ED03 /* RKForeignKeyConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C59B8C16ADC67100A61565 /* RKForeignKeyConnectionDescription.m */; };
+		712B509D16AEE68000F7ED03 /* RKEntityMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		712B509E16AEE68100F7ED03 /* RKEntityMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */; };
+		712B509F16AEE69500F7ED03 /* RKObjectMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8516ADCD6000F7ED03 /* RKObjectMappingSubclass.h */; };
+		712B50A016AEE69600F7ED03 /* RKObjectMappingSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 712B4F8516ADCD6000F7ED03 /* RKObjectMappingSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		71C59B8D16ADC67200A61565 /* RKForeignKeyConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B8B16ADC67100A61565 /* RKForeignKeyConnectionDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		71C59B8E16ADC67200A61565 /* RKForeignKeyConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C59B8C16ADC67100A61565 /* RKForeignKeyConnectionDescription.m */; };
+		71C59B8F16ADC67B00A61565 /* RKForeignKeyConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B8B16ADC67100A61565 /* RKForeignKeyConnectionDescription.h */; };
+		71C59B9216ADC6A600A61565 /* RKKeyPathConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9016ADC6A400A61565 /* RKKeyPathConnectionDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		71C59B9316ADC6A600A61565 /* RKKeyPathConnectionDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 71C59B9016ADC6A400A61565 /* RKKeyPathConnectionDescription.h */; };
+		71C59B9416ADC6A600A61565 /* RKKeyPathConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C59B9116ADC6A500A61565 /* RKKeyPathConnectionDescription.m */; };
+		71C59B9516ADC6A600A61565 /* RKKeyPathConnectionDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 71C59B9116ADC6A500A61565 /* RKKeyPathConnectionDescription.m */; };
 		73D3907414CA1AE00093E3D6 /* parent.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907114CA19F90093E3D6 /* parent.json */; };
 		73D3907514CA1AE20093E3D6 /* parent.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907114CA19F90093E3D6 /* parent.json */; };
 		73D3907614CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
@@ -941,6 +959,15 @@
 		41A4EBF715374D1800740BC8 /* redirection.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = redirection.rb; sourceTree = "<group>"; };
 		5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilitiesTest.m; sourceTree = "<group>"; };
 		5CCC295515B7124A0045F0F5 /* RKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMacros.h; sourceTree = "<group>"; };
+		712B4F8016ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKConnectionDescriptionFactory.h; sourceTree = "<group>"; };
+		712B4F8116ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKConnectionDescriptionFactory.m; sourceTree = "<group>"; };
+		712B4F8516ADCD6000F7ED03 /* RKObjectMappingSubclass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingSubclass.h; sourceTree = "<group>"; };
+		712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKEntityMappingSubclass.h; sourceTree = "<group>"; };
+		71C59B8B16ADC67100A61565 /* RKForeignKeyConnectionDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKForeignKeyConnectionDescription.h; sourceTree = "<group>"; };
+		71C59B8C16ADC67100A61565 /* RKForeignKeyConnectionDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKForeignKeyConnectionDescription.m; sourceTree = "<group>"; };
+		71C59B9016ADC6A400A61565 /* RKKeyPathConnectionDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKKeyPathConnectionDescription.h; sourceTree = "<group>"; };
+		71C59B9116ADC6A500A61565 /* RKKeyPathConnectionDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKKeyPathConnectionDescription.m; sourceTree = "<group>"; };
+		71C59B9616ADC71800A61565 /* RKConnectionDescriptionSubclass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKConnectionDescriptionSubclass.h; sourceTree = "<group>"; };
 		7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCaching.h; sourceTree = "<group>"; };
 		7394DF3814CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKFetchRequestManagedObjectCache.h; sourceTree = "<group>"; };
 		7394DF3914CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchRequestManagedObjectCache.m; sourceTree = "<group>"; };
@@ -1168,6 +1195,7 @@
 				25160D8B145650490060A5C5 /* RKMapperOperation_Private.h */,
 				25160D8D145650490060A5C5 /* RKObjectMapping.h */,
 				25160D8E145650490060A5C5 /* RKObjectMapping.m */,
+				712B4F8516ADCD6000F7ED03 /* RKObjectMappingSubclass.h */,
 				25160D8F145650490060A5C5 /* RKMapping.h */,
 				25CA7A8E14EC570100888FF8 /* RKMapping.m */,
 				25160D90145650490060A5C5 /* RKMappingOperation.h */,
@@ -1627,6 +1655,22 @@
 			path = PLISTs;
 			sourceTree = "<group>";
 		};
+		71C59B8916ADC63D00A61565 /* ConnectionDescription */ = {
+			isa = PBXGroup;
+			children = (
+				712B4F8016ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h */,
+				712B4F8116ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m */,
+				25E88C86165C5CC30042ABD0 /* RKConnectionDescription.h */,
+				25E88C87165C5CC30042ABD0 /* RKConnectionDescription.m */,
+				71C59B9616ADC71800A61565 /* RKConnectionDescriptionSubclass.h */,
+				71C59B8B16ADC67100A61565 /* RKForeignKeyConnectionDescription.h */,
+				71C59B8C16ADC67100A61565 /* RKForeignKeyConnectionDescription.m */,
+				71C59B9016ADC6A400A61565 /* RKKeyPathConnectionDescription.h */,
+				71C59B9116ADC6A500A61565 /* RKKeyPathConnectionDescription.m */,
+			);
+			name = ConnectionDescription;
+			sourceTree = "<group>";
+		};
 		E4081DFC15FB89DF00364948 /* ManagedObjectCaching */ = {
 			isa = PBXGroup;
 			children = (
@@ -1695,12 +1739,12 @@
 		E4081E0915FB8FD800364948 /* Mapping */ = {
 			isa = PBXGroup;
 			children = (
+				71C59B8916ADC63D00A61565 /* ConnectionDescription */,
 				25160D4C145650490060A5C5 /* RKEntityMapping.h */,
 				25160D4D145650490060A5C5 /* RKEntityMapping.m */,
+				712B505516AEDA7100F7ED03 /* RKEntityMappingSubclass.h */,
 				258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */,
 				25AA23CF15AF291F006EF62D /* RKManagedObjectMappingOperationDataSource.m */,
-				25E88C86165C5CC30042ABD0 /* RKConnectionDescription.h */,
-				25E88C87165C5CC30042ABD0 /* RKConnectionDescription.m */,
 			);
 			name = Mapping;
 			sourceTree = "<group>";
@@ -1806,6 +1850,12 @@
 				25A226D61618A57500952D72 /* RKObjectUtilities.h in Headers */,
 				2507C327161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 				25CDA0DC161E7ED400F583F3 /* RKISO8601DateFormatter.h in Headers */,
+				71C59B8D16ADC67200A61565 /* RKForeignKeyConnectionDescription.h in Headers */,
+				71C59B9216ADC6A600A61565 /* RKKeyPathConnectionDescription.h in Headers */,
+				712B4F8216ADCBB800F7ED03 /* RKConnectionDescriptionFactory.h in Headers */,
+				712B509916AEE65600F7ED03 /* RKConnectionDescriptionSubclass.h in Headers */,
+				712B509D16AEE68000F7ED03 /* RKEntityMappingSubclass.h in Headers */,
+				712B50A016AEE69600F7ED03 /* RKObjectMappingSubclass.h in Headers */,
 				25E88C88165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */,
 				25019495166406E30081D68A /* RKValueTransformers.h in Headers */,
 				25A8C2341673BD480014D9A6 /* RKConnectionTestExpectation.h in Headers */,
@@ -1913,6 +1963,12 @@
 				255893E4166BA7400010C70B /* RestKit-Prefix.pch in Headers */,
 				255893E5166BA7700010C70B /* RKTestFixture.h in Headers */,
 				25A8C2351673BD480014D9A6 /* RKConnectionTestExpectation.h in Headers */,
+				71C59B8F16ADC67B00A61565 /* RKForeignKeyConnectionDescription.h in Headers */,
+				71C59B9316ADC6A600A61565 /* RKKeyPathConnectionDescription.h in Headers */,
+				712B509716AEE65500F7ED03 /* RKConnectionDescriptionSubclass.h in Headers */,
+				712B509A16AEE65F00F7ED03 /* RKConnectionDescriptionFactory.h in Headers */,
+				712B509E16AEE68100F7ED03 /* RKEntityMappingSubclass.h in Headers */,
+				712B509F16AEE69500F7ED03 /* RKObjectMappingSubclass.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2267,6 +2323,9 @@
 				25019497166406E30081D68A /* RKValueTransformers.m in Sources */,
 				25A8C2361673BD480014D9A6 /* RKConnectionTestExpectation.m in Sources */,
 				258BEA02168D058300C74C8C /* RKObjectMappingMatcher.m in Sources */,
+				71C59B8E16ADC67200A61565 /* RKForeignKeyConnectionDescription.m in Sources */,
+				71C59B9416ADC6A600A61565 /* RKKeyPathConnectionDescription.m in Sources */,
+				712B4F8316ADCBB800F7ED03 /* RKConnectionDescriptionFactory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2420,6 +2479,9 @@
 				25019498166406E30081D68A /* RKValueTransformers.m in Sources */,
 				25A8C2371673BD480014D9A6 /* RKConnectionTestExpectation.m in Sources */,
 				258BEA03168D058300C74C8C /* RKObjectMappingMatcher.m in Sources */,
+				71C59B9516ADC6A600A61565 /* RKKeyPathConnectionDescription.m in Sources */,
+				712B509B16AEE66A00F7ED03 /* RKConnectionDescriptionFactory.m in Sources */,
+				712B509C16AEE67700F7ED03 /* RKForeignKeyConnectionDescription.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
