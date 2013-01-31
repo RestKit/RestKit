@@ -1250,4 +1250,29 @@
     expect(mappingResult).willNot.beNil();
 }
 
+- (void)testUseOfMetadataMappingAsIdentificationAttribute
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    objectManager.managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:objectManager.managedObjectStore];
+    [humanMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.routing.parameters.railsID": @"favoriteCatID" }];
+    [humanMapping setIdentificationAttributes:@[ @"favoriteCatID" ]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithName:@"load_human" pathPattern:@"/JSON/humans/:railsID\\.json" method:RKRequestMethodGET]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping pathPattern:@"/JSON/humans/:railsID\\.json" keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:objectManager.managedObjectStore.mainQueueManagedObjectContext];
+    human.railsID = @1;
+    __block RKMappingResult *mappingResult = nil;
+    [objectManager getObjectsAtPathForRouteNamed:@"load_human" object:human parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    
+    expect(mappingResult).willNot.beNil();
+    RKHuman *anotherHuman = [mappingResult firstObject];
+    expect(anotherHuman.name).to.equal(@"Blake Watters");
+    expect(anotherHuman.favoriteCatID).to.equal(@1);
+    expect([anotherHuman isEqual:human]).to.beFalsy();
+}
+
 @end
