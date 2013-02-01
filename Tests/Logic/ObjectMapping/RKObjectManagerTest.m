@@ -1220,6 +1220,7 @@
     
     expect(mappingResult).willNot.beNil();
     RKTestUser *anotherUser = [mappingResult firstObject];
+    expect(anotherUser).notTo.equal(user);
     expect(anotherUser.name).to.equal(@"Blake Watters");
     expect(anotherUser.position).to.equal(@1);
 }
