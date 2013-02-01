@@ -64,6 +64,15 @@
 
  If a `targetObject` is configured on the mapper operation, all mapping work on the `representation` will target the specified object. For transient `NSObject` mappings, this ensures that the properties of an existing object are updated rather than an new object being created for the mapped representation. If an array of representations is being processed and a `targetObject` is provided, it must be a mutable collection object else an exception will be raised.
 
+ ## Metadata Mapping
+
+ The `RKMapperOperation` class provides support for metadata mapping provided to the operation via the `mappingMetadata` property. This dictionary is made available to all `RKMappingOperation` objects executed by the receiver to process the representation being mapped. In addition to any user supplied metadata, the mapper operation makes the following metadata key paths available for mapping:
+
+ 1. `@metadata.mapping.rootKeyPath` - An object specifying the root key path at which the current representation is nested within the source representation. This will correspond to a key in the `mappingsDictionary` and is typically an `NSString`, but can be `[NSNull null]` if the representation being mapped is at the root.
+ 1. `@metadata.mapping.collectionIndex` - An `NSNumber` object specifying the index of the current object within a collection being mapped. This key is only available if the current representation exists within a collection.
+
+ Please refer to the documentation accompanying `RKMappingOperation` for more details on metadata mapping.
+
  ## Core Data
 
  `RKMapperOperation` supports mapping to Core Data target entities. To do so, it must be configured with an `RKManagedObjectMappingOperationDataSource` object as the data source.
@@ -96,6 +105,11 @@
  The result of the mapping process. A `nil` value indicates that no mappable object representations were found and no mapping was performed.
  */
 @property (nonatomic, strong, readonly) RKMappingResult *mappingResult;
+
+/**
+ Returns a dictionary containing information about the mappings applied during the execution of the operation. The keys of the dictionary are keyPaths into the `mappingResult` for values that were mapped and the values are the corresponding `RKPropertyMapping` objects used to perform the mapping.
+ */
+@property (nonatomic, readonly) NSDictionary *mappingInfo;
 
 ///-------------------------------------
 /// @name Managing Mapping Configuration
@@ -132,13 +146,28 @@
  */
 @property (nonatomic, weak) id<RKMapperOperationDelegate> delegate;
 
+/**
+ A dictionary of metadata that is available for mappping by any mapping operation started by the receiver.
+ */
+@property (nonatomic, copy) NSDictionary *metadata;
+
+///------------------------------
+/// @name Executing the Operation
+///------------------------------
+
+/**
+ Executes the mapper operation to completion.
+ 
+ @param error A pointer to an `NSError` object to set in the event an error occurs during execution.
+ @return A Boolean value that indicates if the operation completed successfully.
+ */
 - (BOOL)execute:(NSError **)error;
 
 @end
 
-///--------------------------------------
+///--------------------------------
 /// @name Mapper Operation Delegate
-///--------------------------------------
+///--------------------------------
 
 /**
  Objects wishing to act as the delegate for `RKMapperOperation` objects must adopt the `RKMapperOperationDelegate` protocol. The protocol provides a rich set of optional callback methods that provides insight into the lifecycle of a mapper operation.

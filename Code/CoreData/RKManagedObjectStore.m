@@ -31,6 +31,8 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
+extern NSString * const RKErrorDomain;
+
 NSString * const RKSQLitePersistentStoreSeedDatabasePathOption = @"RKSQLitePersistentStoreSeedDatabasePathOption";
 NSString * const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
 
@@ -52,7 +54,11 @@ static RKManagedObjectStore *defaultStore = nil;
 
 + (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore
 {
-    @synchronized(defaultStore) {
+    if (defaultStore) {
+        @synchronized(defaultStore) {
+            defaultStore = managedObjectStore;
+        }
+    } else {
         defaultStore = managedObjectStore;
     }
 }
@@ -182,6 +188,7 @@ static RKManagedObjectStore *defaultStore = nil;
 {
     NSAssert(!self.persistentStoreManagedObjectContext, @"Unable to create managed object contexts: A primary managed object context already exists.");
     NSAssert(!self.mainQueueManagedObjectContext, @"Unable to create managed object contexts: A main queue managed object context already exists.");
+    NSAssert([[self.persistentStoreCoordinator persistentStores] count], @"Cannot create managed object contexts: The persistent store coordinator does not have any persistent stores. This likely means that you forgot to add a persistent store or your attempt to do so failed with an error.");
 
     // Our primary MOC is a private queue concurrency type
     self.persistentStoreManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
@@ -286,6 +293,106 @@ static RKManagedObjectStore *defaultStore = nil;
     [self.mainQueueManagedObjectContext performBlock:^{
         [self.mainQueueManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
     }];
+}
+
++ (BOOL)migratePersistentStoreOfType:(NSString *)storeType
+                               atURL:(NSURL *)storeURL
+                        toModelAtURL:(NSURL *)destinationModelURL
+                               error:(NSError **)error
+          configuringModelsWithBlock:(void (^)(NSManagedObjectModel *, NSURL *))block
+{
+    BOOL isMomd = [[destinationModelURL pathExtension] isEqualToString:@"momd"]; // Momd contains a directory of versioned models
+    NSManagedObjectModel *destinationModel = [[[NSManagedObjectModel alloc] initWithContentsOfURL:destinationModelURL] mutableCopy];
+    
+    // Yield the destination model for configuration (i.e. search indexing)
+    if (block) block(destinationModel, destinationModelURL);
+    
+    // Check if the store is compatible with our model
+    NSDictionary *storeMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType
+                                                                                             URL:storeURL
+                                                                                           error:error];
+    if (! storeMetadata) return NO;
+    if ([destinationModel isConfiguration:nil compatibleWithStoreMetadata:storeMetadata]) {
+        // Our store is compatible with the current model, no migration is necessary
+        return YES;
+    }
+    
+    RKLogInfo(@"Determined that store at URL %@ has incompatible metadata for managed object model: performing migration...", storeURL);
+        
+    NSURL *momdURL = isMomd ? destinationModelURL : [destinationModelURL URLByDeletingLastPathComponent];
+    
+    // We can only do migrations within a versioned momd
+    if (![[momdURL pathExtension] isEqualToString:@"momd"]) {
+        NSString *errorDescription = [NSString stringWithFormat:@"Migration failed: Migrations can only be performed to versioned destination models contained in a .momd package. Incompatible destination model given at path '%@'", [momdURL path]];
+        if (error) *error = [NSError errorWithDomain:RKErrorDomain code:NSMigrationError userInfo:@{ NSLocalizedDescriptionKey: errorDescription }];
+        return NO;
+    }
+    
+    NSArray *versionedModelURLs = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:momdURL
+                                                                includingPropertiesForKeys:@[] // We only want the URLs
+                                                                                   options:NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
+                                                                                     error:error];
+    if (! versionedModelURLs) {
+        return NO;
+    }
+    
+    // Iterate across each model version and try to find a compatible store
+    NSManagedObjectModel *sourceModel = nil;
+    for (NSURL *versionedModelURL in versionedModelURLs) {
+        if (! [@[@"mom", @"momd"] containsObject:[versionedModelURL pathExtension]]) continue;
+        NSManagedObjectModel *model = [[[NSManagedObjectModel alloc] initWithContentsOfURL:versionedModelURL] mutableCopy];
+        if (! model) continue;
+        if (block) block(model, versionedModelURL);
+        
+        if ([model isConfiguration:nil compatibleWithStoreMetadata:storeMetadata]) {
+            sourceModel = model;
+            break;
+        }
+    }
+    
+    // Cannot complete the migration as we can't find a source model
+    if (! sourceModel) {
+        NSString *errorDescription = [NSString stringWithFormat:@"Migration failed: Unable to find the source managed object model used to create the %@ store at path '%@'", storeType, [storeURL path]];
+        if (error) *error = [NSError errorWithDomain:RKErrorDomain code:NSMigrationMissingSourceModelError userInfo:@{ NSLocalizedDescriptionKey: errorDescription }];
+        return NO;
+    }
+    
+    // Infer a mapping model and complete the migration
+    NSMappingModel *mappingModel = [NSMappingModel inferredMappingModelForSourceModel:sourceModel
+                                                                     destinationModel:destinationModel
+                                                                                error:error];
+    if (!mappingModel) {
+        RKLogError(@"Failed to obtain inferred mapping model for source and destination models: aborting migration...");
+        RKLogError(@"%@", *error);
+        return NO;
+    }
+
+    CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
+    NSString *UUID = (__bridge_transfer NSString*)CFUUIDCreateString(kCFAllocatorDefault, uuid);
+    CFRelease(uuid);
+
+    NSString *migrationPath = [NSTemporaryDirectory() stringByAppendingFormat:@"Migration-%@.sqlite", UUID];
+    NSURL *migrationURL = [NSURL fileURLWithPath:migrationPath];
+    
+    // Create a migration manager to perform the migration.
+    NSMigrationManager *manager = [[NSMigrationManager alloc] initWithSourceModel:sourceModel destinationModel:destinationModel];
+    BOOL success = [manager migrateStoreFromURL:storeURL type:NSSQLiteStoreType
+                                        options:nil withMappingModel:mappingModel toDestinationURL:migrationURL
+                                destinationType:NSSQLiteStoreType destinationOptions:nil error:error];
+    
+    if (success) {
+        success = [[NSFileManager defaultManager] removeItemAtURL:storeURL error:error];
+        if (success) {
+            success = [[NSFileManager defaultManager] moveItemAtURL:migrationURL toURL:storeURL error:error];
+            if (success) RKLogInfo(@"Successfully migrated existing store to managed object model at path '%@'...", [destinationModelURL path]);
+        } else {
+            RKLogError(@"Failed to remove existing store at path '%@': unable to complete migration...", [storeURL path]);
+            RKLogError(@"%@", *error);
+        }
+    } else {
+        RKLogError(@"Failed migration with error: %@", *error);
+    }
+    return success;
 }
 
 @end

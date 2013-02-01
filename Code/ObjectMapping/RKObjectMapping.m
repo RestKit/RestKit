@@ -115,8 +115,15 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     return [[self alloc] initWithClass:objectClass];
 }
 
-+ (instancetype)requestMapping
++ (RKObjectMapping *)requestMapping
 {
+    if (! [self isEqual:[RKObjectMapping class]]) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"`%@` is not meant to be invoked on `%@`. You probably want to invoke `[RKObjectMapping requestMapping]`.",
+                                               NSStringFromSelector(_cmd),
+                                               NSStringFromClass(self)]
+                                     userInfo:nil];
+    }
     return [self mappingForClass:[NSMutableDictionary class]];
 }
 

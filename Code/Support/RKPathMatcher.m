@@ -128,7 +128,7 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
 }
 
-- (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes
+- (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes interpolatedParameters:(NSDictionary **)interpolatedParameters
 {
     NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using pathMatcherWithPattern: before calling pathFromObject:");
     NSAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
@@ -139,6 +139,9 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
         };
     }
     NSString *path = [self.socPattern stringFromObject:object withBlock:encoderBlock];
+    if (interpolatedParameters) {
+        *interpolatedParameters = [self.socPattern parameterDictionaryFromSourceString:path];
+    }
     return path;
 }
 

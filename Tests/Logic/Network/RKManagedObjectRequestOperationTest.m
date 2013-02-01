@@ -12,27 +12,32 @@
 #import "RKHuman.h"
 #import "RKTestUser.h"
 #import "RKMappingErrors.h"
-
-@interface RKPost : NSManagedObject
-@end
-
-@implementation RKPost
-
-- (BOOL)validateTitle:(id *)ioValue error:(NSError **)outError {
-    // Don't allow blank titles
-    if ((*ioValue == nil) || ([[(NSString*)*ioValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""])) {        
-        return NO;
-    }
-    
-    return YES;
-}
-
-@end
+#import "RKMappableObject.h"
+#import "RKPost.h"
 
 @interface RKManagedObjectRequestOperation ()
 - (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;
 @end
 NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
+
+
+@interface RKTestDelegateManagedObjectRequestOperation : RKManagedObjectRequestOperation
+@end
+
+@implementation RKTestDelegateManagedObjectRequestOperation
+
+- (void)mapperWillStartMapping:(RKMapperOperation *)mapper
+{
+    // For stubbing
+}
+
+@end
+
+@interface RKTestListOfLists : NSObject
+@property (nonatomic, strong) NSArray *listOfLists;
+@end
+@implementation RKTestListOfLists
+@end
 
 @interface RKManagedObjectRequestOperationTest : RKTestCase
 
@@ -139,7 +144,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(managedObjectRequestOperation.mappingResult).notTo.beNil();
     NSArray *managedObjectContexts = [[managedObjectRequestOperation.mappingResult array] valueForKeyPath:@"@distinctUnionOfObjects.managedObjectContext"];
     expect([managedObjectContexts count]).to.equal(1);
-    expect(managedObjectContexts[0]).to.equal(managedObjectStore.mainQueueManagedObjectContext);
+    expect(managedObjectContexts).to.equal([NSArray arrayWithObject:managedObjectStore.mainQueueManagedObjectContext]);
 }
 
 // 304 'Not Modified'
@@ -186,7 +191,11 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation waitUntilFinished];
     expect(managedObjectRequestOperation.error).notTo.beNil();
     expect(managedObjectRequestOperation.mappingResult).to.beNil();
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED
     expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"The operation couldn’t be completed. (Cocoa error 1660.)");
+    #else
+    expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"name is too long.");
+    #endif
 }
 
 #pragma mark - Deletion Response Tests
@@ -673,6 +682,173 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(orphan.managedObjectContext).to.beNil();
 }
 
+- (void)testDeletionOfOrphanedObjectsMappedWithCyclicRelationshipThatIsNotSelfReferential
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel new];
+    NSEntityDescription *listEntity = [NSEntityDescription new];
+    [listEntity setName:@"List"];
+    NSAttributeDescription *listNameAttribute = [NSAttributeDescription new];
+    [listNameAttribute setName:@"name"];
+    [listNameAttribute setAttributeType:NSStringAttributeType];
+    
+    NSEntityDescription *authorEntity = [NSEntityDescription new];
+    [authorEntity setName:@"Author"];
+    NSAttributeDescription *authorNameAttribute = [NSAttributeDescription new];
+    [authorNameAttribute setName:@"name"];
+    [authorNameAttribute setAttributeType:NSStringAttributeType];
+    [authorEntity setProperties:@[ authorNameAttribute ]];
+    
+    NSEntityDescription *entryEntity = [NSEntityDescription new];
+    [entryEntity setName:@"Entry"];    
+    NSAttributeDescription *entryNameAttribute = [NSAttributeDescription new];
+    [entryNameAttribute setName:@"name"];
+    [entryNameAttribute setAttributeType:NSStringAttributeType];
+    NSAttributeDescription *entryValueAttribute = [NSAttributeDescription new];
+    [entryValueAttribute setName:@"value"];
+    [entryValueAttribute setAttributeType:NSStringAttributeType];
+    
+    // Create relationships
+    NSRelationshipDescription *listHasOneAuthorRelationship = [NSRelationshipDescription new];
+    [listHasOneAuthorRelationship setName:@"author"];
+    [listHasOneAuthorRelationship setDestinationEntity:authorEntity];
+    [listHasOneAuthorRelationship setMaxCount:1]; // To One
+    
+    NSRelationshipDescription *authorHasManyListsRelationship = [NSRelationshipDescription new];
+    [authorHasManyListsRelationship setName:@"lists"];
+    [authorHasManyListsRelationship setDestinationEntity:listEntity];
+    [authorHasManyListsRelationship setMaxCount:0]; // To Many
+
+    [authorHasManyListsRelationship setInverseRelationship:listHasOneAuthorRelationship];
+    [listHasOneAuthorRelationship setInverseRelationship:authorHasManyListsRelationship];
+    
+    NSRelationshipDescription *listHasManyValuesRelationship = [NSRelationshipDescription new];
+    [listHasManyValuesRelationship setName:@"entries"];
+    [listHasManyValuesRelationship setDestinationEntity:entryEntity];
+    [listHasManyValuesRelationship setMaxCount:0]; // To Many
+    
+    NSRelationshipDescription *entryBelongsToListRelationship = [NSRelationshipDescription new];
+    [entryBelongsToListRelationship setName:@"list"];
+    [entryBelongsToListRelationship setDestinationEntity:listEntity];
+    [entryBelongsToListRelationship setMaxCount:1]; // To One
+    [entryBelongsToListRelationship setInverseRelationship:listHasManyValuesRelationship];
+    
+    [listHasManyValuesRelationship setInverseRelationship:entryBelongsToListRelationship];
+    
+    NSRelationshipDescription *entryRelatesToOtherListRelationship = [NSRelationshipDescription new];
+    [entryRelatesToOtherListRelationship setName:@"relatedList"];
+    [entryRelatesToOtherListRelationship setDestinationEntity:listEntity];
+    [entryRelatesToOtherListRelationship setMaxCount:1]; // To One
+    [entryRelatesToOtherListRelationship setInverseRelationship:listHasManyValuesRelationship];
+    
+    // Set the properties
+    [authorEntity setProperties:@[ authorNameAttribute, authorHasManyListsRelationship ]];
+    [listEntity setProperties:@[ listNameAttribute, listHasOneAuthorRelationship, listHasManyValuesRelationship ]];
+    [entryEntity setProperties:@[ entryNameAttribute, entryValueAttribute, entryBelongsToListRelationship, entryRelatesToOtherListRelationship ]];
+    
+    [managedObjectModel setEntities:@[ listEntity, authorEntity, entryEntity ]];
+    
+    // Configure a Core Data stack for this model
+    NSError *error = nil;
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+    [managedObjectStore createPersistentStoreCoordinator];
+    [managedObjectStore addInMemoryPersistentStore:&error];
+    [managedObjectStore createManagedObjectContexts];
+    
+    // Create mappings
+    RKEntityMapping *listMapping = [[RKEntityMapping alloc] initWithEntity:listEntity];
+    listMapping.identificationAttributes = @[ @"name" ];
+    [listMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *authorMapping = [[RKEntityMapping alloc] initWithEntity:authorEntity];
+    authorMapping.identificationAttributes = @[ @"name" ];
+    [authorMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *entryMapping = [[RKEntityMapping alloc] initWithEntity:entryEntity];
+    entryMapping.identificationAttributes = @[ @"name" ];
+    [entryMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    
+    // NOTE: This cyclic mapping should trigger an explosion...
+    [entryMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"list"
+                                                                                 toKeyPath:@"list"
+                                                                               withMapping:listMapping]];
+    [entryMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"relatedList"
+                                                                                 toKeyPath:@"relatedList"
+                                                                               withMapping:listMapping]];
+    
+    [listMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"author"
+                                                                                toKeyPath:@"author"
+                                                                              withMapping:authorMapping]];
+    
+    RKRelationshipMapping *entriesRelationship = [RKRelationshipMapping relationshipMappingFromKeyPath:@"entries"
+                                                                                             toKeyPath:@"entries"
+                                                                                           withMapping:entryMapping];
+    entriesRelationship.assignmentPolicy = RKUnionAssignmentPolicy;
+    [listMapping addPropertyMapping:entriesRelationship];
+    
+    
+    RKObjectMapping *listsOfListsMapping = [RKObjectMapping mappingForClass:[RKTestListOfLists class]];
+    [listsOfListsMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"lists" toKeyPath:@"listOfLists" withMapping:listMapping]];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:listsOfListsMapping
+                                                                                       pathPattern:nil
+                                                                                           keyPath:nil
+                                                                                       statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    // Create an orphaned Author and List
+    NSManagedObject *orphanedAuthor = [[NSManagedObject alloc] initWithEntity:authorEntity insertIntoManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [orphanedAuthor setValue:@"Orphaned Author" forKey:@"name"];
+    
+    NSManagedObject *orphanedList = [[NSManagedObject alloc] initWithEntity:listEntity insertIntoManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [orphanedList setValue:@"Orphaned List" forKey:@"name"];
+    
+    // Create an existing List and Entry to be Unioned onto the result set
+    NSManagedObject *existingList = [[NSManagedObject alloc] initWithEntity:listEntity insertIntoManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [existingList setValue:@"Second List" forKey:@"name"];
+    
+    NSManagedObject *existingEntry = [[NSManagedObject alloc] initWithEntity:entryEntity insertIntoManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [existingEntry setValue:@"Existing Entry" forKey:@"name"];
+    [existingList setValue:[NSSet setWithObject:existingEntry] forKey:@"entries"];
+    
+    BOOL success = [managedObjectStore.persistentStoreManagedObjectContext saveToPersistentStore:&error];
+    expect(success).to.equal(YES);
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/lists.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    RKFetchRequestBlock listFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+        return [NSFetchRequest fetchRequestWithEntityName:@"List"];
+    };
+    RKFetchRequestBlock authorFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+        return [NSFetchRequest fetchRequestWithEntityName:@"Author"];
+    };
+    RKFetchRequestBlock entryFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+        return [NSFetchRequest fetchRequestWithEntityName:@"Entry"];
+    };
+    managedObjectRequestOperation.fetchRequestBlocks = @[ listFetchRequestBlock, authorFetchRequestBlock, entryFetchRequestBlock ];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.deletesOrphanedObjects = YES;
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    managedObjectRequestOperation.managedObjectCache = managedObjectCache;
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
+    
+    NSManagedObjectContext *managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    NSUInteger count = [managedObjectContext countForEntityForName:@"List" predicate:nil error:nil];
+    expect(count).to.equal(3);
+    
+    count = [managedObjectContext countForEntityForName:@"Entry" predicate:nil error:nil];
+    expect(count).to.equal(4);
+    
+    count = [managedObjectContext countForEntityForName:@"Author" predicate:nil error:nil];
+    expect(count).to.equal(2);
+    
+    // Orphans get deleted
+    expect(orphanedAuthor.managedObjectContext).to.beNil();
+    expect(orphanedList.managedObjectContext).to.beNil();
+    
+    // Objects in the results do not
+    expect(existingList.managedObjectContext).notTo.beNil();
+    expect(existingEntry.managedObjectContext).notTo.beNil();
+}
+
 - (void)testMappingWithDynamicMappingContainingIncompatibleEntityMappingsAtSameKeyPath
 {
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
@@ -768,6 +944,97 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     expect(managedObjectRequestOperation.error).to.beNil();
     expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
+}
+
+- (void)testThatSuccessfulCompletionSavesManagedObjectIfTargetObjectIsUnsavedEvenIfNoMappingWasPerformed
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext withProperties:nil];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/204" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"POST";
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.targetObject = human;
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        expect([human isNew]).to.equal(NO);
+    }];
+}
+
+- (void)testThatMapperOperationDelegateIsPassedThroughToUnderlyingMapperOperation
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKTestDelegateManagedObjectRequestOperation *managedObjectRequestOperation = [[RKTestDelegateManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    id mockOperation = [OCMockObject partialMockForObject:managedObjectRequestOperation];
+    [[mockOperation expect] mapperWillStartMapping:OCMOCK_ANY];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    [managedObjectRequestOperation start];
+    expect([managedObjectRequestOperation isFinished]).will.beTruthy();
+    [mockOperation verify];
+}
+
+- (void)testThatRefetchingOfNestedNonManagedAndManagedObjectsWorksWithHasOneRelations
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKObjectMapping *itemMapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favorite_cat" toKeyPath:@"bestFriend" withMapping:entityMapping]];
+    [itemMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"items.human" toKeyPath:@"hasMany" withMapping:userMapping]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:itemMapping pathPattern:nil keyPath:@"result" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/has_many_with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    RKMappableObject *result = [managedObjectRequestOperation.mappingResult.array lastObject];
+    RKTestUser *user = (RKTestUser *)result.hasMany.anyObject;
+    NSLog(@"Examining result = %@, with result.hasMany = %@, user = %@ and user.bestFriend(%@) = %@", result, result.hasMany, user, [user.bestFriend class], user.bestFriend);
+    expect(user.bestFriend).to.beInstanceOf([RKHuman class]);
+    expect([user.bestFriend managedObjectContext]).to.equal(managedObjectStore.persistentStoreManagedObjectContext);
+}
+
+- (void)testThatAnEmptyResultHasTheProperManagedObjectContext
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/empty_human.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    RKHuman *result = [managedObjectRequestOperation.mappingResult.array lastObject];
+    expect(managedObjectRequestOperation.managedObjectContext).to.equal(result.managedObjectContext);
+}
+
+- (void)testMappingMetadataConfiguredOnTheOperation
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"@metadata.nickName": @"nickName" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.mappingMetadata = @{ @"nickName": @"Big Sleezy" };
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    expect(managedObjectRequestOperation.mappingResult).notTo.beNil();
+    RKHuman *human = [managedObjectRequestOperation.mappingResult firstObject];
+    expect(human.nickName).to.equal(@"Big Sleezy");
 }
 
 @end

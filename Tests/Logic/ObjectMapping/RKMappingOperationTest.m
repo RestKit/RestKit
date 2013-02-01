@@ -450,4 +450,41 @@
     expect(mapper.mappingResult).to.beNil();
 }
 
+- (void)testMappingRootKeyToDictionary
+{
+    NSDictionary *representation = @{ @"MyObject": @{ @"ObjectAttribute1": @{} }, @"MyRootString": @"SomeString" };
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"MyRootString": @"MyRootString" }];
+    
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:mapping];
+    mappingOperation.dataSource = dataSource;
+    BOOL success = [mappingOperation performMapping:nil];
+    expect(success).to.equal(YES);
+    expect([mappingOperation.destinationObject isKindOfClass:[NSMutableDictionary class]]).to.equal(YES);
+    expect([mappingOperation.destinationObject valueForKeyPath:@"MyRootString"]).to.equal(@"SomeString");
+}
+
+- (void)testThatOneToOneRelationshipOfHasManyDoesNotHaveIncorrectCollectionIndexMetadataKey
+{
+    NSDictionary *representation = @{ @"name": @"Blake", @"friend": @{ @"name": @"jeff" } };
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.mapping.collectionIndex": @"luckyNumber" }];
+    [userMapping addRelationshipMappingWithSourceKeyPath:@"friend" mapping:userMapping];
+
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:userMapping];
+    mappingOperation.metadata = @{ @"mapping": @{ @"collectionIndex": @25 } };
+    mappingOperation.dataSource = dataSource;
+    BOOL success = [mappingOperation performMapping:nil];
+    expect(success).to.equal(YES);
+
+    RKTestUser *blake = mappingOperation.destinationObject;
+    expect(blake).notTo.beNil();
+    expect(blake.name).to.equal(@"Blake");
+    expect(blake.luckyNumber).to.equal(@25);
+    expect(blake.friend).notTo.beNil();
+    expect(blake.friend.luckyNumber).to.beNil();
+}
+
 @end

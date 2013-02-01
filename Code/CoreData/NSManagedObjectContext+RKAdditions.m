@@ -44,6 +44,7 @@
         __block BOOL success;
         [contextToSave performBlockAndWait:^{
             success = [contextToSave save:&localError];
+            if (! success && localError == nil) RKLogWarning(@"Saving of managed object context failed, but a `nil` value for the `error` argument was returned. This typically indicates an invalid implementation of a key-value validation method exists within your model. This violation of the API contract may result in the save operation being mis-interpretted by callers that rely on the availability of the error.");
         }];
 
         if (! success) {

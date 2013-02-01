@@ -199,8 +199,16 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 // JSON looks like {"article": {"title": "My Article", "author": "Blake", "body": "Very cool!!", "categories": [{"id": 1, "name": "Core Data"]}
 NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
 RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+NSError *error = nil;
+BOOL success = RKEnsureDirectoryExistsAtPath(RKApplicationDataDirectory(), &error);
+if (! success) {
+    RKLogError(@"Failed to create Application Data Directory at path '%@': %@", RKApplicationDataDirectory(), error);
+}
 NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Store.sqlite"];
-[managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:nil];
+NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+if (! persistentStore) {
+    RKLogError(@"Failed adding persistent store at path '%@': %@", path, error);
+}
 [managedObjectStore createManagedObjectContexts];
 
 RKEntityMapping *categoryMapping = [RKEntityMapping mappingForEntityForName:@"Category" inManagedObjectStore:managedObjectStore];
@@ -268,7 +276,7 @@ RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptor
 RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 [manager addResponseDescriptorsFromArray:@[ articleDescriptor, errorDescriptor ]];
 
-[manager getObjectsAtPath:@"/articles/555.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult)) {
+[manager getObjectsAtPath:@"/articles/555.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
 	// Handled with articleDescriptor
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	// Transport error or server error handled by errorDescriptor
@@ -279,8 +287,15 @@ RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithStr
 ``` objective-c
 NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
 RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+BOOL success = RKEnsureDirectoryExistsAtPath(RKApplicationDataDirectory(), &error);
+if (! success) {
+    RKLogError(@"Failed to create Application Data Directory at path '%@': %@", RKApplicationDataDirectory(), error);
+}
 NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Store.sqlite"];
-[managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:nil];
+NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+if (! persistentStore) {
+    RKLogError(@"Failed adding persistent store at path '%@': %@", path, error);
+}
 [managedObjectStore createManagedObjectContexts];
 
 RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
@@ -322,7 +337,7 @@ RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorW
 
 RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
 [manager addRequestDescriptor:requestDescriptor];
-[manager addResponseDescriptor:responseDescriptor];
+[manager addResponseDescriptor:articleDescriptor];
 
 Article *article = [Article new];
 article.title = @"Introduction to RestKit";
@@ -381,7 +396,7 @@ NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormReq
                             mimeType:@"image/png"];
 }];
 
-RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequesOperationWithRequest:request success:nil failure:nil];
+RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request success:nil failure:nil];
 [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
 ```
 
@@ -413,6 +428,17 @@ RKRoute *route = [RKRoute routeWithName:@"airport_weather" resourcePathPattern:@
 ``` objective-c
 NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
 RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+NSError *error = nil;
+BOOL success = RKEnsureDirectoryExistsAtPath(RKApplicationDataDirectory(), &error);
+if (! success) {
+    RKLogError(@"Failed to create Application Data Directory at path '%@': %@", RKApplicationDataDirectory(), error);
+}
+NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Store.sqlite"];
+NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+if (! persistentStore) {
+    RKLogError(@"Failed adding persistent store at path '%@': %@", path, error);
+}
+[managedObjectStore createManagedObjectContexts];
 
 RKEntityMapping *articleMapping = [RKEntityMapping mappingForEntityForName:@"Article" inManagedObjectStore:managedObjectStore];
 [articleMapping addAttributeMappingsFromArray:@[@"title", @"author", @"body"]];
@@ -439,6 +465,17 @@ if (success) {
 ``` objective-c
 NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
 RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+NSError *error = nil;
+BOOL success = RKEnsureDirectoryExistsAtPath(RKApplicationDataDirectory(), &error);
+if (! success) {
+    RKLogError(@"Failed to create Application Data Directory at path '%@': %@", RKApplicationDataDirectory(), error);
+}
+NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Store.sqlite"];
+NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:path fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+if (! persistentStore) {
+    RKLogError(@"Failed adding persistent store at path '%@': %@", path, error);
+}
+[managedObjectStore createManagedObjectContexts];
 [managedObjectStore addSearchIndexingToEntityForName:@"Article" onAttributes:@[ @"title", @"body" ]];
 [managedObjectStore addInMemoryPersistentStore:nil];
 [managedObjectStore createManagedObjectContexts];

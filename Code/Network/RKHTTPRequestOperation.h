@@ -28,6 +28,10 @@
 
 /**
  The `RKHTTPRequestOperation` class is a subclass of `AFHTTPRequestOperation` for HTTP or HTTPS requests made by RestKit. It provides per-instance configuration of the acceptable status codes and content types and integrates with the `RKLog` system to provide detailed requested and response logging. Instances of `RKHTTPRequest` are created by `RKObjectRequestOperation` and its subclasses to HTTP requests that will be object mapped. When used to make standalone HTTP requests, `RKHTTPRequestOperation` instance behave identically to `AFHTTPRequestOperation` with the exception of emitting logging information.
+ 
+ ## Determining Request Processability
+ 
+ The `RKHTTPRequestOperation` class diverges from the behavior of `AFHTTPRequestOperation` in the implementation of `canProcessRequest`, which is used to determine if a request can be processed. Because `RKHTTPRequestOperation` handles Content Type and Status Code acceptability at the instance rather than the class level, it by default returns `YES` when sent a `canProcessRequest:` method. Subclasses are encouraged to implement more specific logic if constraining the type of requests handled is desired.
  */
 @interface RKHTTPRequestOperation : AFHTTPRequestOperation
 

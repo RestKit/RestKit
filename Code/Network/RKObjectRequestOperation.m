@@ -20,6 +20,7 @@
 
 #import "RKObjectRequestOperation.h"
 #import "RKResponseMapperOperation.h"
+#import "RKResponseDescriptor.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKHTTPUtilities.h"
 #import "RKLog.h"
@@ -57,15 +58,16 @@ static inline NSString *RKDescriptionForRequest(NSURLRequest *request)
     return [NSString stringWithFormat:@"%@ '%@'", request.HTTPMethod, [request.URL absoluteString]];
 }
 
-static NSIndexSet *RKObjectRequestOperationAcceptableStatusCodes()
+static NSIndexSet *RKAcceptableStatusCodesFromResponseDescriptors(NSArray *responseDescriptors)
 {
-    static NSMutableIndexSet *statusCodes = nil;
-    if (! statusCodes) {
-        statusCodes = [NSMutableIndexSet indexSet];
-        [statusCodes addIndexesInRange:RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful)];
-        [statusCodes addIndexesInRange:RKStatusCodeRangeForClass(RKStatusCodeClassClientError)];
-    }
-    return statusCodes;
+    // If there are no response descriptors or any descriptor matches any status code (expressed by `statusCodes` == `nil`) then we want to accept anything
+    if ([responseDescriptors count] == 0 || [[responseDescriptors valueForKey:@"statusCodes"] containsObject:[NSNull null]]) return nil;
+    
+    NSMutableIndexSet *acceptableStatusCodes = [NSMutableIndexSet indexSet];
+    [responseDescriptors enumerateObjectsUsingBlock:^(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
+        [acceptableStatusCodes addIndexes:responseDescriptor.statusCodes];
+    }];
+    return acceptableStatusCodes;
 }
 
 static NSString *RKStringForStateOfObjectRequestOperation(RKObjectRequestOperation *operation)
@@ -117,12 +119,19 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     return responseMappingQueue;
 }
 
++ (BOOL)canProcessRequest:(NSURLRequest *)request
+{
+    return YES;
+}
+
 - (void)dealloc
 {
 #if !OS_OBJECT_USE_OBJC
-    if(_failureCallbackQueue) dispatch_release(_failureCallbackQueue);
-    if(_successCallbackQueue) dispatch_release(_successCallbackQueue);
+    if (_failureCallbackQueue) dispatch_release(_failureCallbackQueue);
+    if (_successCallbackQueue) dispatch_release(_successCallbackQueue);
 #endif
+    _failureCallbackQueue = NULL;
+    _successCallbackQueue = NULL;
 }
 
 // Designated initializer
@@ -136,7 +145,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         self.responseDescriptors = responseDescriptors;
         self.HTTPRequestOperation = requestOperation;
         self.HTTPRequestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
-        self.HTTPRequestOperation.acceptableStatusCodes = RKObjectRequestOperationAcceptableStatusCodes();
+        self.HTTPRequestOperation.acceptableStatusCodes = RKAcceptableStatusCodesFromResponseDescriptors(responseDescriptors);
     }
     
     return self;
@@ -246,10 +255,12 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
     // Spin up an RKObjectResponseMapperOperation
-    self.responseMapperOperation = [[RKObjectResponseMapperOperation alloc] initWithResponse:self.HTTPRequestOperation.response
-                                                                                        data:self.HTTPRequestOperation.responseData
-                                                                         responseDescriptors:self.responseDescriptors];
+    self.responseMapperOperation = [[RKObjectResponseMapperOperation alloc] initWithRequest:self.HTTPRequestOperation.request
+                                                                                   response:self.HTTPRequestOperation.response
+                                                                                       data:self.HTTPRequestOperation.responseData
+                                                                        responseDescriptors:self.responseDescriptors];
     self.responseMapperOperation.targetObject = self.targetObject;
+    self.responseMapperOperation.mappingMetadata = self.mappingMetadata;
     self.responseMapperOperation.mapperDelegate = self;
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];

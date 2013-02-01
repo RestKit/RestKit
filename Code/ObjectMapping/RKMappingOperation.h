@@ -132,6 +132,34 @@
 
 /**
  Instances of `RKMappingOperation` perform transformation between object representations according to the rules expressed in `RKObjectMapping` objects. Mapping operations provide the foundation for the RestKit object mapping engine and perform the work of inspecting the attributes and relationships of a source object and determining how to map them into new representations on a destination object.
+
+ ## Metadata Mapping
+
+ The mapping operation provides support for mapping for a dictionary of metadata in addition to the source object. This metadata is made available by mapping key paths nested under a specially designated parent key that cannot exist in a source representation. By convention, metadata is typically nested under sub keys to effectively namespace usage between components. The object mapping engine itself reserves the 'mapping' key for its usage. Metadata is passed down through a hierarchy of mapping operations (i.e. as relationships are traversed), making a common set of ancillary information available for mapping for by any operation executed.
+
+ To understand how metadata works, consider the following example:
+
+    @interface RKMetadataExample : NSObject
+    @property (nonatomic, copy) NSString *name;
+    @property (nonatomic, copy) NSURL *URL;
+    @property (nonatomic, copy) NSDate *mappedAt;
+    @end
+
+    RKMetadataExample *example = [RKMetadataExample new];
+    NSDictionary *representation = @{ @"name": @"Blake Watters" };
+    NSDictionary *metadata = @{ @"URL": [NSURL URLWithString:@"http://restkit.org"] };
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKMetadataExample class]];
+    [mapping addAttributeMappingsFromDicitonary:@{ @"name": @"name", @"@metadata.URL": @"URL" }];
+    RKMappingOperation *mappingOperation = [[RKObjectMapping alloc] initWithSourceObject:representation destinationObject:example mapping:
+    NSError *error = nil;
+    BOOL success = [mappingOperation execute:&error];
+
+ Note the use of the special keyPath `@"@metadata.URL"`. The `@metadata` prefix indicates that the property is to be mapped from the metadata dictionary instead of from the source object representation. If any relationships were mapped, it would have access to this same metadata information as well.
+
+ In addition to any metadata provided to the mapping operation via the `metadata` property, the operation itself makes the following metadata key paths available for mapping:
+
+ 1. `@metadata.mapping.collectionIndex` - An `NSNumber` object specifying the index of the current object within a collection being mapped. This key is only available if the current representation exists within a collection.
  */
 @interface RKMappingOperation : NSOperation
 
@@ -179,6 +207,11 @@
  */
 @property (nonatomic, strong, readonly) RKObjectMapping *objectMapping;
 
+/**
+ A dictionary of metadata available for mapping in addition to the source object.
+ */
+@property (nonatomic, copy) NSDictionary *metadata;
+
 ///-------------------------------------------
 /// @name Configuring Delegate and Data Source
 ///-------------------------------------------
@@ -195,10 +228,21 @@
  */
 @property (nonatomic, weak) id<RKMappingOperationDataSource> dataSource;
 
+///--------------------------------
+/// @name Accessing Mapping Details
+///--------------------------------
+
 /**
  The error, if any, that occurred during the execution of the mapping operation.
  */
 @property (nonatomic, strong, readonly) NSError *error;
+
+/**
+ Returns a dictionary containing information about the mappings applied during the execution of the operation. The keys of the dictionary are keyPaths into the `destinationObject` for values that were mapped and the values are the corresponding `RKPropertyMapping` objects used to perform the mapping.
+ 
+ Mapping info is aggregated for all child mapping operations executed for relationships.
+ */
+@property (nonatomic, readonly) NSDictionary *mappingInfo;
 
 ///-------------------------
 /// @name Performing Mapping

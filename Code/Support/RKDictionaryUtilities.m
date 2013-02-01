@@ -10,6 +10,9 @@
 
 NSDictionary * RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2)
 {
+    if (! dict1) return dict2;
+    if (! dict2) return dict1;
+
     NSMutableDictionary *mergedDictionary = [dict1 mutableCopy];
 
     [dict2 enumerateKeysAndObjectsUsingBlock:^(id key2, id obj2, BOOL *stop) {

@@ -33,7 +33,7 @@
 
  ## Managed Object Contexts
 
- The managed object store provides the application developer with a pair of managed objects with which to work with Core Data. The store configures a primary managed object context with the NSPrivateQueueConcurrencyType that is associated with the persistent store coordinator for handling Core Data persistence. A second context is also created with the NSMainQueueConcurrencyType that is a child of the primary managed object context for doing work on the main queue. Additional child contexts can be created directly or via a convenience method interface provided by the store (see newChildManagedObjectContextWithConcurrencyType:).
+ The managed object store provides the application developer with a pair of managed object contexts with which to work with Core Data. The store configures a primary managed object context with the NSPrivateQueueConcurrencyType that is associated with the persistent store coordinator for handling Core Data persistence. A second context is also created with the NSMainQueueConcurrencyType that is a child of the primary managed object context for doing work on the main queue. Additional child contexts can be created directly or via a convenience method interface provided by the store (see newChildManagedObjectContextWithConcurrencyType:).
 
  The managed object context hierarchy is designed to isolate the main thread from disk I/O and avoid deadlocks. Because the primary context manages its own private queue, saving the main queue context will not result in the objects being saved to the persistent store. The primary context must be saved as well for objects to be persisted to disk.
 
@@ -243,6 +243,54 @@
  @return A newly created managed object context with the given concurrency type whose parent is the `persistentStoreManagedObjectContext`.
  */
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType;
+
+///----------------------------
+/// @name Performing Migrations
+///----------------------------
+
+/**
+ Performs a migration on a persistent store at a given URL to the model at the specified URL.
+ 
+ This method provides support for migrating persistent stores in which the source and destination models have been mutated after being loaded from the model archive on disk, such as when the RestKit managed object searching support is used. In a situation where the persistent store has been created with a dynamically modified managed object model. Core Data is unable to infer the mapping model because the metadata of the persistent store does not agree with that of the managed object model due to the dynamic modifications. In order to perform a migration, one must load the appropriate source model, apply the dynamic changes appropriate for that model, then infer a mapping model from the modified model. This method assists in this process by accepting a source store and a destination model as arguments and searching through all models in the .momd package and yielding each model to the given configuration block for processing. After the block is invoked, the metadata of the store is checked for compatibility with the modified managed object model to identify the source store. Once the source store is found, a mapping model is inferred and the migration proceeds. The migration is done against a copy of the given persistent store and if successful, the migrated store is moved to replace the original store.
+ 
+ To understand how this is used, consider the following example: Given a managed object model containing two entities 'Article' and 'Tag', the user wishes to configure managed object search indexing on the models and wishes to be able to migrate existing persistent stores across versions. The migration configuration would look something like this:
+ 
+     NSURL *storeURL = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"MyStore.sqlite"];
+     NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"VersionedModel" withExtension:@"momd"];
+     BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:^(NSManagedObjectModel *model, NSURL *sourceURL) {
+        // Examine each model and configure search indexing appropriately based on the versionIdentifiers configured in the model
+        if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"1.0"]]) {
+            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
+            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
+            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
+        } else if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"2.0"]]) {
+            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
+            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title", @"body" ]];
+            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
+        } else if ([[model versionIdentifiers] containsObject:@"3.0"] || [[model versionIdentifiers] containsObject:@"4.0"]) {
+            // We index the same attributes on v3 and v4
+            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
+            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title", @"body", @"authorName" ]];
+            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
+        }
+     }];
+ 
+ @param storeType The type of store that given URL. May be `nil`.
+ @param storeURL A URL to the store that is to be migrated.
+ @param destinationModelURL A URL to the managed object model that the persistent store is to be updated to. This URL may target a specific model version with a .momd package or point to the .momd package itself, in which case the migration is performed to the current version of the model as configured on the .xcdatamodeld file used to the build the .momd package.
+ @param error A pointer to an error object that is set in the event that the migration is unsuccessful.
+ @param block A block object used to configure
+ 
+ @warning This method is only usable with a versioned Managed Object Model stored as a .momd package containing .mom managed object model archives.
+ */
++ (BOOL)migratePersistentStoreOfType:(NSString *)storeType
+                               atURL:(NSURL *)storeURL
+                        toModelAtURL:(NSURL *)destinationModelURL
+                               error:(NSError **)error
+          configuringModelsWithBlock:(void (^)(NSManagedObjectModel *model, NSURL *sourceURL))block;
 
 @end
 

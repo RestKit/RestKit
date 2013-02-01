@@ -96,16 +96,17 @@
  For example, given an 'article' object with an 'articleID' property value of 12345 and a code of "This/That"...
 
      RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/articles/:articleID/:code"];
-     NSString *path = [matcher pathFromObject:article addingEscapes:YES];
+     NSString *path = [matcher pathFromObject:article addingEscapes:YES interpolatedParameters:nil];
 
  ... will produce a 'path' containing the string `@"/articles/12345/This%2FThat"`
 
  @param object The object containing the properties to interpolate.
  @param addEscapes Conditionally add percent escapes to the interpolated property values
+ @param interpolatedParameters On input, a pointer for a dictionary object. When the path pattern of the receiver is interpolated, this pointer is set to a new dictionary object in which the keys correspond to the named parameters within the path pattern and the values are taken from the corresponding keypaths of the interpolated object .
  @return A string with the object's interpolated property values inserted into the receiver's established pattern.
  @see `RKRouter`
  */
-- (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes;
+- (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes interpolatedParameters:(NSDictionary **)interpolatedParameters;
 
 ///-------------------------------------------
 /// @name Accessing Tokenized Query Parameters

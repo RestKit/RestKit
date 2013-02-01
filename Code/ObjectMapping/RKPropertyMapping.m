@@ -23,8 +23,8 @@
 @interface RKPropertyMapping ()
 // Synthesize as read/write to allow assignment in `RKObjectMapping`
 @property (nonatomic, weak, readwrite) RKObjectMapping *objectMapping;
-@property (nonatomic, strong, readwrite) NSString *sourceKeyPath;
-@property (nonatomic, strong, readwrite) NSString *destinationKeyPath;
+@property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
+@property (nonatomic, copy, readwrite) NSString *destinationKeyPath;
 @end
 
 @implementation RKPropertyMapping
@@ -40,8 +40,8 @@
 - (BOOL)isEqualToMapping:(RKPropertyMapping *)otherMapping
 {
     return [otherMapping isMemberOfClass:[self class]] &&
-    [self.sourceKeyPath isEqual:otherMapping.sourceKeyPath] &&
-    [self.destinationKeyPath isEqual:otherMapping.destinationKeyPath];
+            [self.sourceKeyPath isEqual:otherMapping.sourceKeyPath] &&
+            [self.destinationKeyPath isEqual:otherMapping.destinationKeyPath];
 }
 
 - (NSString *)description

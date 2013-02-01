@@ -29,12 +29,16 @@
  
  ## Acceptable Content Types and Status Codes
  
- Instances of `RKObjectRequestOperation` determine the acceptability of status codes and content types differently than is typical for `AFNetworking` derived network opertations. The `RKHTTPRequestOperation` (which is a subclass of the AFNetworking `AFHTTPRequestOperation` class) supports the dynamic assigning of acceptable status codes and content types. This facility is utilized during the configuration of the network operation for an object request operation. The set of acceptable content types is determined by consulting the `RKMIMETypeSerialization` via an invocation of `[RKMIMETypeSerialization registeredMIMETypes]`. The `registeredMIMETypes` method returns an `NSSet` containing either `NSString` or `NSRegularExpression` objects that specify the content types for which `RKSerialization` classes have been registered to handle. The set of acceptable status codes is determined by aggregating the value of the `statusCodes` property from all registered `RKResponseDescriptor` objects.
+ Instances of `RKObjectRequestOperation` determine the acceptability of status codes and content types differently than is typical for `AFNetworking` derived network opertations. The `RKHTTPRequestOperation` (which is a subclass of the AFNetworking `AFHTTPRequestOperation` class) supports the dynamic assignment of acceptable status codes and content types. This facility is utilized during the configuration of the network operation for an object request operation. The set of acceptable content types is determined by consulting the `RKMIMETypeSerialization` via an invocation of `[RKMIMETypeSerialization registeredMIMETypes]`. The `registeredMIMETypes` method returns an `NSSet` containing either `NSString` or `NSRegularExpression` objects that specify the content types for which `RKSerialization` classes have been registered to handle. The set of acceptable status codes is determined by aggregating the value of the `statusCodes` property from all registered `RKResponseDescriptor` objects.
  
  ## Error Mapping
  
  If the HTTP request returned a response in the Client Error (400-499 range) or Server Error (500-599 range) class and an appropriate `RKResponseDescriptor` is provided to perform mapping on the response, then the object mapping result is considered to contain a server returned error. In this case, an `NSError` object is created in the `RKErrorDomain` with an error code of `RKMappingErrorFromMappingResult` and the object request operation is failed. In the event that an a response is returned in an error class and no `RKResponseDescriptor` has been provided to the operation to handle it, then an `NSError` object in the `AFNetworkingErrorDomain` with an error code of `NSURLErrorBadServerResponse` will be returned by the underlying `RKHTTPRequestOperation` indicating that an unexpected status code was returned. 
  
+ ## Metadata Mapping
+
+ The `RKObjectRequestOperation` class provides support for metadata mapping via the `mappingMetadata` property. This optional dictionary of user supplied information is made available to the mapping operations executed when processing the HTTP response loaded by an object request operation. More details about the metadata mapping architecture is available on the `RKMappingOperation` documentation.
+
  ## Prioritization and Cancellation
  
  Object request operations support prioritization and cancellation of the underlying `RKHTTPRequestOperation` and `RKResponseMapperOperation` operations that perform the network transport and object mapping duties on their behalf. The queue priority of the object request operation, as set via the `[NSOperation setQueuePriority:]` method, is applied to the underlying response mapping operation when it is enqueued onto the `responseMappingQueue`. If the object request operation is cancelled, then the underlying HTTP request operation and response mapping operation are also cancelled.
@@ -95,6 +99,8 @@
 
 /**
  The array of `RKResponseDescriptor` objects that specify how the deserialized `responseData` is to be object mapped.
+ 
+ The response descriptors define the acceptable HTTP Status Codes of the receiver.
  */
 @property (nonatomic, strong, readonly) NSArray *responseDescriptors;
 
@@ -105,6 +111,11 @@
  */
 @property (nonatomic, strong) id targetObject;
 
+/**
+ An optional dictionary of metadata to make available to mapping operations executed while processing the HTTP response loaded by the receiver.
+ */
+@property (nonatomic, copy) NSDictionary *mappingMetadata;
+
 ///----------------------------------
 /// @name Accessing Operation Results
 ///----------------------------------
@@ -112,7 +123,7 @@
 /**
  The mapping result returned by the underlying `RKObjectResponseMapperOperation`.
  
- This property is `nil` if the operation is failed due to a network transport error.
+ This property is `nil` if the operation is failed due to a network transport error or no mapping was peformed on the response.
  */
 @property (nonatomic, strong, readonly) RKMappingResult *mappingResult;
 
@@ -167,6 +178,17 @@
  @warning The deserialized response body may or may not be immutable depending on the implementation details of the `RKSerialization` class that deserialized the response. If you wish to make changes to the mappable object representations, you must obtain a mutable copy of the response body input.
  */
 - (void)setWillMapDeserializedResponseBlock:(id (^)(id deserializedResponseBody))block;
+
+///-----------------------------------------------------
+/// @name Determining Whether a Request Can Be Processed
+///-----------------------------------------------------
+
+/**
+ Returns a Boolean value determining whether or not the class can process the specified request.
+ 
+ @param request The request that is determined to be supported or not supported for this class.
+ */
++ (BOOL)canProcessRequest:(NSURLRequest *)request;
 
 ///-------------------------------------------
 /// @name Accessing the Response Mapping Queue

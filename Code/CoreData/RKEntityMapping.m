@@ -149,7 +149,10 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 
 + (instancetype)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore
 {
+    NSParameterAssert(entityName);
+    NSParameterAssert(managedObjectStore);
     NSEntityDescription *entity = [[managedObjectStore.managedObjectModel entitiesByName] objectForKey:entityName];
+    NSAssert(entity, @"Unable to find an Entity with the name '%@' in the managed object model", entityName);
     return [[self alloc] initWithEntity:entity];
 }
 
@@ -180,8 +183,10 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 - (id)copyWithZone:(NSZone *)zone
 {
     RKEntityMapping *copy = [super copyWithZone:zone];
+    copy.entity = self.entity;
     copy.identificationAttributes = self.identificationAttributes;
     copy.identificationPredicate = self.identificationPredicate;
+    copy.deletionPredicate = self.deletionPredicate;
     
     for (RKConnectionDescription *connection in self.connections) {
         [copy addConnection:[connection copy]];
@@ -235,7 +240,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 - (void)addConnectionForRelationship:(id)relationshipOrName connectedBy:(id)connectionSpecifier
 {
     NSRelationshipDescription *relationship = [relationshipOrName isKindOfClass:[NSRelationshipDescription class]] ? relationshipOrName : [[self.entity relationshipsByName] valueForKey:relationshipOrName];
-    NSAssert(relationship, @"No relatiobship was found named '%@' in the '%@' entity", relationshipOrName, [self.entity name]);
+    NSAssert(relationship, @"No relationship was found named '%@' in the '%@' entity", relationshipOrName, [self.entity name]);
     RKConnectionDescription *connection = nil;
     if ([connectionSpecifier isKindOfClass:[NSString class]]) {
         NSString *sourceAttribute = connectionSpecifier;
