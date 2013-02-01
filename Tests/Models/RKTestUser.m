@@ -35,7 +35,7 @@
             // No primary key -- consult superclass
             return [super isEqual:object];
         } else {
-            return [[(RKTestUser *)object userID] isEqualToNumber:self.userID];
+            return self.userID && [[(RKTestUser *)object userID] isEqualToNumber:self.userID];
         }
     }
 

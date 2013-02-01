@@ -185,6 +185,10 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
 
 @end
 
+@interface AFURLConnectionOperation ()
+@property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
+@end
+
 @interface RKHTTPRequestOperation ()
 @property (readwrite, nonatomic, strong) NSError *HTTPError;
 @end
@@ -224,6 +228,8 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
 // NOTE: We reimplement this because the AFNetworking implementation keeps Acceptable Status Code/MIME Type at class level
 - (NSError *)error
 {
+    [self.lock lock];
+
     if (!self.HTTPError && self.response) {
         if (![self hasAcceptableStatusCode] || ![self hasAcceptableContentType]) {
             NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
@@ -244,11 +250,9 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
         }
     }
     
-    if (self.HTTPError) {
-        return self.HTTPError;
-    } else {
-        return [super error];
-    }
+    NSError *error = self.HTTPError ?: [super error];
+    [self.lock unlock];
+    return error;
 }
 
 - (BOOL)wasNotModified

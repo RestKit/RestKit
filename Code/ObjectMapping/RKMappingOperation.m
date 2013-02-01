@@ -207,24 +207,11 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
     return NO;
 }
 
-@interface RKMappingSourceObject : NSProxy
-
-- (id)initWithObject:(id)object metadata:(NSDictionary *)metadata;
-
-@end
-
 static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 
-static BOOL RKIsMetadataKVCInvocation(NSInvocation *invocation)
-{
-    if (sel_isEqual(invocation.selector, @selector(valueForKeyPath:))) {
-        __unsafe_unretained NSString *keyPath = nil;
-        [invocation getArgument:&keyPath atIndex:2];
-        return [keyPath hasPrefix:RKMetadataKeyPathPrefix];
-    }
-
-    return NO;
-}
+@interface RKMappingSourceObject : NSProxy
+- (id)initWithObject:(id)object metadata:(NSDictionary *)metadata;
+@end
 
 @interface RKMappingSourceObject ()
 @property (nonatomic, strong) id object;
@@ -247,14 +234,19 @@ static BOOL RKIsMetadataKVCInvocation(NSInvocation *invocation)
 
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
-    if (RKIsMetadataKVCInvocation(invocation)) {
-        __unsafe_unretained NSString *keyPath = nil;
-        [invocation getArgument:&keyPath atIndex:2];
-        __unsafe_unretained NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
-        [invocation setArgument:&metadataKeyPath atIndex:2];
-        [invocation invokeWithTarget:self.metadata];
+    [invocation invokeWithTarget:self.object];
+}
+
+/**
+ NOTE: We implement `valueForKeyPath:` on the proxy instead of using `forwardInvocation:` because the OS X runtime fails to appropriately handle scalar boxing/unboxing, resulting in incorrect metadata mappings. Proxying the method directly produces the expected results on both OS X and iOS [sbw - 2/1/2012]
+ */
+- (id)valueForKeyPath:(NSString *)keyPath
+{
+    if ([keyPath hasPrefix:RKMetadataKeyPathPrefix]) {
+        NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
+        return [self.metadata valueForKeyPath:metadataKeyPath];
     } else {
-        [invocation invokeWithTarget:self.object];
+        return [self.object valueForKeyPath:keyPath];
     }
 }
 

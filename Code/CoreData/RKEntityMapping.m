@@ -149,7 +149,10 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 
 + (instancetype)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore
 {
+    NSParameterAssert(entityName);
+    NSParameterAssert(managedObjectStore);
     NSEntityDescription *entity = [[managedObjectStore.managedObjectModel entitiesByName] objectForKey:entityName];
+    NSAssert(entity, @"Unable to find an Entity with the name '%@' in the managed object model", entityName);
     return [[self alloc] initWithEntity:entity];
 }
 
