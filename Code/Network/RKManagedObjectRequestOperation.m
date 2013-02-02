@@ -321,9 +321,11 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 
     if ([targetObject isKindOfClass:[NSManagedObject class]]) {
         if ([[targetObject objectID] isTemporaryID]) {
-            NSError *error = nil;
-            BOOL success = [[targetObject managedObjectContext] obtainPermanentIDsForObjects:@[ targetObject ] error:&error];
-            if (! success) RKLogWarning(@"Failed to obtain permanent objectID for targetObject: %@ (%ld)", [error localizedDescription], (long) error.code);
+            [[targetObject managedObjectContext] performBlockAndWait:^{
+                NSError *error = nil;
+                BOOL success = [[targetObject managedObjectContext] obtainPermanentIDsForObjects:@[ targetObject ] error:&error];
+                if (! success) RKLogWarning(@"Failed to obtain permanent objectID for targetObject: %@ (%ld)", [error localizedDescription], (long) error.code);
+            }];            
         }
         self.targetObjectID = [targetObject objectID];
     } else {
@@ -542,39 +544,39 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 {
     __block BOOL _blockSuccess = YES;
     __block NSError *localError = nil;
-    NSArray *insertedObjects = [self.privateContext.insertedObjects allObjects];
-    if ([insertedObjects count] > 0) {
+    [self.privateContext performBlockAndWait:^{
+        NSArray *insertedObjects = [[self.privateContext insertedObjects] allObjects];
         RKLogDebug(@"Obtaining permanent ID's for %ld managed objects", (unsigned long) [insertedObjects count]);
-        [self.privateContext performBlockAndWait:^{
-            _blockSuccess = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:&localError];
-        }];
-        if (!_blockSuccess && error) *error = localError;
-    }
+        _blockSuccess = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:nil];
+    }];
+    if (!_blockSuccess && error) *error = localError;
 
     return _blockSuccess;;
 }
 
 - (void)willFinish
 {
+    if ([self isCancelled]) return;
+    
     BOOL success;
     NSError *error = nil;
 
     // Handle any cleanup
     success = [self deleteTargetObjectIfAppropriate:&error];
-    if (! success) {
+    if (! success || [self isCancelled]) {
         self.error = error;
         return;
     }
 
     success = [self deleteLocalObjectsMissingFromMappingResult:&error];
-    if (! success) {
+    if (! success || [self isCancelled]) {
         self.error = error;
         return;
     }
 
     // Persist our mapped objects
     success = [self obtainPermanentObjectIDsForInsertedObjects:&error];
-    if (! success) {
+    if (! success || [self isCancelled]) {
         self.error = error;
         return;
     }
@@ -600,7 +602,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
                 [entityMappingEvents addObject:[RKEntityMappingEvent eventWithRootKey:rootKey
                                                                               keyPath:RKKeyPathByDeletingLastComponent(keyPath)
                                                                         entityMapping:(RKEntityMapping *)propertyMapping.objectMapping]];
-            }            
+            }
             if ([propertyMapping isKindOfClass:[RKRelationshipMapping class]]) {
                 if ([[(RKRelationshipMapping *)propertyMapping mapping] isKindOfClass:[RKEntityMapping class]]) {
                     [entityMappingEvents addObject:[RKEntityMappingEvent eventWithRootKey:rootKey keyPath:keyPath entityMapping:(RKEntityMapping *)[(RKRelationshipMapping *)propertyMapping mapping]]];
