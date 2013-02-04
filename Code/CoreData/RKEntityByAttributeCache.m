@@ -373,24 +373,36 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     /**
      We dispatch async here to avoid a deadlock situation if the notification is delivered while another thread has acquired the lock. This is problematic for changes to `NSMainQueueConcurrencyType` MOC's in particular. We pre-calculate the attribute values from the object rather than invoking `addObject:` or `removeObject:` as the deleted objects will be unreadable once execution resumes following the notification's delivery.
      */
+    NSMutableDictionary *newObjectIDsToAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[objectsToAdd count]];
     for (NSManagedObject *managedObject in objectsToAdd) {
         if ([managedObject.entity isKindOfEntity:self.entity]) {
             NSManagedObjectID *objectID = [managedObject objectID];
             NSDictionary *attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self setObjectID:objectID forAttributeValues:attributeValues];
-            });
+            [newObjectIDsToAttributeValues setObject:attributeValues forKey:objectID];
         }
     }
     
+    // Deleted objects
+    NSMutableDictionary *deletedObjectIDsToAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[deletedObjects count]];
     for (NSManagedObject *managedObject in deletedObjects) {
         if ([managedObject.entity isKindOfEntity:self.entity]) {
             NSManagedObjectID *objectID = [managedObject objectID];
             NSDictionary *attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self removeObjectID:objectID forAttributeValues:attributeValues];
-            });
+            [deletedObjectIDsToAttributeValues setObject:attributeValues forKey:objectID];
         }
+    }
+    
+    if ([newObjectIDsToAttributeValues count] || [deletedObjectIDsToAttributeValues count]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self.lock lock];
+            [newObjectIDsToAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID *objectID, NSDictionary *attributeValues, BOOL *stop) {
+                [self setObjectID:objectID forAttributeValues:attributeValues];
+            }];
+            [deletedObjectIDsToAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID *objectID, NSDictionary *attributeValues, BOOL *stop) {
+                [self removeObjectID:objectID forAttributeValues:attributeValues];
+            }];
+            [self.lock unlock];
+        });
     }
 }
 
