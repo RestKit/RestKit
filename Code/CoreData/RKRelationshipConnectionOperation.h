@@ -45,8 +45,8 @@
  @return The receiver, initialized with the given managed object, connection mapping, and managed object cache.
  */
 - (id)initWithManagedObject:(NSManagedObject *)managedObject
-                           connection:(RKConnectionDescription *)connection
-                   managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
+                 connection:(RKConnectionDescription *)connection
+         managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
 
 ///--------------------------------------------
 /// @name Accessing Details About the Operation

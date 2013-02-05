@@ -32,6 +32,8 @@ extern NSString * const RKTestFactoryDefaultNamesClient;
 extern NSString * const RKTestFactoryDefaultNamesObjectManager;
 extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 
+@class RKManagedObjectStore;
+
 /**
  The `RKTestFactory` class provides an interface for initializing RestKit objects within a unit testing environment. The factory is used to ensure isolation between test cases by ensuring that RestKit's important singleton objects are torn down between tests and that each test is working within a clean Core Data environment. Callback hooks are provided so that application specific set up and tear down logic can be integrated as well.
 
@@ -187,7 +189,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 
  @return The shared managed object store instance.
  */
-+ (id)managedObjectStore;
++ (RKManagedObjectStore *)managedObjectStore;
 
 ///----------------------------------------------
 /// @name Configuring Set Up and Tear Down Blocks
