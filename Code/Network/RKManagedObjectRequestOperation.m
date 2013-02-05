@@ -509,14 +509,14 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
         success = [context saveToPersistentStore:&localError];
     } else {
         [context performBlockAndWait:^{
-            success = [context save:&localError];
+            success = ([self isCancelled]) ? NO : [context save:&localError];
         }];
     }
     if (success) {
         if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
             [self.managedObjectContext performBlock:^{
                 RKLogDebug(@"Refreshing mapped target object %@ in context %@", self.targetObject, self.managedObjectContext);
-                [self.managedObjectContext refreshObject:self.targetObject mergeChanges:YES];
+                if (! [self isCancelled]) [self.managedObjectContext refreshObject:self.targetObject mergeChanges:YES];
             }];
         }
     } else {
@@ -581,7 +581,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
         return;
     }
     success = [self saveContext:&error];
-    if (! success) {
+    if (! success || [self isCancelled]) {
         self.error = error;
         return;
     }
