@@ -501,12 +501,45 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return YES;
 }
 
+/**
+ NOTE: This is more or less a direct port of the functionality provided by `[NSManagedObjectContext saveToPersistentStore:]` in the `RKAdditions` category. We have duplicated the logic here to add in support for checking if the operation has been cancelled since we began cascading up the MOC chain. Because each `performBlockAndWait:` invocation essentially jumps threads and is subject to the availability of the context, it is very possible for the operation to be cancelled during this part of the operation's lifecycle.
+ */
+- (BOOL)saveContextToPersistentStore:(NSManagedObjectContext *)contextToSave error:(NSError **)error
+{
+    __block NSError *localError = nil;
+    while (contextToSave) {
+        __block BOOL success;
+        [contextToSave performBlockAndWait:^{
+            if (! [self isCancelled]) {
+                success = [contextToSave save:&localError];
+                if (! success && localError == nil) RKLogWarning(@"Saving of managed object context failed, but a `nil` value for the `error` argument was returned. This typically indicates an invalid implementation of a key-value validation method exists within your model. This violation of the API contract may result in the save operation being mis-interpretted by callers that rely on the availability of the error.");
+            } else {
+                // We have been cancelled while the save is in progress -- bail
+                success = NO;
+            }
+        }];
+
+        if (! success) {
+            if (error) *error = localError;
+            return NO;
+        }
+
+        if (! contextToSave.parentContext && contextToSave.persistentStoreCoordinator == nil) {
+            RKLogWarning(@"Reached the end of the chain of nested managed object contexts without encountering a persistent store coordinator. Objects are not fully persisted.");
+            return NO;
+        }
+        contextToSave = contextToSave.parentContext;
+    }
+
+    return YES;
+}
+
 - (BOOL)saveContext:(NSManagedObjectContext *)context error:(NSError **)error
 {
     __block BOOL success = YES;
     __block NSError *localError = nil;
     if (self.savesToPersistentStore) {
-        success = [context saveToPersistentStore:&localError];
+        success = [self saveContextToPersistentStore:context error:&localError];
     } else {
         [context performBlockAndWait:^{
             success = ([self isCancelled]) ? NO : [context save:&localError];
