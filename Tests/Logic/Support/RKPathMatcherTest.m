@@ -125,6 +125,16 @@
     expect(interpolatedPath).to.equal(expectedPath);
 }
 
+- (void)testThatEscapedParametersAreUnescapedWhenCreatingPathFromObject
+{
+    NSDictionary *arguments = @{ @"name": @"Blake Watters" };
+    RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:@"/names/:name"];
+    NSDictionary *params = nil;
+    [matcher pathFromObject:arguments addingEscapes:YES interpolatedParameters:&params];
+    expect(params).notTo.beNil();
+    expect([params objectForKey:@"name"]).to.equal(@"Blake Watters");
+}
+
 - (void)testMatchingPathWithTrailingSlashAndQuery
 {
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/v1/organizations/"];

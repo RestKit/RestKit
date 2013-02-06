@@ -140,7 +140,14 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     }
     NSString *path = [self.socPattern stringFromObject:object withBlock:encoderBlock];
     if (interpolatedParameters) {
-        *interpolatedParameters = [self.socPattern parameterDictionaryFromSourceString:path];
+        NSMutableDictionary *parsedParameters = [[self.socPattern parameterDictionaryFromSourceString:path] mutableCopy];
+        if (addEscapes) {
+            for (NSString *key in [parsedParameters allKeys]) {
+                NSString *unescapedParameter = [[parsedParameters objectForKey:key] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                [parsedParameters setValue:unescapedParameter forKey:key];
+            }
+        }
+        *interpolatedParameters = parsedParameters;
     }
     return path;
 }
