@@ -185,6 +185,8 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     NSString *relationshipName = self.connection.relationship.name;
     RKLogTrace(@"Connecting relationship '%@' with mapping: %@", relationshipName, self.connection);
     [self.managedObjectContext performBlockAndWait:^{
+        if (self.isCancelled || [self.managedObject isDeleted]) return;
+
         BOOL shouldConnect = YES;
         self.connectedValue = [self findConnected:&shouldConnect];
         if (shouldConnect) {

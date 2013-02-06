@@ -361,6 +361,9 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     __block RKMappingResult *mappingResult = nil;
     self.operationQueue = [NSOperationQueue new];
     [self.managedObjectContext performBlockAndWait:^{
+        // We may have been cancelled before we made it onto the MOC's queue
+        if ([self isCancelled]) return;
+
         // Configure the mapper
         self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
         self.mapperOperation.delegate = self.mapperDelegate;
