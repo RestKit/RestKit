@@ -16,19 +16,15 @@ RestKit::Rake::ServerTask.new do |t|
 end
 
 namespace :test do
-  task :kill_simulator do
-    system(%q{killall -m -KILL "iPhone Simulator"})
-  end
-  
   namespace :logic do
     desc "Run the logic tests for iOS"
-    task :ios => :kill_simulator do
+    task :ios do
       config = Xcode.workspace(:RestKit).scheme(:RestKitTests)
       builder = config.builder
       build_dir = File.dirname(config.parent.workspace_root) + '/Build'
       builder.symroot = build_dir + '/Products'
       builder.objroot = build_dir
-    	builder.test(:sdk => 'iphonesimulator')
+      builder.test(:sdk => 'iphonesimulator')
     end
     
     desc "Run the logic tests for OS X"
