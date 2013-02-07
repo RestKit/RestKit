@@ -7,8 +7,9 @@ source .rvmrc
 # Git submodules
 git submodule update --init
 
-# Bundler
+# Bundler & CocoaPods
 bundle
+pod install
 
 # Run the build
 rake server:stop || true
