@@ -599,7 +599,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
         }
         
         RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-        [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
+        [self.destinationObject setValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath];
     } else {
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
             [self.delegate mappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
