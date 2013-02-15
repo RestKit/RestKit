@@ -147,7 +147,7 @@
     
     // JSON looks like {"project": { "name": "Project Name", "userID": 1234, "projectID": 1 } }
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Project" inManagedObjectStore:managedObjectStore];
-    [mapping addAttributeMappings:@[ @"name", @"userID", @"projectID" ]];
+    [mapping addAttributeMappingsFromArray:@[ @"name", @"userID", @"projectID" ]];
  
     // Find a 'User' whose value for the 'userID' object is equal to the value stored on the 'userID' attribute of the 'Project' and assign it to the relationship
     // In other words, "Find the User whose userID == 1234 and assign that object to the 'user' relationship"
