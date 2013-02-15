@@ -400,7 +400,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         }
     }
     
-    if ([self.managedObjectCache respondsToSelector:@selector(didDeleteObject::)]) {
+    if ([self.managedObjectCache respondsToSelector:@selector(didDeleteObject:)]) {
         for (NSManagedObject *managedObject in [self.managedObjectContext deletedObjects]) {
             [self.managedObjectCache didDeleteObject:managedObject];
         }
