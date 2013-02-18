@@ -190,7 +190,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 	NSLog(@"Mapped the article: %@", article);
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	NSLog(@"Failed with error: %@", [error localizedDescription]);
-}];]
+}];
 ```
 
 ### Managed Object Request
