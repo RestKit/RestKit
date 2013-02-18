@@ -257,7 +257,8 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
 
 - (BOOL)wasNotModified
 {
-    return [(NSString *)[[self.response allHeaderFields] objectForKey:@"Status"] isEqualToString:@"304 Not Modified"];
+    NSString *status = (NSString *)[[self.response allHeaderFields] objectForKey:@"Status"];
+    return (self.response.statusCode == 304 || [status isEqualToString:@"304 Not Modified"]);
 }
 
 #pragma mark - NSURLConnectionDelegate methods
