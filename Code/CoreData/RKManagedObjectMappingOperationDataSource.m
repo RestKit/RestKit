@@ -123,6 +123,7 @@ static id RKMutableCollectionValueWithObjectForKeyPath(id object, NSString *keyP
     return nil;
 }
 
+// Pre-condition: invoked from the managed object context of the given object
 static BOOL RKDeleteInvalidNewManagedObject(NSManagedObject *managedObject)
 {
     if ([managedObject isKindOfClass:[NSManagedObject class]] && [managedObject managedObjectContext] && [managedObject isNew]) {
@@ -326,7 +327,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         // Attempt to establish the connections and delete the object if its invalid once we are done
         NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
         NSBlockOperation *deletionOperation = [NSBlockOperation blockOperationWithBlock:^{
-            RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject);
+            [[(NSManagedObject *)mappingOperation.destinationObject managedObjectContext] performBlockAndWait:^{
+                RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject);
+            }];
         }];
         
         for (RKConnectionDescription *connection in connections) {
