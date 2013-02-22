@@ -191,6 +191,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	NSLog(@"Failed with error: %@", [error localizedDescription]);
 }];
+[operation start];
 ```
 
 ### Managed Object Request
