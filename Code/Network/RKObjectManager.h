@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network.h>
+#import "Network.h"
 #import "RKRouter.h"
 #import "RKPaginator.h"
 #import "RKMacros.h"
