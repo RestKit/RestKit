@@ -16,19 +16,15 @@ RestKit::Rake::ServerTask.new do |t|
 end
 
 namespace :test do
-  task :kill_simulator do
-    system(%q{killall -m -KILL "iPhone Simulator"})
-  end
-  
   namespace :logic do
     desc "Run the logic tests for iOS"
-    task :ios => :kill_simulator do
+    task :ios do
       config = Xcode.workspace(:RestKit).scheme(:RestKitTests)
       builder = config.builder
       build_dir = File.dirname(config.parent.workspace_root) + '/Build'
       builder.symroot = build_dir + '/Products'
       builder.objroot = build_dir
-    	builder.test(:sdk => 'iphonesimulator')
+      builder.test(:sdk => 'iphonesimulator')
     end
     
     desc "Run the logic tests for OS X"
@@ -129,8 +125,8 @@ namespace :docs do
   end
   
   desc "Build and publish the documentation set to the remote server (using rsync over SSH)"
-  task :publish, :version, :destination do |t, args|
-    args.with_defaults(:version => File.read("VERSION").chomp, :destination => "restkit.org:/var/www/public/restkit.org/public/api/")
+  task :publish, :version, :destination, :publish_feed do |t, args|
+    args.with_defaults(:version => File.read("VERSION").chomp, :destination => "restkit.org:/var/www/public/restkit.org/public/api/", :publish_feed => 'true')
     version = args[:version]
     destination = args[:destination]    
     puts "Generating RestKit docset for version #{version}..."
@@ -145,7 +141,8 @@ namespace :docs do
     command = "rsync -rvpPe ssh --delete Docs/API/html/ #{versioned_destination}"
     run(command)
     
-    if $?.exitstatus == 0
+    should_publish_feed = %{yes true 1}.include?(args[:publish_feed].downcase)
+    if $?.exitstatus == 0 && should_publish_feed
       command = "rsync -rvpPe ssh Docs/API/publish/* #{destination}"
       run(command)
     end

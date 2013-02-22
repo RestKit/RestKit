@@ -29,7 +29,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 ## Getting Started
 
 - [Download RestKit](https://github.com/RestKit/RestKit/downloads) and play with the [examples](https://github.com/RestKit/RestKit/tree/development/Examples) for iPhone and Mac OS X
-- First time with RestKit? Read the ["Overview"](#Overview) section below and then check out the ["Getting Acquainted with RestKit"](https://github.com/RestKit/RestKit/wiki/Getting-Acquainted-with-RestKit) tutorial and [Object Mapping Reference](https://github.com/RestKit/RestKit/wiki/Object-mapping) documents in the wiki to jump right in.
+- First time with RestKit? Read the ["Overview"](#overview) section below and then check out the ["Getting Acquainted with RestKit"](https://github.com/RestKit/RestKit/wiki/Getting-Acquainted-with-RestKit) tutorial and [Object Mapping Reference](https://github.com/RestKit/RestKit/wiki/Object-mapping) documents in the wiki to jump right in.
 - Upgrading from RestKit 0.9.x or 0.10.x? Read the ["Upgrading to RestKit 0.20.x"](https://github.com/RestKit/RestKit/wiki/Upgrading-from-v0.10.x-to-v0.20.0) guide in the wiki
 - Adding RestKit to an existing [AFNetworking](http://afnetworking.org) application? Read the [AFNetworking Integration](https://github.com/RestKit/RestKit/wiki/AFNetworking-Integration) document to learn details about how the frameworks fit together.
 - Review the [source code API documentation](http://restkit.org/api/latest) for a detailed look at the classes and API's in RestKit. A great place to start is [RKObjectManager](http://restkit.org/api/latest/Classes/RKObjectManager.html).
@@ -190,7 +190,8 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 	NSLog(@"Mapped the article: %@", article);
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 	NSLog(@"Failed with error: %@", [error localizedDescription]);
-}];]
+}];
+[operation start];
 ```
 
 ### Managed Object Request
@@ -247,7 +248,7 @@ RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage
 
 NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError);
 // Any response in the 4xx status code range with an "errors" key path uses this mapping
-RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:@"errors" statusCodes:statusCodes];
+RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:errorMapping pathPattern:nil keyPath:@"errors" statusCodes:statusCodes];
 
 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://restkit.org/articles/error.json"]];
 RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[errorDescriptor]];

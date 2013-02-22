@@ -258,7 +258,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                 if ([indexedIDs containsObject:[managedObject objectID]]) return;
                 [indexedIDs addObject:[managedObject objectID]];
                 double percentage = (((float)[indexedIDs count]) / (float)totalObjects) * 100;
-                if ([indexedIDs count] % 250 == 0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) [indexedIDs count], (unsigned long) totalObjects, percentage);
+                if ([indexedIDs count] % 250 == 0 || percentage >= 100.0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) [indexedIDs count], (unsigned long) totalObjects, percentage);
             }];
         }
                 

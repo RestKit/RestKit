@@ -1943,8 +1943,8 @@
 				25160D2114564E820060A5C5 /* Sources */,
 				25160D2214564E820060A5C5 /* Frameworks */,
 				25160D2314564E820060A5C5 /* Resources */,
-				25160D2414564E820060A5C5 /* ShellScript */,
 				212C92B936E847348494D6F7 /* Copy Pods Resources */,
+				25160D2414564E820060A5C5 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1982,8 +1982,8 @@
 				25160E74145651060060A5C5 /* Frameworks */,
 				25160E75145651060060A5C5 /* Resources */,
 				250CA67F147D8EEC0047D347 /* CopyFiles */,
-				25160E76145651060060A5C5 /* ShellScript */,
 				0779C6DD2283438BA5EAB1FB /* Copy Pods Resources */,
+				25160E76145651060060A5C5 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2166,7 +2166,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n#\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n\n# Run the unit tests in this test bundle.\n\"${SRCROOT}/Tests/RunPlatformUnitTests\"";
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"";
 		};
 		25160E76145651060060A5C5 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
