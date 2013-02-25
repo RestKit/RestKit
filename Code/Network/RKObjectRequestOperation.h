@@ -62,7 +62,10 @@
  @see `RKMIMETypeSerialization`
  @see `RKManagedObjectRequestOperation`
  */
-@interface RKObjectRequestOperation : NSOperation <RKMapperOperationDelegate>
+@interface RKObjectRequestOperation : NSOperation <RKMapperOperationDelegate> {
+  @protected
+    RKMappingResult *_mappingResult;
+}
 
 ///-----------------------------------------------
 /// @name Initializing an Object Request Operation
