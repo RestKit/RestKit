@@ -197,7 +197,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 
 - (BOOL)event:(RKMappingTestEvent *)event satisfiesExpectation:(id)expectation error:(NSError **)error
 {
-    BOOL success;
+    BOOL success = NO;
 
     NSDictionary *userInfo = @{ RKMappingTestEventErrorKey : event,
                                 RKMappingTestExpectationErrorKey : expectation };
