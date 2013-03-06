@@ -315,6 +315,17 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return self;
 }
 
+/**
+ NOTE: This dealloc implementation attempts to avoid crashes coming from Core Data due to the ordering of deallocations under ARC. If the MOC is deallocated before its managed objects, it can trigger a crash. We dispose of the mapping result and reset the private context to avoid this situation. The crash manifests itself in `cxx_destruct`
+ [sbw - 2/25/2013]
+ */
+- (void)dealloc
+{
+    _mappingResult = nil;
+    _responseMapperOperation = nil;
+    _privateContext = nil;
+}
+
 - (void)setTargetObject:(id)targetObject
 {
     [super setTargetObject:targetObject];
