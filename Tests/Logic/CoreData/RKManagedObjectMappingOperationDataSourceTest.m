@@ -23,6 +23,9 @@
 
 @end
 
+/**
+ NOTE: You need to take care that you allow the operationQueue to finish before the next test begins execution, else the Core Data tear down can result in intermittent test crashes.
+ */
 @implementation RKManagedObjectMappingOperationDataSourceTest
 
 - (void)setUp
@@ -573,6 +576,8 @@
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.favoriteCat, isNot(nilValue()));
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
+    
+    [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
 }
 
 - (void)testShouldConnectRelationshipsByPrimaryKeyReverse
@@ -906,6 +911,8 @@
     assertThat([[parent.children anyObject] parents], isNot(nilValue()));
     assertThatBool([[[parent.children anyObject] parents] containsObject:parent], is(equalToBool(YES)));
     assertThatUnsignedInteger([[[parent.children anyObject] parents] count], is(equalToInt(1)));
+    
+    [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
 }
 
 - (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder
