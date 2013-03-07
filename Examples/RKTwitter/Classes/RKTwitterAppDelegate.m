@@ -28,7 +28,7 @@
     [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
   
     // Initialize HTTPClient
-    NSURL *baseURL = [NSURL URLWithString:@"http://twitter.com"];
+    NSURL *baseURL = [NSURL URLWithString:@"https://twitter.com"];
     AFHTTPClient* client = [[AFHTTPClient alloc] initWithBaseURL:baseURL];
     //we want to work with JSON-Data
     [client setDefaultHeader:@"Accept" value:RKMIMETypeJSON];
