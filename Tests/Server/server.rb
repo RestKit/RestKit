@@ -287,11 +287,6 @@ class RestKitTestServer < Sinatra::Base
     status 304
   end
   
-  get '/204_with_not_modified_status' do
-    status 204
-    response.headers['Status'] = '304 Not Modified'
-  end
-  
   delete '/humans/1234/whitespace' do
     content_type 'application/json'
     status 200

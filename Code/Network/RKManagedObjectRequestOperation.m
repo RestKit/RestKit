@@ -369,10 +369,11 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     [self.responseMapperOperation cancel];
 }
 
+// RKResponseHasBeenMappedCacheUserInfoKey is stored by RKObjectRequestOperation
 - (BOOL)canSkipMapping
 {
     NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:self.HTTPRequestOperation.request];
-    return [[cachedResponse.userInfo objectForKey:@"RKResponseHasBeenMapped"] boolValue];
+    return [[cachedResponse.userInfo objectForKey:RKResponseHasBeenMappedCacheUserInfoKey] boolValue];
 }
 
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
@@ -635,17 +636,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     if (! success || [self isCancelled]) {
         self.error = error;
         return;
-    }
-    
-    NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:self.HTTPRequestOperation.request];
-    if (cachedResponse) {
-        // We're all done mapping this request. Now we set a flag on the cache entry's userInfo dictionary to indicate that the request
-        // corresponding to the cache entry completed successfully, and we can reliably skip mapping if a subsequent request results
-        // in the use of this cachedResponse.
-        NSMutableDictionary *userInfo = cachedResponse.userInfo ? [cachedResponse.userInfo mutableCopy] : [NSMutableDictionary dictionaryWithObject:@YES forKey:@"RKResponseHasBeenMapped"];
-        NSCachedURLResponse *newCachedResponse = [[NSCachedURLResponse alloc] initWithResponse:cachedResponse.response data:cachedResponse.data userInfo:userInfo storagePolicy:cachedResponse.storagePolicy];
-        [[NSURLCache sharedURLCache] storeCachedResponse:newCachedResponse forRequest:self.HTTPRequestOperation.request];
-    }
+    }        
 
     // Refetch all managed objects nested at key paths within the results dictionary before returning
     if (self.mappingResult) {

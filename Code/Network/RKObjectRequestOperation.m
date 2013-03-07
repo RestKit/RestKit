@@ -38,6 +38,7 @@
 
 NSString * const RKObjectRequestOperationDidStartNotification = @"RKObjectRequestOperationDidStartNotification";
 NSString * const RKObjectRequestOperationDidFinishNotification = @"RKObjectRequestOperationDidFinishNotification";
+NSString * const RKResponseHasBeenMappedCacheUserInfoKey = @"RKResponseHasBeenMapped";
 
 static void RKIncrementNetworkActivityIndicator()
 {
@@ -315,8 +316,21 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     }
     self.mappingResult = mappingResult;
     [self willFinish];
-    
-    if (self.error) self.mappingResult = nil;
+        
+    if (self.error) {
+        self.mappingResult = nil;
+    } else {
+        NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:self.HTTPRequestOperation.request];
+        if (cachedResponse) {
+            // We're all done mapping this request. Now we set a flag on the cache entry's userInfo dictionary to indicate that the request
+            // corresponding to the cache entry completed successfully, and we can reliably skip mapping if a subsequent request results
+            // in the use of this cachedResponse.
+            NSMutableDictionary *userInfo = cachedResponse.userInfo ? [cachedResponse.userInfo mutableCopy] : [NSMutableDictionary dictionary];
+            [userInfo setObject:@YES forKey:RKResponseHasBeenMappedCacheUserInfoKey];
+            NSCachedURLResponse *newCachedResponse = [[NSCachedURLResponse alloc] initWithResponse:cachedResponse.response data:cachedResponse.data userInfo:userInfo storagePolicy:cachedResponse.storagePolicy];
+            [[NSURLCache sharedURLCache] storeCachedResponse:newCachedResponse forRequest:self.HTTPRequestOperation.request];
+        }
+    }
 }
 
 - (void)main
