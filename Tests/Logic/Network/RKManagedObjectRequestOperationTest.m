@@ -173,9 +173,54 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect([mappedObjects[0] objectID]).to.equal([human objectID]);
 }
 
+- (void)testThatCachedNotModifiedResponseIsNotUsedWhenMappingFailedToComplete
+{
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+        return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    };
+
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    RKManagedObjectRequestOperation *initialManagedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    initialManagedObjectRequestOperation.fetchRequestBlocks = @[fetchRequestBlock];
+    initialManagedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    initialManagedObjectRequestOperation.managedObjectCache = managedObjectStore.managedObjectCache;
+
+    // Send our first request in order to generate a cache entry, ensuring mapping is suspended and thus no objects are created in the store
+    NSOperationQueue *operationQueue = [[NSOperationQueue alloc] init];
+    [[RKObjectRequestOperation responseMappingQueue] setSuspended:YES];
+    [operationQueue addOperation:initialManagedObjectRequestOperation];
+
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+    [initialManagedObjectRequestOperation cancel];
+
+    expect(initialManagedObjectRequestOperation.isCancelled).to.beTruthy();
+    expect([[NSURLCache sharedURLCache] cachedResponseForRequest:request]).toNot.beNil();
+    expect(initialManagedObjectRequestOperation.mappingResult).to.beNil();
+
+    // Now setup and send our second request
+    [[RKObjectRequestOperation responseMappingQueue] setSuspended:NO];
+    RKManagedObjectRequestOperation *secondManagedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    secondManagedObjectRequestOperation.fetchRequestBlocks = @[fetchRequestBlock];
+    secondManagedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    secondManagedObjectRequestOperation.managedObjectCache = managedObjectStore.managedObjectCache;
+
+    [operationQueue addOperation:secondManagedObjectRequestOperation];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    expect(secondManagedObjectRequestOperation.mappingResult).notTo.beNil();
+    NSArray *mappedObjects = [secondManagedObjectRequestOperation.mappingResult array];
+    expect(mappedObjects).to.haveCountOf(2);
+}
+
 - (void)testThatInvalidObjectFailingManagedObjectContextSaveFailsOperation
 {
-    // NOTE: The model defines a maximum length of 15 for the 'name' attribute    
+    // NOTE: The model defines a maximum length of 15 for the 'name' attribute
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     human.name = @"This Is An Invalid Name Because It Exceeds Fifteen Characters";

@@ -265,6 +265,7 @@ class RestKitTestServer < Sinatra::Base
   get '/coredata/etag' do
     content_type 'application/json'
     tag = '2cdd0a2b329541d81e82ab20aff6281b'
+    cache_control(:private, :must_revalidate, :max_age => 0)
     if tag == request.env["HTTP_IF_NONE_MATCH"]
       status 304
       ""

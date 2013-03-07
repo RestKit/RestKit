@@ -259,11 +259,6 @@ static void *RKHTTPRequestOperationStartDate = &RKHTTPRequestOperationStartDate;
     return error;
 }
 
-- (BOOL)wasNotModified
-{
-    return [(NSString *)[[self.response allHeaderFields] objectForKey:@"Status"] isEqualToString:@"304 Not Modified"];
-}
-
 #pragma mark - NSURLConnectionDelegate methods
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
