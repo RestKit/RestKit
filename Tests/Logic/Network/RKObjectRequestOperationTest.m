@@ -727,4 +727,29 @@
     expect(user.phone).to.equal(@"867-5309");
 }
 
+- (void)testCopyingOperation
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"@metadata.phoneNumber": @"phone" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    RKTestComplexUser *user = [RKTestComplexUser new];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"POST";
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [requestOperation start];
+    
+    RKObjectRequestOperation *copiedOperation = [requestOperation copy];
+    copiedOperation.mappingMetadata = @{ @"phoneNumber": @"867-5309" };
+    copiedOperation.targetObject = user;
+    [copiedOperation start];
+    expect(requestOperation.error).to.beNil();
+    expect(requestOperation.mappingResult).notTo.beNil();
+    expect(user.phone).to.equal(@"867-5309");
+}
+
 @end

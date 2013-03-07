@@ -336,5 +336,18 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
             self.HTTPRequestOperation.request, RKStringDescribingURLResponseWithData(self.HTTPRequestOperation.response, self.HTTPRequestOperation.responseData)];
 }
 
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    RKObjectRequestOperation *operation = [(RKObjectRequestOperation *)[[self class] allocWithZone:zone] initWithHTTPRequestOperation:[self.HTTPRequestOperation copyWithZone:zone] responseDescriptors:self.responseDescriptors];
+    operation.targetObject = self.targetObject;
+    operation.mappingMetadata = self.mappingMetadata;
+    operation.successCallbackQueue = self.successCallbackQueue;
+    operation.failureCallbackQueue = self.failureCallbackQueue;
+    operation.willMapDeserializedResponseBlock = self.willMapDeserializedResponseBlock;
+    operation.completionBlock = self.completionBlock;
+    
+    return operation;
+}
 
 @end

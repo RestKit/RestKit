@@ -1085,4 +1085,23 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(human.nickName).to.equal(@"Big Sleezy");
 }
 
+- (void)testCopyingOperation
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"@metadata.nickName": @"nickName" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    RKManagedObjectRequestOperation *copiedOperation = [managedObjectRequestOperation copy];
+    copiedOperation.mappingMetadata = @{ @"nickName": @"Big Sleezy" };
+    [copiedOperation start];
+    expect(copiedOperation.error).to.beNil();
+    expect(copiedOperation.mappingResult).notTo.beNil();
+    RKHuman *human = [copiedOperation.mappingResult firstObject];
+    expect(human.nickName).to.equal(@"Big Sleezy");
+}
+
 @end

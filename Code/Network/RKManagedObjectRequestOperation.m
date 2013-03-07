@@ -674,4 +674,17 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     self.entityMappingEvents = entityMappingEvents;
 }
 
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[super copyWithZone:zone];
+    operation.managedObjectContext = self.managedObjectContext;
+    operation.managedObjectCache = self.managedObjectCache;
+    operation.fetchRequestBlocks = self.fetchRequestBlocks;
+    operation.deletesOrphanedObjects = self.deletesOrphanedObjects;
+    operation.savesToPersistentStore = self.savesToPersistentStore;
+    
+    return operation;
+}
+
 @end
