@@ -32,7 +32,7 @@ NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass)
     return [NSIndexSet indexSetWithIndexesInRange:RKStatusCodeRangeForClass(statusCodeClass)];
 }
 
-NSIndexSet *RKCacheableStatusCodes()
+NSIndexSet *RKCacheableStatusCodes(void)
 {
     NSMutableIndexSet *cacheableStatusCodes = [NSMutableIndexSet indexSet];
     [cacheableStatusCodes addIndex:200];

@@ -83,7 +83,7 @@ NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
 
  @return A new index set containing all cacheable status codes.
  */
-NSIndexSet *RKCacheableStatusCodes();
+NSIndexSet *RKCacheableStatusCodes(void);
 
 /**
  Returns string representation of a given HTTP status code.
