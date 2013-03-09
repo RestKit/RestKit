@@ -93,6 +93,16 @@
  
  In the event that a managed object request operation loads a 304 'Not Modified' response for an HTTP request no object mapping is performed as Core Data is assumed to contain a managed object representation of the resource requested. No object mapping is performed on the cached response body, making a cache hit for a managed object request operation a very lightweight operation. To build the mapping result returned to the caller, all of the fetch request blocks matching the request URL will be invoked and each fetch request returned is executed against the managed object context and the objects returned are added to the mapping result. Please note that all managed objects returned in the mapping result for a 'Not Modified' response will be returned under the `[NSNull null]` key path.
  
+ Note that `NSURLConnection` supports conditional GET transparently when the cache policy is set to `NSURLRequestUseProtocolCachePolicy`. Because of this the `NSHTTPURLResponse` loaded does not have the 304 (Not Modified) status code. In order to determine if a 304 response has resulted in the loading of an existing response from `NSURLCache`, the managed object request operation evaluates the following heuristic on the response:
+ 
+ 1. Before the HTTP request is loaded, a reference to any existing `NSCachedURLResponse` is obtained.
+ 1. When the response is loaded, the request is evaluated for cacheability. A request is considered cacheable if and only if its HTTP method is either "GET" or "HEAD" and its status code is 200, 304, 203, 300, 301, 302, 307, or 410.
+ 1. If the request is found to be cacheable, the Etag of the current response is matched against the reference to the existing cache entry obtained before the request was loaded.
+ 1. If the Etags match, the response data of the loaded response is matched against the cache entry reference.
+ 1. If the data is found to match, then the `userInfo` dictionary of the cache entry for the current request is checked for the existence of Boolean value under the `RKResponseHasBeenMappedCacheUserInfoKey` key. If the value of this key is `YES`, it indicates that the response was previously mapped to completion by an object request operation.
+ 
+ If this heuristic evaluates positively, then the response is determined to have been loaded from the cache and no mapping or managed object deletion cleanup is performed. This optimization greatly improves performance in applications where HTTP caching is leveraged.
+ 
  ## Subclassing Notes
  
  This class relies on the following `RKMapperOperationDelegate` method methods to do its work:
