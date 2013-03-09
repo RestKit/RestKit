@@ -1325,4 +1325,43 @@
     expect([blake valueForKey:@"requiredCat"]).to.equal(cat);
 }
 
+- (void)testManagedObjectsMappedWithRelationshipsThatAreSetByConnectionsWithInMemoryCache
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    //RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [NSOperationQueue new];
+    
+    NSDictionary *representation = @{ @"human": @{ @"name": @"Blake Watters", @"favoriteCatID": @(12345) }, @"cat": @{ @"railsID": @(12345) } };
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat"
+                                                      inManagedObjectStore:managedObjectStore];
+    catMapping.identificationAttributes = @[ @"railsID" ];
+    [catMapping addAttributeMappingsFromDictionary:@{ @"railsID": @"railsID" }];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human"
+                                                        inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"favoriteCatID" toKeyPath:@"favoriteCatID"]];
+    [humanMapping addConnectionForRelationship:@"favoriteCat" connectedBy:@{ @"favoriteCatID": @"railsID" }];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation
+                                                               mappingsDictionary:@{ @"human": humanMapping , @"cat": catMapping }];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+    [mapper start];
+    
+    [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
+    
+    RKCat *cat = [mapper.mappingResult.dictionary objectForKey:@"cat"];
+    expect(cat.railsID).to.equal(12345);
+    expect(cat.managedObjectContext).notTo.beNil();
+    
+    RKHuman *blake = [mapper.mappingResult.dictionary objectForKey:@"human"];
+    expect(blake.name).to.equal(@"Blake Watters");
+    expect(blake.managedObjectContext).notTo.beNil();
+    expect([blake isDeleted]).to.beFalsy();
+    expect([blake valueForKey:@"favoriteCat"]).notTo.beNil();
+    expect([blake valueForKey:@"favoriteCat"]).to.equal([mapper.mappingResult.dictionary objectForKey:@"cat"]);
+}
+
 @end
