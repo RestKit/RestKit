@@ -71,6 +71,7 @@ class RestKitTestServer < Sinatra::Base
   end
 
   get '/humans/1' do
+    etag('2cdd0a2b329541d81e82ab20aff6281b')
     status 200
     content_type 'application/json'
     {:human => {:name => "Blake Watters", :id => 1}}.merge(params).to_json
