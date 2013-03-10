@@ -968,9 +968,6 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
 - (void)testThatMappingObjectsWithTheSameIdentificationAttributesAcrossTwoObjectRequestOperationConcurrentlyDoesNotCreateDuplicateObjects
 {
-    NSLog(@"Test disabled -- passage or failure is dependent upon execution speed of the test. Should be fixed by adjusting concurrency implementation of `RKObjectRequestOperation`");
-    return;
-    
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKInMemoryManagedObjectCache *inMemoryCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     managedObjectStore.managedObjectCache = inMemoryCache;
@@ -982,8 +979,6 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:@"human" statusCodes:nil];
     
     NSURL *URL = [NSURL URLWithString:@"humans/1" relativeToURL:[RKTestFactory baseURL]];
-//    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"text/plain"];
-//    NSURL *URL = [NSURL URLWithString:@"http://restkit.org/human_1.json"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     
     RKManagedObjectRequestOperation *firstOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];

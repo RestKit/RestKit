@@ -77,6 +77,16 @@
 
 - (void)didCreateObject:(NSManagedObject *)object
 {
+    /**
+     NOTE: When an object with a temporary ID is added to the cache, we obtain a permanent ID to avoid the potential for duplicated objects being created due to concurrenct access
+     */
+    if ([[object objectID] isTemporaryID]) {
+        NSError *error = nil;
+        RKLogTrace(@"Obtaining permanent managed object ID for temporary managed object: %@", object);
+        if (! [[object managedObjectContext] obtainPermanentIDsForObjects:@[ object ] error:&error]) {
+            RKLogError(@"Failed to obtain permanent managed object ID: %@", error);
+        }
+    }
     [self.entityCache addObject:object];
 }
 
