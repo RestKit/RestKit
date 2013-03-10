@@ -17,7 +17,7 @@
 #import "RKHuman.h"
 #import "RKChild.h"
 #import "RKParent.h"
-//#import "RKBenchmark.h"
+#import "RKBenchmark.h"
 
 @interface RKManagedObjectMappingOperationDataSourceTest : RKTestCase
 
@@ -1143,78 +1143,77 @@
     expect([human isDeleted]).to.equal(YES);
 }
 
-// TODO: Import bencharmk utility somehow...
-//- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache
-//{
-//    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-//    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
-//    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
-//                                                                                                                                                      cache:managedObjectCache];
-//    managedObjectStore.managedObjectCache = managedObjectCache;
-//
-//    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
-//    childMapping.identificationAttributes = @[ @"childID" ];
-//    [childMapping addAttributeMappingsFromArray:@[@"name", @"childID"]];
-//
-//    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
-//    [parentMapping addAttributeMappingsFromArray:@[@"parentID", @"name"]];
-//    parentMapping.identificationAttributes = @[ @"parentID" ];
-//    [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
-//
-//
-//    NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
-//    NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
-//    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:JSON mappingsDictionary:mappingsDictionary];
-//    mapper.mappingOperationDataSource = mappingOperationDataSource;
-//
-//    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
-//    RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
-//
-//    [RKBenchmark report:@"Mapping with Fetch Request Cache" executionBlock:^{
-//        for (NSUInteger i = 0; i < 50; i++) {
-//            [mapper performMapping];
-//        }
-//    }];
-//    NSUInteger parentCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Parent" predicate:nil error:nil];
-//    NSUInteger childrenCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Child" predicate:nil error:nil];
-//    assertThatInteger(parentCount, is(equalToInteger(25)));
-//    assertThatInteger(childrenCount, is(equalToInteger(51)));
-//}
-//
-//- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithInMemoryMappingCache
-//{
-//    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-//    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-//    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
-//                                                                                                                                                      cache:managedObjectCache];
-//    managedObjectStore.managedObjectCache = managedObjectCache;
-//
-//    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
-//    childMapping.identificationAttributes = @[ @"childID" ];
-//    [childMapping addAttributeMappingsFromArray:@[@"name", @"childID"]];
-//
-//    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
-//    [parentMapping addAttributeMappingsFromArray:@[@"parentID", @"name"]];
-//    parentMapping.identificationAttributes = @[ @"parentID" ];
-//    [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
-//
-//    NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
-//    NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
-//    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithObject:JSON mappingsDictionary:mappingsDictionary];
-//    mapper.mappingOperationDataSource = mappingOperationDataSource;
-//    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
-//    RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
-//
-//    [RKBenchmark report:@"Mapping with In Memory Cache" executionBlock:^{
-//        for (NSUInteger i = 0; i < 50; i++) {
-//            [mapper performMapping];
-//        }
-//    }];
-//    NSUInteger parentCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Parent" predicate:nil error:nil];
-//    NSUInteger childrenCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Child" predicate:nil error:nil];
-//    assertThatInteger(parentCount, is(equalToInteger(25)));
-//    assertThatInteger(childrenCount, is(equalToInteger(51)));
-//}
+- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    managedObjectStore.managedObjectCache = managedObjectCache;
+
+    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
+    childMapping.identificationAttributes = @[ @"childID" ];
+    [childMapping addAttributeMappingsFromArray:@[@"name", @"childID"]];
+
+    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
+    [parentMapping addAttributeMappingsFromArray:@[@"parentID", @"name"]];
+    parentMapping.identificationAttributes = @[ @"parentID" ];
+    [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
+
+
+    NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
+    NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
+    RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
+
+    [RKBenchmark report:@"Mapping with Fetch Request Cache" executionBlock:^{
+        for (NSUInteger i = 0; i < 50; i++) {
+            [mapper start];
+        }
+    }];
+    NSUInteger parentCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Parent" predicate:nil error:nil];
+    NSUInteger childrenCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Child" predicate:nil error:nil];
+    assertThatInteger(parentCount, is(equalToInteger(25)));
+    assertThatInteger(childrenCount, is(equalToInteger(51)));
+}
+
+- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithInMemoryMappingCache
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    managedObjectStore.managedObjectCache = managedObjectCache;
+
+    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
+    childMapping.identificationAttributes = @[ @"childID" ];
+    [childMapping addAttributeMappingsFromArray:@[@"name", @"childID"]];
+
+    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
+    [parentMapping addAttributeMappingsFromArray:@[@"parentID", @"name"]];
+    parentMapping.identificationAttributes = @[ @"parentID" ];
+    [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
+
+    NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
+    NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
+    RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
+
+    [RKBenchmark report:@"Mapping with In Memory Cache" executionBlock:^{
+        for (NSUInteger i = 0; i < 50; i++) {
+            [mapper start];
+        }
+    }];
+    NSUInteger parentCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Parent" predicate:nil error:nil];
+    NSUInteger childrenCount = [managedObjectStore.persistentStoreManagedObjectContext countForEntityForName:@"Child" predicate:nil error:nil];
+    assertThatInteger(parentCount, is(equalToInteger(25)));
+    assertThatInteger(childrenCount, is(equalToInteger(51)));
+}
 
 - (void)testMappingIdentificationAttributesFromElementsOnAnArray
 {
