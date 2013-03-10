@@ -156,7 +156,7 @@
     expect(matches).to.equal(NO);
     
     pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/:version/organizations/:organizationID"];
-    matches = [pathMatcher matchesPath:@"/api/v1/organizations/1234/" tokenizeQueryStrings:NO parsedArguments:nil];
+    matches = [pathMatcher matchesPath:@"/api/v1/organizations/1234" tokenizeQueryStrings:NO parsedArguments:nil];
     expect(matches).to.equal(YES);
 }
 
@@ -174,6 +174,23 @@
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/api/v1/organizations/"];
     BOOL match = [pathMatcher matchesPath:@"/api/v1/organizations/?client_search=s" tokenizeQueryStrings:YES parsedArguments:&argsDictionary];
     expect(match).to.beTruthy();
+}
+
+- (void)testThatMatchingPathPatternsDoesNotMatchPathsShorterThanTheInput
+{
+    NSString *path = @"/categories/some-category-name/articles/the-article-name";
+    
+    RKPathMatcher *pathMatcher1 = [RKPathMatcher pathMatcherWithPattern:@"/categories"];
+    BOOL matches = [pathMatcher1 matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(NO);
+    
+    RKPathMatcher *pathMatcher2 = [RKPathMatcher pathMatcherWithPattern:@"/categories/:categoryName"];
+    matches = [pathMatcher2 matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(NO);
+    
+    RKPathMatcher *pathMatcher3 = [RKPathMatcher pathMatcherWithPattern:@"/categories/:categorySlug/articles/:articleSlug"];
+    matches = [pathMatcher3 matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
+    expect(matches).to.equal(YES);
 }
 
 @end

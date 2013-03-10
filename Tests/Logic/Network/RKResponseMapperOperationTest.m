@@ -284,6 +284,28 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
 }
 
+- (void)testThatResponseDescriptorsDoNotMatchTooAggressively
+{
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/categories/some-category-name/articles/the-article-name"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:responseURL];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"some\": \"Data\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    NSURL *baseURL =  [NSURL URLWithString:@"http://restkit.org"];
+    
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKResponseDescriptor *responseDescriptor1 = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/categories" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor1.baseURL = baseURL;
+    RKResponseDescriptor *responseDescriptor2 = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/categories/:categoryName" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor2.baseURL = baseURL;
+    RKResponseDescriptor *responseDescriptor3 = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/categories/:categorySlug/articles/:articleSlug" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor3.baseURL = baseURL;
+    
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithRequest:request response:response data:data responseDescriptors:@[ responseDescriptor1, responseDescriptor2, responseDescriptor3 ]];
+    [mapper start];
+    expect(mapper.matchingResponseDescriptors).to.haveCountOf(1);
+    expect(mapper.matchingResponseDescriptors).to.equal(@[ responseDescriptor3 ]);
+}
+
 #pragma mark -
 
 - (void)testThatObjectResponseMapperOperationDoesNotMapWithTargetObjectForUnsuccessfulResponseStatusCode
