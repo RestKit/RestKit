@@ -1429,6 +1429,23 @@
     assertThat(user.favoriteColors, is(equalTo(@[ @"Blue" ])));
 }
 
+- (void)testMappingArrayToMutableArray
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"favoriteColors": @"mutableFavoriteColors" }];
+    
+    NSDictionary *dictionary = @{ @"favoriteColors": @[ @"Blue", @"Red" ] };
+    RKTestUser *user = [RKTestUser user];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.mutableFavoriteColors, is(equalTo(@[ @"Blue", @"Red" ])));
+    assertThat(user.mutableFavoriteColors, is(instanceOf([NSMutableArray class])));
+}
+
 - (void)testMappingASingularValueToASet
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
