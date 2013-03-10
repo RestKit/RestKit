@@ -476,6 +476,8 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
         NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
         if (fetchRequest) {
+            // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
+            [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
             RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
 
             [self.privateContext performBlockAndWait:^{

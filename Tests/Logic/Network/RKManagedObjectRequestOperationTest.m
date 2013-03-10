@@ -99,6 +99,28 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(blockURL.relativePath).to.equal(@"categories/1234");
 }
 
+- (void)testFetchRequestBlocksDoNotCrash
+{
+    RKLogConfigureByName("RestKit/Network/CoreData", RKLogLevelTrace);
+    NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"categories/1234" relativeToURL:baseURL]];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:request.URL statusCode:200 HTTPVersion:@"1.1" headerFields:@{}];
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"categories/:categoryID" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor.baseURL = baseURL;
+    id mockRequestOperation = [OCMockObject niceMockForClass:[RKHTTPRequestOperation class]];
+    [[[mockRequestOperation stub] andReturn:request] request];
+    [[[mockRequestOperation stub] andReturn:response] response];
+    RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:mockRequestOperation responseDescriptors:@[ responseDescriptor ]];
+    RKFetchRequestBlock fetchRequesBlock = ^NSFetchRequest *(NSURL *URL) {
+        return [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    };
+    
+    operation.fetchRequestBlocks = @[fetchRequesBlock];
+    NSError *error;
+    [operation localObjectsFromFetchRequestsMatchingRequestURL:&error];
+}
+
 - (void)testThatFetchRequestBlocksInvokedWithRelativeURLAreInAgreementWithPathPattern
 {
     NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/"];
