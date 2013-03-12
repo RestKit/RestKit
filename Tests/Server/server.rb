@@ -261,6 +261,13 @@ class RestKitTestServer < Sinatra::Base
      :current_page => current_page, :entries => entries, :total_pages => 3}.to_json
   end
   
+  get '/paginate/' do
+    status 200
+    content_type 'application/json'
+    {:per_page => 10, :total_entries => 0,
+     :current_page => 1, :entries => [], :total_pages => 0}.to_json
+  end
+  
   get '/coredata/etag' do
     content_type 'application/json'
     tag = '2cdd0a2b329541d81e82ab20aff6281b'
