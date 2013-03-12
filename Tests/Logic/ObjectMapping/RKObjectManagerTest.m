@@ -1158,7 +1158,6 @@
     NSError *error = nil;
     BOOL success = [temporaryHuman.managedObjectContext saveToPersistentStore:&error];
     expect(success).to.equal(YES);
-    expect([temporaryHuman.objectID isTemporaryID]).to.equal(YES); // Still temporary because the permanent ID has not yet been merged
     
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
     [_objectManager enqueueObjectRequestOperation:operation];

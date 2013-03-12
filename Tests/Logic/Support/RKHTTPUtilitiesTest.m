@@ -105,4 +105,11 @@
     expect(pathAndQueryString).to.equal(@"search?this=that&type=search");
 }
 
+- (void)testShouldNotDropTheTrailingSlashFromThePathOfAURLThatIncludesAQueryString
+{
+    NSURL *testURL = [NSURL URLWithString:@"http://restkit.org/api/v1/search/?this=that&type=search"];
+    NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(testURL, nil);
+    expect(pathAndQueryString).to.equal(@"/api/v1/search/?this=that&type=search");
+}
+
 @end

@@ -65,6 +65,19 @@ static BOOL RKIsManagedObject(id object)
     return managedObjectClass && [object isKindOfClass:managedObjectClass];
 }
 
+/**
+ NOTE: Because most Foundation classes are implemented as class-clusters, we cannot introspect them for mutability. Instead, we evaluate the destination type and if it is a mutable class, we return `YES` to trigger an invocation of `mutableCopy`.
+ */
+static BOOL RKIsMutableTypeTransformation(id value, Class destinationType)
+{
+    if ([destinationType isEqual:[NSMutableArray class]]) return YES;
+    else if ([destinationType isEqual:[NSMutableDictionary class]]) return YES;
+    else if ([destinationType isEqual:[NSMutableString class]]) return YES;
+    else if ([destinationType isEqual:[NSMutableSet class]]) return YES;
+    else if ([destinationType isEqual:[NSMutableOrderedSet class]]) return YES;
+    else return NO;
+}
+
 id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer);
 id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer)
 {
@@ -78,6 +91,8 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     } else if (RKClassIsCollection(destinationType) && !RKObjectIsCollection(value)) {
         // Call ourself recursively with an array value to transform as appropriate
         return RKTransformedValueWithClass(@[ value ], destinationType, dateToStringValueTransformer);
+    } else if (RKIsMutableTypeTransformation(value, destinationType)) {
+        return [value mutableCopy];
     } else if ([sourceType isSubclassOfClass:[NSString class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
         // String -> Date
         return [dateToStringValueTransformer transformedValue:value];
@@ -599,7 +614,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
         }
         
         RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-        [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
+        [self.destinationObject setValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath];
     } else {
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
             [self.delegate mappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];

@@ -35,7 +35,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent RKlcl_cRestKitCoreData
+#define RKLogComponent RKlcl_cRestKitNetworkCoreData
 
 @interface RKEntityMappingEvent : NSObject
 @property (nonatomic, copy) id rootKey;
@@ -298,6 +298,8 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @property (nonatomic, strong) NSArray *entityMappingEvents;
+
+@property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
 @end
 
 @implementation RKManagedObjectRequestOperation
@@ -311,6 +313,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     if (self) {
         self.savesToPersistentStore = YES;
         self.deletesOrphanedObjects = YES;
+        self.cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:requestOperation.request];
     }
     return self;
 }
@@ -368,10 +371,34 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     [self.responseMapperOperation cancel];
 }
 
+// RKResponseHasBeenMappedCacheUserInfoKey is stored by RKObjectRequestOperation
+- (BOOL)canSkipMapping
+{
+    // Is the request cacheable
+    if (!self.cachedResponse) return NO;
+    NSURLRequest *request = self.HTTPRequestOperation.request;
+    if (! [[request HTTPMethod] isEqualToString:@"GET"] && ! [[request HTTPMethod] isEqualToString:@"HEAD"]) return NO;
+    NSHTTPURLResponse *response = (NSHTTPURLResponse *)self.HTTPRequestOperation.response;
+    if (! [RKCacheableStatusCodes() containsIndex:response.statusCode]) return NO;
+
+    // Check for a change in the Etag
+    NSString *cachedEtag = [[(NSHTTPURLResponse *)[self.cachedResponse response] allHeaderFields] objectForKey:@"Etag"];
+    NSString *responseEtag = [[response allHeaderFields] objectForKey:@"Etag"];
+    if (! [cachedEtag isEqualToString:responseEtag]) return NO;
+
+    // Response data has changed
+    NSData *responseData = self.HTTPRequestOperation.responseData;
+    if (! [responseData isEqualToData:[self.cachedResponse data]]) return NO;
+
+    // Check that we have mapped this response previously
+    NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
+    return [[cachedResponse.userInfo objectForKey:RKResponseHasBeenMappedCacheUserInfoKey] boolValue];
+}
+
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
-    if (self.HTTPRequestOperation.wasNotModified) {
-        RKLogDebug(@"Managed object mapping requested for cached response: skipping mapping...");
+    if ([self canSkipMapping]) {
+        RKLogDebug(@"Managed object mapping requested for cached response which was previously mapped: skipping...");
         NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
         NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
         NSMutableArray *managedObjects = [NSMutableArray array];
@@ -395,6 +422,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
                                                                                responseDescriptors:self.responseDescriptors];
     self.responseMapperOperation.mapperDelegate = self;
     self.responseMapperOperation.mappingMetadata = self.mappingMetadata;
+    self.responseMapperOperation.targetObject = self.targetObject;
     self.responseMapperOperation.targetObjectID = self.targetObjectID;
     self.responseMapperOperation.managedObjectContext = self.privateContext;
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
@@ -449,6 +477,8 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
         NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
         if (fetchRequest) {
+            // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
+            [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
             RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
 
             [self.privateContext performBlockAndWait:^{
@@ -462,7 +492,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
             RKLogTrace(@"Fetched local objects matching URL '%@' with fetch request '%@': %@", URL, fetchRequest, _blockObjects);
             [localObjects addObjectsFromArray:_blockObjects];
         } else {
-            RKLogDebug(@"Fetch request block %@ returned nil fetch request for URL: '%@'", fetchRequestBlock, URL);
+            RKLogTrace(@"Fetch request block %@ returned nil fetch request for URL: '%@'", fetchRequestBlock, URL);
         }
     }
 
@@ -481,7 +511,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
         return YES;
     }
     
-    if (self.HTTPRequestOperation.wasNotModified) {
+    if ([self canSkipMapping]) {
         RKLogDebug(@"Skipping deletion of orphaned objects: 304 (Not Modified) status code encountered");
         return YES;
     }
@@ -628,8 +658,8 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     if (! success || [self isCancelled]) {
         self.error = error;
         return;
-    }
-    
+    }        
+
     // Refetch all managed objects nested at key paths within the results dictionary before returning
     if (self.mappingResult) {
         self.mappingResult = (RKMappingResult *)[[RKRefetchingMappingResult alloc] initWithMappingResult:self.mappingResult managedObjectContext:self.managedObjectContext entityMappingEvents:self.entityMappingEvents];
@@ -655,6 +685,19 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
         }];
     }];    
     self.entityMappingEvents = entityMappingEvents;
+}
+
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+    RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[super copyWithZone:zone];
+    operation.managedObjectContext = self.managedObjectContext;
+    operation.managedObjectCache = self.managedObjectCache;
+    operation.fetchRequestBlocks = self.fetchRequestBlocks;
+    operation.deletesOrphanedObjects = self.deletesOrphanedObjects;
+    operation.savesToPersistentStore = self.savesToPersistentStore;
+    
+    return operation;
 }
 
 @end

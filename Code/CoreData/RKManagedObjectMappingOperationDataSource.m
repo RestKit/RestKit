@@ -247,13 +247,15 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     NSManagedObject *managedObject = nil;
     
     // If we are mapping within a relationship, try to find an existing object without identifying attributes
+    // NOTE: We avoid doing the mutable(Array|Set|OrderedSet)ValueForKey if there are identification attributes for performance (see issue GH-1232)
     if (relationship) {
-        id mutableArrayOrSetValueForExistingObjects = RKMutableCollectionValueWithObjectForKeyPath(mappingOperation.destinationObject, relationship.destinationKeyPath);
         NSArray *identificationAttributes = [entityMapping.identificationAttributes valueForKey:@"name"];
-        for (NSManagedObject *existingObject in mutableArrayOrSetValueForExistingObjects) {
+        id existingObjectsOfRelationship = identificationAttributes ? [mappingOperation.destinationObject valueForKeyPath:relationship.destinationKeyPath] : RKMutableCollectionValueWithObjectForKeyPath(mappingOperation.destinationObject, relationship.destinationKeyPath);
+        if (existingObjectsOfRelationship && !RKObjectIsCollection(existingObjectsOfRelationship)) existingObjectsOfRelationship = @[ existingObjectsOfRelationship ];
+        for (NSManagedObject *existingObject in existingObjectsOfRelationship) {
             if (! identificationAttributes) {
                 managedObject = existingObject;
-                [mutableArrayOrSetValueForExistingObjects removeObject:managedObject];
+                [existingObjectsOfRelationship removeObject:managedObject];
                 break;
             }
             

@@ -38,6 +38,16 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     return encodedString;
 }
 
+static NSUInteger RKNumberOfSlashesInString(NSString *string)
+{
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        regex = [NSRegularExpression regularExpressionWithPattern:@"/" options:NSRegularExpressionCaseInsensitive error:nil];
+    });
+    return [regex numberOfMatchesInString:string options:0 range:NSMakeRange(0, [string length])];
+}
+
 @interface RKPathMatcher ()
 @property (nonatomic, strong) SOCPattern *socPattern;
 @property (nonatomic, copy) NSString *patternString; // SOCPattern keeps it private
@@ -102,14 +112,10 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
             [argumentsCollection addEntriesFromDictionary:self.queryParameters];
         }
     }
-    if (![self matches])
-        return NO;
-    if (!arguments) {
-        return YES;
-    }
+    if (![self matches]) return NO;
+    if (!arguments) return YES;
     NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:self.rootPath];
-    if (extracted)
-        [argumentsCollection addEntriesFromDictionary:RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(extracted)];
+    if (extracted) [argumentsCollection addEntriesFromDictionary:RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(extracted)];
     *arguments = argumentsCollection;
     return YES;
 }
@@ -125,7 +131,8 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
 {
     self.sourcePath = sourceString;
     self.rootPath = sourceString;
-    return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
+    return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize]
+    && RKNumberOfSlashesInString(self.patternString) == RKNumberOfSlashesInString(self.rootPath);
 }
 
 - (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes interpolatedParameters:(NSDictionary **)interpolatedParameters
@@ -140,7 +147,14 @@ static NSString *RKEncodeURLString(NSString *unencodedString)
     }
     NSString *path = [self.socPattern stringFromObject:object withBlock:encoderBlock];
     if (interpolatedParameters) {
-        *interpolatedParameters = [self.socPattern parameterDictionaryFromSourceString:path];
+        NSMutableDictionary *parsedParameters = [[self.socPattern parameterDictionaryFromSourceString:path] mutableCopy];
+        if (addEscapes) {
+            for (NSString *key in [parsedParameters allKeys]) {
+                NSString *unescapedParameter = [[parsedParameters objectForKey:key] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                [parsedParameters setValue:unescapedParameter forKey:key];
+            }
+        }
+        *interpolatedParameters = parsedParameters;
     }
     return path;
 }

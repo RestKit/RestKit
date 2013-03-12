@@ -394,4 +394,20 @@ static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_pag
     expect([paginator valueForKey:@"perPageNumber"]).to.equal(10);
 }
 
+- (void)testPaginatorWithPaginationURLThatIncludesTrailingSlash
+{
+    NSURL *paginationURL = [NSURL URLWithString:@"/paginate/?per_page=:perPage&page=:currentPage" relativeToURL:[RKTestFactory baseURL]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:paginationURL];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    __block NSArray *blockObjects = nil;
+    [paginator setCompletionBlockWithSuccess:^(RKPaginator *paginator, NSArray *objects, NSUInteger page) {
+        blockObjects = objects;
+    } failure:nil];
+    [paginator loadPage:1];
+    [paginator waitUntilFinished];
+    expect(blockObjects).willNot.beNil();
+    expect(paginator.pageCount).to.equal(0);
+    expect(paginator.objectCount).to.equal(0);
+}
+
 @end

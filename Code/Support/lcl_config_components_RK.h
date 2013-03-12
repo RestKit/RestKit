@@ -54,6 +54,7 @@ _RKlcl_component(RestKit,                     "restkit",                        
 _RKlcl_component(RestKitCoreData,             "restkit.core_data",                "RestKit/CoreData")
 _RKlcl_component(RestKitCoreDataCache,        "restkit.core_data.cache",          "RestKit/CoreData/Cache")
 _RKlcl_component(RestKitNetwork,              "restkit.network",                  "RestKit/Network")
+_RKlcl_component(RestKitNetworkCoreData,      "restkit.network.core_data",        "RestKit/Network/CoreData")
 _RKlcl_component(RestKitObjectMapping,        "restkit.object_mapping",           "RestKit/ObjectMapping")
 _RKlcl_component(RestKitSearch,               "restkit.search",                   "RestKit/Search")
 _RKlcl_component(RestKitSupport,              "restkit.support",                  "RestKit/Support")

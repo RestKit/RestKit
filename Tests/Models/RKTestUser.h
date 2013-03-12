@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSDate *birthDate;
 @property (nonatomic, strong) NSDate *favoriteDate;
 @property (nonatomic, strong) NSArray *favoriteColors;
+@property (nonatomic, strong) NSMutableArray *mutableFavoriteColors;
 @property (nonatomic, strong) NSDictionary *addressDictionary;
 @property (nonatomic, strong) NSURL *website;
 @property (nonatomic, strong) NSNumber *isDeveloper;

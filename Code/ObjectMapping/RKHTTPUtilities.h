@@ -79,6 +79,13 @@ NSRange RKStatusCodeRangeForClass(RKStatusCodeClass statusCodeClass);
 NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass);
 
 /**
+ Creates and returns a new index set including all HTTP response status codes that are cacheable.
+
+ @return A new index set containing all cacheable status codes.
+ */
+NSIndexSet *RKCacheableStatusCodes(void);
+
+/**
  Returns string representation of a given HTTP status code.
  
  The list of supported status codes was built from http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
