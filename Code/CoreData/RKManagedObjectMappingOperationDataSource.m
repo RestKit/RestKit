@@ -326,10 +326,15 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         // Delete the object immediately if there are no connections that may make it valid
         if ([connections count] == 0 && RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject)) return YES;
         
-        // Attempt to establish the connections and delete the object if its invalid once we are done
+        /**
+         Attempt to establish the connections and delete the object if its invalid once we are done
+         
+         NOTE: We obtain a weak reference to the MOC to avoid a potential crash under iOS 5 if the MOC is deallocated before the operation executes. Under iOS 6, the object returns a nil `managedObjectContext` and the `performBlockAndWait:` message is sent to nil.
+         */
         NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
+        __weak NSManagedObjectContext *weakContext = [(NSManagedObject *)mappingOperation.destinationObject managedObjectContext];
         NSBlockOperation *deletionOperation = [NSBlockOperation blockOperationWithBlock:^{
-            [[(NSManagedObject *)mappingOperation.destinationObject managedObjectContext] performBlockAndWait:^{
+            [weakContext performBlockAndWait:^{
                 RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject);
             }];
         }];

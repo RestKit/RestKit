@@ -1363,4 +1363,35 @@
     expect([blake valueForKey:@"favoriteCat"]).to.equal([mapper.mappingResult.dictionary objectForKey:@"cat"]);
 }
 
+- (void)testDeletionOperationAfterManagedObjectContextIsDeallocated
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSManagedObjectContext *managedObjectContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectContext cache:nil];
+    
+    
+    NSDictionary *representation = @{ @"human": @{ @"name": @"Blake Watters", @"favoriteCatID": @(12345) }, @"cat": @{ @"railsID": @(12345) } };
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat"
+                                                      inManagedObjectStore:managedObjectStore];
+    RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectContext];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:cat mapping:catMapping];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue setSuspended:YES];
+    dataSource.operationQueue = operationQueue;
+    
+    id mockOperation = [OCMockObject partialMockForObject:mappingOperation];
+    [[[mockOperation stub] andReturn:catMapping] objectMapping];
+    [dataSource commitChangesForMappingOperation:mockOperation error:nil];
+    
+    expect([operationQueue operationCount]).to.equal(1);
+    dataSource = nil;
+    managedObjectContext = nil;
+    [operationQueue setSuspended:NO];
+    
+    [operationQueue waitUntilAllOperationsAreFinished];
+    // Create a operation queue
+    // Create data source
+    
+}
+
 @end
