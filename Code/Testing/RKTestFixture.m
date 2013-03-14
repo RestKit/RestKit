@@ -86,14 +86,12 @@ static NSBundle *fixtureBundle = nil;
 {
     NSError *error = nil;
     NSData *resourceContents = [self dataWithContentsOfFixture:fixtureName];
+    NSAssert(resourceContents, @"Failed to read fixture named '%@'", fixtureName);
     NSString *MIMEType = [self MIMETypeForFixture:fixtureName];
+    NSAssert(MIMEType, @"Failed to determine MIME type of fixture named '%@'", fixtureName);
     
     id object = [RKMIMETypeSerialization objectFromData:resourceContents MIMEType:MIMEType error:&error];
-    if (object == nil) {
-        RKLogCritical(@"Failed to parse fixture name '%@' in bundle %@. Error: %@", fixtureName, [self fixtureBundle], [error localizedDescription]);
-        return nil;
-    }
-    
+    NSAssert(object, @"Failed to parse fixture name '%@' in bundle %@. Error: %@", fixtureName, [self fixtureBundle], [error localizedDescription]);
     return object;
 }
 
