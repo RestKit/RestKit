@@ -36,6 +36,7 @@
 @implementation RKPaginatorTest
 
 static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_page=:perPage&page=:currentPage";
+static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/paginate?limit=:perPage&offset=:currentOffset";
 
 - (void)setUp
 {
@@ -68,6 +69,11 @@ static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_pag
 - (NSURL *)paginationURL
 {
     return [NSURL URLWithString:RKPaginatorTestResourcePathPattern relativeToURL:[RKTestFactory baseURL]];
+}
+
+- (NSURL *)paginationOffsetURL
+{
+    return [NSURL URLWithString:RKPaginatorTestResourcePathPatternWithOffset relativeToURL:[RKTestFactory baseURL]];
 }
 
 #pragma mark - Test Cases
@@ -144,6 +150,17 @@ static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_pag
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
     expect([[mockPaginator URL] query]).to.equal(@"per_page=25&page=1");
 }
+
+- (void)testThatURLReturnedReflectsStateOfPaginatorWithOffset
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationOffsetURL];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    id mockPaginator = [OCMockObject partialMockForObject:paginator];
+    NSUInteger currentPage = 1;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    expect([[mockPaginator URL] query]).to.equal(@"limit=25&offset=0");
+}
+
 
 - (void)testLoadingAPageOfObjects
 {
@@ -408,6 +425,18 @@ static NSString * const RKPaginatorTestResourcePathPattern = @"/paginate?per_pag
     expect(blockObjects).willNot.beNil();
     expect(paginator.pageCount).to.equal(0);
     expect(paginator.objectCount).to.equal(0);
+}
+
+- (void)testOffsetNumberOfNextPage
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    [paginator loadPage:1];
+    [paginator waitUntilFinished];
+    expect(paginator.currentOffset).to.equal(0);
+    [paginator loadNextPage];
+    [paginator waitUntilFinished];
+    expect(paginator.currentOffset).to.equal(3);
 }
 
 @end

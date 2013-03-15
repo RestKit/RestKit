@@ -36,6 +36,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 @property (nonatomic, strong) RKObjectRequestOperation *objectRequestOperation;
 @property (nonatomic, copy) NSArray *responseDescriptors;
 @property (nonatomic, assign, readwrite) NSUInteger currentPage;
+@property (nonatomic, assign, readwrite) NSUInteger currentOffset;
 @property (nonatomic, assign, readwrite) NSUInteger pageCount;
 @property (nonatomic, assign, readwrite) NSUInteger objectCount;
 @property (nonatomic, assign, readwrite) BOOL loaded;
@@ -114,6 +115,11 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     return _currentPage != NSNotFound;
 }
 
+- (BOOL)hasCurrentOffset
+{
+    return [self hasCurrentPage];
+}
+
 - (BOOL)hasPageCount
 {
     return _pageCount != NSNotFound;
@@ -129,6 +135,14 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     // Referenced during initial load, so we don't rely on isLoaded.
     NSAssert([self hasCurrentPage], @"Current page has not been initialized.");
     return _currentPage;
+}
+
+- (NSUInteger)currentOffset
+
+{
+    // Referenced during initial load, so we don't rely on isLoaded.
+    NSAssert([self hasCurrentOffset], @"Offset has not been initialized.");
+    return (_currentPage - 1) * _perPage;
 }
 
 - (BOOL)hasNextPage
@@ -227,9 +241,10 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p patternURL=%@ isLoaded=%@ perPage=%ld currentPage=%@ pageCount=%@ objectCount=%@>",
+    return [NSString stringWithFormat:@"<%@: %p patternURL=%@ isLoaded=%@ perPage=%ld currentPage=%@ currentOffset=%@ pageCount=%@ objectCount=%@>",
             NSStringFromClass([self class]), self, self.patternURL, self.isLoaded ? @"YES" : @"NO", (long) self.perPage,
             [self hasCurrentPage] ? @(self.currentPage) : @"???",
+            [self hasCurrentOffset] ? @(self.currentOffset) : @"???",
             [self hasPageCount] ? @(self.pageCount) : @"???",
             [self hasObjectCount] ? @(self.objectCount) : @"???"];
 }
