@@ -1394,4 +1394,31 @@
     
 }
 
+- (void)testThatMappingRequiredHasManyRelationshipDoesNotCrash
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [NSOperationQueue new];
+
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"railsID": @123, @"hoardedCats": @[ @{ @"name": @"Asia", @"railsID": @12345 }] };
+    RKEntityMapping *catHoarderMapping = [RKEntityMapping mappingForEntityForName:@"CatHoarder" inManagedObjectStore:managedObjectStore];
+    [catHoarderMapping addAttributeMappingsFromArray:@[ @"name", @"railsID" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"HoardedCat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name", @"railsID" ]];
+    catMapping.identificationAttributes = @[ @"railsID" ];
+    [catHoarderMapping addRelationshipMappingWithSourceKeyPath:@"hoardedCats" mapping:catMapping];
+
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: catHoarderMapping }];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+    mappingOperationDataSource.parentOperation = mapper;
+    [mapper start];
+    [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
+
+    NSManagedObject *catHoarder = [mapper.mappingResult firstObject];
+    expect(catHoarder).notTo.beNil();
+    expect([catHoarder valueForKeyPath:@"hoardedCats"]).to.haveCountOf(1);
+}
+
 @end

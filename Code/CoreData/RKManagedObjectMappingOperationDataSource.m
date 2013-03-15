@@ -323,9 +323,6 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             return NO;
         }
         
-        // Delete the object immediately if there are no connections that may make it valid
-        if ([connections count] == 0 && RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject)) return YES;
-        
         /**
          Attempt to establish the connections and delete the object if its invalid once we are done
          
@@ -339,6 +336,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             }];
         }];
         
+        // Add a dependency on the parent operation. If we are being mapped as part of a relationship, then the assignment of the mapped object to a parent may well fulfill the validation requirements. This ensures that the relationship mapping has completed before we evaluate the object for deletion.
+        if (self.parentOperation) [deletionOperation addDependency:self.parentOperation];
+
         for (RKConnectionDescription *connection in connections) {
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connection:connection managedObjectCache:self.managedObjectCache];
             [operation setConnectionBlock:^(RKRelationshipConnectionOperation *operation, id connectedValue) {
