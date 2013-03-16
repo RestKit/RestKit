@@ -1072,7 +1072,11 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     expect(managedObjectRequestOperation.error).notTo.beNil();
     expect([managedObjectRequestOperation.error code]).to.equal(NSValidationMissingMandatoryPropertyError);
+#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+    expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"title is a required value.");
+#else
     expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"The operation couldn’t be completed. (Cocoa error 1570.)");
+#endif
 }
 
 - (void)testThatSuccessfulCompletionSavesManagedObjectIfTargetObjectIsUnsavedEvenIfNoMappingWasPerformed
