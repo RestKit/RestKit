@@ -33,6 +33,7 @@
 @property (nonatomic, strong) NSDate *createdAt;
 @property (nonatomic, strong) NSDate *updatedAt;
 @property (nonatomic, strong) NSArray *favoriteColors;
+@property (nonatomic, strong) NSMutableSet *mutableFavoriteColors;
 
 @property (nonatomic, strong) NSSet *cats;
 @property (nonatomic, strong) NSNumber *favoriteCatID;
