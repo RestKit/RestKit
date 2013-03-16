@@ -1373,6 +1373,7 @@
     NSDictionary *representation = @{ @"human": @{ @"name": @"Blake Watters", @"favoriteCatID": @(12345) }, @"cat": @{ @"railsID": @(12345) } };
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat"
                                                       inManagedObjectStore:managedObjectStore];
+    catMapping.discardsInvalidObjectsOnInsert = YES;
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectContext];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:cat mapping:catMapping];
     NSOperationQueue *operationQueue = [NSOperationQueue new];

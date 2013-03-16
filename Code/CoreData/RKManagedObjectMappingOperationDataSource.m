@@ -313,9 +313,10 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 - (BOOL)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation error:(NSError **)error
 {
     if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
-        [self emitDeadlockWarningIfNecessary];                
+        [self emitDeadlockWarningIfNecessary];
         
-        NSArray *connections = [(RKEntityMapping *)mappingOperation.objectMapping connections];
+        RKEntityMapping *entityMapping = (RKEntityMapping *)mappingOperation.objectMapping;
+        NSArray *connections = [entityMapping connections];
         if ([connections count] > 0 && self.managedObjectCache == nil) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Cannot map an entity mapping that contains connection mappings with a data source whose managed object cache is nil." };
             NSError *localError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorNilManagedObjectCache userInfo:userInfo];
@@ -330,11 +331,11 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
          */
         NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
         __weak NSManagedObjectContext *weakContext = [(NSManagedObject *)mappingOperation.destinationObject managedObjectContext];
-        NSBlockOperation *deletionOperation = [NSBlockOperation blockOperationWithBlock:^{
+        NSBlockOperation *deletionOperation = entityMapping.discardsInvalidObjectsOnInsert ? [NSBlockOperation blockOperationWithBlock:^{
             [weakContext performBlockAndWait:^{
                 RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject);
             }];
-        }];
+        }] : nil;
         
         // Add a dependency on the parent operation. If we are being mapped as part of a relationship, then the assignment of the mapped object to a parent may well fulfill the validation requirements. This ensures that the relationship mapping has completed before we evaluate the object for deletion.
         if (self.parentOperation) [deletionOperation addDependency:self.parentOperation];
