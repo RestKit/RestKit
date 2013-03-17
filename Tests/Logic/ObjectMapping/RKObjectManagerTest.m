@@ -1275,4 +1275,41 @@
     expect([anotherHuman isEqual:human]).to.beFalsy();
 }
 
+- (void)testThatPostingAnArrayOfObjectsThatWereManuallyCreatedDoesNotResultInTheCreationOfDuplicatedObjects
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKInMemoryManagedObjectCache *inMemoryCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    managedObjectStore.managedObjectCache = inMemoryCache;
+    objectManager.managedObjectStore = managedObjectStore;
+    
+    NSManagedObject *developmentTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [developmentTag setValue:@"development" forKey:@"name"];
+    NSManagedObject *restKitTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [restKitTag setValue:@"restkit" forKey:@"name"];
+    [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:nil];
+    
+    RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
+    tagMapping.identificationAttributes = @[ @"name" ];
+    [tagMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:tagMapping pathPattern:nil keyPath:nil statusCodes:nil];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    RKObjectMapping *requestMapping = [RKObjectMapping requestMapping];
+    [requestMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:requestMapping objectClass:[NSManagedObject class] rootKeyPath:nil];
+    [objectManager addRequestDescriptor:requestDescriptor];
+    
+    __block RKMappingResult *mappingResult = nil;
+    NSArray *tags = @[ developmentTag, restKitTag ];
+    [objectManager postObject:tags path:@"/tags" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    expect(mappingResult).willNot.beNil();
+    NSSet *tagObjectIDs = [NSSet setWithArray:[tags valueForKey:@"objectID"]];
+    NSSet *mappedObjectIDs = [NSSet setWithArray:[mappingResult.array valueForKey:@"objectID"]];
+    expect(mappedObjectIDs).to.equal(tagObjectIDs);
+    NSUInteger tagsCount = [managedObjectStore.mainQueueManagedObjectContext countForEntityForName:@"Tag" predicate:nil error:nil];
+    expect(tagsCount).to.equal(2);
+};
+
 @end
