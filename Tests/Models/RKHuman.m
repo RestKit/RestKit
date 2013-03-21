@@ -32,6 +32,7 @@
 @dynamic createdAt;
 @dynamic updatedAt;
 @dynamic favoriteColors;
+@dynamic mutableFavoriteColors;
 
 @dynamic favoriteCatID;
 @dynamic favoriteCat;

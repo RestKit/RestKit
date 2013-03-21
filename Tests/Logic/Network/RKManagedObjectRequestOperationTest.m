@@ -1042,10 +1042,11 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(fetchedObjects).to.haveCountOf(1);
 }
 
-- (void)testManagedObjectRequestOperationCompletesAndIgnoresInvalidObjects
+- (void)testManagedObjectRequestOperationCompletesAndIgnoresInvalidObjectsWhenDiscardsInvalidObjectsOnInsertIsYES
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
+    postMapping.discardsInvalidObjectsOnInsert = YES;
     [postMapping addAttributeMappingsFromArray:@[ @"title", @"body" ]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:postMapping pathPattern:nil keyPath:@"posts" statusCodes:[NSIndexSet indexSetWithIndex:200]];
     
@@ -1055,6 +1056,27 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     expect(managedObjectRequestOperation.error).to.beNil();
     expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
+}
+
+- (void)testManagedObjectRequestOperationFailsWithValidationErrorWhenDiscardsInvalidObjectsOnInsertIsNO
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
+    postMapping.discardsInvalidObjectsOnInsert = NO;
+    [postMapping addAttributeMappingsFromArray:@[ @"title", @"body" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:postMapping pathPattern:nil keyPath:@"posts" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/posts_with_invalid.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).notTo.beNil();
+    expect([managedObjectRequestOperation.error code]).to.equal(NSValidationMissingMandatoryPropertyError);
+#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+    expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"title is a required value.");
+#else
+    expect([managedObjectRequestOperation.error localizedDescription]).to.equal(@"The operation couldn’t be completed. (Cocoa error 1570.)");
+#endif
 }
 
 - (void)testThatSuccessfulCompletionSavesManagedObjectIfTargetObjectIsUnsavedEvenIfNoMappingWasPerformed
@@ -1165,6 +1187,29 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(copiedOperation.mappingResult).notTo.beNil();
     RKHuman *human = [copiedOperation.mappingResult firstObject];
     expect(human.nickName).to.equal(@"Big Sleezy");
+}
+
+- (void)testThatManuallyCreatedObjectsAreNotDuplicatedWhenMappedWithInMemoryManagedObjectCache
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID", @"name": @"name" }];
+    entityMapping.identificationAttributes = @[ @"railsID" ];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:nil];
+    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    human.railsID = @1;
+    [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:nil];
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+    [request setHTTPMethod:@"POST"];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    managedObjectRequestOperation.managedObjectCache = managedObjectCache;
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue addOperation:managedObjectRequestOperation];
+    expect(managedObjectRequestOperation.isFinished).will.equal(YES);
+    RKHuman *mappedHuman = [managedObjectRequestOperation.mappingResult firstObject];
+    expect(mappedHuman).to.equal(human);
 }
 
 @end

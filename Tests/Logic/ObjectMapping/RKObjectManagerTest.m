@@ -785,6 +785,28 @@
     expect(array).to.equal(expected);
 }
 
+- (void)testPostingAnArrayWithSingleObjectGeneratesAnArray
+{
+    RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
+    [firstRequestMapping addAttributeMappingsFromArray:@[ @"name", @"emailAddress" ]];
+    
+    RKRequestDescriptor *firstRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:firstRequestMapping objectClass:[RKTestUser class] rootKeyPath:@"whatever"];
+    
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.emailAddress = @"blake@restkit.org";
+    
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:firstRequestDescriptor];
+    
+    NSArray *arrayOfObjects = @[ user ];
+    NSURLRequest *request = [objectManager requestWithObject:arrayOfObjects method:RKRequestMethodPOST path:@"/path" parameters:nil];
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    NSDictionary *expected = @{ @"whatever": @[ @{ @"name": @"Blake", @"emailAddress": @"blake@restkit.org" } ] };
+    expect(array).to.equal(expected);
+}
+
 - (void)testPostingNilObjectWithExtraParameters
 {
     RKObjectMapping *firstRequestMapping = [RKObjectMapping requestMapping];
@@ -1274,5 +1296,42 @@
     expect(anotherHuman.favoriteCatID).to.equal(@1);
     expect([anotherHuman isEqual:human]).to.beFalsy();
 }
+
+- (void)testThatPostingAnArrayOfObjectsThatWereManuallyCreatedDoesNotResultInTheCreationOfDuplicatedObjects
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKInMemoryManagedObjectCache *inMemoryCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    managedObjectStore.managedObjectCache = inMemoryCache;
+    objectManager.managedObjectStore = managedObjectStore;
+    
+    NSManagedObject *developmentTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [developmentTag setValue:@"development" forKey:@"name"];
+    NSManagedObject *restKitTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [restKitTag setValue:@"restkit" forKey:@"name"];
+    [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:nil];
+    
+    RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
+    tagMapping.identificationAttributes = @[ @"name" ];
+    [tagMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:tagMapping pathPattern:nil keyPath:nil statusCodes:nil];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    RKObjectMapping *requestMapping = [RKObjectMapping requestMapping];
+    [requestMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:requestMapping objectClass:[NSManagedObject class] rootKeyPath:nil];
+    [objectManager addRequestDescriptor:requestDescriptor];
+    
+    __block RKMappingResult *mappingResult = nil;
+    NSArray *tags = @[ developmentTag, restKitTag ];
+    [objectManager postObject:tags path:@"/tags" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    expect(mappingResult).willNot.beNil();
+    NSSet *tagObjectIDs = [NSSet setWithArray:[tags valueForKey:@"objectID"]];
+    NSSet *mappedObjectIDs = [NSSet setWithArray:[mappingResult.array valueForKey:@"objectID"]];
+    expect(mappedObjectIDs).to.equal(tagObjectIDs);
+    NSUInteger tagsCount = [managedObjectStore.mainQueueManagedObjectContext countForEntityForName:@"Tag" predicate:nil error:nil];
+    expect(tagsCount).to.equal(2);
+};
 
 @end

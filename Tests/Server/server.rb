@@ -325,6 +325,11 @@ class RestKitTestServer < Sinatra::Base
     content_type 'application/json'
     [{ :name => 'development' }, { :name => 'restkit' }].to_json
   end
+  
+  post '/tags' do
+    content_type 'application/json'
+    [{ :name => 'development' }, { :name => 'restkit' }].to_json
+  end
 
   # start the server if ruby file executed directly
   run! if app_file == $0

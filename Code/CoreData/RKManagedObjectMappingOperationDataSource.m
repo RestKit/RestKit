@@ -313,9 +313,10 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 - (BOOL)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation error:(NSError **)error
 {
     if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
-        [self emitDeadlockWarningIfNecessary];                
+        [self emitDeadlockWarningIfNecessary];
         
-        NSArray *connections = [(RKEntityMapping *)mappingOperation.objectMapping connections];
+        RKEntityMapping *entityMapping = (RKEntityMapping *)mappingOperation.objectMapping;
+        NSArray *connections = [entityMapping connections];
         if ([connections count] > 0 && self.managedObjectCache == nil) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Cannot map an entity mapping that contains connection mappings with a data source whose managed object cache is nil." };
             NSError *localError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorNilManagedObjectCache userInfo:userInfo];
@@ -323,17 +324,22 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             return NO;
         }
         
-        // Delete the object immediately if there are no connections that may make it valid
-        if ([connections count] == 0 && RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject)) return YES;
-        
-        // Attempt to establish the connections and delete the object if its invalid once we are done
+        /**
+         Attempt to establish the connections and delete the object if its invalid once we are done
+         
+         NOTE: We obtain a weak reference to the MOC to avoid a potential crash under iOS 5 if the MOC is deallocated before the operation executes. Under iOS 6, the object returns a nil `managedObjectContext` and the `performBlockAndWait:` message is sent to nil.
+         */
         NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
-        NSBlockOperation *deletionOperation = [NSBlockOperation blockOperationWithBlock:^{
-            [[(NSManagedObject *)mappingOperation.destinationObject managedObjectContext] performBlockAndWait:^{
+        __weak NSManagedObjectContext *weakContext = [(NSManagedObject *)mappingOperation.destinationObject managedObjectContext];
+        NSBlockOperation *deletionOperation = entityMapping.discardsInvalidObjectsOnInsert ? [NSBlockOperation blockOperationWithBlock:^{
+            [weakContext performBlockAndWait:^{
                 RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject);
             }];
-        }];
+        }] : nil;
         
+        // Add a dependency on the parent operation. If we are being mapped as part of a relationship, then the assignment of the mapped object to a parent may well fulfill the validation requirements. This ensures that the relationship mapping has completed before we evaluate the object for deletion.
+        if (self.parentOperation) [deletionOperation addDependency:self.parentOperation];
+
         for (RKConnectionDescription *connection in connections) {
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connection:connection managedObjectCache:self.managedObjectCache];
             [operation setConnectionBlock:^(RKRelationshipConnectionOperation *operation, id connectedValue) {
