@@ -361,6 +361,9 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     __block RKMappingResult *mappingResult = nil;
     self.operationQueue = [NSOperationQueue new];
     [self.managedObjectContext performBlockAndWait:^{
+        // We may have been cancelled before we made it onto the MOC's queue
+        if ([self isCancelled]) return;
+
         // Configure the mapper
         self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
         self.mapperOperation.delegate = self.mapperDelegate;
@@ -383,10 +386,11 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
                 if (objectID) {
                     if ([objectID isTemporaryID]) RKLogWarning(@"Performing object mapping to temporary target objectID. Results may not be accessible without obtaining a permanent object ID.");
                     NSManagedObject *localObject = [self.managedObjectContext existingObjectWithID:objectID error:&blockError];
-                    NSAssert([localObject.managedObjectContext isEqual:self.managedObjectContext], @"Serious Core Data error: requested existing object with ID %@ in context %@, instead got an object reference in context %@. This may indicate that the objectID for your target managed object was obtained using `obtainPermanentIDsForObjects:error:` in the wrong context.", objectID, self.managedObjectContext, [localObject managedObjectContext]);
+                    NSAssert(localObject == nil || localObject.managedObjectContext == nil || [localObject.managedObjectContext isEqual:self.managedObjectContext], @"Serious Core Data error: requested existing object with ID %@ in context %@, instead got an object reference in context %@. This may indicate that the objectID for your target managed object was obtained using `obtainPermanentIDsForObjects:error:` in the wrong context.", objectID, self.managedObjectContext, [localObject managedObjectContext]);
                     if (! localObject) {
                         RKLogWarning(@"Failed to retrieve existing object with ID: %@", objectID);
                         RKLogCoreDataError(blockError);
+                        return;
                     }
                     self.mapperOperation.targetObject = localObject;
                 } else {

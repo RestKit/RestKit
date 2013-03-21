@@ -164,6 +164,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     self = [self initWithClass:objectClass];
     if (self) {
         self.entity = entity;
+        self.discardsInvalidObjectsOnInsert = NO;
         if ([RKEntityMapping isEntityIdentificationInferenceEnabled]) self.identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
     }
 

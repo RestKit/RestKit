@@ -85,7 +85,7 @@ static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObject(NSArray *
 @interface RKObjectParameters : NSObject
 
 @property (nonatomic, strong) NSMutableDictionary *parameters;
-- (void)addParameters:(NSDictionary *)serialization atRootKeyPath:(NSString *)rootKeyPath;
+- (void)addParameters:(NSDictionary *)serialization atRootKeyPath:(NSString *)rootKeyPath inArray:(BOOL)inArray;
 
 @end
 
@@ -100,7 +100,7 @@ static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObject(NSArray *
     return self;
 }
 
-- (void)addParameters:(NSDictionary *)parameters atRootKeyPath:(NSString *)rootKeyPath
+- (void)addParameters:(NSDictionary *)parameters atRootKeyPath:(NSString *)rootKeyPath inArray:(BOOL)inArray
 {
     id rootKey = rootKeyPath ?: [NSNull null];
     id nonNestedParameters = rootKeyPath ? [parameters objectForKey:rootKeyPath] : parameters;
@@ -115,7 +115,7 @@ static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObject(NSArray *
             [NSException raise:NSInvalidArgumentException format:@"Unexpected argument of type '%@': expected an NSDictionary or NSArray.", [value class]];
         }
     } else {
-        [self.parameters setObject:nonNestedParameters forKey:rootKey];
+        [self.parameters setObject:(inArray ? @[ nonNestedParameters ] : nonNestedParameters) forKey:rootKey];
     }
 }
 
@@ -354,7 +354,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 {
     NSMutableURLRequest* request;
     if (parameters && !([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"])) {
-        request = [self.HTTPClient requestWithMethod:method path:path parameters:nil];
+        // NOTE: If the HTTP client has been subclasses, then the developer may be trying to perform signing on the request
+        NSDictionary *parametersForClient = [self.HTTPClient isMemberOfClass:[AFHTTPClient class]] ? nil : parameters;
+        request = [self.HTTPClient requestWithMethod:method path:path parameters:parametersForClient];
 		
         NSError *error = nil;
         NSString *charset = (__bridge NSString *)CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(self.HTTPClient.stringEncoding));
@@ -392,16 +394,18 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 {
     NSArray *objectsToParameterize = ([object isKindOfClass:[NSArray class]] || object == nil) ? object : @[ object ];
     RKObjectParameters *objectParameters = [RKObjectParameters new];
-    for (id object in objectsToParameterize) {
-        RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, object);
+    for (id objectToParameterize in objectsToParameterize) {
+        RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, objectToParameterize);
         if ((method != RKRequestMethodGET && method != RKRequestMethodDELETE) && requestDescriptor) {
             NSError *error = nil;
-            NSDictionary *parametersForObject = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+            NSDictionary *parametersForObject = [RKObjectParameterization parametersWithObject:objectToParameterize requestDescriptor:requestDescriptor error:&error];
             if (error) {
-                RKLogError(@"Object parameterization failed while building %@ request for object '%@': %@", RKStringFromRequestMethod(method), object, error);
+                RKLogError(@"Object parameterization failed while building %@ request for object '%@': %@", RKStringFromRequestMethod(method), objectToParameterize, error);
                 return nil;
             }
-            [objectParameters addParameters:parametersForObject atRootKeyPath:requestDescriptor.rootKeyPath];
+            // Ensure that a single object inputted as an array is emitted as an array when serialized
+            BOOL inArray = ([object isKindOfClass:[NSArray class]] && [object count] == 1);
+            [objectParameters addParameters:parametersForObject atRootKeyPath:requestDescriptor.rootKeyPath inArray:inArray];
         }
     }
     id requestParameters = [objectParameters requestParameters];

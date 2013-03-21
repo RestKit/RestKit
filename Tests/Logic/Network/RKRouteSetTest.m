@@ -372,6 +372,17 @@
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
 }
 
+- (void)testRouteForRelationshipOfClassWithAny
+{
+    RKRouteSet *router = [RKRouteSet new];
+    [router addRoute:[RKRoute routeWithRelationshipName:@"friends" objectClass:[RKTestUser class] pathPattern:@"/friends" method:RKRequestMethodGET]];
+    RKRoute *route = [router routeForRelationship:@"friends" ofClass:[RKTestUser class] method:RKRequestMethodAny];
+    assertThat(route, is(notNilValue()));
+    assertThat(route.name, is(equalTo(@"friends")));
+    assertThat(route.pathPattern, is(equalTo(@"/friends")));
+    assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
+}
+
 - (void)testRoutesForRelationship
 {
     RKRouteSet *router = [RKRouteSet new];

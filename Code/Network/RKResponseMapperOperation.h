@@ -139,7 +139,7 @@
 @property (nonatomic, strong, readonly) NSDictionary *responseMappingsDictionary;
 
 /**
- Returns an array containing all `RKResponseDescriptor` objects in the configured `responseDescriptors` array that were found to match response.
+ Returns an array containing all `RKResponseDescriptor` objects in the configured `responseDescriptors` array that were found to match the response.
  
  @see `responseDescriptors`
  @see `RKResponseDescriptor`

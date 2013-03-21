@@ -189,6 +189,14 @@
 @property (nonatomic, readonly) NSUInteger currentPage;
 
 /**
+ Returns the offset based off the page for the most recently loaded objects.
+
+ @return The offset for the current page of objects.
+ @exception NSInternalInconsistencyException Raised if `isLoaded` is equal to `NO`.
+ */
+@property (nonatomic, readonly) NSUInteger offset;
+
+/**
  Returns the number of pages in the total resource collection.
 
  @return A count of the number of pages in the resource collection.

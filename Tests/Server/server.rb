@@ -62,7 +62,6 @@ class RestKitTestServer < Sinatra::Base
   post '/humans' do
     status 201
     content_type 'application/json'
-    puts "Got params: #{params.inspect}"
     {:human => {:name => "My Name", :id => 1, :website => "http://restkit.org/"}}.to_json
   end
 
@@ -72,9 +71,9 @@ class RestKitTestServer < Sinatra::Base
   end
 
   get '/humans/1' do
+    etag('2cdd0a2b329541d81e82ab20aff6281b')
     status 200
     content_type 'application/json'
-    puts "Got params: #{params.inspect}"
     {:human => {:name => "Blake Watters", :id => 1}}.merge(params).to_json
   end
 
@@ -262,9 +261,17 @@ class RestKitTestServer < Sinatra::Base
      :current_page => current_page, :entries => entries, :total_pages => 3}.to_json
   end
   
+  get '/paginate/' do
+    status 200
+    content_type 'application/json'
+    {:per_page => 10, :total_entries => 0,
+     :current_page => 1, :entries => [], :total_pages => 0}.to_json
+  end
+  
   get '/coredata/etag' do
     content_type 'application/json'
     tag = '2cdd0a2b329541d81e82ab20aff6281b'
+    cache_control(:private, :must_revalidate, :max_age => 0)
     if tag == request.env["HTTP_IF_NONE_MATCH"]
       status 304
       ""
@@ -286,11 +293,6 @@ class RestKitTestServer < Sinatra::Base
   
   get '/304' do
     status 304
-  end
-  
-  get '/204_with_not_modified_status' do
-    status 204
-    response.headers['Status'] = '304 Not Modified'
   end
   
   delete '/humans/1234/whitespace' do
@@ -320,6 +322,11 @@ class RestKitTestServer < Sinatra::Base
   end
   
   get '/posts/:post_id/tags' do
+    content_type 'application/json'
+    [{ :name => 'development' }, { :name => 'restkit' }].to_json
+  end
+  
+  post '/tags' do
     content_type 'application/json'
     [{ :name => 'development' }, { :name => 'restkit' }].to_json
   end

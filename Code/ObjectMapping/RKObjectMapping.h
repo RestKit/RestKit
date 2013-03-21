@@ -46,16 +46,16 @@
  
  To combat this repetition, a block can be designated to perform a transformation on source keys to produce corresponding destination keys:
  
-    [userMapping setDefaultSourceToDestinationKeyTransformationBlock:^NSString *(NSString *sourceKey) {
+    [userMapping setSourceToDestinationKeyTransformationBlock:^NSString *(RKObjectMapping *mapping, NSString *sourceKey) {
         // Value transformer compliments of TransformerKit (See https://github.com/mattt/TransformerKit)
-        return [[NSValueTransformer valueTransformerForName:TKLlamaCaseStringTransformerName] transformedValue:key];
+        return [[NSValueTransformer valueTransformerForName:TKLlamaCaseStringTransformerName] transformedValue:sourceKey];
     }];
  
  With the block configured, the original configuration can be changed into a simpler array based invocation:
  
     [userMapping addAttributeMappingsFromArray:@[ @"first_name", @"last_name", @"email_address" ]];
  
- Transformation blocks can be configured on a per-mapping basis or globally via `[RKObjectMapping setDefaultSourceToDestinationKeyTransformationBlock:]`.
+ Transformation blocks can be configured on a per-mapping basis via `setSourceToDestinationKeyTransformationBlock:` or globally via `[RKObjectMapping setDefaultSourceToDestinationKeyTransformationBlock:]`.
 
  @see `RKAttributeMapping`
  @see `RKRelationshipMapping`

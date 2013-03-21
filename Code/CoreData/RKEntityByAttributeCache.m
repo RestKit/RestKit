@@ -83,6 +83,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 
 @interface RKEntityByAttributeCache ()
 @property (nonatomic, strong) NSMutableDictionary *cacheKeysToObjectIDs;
+@property (nonatomic, strong) NSRecursiveLock *lock;
 @end
 
 @implementation RKEntityByAttributeCache
@@ -99,6 +100,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
         _attributes = attributeNames;
         _managedObjectContext = context;
         _monitorsContextForChanges = YES;
+        _lock = [NSRecursiveLock new];
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(managedObjectContextDidChange:)
@@ -123,73 +125,87 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 
 - (NSUInteger)count
 {
-    return [[[self.cacheKeysToObjectIDs allValues] valueForKeyPath:@"@sum.@count"] integerValue];
+    [self.lock lock];
+    NSUInteger count = [[[self.cacheKeysToObjectIDs allValues] valueForKeyPath:@"@sum.@count"] integerValue];
+    [self.lock unlock];
+    return count;
 }
 
 - (NSUInteger)countOfAttributeValues
 {
-    return [self.cacheKeysToObjectIDs count];
+    [self.lock lock];
+    NSUInteger count = [self.cacheKeysToObjectIDs count];
+    [self.lock unlock];
+    return count;
 }
 
 - (NSUInteger)countWithAttributeValues:(NSDictionary *)attributeValues
 {
-    return [[self objectsWithAttributeValues:attributeValues inContext:self.managedObjectContext] count];
+    [self.lock lock];
+    NSUInteger count = [[self objectsWithAttributeValues:attributeValues inContext:self.managedObjectContext] count];
+    [self.lock unlock];
+    return count;
 }
 
 - (void)load
 {
+    [self.lock lock];
     RKLogDebug(@"Loading entity cache for Entity '%@' by attributes '%@' in managed object context %@ (concurrencyType = %ld)",
                self.entity.name, self.attributes, self.managedObjectContext, (unsigned long)self.managedObjectContext.concurrencyType);
-    @synchronized(self.cacheKeysToObjectIDs) {
-        self.cacheKeysToObjectIDs = [NSMutableDictionary dictionary];
+    self.cacheKeysToObjectIDs = [NSMutableDictionary dictionary];
 
-        NSExpressionDescription* objectIDExpression = [NSExpressionDescription new];
-        objectIDExpression.name = @"objectID";
-        objectIDExpression.expression = [NSExpression expressionForEvaluatedObject];
-        objectIDExpression.expressionResultType = NSObjectIDAttributeType;
+    NSExpressionDescription* objectIDExpression = [NSExpressionDescription new];
+    objectIDExpression.name = @"objectID";
+    objectIDExpression.expression = [NSExpression expressionForEvaluatedObject];
+    objectIDExpression.expressionResultType = NSObjectIDAttributeType;
 
-        // NOTE: `NSDictionaryResultType` does NOT support fetching pending changes. Pending objects must be manually added to the cache via `addObject:`.
-        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-        fetchRequest.entity = self.entity;
-        fetchRequest.resultType = NSDictionaryResultType;
-        fetchRequest.propertiesToFetch = [self.attributes arrayByAddingObject:objectIDExpression];
+    // NOTE: `NSDictionaryResultType` does NOT support fetching pending changes. Pending objects must be manually added to the cache via `addObject:`.
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    fetchRequest.entity = self.entity;
+    fetchRequest.resultType = NSDictionaryResultType;
+    fetchRequest.propertiesToFetch = [self.attributes arrayByAddingObject:objectIDExpression];
 
-        [self.managedObjectContext performBlockAndWait:^{
-            NSError *error = nil;
-            NSArray *dictionaries = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-            if (dictionaries) {
-                RKLogDebug(@"Retrieved %ld dictionaries for cachable `NSManagedObjectID` objects with fetch request: %@", (long) [dictionaries count], fetchRequest);
-            } else {
-                RKLogWarning(@"Failed to load entity cache. Failed to execute fetch request: %@", fetchRequest);
-                RKLogCoreDataError(error);
-            }
+    [self.managedObjectContext performBlockAndWait:^{
+        NSError *error = nil;
+        NSArray *dictionaries = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        if (dictionaries) {
+            RKLogDebug(@"Retrieved %ld dictionaries for cachable `NSManagedObjectID` objects with fetch request: %@", (long) [dictionaries count], fetchRequest);
+        } else {
+            RKLogWarning(@"Failed to load entity cache. Failed to execute fetch request: %@", fetchRequest);
+            RKLogCoreDataError(error);
+        }
 
-            for (NSDictionary *dictionary in dictionaries) {
-                NSManagedObjectID *objectID = [dictionary objectForKey:@"objectID"];
-                NSDictionary *attributeValues = [dictionary dictionaryWithValuesForKeys:self.attributes];
-                [self setObjectID:objectID forAttributeValues:attributeValues];
-            }
-         }];
-    }
+        for (NSDictionary *dictionary in dictionaries) {
+            NSManagedObjectID *objectID = [dictionary objectForKey:@"objectID"];
+            NSDictionary *attributeValues = [dictionary dictionaryWithValuesForKeys:self.attributes];
+            [self setObjectID:objectID forAttributeValues:attributeValues];
+        }
+     }];
+    [self.lock unlock];
 }
 
 - (void)flush
 {
-    @synchronized(self.cacheKeysToObjectIDs) {
-        RKLogDebug(@"Flushing entity cache for Entity '%@' by attributes '%@'", self.entity.name, self.attributes);
-        self.cacheKeysToObjectIDs = nil;
-    }
+    [self.lock lock];
+    RKLogDebug(@"Flushing entity cache for Entity '%@' by attributes '%@'", self.entity.name, self.attributes);
+    self.cacheKeysToObjectIDs = nil;
+    [self.lock unlock];
 }
 
 - (void)reload
 {
+    [self.lock lock];
     [self flush];
     [self load];
+    [self.lock unlock];
 }
 
 - (BOOL)isLoaded
 {
-    return (self.cacheKeysToObjectIDs != nil);
+    [self.lock lock];
+    BOOL isLoaded = (self.cacheKeysToObjectIDs != nil);
+    [self.lock unlock];
+    return isLoaded;
 }
 
 - (NSManagedObject *)objectForObjectID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)context
@@ -203,6 +219,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
      */
     __block NSError *error = nil;
     __block NSManagedObject *object;
+    [self.lock lock];
     [context performBlockAndWait:^{
         object = [context existingObjectWithID:objectID error:&error];
     }];
@@ -211,21 +228,22 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
         if (error && !([objectID isTemporaryID] && [error code] == NSManagedObjectReferentialIntegrityError)) {
             RKLogError(@"Failed to retrieve managed object with ID %@. Error %@\n%@", objectID, [error localizedDescription], [error userInfo]);
         }
-
-        return nil;
     }
-
+    [self.lock unlock];
     return object;
 }
 
 - (NSManagedObject *)objectWithAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
 {
+    [self.lock lock];
     NSSet *objects = [self objectsWithAttributeValues:attributeValues inContext:context];
+    [self.lock unlock];
     return ([objects count] > 0) ? [objects anyObject] : nil;
 }
 
 - (NSSet *)objectsWithAttributeValues:(NSDictionary *)attributeValues inContext:(NSManagedObjectContext *)context
 {
+    [self.lock lock];
     NSMutableSet *objects = [NSMutableSet set];
     NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
     for (NSString *cacheKey in cacheKeys) {
@@ -250,51 +268,52 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
             }
         }
     }
-
+    [self.lock unlock];
     return objects;
 }
 
 - (void)setObjectID:(NSManagedObjectID *)objectID forAttributeValues:(NSDictionary *)attributeValues
 {
-    @synchronized(self.cacheKeysToObjectIDs) {
-        if (attributeValues && [attributeValues count]) {
-            NSString *cacheKey = RKCacheKeyForEntityWithAttributeValues(self.entity, attributeValues);
-            NSMutableArray *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
-            if (objectIDs) {
-                if (! [objectIDs containsObject:objectID]) {
-                    [objectIDs addObject:objectID];
-                }
-            } else {
-                objectIDs = [NSMutableArray arrayWithObject:objectID];
+    [self.lock lock];
+    if (attributeValues && [attributeValues count]) {
+        NSString *cacheKey = RKCacheKeyForEntityWithAttributeValues(self.entity, attributeValues);
+        NSMutableArray *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
+        if (objectIDs) {
+            if (! [objectIDs containsObject:objectID]) {
+                [objectIDs addObject:objectID];
             }
-
-            if (nil == self.cacheKeysToObjectIDs) self.cacheKeysToObjectIDs = [NSMutableDictionary dictionary];
-            [self.cacheKeysToObjectIDs setValue:objectIDs forKey:cacheKey];
         } else {
-            RKLogWarning(@"Unable to add object for object ID %@: empty values dictionary for attributes '%@'", objectID, self.attributes);
+            objectIDs = [NSMutableArray arrayWithObject:objectID];
         }
+
+        if (nil == self.cacheKeysToObjectIDs) self.cacheKeysToObjectIDs = [NSMutableDictionary dictionary];
+        [self.cacheKeysToObjectIDs setValue:objectIDs forKey:cacheKey];
+    } else {
+        RKLogWarning(@"Unable to add object for object ID %@: empty values dictionary for attributes '%@'", objectID, self.attributes);
     }
+    [self.lock unlock];
 }
 
 - (void)removeObjectID:(NSManagedObjectID *)objectID forAttributeValues:(NSDictionary *)attributeValues
 {
-    @synchronized(self.cacheKeysToObjectIDs) {
-        if (attributeValues && [attributeValues count]) {
-            NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
-            for (NSString *cacheKey in cacheKeys) {
-                NSMutableArray *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
-                if (objectIDs && [objectIDs containsObject:objectID]) {
-                    [objectIDs removeObject:objectID];
-                }
+    [self.lock lock];
+    if (attributeValues && [attributeValues count]) {
+        NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
+        for (NSString *cacheKey in cacheKeys) {
+            NSMutableArray *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
+            if (objectIDs && [objectIDs containsObject:objectID]) {
+                [objectIDs removeObject:objectID];
             }
-        } else {
-            RKLogWarning(@"Unable to remove object for object ID %@: empty values dictionary for attributes '%@'", objectID, self.attributes);
         }
+    } else {
+        RKLogWarning(@"Unable to remove object for object ID %@: empty values dictionary for attributes '%@'", objectID, self.attributes);
     }
+    [self.lock unlock];
 }
 
 - (void)addObject:(NSManagedObject *)object
 {
+    [self.lock lock];
     __block NSEntityDescription *entity;
     __block NSDictionary *attributeValues;
     __block NSManagedObjectID *objectID;
@@ -305,10 +324,12 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     }];
     NSAssert([entity isKindOfEntity:self.entity], @"Cannot add object with entity '%@' to cache for entity of '%@'", [entity name], [self.entity name]);
     [self setObjectID:objectID forAttributeValues:attributeValues];
+    [self.lock unlock];
 }
 
 - (void)removeObject:(NSManagedObject *)object
 {
+    [self.lock lock];
     __block NSEntityDescription *entity;
     __block NSDictionary *attributeValues;
     __block NSManagedObjectID *objectID;
@@ -319,42 +340,69 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     }];
     NSAssert([entity isKindOfEntity:self.entity], @"Cannot remove object with entity '%@' from cache for entity of '%@'", [entity name], [self.entity name]);
     [self removeObjectID:objectID forAttributeValues:attributeValues];
+    [self.lock unlock];
 }
 
 - (BOOL)containsObjectWithAttributeValues:(NSDictionary *)attributeValues
 {
-    return [[self objectsWithAttributeValues:attributeValues inContext:self.managedObjectContext] count] > 0;
+    [self.lock lock];
+    BOOL containsObject = [[self objectsWithAttributeValues:attributeValues inContext:self.managedObjectContext] count] > 0;
+    [self.lock unlock];
+    return containsObject;
 }
 
 - (BOOL)containsObject:(NSManagedObject *)object
 {
+    [self.lock lock];
     NSArray *allObjectIDs = [[self.cacheKeysToObjectIDs allValues] valueForKeyPath:@"@distinctUnionOfArrays.self"];
+    [self.lock unlock];
     return [allObjectIDs containsObject:object.objectID];
 }
 
 - (void)managedObjectContextDidChange:(NSNotification *)notification
 {
-    if (self.monitorsContextForChanges == NO) return;
-
     NSDictionary *userInfo = notification.userInfo;
     NSSet *insertedObjects = [userInfo objectForKey:NSInsertedObjectsKey];
     NSSet *updatedObjects = [userInfo objectForKey:NSUpdatedObjectsKey];
     NSSet *deletedObjects = [userInfo objectForKey:NSDeletedObjectsKey];
     RKLogTrace(@"insertedObjects=%@, updatedObjects=%@, deletedObjects=%@", insertedObjects, updatedObjects, deletedObjects);
-
+    
     NSMutableSet *objectsToAdd = [NSMutableSet setWithSet:insertedObjects];
     [objectsToAdd unionSet:updatedObjects];
-
-    for (NSManagedObject *object in objectsToAdd) {
-        if ([object.entity isKindOfEntity:self.entity]) {
-            [self addObject:object];
+    
+    /**
+     We dispatch async here to avoid a deadlock situation if the notification is delivered while another thread has acquired the lock. This is problematic for changes to `NSMainQueueConcurrencyType` MOC's in particular. We pre-calculate the attribute values from the object rather than invoking `addObject:` or `removeObject:` as the deleted objects will be unreadable once execution resumes following the notification's delivery.
+     */
+    NSMutableDictionary *newObjectIDsToAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[objectsToAdd count]];
+    for (NSManagedObject *managedObject in objectsToAdd) {
+        if ([managedObject.entity isKindOfEntity:self.entity]) {
+            NSManagedObjectID *objectID = [managedObject objectID];
+            NSDictionary *attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
+            [newObjectIDsToAttributeValues setObject:attributeValues forKey:objectID];
         }
     }
-
-    for (NSManagedObject *object in deletedObjects) {
-        if ([object.entity isKindOfEntity:self.entity]) {
-            [self removeObject:object];
+    
+    // Deleted objects
+    NSMutableDictionary *deletedObjectIDsToAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[deletedObjects count]];
+    for (NSManagedObject *managedObject in deletedObjects) {
+        if ([managedObject.entity isKindOfEntity:self.entity]) {
+            NSManagedObjectID *objectID = [managedObject objectID];
+            NSDictionary *attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
+            [deletedObjectIDsToAttributeValues setObject:attributeValues forKey:objectID];
         }
+    }
+    
+    if ([newObjectIDsToAttributeValues count] || [deletedObjectIDsToAttributeValues count]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self.lock lock];
+            [newObjectIDsToAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID *objectID, NSDictionary *attributeValues, BOOL *stop) {
+                [self setObjectID:objectID forAttributeValues:attributeValues];
+            }];
+            [deletedObjectIDsToAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID *objectID, NSDictionary *attributeValues, BOOL *stop) {
+                [self removeObjectID:objectID forAttributeValues:attributeValues];
+            }];
+            [self.lock unlock];
+        });
     }
 }
 

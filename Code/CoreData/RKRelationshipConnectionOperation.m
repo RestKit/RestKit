@@ -181,16 +181,28 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 
 - (void)main
 {
-    if (self.isCancelled) return;
+    if (self.isCancelled || [self.managedObject isDeleted]) return;
     NSString *relationshipName = self.connection.relationship.name;
     RKLogTrace(@"Connecting relationship '%@' with mapping: %@", relationshipName, self.connection);
     [self.managedObjectContext performBlockAndWait:^{
+        if (self.isCancelled || [self.managedObject isDeleted]) return;
+
         BOOL shouldConnect = YES;
         self.connectedValue = [self findConnected:&shouldConnect];
         if (shouldConnect) {
-            [self.managedObject setValue:self.connectedValue forKeyPath:relationshipName];
-            RKLogDebug(@"Connected relationship '%@' to object '%@'", relationshipName, self.connectedValue);
-            if (self.connectionBlock) self.connectionBlock(self, self.connectedValue);
+            @try {
+                [self.managedObject setValue:self.connectedValue forKeyPath:relationshipName];
+                RKLogDebug(@"Connected relationship '%@' to object '%@'", relationshipName, self.connectedValue);
+                if (self.connectionBlock) self.connectionBlock(self, self.connectedValue);
+            }
+            @catch (NSException *exception) {
+                if ([[exception name] isEqualToString:NSObjectInaccessibleException]) {
+                    // Object has been deleted
+                    RKLogDebug(@"Rescued an `NSObjectInaccessibleException` exception while attempting to establish a relationship.");
+                } else {
+                    [exception raise];
+                }
+            }
         }
     }];
 }

@@ -32,6 +32,20 @@ NSIndexSet *RKStatusCodeIndexSetForClass(RKStatusCodeClass statusCodeClass)
     return [NSIndexSet indexSetWithIndexesInRange:RKStatusCodeRangeForClass(statusCodeClass)];
 }
 
+NSIndexSet *RKCacheableStatusCodes(void)
+{
+    NSMutableIndexSet *cacheableStatusCodes = [NSMutableIndexSet indexSet];
+    [cacheableStatusCodes addIndex:200];
+    [cacheableStatusCodes addIndex:304];
+    [cacheableStatusCodes addIndex:203];
+    [cacheableStatusCodes addIndex:300];
+    [cacheableStatusCodes addIndex:301];
+    [cacheableStatusCodes addIndex:302];
+    [cacheableStatusCodes addIndex:307];
+    [cacheableStatusCodes addIndex:410];
+    return cacheableStatusCodes;
+}
+
 NSString *RKStringFromRequestMethod(RKRequestMethod method)
 {
     switch (method) {
@@ -509,6 +523,7 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL)
     } else {
         // NOTE: [URL relativeString] would return the same value as `absoluteString` if URL is not relative to a baseURL
         NSString *query = [URL query];
-        return (query && [query length]) ? [NSString stringWithFormat:@"%@?%@", [URL path], query] : [URL path];
+        NSString *pathWithPrevervedTrailingSlash = [CFBridgingRelease(CFURLCopyPath((CFURLRef)URL)) stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        return (query && [query length]) ? [NSString stringWithFormat:@"%@?%@", pathWithPrevervedTrailingSlash, query] : pathWithPrevervedTrailingSlash;
     }
 }

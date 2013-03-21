@@ -146,6 +146,9 @@
 
 + (id)objectFromData:(NSData *)data MIMEType:(NSString *)MIMEType error:(NSError **)error
 {
+    NSParameterAssert(data);
+    NSParameterAssert(MIMEType);
+
     Class<RKSerialization> serializationClass = [self serializationClassForMIMEType:MIMEType];
     if (!serializationClass) {
         if (error) {
@@ -161,6 +164,8 @@
 
 + (id)dataFromObject:(id)object MIMEType:(NSString *)MIMEType error:(NSError **)error
 {
+    NSParameterAssert(object);
+    NSParameterAssert(MIMEType);
     Class<RKSerialization> serializationClass = [self serializationClassForMIMEType:MIMEType];
     if (!serializationClass) {
         if (error) {

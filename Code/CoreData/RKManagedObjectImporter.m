@@ -215,6 +215,7 @@
     NSDictionary *mappingDictionary = @{ (keyPath ?: [NSNull null]) : mapping };
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappingDictionary];
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
+    self.mappingOperationDataSource.parentOperation = mapper;
     __block RKMappingResult *mappingResult;
     [self.managedObjectContext performBlockAndWait:^{
         [mapper start];

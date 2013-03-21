@@ -36,6 +36,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 @property (nonatomic, strong) RKObjectRequestOperation *objectRequestOperation;
 @property (nonatomic, copy) NSArray *responseDescriptors;
 @property (nonatomic, assign, readwrite) NSUInteger currentPage;
+@property (nonatomic, assign, readwrite) NSUInteger offset;
 @property (nonatomic, assign, readwrite) NSUInteger pageCount;
 @property (nonatomic, assign, readwrite) NSUInteger objectCount;
 @property (nonatomic, assign, readwrite) BOOL loaded;
@@ -71,6 +72,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         self.currentPage = NSNotFound;
         self.pageCount = NSNotFound;
         self.objectCount = NSNotFound;
+        self.offset = NSNotFound;
         self.perPage = RKPaginatorDefaultPerPage;
         self.loaded = NO;
     }
@@ -114,6 +116,11 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     return _currentPage != NSNotFound;
 }
 
+- (BOOL)hasOffset
+{
+    return _offset != NSNotFound;
+}
+
 - (BOOL)hasPageCount
 {
     return _pageCount != NSNotFound;
@@ -129,6 +136,12 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     // Referenced during initial load, so we don't rely on isLoaded.
     NSAssert([self hasCurrentPage], @"Current page has not been initialized.");
     return _currentPage;
+}
+
+- (NSUInteger)offset
+{
+    if ([self hasOffset]) return _offset;
+    return [self hasCurrentPage] ? ((_currentPage - 1) * _perPage) : 0;
 }
 
 - (BOOL)hasNextPage
@@ -227,9 +240,10 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p patternURL=%@ isLoaded=%@ perPage=%ld currentPage=%@ pageCount=%@ objectCount=%@>",
+    return [NSString stringWithFormat:@"<%@: %p patternURL=%@ isLoaded=%@ perPage=%ld currentPage=%@ offset=%@ pageCount=%@ objectCount=%@>",
             NSStringFromClass([self class]), self, self.patternURL, self.isLoaded ? @"YES" : @"NO", (long) self.perPage,
             [self hasCurrentPage] ? @(self.currentPage) : @"???",
+            [self hasOffset] ? @(self.offset) : @"???",
             [self hasPageCount] ? @(self.pageCount) : @"???",
             [self hasObjectCount] ? @(self.objectCount) : @"???"];
 }
@@ -290,6 +304,16 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 - (void)setObjectCountNumber:(NSNumber *)objectCountNumber
 {
     self.objectCount = [objectCountNumber unsignedIntegerValue];
+}
+
+- (NSNumber *)offsetNumber
+{
+    return [NSNumber numberWithUnsignedInteger:self.offset];
+}
+
+- (void)setOffsetNumber:(NSNumber *)offsetNumber
+{
+    self.offset = [offsetNumber unsignedIntegerValue];
 }
 
 @end

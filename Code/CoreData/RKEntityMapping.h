@@ -147,7 +147,7 @@
     
     // JSON looks like {"project": { "name": "Project Name", "userID": 1234, "projectID": 1 } }
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Project" inManagedObjectStore:managedObjectStore];
-    [mapping addAttributeMappings:@[ @"name", @"userID", @"projectID" ]];
+    [mapping addAttributeMappingsFromArray:@[ @"name", @"userID", @"projectID" ]];
  
     // Find a 'User' whose value for the 'userID' object is equal to the value stored on the 'userID' attribute of the 'Project' and assign it to the relationship
     // In other words, "Find the User whose userID == 1234 and assign that object to the 'user' relationship"
@@ -176,6 +176,19 @@
  @return The connection object for the specified relationship or `nil` if none is configured.
  */
 - (RKConnectionDescription *)connectionForRelationship:(id)relationshipOrName;
+
+///-----------------------------
+/// @name Configuring Validation
+///-----------------------------
+
+/**
+ A Boolean value that determines if newly created `NSManagedObject` instances mapped with the receiver should be discarded when they fail `validateForInsert:`.
+ 
+ This property allows for the deletion of managed objects that fail validation such that `NSManagedObjectContext` save will complete successfully. Typically an invalid managed object in the graph will result in a failure to save the `NSManagedObjectContext` due to an NSValidation error. In some cases it is desirable to persist only the subset of objects that pass validation and discard the invalid content rather than failing the entire operation. Setting this property to `YES` will result in the deletion of in any newly created `NSManagedObject` instances that fail to return `YES` when sent the `validateForInsert:` message.
+ 
+ **Default**: `NO`
+ */
+@property (nonatomic, assign) BOOL discardsInvalidObjectsOnInsert;
 
 ///------------------------------------
 /// @name Flagging Objects for Deletion

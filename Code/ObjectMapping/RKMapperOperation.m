@@ -225,6 +225,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
                 [mappedObjects addObject:destinationObject];
             }
         }
+        *stop = [self isCancelled];
     }];
 
     return mappedObjects;

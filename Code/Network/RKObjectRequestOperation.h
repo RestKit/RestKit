@@ -23,6 +23,11 @@
 #import "RKMapperOperation.h"
 
 /**
+ The key for a Boolean NSNumber value that indicates if a `NSCachedURLResponse` stored in the `NSURLCache` has been object mapped to completion. This key is stored on the `userInfo` of the cached response, if any, just before an `RKObjectRequestOperation` transitions to the finished state.
+ */
+extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
+
+/**
  `RKObjectRequestOperation` is an `NSOperation` subclass that implements object mapping on the response body of an `NSHTTPResponse` loaded via an `RKHTTPRequestOperation`.
  
  Object request operations are initialized with a fully configured `NSURLRequest` object and an array of `RKResponseDescriptor` objects. `RKObjectRequestOperation` is internally implemented as an aggregate operation that constructs and starts an `RKHTTPRequestOperation` to perform the network access and retrieve the mappable data. If an error occurs during HTTP transport, the object request operation is failed with the transport error. Once response data is loaded for the request, the object request operation creates and starts an `RKObjectResponseMapperOperation` to perform the object mapping on the response body. If the mapping operation fails, then object request operation is failed and the `error` property is set. If mapping is successful, then the `mappingResult` property is set and the operation is finished successfully.
@@ -62,7 +67,10 @@
  @see `RKMIMETypeSerialization`
  @see `RKManagedObjectRequestOperation`
  */
-@interface RKObjectRequestOperation : NSOperation <RKMapperOperationDelegate>
+@interface RKObjectRequestOperation : NSOperation <NSCopying, RKMapperOperationDelegate> {
+  @protected
+    RKMappingResult *_mappingResult;
+}
 
 ///-----------------------------------------------
 /// @name Initializing an Object Request Operation

@@ -258,7 +258,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                 if ([indexedIDs containsObject:[managedObject objectID]]) return;
                 [indexedIDs addObject:[managedObject objectID]];
                 double percentage = (((float)[indexedIDs count]) / (float)totalObjects) * 100;
-                if ([indexedIDs count] % 250 == 0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) [indexedIDs count], (unsigned long) totalObjects, percentage);
+                if ([indexedIDs count] % 250 == 0 || percentage >= 100.0) RKLogInfo(@"Indexing object %ld of %ld (%.2f%% complete)", (unsigned long) [indexedIDs count], (unsigned long) totalObjects, percentage);
             }];
         }
                 
@@ -311,7 +311,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
             [self.indexingContext performBlockAndWait:^{
                 NSError *error = nil;
                 NSManagedObject *managedObject = [self.indexingContext existingObjectWithID:objectID error:&error];
-                NSAssert([[managedObject managedObjectContext] isEqual:self.indexingContext], @"Serious Core Data error: Asked for an `NSManagedObject` with ID %@ in indexing context %@, but got one in %@", objectID, self.indexingContext, [managedObject managedObjectContext]);
+                NSAssert(managedObject == nil || [[managedObject managedObjectContext] isEqual:self.indexingContext], @"Serious Core Data error: Asked for an `NSManagedObject` with ID %@ in indexing context %@, but got one in %@", objectID, self.indexingContext, [managedObject managedObjectContext]);
                 if (managedObject && error == nil) {
                     BOOL performIndexing = YES;
                     if ([self.delegate respondsToSelector:@selector(searchIndexer:shouldIndexManagedObject:)]) {

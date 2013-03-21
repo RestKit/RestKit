@@ -57,9 +57,4 @@
  */
 @property (nonatomic, strong) NSSet *acceptableContentTypes;
 
-/**
- Whether the response received a 304 response, whether via the initial request, or by virtue of cache revalidation occurring from `NSURLCache`.
- */
-@property (nonatomic, readonly) BOOL wasNotModified;
-
 @end
