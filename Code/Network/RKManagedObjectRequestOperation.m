@@ -397,10 +397,10 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 
 - (RKMappingResult *)performMappingOnResponse:(NSError **)error
 {
-    if ([self canSkipMapping]) {
+    NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
+    NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
+    if ([fetchRequests count] && [self canSkipMapping]) {
         RKLogDebug(@"Managed object mapping requested for cached response which was previously mapped: skipping...");
-        NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
-        NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
         NSMutableArray *managedObjects = [NSMutableArray array];
         [self.privateContext performBlockAndWait:^{
             NSError *error = nil;
