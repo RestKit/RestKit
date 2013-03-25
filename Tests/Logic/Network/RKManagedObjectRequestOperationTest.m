@@ -207,9 +207,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 // 304 'Not Modified'
 - (void)testThatManagedObjectsAreMappedWhenHandlingAResponseThatCanSkipMappingButThereIsNoFetchRequestBlockRegistered
 {
-    RKLogConfigureByName("*", RKLogLevelTrace);
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
     
     // Store a cache entry indicating that the response has been previously mapped
