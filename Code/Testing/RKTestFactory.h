@@ -144,6 +144,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  @return The shared object instance for the factory registered with the given name.
  */
 + (id)sharedObjectFromFactory:(NSString *)factoryName;
++ (id)sharedObjectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties;
 
 /**
  Inserts a new managed object for the `NSEntityDescription` with the given name into the specified  managed object context and sets properties on the instance from the given dictionary. A permanent managed object ID is obtained for the object so that it can be referenced across threads without any further work.
