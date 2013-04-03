@@ -20,6 +20,7 @@
 
 #import "RKMapperOperation.h"
 #import "RKMapperOperation_Private.h"
+#import "RKObjectMapping.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
 #import "RKResponseDescriptor.h"
@@ -206,9 +207,16 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             RKLogWarning(@"Collection mapping forced but representations is of type '%@' rather than NSDictionary", NSStringFromClass([representations class]));
         }
     }
-
-    // Ensure we are mapping onto a mutable collection if there is a target
-    NSMutableArray *mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[representations count]];
+    
+    // Ensure we are mapping onto a mutable collection if there is a target of the right class
+    BOOL shouldMapTargetObject = (self.targetObject != nil);
+    if ([mapping isKindOfClass:[RKObjectMapping class]])
+    {
+        Class mappingObjectClass = [(RKObjectMapping *)mapping objectClass];
+        shouldMapTargetObject = [self.targetObject isKindOfClass:mappingObjectClass];
+    }
+    
+    NSMutableArray *mappedObjects = shouldMapTargetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[representations count]];
     if (NO == [mappedObjects respondsToSelector:@selector(addObject:)]) {
         NSString *errorMessage = [NSString stringWithFormat:
                                   @"Cannot map a collection of objects onto a non-mutable collection. Unexpected destination object type '%@'",
