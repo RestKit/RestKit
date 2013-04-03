@@ -95,17 +95,11 @@
 
 - (id)sharedObjectFromFactory:(NSString *)factoryName
 {
-    return [self sharedObjectFromFactory:factoryName properties:nil];
-}
-
-- (id)sharedObjectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties
-{
     id sharedObject = [self.sharedObjectsByFactoryName objectForKey:factoryName];
     if (! sharedObject) {
         sharedObject = [self objectFromFactory:factoryName properties:nil];
         [self.sharedObjectsByFactoryName setObject:sharedObject forKey:factoryName];
     }
-    [sharedObject setValuesForKeysWithDictionary:properties];
     return sharedObject;
 }
 
@@ -175,11 +169,6 @@
 + (id)sharedObjectFromFactory:(NSString *)factoryName
 {
     return [[RKTestFactory sharedFactory] sharedObjectFromFactory:factoryName];
-}
-
-+ (id)sharedObjectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties
-{
-    return [[RKTestFactory sharedFactory] sharedObjectFromFactory:factoryName properties:properties];
 }
 
 + (id)insertManagedObjectForEntityForName:(NSString *)entityName
