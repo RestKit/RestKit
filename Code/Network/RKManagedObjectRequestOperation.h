@@ -66,8 +66,7 @@
         if (match) {
             airportID = [argsDict objectForKey:@"airport_id"];
             NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Terminal"];
-            NSEntityDescription *entity = [NSEntityDescription entityForName:@"Airport" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-            fetchRequest.predicate = [NSPredication predicateWithFormat:@"airportID = %@", @([airportID integerValue])]; // NOTE: Coerced from string to number
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"airportID = %@", @([airportID integerValue])]; // NOTE: Coerced from string to number
             fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES] ];
             return fetchRequest;
         }
