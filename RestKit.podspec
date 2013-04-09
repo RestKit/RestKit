@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.7'
   
   # Exclude optional Search and Testing modules
-  s.preferred_dependency = 'Core'
+  s.default_subspec = 'Core'
   
   # Add Core Data to the PCH (This should be part of the Core Data Subspec, but CocoaPods does not allow)
   s.prefix_header_contents = <<-EOS
