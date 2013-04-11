@@ -69,7 +69,6 @@
         self.connectionQueue = [NSOperationQueue new];
         [self.connectionQueue setName:@"RKManagedObjectImporter Connection Queue"];
         [self.connectionQueue setSuspended:YES];
-        [self.connectionQueue setMaxConcurrentOperationCount:1];
 
         RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [self createMappingOperationDataSource];
         self.mappingOperationDataSource = mappingOperationDataSource;
