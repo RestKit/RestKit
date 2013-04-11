@@ -1,3 +1,6 @@
 [submodule "Vendor/AFNetworking"]
 	path = Vendor/AFNetworking
 	url = https://github.com/AFNetworking/AFNetworking.git
+[submodule "Vendor/TransitionKit"]
+	path = Vendor/TransitionKit
+	url = git@github.com:blakewatters/TransitionKit.git
