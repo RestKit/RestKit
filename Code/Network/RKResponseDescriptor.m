@@ -88,7 +88,7 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
 
 - (BOOL)matchesPath:(NSString *)path
 {
-    if (!self.pathPattern || !path) return YES;
+    if (!self.pathPattern || !path) return NO;
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:self.pathPattern];
     return [pathMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
 }
@@ -96,6 +96,7 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
 - (BOOL)matchesURL:(NSURL *)URL
 {
     NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(URL, self.baseURL);
+    if (!self.pathPattern || !pathAndQueryString) return YES;
     if (self.baseURL) {
         if (! RKURLIsRelativeToURL(URL, self.baseURL)) return NO;
         return [self matchesPath:pathAndQueryString];

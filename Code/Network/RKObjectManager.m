@@ -249,6 +249,29 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
     return NO;
 }
 
+static NSArray* RKArrayOfResponseDescriptorsForClass(NSArray *responseDescriptors, Class classToBeMapped)
+{
+  // Visit all mappings accessible from the object graphs of all response descriptors
+  NSMutableSet *responseDescriptorsForClass = [NSMutableSet set];
+  for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+    RKMappingGraphVisitor *graphVisitor = [[RKMappingGraphVisitor alloc] initWithMapping:responseDescriptor.mapping];
+    for (RKMapping* mapping in graphVisitor.mappings) {
+      if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+        if ([[(RKObjectMapping *)mapping objectClass] isSubclassOfClass:classToBeMapped]) [responseDescriptorsForClass addObject:responseDescriptor];
+      }
+      
+      if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+        RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)mapping;
+        for (RKObjectMapping *mapping in dynamicMapping.objectMappings) {
+          if ([[(RKObjectMapping *)mapping objectClass] isSubclassOfClass:classToBeMapped]) [responseDescriptorsForClass addObject:responseDescriptor];
+        }
+      }
+    }
+    
+  }
+  return [responseDescriptorsForClass allObjects];
+}
+
 static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParameterEncoding encoding)
 {
     switch (encoding) {
@@ -532,7 +555,11 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         routingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
     }
     
-    NSArray *matchingDescriptors = RKFilteredArrayOfResponseDescriptorsMatchingPath(self.responseDescriptors, path);
+    NSArray *matchingDescriptors = RKArrayOfResponseDescriptorsForClass(self.responseDescriptors, [object class]);
+    if ((method != RKRequestMethodPOST) && (method != RKRequestMethodPUT)) {
+      matchingDescriptors = [matchingDescriptors arrayByAddingObjectsFromArray:RKFilteredArrayOfResponseDescriptorsMatchingPath(self.responseDescriptors, path)];
+    }
+  
     BOOL containsEntityMapping = RKDoesArrayOfResponseDescriptorsContainEntityMapping(matchingDescriptors);
     BOOL isManagedObjectRequestOperation = (containsEntityMapping || [object isKindOfClass:[NSManagedObject class]]);
     
