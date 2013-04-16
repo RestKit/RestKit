@@ -188,6 +188,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     copy.identificationAttributes = self.identificationAttributes;
     copy.identificationPredicate = self.identificationPredicate;
     copy.deletionPredicate = self.deletionPredicate;
+    copy.mutableConnections = [NSMutableArray array];
     
     for (RKConnectionDescription *connection in self.connections) {
         [copy addConnection:[connection copy]];
