@@ -158,6 +158,16 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     return [[super description] stringByAppendingString:@"_RKRefetchingMappingResult"];
 }
 
+/**
+ Add explicit ordering of deallocations to fight `cxx_destruct` crashes
+ */
+- (void)dealloc
+{
+    _mappingResult = nil;
+    _entityMappingEvents = nil;
+    _managedObjectContext = nil;
+}
+
 - (id)initWithMappingResult:(RKMappingResult *)mappingResult
        managedObjectContext:(NSManagedObjectContext *)managedObjectContext
         entityMappingEvents:(NSArray *)entityMappingEvents;
