@@ -25,6 +25,7 @@
 #import "RKHTTPUtilities.h"
 #import "RKLog.h"
 #import "RKMappingErrors.h"
+#import "RKOperationStateMachine.h"
 
 #import <Availability.h>
 
@@ -97,6 +98,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 }
 
 @interface RKObjectRequestOperation ()
+@property (nonatomic, strong) RKOperationStateMachine *stateMachine;
 @property (nonatomic, strong, readwrite) RKHTTPRequestOperation *HTTPRequestOperation;
 @property (nonatomic, strong, readwrite) NSArray *responseDescriptors;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
@@ -118,6 +120,17 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     });
     
     return responseMappingQueue;
+}
+
++ (dispatch_queue_t)dispatchQueue
+{
+    static dispatch_queue_t dispatchQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dispatchQueue = dispatch_queue_create("org.restkit.network.object-request-operation-queue", DISPATCH_QUEUE_CONCURRENT);
+    });
+
+    return dispatchQueue;
 }
 
 + (BOOL)canProcessRequest:(NSURLRequest *)request
@@ -147,6 +160,22 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         self.HTTPRequestOperation = requestOperation;
         self.HTTPRequestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
         self.HTTPRequestOperation.acceptableStatusCodes = RKAcceptableStatusCodesFromResponseDescriptors(responseDescriptors);
+        
+        __weak __typeof(&*self)weakSelf = self;
+        self.stateMachine = [[RKOperationStateMachine alloc] initWithOperation:self dispatchQueue:[[self class] dispatchQueue]];
+        [self.stateMachine setExecutionBlock:^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidStartNotification object:weakSelf];
+            RKIncrementNetworkActivityIndicator();
+            if (! weakSelf.isCancelled) [weakSelf execute];
+        }];
+        [self.stateMachine setFinalizationBlock:^{
+            RKDecrementNetworkAcitivityIndicator();
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf];
+        }];
+        [self.stateMachine setCancellationBlock:^{
+            [weakSelf.HTTPRequestOperation cancel];
+            [weakSelf.responseMapperOperation cancel];
+        }];
     }
     
     return self;
@@ -280,13 +309,6 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     // Default implementation does nothing
 }
 
-- (void)cancel
-{
-    [super cancel];
-    [self.HTTPRequestOperation cancel];
-    [self.responseMapperOperation cancel];
-}
-
 - (void)execute
 {
     // Send the request
@@ -296,6 +318,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     if (self.HTTPRequestOperation.error) {
         RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", self.HTTPRequestOperation.error);
         self.error = self.HTTPRequestOperation.error;
+        [self.stateMachine finish];
         return;
     }
     
@@ -305,6 +328,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     NSError *error = nil;
     RKMappingResult *mappingResult = [self performMappingOnResponse:&error];
     if (self.isCancelled) {
+        [self.stateMachine finish];
         return;
     }
     
@@ -312,6 +336,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     // which we do not treat as an error condition
     if (! mappingResult && error && !([self.HTTPRequestOperation.request.HTTPMethod isEqualToString:@"DELETE"] && error.code == RKMappingErrorNotFound)) {
         self.error = error;
+        [self.stateMachine finish];
         return;
     }
     self.mappingResult = mappingResult;
@@ -331,17 +356,8 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
             [[NSURLCache sharedURLCache] storeCachedResponse:newCachedResponse forRequest:self.HTTPRequestOperation.request];
         }
     }
-}
-
-- (void)main
-{
-    if (self.isCancelled) return;
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidStartNotification object:self];
-    RKIncrementNetworkActivityIndicator();
-    [self execute];
-    RKDecrementNetworkAcitivityIndicator();
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:self];
+    [self.stateMachine finish];
 }
 
 - (NSString *)description {
@@ -362,6 +378,39 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     operation.completionBlock = self.completionBlock;
     
     return operation;
+}
+
+#pragma mark - NSOperation
+
+- (BOOL)isConcurrent
+{
+    return YES;
+}
+
+- (BOOL)isReady
+{
+    return [self.stateMachine isReady];
+}
+
+- (BOOL)isExecuting
+{
+    return [self.stateMachine isExecuting];
+}
+
+- (BOOL)isFinished
+{
+    return [self.stateMachine isFinished];
+}
+
+- (void)start
+{
+    [self.stateMachine start];
+}
+
+- (void)cancel
+{
+    [super cancel];
+    [self.stateMachine cancel];
 }
 
 @end

@@ -96,6 +96,7 @@
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
     [requestOperation start];
+    [requestOperation waitUntilFinished];
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
 }
@@ -614,6 +615,7 @@
     id mockOperation = [OCMockObject partialMockForObject:requestOperation];
     [[mockOperation expect] mapperWillStartMapping:OCMOCK_ANY];
     [requestOperation start];
+    [requestOperation waitUntilFinished];
     expect([requestOperation isFinished]).will.beTruthy();
     [mockOperation verify];
 }
@@ -683,6 +685,7 @@
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
     [requestOperation start];
+    [requestOperation waitUntilFinished];
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
 }
@@ -702,6 +705,7 @@
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
     [requestOperation start];
+    [requestOperation waitUntilFinished];
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299), got 500");
 }
@@ -723,6 +727,7 @@
     requestOperation.mappingMetadata = @{ @"phoneNumber": @"867-5309" };
     requestOperation.targetObject = user;
     [requestOperation start];
+    [requestOperation waitUntilFinished];
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
     expect(user.phone).to.equal(@"867-5309");
@@ -743,11 +748,13 @@
     request.HTTPMethod = @"POST";
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
+    [requestOperation waitUntilFinished];
     
     RKObjectRequestOperation *copiedOperation = [requestOperation copy];
     copiedOperation.mappingMetadata = @{ @"phoneNumber": @"867-5309" };
     copiedOperation.targetObject = user;
     [copiedOperation start];
+    [copiedOperation waitUntilFinished];
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
     expect(user.phone).to.equal(@"867-5309");
@@ -764,6 +771,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
+    [requestOperation waitUntilFinished];
     expect(requestOperation.error).to.beNil();
     
     NSCachedURLResponse *response = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
@@ -779,6 +787,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
+    [requestOperation waitUntilFinished];
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"No response descriptors match the response loaded.");
     
