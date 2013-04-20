@@ -42,10 +42,10 @@
  Initializes a new state machine object with a given operation and dispatch queue.
 
  @param operation The operation that the receiver is modeling the concurrent lifecycle of.
- @param operationQueue The dispatch queue on which the operation executes concurrently.
+ @param dispatchQueue The dispatch queue on which the operation executes concurrently.
  @return The receiver, initialized with the given operation and queue.
  */
-- (id)initWithOperation:(NSOperation *)operation queue:(dispatch_queue_t)operationQueue;
+- (id)initWithOperation:(NSOperation *)operation dispatchQueue:(dispatch_queue_t)dispatchQueue;
 
 ///-----------------------
 /// @name Inspecting State
@@ -128,14 +128,14 @@
 ///------------------------------
 
 /**
- The operatio that the receiver is modeling.
+ The operation that the receiver is modeling the lifecycle of.
  */
 @property (nonatomic, weak, readonly) NSOperation *operation;
 
 /**
  The dispatch queue within which the state machine executes.
  */
-@property (nonatomic, assign, readonly) dispatch_queue_t operationQueue;
+@property (nonatomic, assign, readonly) dispatch_queue_t dispatchQueue;
 
 @end
 

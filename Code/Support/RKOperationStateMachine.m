@@ -35,7 +35,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 @interface RKOperationStateMachine ()
 @property (nonatomic, strong) TKStateMachine *stateMachine;
 @property (nonatomic, weak, readwrite) NSOperation *operation;
-@property (nonatomic, assign, readwrite) dispatch_queue_t operationQueue;
+@property (nonatomic, assign, readwrite) dispatch_queue_t dispatchQueue;
 @property (nonatomic, assign, getter = isCancelled) BOOL cancelled;
 @property (nonatomic, copy) void (^cancellationBlock)(void);
 @property (nonatomic, strong) NSRecursiveLock *lock;
@@ -43,18 +43,19 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
 @implementation RKOperationStateMachine
 
-- (id)initWithOperation:(NSOperation *)operation queue:(dispatch_queue_t)operationQueue
+- (id)initWithOperation:(NSOperation *)operation dispatchQueue:(dispatch_queue_t)dispatchQueue
 {
     if (! operation) [NSException raise:NSInvalidArgumentException format:@"Invalid argument: `operation` cannot be nil."];
-    if (! operationQueue) [NSException raise:NSInvalidArgumentException format:@"Invalid argument: `operationQueue` cannot be nil."];
+    if (! dispatchQueue) [NSException raise:NSInvalidArgumentException format:@"Invalid argument: `dispatchQueue` cannot be nil."];
     self = [super init];
     if (self) {
         self.operation = operation;
-        self.operationQueue = operationQueue;
+        self.dispatchQueue = dispatchQueue;
         self.stateMachine = [TKStateMachine new];
         self.lock = [NSRecursiveLock new];
         [self.lock setName:RKOperationLockName];
 
+        // NOTE: State transitions are guarded by a lock via start/finish/cancel action methods
         TKState *readyState = [TKState stateWithName:RKOperationStateReady];
         [readyState setWillExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
             [self.operation willChangeValueForKey:@"isReady"];
@@ -131,7 +132,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
 - (void)start
 {
-    if (! self.operationQueue) [NSException raise:NSInternalInconsistencyException format:@"You must configure an `operationQueue`."];
+    if (! self.dispatchQueue) [NSException raise:NSInternalInconsistencyException format:@"You must configure an `operationQueue`."];
     [self.lock lock];
     NSError *error = nil;
     BOOL success = [self.stateMachine fireEvent:RKOperationEventStart error:&error];
@@ -142,7 +143,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 - (void)finish
 {
     // Ensure that we are finished from the operation queue
-    dispatch_async(self.operationQueue, ^{
+    dispatch_async(self.dispatchQueue, ^{
         [self.lock lock];
         NSError *error = nil;
         BOOL success = [self.stateMachine fireEvent:RKOperationEventFinish error:&error];
@@ -159,7 +160,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
     [self.lock unlock];
 
     if (self.cancellationBlock) {
-        dispatch_async(self.operationQueue, ^{
+        dispatch_async(self.dispatchQueue, ^{
             [self.lock lock];
             self.cancellationBlock();
             [self.lock unlock];
@@ -171,10 +172,8 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 {
     TKState *executingState = [self.stateMachine stateNamed:RKOperationStateExecuting];
     [executingState setDidEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-        dispatch_async(self.operationQueue, ^{
-            [self.lock lock];
+        dispatch_async(self.dispatchQueue, ^{
             block();
-            [self.lock unlock];
         });
     }];
 }
