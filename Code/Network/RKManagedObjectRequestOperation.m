@@ -405,7 +405,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return [[cachedResponse.userInfo objectForKey:RKResponseHasBeenMappedCacheUserInfoKey] boolValue];
 }
 
-- (RKMappingResult *)performMappingOnResponse:(NSError **)error
+- (void)performMappingOnResponseWithCompletionBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))completionBlock
 {
     NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
     NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
@@ -423,7 +423,9 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
                 }
             }
         }];
-        return [[RKMappingResult alloc] initWithDictionary:@{ [NSNull null]: managedObjects }];
+        RKMappingResult *mappingResult = [[RKMappingResult alloc] initWithDictionary:@{ [NSNull null]: managedObjects }];
+        completionBlock(mappingResult, nil);
+        return;
     }
 
     self.responseMapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithRequest:self.HTTPRequestOperation.request
@@ -437,16 +439,12 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     self.responseMapperOperation.managedObjectContext = self.privateContext;
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
-    [self.responseMapperOperation setQueuePriority:[self queuePriority]];
+    [self.responseMapperOperation setQueuePriority:[self queuePriority]];    
+    __weak __typeof(&*self)weakSelf = self;
+    [self.responseMapperOperation setCompletionBlock:^{
+        completionBlock(weakSelf.responseMapperOperation.mappingResult, weakSelf.responseMapperOperation.error);
+    }];
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
-    [self.responseMapperOperation waitUntilFinished];
-    if ([self isCancelled]) return nil;
-    if (self.responseMapperOperation.error) {
-        if (error) *error = self.responseMapperOperation.error;
-        return nil;
-    }
-
-    return self.responseMapperOperation.mappingResult;
 }
 
 - (BOOL)deleteTargetObjectIfAppropriate:(NSError **)error

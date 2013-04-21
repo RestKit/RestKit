@@ -129,7 +129,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     dispatch_once(&onceToken, ^{
         dispatchQueue = dispatch_queue_create("org.restkit.network.object-request-operation-queue", DISPATCH_QUEUE_CONCURRENT);
     });
-
+    
     return dispatchQueue;
 }
 
@@ -160,6 +160,8 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         self.HTTPRequestOperation = requestOperation;
         self.HTTPRequestOperation.acceptableContentTypes = [RKMIMETypeSerialization registeredMIMETypes];
         self.HTTPRequestOperation.acceptableStatusCodes = RKAcceptableStatusCodesFromResponseDescriptors(responseDescriptors);
+        self.HTTPRequestOperation.successCallbackQueue = [[self class] dispatchQueue];
+        self.HTTPRequestOperation.failureCallbackQueue = [[self class] dispatchQueue];
         
         __weak __typeof(&*self)weakSelf = self;
         self.stateMachine = [[RKOperationStateMachine alloc] initWithOperation:self dispatchQueue:[[self class] dispatchQueue]];
@@ -282,9 +284,8 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 #pragma clang diagnostic pop
 }
 
-- (RKMappingResult *)performMappingOnResponse:(NSError **)error
+- (void)performMappingOnResponseWithCompletionBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))completionBlock
 {
-    // Spin up an RKObjectResponseMapperOperation
     self.responseMapperOperation = [[RKObjectResponseMapperOperation alloc] initWithRequest:self.HTTPRequestOperation.request
                                                                                    response:self.HTTPRequestOperation.response
                                                                                        data:self.HTTPRequestOperation.responseData
@@ -294,14 +295,11 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     self.responseMapperOperation.mapperDelegate = self;
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
+    __weak __typeof(&*self)weakSelf = self;
+    [self.responseMapperOperation setCompletionBlock:^{
+        completionBlock(weakSelf.responseMapperOperation.mappingResult, weakSelf.responseMapperOperation.error);
+    }];    
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
-    [self.responseMapperOperation waitUntilFinished];
-    if ([self isCancelled]) return nil;
-    if (self.responseMapperOperation.error) {
-        if (error) *error = self.responseMapperOperation.error;
-        return nil;
-    }
-    return self.responseMapperOperation.mappingResult;
 }
 
 - (void)willFinish
@@ -311,53 +309,54 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 - (void)execute
 {
+    __weak __typeof(&*self)weakSelf = self;
+    [self.HTTPRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if (weakSelf.isCancelled) {
+            [weakSelf.stateMachine finish];
+            return;
+        }
+        
+        [weakSelf performMappingOnResponseWithCompletionBlock:^(RKMappingResult *mappingResult, NSError *error) {
+            if (weakSelf.isCancelled) {
+                [weakSelf.stateMachine finish];
+                return;
+            }
+            
+            // If there is no mapping result but no error, there was no mapping to be performed,
+            // which we do not treat as an error condition
+            if (error && !([weakSelf.HTTPRequestOperation.request.HTTPMethod isEqualToString:@"DELETE"] && error.code == RKMappingErrorNotFound)) {
+                weakSelf.error = error;
+                [weakSelf.stateMachine finish];
+                return;
+            }
+            weakSelf.mappingResult = mappingResult;
+            [weakSelf willFinish];
+            
+            if (weakSelf.error) {
+                weakSelf.mappingResult = nil;
+            } else {
+                NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:weakSelf.HTTPRequestOperation.request];
+                if (cachedResponse) {
+                    // We're all done mapping this request. Now we set a flag on the cache entry's userInfo dictionary to indicate that the request
+                    // corresponding to the cache entry completed successfully, and we can reliably skip mapping if a subsequent request results
+                    // in the use of this cachedResponse.
+                    NSMutableDictionary *userInfo = cachedResponse.userInfo ? [cachedResponse.userInfo mutableCopy] : [NSMutableDictionary dictionary];
+                    [userInfo setObject:@YES forKey:RKResponseHasBeenMappedCacheUserInfoKey];
+                    NSCachedURLResponse *newCachedResponse = [[NSCachedURLResponse alloc] initWithResponse:cachedResponse.response data:cachedResponse.data userInfo:userInfo storagePolicy:cachedResponse.storagePolicy];
+                    [[NSURLCache sharedURLCache] storeCachedResponse:newCachedResponse forRequest:weakSelf.HTTPRequestOperation.request];
+                }
+            }
+            
+            [weakSelf.stateMachine finish];
+        }];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", weakSelf.HTTPRequestOperation.error);
+        weakSelf.error = weakSelf.HTTPRequestOperation.error;
+        [weakSelf.stateMachine finish];
+    }];
+    
     // Send the request
     [self.HTTPRequestOperation start];
-    [self.HTTPRequestOperation waitUntilFinished];
-    
-    if (self.HTTPRequestOperation.error) {
-        RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", self.HTTPRequestOperation.error);
-        self.error = self.HTTPRequestOperation.error;
-        [self.stateMachine finish];
-        return;
-    }
-    
-    if (self.isCancelled) return;
-    
-    // Map the response
-    NSError *error = nil;
-    RKMappingResult *mappingResult = [self performMappingOnResponse:&error];
-    if (self.isCancelled) {
-        [self.stateMachine finish];
-        return;
-    }
-    
-    // If there is no mapping result but no error, there was no mapping to be performed,
-    // which we do not treat as an error condition
-    if (! mappingResult && error && !([self.HTTPRequestOperation.request.HTTPMethod isEqualToString:@"DELETE"] && error.code == RKMappingErrorNotFound)) {
-        self.error = error;
-        [self.stateMachine finish];
-        return;
-    }
-    self.mappingResult = mappingResult;
-    [self willFinish];
-        
-    if (self.error) {
-        self.mappingResult = nil;
-    } else {
-        NSCachedURLResponse *cachedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:self.HTTPRequestOperation.request];
-        if (cachedResponse) {
-            // We're all done mapping this request. Now we set a flag on the cache entry's userInfo dictionary to indicate that the request
-            // corresponding to the cache entry completed successfully, and we can reliably skip mapping if a subsequent request results
-            // in the use of this cachedResponse.
-            NSMutableDictionary *userInfo = cachedResponse.userInfo ? [cachedResponse.userInfo mutableCopy] : [NSMutableDictionary dictionary];
-            [userInfo setObject:@YES forKey:RKResponseHasBeenMappedCacheUserInfoKey];
-            NSCachedURLResponse *newCachedResponse = [[NSCachedURLResponse alloc] initWithResponse:cachedResponse.response data:cachedResponse.data userInfo:userInfo storagePolicy:cachedResponse.storagePolicy];
-            [[NSURLCache sharedURLCache] storeCachedResponse:newCachedResponse forRequest:self.HTTPRequestOperation.request];
-        }
-    }
-    
-    [self.stateMachine finish];
 }
 
 - (NSString *)description {
