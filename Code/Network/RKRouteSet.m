@@ -94,6 +94,14 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     [self.routes addObject:route];
 }
 
+- (void)addRoutes:(NSArray *)routes
+{
+    for (RKRoute *route in routes) {
+        if (! [route isKindOfClass:[RKRoute class]]) [NSException raise:NSInvalidArgumentException format:@"Unexpected object of type `%@` encountered in array of routes.", [route class]];
+        [self addRoute:route];
+    }
+}
+
 - (void)removeRoute:(RKRoute *)route
 {
     NSAssert([self containsRoute:route], @"Cannot remove a route that is not added to the router.");
