@@ -105,9 +105,8 @@
 {
     NSMutableURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://invalid.is"]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     
     // NOTE: If your ISP provides a redirect page for unknown hosts, you'll get a `NSURLErrorCannotDecodeContentData`
     NSArray *validErrorCodes = @[ @(NSURLErrorCannotDecodeContentData), @(NSURLErrorCannotFindHost) ];
@@ -118,9 +117,8 @@
 {
     NSMutableURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://invalid••™¡.is"]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     
     expect([requestOperation.error code]).to.equal(NSURLErrorBadURL);
 }
@@ -135,9 +133,8 @@
     [request addValue:authString forHTTPHeaderField:@"Authorization"];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
     requestOperation.targetObject = user;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(user.firstname).to.equal(@"Diego");
 }
@@ -146,9 +143,8 @@
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/ComplexNestedUser.json" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect([requestOperation.mappingResult array]).to.haveCountOf(1);
     RKTestComplexUser *user = [[requestOperation.mappingResult array] lastObject];
     expect(user.firstname).to.equal(@"Diego");
@@ -158,9 +154,8 @@
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/errors.json" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self errorResponseDescriptor] ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
@@ -177,9 +172,8 @@
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/404" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self errorResponseDescriptor] ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).notTo.beNil();
 }
 
@@ -193,9 +187,8 @@
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:objectMapping pathPattern:nil keyPath:@"results" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/ArrayOfResults.json" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     NSArray *objects = [requestOperation.mappingResult array];
     expect(objects).to.haveCountOf(2);
@@ -225,9 +218,8 @@
     [request setHTTPBody:requestBody];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
     requestOperation.targetObject = user;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(requestOperation.HTTPRequestOperation.response.statusCode).to.equal(204);
     expect(requestOperation.error).to.beNil();
@@ -257,9 +249,8 @@
     [request setHTTPBody:requestBody];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
@@ -290,9 +281,8 @@
     NSData *requestBody = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
     [request setHTTPBody:requestBody];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
@@ -330,9 +320,8 @@
     NSData *requestBody = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
     [request setHTTPBody:requestBody];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
@@ -356,9 +345,8 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/ComplexNestedUser.json" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
@@ -376,9 +364,8 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/ComplexNestedUser.json" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
@@ -401,16 +388,14 @@
     request.HTTPMethod = @"DELETE";
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect(requestOperation.mappingResult).notTo.beNil();
 }
 
 - (void)testThatAResponseWithA2xxStatusCodeAnEmptyResponseBodyLoadsAMappingResultContainingTheTargetObject
 {
-
     RKTestComplexUser *user = [RKTestComplexUser new];
     user.firstname = @"Blake";
     user.lastname = @"Watters";
@@ -424,9 +409,8 @@
     request.HTTPMethod = @"DELETE";
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
 
     expect([requestOperation.mappingResult array]).to.contain(user);
 }
@@ -441,9 +425,8 @@
 
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/users/empty" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor1, responseDescriptor2 ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.mappingResult).notTo.beNil();
 }
 
@@ -451,9 +434,8 @@
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/empty/array" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.mappingResult).to.beNil();
     expect(requestOperation.error).to.beNil();
 }
@@ -462,9 +444,8 @@
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/empty/dictionary" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.mappingResult).to.beNil();
     expect(requestOperation.error).to.beNil();
 }
@@ -474,9 +455,8 @@
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/empty/string" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.mappingResult).to.beNil();
     expect(requestOperation.error).to.beNil();
 }
@@ -488,9 +468,8 @@
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/empty/string" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ ]];
     requestOperation.targetObject = targetObject;
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.mappingResult).notTo.beNil();
     expect(requestOperation.error).to.beNil();
     expect([requestOperation.mappingResult array]).to.contain(targetObject);
@@ -509,9 +488,8 @@
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/users/empty" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor1, responseDescriptor2 ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).notTo.beNil();    
     NSString *failureReason = [[requestOperation.error userInfo] valueForKey:NSLocalizedFailureReasonErrorKey];
     assertThat(failureReason, containsString(@"A 200 response was loaded from the URL 'http://127.0.0.1:4567/users/empty', which failed to match all (2) response descriptors:"));
@@ -527,36 +505,29 @@
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/empty/array" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
 
-    __block RKMappingResult *blockMappingResult = nil;
+    __block BOOL invoked = NO;
     [requestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        blockMappingResult = mappingResult;
+        invoked = YES;
     } failure:nil];
 
-    dispatch_async(dispatch_get_current_queue(), ^{
-        expect(blockMappingResult).notTo.beNil();
-    });
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect(invoked).will.beTruthy();
 }
 
 - (void)testInvocationOfFailureBlock
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/errors.json" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ ]];
-    NSOperationQueue *operationQueue = [NSOperationQueue new];
 
     __block NSError *blockError = nil;
     [requestOperation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
         blockError = error;
     }];
 
-    dispatch_async(dispatch_get_current_queue(), ^{
-        expect(blockError).notTo.beNil();
-    });
-    [operationQueue addOperation:requestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    [requestOperation start];
+    expect([requestOperation isFinished]).will.beTruthy();
+    expect(blockError).notTo.beNil();
 }
 
 #pragma mark - Will Map Data Block
@@ -572,7 +543,7 @@
         return @{ @"user": @{ @"email": @"blake@restkit.org" } };
     }];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     RKTestComplexUser *user = [requestOperation.mappingResult firstObject];
     expect(user).notTo.beNil();
     expect(user.email).to.equal(@"blake@restkit.org");
@@ -587,7 +558,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/XML/channels.xml" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"Expected content type {(\n    \"application/json\",\n    \"application/x-www-form-urlencoded\"\n)}, got application/xml");
@@ -602,7 +573,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/503" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299), got 503");
@@ -615,7 +586,6 @@
     id mockOperation = [OCMockObject partialMockForObject:requestOperation];
     [[mockOperation expect] mapperWillStartMapping:OCMOCK_ANY];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
     expect([requestOperation isFinished]).will.beTruthy();
     [mockOperation verify];
 }
@@ -630,7 +600,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/fail" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     
     expect(requestOperation.error).willNot.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
@@ -647,7 +617,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/fail" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ userDescriptor, errorDescriptor ]];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     
     expect(requestOperation.error).willNot.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
@@ -685,7 +655,7 @@
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
 }
@@ -705,7 +675,7 @@
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     requestOperation.targetObject = user;
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200-299), got 500");
 }
@@ -727,7 +697,7 @@
     requestOperation.mappingMetadata = @{ @"phoneNumber": @"867-5309" };
     requestOperation.targetObject = user;
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).to.beNil();
     expect(requestOperation.mappingResult).notTo.beNil();
     expect(user.phone).to.equal(@"867-5309");
@@ -748,7 +718,7 @@
     request.HTTPMethod = @"POST";
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     
     RKObjectRequestOperation *copiedOperation = [requestOperation copy];
     copiedOperation.mappingMetadata = @{ @"phoneNumber": @"867-5309" };
@@ -771,7 +741,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).to.beNil();
     
     NSCachedURLResponse *response = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
@@ -787,7 +757,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
-    [requestOperation waitUntilFinished];
+    expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"No response descriptors match the response loaded.");
     

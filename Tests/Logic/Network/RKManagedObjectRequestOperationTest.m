@@ -271,7 +271,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     secondManagedObjectRequestOperation.managedObjectCache = managedObjectStore.managedObjectCache;
 
     [operationQueue addOperation:secondManagedObjectRequestOperation];
-    [operationQueue waitUntilAllOperationsAreFinished];
+    expect([secondManagedObjectRequestOperation isFinished]).will.beTruthy();
     expect(secondManagedObjectRequestOperation.mappingResult).notTo.beNil();
     NSArray *mappedObjects = [secondManagedObjectRequestOperation.mappingResult array];
     expect(mappedObjects).to.haveCountOf(2);

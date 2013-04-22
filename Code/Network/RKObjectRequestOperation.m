@@ -295,16 +295,10 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     self.responseMapperOperation.mapperDelegate = self;
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
-    __weak __typeof(&*self)weakSelf = self;
-    [self.responseMapperOperation setCompletionBlock:^{
-        completionBlock(weakSelf.responseMapperOperation.mappingResult, weakSelf.responseMapperOperation.error);
-    }];    
+    [self.responseMapperOperation setDidFinishMappingBlock:^(RKMappingResult *mappingResult, NSError *error) {
+        completionBlock(mappingResult, error);
+    }];
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
-}
-
-- (void)willFinish
-{
-    // Default implementation does nothing
 }
 
 - (void)execute
@@ -330,7 +324,6 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
                 return;
             }
             weakSelf.mappingResult = mappingResult;
-            [weakSelf willFinish];
             
             if (weakSelf.error) {
                 weakSelf.mappingResult = nil;
