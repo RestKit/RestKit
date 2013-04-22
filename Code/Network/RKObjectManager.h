@@ -534,6 +534,18 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 - (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
 
+/**
+ Finds any operation in the object manager's operation queue whose requests match the specified HTTP method and path pattern and returns YES if one exist.
+ 
+ Paths are matches against the `path` of the `NSURL` of the `NSURLRequest` of each `RKObjectRequestOperation` contained in the receiver's operation queue using a `RKPathMatcher` object.
+ 
+ @param method The HTTP method to match for the cancelled requests, such as `RKRequestMethodGET`, `RKRequestMethodPOST`, `RKRequestMethodPUT`, `RKRequestMethodPatch`, or `RKRequestMethodDELETE`. If `RKRequestMethodAny`, all object request operations with URLs matching the given path pattern will be cancelled.
+ @param pathPattern The pattern to match against the path of the request URL for executing object request operations considered for cancellation.
+ 
+ @see `RKPathMatcher`
+ */
+- (BOOL)objectManagerContainsObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
+
 ///-----------------------------------------
 /// @name Batching Object Request Operations
 ///-----------------------------------------
