@@ -798,8 +798,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     }
 }
 
-- (BOOL)objectManagerContainsObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern
+- (NSArray *)enqueuedObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern
 {
+    NSMutableArray *matches = [NSMutableArray array];
     NSString *methodName = RKStringFromRequestMethod(method);
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
     for (NSOperation *operation in [self.operationQueue operations]) {
@@ -810,10 +811,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL([request URL], self.baseURL);
         
         if ((!methodName || [methodName isEqualToString:[request HTTPMethod]]) && [pathMatcher matchesPath:pathAndQueryString tokenizeQueryStrings:NO parsedArguments:nil]) {
-            return YES;
+            [matches addObject:operation];
         }
     }
-    return NO;
+    return [matches copy];
 }
 
 - (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *)route

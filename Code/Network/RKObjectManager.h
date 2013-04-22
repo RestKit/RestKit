@@ -535,7 +535,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 - (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
 
 /**
- Finds any operation in the object manager's operation queue whose requests match the specified HTTP method and path pattern and returns YES if one exist.
+ Returns an array of operations in the object manager's operation queue whose requests match the specified HTTP method and path pattern and returns YES if one exist.
  
  Paths are matches against the `path` of the `NSURL` of the `NSURLRequest` of each `RKObjectRequestOperation` contained in the receiver's operation queue using a `RKPathMatcher` object.
  
@@ -544,7 +544,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see `RKPathMatcher`
  */
-- (BOOL)objectManagerContainsObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
+- (NSArray *)enqueuedObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
 
 ///-----------------------------------------
 /// @name Batching Object Request Operations
