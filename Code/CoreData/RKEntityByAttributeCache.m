@@ -45,7 +45,9 @@ static id RKCacheKeyValueForEntityAttributeWithValue(NSEntityDescription *entity
 
 static NSString *RKCacheKeyForEntityWithAttributeValues(NSEntityDescription *entity, NSDictionary *attributeValues)
 {
-    NSArray *sortedAttributes = [[attributeValues allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    // Performance optimization
+    if ([attributeValues count] == 1) return [NSString stringWithFormat:@"%@", [[attributeValues allValues] lastObject]];
+    NSArray *sortedAttributes = [[attributeValues allKeys] sortedArrayUsingSelector:@selector(compare:)];
     NSMutableArray *sortedValues = [NSMutableArray arrayWithCapacity:[sortedAttributes count]];
     [sortedAttributes enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
         id cacheKeyValue = RKCacheKeyValueForEntityAttributeWithValue(entity, attributeName, [attributeValues objectForKey:attributeName]);
