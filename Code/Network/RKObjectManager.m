@@ -802,12 +802,12 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 {
     NSString *methodName = RKStringFromRequestMethod(method);
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
-    for (NSOperation *operation in [[RKObjectManager sharedManager].operationQueue operations]) {
+    for (NSOperation *operation in [self.operationQueue operations]) {
         if (![operation isKindOfClass:[RKObjectRequestOperation class]]) {
             continue;
         }
         NSURLRequest *request = [(RKObjectRequestOperation *)operation HTTPRequestOperation].request;
-        NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL([request URL], [RKObjectManager sharedManager].baseURL);
+        NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL([request URL], self.baseURL);
         
         if ((!methodName || [methodName isEqualToString:[request HTTPMethod]]) && [pathMatcher matchesPath:pathAndQueryString tokenizeQueryStrings:NO parsedArguments:nil]) {
             return YES;

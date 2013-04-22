@@ -330,6 +330,47 @@
     expect([operation isCancelled]).to.equal(YES);
 }
 
+- (void)testContainsOperationByExactMethodAndPath
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    expect([_objectManager objectManagerContainsObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/cancel"]).to.equal(YES);
+}
+
+- (void)testContainsOperationByPathMatch
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/1234/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    expect([_objectManager objectManagerContainsObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/:objectID/cancel"]).to.equal(YES);
+}
+
+- (void)testContainsOperationFailsForMismatchedMethod
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    expect([_objectManager objectManagerContainsObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"]).to.equal(NO);
+}
+
+- (void)testContainsOperationFailsForMismatchedPath
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    expect([_objectManager objectManagerContainsObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"]).to.equal(NO);
+}
+
+- (void)testContainsOperationByPathMatchForBaseURLWithPath
+{
+    self.objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://localhost:4567/object_manager/"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localhost:4567/object_manager/1234/cancel"]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    expect([_objectManager objectManagerContainsObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@":objectID/cancel"]).to.equal(YES);
+}
+
 - (void)testShouldProperlyFireABatchOfOperations
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
