@@ -44,7 +44,7 @@ EOS
     ns.ios.frameworks = 'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration'
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
     ns.dependency       'SOCKit'
-    ns.dependency       'AFNetworking', '1.2.1'
+    ns.dependency       'AFNetworking', '~> 1.2.0'
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
   end    
@@ -69,5 +69,6 @@ EOS
   s.subspec 'Support' do |ss|
     ss.header_dir     = 'RestKit/Support'
     ss.source_files   = 'Code/Support'
+    ss.dependency 'TransitionKit', '1.1.0'
   end
 end

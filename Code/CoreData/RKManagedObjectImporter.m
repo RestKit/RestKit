@@ -215,7 +215,6 @@
     NSDictionary *mappingDictionary = @{ (keyPath ?: [NSNull null]) : mapping };
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappingDictionary];
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
-    self.mappingOperationDataSource.parentOperation = mapper;
     __block RKMappingResult *mappingResult;
     [self.managedObjectContext performBlockAndWait:^{
         [mapper start];
@@ -274,6 +273,7 @@
 - (BOOL)finishImporting:(NSError **)error
 {
     // Perform our connection operations in a batch, before we save the MOC
+    RKLogInfo(@"Starting %lu connection operations...", (unsigned long) self.connectionQueue.operationCount);
     [self.connectionQueue setSuspended:NO];
     [self.connectionQueue waitUntilAllOperationsAreFinished];
 

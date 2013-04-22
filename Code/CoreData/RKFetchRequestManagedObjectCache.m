@@ -80,8 +80,11 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
     
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[entity name]];
     fetchRequest.predicate = [substitutionPredicate predicateWithSubstitutionVariables:attributeValues];
-    NSError *error = nil;
-    NSArray *objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    __block NSError *error = nil;
+    __block NSArray *objects = nil;
+    [managedObjectContext performBlockAndWait:^{
+        objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    }];
     if (! objects) {
         RKLogError(@"Failed to execute fetch request due to error: %@", error);
     }

@@ -162,9 +162,9 @@
  */
 @property (nonatomic, strong, readonly) NSError *error;
 
-///-------------------------------------
-/// @name Manipulating the Mappable Data
-///-------------------------------------
+///----------------------------
+/// @name Configuring Callbacks
+///----------------------------
 
 /**
  Sets a block to be executed before the response mapper operation begins mapping the deserialized response body, providing an opportunity to manipulate the mappable representation input before mapping begins.
@@ -173,6 +173,13 @@
  @warning The deserialized response body may or may not be immutable depending on the implementation details of the `RKSerialization` class that deserialized the response. If you wish to make changes to the mappable object representations, you must obtain a mutable copy of the response body input.
  */
 - (void)setWillMapDeserializedResponseBlock:(id (^)(id deserializedResponseBody))block;
+
+/**
+ Sets a block to be executed when the response mapper operation has completed its mapping activities. This method is distinct from the `completionBlock` because it is invoked while the operation is still executing.
+ 
+ @param block A block object to be executed when the response mapping is finished. The block has no return value and accepts two arguments: an `RKNappingResult` object that was mapped from the response or an `NSError` error indicating that the mapping has failed.
+ */
+- (void)setDidFinishMappingBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))block;
 
 @end
 

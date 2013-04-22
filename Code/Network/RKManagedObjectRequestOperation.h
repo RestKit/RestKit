@@ -33,7 +33,7 @@
 
  Every `RKManagedObjectRequestOperation` object must be assigned an `NSManagedObjectContext` in which to persist the results of the underlying object mapping operation. This context is used as the parent context for a new, private `NSManagedObjectContext` with a concurrency type of `NSPrivateQueueConcurrencyType` in which the object mapping is actually performed. The use of this parent context has a number of benefits:
 
- 1. If the context that was assigned to the managed object request operation has a concurrency type of `NSMainQueueConcurrencyType`, then directly mapping into the context would block the execution of the main thread for the duration of the mapping process. The use of the private child context isolates the mapping process from the main thread entirely.
+ 1. If the context that was assigned to the managed object request operation has a concurrency type of `NSMainQueueConcurrencyType`, then directly mapping into the context would block the execution of the main thread for the duration of the mapping process. The use of the private child context isolates the mapping process from the main thread.
  1. In the event of an error, the private context can be discarded, leaving the state of the parent context unchanged. On successful completion, the private context is saved and 'pushes' its changes up one level into the parent context.
 
  ## Permanent Managed Object IDs
@@ -113,7 +113,6 @@
  ## Limitations and Caveats
 
  1. `RKManagedObjectRequestOperation` **does NOT** support object mapping that targets an `NSManagedObjectContext` with a `concurrencyType` of `NSConfinementConcurrencyType`.
- 1. `RKManagedObjectRequestOperation` can become deadlocked if configured to perform mapping onto an `NSManagedObjectContext` with the `NSMainQueueConcurrencyType` and is invoked synchronously from the main thread via `start` or an attempt is made to await completion of the operation via `waitUntilFinished`. This occurs because managed object contexts with the `NSMainQueueConcurrencyType` are dependent upon the execution of the main thread's run loop to perform their work and `waitUntilFinished` blocks the calling thread, leading to a deadlock when called from the main thread. Rather than awaiting completion of the operation via `waitUntilFinishes`, consider using a completion block, key-value observation, or spinning the run-loop via `[[NSRunLoop currentRunLoop] runUntilDate:]`.
 
  @see `RKObjectRequestOperation`
  @see `RKEntityMapping`
