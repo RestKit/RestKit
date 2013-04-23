@@ -433,13 +433,13 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     [managedObjectRequestOperation start];
-    [managedObjectRequestOperation waitUntilFinished];
+    expect([managedObjectRequestOperation isFinished]).will.beTruthy();
     expect(managedObjectRequestOperation.error).to.beNil();
     expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
     RKTestUser *testUser = [managedObjectRequestOperation.mappingResult firstObject];
-    expect([[testUser.friends lastObject] managedObjectContext]).to.equal(managedObjectStore.persistentStoreManagedObjectContext);
+    expect([[testUser.friends lastObject] managedObjectContext]).to.equal(managedObjectStore.mainQueueManagedObjectContext);
 }
 
 - (void)testThatManagedObjectMappedAsTheRelationshipOfNonManagedObjectsWithADynamicMappingAreRefetchedFromTheParentContext
