@@ -48,7 +48,8 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
 {
     self = [super init];
     if (self) {
-        _inspectionCache = [[NSCache alloc] init];
+        // NOTE: We use an `NSMutableDictionary` because it is *much* faster than `NSCache` on lookup
+        _inspectionCache = [NSMutableDictionary dictionary];
     }
 
     return self;
@@ -56,7 +57,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
 
 - (NSDictionary *)propertyInspectionForClass:(Class)objectClass
 {
-    NSMutableDictionary *inspection = [_inspectionCache objectForKey:objectClass];
+    NSMutableDictionary *inspection = [_inspectionCache objectForKey:NSStringFromClass(objectClass)];
     if (inspection) return inspection;
     
     inspection = [NSMutableDictionary dictionary];
@@ -99,10 +100,11 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
         }
 
         free(propList);
-        currentClass = [currentClass superclass];
+        Class superclass = [currentClass superclass];
+        currentClass = (superclass == [NSObject class] || superclass == [NSManagedObject class]) ? nil : superclass;
     }
 
-    [_inspectionCache setObject:inspection forKey:objectClass];
+    [_inspectionCache setObject:inspection forKey:NSStringFromClass(objectClass)];
     RKLogDebug(@"Cached property inspection for Class '%@': %@", NSStringFromClass(objectClass), inspection);
     return inspection;
 }

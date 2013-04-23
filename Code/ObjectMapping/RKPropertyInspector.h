@@ -48,7 +48,7 @@ extern NSString * const RKPropertyInspectionIsPrimitiveKey;
  */
 @interface RKPropertyInspector : NSObject {
   @protected
-    NSCache *_inspectionCache;
+    NSMutableDictionary *_inspectionCache;
 }
 
 ///-----------------------------------------------
