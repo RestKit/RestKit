@@ -807,6 +807,25 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     }
 }
 
+- (NSArray *)enqueuedObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern
+{
+    NSMutableArray *matches = [NSMutableArray array];
+    NSString *methodName = RKStringFromRequestMethod(method);
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
+    for (NSOperation *operation in [self.operationQueue operations]) {
+        if (![operation isKindOfClass:[RKObjectRequestOperation class]]) {
+            continue;
+        }
+        NSURLRequest *request = [(RKObjectRequestOperation *)operation HTTPRequestOperation].request;
+        NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL([request URL], self.baseURL);
+        
+        if ((!methodName || [methodName isEqualToString:[request HTTPMethod]]) && [pathMatcher matchesPath:pathAndQueryString tokenizeQueryStrings:NO parsedArguments:nil]) {
+            [matches addObject:operation];
+        }
+    }
+    return [matches copy];
+}
+
 - (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *)route
                                                objects:(NSArray *)objects
                                               progress:(void (^)(NSUInteger numberOfFinishedOperations,
