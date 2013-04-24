@@ -444,4 +444,30 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     return YES;
 }
 
+- (BOOL)mappingOperation:(RKMappingOperation *)mappingOperation shouldSetUnchangedValuesForObject:(id)object
+{
+    // Only new objects should have a temporary ID
+    if ([object isKindOfClass:[NSManagedObject class]] && [[(NSManagedObject *)object objectID] isTemporaryID]) {
+        return YES;
+    }
+    else return NO;
+}
+
+- (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation
+{
+    if (! [mappingOperation.mapping isKindOfClass:[RKEntityMapping class]]) return NO;
+    RKEntityMapping *entityMapping = (RKEntityMapping *)mappingOperation.mapping;
+    NSString *modificationKey = [entityMapping modificationKey];
+    if (! modificationKey) return NO;
+    id currentValue = [mappingOperation.destinationObject valueForKey:modificationKey];
+    if (! currentValue) return nil;
+    
+    RKPropertyMapping *propertyMappingForModificationKey = [[(RKEntityMapping *)mappingOperation.mapping propertyMappingsByDestinationKeyPath] objectForKey:modificationKey];
+    id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];    
+    RKDateToStringValueTransformer *transformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:entityMapping.preferredDateFormatter stringToDateFormatters:entityMapping.dateFormatters];
+    Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
+    id transformedValue = RKTransformedValueWithClass(rawValue, attributeClass, transformer);
+    return RKObjectIsEqualToObject(transformedValue, currentValue);
+}
+
 @end
