@@ -29,14 +29,20 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
+@interface RKPropertyInspector ()
+@property (nonatomic, assign) dispatch_queue_t queue;
+@property (nonatomic, strong) NSMutableDictionary *inspectionCache;
+@end
+
 @implementation RKPropertyInspector (CoreData)
 
 - (NSDictionary *)propertyInspectionForEntity:(NSEntityDescription *)entity
 {
-    NSMutableDictionary *entityInspection = [_inspectionCache objectForKey:[entity name]];
-    if (entityInspection) {
-        return entityInspection;
-    }
+    __block NSMutableDictionary *entityInspection;
+    dispatch_sync(self.queue, ^{
+        entityInspection = [self.inspectionCache objectForKey:[entity name]];
+    });
+    if (entityInspection) return entityInspection;
 
     entityInspection = [NSMutableDictionary dictionary];
     for (NSString *name in [entity attributesByName]) {
@@ -101,8 +107,10 @@
         }
     }
 
-    [_inspectionCache setObject:entityInspection forKey:[entity name]];
-    RKLogDebug(@"Cached property inspection for Entity '%@': %@", entity, entityInspection);
+    dispatch_barrier_async(self.queue, ^{
+        [self.inspectionCache setObject:entityInspection forKey:[entity name]];
+        RKLogDebug(@"Cached property inspection for Entity '%@': %@", entity, entityInspection);
+    });
     return entityInspection;
 }
 
