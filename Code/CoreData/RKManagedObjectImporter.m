@@ -26,6 +26,7 @@
 #import "RKMapperOperation.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKInMemoryManagedObjectCache.h"
+#import "RKFetchRequestManagedObjectCache.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKPathUtilities.h"
 #import "RKLog.h"
@@ -69,9 +70,8 @@
         self.connectionQueue = [NSOperationQueue new];
         [self.connectionQueue setName:@"RKManagedObjectImporter Connection Queue"];
         [self.connectionQueue setSuspended:YES];
-
-        RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [self createMappingOperationDataSource];
-        self.mappingOperationDataSource = mappingOperationDataSource;
+        
+        self.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectContext];
 
         self.hasPerformedResetIfNecessary = NO;
         self.resetsStoreBeforeImporting = YES;
@@ -100,8 +100,7 @@
         [self.connectionQueue setName:@"RKManagedObjectImporter Connection Queue"];
         [self.connectionQueue setSuspended:YES];
 
-        RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [self createMappingOperationDataSource];
-        self.mappingOperationDataSource = mappingOperationDataSource;
+        self.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectContext];
 
         self.hasPerformedResetIfNecessary = NO;
         self.resetsStoreBeforeImporting = NO;
@@ -148,17 +147,13 @@
     return managedObjectContext;
 }
 
-- (RKManagedObjectMappingOperationDataSource *)createMappingOperationDataSource
+- (void)setManagedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache
 {
     NSAssert(self.connectionQueue, @"Connection Queue cannot be nil");
-    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.managedObjectContext];
-    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext
-                                                                                                                                                      cache:managedObjectCache];
-    mappingOperationDataSource.operationQueue = self.connectionQueue;
-
-    return mappingOperationDataSource;
+    self.mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext
+                                                                                                                cache:managedObjectCache];
+    self.mappingOperationDataSource.operationQueue = self.connectionQueue;
 }
-
 
 - (void)resetPersistentStoreIfNecessary
 {
