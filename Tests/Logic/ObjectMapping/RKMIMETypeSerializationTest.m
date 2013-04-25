@@ -155,13 +155,14 @@
     NSArray *parsedData = [NSArray array];
     NSError *error = nil;
     NSData *data = [@"foobar" dataUsingEncoding:NSUTF8StringEncoding];
-    id mockSerializationClass = [OCMockObject mockForClassObject:[RKNSJSONSerialization class]];
-    [[[mockSerializationClass expect] andReturn:parsedData] objectFromData:data error:[OCMArg setTo:error]];
-    [RKMIMETypeSerialization registerClass:mockSerializationClass forMIMEType:@"application/bson"];
+    id mockSerializationClass = [OCMockObject mockForClass:[RKNSJSONSerialization class]];
+    [[[[mockSerializationClass expect] classMethod] andReturn:parsedData] objectFromData:data error:[OCMArg setTo:error]];
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"application/bson"];
     id object = [RKMIMETypeSerialization objectFromData:data MIMEType:@"application/bson" error:&error];
     expect(object).to.equal(parsedData);
     expect(error).to.beNil();
     [mockSerializationClass verify];
+    [mockSerializationClass stopMocking];
 }
 
 - (void)testShouldReturnNilAndSetErrorIfNoParserRegisteredWhenSerializing
@@ -180,13 +181,14 @@
     NSError *error = nil;
     NSData *data = [NSData data];
     NSObject *object = [NSObject new];
-    id mockSerializationClass = [OCMockObject mockForClassObject:[RKNSJSONSerialization class]];
-    [[[mockSerializationClass expect] andReturn:data] dataFromObject:object error:[OCMArg setTo:error]];
-    [RKMIMETypeSerialization registerClass:mockSerializationClass forMIMEType:@"application/bson"];
+    id mockSerializationClass = [OCMockObject mockForClass:[RKNSJSONSerialization class]];
+    [[[[mockSerializationClass expect] classMethod] andReturn:data] dataFromObject:object error:[OCMArg setTo:error]];
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"application/bson"];
     NSData *serializedData = [RKMIMETypeSerialization dataFromObject:object MIMEType:@"application/bson" error:&error];
     expect(serializedData).to.equal(data);
     expect(error).to.beNil();
     [mockSerializationClass verify];
+    [mockSerializationClass stopMocking];
 }
 
 @end

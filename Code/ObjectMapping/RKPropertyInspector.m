@@ -31,6 +31,11 @@ NSString * const RKPropertyInspectionNameKey = @"name";
 NSString * const RKPropertyInspectionKeyValueCodingClassKey = @"keyValueCodingClass";
 NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
 
+@interface RKPropertyInspector ()
+@property (nonatomic, assign) dispatch_queue_t queue;
+@property (nonatomic, strong) NSMutableDictionary *inspectionCache;
+@end
+
 @implementation RKPropertyInspector
 
 + (RKPropertyInspector *)sharedInspector
@@ -48,15 +53,28 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
 {
     self = [super init];
     if (self) {
-        _inspectionCache = [[NSCache alloc] init];
+        // NOTE: We use an `NSMutableDictionary` because it is *much* faster than `NSCache` on lookup
+        self.inspectionCache = [NSMutableDictionary dictionary];
+        self.queue = dispatch_queue_create("org.restkit.core-data.property-inspection-queue", DISPATCH_QUEUE_CONCURRENT);
     }
 
     return self;
 }
 
+- (void)dealloc
+{
+#if !OS_OBJECT_USE_OBJC
+    if (_queue) dispatch_release(_queue);
+#endif
+    _queue = NULL;
+}
+
 - (NSDictionary *)propertyInspectionForClass:(Class)objectClass
 {
-    NSMutableDictionary *inspection = [_inspectionCache objectForKey:objectClass];
+    __block NSMutableDictionary *inspection;
+    dispatch_sync(self.queue, ^{
+        inspection = [self.inspectionCache objectForKey:objectClass];
+    });
     if (inspection) return inspection;
     
     inspection = [NSMutableDictionary dictionary];
@@ -99,11 +117,14 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
         }
 
         free(propList);
-        currentClass = [currentClass superclass];
+        Class superclass = [currentClass superclass];
+        currentClass = (superclass == [NSObject class] || superclass == [NSManagedObject class]) ? nil : superclass;
     }
 
-    [_inspectionCache setObject:inspection forKey:objectClass];
-    RKLogDebug(@"Cached property inspection for Class '%@': %@", NSStringFromClass(objectClass), inspection);
+    dispatch_barrier_async(self.queue, ^{
+        [self.inspectionCache setObject:inspection forKey:(id<NSCopying>)objectClass];
+        RKLogDebug(@"Cached property inspection for Class '%@': %@", NSStringFromClass(objectClass), inspection);
+    });
     return inspection;
 }
 

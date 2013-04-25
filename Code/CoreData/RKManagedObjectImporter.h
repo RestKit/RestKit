@@ -21,23 +21,20 @@
 #import <CoreData/CoreData.h>
 
 @class RKMapping, RKObjectManager;
+@protocol RKManagedObjectCaching;
 
 /**
- Instances of RKManagedObjectImporter perform bulk imports of managed objects into a persistent store from
- source files (typically in JSON or XML format) using object mappings. The importer provides functionality
- for updating an existing persistent store or creating a seed database that can be used to bootstrap a new
- persistent store with an initial data set.
+ Instances of `RKManagedObjectImporter` perform bulk imports of managed objects into a persistent store from source files (typically in JSON or XML format) using object mappings. The importer provides functionality for updating an existing persistent store or creating a seed database that can be used to bootstrap a new persistent store with an initial data set.
 
- The importer requires that the source files have a MIME type that is identifiable by file extension and be
- parsable using a parser registered with the shared parser registry.
+ The importer requires that the source files have a MIME type that is identifiable by file extension and be parsable using a parser registered with the shared parser registry.
 
  @see RKMIMETypeSerialization
  */
 @interface RKManagedObjectImporter : NSObject
 
-///-----------------------------------------------------------------------------
+///-------------------------------
 /// @name Initializing an Importer
-///-----------------------------------------------------------------------------
+///-------------------------------
 
 /**
  Initializes the receiver with a given managed object model and a path at which a SQLite persistent store
@@ -80,9 +77,9 @@
  */
 @property (nonatomic, assign) BOOL resetsStoreBeforeImporting;
 
-///-----------------------------------------------------------------------------
+///----------------------------------
 /// @name Accessing Core Data Details
-///-----------------------------------------------------------------------------
+///----------------------------------
 
 /**
  The persistent store in which imported managed objects will be persisted.
@@ -111,6 +108,13 @@
  
  */
 @property (nonatomic, strong, readonly) NSString *storePath;
+
+/**
+ A class that conforms to the `RKManagedObjectCaching` protocol that should be used when performing the import.
+ 
+ **Default**: An instance of `RKInMemoryManagedObjectCache`.
+ */
+@property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;
 
 ///-----------------------------------------------------------------------------
 /// @name Importing Managed Objects

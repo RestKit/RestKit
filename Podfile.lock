@@ -1,27 +1,19 @@
-
 PODS:
-- Expecta (0.2.0)
-- OCHamcrest (1.9)
-- OCMock (2.0.1.classmocks)
-- Specta (0.1.7)
+  - Expecta (0.2.1)
+  - OCHamcrest (2.0.0)
+  - OCMock (2.1.1)
+  - Specta (0.1.8)
 
 DEPENDENCIES:
-- Expecta (from `git://github.com/blakewatters/expecta.git', branch `restkit')
-- OCHamcrest (= 1.9)
-- OCMock (from `git://github.com/blakewatters/ocmock.git')
-- Specta (= 0.1.7)
-
-EXTERNAL SOURCES:
-  Expecta:
-    :git: git://github.com/blakewatters/expecta.git
-    :branch: restkit
-  OCMock:
-    :git: git://github.com/blakewatters/ocmock.git
+  - Expecta (= 0.2.1)
+  - OCHamcrest (= 2.0.0)
+  - OCMock (= 2.1.1)
+  - Specta (= 0.1.8)
 
 SPEC CHECKSUMS:
-  Expecta: 3ddfc757aeb1e351e12c6f1e21ab631f77178f13
-  OCHamcrest: f8393efd5a49d91879be573635d6183effacc0ab
-  OCMock: 5ab9b659efcd39b4ca4825628bee3df51a189ff8
-  Specta: 4e6b096987bf7435e2c05c60d9387316f5735ec0
+  Expecta: d46fb1bd78c90a83da0158b9b1e108de106e369f
+  OCHamcrest: 6145ed6c91cbfa1fa3c4ecb7e7210ad2e832e62d
+  OCMock: 79212e5e328378af5cfd6edb5feacfd6c49cd8a3
+  Specta: 8a215d36842f2d29e888786937d1bf7f8725f780
 
-COCOAPODS: 0.16.2
+COCOAPODS: 0.18.1

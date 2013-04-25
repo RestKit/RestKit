@@ -45,7 +45,9 @@ static id RKCacheKeyValueForEntityAttributeWithValue(NSEntityDescription *entity
 
 static NSString *RKCacheKeyForEntityWithAttributeValues(NSEntityDescription *entity, NSDictionary *attributeValues)
 {
-    NSArray *sortedAttributes = [[attributeValues allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    // Performance optimization
+    if ([attributeValues count] == 1) return [NSString stringWithFormat:@"%@", [[attributeValues allValues] lastObject]];
+    NSArray *sortedAttributes = [[attributeValues allKeys] sortedArrayUsingSelector:@selector(compare:)];
     NSMutableArray *sortedValues = [NSMutableArray arrayWithCapacity:[sortedAttributes count]];
     [sortedAttributes enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
         id cacheKeyValue = RKCacheKeyValueForEntityAttributeWithValue(entity, attributeName, [attributeValues objectForKey:attributeName]);
@@ -247,9 +249,9 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     NSMutableSet *objects = [NSMutableSet set];
     NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
     for (NSString *cacheKey in cacheKeys) {
-        NSArray *objectIDs = nil;
+        NSSet *objectIDs = nil;
         @synchronized(self.cacheKeysToObjectIDs) {
-            objectIDs = [[NSArray alloc] initWithArray:[self.cacheKeysToObjectIDs objectForKey:cacheKey] copyItems:YES];
+            objectIDs = [[NSSet alloc] initWithSet:[self.cacheKeysToObjectIDs objectForKey:cacheKey] copyItems:YES];
         }
         if ([objectIDs count]) {
             /**
@@ -277,13 +279,13 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     [self.lock lock];
     if (attributeValues && [attributeValues count]) {
         NSString *cacheKey = RKCacheKeyForEntityWithAttributeValues(self.entity, attributeValues);
-        NSMutableArray *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
+        NSMutableSet *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
         if (objectIDs) {
             if (! [objectIDs containsObject:objectID]) {
                 [objectIDs addObject:objectID];
             }
         } else {
-            objectIDs = [NSMutableArray arrayWithObject:objectID];
+            objectIDs = [NSMutableSet setWithObject:objectID];
         }
 
         if (nil == self.cacheKeysToObjectIDs) self.cacheKeysToObjectIDs = [NSMutableDictionary dictionary];
@@ -300,7 +302,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     if (attributeValues && [attributeValues count]) {
         NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
         for (NSString *cacheKey in cacheKeys) {
-            NSMutableArray *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
+            NSMutableSet *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
             if (objectIDs && [objectIDs containsObject:objectID]) {
                 [objectIDs removeObject:objectID];
             }

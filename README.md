@@ -54,7 +54,7 @@ Object mapping is a deep topic and is explored in exhaustive detail in the [Obje
 RestKit is broken into several modules that cleanly separate the mapping engine from the HTTP and Core Data integrations to provide maximum flexibility. Key classes in each module are highlighted below and each module is hyperlinked to the README.md contained within the source code.
 
 <table>
-  <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/ObjectMapping/README.md">Object Mapping</a></th></tr>
+  <tr><th colspan="2" style="text-align:center;"><a href="Code/ObjectMapping/README.md">Object Mapping</a></th></tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectMapping.html">RKObjectMapping</a></td>
     <td>Encapsulates configuration for transforming object representations as expressed by key-value coding keypaths.</td>
@@ -79,7 +79,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectMappingOperation.html">RKObjectMappingOperation</a></td>
     <td>An <tt>NSOperation</tt> that performs a mapping between object representations using an <tt>RKObjectMapping</tt>.</td>
   </tr>  
-  <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/Network/README.md">Networking</a></th></tr>
+  <tr><th colspan="2" style="text-align:center;"><a href="Code/Network/README.md">Networking</a></th></tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKRequestDescriptor.html">RKRequestDescriptor</a></td>
     <td>Describes a request that can be sent from the application to a remote web application for a given object type.</td>
@@ -120,7 +120,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
     <td><a href="http://restkit.org/api/latest/Classes/RKRoute.html">RKRoute</a></td>
     <td>Describes a single relative path for a given object type and HTTP method, the relationship of an object, or a symbolic name.</td>
   </tr>
-  <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/CoreData/README.md">Core Data</a></th></tr>
+  <tr><th colspan="2" style="text-align:center;"><a href="Code/CoreData/README.md">Core Data</a></th></tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKManagedObjectStore.html">RKManagedObjectStore</a></td>
     <td>Encapsulates Core Data configuration including an <tt>NSManagedObjectModel</tt>, a <tt>NSPersistentStoreCoordinator</tt>, and a pair of <tt>NSManagedObjectContext</tt> objects.</td>
@@ -146,7 +146,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
     	</ol>
     </td>
   </tr>
-  <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/Search/README.md">Search</a></th></tr>
+  <tr><th colspan="2" style="text-align:center;"><a href="Code/Search/README.md">Search</a></th></tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKSearchIndexer.html">RKSearchIndexer</a></td>
     <td>Provides support for generating a full-text searchable index within Core Data for string attributes of entities within an application.</td>
@@ -155,7 +155,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
     <td><a href="http://restkit.org/api/latest/Classes/RKSearchPredicate.html">RKSearchPredicate</a></td>
     <td>Generates an <tt>NSCompoundPredicate</tt> given a string of text that will search an index built with an <tt>RKSearchIndexer</tt> across any indexed entity.</td>
   </tr>
-  <tr><th colspan="2" style="text-align:center;"><a href="blob/development/Code/Testing/README.md">Testing</a></th></tr>
+  <tr><th colspan="2" style="text-align:center;"><a href="Code/Testing/README.md">Testing</a></th></tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKMappingTest.html">RKMappingTest</a></td>
     <td>Provides support for unit testing object mapping configurations given a parsed document and an object or entity mapping. Expectations are configured in terms of expected key path mappings and/or expected transformation results.</td>
@@ -579,11 +579,11 @@ $ touch Podfile
 $ edit Podfile
 platform :ios, '5.0' 
 # Or platform :osx, '10.7'
-pod 'RestKit', '~> 0.20.0pre'
+pod 'RestKit', '~> 0.20.0'
 
 # Testing and Search are optional components
-pod 'RestKit/Testing', '~> 0.20.0pre'
-pod 'RestKit/Search',  '~> 0.20.0pre'
+pod 'RestKit/Testing', '~> 0.20.0'
+pod 'RestKit/Search',  '~> 0.20.0'
 ```
 
 Install into your project:
@@ -606,7 +606,7 @@ Detailed installation instructions are available in the [Visual Install Guide](h
 
 ## License
 
-RestKit is licensed under the terms of the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html). Please see the [LICENSE](https://github.com/RestKit/RestKit/blob/master/LICENSE) file for full details.
+RestKit is licensed under the terms of the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html). Please see the [LICENSE](LICENSE) file for full details.
 
 ## Credits
 

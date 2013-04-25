@@ -323,39 +323,41 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     for (NSString *keyPath in mappingsByKeyPath) {
         if ([self isCancelled]) return nil;
         
-        id mappingResult = nil;
-        id nestedRepresentation = nil;
+        @autoreleasepool {
+            id mappingResult = nil;
+            id nestedRepresentation = nil;
 
-        RKLogTrace(@"Examining keyPath '%@' for mappable content...", keyPath);
+            RKLogTrace(@"Examining keyPath '%@' for mappable content...", keyPath);
 
-        if ([keyPath isEqual:[NSNull null]] || [keyPath isEqualToString:@""]) {
-            nestedRepresentation = self.representation;
-        } else {
-            nestedRepresentation = [self.representation valueForKeyPath:keyPath];
-        }
-
-        // Not found...
-        if (nestedRepresentation == nil || nestedRepresentation == [NSNull null] || [self isNullCollection:nestedRepresentation]) {
-            RKLogDebug(@"Found unmappable value at keyPath: %@", keyPath);
-
-            if ([self.delegate respondsToSelector:@selector(mapper:didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:)]) {
-                [self.delegate mapper:self didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
+            if ([keyPath isEqual:[NSNull null]] || [keyPath isEqualToString:@""]) {
+                nestedRepresentation = self.representation;
+            } else {
+                nestedRepresentation = [self.representation valueForKeyPath:keyPath];
             }
 
-            continue;
-        }
+            // Not found...
+            if (nestedRepresentation == nil || nestedRepresentation == [NSNull null] || [self isNullCollection:nestedRepresentation]) {
+                RKLogDebug(@"Found unmappable value at keyPath: %@", keyPath);
 
-        // Found something to map
-        foundMappable = YES;
-        RKMapping *mapping = [mappingsByKeyPath objectForKey:keyPath];
-        if ([self.delegate respondsToSelector:@selector(mapper:didFindRepresentationOrArrayOfRepresentations:atKeyPath:)]) {
-            [self.delegate mapper:self didFindRepresentationOrArrayOfRepresentations:nestedRepresentation atKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
-        }
+                if ([self.delegate respondsToSelector:@selector(mapper:didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:)]) {
+                    [self.delegate mapper:self didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
+                }
 
-        mappingResult = [self mapRepresentationOrRepresentations:nestedRepresentation atKeyPath:keyPath usingMapping:mapping];
+                continue;
+            }
 
-        if (mappingResult) {
-            [results setObject:mappingResult forKey:keyPath];
+            // Found something to map
+            foundMappable = YES;
+            RKMapping *mapping = [mappingsByKeyPath objectForKey:keyPath];
+            if ([self.delegate respondsToSelector:@selector(mapper:didFindRepresentationOrArrayOfRepresentations:atKeyPath:)]) {
+                [self.delegate mapper:self didFindRepresentationOrArrayOfRepresentations:nestedRepresentation atKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
+            }
+
+            mappingResult = [self mapRepresentationOrRepresentations:nestedRepresentation atKeyPath:keyPath usingMapping:mapping];
+
+            if (mappingResult) {
+                [results setObject:mappingResult forKey:keyPath];
+            }
         }
     }
 

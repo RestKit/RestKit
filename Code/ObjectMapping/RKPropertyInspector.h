@@ -46,10 +46,7 @@ extern NSString * const RKPropertyInspectionIsPrimitiveKey;
 /**
  The `RKPropertyInspector` class provides an interface for introspecting the properties and attributes of classes using the reflection capabilities of the Objective-C runtime. Once inspected, the properties inspection details are cached.
  */
-@interface RKPropertyInspector : NSObject {
-  @protected
-    NSCache *_inspectionCache;
-}
+@interface RKPropertyInspector : NSObject
 
 ///-----------------------------------------------
 /// @name Retrieving the Shared Inspector Instance

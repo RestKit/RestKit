@@ -158,6 +158,16 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     return [[super description] stringByAppendingString:@"_RKRefetchingMappingResult"];
 }
 
+/**
+ Add explicit ordering of deallocations to fight `cxx_destruct` crashes
+ */
+- (void)dealloc
+{
+    _mappingResult = nil;
+    _entityMappingEvents = nil;
+    _managedObjectContext = nil;
+}
+
 - (id)initWithMappingResult:(RKMappingResult *)mappingResult
        managedObjectContext:(NSManagedObjectContext *)managedObjectContext
         entityMappingEvents:(NSArray *)entityMappingEvents;
@@ -395,7 +405,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return [[cachedResponse.userInfo objectForKey:RKResponseHasBeenMappedCacheUserInfoKey] boolValue];
 }
 
-- (RKMappingResult *)performMappingOnResponse:(NSError **)error
+- (void)performMappingOnResponseWithCompletionBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))completionBlock
 {
     NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
     NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
@@ -413,7 +423,9 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
                 }
             }
         }];
-        return [[RKMappingResult alloc] initWithDictionary:@{ [NSNull null]: managedObjects }];
+        RKMappingResult *mappingResult = [[RKMappingResult alloc] initWithDictionary:@{ [NSNull null]: managedObjects }];
+        completionBlock(mappingResult, nil);
+        return;
     }
 
     self.responseMapperOperation = [[RKManagedObjectResponseMapperOperation alloc] initWithRequest:self.HTTPRequestOperation.request
@@ -427,16 +439,45 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     self.responseMapperOperation.managedObjectContext = self.privateContext;
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
-    [self.responseMapperOperation setQueuePriority:[self queuePriority]];
+    [self.responseMapperOperation setQueuePriority:[self queuePriority]];    
+    __weak __typeof(&*self)weakSelf = self;
+    [self.responseMapperOperation setDidFinishMappingBlock:^(RKMappingResult *mappingResult, NSError *responseMappingError) {
+        if ([weakSelf isCancelled]) return completionBlock(mappingResult, responseMappingError);
+        
+        BOOL success;
+        NSError *error = nil;
+        
+        // Handle any cleanup
+        success = [weakSelf deleteTargetObjectIfAppropriate:&error];
+        if (! success || [weakSelf isCancelled]) {
+            return completionBlock(nil, error);
+        }
+        
+        success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
+        if (! success || [weakSelf isCancelled]) {
+            return completionBlock(nil, error);
+        }
+        
+        // Persist our mapped objects
+        success = [weakSelf obtainPermanentObjectIDsForInsertedObjects:&error];
+        if (! success || [weakSelf isCancelled]) {
+            return completionBlock(nil, error);
+        }
+        success = [weakSelf saveContext:&error];
+        if (! success || [weakSelf isCancelled]) {
+            return completionBlock(nil, error);
+        }
+        
+        // Refetch all managed objects nested at key paths within the results dictionary before returning
+        if (mappingResult) {
+            RKRefetchingMappingResult *refetchingMappingResult = [[RKRefetchingMappingResult alloc] initWithMappingResult:mappingResult
+                                                                                                     managedObjectContext:weakSelf.managedObjectContext
+                                                                                                      entityMappingEvents:weakSelf.entityMappingEvents];
+            return completionBlock((RKMappingResult *)refetchingMappingResult, nil);
+        }
+        completionBlock(nil, responseMappingError);
+    }];
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
-    [self.responseMapperOperation waitUntilFinished];
-    if ([self isCancelled]) return nil;
-    if (self.responseMapperOperation.error) {
-        if (error) *error = self.responseMapperOperation.error;
-        return nil;
-    }
-
-    return self.responseMapperOperation.mappingResult;
 }
 
 - (BOOL)deleteTargetObjectIfAppropriate:(NSError **)error
@@ -499,7 +540,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return localObjects;
 }
 
-- (BOOL)deleteLocalObjectsMissingFromMappingResult:(NSError **)error
+- (BOOL)deleteLocalObjectsMissingFromMappingResult:(RKMappingResult *)mappingResult error:(NSError **)error
 {
     if (! self.deletesOrphanedObjects) {
         RKLogDebug(@"Skipping deletion of orphaned objects: disabled as deletesOrphanedObjects=NO");
@@ -518,7 +559,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 
     // Build an aggregate collection of all the managed objects in the mapping result
     NSMutableSet *managedObjectsInMappingResult = [NSMutableSet set];
-    NSDictionary *mappingResultDictionary = self.mappingResult.dictionary;
+    NSDictionary *mappingResultDictionary = [mappingResult dictionary];
     
     for (RKEntityMappingEvent *event in self.entityMappingEvents) {
         id objectsAtRoot = [mappingResultDictionary objectForKey:event.rootKey];
@@ -626,44 +667,6 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     if (!_blockSuccess && error) *error = localError;
 
     return _blockSuccess;;
-}
-
-- (void)willFinish
-{
-    if ([self isCancelled]) return;
-    
-    BOOL success;
-    NSError *error = nil;
-
-    // Handle any cleanup
-    success = [self deleteTargetObjectIfAppropriate:&error];
-    if (! success || [self isCancelled]) {
-        self.error = error;
-        return;
-    }
-
-    success = [self deleteLocalObjectsMissingFromMappingResult:&error];
-    if (! success || [self isCancelled]) {
-        self.error = error;
-        return;
-    }
-
-    // Persist our mapped objects
-    success = [self obtainPermanentObjectIDsForInsertedObjects:&error];
-    if (! success || [self isCancelled]) {
-        self.error = error;
-        return;
-    }
-    success = [self saveContext:&error];
-    if (! success || [self isCancelled]) {
-        self.error = error;
-        return;
-    }        
-
-    // Refetch all managed objects nested at key paths within the results dictionary before returning
-    if (self.mappingResult) {
-        self.mappingResult = (RKMappingResult *)[[RKRefetchingMappingResult alloc] initWithMappingResult:self.mappingResult managedObjectContext:self.managedObjectContext entityMappingEvents:self.entityMappingEvents];
-    }
 }
 
 - (void)mapperDidFinishMapping:(RKMapperOperation *)mapper
