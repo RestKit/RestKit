@@ -766,4 +766,28 @@
     expect([response.userInfo valueForKey:RKResponseHasBeenMappedCacheUserInfoKey]).to.beFalsy();
 }
 
+- (void)testThatCancellationOfOperationReturnsCancelledCodeAndInvokesFailureBlock
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"@metadata.phoneNumber": @"phone" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    [[RKObjectRequestOperation responseMappingQueue] setSuspended:YES];
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"POST";
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    __block BOOL invoked = NO;
+    [requestOperation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        invoked = YES;
+    }];
+    [requestOperation start];
+    expect([requestOperation isExecuting]).to.equal(YES);
+    [requestOperation cancel];
+    [[RKObjectRequestOperation responseMappingQueue] setSuspended:NO];
+    expect([requestOperation isFinished]).will.equal(YES);
+    expect(invoked).will.equal(YES);
+    expect(requestOperation.error).notTo.beNil();
+    expect(requestOperation.error.code).to.equal(RKOperationCancelledError);
+}
+
 @end
