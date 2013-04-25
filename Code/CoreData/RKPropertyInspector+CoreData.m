@@ -132,12 +132,14 @@
 - (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath isPrimitive:(BOOL *)isPrimitive
 {
     NSArray *components = [keyPath componentsSeparatedByString:@"."];
-    Class propertyClass = [self class];
+    Class currentPropertyClass = [self class];
+    Class propertyClass = nil;
     for (NSString *property in components) {
         if (isPrimitive) *isPrimitive = NO; // Core Data does not enable you to model primitives
         propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofEntity:[self entity]];
-        propertyClass = propertyClass ?: [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass isPrimitive:isPrimitive];
+        propertyClass = propertyClass ?: [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:currentPropertyClass isPrimitive:isPrimitive];
         if (! propertyClass) break;
+        currentPropertyClass = propertyClass;
     }
     
     return propertyClass;
