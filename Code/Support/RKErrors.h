@@ -33,7 +33,8 @@ typedef enum {
     RKRequestUnexpectedResponseError            =   3,
     RKObjectLoaderUnexpectedResponseError       =   4,
     RKRequestConnectionTimeoutError             =   5,
-    RKUnsupportedMIMETypeError                  =   6
+    RKUnsupportedMIMETypeError                  =   6,
+    RKObjectRequestOperationCancelledError      =   7
 } RKRestKitError;
 
 
