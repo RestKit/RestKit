@@ -263,6 +263,10 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
     self.completionBlock = ^ {
+        if ([self isCancelled] && !self.error) {
+            self.error = [NSError errorWithDomain:RKErrorDomain code:RKObjectRequestOperationCancelledError userInfo:nil];
+        }
+
         if (self.error) {
             if (failure) {
                 dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
