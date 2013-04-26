@@ -9,7 +9,7 @@ RestKit is a modern Objective-C framework for implementing RESTful web services 
 @property (nonatomic, copy) NSString *text;
 @end
 
-RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTweet class]];
+RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[Tweet class]];
 [mapping addAttributeMappingsFromDictionary:@{
     @"user.name":   @"username",
     @"user.id":     @"userID",
