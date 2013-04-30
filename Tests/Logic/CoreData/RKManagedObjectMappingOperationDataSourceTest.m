@@ -20,7 +20,6 @@
 #import "RKBenchmark.h"
 
 @interface RKManagedObjectMappingOperationDataSourceTest : RKTestCase
-
 @end
 
 /**
@@ -29,7 +28,7 @@
 @implementation RKManagedObjectMappingOperationDataSourceTest
 
 - (void)setUp
-{
+{    
     [RKTestFactory setUp];
 }
 
@@ -742,6 +741,7 @@
     operation.dataSource = mappingOperationDataSource;
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
+//    expect([mappingOperationDataSource.operationQueue operationCount]).will.equal(0);
     [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.cats, isNot(nilValue()));
@@ -1166,9 +1166,6 @@
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
     mapper.mappingOperationDataSource = mappingOperationDataSource;
 
-    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
-    RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
-
     [RKBenchmark report:@"Mapping with Fetch Request Cache" executionBlock:^{
         for (NSUInteger i = 0; i < 50; i++) {
             [mapper start];
@@ -1201,8 +1198,6 @@
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
     mapper.mappingOperationDataSource = mappingOperationDataSource;
-    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
-    RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
 
     [RKBenchmark report:@"Mapping with In Memory Cache" executionBlock:^{
         for (NSUInteger i = 0; i < 50; i++) {

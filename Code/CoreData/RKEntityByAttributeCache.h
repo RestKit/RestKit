@@ -68,10 +68,11 @@
 @property (nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
 
 /**
- A Boolean value determining if the receiever monitors the managed object context
- for changes and updates the cache entries using the notifications emitted.
+ The queue on which to dispatch callbacks for asynchronous operations. When `nil`, the main queue is used.
+ 
+ **Default**: `nil`
  */
-@property (nonatomic, assign) BOOL monitorsContextForChanges;
+@property (nonatomic, assign) dispatch_queue_t callbackQueue;
 
 ///-------------------------------------
 /// @name Loading and Flushing the Cache
@@ -81,14 +82,17 @@
  Loads the cache by finding all instances of the configured entity and building
  an association between the value of the cached attribute's value and the
  managed object ID for the object.
+ 
+ @param completion A block to execute when the cache has finished loading.
  */
-- (void)load;
+- (void)load:(void (^)(void))completion;
 
 /**
- Flushes the cache by releasing all cache attribute value to managed object ID
- associations.
+ Flushes the cache by releasing all cache attribute value to managed object ID associations.
+ 
+ @param completion A block to execute when the cache has finished flushing.
  */
-- (void)flush;
+- (void)flush:(void (^)(void))completion;
 
 ///-----------------------------
 /// @name Inspecting Cache State
@@ -160,21 +164,36 @@
 ///------------------------------
 
 /**
- Adds a managed object to the cache.
+ Asynchronously adds a managed object to the cache.
 
  The object must be an instance of the cached entity.
 
  @param object The managed object to add to the cache.
+ @param completion An optional block to execute once the object has been added to the cache.
  */
-- (void)addObject:(NSManagedObject *)object;
+- (void)addObjects:(NSSet *)managedObjects completion:(void (^)(void))completion;
 
 /**
- Removes a managed object from the cache.
+ Asynchronously removes a managed object from the cache.
 
  The object must be an instance of the cached entity.
 
  @param object The managed object to remove from the cache.
+ @param completion An optional block to execute once the object has been removed from the cache.
  */
-- (void)removeObject:(NSManagedObject *)object;
+- (void)removeObjects:(NSSet *)managedObjects completion:(void (^)(void))completion;
 
+@end
+
+/*
+ Deprecated in 0.20.1
+ 
+ All methods below now accept a completion block
+ */
+@interface RKEntityByAttributeCache (Deprecations)
+- (void)load DEPRECATED_ATTRIBUTE; // use `load:`
+- (void)flush DEPRECATED_ATTRIBUTE; // use `flush:`
+- (void)addObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE; // use `addObjects:completion:`
+- (void)removeObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE; // use `removeObjects:completion:`
+@property (nonatomic, assign) BOOL monitorsContextForChanges DEPRECATED_ATTRIBUTE; // No longer applies. Consumers are responsible for context change monitoring. Handled by `RKInMemoryManagedObjectCache`
 @end

@@ -340,9 +340,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         // Add a dependency on the parent operation. If we are being mapped as part of a relationship, then the assignment of the mapped object to a parent may well fulfill the validation requirements. This ensures that the relationship mapping has completed before we evaluate the object for deletion.
         if (self.parentOperation) [deletionOperation addDependency:self.parentOperation];
 
-        for (RKConnectionDescription *connection in connections) {
-            RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connection:connection managedObjectCache:self.managedObjectCache];
-            [operation setConnectionBlock:^(RKRelationshipConnectionOperation *operation, id connectedValue) {
+        if ([connections count]) {
+            RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connections:connections managedObjectCache:self.managedObjectCache];
+            [operation setConnectionBlock:^(RKRelationshipConnectionOperation *operation, RKConnectionDescription *connection, id connectedValue) {
                 if (connectedValue) {
                     if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didConnectRelationship:toValue:usingConnection:)]) {
                         [mappingOperation.delegate mappingOperation:mappingOperation didConnectRelationship:connection.relationship toValue:connectedValue usingConnection:connection];
@@ -353,6 +353,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
                     }
                 }
             }];
+            
             if (self.parentOperation) [operation addDependency:self.parentOperation];
             [deletionOperation addDependency:operation];
             [operationQueue addOperation:operation];
@@ -460,7 +461,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     NSString *modificationKey = [entityMapping modificationKey];
     if (! modificationKey) return NO;
     id currentValue = [mappingOperation.destinationObject valueForKey:modificationKey];
-    if (! currentValue) return nil;
+    if (! currentValue) return NO;
     
     RKPropertyMapping *propertyMappingForModificationKey = [[(RKEntityMapping *)mappingOperation.mapping propertyMappingsByDestinationKeyPath] objectForKey:modificationKey];
     id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];    

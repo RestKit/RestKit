@@ -35,16 +35,8 @@
 #import <RestKit/Testing.h>
 
 /*
- Base class for RestKit test cases. Provides initialization of testing
- infrastructure.
+ Base class for RestKit test cases. Provides initialization of testing infrastructure.
  */
 @interface RKTestCase : SenTestCase
 @end
 
-@interface SenTestCase (MethodSwizzling)
-- (void)swizzleMethod:(SEL)aOriginalMethod
-              inClass:(Class)aOriginalClass
-           withMethod:(SEL)aNewMethod
-            fromClass:(Class)aNewClass
-         executeBlock:(void (^)(void))aBlock;
-@end

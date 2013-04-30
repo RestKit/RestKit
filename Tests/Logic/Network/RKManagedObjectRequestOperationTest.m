@@ -101,7 +101,6 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
 - (void)testFetchRequestBlocksDoNotCrash
 {
-    RKLogConfigureByName("RestKit/Network/CoreData", RKLogLevelTrace);
     NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/"];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"categories/1234" relativeToURL:baseURL]];
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:request.URL statusCode:200 HTTPVersion:@"1.1" headerFields:@{}];
