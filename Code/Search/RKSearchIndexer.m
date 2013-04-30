@@ -169,7 +169,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
             NSMutableSet *searchWords = [NSMutableSet set];
             for (NSString *searchableAttribute in searchableAttributes) {
                 NSString *attributeValue = [managedObject valueForKey:searchableAttribute];
-                id collectionOfStrings = RKObjectIsCollection(attributeValue) ? attributeValue : @[ attributeValue ];
+                id collectionOfStrings = RKObjectIsCollection(attributeValue) ? attributeValue : (attributeValue ? @[attributeValue] : @[]);
                 attributeValue = nil;
                 for (id object in collectionOfStrings) {
                     if ([object isKindOfClass:[NSString class]]) {
