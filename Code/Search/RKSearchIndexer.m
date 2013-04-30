@@ -265,14 +265,14 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
         if (totalObjects >= 250) RKLogInfo(@"Finished indexing.");
     } else {
         // Perform asynchronous indexing
-        for (NSManagedObject *managedObject in objectsToIndex) {
-            if ([self.delegate respondsToSelector:@selector(searchIndexer:shouldIndexManagedObject:)]) {
-                if (! [self.delegate searchIndexer:self shouldIndexManagedObject:managedObject]) continue;
-            }
-            [self.operationQueue addOperationWithBlock:^{
+        [self.operationQueue addOperationWithBlock:^{
+            for (NSManagedObject *managedObject in objectsToIndex) {
+                if ([self.delegate respondsToSelector:@selector(searchIndexer:shouldIndexManagedObject:)]) {
+                    if (! [self.delegate searchIndexer:self shouldIndexManagedObject:managedObject]) continue;
+                }
                 [self indexManagedObject:managedObject];
-            }];
-        }
+            }
+        }];
         self.totalIndexingOperationCount = [self.operationQueue operationCount];
     }
 }
@@ -286,29 +286,17 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     
     NSDictionary *userInfo = [notification userInfo];
     NSSet *candidateObjects = [[NSSet setWithSet:[userInfo objectForKey:NSInsertedObjectsKey]] setByAddingObjectsFromSet:[userInfo objectForKey:NSUpdatedObjectsKey]];
-    NSSet *objectsToIndex = [self objectsToIndexFromCandidateObjects:candidateObjects checkChangedValues:NO];
-
-    // After all indexing is complete, save the indexing context
-    __block NSBlockOperation *saveOperation = [NSBlockOperation blockOperationWithBlock:^{
-        if ([saveOperation isCancelled]) return;
-        [self.indexingContext performBlockAndWait:^{
-            NSError *error = nil;
-            RKLogInfo(@"Indexing completed. Saving indexing context...");
-            BOOL success = [self.indexingContext saveToPersistentStore:&error];
-            if (! success) {
-                RKLogError(@"Failed to save indexing context: %@", error);
-            }
-        }];
-    }];
+    NSSet *objectsToIndex = [self objectsToIndexFromCandidateObjects:candidateObjects checkChangedValues:NO];    
     
     NSMutableSet *failedObjectIDs = [NSMutableSet set];
     
     // Enqueue an operation for each object to index
     NSArray *objectIDsForObjectsToIndex = [objectsToIndex valueForKey:@"objectID"];
-    for (NSManagedObjectID *objectID in objectIDsForObjectsToIndex) {
-        __block NSBlockOperation *indexingOperation = [NSBlockOperation blockOperationWithBlock:^{
-            if ([indexingOperation isCancelled]) return;
-            [self.indexingContext performBlockAndWait:^{
+    __block NSBlockOperation *indexingOperation = [NSBlockOperation blockOperationWithBlock:^{
+        if ([indexingOperation isCancelled]) return;
+        [self.indexingContext performBlockAndWait:^{
+            for (NSManagedObjectID *objectID in objectIDsForObjectsToIndex) {
+                if ([indexingOperation isCancelled]) return;
                 NSError *error = nil;
                 NSManagedObject *managedObject = [self.indexingContext existingObjectWithID:objectID error:&error];
                 NSAssert(managedObject == nil || [[managedObject managedObjectContext] isEqual:self.indexingContext], @"Serious Core Data error: Asked for an `NSManagedObject` with ID %@ in indexing context %@, but got one in %@", objectID, self.indexingContext, [managedObject managedObjectContext]);
@@ -326,19 +314,26 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
                 } else {
                     RKLogError(@"Failed indexing of object %@ with error: %@", managedObject, error);
                 }
-            }];
+            }
+            
+            // After all indexing is complete, save the indexing context
+            if ([indexingOperation isCancelled]) return;
+            NSError *error = nil;
+            RKLogInfo(@"Indexing completed. Saving indexing context...");
+            BOOL success = [self.indexingContext saveToPersistentStore:&error];
+            if (! success) {
+                RKLogError(@"Failed to save indexing context: %@", error);
+            }
         }];
-        
-        [saveOperation addDependency:indexingOperation];
-        [self.operationQueue addOperation:indexingOperation];
-    }
+    }];
+    
+    [self.operationQueue addOperation:indexingOperation];
     
     // Assert that we indexed everything sucessfully
     [self.operationQueue addOperationWithBlock:^{
         NSAssert([failedObjectIDs count] == 0, @"Expected no indexing failures, got %ld", (long) [failedObjectIDs count]);
     }];
     
-    [self.operationQueue addOperation:saveOperation];
     self.totalIndexingOperationCount = [self.operationQueue operationCount];
 }
 
