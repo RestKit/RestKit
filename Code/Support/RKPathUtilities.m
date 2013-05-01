@@ -30,16 +30,21 @@ NSString *RKApplicationDataDirectory(void)
 
     NSArray *possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
                                              inDomains:NSUserDomainMask];
-    NSURL *appSupportDir = nil;
-    NSURL *appDirectory = nil;
 
     if ([possibleURLs count] >= 1) {
-        appSupportDir = [possibleURLs objectAtIndex:0];
-    }
-
-    if (appSupportDir) {
-        appDirectory = [appSupportDir URLByAppendingPathComponent:RKExecutableName()];
-        return [appDirectory path];
+        
+        NSURL *appSupportDir = [possibleURLs objectAtIndex:0];
+        NSURL *appDirectory = [appSupportDir URLByAppendingPathComponent:RKExecutableName()];
+        NSString *path = [appDirectory path];
+        
+        NSError *error = nil;
+        if ([sharedFM createDirectoryAtPath:path withIntermediateDirectories:YES
+                                 attributes:nil error:&error]){
+            return path;
+        } else {
+            // Handle the error.
+            RKLogWarning(@"Directory didn't exist and failed to create it. Error:%@", error);
+        }
     }
 
     return nil;
