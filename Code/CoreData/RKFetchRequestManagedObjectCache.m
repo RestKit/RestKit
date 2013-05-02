@@ -21,6 +21,7 @@
  */
 static NSString *RKPredicateCacheKeyForAttributeValues(NSDictionary *attributesValues)
 {
+    if ([attributesValues count] == 1) return [[attributesValues allKeys] lastObject];
     NSArray *sortedKeys = [[attributesValues allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     NSMutableArray *keyFragments = [NSMutableArray array];
     for (NSString *attributeName in sortedKeys) {
@@ -48,7 +49,8 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
 }
 
 @interface RKFetchRequestManagedObjectCache ()
-@property (nonatomic, strong) NSCache *predicateCache;
+@property (nonatomic, strong) NSMutableDictionary *predicateCache;
+@property (nonatomic, assign) dispatch_queue_t cacheQueue;
 @end
 
 @implementation RKFetchRequestManagedObjectCache
@@ -57,25 +59,42 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
 {
     self = [super init];
     if (self) {
-        self.predicateCache = [NSCache new];
+        self.predicateCache = [NSMutableDictionary dictionary];
+        self.cacheQueue = dispatch_queue_create("org.restkit.core-data.fetch-request-cache-queue", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
+}
+
+- (void)dealloc
+{
+#if !OS_OBJECT_USE_OBJC
+    if (_cacheQueue) dispatch_release(_cacheQueue);
+#endif
+    _cacheQueue = NULL;
 }
 
 - (NSSet *)managedObjectsWithEntity:(NSEntityDescription *)entity
                     attributeValues:(NSDictionary *)attributeValues
              inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-
     NSAssert(entity, @"Cannot find existing managed object without a target class");
     NSAssert(attributeValues, @"Cannot retrieve cached objects without attribute values to identify them with.");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a nil context");
     
+    if ([attributeValues count] == 0) return [NSSet set];
+    
     NSString *predicateCacheKey = RKPredicateCacheKeyForAttributeValues(attributeValues);
-    NSPredicate *substitutionPredicate = [self.predicateCache objectForKey:predicateCacheKey];
+    
+    __block NSPredicate *substitutionPredicate;
+    dispatch_sync(self.cacheQueue, ^{
+        substitutionPredicate = [self.predicateCache objectForKey:predicateCacheKey];
+    });
+         
     if (! substitutionPredicate) {
         substitutionPredicate = RKPredicateWithSubsitutionVariablesForAttributeValues(attributeValues);
-        [self.predicateCache setObject:substitutionPredicate forKey:predicateCacheKey];
+        dispatch_barrier_async(self.cacheQueue, ^{
+            [self.predicateCache setObject:substitutionPredicate forKey:predicateCacheKey];
+        });
     }
     
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[entity name]];
