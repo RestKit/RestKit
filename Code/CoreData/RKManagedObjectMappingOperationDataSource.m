@@ -468,6 +468,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     RKDateToStringValueTransformer *transformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:entityMapping.preferredDateFormatter stringToDateFormatters:entityMapping.dateFormatters];
     Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
     id transformedValue = RKTransformedValueWithClass(rawValue, attributeClass, transformer);
+    if (! transformedValue) return NO;
     return RKObjectIsEqualToObject(transformedValue, currentValue);
 }
 
