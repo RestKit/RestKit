@@ -219,7 +219,8 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
     RKHTTPRequestOperation *HTTPRequestOperation = objectRequestOperation.HTTPRequestOperation;
     NSTimeInterval objectRequestExecutionDuration = [[NSDate date] timeIntervalSinceDate:objc_getAssociatedObject(objectRequestOperation, RKOperationStartDate)];
     NSTimeInterval httpRequestExecutionDuration = [objc_getAssociatedObject(HTTPRequestOperation, RKOperationFinishDate) timeIntervalSinceDate:objc_getAssociatedObject(HTTPRequestOperation, RKOperationStartDate)];
-    NSTimeInterval mappingDuration = [[notification.userInfo objectForKey:RKObjectRequestOperationMappingDidFinishUserInfoKey] timeIntervalSinceDate:[notification.userInfo objectForKey:RKObjectRequestOperationMappingDidStartUserInfoKey]];
+    NSDate *mappingDidStartTime = [notification.userInfo objectForKey:RKObjectRequestOperationMappingDidFinishUserInfoKey];
+    NSTimeInterval mappingDuration = [mappingDidStartTime isEqual:[NSNull null]] ? 0.0 : [mappingDidStartTime timeIntervalSinceDate:[notification.userInfo objectForKey:RKObjectRequestOperationMappingDidStartUserInfoKey]];
     
     NSString *statusCodeString = RKStringFromStatusCode([HTTPRequestOperation.response statusCode]);
     NSString *statusCodeDescription = statusCodeString ? [NSString stringWithFormat:@" %@ ", statusCodeString] : @" ";
