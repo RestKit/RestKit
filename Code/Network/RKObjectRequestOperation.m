@@ -387,7 +387,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         }];
         [self.stateMachine setFinalizationBlock:^{
             RKDecrementNetworkAcitivityIndicator();
-            [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: weakSelf.mappingDidStartDate, RKObjectRequestOperationMappingDidFinishUserInfoKey: weakSelf.mappingDidFinishDate }];
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: weakSelf.mappingDidStartDate ?: [NSNull null], RKObjectRequestOperationMappingDidFinishUserInfoKey: weakSelf.mappingDidFinishDate ?: [NSNull null] }];
         }];
         [self.stateMachine setCancellationBlock:^{
             [weakSelf.HTTPRequestOperation cancel];
