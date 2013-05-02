@@ -220,9 +220,14 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
 /**
  Posted when an object request operation begin executing.
  */
-extern NSString * const RKObjectRequestOperationDidStartNotification;
+extern NSString *const RKObjectRequestOperationDidStartNotification;
 
 /**
  Posted when an object request operation finishes.
  */
-extern NSString * const RKObjectRequestOperationDidFinishNotification;
+extern NSString *const RKObjectRequestOperationDidFinishNotification;
+
+/**
+ The key for an `NSDate` object specifying the time at which object mapping began for object request operation. Available in the user info dictionary of an `RKObjectRequestOperationDidFinishNotification`
+ */
+extern NSString *const RKObjectRequestOperationMappingDidStartUserInfoKey;

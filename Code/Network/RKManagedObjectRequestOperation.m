@@ -197,6 +197,11 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     return [self.mappingResult description];
 }
 
+- (NSUInteger)count
+{
+    return [self.mappingResult count];
+}
+
 - (RKMappingResult *)refetchedMappingResult
 {
     NSAssert(!self.refetched, @"Mapping result should only be refetched once");
