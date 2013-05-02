@@ -228,6 +228,11 @@ extern NSString *const RKObjectRequestOperationDidStartNotification;
 extern NSString *const RKObjectRequestOperationDidFinishNotification;
 
 /**
- The key for an `NSDate` object specifying the time at which object mapping began for object request operation. Available in the user info dictionary of an `RKObjectRequestOperationDidFinishNotification`
+ The key for an `NSDate` object specifying the time at which object mapping started for object request operation. Available in the user info dictionary of an `RKObjectRequestOperationDidFinishNotification`
  */
 extern NSString *const RKObjectRequestOperationMappingDidStartUserInfoKey;
+
+/**
+ The key for an `NSDate` object specifying the time at which object mapping finished for object request operation. Available in the user info dictionary of an `RKObjectRequestOperationDidFinishNotification`
+ */
+extern NSString *const RKObjectRequestOperationMappingDidFinishUserInfoKey;

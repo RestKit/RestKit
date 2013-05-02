@@ -144,6 +144,7 @@ static NSString *RKStringDescribingStream(NSStream *stream)
 
 static void *RKParentObjectRequestOperation = &RKParentObjectRequestOperation;
 static void *RKOperationStartDate = &RKOperationStartDate;
+static void *RKOperationFinishDate = &RKOperationFinishDate;
 
 - (void)objectRequestOperationDidStart:(NSNotification *)notification
 {
@@ -181,7 +182,10 @@ static void *RKOperationStartDate = &RKOperationStartDate;
     
     // NOTE: if we have a parent object request operation, we'll wait it to finish to emit the logging info
     RKObjectRequestOperation *parentOperation = objc_getAssociatedObject(operation, RKParentObjectRequestOperation);
-    if (parentOperation) return;
+    if (parentOperation) {
+        objc_setAssociatedObject(operation, RKOperationFinishDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        return;
+    }
     
     NSTimeInterval elapsedTime = [[NSDate date] timeIntervalSinceDate:objc_getAssociatedObject(operation, RKOperationStartDate)];
     
@@ -213,10 +217,9 @@ static void *RKOperationStartDate = &RKOperationStartDate;
     if (![objectRequestOperation isKindOfClass:[RKObjectRequestOperation class]]) return;
     
     RKHTTPRequestOperation *HTTPRequestOperation = objectRequestOperation.HTTPRequestOperation;
-    NSDate *referenceDate = [NSDate date];
-    NSTimeInterval objectRequestExecutionDuration = [referenceDate timeIntervalSinceDate:objc_getAssociatedObject(objectRequestOperation, RKOperationStartDate)];
-    NSTimeInterval httpRequestExecutionDuration = [referenceDate timeIntervalSinceDate:objc_getAssociatedObject(HTTPRequestOperation, RKOperationStartDate)];
-    NSTimeInterval mappingDuration = [referenceDate timeIntervalSinceDate:[notification.userInfo objectForKey:RKObjectRequestOperationMappingDidStartUserInfoKey]];
+    NSTimeInterval objectRequestExecutionDuration = [[NSDate date] timeIntervalSinceDate:objc_getAssociatedObject(objectRequestOperation, RKOperationStartDate)];
+    NSTimeInterval httpRequestExecutionDuration = [objc_getAssociatedObject(HTTPRequestOperation, RKOperationFinishDate) timeIntervalSinceDate:objc_getAssociatedObject(HTTPRequestOperation, RKOperationStartDate)];
+    NSTimeInterval mappingDuration = [[notification.userInfo objectForKey:RKObjectRequestOperationMappingDidFinishUserInfoKey] timeIntervalSinceDate:[notification.userInfo objectForKey:RKObjectRequestOperationMappingDidStartUserInfoKey]];
     
     NSString *statusCodeString = RKStringFromStatusCode([HTTPRequestOperation.response statusCode]);
     NSString *statusCodeDescription = statusCodeString ? [NSString stringWithFormat:@" %@ ", statusCodeString] : @" ";
@@ -245,10 +248,11 @@ static void *RKOperationStartDate = &RKOperationStartDate;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-NSString * const RKObjectRequestOperationDidStartNotification = @"RKObjectRequestOperationDidStartNotification";
-NSString * const RKObjectRequestOperationDidFinishNotification = @"RKObjectRequestOperationDidFinishNotification";
-NSString * const RKResponseHasBeenMappedCacheUserInfoKey = @"RKResponseHasBeenMapped";
-NSString * const RKObjectRequestOperationMappingDidStartUserInfoKey = @"mappingStartedAt";
+NSString *const RKObjectRequestOperationDidStartNotification = @"RKObjectRequestOperationDidStartNotification";
+NSString *const RKObjectRequestOperationDidFinishNotification = @"RKObjectRequestOperationDidFinishNotification";
+NSString *const RKResponseHasBeenMappedCacheUserInfoKey = @"RKResponseHasBeenMapped";
+NSString *const RKObjectRequestOperationMappingDidStartUserInfoKey = @"mappingStartedAt";
+NSString *const RKObjectRequestOperationMappingDidFinishUserInfoKey = @"mappingFinishedAt";
 
 static void RKIncrementNetworkActivityIndicator()
 {
@@ -315,6 +319,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 @property (nonatomic, strong) RKObjectResponseMapperOperation *responseMapperOperation;
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @property (nonatomic, strong) NSDate *mappingDidStartDate;
+@property (nonatomic, strong) NSDate *mappingDidFinishDate;
 @end
 
 @implementation RKObjectRequestOperation
@@ -382,7 +387,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         }];
         [self.stateMachine setFinalizationBlock:^{
             RKDecrementNetworkAcitivityIndicator();
-            [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: weakSelf.mappingDidStartDate }];
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: weakSelf.mappingDidStartDate, RKObjectRequestOperationMappingDidFinishUserInfoKey: weakSelf.mappingDidFinishDate }];
         }];
         [self.stateMachine setCancellationBlock:^{
             [weakSelf.HTTPRequestOperation cancel];
@@ -552,6 +557,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
                 }
             }
             
+            weakSelf.mappingDidFinishDate = [NSDate date];
             [weakSelf.stateMachine finish];
         }];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
