@@ -169,7 +169,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     [paginator loadPage:1];
     [paginator waitUntilFinished];
-    expect(paginator.isLoaded).to.equal(YES);
+    expect(paginator.isLoaded).will.equal(YES);
 }
 
 - (void)testLoadingAPageOfObjectsWithDocumentedPaginationMapping
@@ -316,7 +316,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     [paginator loadPage:3];
     [paginator waitUntilFinished];
-    expect(paginator.error).notTo.beNil();
+    expect(paginator.error).willNot.beNil();
 }
 
 - (void)testKnowledgeOfHasANextPage

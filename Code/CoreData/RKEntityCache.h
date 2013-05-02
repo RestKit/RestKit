@@ -23,25 +23,19 @@
 @class RKEntityByAttributeCache;
 
 /**
- Instances of RKInMemoryEntityCache provide an in-memory caching mechanism for
- objects in a Core Data managed object context. Managed objects can be cached by
- attribute for fast retrieval without repeatedly hitting the Core Data persistent store.
- This can provide a substantial speed advantage over issuing fetch requests
- in cases where repeated look-ups of the same data are performed using a small set
- of attributes as the query key. Internally, the cache entries are maintained as
- references to the NSManagedObjectID of corresponding cached objects.
+ Instances of `RKEntityCache` provide an in-memory caching mechanism for objects in a Core Data managed object context. Managed objects can be cached by attribute for fast retrieval without repeatedly hitting the Core Data persistent store. This can provide a substantial speed advantage over issuing fetch requests in cases where repeated look-ups of the same data are performed using a small set of attributes as the query key. Internally, the cache entries are maintained as references to the `NSManagedObjectID` of corresponding cached objects.
  */
 @interface RKEntityCache : NSObject
 
-///-----------------------------------------------------------------------------
+///-----------------------------
 /// @name Initializing the Cache
-///-----------------------------------------------------------------------------
+///-----------------------------
 
 /**
  Initializes the receiver with a managed object context containing the entity instances to be cached.
 
  @param context The managed object context containing objects to be cached.
- @returns self, initialized with context.
+ @returns The receiver, initialized with the given context.
  */
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)context;
 
@@ -49,6 +43,17 @@
  The managed object context with which the receiver is associated.
  */
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
+
+///-------------------------------------
+/// @name Configuring the Callback Queue
+///-------------------------------------
+
+/**
+ The queue on which to dispatch callbacks for asynchronous operations. When `nil`, the main queue is used.
+ 
+ **Default**: `nil`
+ */
+@property (nonatomic, assign) dispatch_queue_t callbackQueue;
 
 ///------------------------------------
 /// @name Caching Objects by Attributes
@@ -60,7 +65,7 @@
  @param entity The entity to cache all instances of.
  @param attributeNames The attributes to cache the instances by.
  */
-- (void)cacheObjectsForEntity:(NSEntityDescription *)entity byAttributes:(NSArray *)attributeNames;
+- (void)cacheObjectsForEntity:(NSEntityDescription *)entity byAttributes:(NSArray *)attributeNames completion:(void (^)(void))completion;
 
 /**
  Returns a Boolean value indicating if all instances of an entity have been cached by a given attribute name.
@@ -119,27 +124,41 @@
 ///-----------------------------------------------------------------------------
 
 /**
- Flushes the entity cache by sending a flush message to each entity attribute cache
- contained within the receiver.
+ Flushes the entity cache by sending a flush message to each entity attribute cache contained within the receiver.
 
+ @param completion An optional block to be executed when the flush has completed.
  @see [RKEntityByAttributeCache flush]
  */
-- (void)flush;
+- (void)flush:(void (^)(void))completion;
 
 /**
- Adds a given object to all entity attribute caches for the object's entity contained
- within the receiver.
+ Adds the given set of objects to all entity attribute caches for the object's entity contained within the receiver.
 
- @param object The object to add to the appropriate entity attribute caches.
+ @param objects The set of objects to add to the appropriate entity attribute caches.
+ @param completion An optional block to be executed when the object addition has completed.
  */
-- (void)addObject:(NSManagedObject *)object;
+- (void)addObjects:(NSSet *)objects completion:(void (^)(void))completion;
 
 /**
- Removed a given object from all entity attribute caches for the object's entity contained
- within the receiver.
+ Removes the given set of objects from all entity attribute caches for the object's entity contained within the receiver.
 
- @param object The object to remove from the appropriate entity attribute caches.
+ @param objects The set of objects to remove from the appropriate entity attribute caches.
+ @param completion An optional block to be executed when the object removal has completed.
  */
-- (void)removeObject:(NSManagedObject *)object;
+- (void)removeObjects:(NSSet *)objects completion:(void (^)(void))completion;
 
+/**
+ Returns a Boolean value that indicates if the receiver contains the given object in any of its attribute caches.
+ 
+ @param managedObject The object to check for.
+ @return `YES` if the receiver contains the given object in one or more of its caches, else `NO`.
+ */
+- (BOOL)containsObject:(NSManagedObject *)managedObject;
+
+@end
+
+// Deprecated in v0.20.1
+@interface RKEntityCache (Deprecations)
+- (void)addObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE; // use `addObjects:completion:`
+- (void)removeObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE; // use `removeObjects:completion:`
 @end

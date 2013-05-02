@@ -368,6 +368,9 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 
 - (BOOL)shouldSetValue:(id *)value atKeyPath:(NSString *)keyPath
 {
+    // Always set the properties
+    if ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] && [self.dataSource mappingOperationShouldSetUnchangedValues:self]) return YES;
+    
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null]) {
         currentValue = nil;
@@ -888,30 +891,33 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     } else if ([self.mapping isKindOfClass:[RKObjectMapping class]]) {
         self.objectMapping = (RKObjectMapping *)self.mapping;
     }
-
-    [self applyNestedMappings];
-    if ([self isCancelled]) return;
-    BOOL mappedSimpleAttributes = [self applyAttributeMappings:[self simpleAttributeMappings]];
-    if ([self isCancelled]) return;
-    BOOL mappedRelationships = [[self relationshipMappings] count] ? [self applyRelationshipMappings] : NO;
-    if ([self isCancelled]) return;
-    // NOTE: We map key path attributes last to allow you to map across the object graphs for objects created/updated by the relationship mappings
-    BOOL mappedKeyPathAttributes = [self applyAttributeMappings:[self keyPathAttributeMappings]];
     
-    if (!mappedSimpleAttributes && !mappedRelationships && !mappedKeyPathAttributes) {
-        // We did not find anything to do
-        RKLogDebug(@"Mapping operation did not find any mappable values for the attribute and relationship mappings in the given object representation");
-        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"No mappable values found for any of the attributes or relationship mappings" };
-        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:userInfo];
-    }
+    BOOL canSkipMapping = [self.dataSource respondsToSelector:@selector(mappingOperationShouldSkipPropertyMapping:)] && [self.dataSource mappingOperationShouldSkipPropertyMapping:self];
+    if (! canSkipMapping) {
+        [self applyNestedMappings];
+        if ([self isCancelled]) return;
+        BOOL mappedSimpleAttributes = [self applyAttributeMappings:[self simpleAttributeMappings]];
+        if ([self isCancelled]) return;
+        BOOL mappedRelationships = [[self relationshipMappings] count] ? [self applyRelationshipMappings] : NO;
+        if ([self isCancelled]) return;
+        // NOTE: We map key path attributes last to allow you to map across the object graphs for objects created/updated by the relationship mappings
+        BOOL mappedKeyPathAttributes = [self applyAttributeMappings:[self keyPathAttributeMappings]];
+        
+        if (!mappedSimpleAttributes && !mappedRelationships && !mappedKeyPathAttributes) {
+            // We did not find anything to do
+            RKLogDebug(@"Mapping operation did not find any mappable values for the attribute and relationship mappings in the given object representation");
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"No mappable values found for any of the attributes or relationship mappings" };
+            self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:userInfo];
+        }
     
-    // We did some mapping work, if there's no error let's commit our changes to the data source
-    if (self.error == nil) {
-        if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:error:)]) {
-            NSError *error = nil;
-            BOOL success = [self.dataSource commitChangesForMappingOperation:self error:&error];
-            if (! success) {
-                self.error = error;
+        // We did some mapping work, if there's no error let's commit our changes to the data source
+        if (self.error == nil) {
+            if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:error:)]) {
+                NSError *error = nil;
+                BOOL success = [self.dataSource commitChangesForMappingOperation:self error:&error];
+                if (! success) {
+                    self.error = error;
+                }
             }
         }
     }

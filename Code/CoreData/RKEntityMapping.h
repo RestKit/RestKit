@@ -114,6 +114,7 @@
  */
 @property (nonatomic, copy) NSPredicate *identificationPredicate;
 
+@property (nonatomic, assign) NSString *modificationKey;
 
 ///-------------------------------------------
 /// @name Configuring Relationship Connections
