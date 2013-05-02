@@ -197,7 +197,16 @@
 /**
  A predicate that identifies objects for the receiver's entity that are to be deleted from the local store.
 
- This property provides support for local deletion of managed objects mapped as a 'tombstone' record from the source representation.
+ This property provides support for local deletion of managed objects mapped as a 'tombstone' record from the source representation. The deletion predicate is used in conjunction with the entity associated with the receiver to construct an `NSFetchRequest` that identifies managed objects that should be deleted when a mapping operation is committed. For example, given the following JSON:
+ 
+    { "userID": 12345, "is_deleted": true }
+ 
+ We could map the `is_deleted` key to a Boolean attribute on the model such as `shouldBeDeleted` and configure a deletion predicate using this attribute:
+ 
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"is_deleted": @"shouldBeDeleted" }];
+    entityMapping.deletionPredicate = [NSPredicate predicateWithFormat:@"shouldBeDeleted = true"];
+ 
+ When a mapping operation completes, a `NSFetchRequest` will be constructed and executed. Any objects in the store whose `shouldBeDeleted` value is true will be deleted.
  */
 @property (nonatomic, copy) NSPredicate *deletionPredicate;
 
