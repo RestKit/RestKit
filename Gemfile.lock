@@ -39,10 +39,10 @@ GEM
       uuidtools (~> 2.1)
     builder (3.2.0)
     claide (0.2.0)
-    cocoapods (0.18.1)
+    cocoapods (0.19.1)
       activesupport (~> 3.2.13)
       claide (~> 0.2.0)
-      cocoapods-core (= 0.18.1)
+      cocoapods-core (= 0.19.1)
       cocoapods-downloader (~> 0.1.0)
       colored (~> 1.2)
       escape (~> 0.0.4)
@@ -52,10 +52,8 @@ GEM
       open4 (~> 1.3.0)
       rake (~> 10.0.0)
       xcodeproj (~> 0.5.5)
-    cocoapods-core (0.18.1)
+    cocoapods-core (0.19.1)
       activesupport (~> 3.2.13)
-      faraday (~> 0.8.1)
-      octokit (~> 1.7)
       rake (~> 10.0.0)
     cocoapods-downloader (0.1.0)
     colored (1.2)
@@ -113,7 +111,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.3.0)
-  cocoapods (= 0.18.1)
+  cocoapods (= 0.19.1)
   debugger (~> 1.3.0)
   rake (~> 10.0.0)
   restkit!
