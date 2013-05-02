@@ -33,7 +33,7 @@
 
  ## Managed Object Contexts
 
- The managed object store provides the application developer with a pair of managed object contexts with which to work with Core Data. The store configures a primary managed object context with the NSPrivateQueueConcurrencyType that is associated with the persistent store coordinator for handling Core Data persistence. A second context is also created with the NSMainQueueConcurrencyType that is a child of the primary managed object context for doing work on the main queue. Additional child contexts can be created directly or via a convenience method interface provided by the store (see newChildManagedObjectContextWithConcurrencyType:).
+ The managed object store provides the application developer with a pair of managed object contexts with which to work with Core Data. The store configures a primary managed object context with the NSPrivateQueueConcurrencyType that is associated with the persistent store coordinator for handling Core Data persistence. A second context is also created with the NSMainQueueConcurrencyType that is a child of the primary managed object context for doing work on the main queue. Additional child contexts can be created directly or via a convenience method interface provided by the store (see newChildManagedObjectContextWithConcurrencyType:tracksChanges:).
 
  The managed object context hierarchy is designed to isolate the main thread from disk I/O and avoid deadlocks. Because the primary context manages its own private queue, saving the main queue context will not result in the objects being saved to the persistent store. The primary context must be saved as well for objects to be persisted to disk.
 
@@ -237,12 +237,14 @@
 @property (nonatomic, strong, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 /**
- Creates a new child managed object context of the persistent store managed object context with a given concurrency type.
+ Creates a new child managed object context of the persistent store managed object context with a given concurrency type, optionally tracking changes saved to the parent context and merging them on save.
 
  @param concurrencyType The desired concurrency type for the new context.
+ @param tracksChanges When `YES`, the new context will observe the `persistentStoreManagedObjectContext` for save events and merge in any changes via `[NSManagedObjectContext mergeChangesFromContextDidSaveNotification:]`.
  @return A newly created managed object context with the given concurrency type whose parent is the `persistentStoreManagedObjectContext`.
  */
-- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType;
+- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges;
+- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType DEPRECATED_ATTRIBUTE; // invokes above with `tracksChanges:NO`
 
 ///----------------------------
 /// @name Performing Migrations

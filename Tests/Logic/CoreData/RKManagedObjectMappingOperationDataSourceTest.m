@@ -1040,8 +1040,8 @@
     [mapping addAttributeMappingsFromArray:@[ @"name", @"railsID" ]];
     
     // Create two contexts with common parent
-    NSManagedObjectContext *firstContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    NSManagedObjectContext *secondContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];        
+    NSManagedObjectContext *firstContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
+    NSManagedObjectContext *secondContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
     
     // Map into the first context
     NSDictionary *objectRepresentation = @{ @"name": @"Blake", @"railsID": @(31337) };
@@ -1361,7 +1361,7 @@
 - (void)testDeletionOperationAfterManagedObjectContextIsDeallocated
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSManagedObjectContext *managedObjectContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    NSManagedObjectContext *managedObjectContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectContext cache:nil];
     
     
