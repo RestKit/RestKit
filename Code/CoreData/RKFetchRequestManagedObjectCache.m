@@ -21,8 +21,7 @@
  */
 static NSString *RKPredicateCacheKeyForAttributeValues(NSDictionary *attributesValues)
 {
-    if ([attributesValues count] == 1) return [[attributesValues allKeys] lastObject];
-    NSArray *sortedKeys = [[attributesValues allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    NSArray *sortedKeys = [[attributesValues allKeys] sortedArrayUsingSelector:@selector(compare:)];
     NSMutableArray *keyFragments = [NSMutableArray array];
     for (NSString *attributeName in sortedKeys) {
         id value = [attributesValues objectForKey:attributeName];
