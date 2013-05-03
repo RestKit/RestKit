@@ -38,21 +38,19 @@ static id RKCacheKeyValueForEntityAttributeWithValue(NSEntityDescription *entity
     if ([value isKindOfClass:[NSString class]] || [value isEqual:[NSNull null]]) {
         return value;
     }
-    
-    Class attributeType = [[RKPropertyInspector sharedInspector] classForPropertyNamed:attribute ofEntity:entity];
-    return [attributeType instancesRespondToSelector:@selector(stringValue)] ? [value stringValue] : value;
+    return [value respondsToSelector:@selector(stringValue)] ? [value stringValue] : value;
 }
 
 static NSString *RKCacheKeyForEntityWithAttributeValues(NSEntityDescription *entity, NSDictionary *attributeValues)
 {
     // Performance optimization
-    if ([attributeValues count] == 1) return [NSString stringWithFormat:@"%@", [[attributeValues allValues] lastObject]];
+    if ([attributeValues count] == 1) return [[[attributeValues allValues] lastObject] description];
     NSArray *sortedAttributes = [[attributeValues allKeys] sortedArrayUsingSelector:@selector(compare:)];
     NSMutableArray *sortedValues = [NSMutableArray arrayWithCapacity:[sortedAttributes count]];
-    [sortedAttributes enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
+    for (NSString *attributeName in sortedAttributes) {
         id cacheKeyValue = RKCacheKeyValueForEntityAttributeWithValue(entity, attributeName, [attributeValues objectForKey:attributeName]);
         [sortedValues addObject:cacheKeyValue];
-    }];
+    };
     
     return [sortedValues componentsJoinedByString:@":"];
 }
@@ -86,9 +84,9 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 @interface RKEntityByAttributeCache ()
 @property (nonatomic, strong) NSMutableDictionary *cacheKeysToObjectIDs;
 #if OS_OBJECT_USE_OBJC
-@property (strong, nonatomic) dispatch_queue_t queue;
+@property (nonatomic, strong) dispatch_queue_t queue;
 #else
-@property (assign, nonatomic) dispatch_queue_t queue;
+@property (nonatomic, assign) dispatch_queue_t queue;
 #endif
 @end
 
