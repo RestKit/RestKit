@@ -101,6 +101,9 @@
     expect([self.managedObjectCache.entityCache containsObject:human1]).will.beTruthy();
     [self.managedObjectStore.persistentStoreManagedObjectContext deleteObject:human1];
     [self waitForPendingChangesToProcess];
+    [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        // Nothing
+    }];
     expect([self.managedObjectCache.entityCache containsObject:human1]).will.beFalsy();
 }
 
