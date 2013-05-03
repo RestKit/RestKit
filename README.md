@@ -616,3 +616,5 @@ Support is provided by the following organizations:
 
 * [GateGuru](http://www.gateguruapp.com/)
 * [Two Toasters](http://www.twotoasters.com/)
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/RestKit/RestKit/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
