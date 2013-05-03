@@ -770,7 +770,7 @@
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     RKTestUser *exampleUser = [RKTestUser new];
-    id mockInspector = [OCMockObject mockForClass:[RKPropertyInspector class]];
+    id mockInspector = [OCMockObject partialMockForObject:[RKPropertyInspector sharedInspector]];
     [[[mockInspector stub] andReturn:nil] propertyInspectionForClass:OCMOCK_ANY];
     id mockObject = [OCMockObject partialMockForObject:exampleUser];
     [[[mockObject expect] andCall:@selector(fakeValidateValue:forKeyPath:error:) onObject:self] validateValue:(id __autoreleasing *)[OCMArg anyPointer] forKeyPath:OCMOCK_ANY error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
@@ -780,6 +780,7 @@
     [mapper start];
     [mockObject verify];
     [mockDelegate verify];
+    [mockInspector stopMocking];
 }
 
 #pragma mark - RKObjectMappingOperationTests
