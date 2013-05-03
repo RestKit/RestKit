@@ -26,7 +26,7 @@ static NSString *RKPredicateCacheKeyForAttributeValues(NSDictionary *attributesV
     for (NSString *attributeName in sortedKeys) {
         id value = [attributesValues objectForKey:attributeName];
         char suffix = ([value respondsToSelector:@selector(count)]) ? '+' : '.';
-        NSString *attributeKey = [NSString stringWithFormat:@"%@%c", attributeName, suffix];
+        NSString *attributeKey = [attributeName stringByAppendingString:[NSString stringWithUTF8String:&suffix]];
         [keyFragments addObject:attributeKey];
     }
     return [keyFragments componentsJoinedByString:@":"];
