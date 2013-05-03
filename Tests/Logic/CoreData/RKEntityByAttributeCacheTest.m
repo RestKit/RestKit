@@ -304,8 +304,6 @@
     human.railsID = [NSNumber numberWithInteger:12345];
     RKChild *child = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     child.railsID = [NSNumber numberWithInteger:12345];
-    
-    NSLog(@"Cache has %d. child.", [self.cache count]);
 
     __weak __typeof(&*self)weakSelf = self;
     __block BOOL done = NO;
