@@ -325,7 +325,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     __block NSDictionary *attributeValues;
     __block NSManagedObjectID *objectID;
     NSManagedObjectContext *managedObjectContext = [[managedObjects anyObject] managedObjectContext];
-    [managedObjectContext performBlock:^{
+    [managedObjectContext performBlockAndWait:^{
         NSMutableDictionary *newObjectIDsToAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[managedObjects count]];
         for (NSManagedObject *managedObject in managedObjects) {
             entity = managedObject.entity;
