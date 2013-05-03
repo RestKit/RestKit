@@ -560,7 +560,7 @@ Support for additional formats and alternate serialization backends is provided 
 
 ## Installation
 
-The recommended approach for installing RestKit is via the [CocoaPods](http://cocoapods.org/) package manager, as it provides flexible dependency management and dead simple installation. For best results, it is recommended that you install via CocoaPods **>= 0.15.2** using Git **>= 1.8.0** installed via Homebrew.
+The recommended approach for installing RestKit is via the [CocoaPods](http://cocoapods.org/) package manager, as it provides flexible dependency management and dead simple installation. For best results, it is recommended that you install via CocoaPods **>= 0.19.1** using Git **>= 1.8.0** installed via Homebrew.
 
 ### via CocoaPods
 
