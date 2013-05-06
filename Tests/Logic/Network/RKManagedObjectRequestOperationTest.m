@@ -1266,4 +1266,69 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(mappedHuman).to.equal(human);
 }
 
+- (void)testThatModificationKeyAttributeDoesNotInapproproiatelyTriggerManagedObjectDeletion
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID", @"name": @"name" }];
+    entityMapping.identificationAttributes = @[ @"railsID" ];
+    entityMapping.modificationKey = @"railsID";
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:nil];
+    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    human.railsID = @1;
+    [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:nil];
+    NSURLRequest *request = [NSURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    managedObjectRequestOperation.managedObjectCache = managedObjectCache;
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+        return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    };
+    managedObjectRequestOperation.deletesOrphanedObjects = YES;
+    managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
+    [managedObjectRequestOperation start];
+    expect([managedObjectRequestOperation isFinished]).will.equal(YES);
+    expect([human isDeleted]).to.equal(NO);
+}
+
+- (void)testThatNestedObjectsThatAreNotMappedDueToTheModificationKeyAreNotInappropriatelyDeletedAsOrphans
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
+    [postMapping addAttributeMappingsFromDictionary:@{ @"title": @"title", @"body": @"body" }];
+    postMapping.identificationAttributes = @[ @"title" ];
+    postMapping.modificationKey = @"title";
+    RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
+    [tagMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    [postMapping addRelationshipMappingWithSourceKeyPath:@"tags" mapping:tagMapping];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:postMapping pathPattern:nil keyPath:@"posts" statusCodes:nil];
+    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKPost *post = [NSEntityDescription insertNewObjectForEntityForName:@"Post" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [post setValue:@"Post Title" forKey:@"title"];
+    NSManagedObject *developmentTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [developmentTag setValue:@"development" forKey:@"name"];
+    NSManagedObject *restKitTag = [NSEntityDescription insertNewObjectForEntityForName:@"Tag" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [restKitTag setValue:@"restkit" forKey:@"name"];
+    [post setValue:[NSSet setWithObjects:developmentTag, restKitTag, nil] forKey:@"tags"];
+    [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:nil];
+    NSURLRequest *request = [NSURLRequest  requestWithURL:[NSURL URLWithString:@"/posts.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    managedObjectRequestOperation.managedObjectCache = managedObjectCache;
+    RKFetchRequestBlock postFetchRequestBlock = ^(NSURL *URL){
+        return [NSFetchRequest fetchRequestWithEntityName:@"Post"];
+    };
+    RKFetchRequestBlock tagFetchRequestBlock = ^(NSURL *URL){
+        return [NSFetchRequest fetchRequestWithEntityName:@"Tag"];
+    };
+    managedObjectRequestOperation.deletesOrphanedObjects = YES;
+    managedObjectRequestOperation.fetchRequestBlocks = @[ postFetchRequestBlock, tagFetchRequestBlock ];
+    [managedObjectRequestOperation start];
+    expect([managedObjectRequestOperation isFinished]).will.equal(YES);
+    expect([post isDeleted]).to.equal(NO);
+    expect([restKitTag hasBeenDeleted]).to.equal(NO);
+    expect([developmentTag hasBeenDeleted]).to.equal(NO);
+}
+
 @end

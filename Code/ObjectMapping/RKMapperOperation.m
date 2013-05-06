@@ -264,12 +264,12 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
         }
         
         id infoKey = keyPath ?: [NSNull null];
-        NSMutableDictionary *infoForKeyPath = [[self.mutableMappingInfo objectForKey:infoKey] mutableCopy];
+        NSMutableArray *infoForKeyPath = [self.mutableMappingInfo objectForKey:infoKey];
         if (infoForKeyPath) {
-            [infoForKeyPath addEntriesFromDictionary:mappingOperation.mappingInfo];
-            [self.mappingInfo setValue:infoForKeyPath forKey:infoKey];
+            [infoForKeyPath addObject:mappingOperation.mappingInfo];
         } else {
-            [self.mappingInfo setValue:mappingOperation.mappingInfo forKey:infoKey];
+            infoForKeyPath = [NSMutableArray arrayWithObject:mappingOperation.mappingInfo];
+            [self.mutableMappingInfo setValue:infoForKeyPath forKey:infoKey];
         }
         return YES;
     }

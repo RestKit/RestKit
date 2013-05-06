@@ -697,7 +697,7 @@
     expect(nameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
 }
 
-- (void)testMappingConstructsMappingInfoDictionaryWithMergedRelationshipInfo
+- (void)testAccessingPropertyAndRelationshipSpecificMappingInfo
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [mapping addAttributeMappingsFromArray:@[ @"name" ]];
@@ -711,10 +711,12 @@
     expect(mappingOperation.mappingInfo).notTo.beNil();
     RKPropertyMapping *friendsMapping = mappingOperation.mappingInfo[@"friends"];
     RKPropertyMapping *nameMapping = mappingOperation.mappingInfo[@"name"];
-    RKPropertyMapping *nestedNameMapping = mappingOperation.mappingInfo[@"friends.name"];
     expect(nameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
     expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
-    expect(nestedNameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
+    
+    NSArray *relationshipMappingInfo = [mappingOperation.mappingInfo relationshipMappingInfo][@"friends"];
+    expect([relationshipMappingInfo count]).to.equal(1);
+    expect(relationshipMappingInfo[0][@"name"]).notTo.beNil();
 }
 
 - (void)testThatMappingHasManyDoesNotDuplicateRelationshipMappingInMappingInfo
@@ -751,7 +753,7 @@
     mapperOperation.mappingOperationDataSource = dataSource;
     [mapperOperation start];
     expect(mapperOperation.mappingInfo).notTo.beNil();
-    RKPropertyMapping *friendsMapping = mapperOperation.mappingInfo[[NSNull null]][@"friends"];
+    RKPropertyMapping *friendsMapping = mapperOperation.mappingInfo[[NSNull null]][0][@"friends"];
     expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
 }
 

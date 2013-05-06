@@ -277,6 +277,67 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 
 @end
 
+@interface RKMappingInfo ()
+@property (nonatomic, assign, readwrite) NSUInteger collectionIndex;
+@property (nonatomic, strong) NSMutableSet *mutablePropertyMappings;
+@property (nonatomic, strong) NSMutableDictionary *mutableRelationshipMappingInfo;
+
+- (id)initWithObjectMapping:(RKObjectMapping *)objectMapping dynamicMapping:(RKDynamicMapping *)dynamicMapping;
+- (void)addPropertyMapping:(RKPropertyMapping *)propertyMapping;
+@end
+
+@implementation RKMappingInfo
+
+- (id)initWithObjectMapping:(RKObjectMapping *)objectMapping dynamicMapping:(RKDynamicMapping *)dynamicMapping
+{
+    self = [self init];
+    if (self) {
+        _objectMapping = objectMapping;
+        _dynamicMapping = dynamicMapping;
+        _mutablePropertyMappings = [NSMutableSet setWithCapacity:[objectMapping.propertyMappings count]];
+        _mutableRelationshipMappingInfo = [NSMutableDictionary dictionaryWithCapacity:[objectMapping.relationshipMappings count]];
+    }
+    return self;
+}
+
+- (NSSet *)propertyMappings
+{
+    return [self.mutablePropertyMappings copy];
+}
+
+- (NSDictionary *)relationshipMappingInfo
+{
+    return [self.mutableRelationshipMappingInfo copy];
+}
+
+- (void)addPropertyMapping:(RKPropertyMapping *)propertyMapping
+{
+    [self.mutablePropertyMappings addObject:propertyMapping];
+}
+
+- (void)addMappingInfo:(RKMappingInfo *)mappingInfo forRelationshipMapping:(RKRelationshipMapping *)relationshipMapping
+{
+    NSMutableArray *arrayOfMappingInfo = [self.mutableRelationshipMappingInfo objectForKey:relationshipMapping.destinationKeyPath];
+    if (arrayOfMappingInfo) {
+        [arrayOfMappingInfo addObject:mappingInfo];
+    } else {
+        arrayOfMappingInfo = [NSMutableArray arrayWithObject:mappingInfo];
+        [self.mutableRelationshipMappingInfo setObject:arrayOfMappingInfo forKey:relationshipMapping.destinationKeyPath];
+    }
+}
+
+- (id)objectForKeyedSubscript:(id)key
+{
+    for (RKPropertyMapping *propertyMapping in self.mutablePropertyMappings) {
+        if ([propertyMapping.destinationKeyPath isEqualToString:key]) {
+            return propertyMapping;
+        }
+    }
+    return nil;
+}
+
+@end
+
 @interface RKMappingOperation ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
@@ -284,8 +345,8 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 @property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping; // The concrete mapping
-@property (nonatomic, strong, readwrite) NSMutableDictionary *mutableMappingInfo;
 @property (nonatomic, strong) NSArray *nestedAttributeMappings;
+@property (nonatomic, strong) RKMappingInfo *mappingInfo;
 @end
 
 @implementation RKMappingOperation
@@ -303,11 +364,6 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     }
 
     return self;
-}
-
-- (NSDictionary *)mappingInfo
-{
-    return _mutableMappingInfo;
 }
 
 - (id)destinationObjectForMappingRepresentation:(id)representation withMapping:(RKMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
@@ -445,14 +501,6 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     return [self applyNestingToMappings:self.objectMapping.relationshipMappings];
 }
 
-- (void)addPropertyMappingToMappingInfo:(RKPropertyMapping *)propertyMapping
-{
-    RKPropertyMapping *existingValue = [self.mappingInfo valueForKey:propertyMapping.destinationKeyPath];
-    if (existingValue == propertyMapping) return;
-    id value = (existingValue) ? @[ existingValue, propertyMapping ] : propertyMapping;
-    [self.mutableMappingInfo setObject:value forKey:(propertyMapping.destinationKeyPath ?: [NSNull null])];
-}
-
 - (void)applyAttributeMapping:(RKAttributeMapping *)attributeMapping withValue:(id)value
 {
     if ([self.delegate respondsToSelector:@selector(mappingOperation:didFindValue:forKeyPath:mapping:)]) {
@@ -496,7 +544,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
             [self.delegate mappingOperation:self didNotSetUnchangedValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
     }
-    [self addPropertyMappingToMappingInfo:attributeMapping];
+    [self.mappingInfo addPropertyMapping:attributeMapping];
 }
 
 // Return YES if we mapped any attributes
@@ -560,14 +608,8 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     if (subOperation.error) {
         RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
     } else {
-        [self addPropertyMappingToMappingInfo:relationshipMapping];
-        
-        // Merge the nested mappingInfo
-        NSMutableDictionary *nestedInfo = [NSMutableDictionary dictionaryWithCapacity:[subOperation.mappingInfo count]];
-        [subOperation.mappingInfo enumerateKeysAndObjectsUsingBlock:^(NSString *nestedKeyPath, RKPropertyMapping *propertyMapping, BOOL *stop) {
-            [nestedInfo setValue:propertyMapping forKey:[NSString stringWithFormat:@"%@.%@", relationshipMapping.destinationKeyPath, nestedKeyPath]];
-        }];
-        [self.mutableMappingInfo addEntriesFromDictionary:nestedInfo];
+        [self.mappingInfo addPropertyMapping:relationshipMapping];
+        [self.mappingInfo addMappingInfo:subOperation.mappingInfo forRelationshipMapping:relationshipMapping];
     }
 
     return YES;
@@ -857,7 +899,6 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 - (void)main
 {
     if ([self isCancelled]) return;
-    self.mutableMappingInfo = [NSMutableDictionary dictionary];
 
     // Handle metadata
     self.sourceObject = [[RKMappingSourceObject alloc] initWithObject:self.sourceObject metadata:self.metadata];
@@ -888,8 +929,10 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSelectObjectMapping:forDynamicMapping:)]) {
             [self.delegate mappingOperation:self didSelectObjectMapping:self.objectMapping forDynamicMapping:(RKDynamicMapping *)self.mapping];
         }
+        self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:self.objectMapping dynamicMapping:(RKDynamicMapping *)self.mapping];
     } else if ([self.mapping isKindOfClass:[RKObjectMapping class]]) {
         self.objectMapping = (RKObjectMapping *)self.mapping;
+        self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:self.objectMapping dynamicMapping:nil];
     }
     
     BOOL canSkipMapping = [self.dataSource respondsToSelector:@selector(mappingOperationShouldSkipPropertyMapping:)] && [self.dataSource mappingOperationShouldSkipPropertyMapping:self];

@@ -21,7 +21,7 @@
 #import "RKObjectMapping.h"
 #import "RKAttributeMapping.h"
 
-@class RKMappingOperation, RKDynamicMapping, RKConnectionDescription;
+@class RKMappingOperation, RKDynamicMapping, RKConnectionDescription, RKMappingInfo;
 @protocol RKMappingOperationDataSource;
 
 /**
@@ -238,11 +238,11 @@
 @property (nonatomic, strong, readonly) NSError *error;
 
 /**
- Returns a dictionary containing information about the mappings applied during the execution of the operation. The keys of the dictionary are keyPaths into the `destinationObject` for values that were mapped and the values are the corresponding `RKPropertyMapping` objects used to perform the mapping.
+ Returns a dictionary containing information about the mappings applied during the execution of the operation. The keys of the dictionary are key paths into the `destinationObject` for values that were mapped and the values are instances of `RKMappingDetails` that specify the object mapping and property mappings that were applied.
  
  Mapping info is aggregated for all child mapping operations executed for relationships.
  */
-@property (nonatomic, readonly) NSDictionary *mappingInfo;
+@property (nonatomic, readonly) RKMappingInfo *mappingInfo;
 
 ///-------------------------
 /// @name Performing Mapping
@@ -255,5 +255,44 @@
  @return A Boolean value indicating if the mapping operation was successful.
  */
 - (BOOL)performMapping:(NSError **)error;
+
+@end
+
+/**
+ Specifies the concrete object mapping and collection of property mappings that were applied for a given key path during the execution of an `RKMappingOperation`.
+ */
+@interface RKMappingInfo : NSObject
+
+/**
+ The mapping that was applied.
+ */
+@property (nonatomic, strong, readonly) RKObjectMapping *objectMapping;
+
+/**
+ The dynamic mapping, if any, that was used to perform the mapping.
+ */
+@property (nonatomic, strong, readonly) RKDynamicMapping *dynamicMapping;
+
+/**
+ The set of property mappings that were applied from the mapping. An empty set indicates that the mapping matched the representation, but all values were unchanged and thus no properties were set.
+ */
+@property (nonatomic, readonly) NSSet *propertyMappings;
+
+/**
+ A dictionary whose keys are the destination key path for a mapped relationship and the value is an array of `RKMappingInfo` objects specifying the mapping details for each item within the collection.
+ */
+@property (nonatomic, readonly) NSDictionary *relationshipMappingInfo;
+
+///--------------------------------------
+/// @name Accessing Property by Subscript
+///--------------------------------------
+
+/**
+ Retrieves the property mapping with the specified destination key path.
+ 
+ @param key An `NSString` object specifying the destination key-path for the property that is to be retrieved.
+ @return The `RKPropertyMapping` with the specified destination key path or `nil` if none was found.
+ */
+- (id)objectForKeyedSubscript:(id)key;
 
 @end
