@@ -341,13 +341,13 @@ static NSSet *RKGatherManagedObjectsFromObjectWithRelationshipMapping(id object,
         
         if ([relationshipMapping.mapping isKindOfClass:[RKObjectMapping class]]) {
             for (RKRelationshipMapping *childRelationshipMapping in [(RKObjectMapping *)relationshipMapping.mapping relationshipMappings]) {
-                [managedObjects unionSet:RKGatherManagedObjectsFromObjectWithRelationshipMapping(relatedObject, relationshipMapping)];
+                [managedObjects unionSet:RKGatherManagedObjectsFromObjectWithRelationshipMapping(relatedObject, childRelationshipMapping)];
             }
         } else if ([relationshipMapping.mapping isKindOfClass:[RKDynamicMapping class]]) {
             for (RKObjectMapping *objectMapping in [(RKDynamicMapping *)relationshipMapping.mapping objectMappings]) {
                 @try {
                     for (RKRelationshipMapping *childRelationshipMapping in objectMapping.relationshipMappings) {
-                        [managedObjects unionSet:RKGatherManagedObjectsFromObjectWithRelationshipMapping(relatedObject, relationshipMapping)];
+                        [managedObjects unionSet:RKGatherManagedObjectsFromObjectWithRelationshipMapping(relatedObject, childRelationshipMapping)];
                     }
                 }
                 @catch (NSException *exception) {
@@ -676,7 +676,7 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
     if ([self canSkipMapping]) {
         RKLogDebug(@"Skipping deletion of orphaned objects: 304 (Not Modified) status code encountered");
         return YES;
-    }    
+    }
     
     NSSet *managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo);
     if (! managedObjectsInMappingResult) return YES;
