@@ -121,6 +121,19 @@
  */
 @property (nonatomic, copy) NSString *modificationKey;
 
+///---------------------------------------------------------------
+/// @name Specifying a Persistent Store for Newly Inserted Objects
+///---------------------------------------------------------------
+
+/**
+ The persistent store in which new object instances mapped with the receiver should be inserted.
+ 
+ If your application makes use of more than one persistent store (i.e. a combination of an in-memory store and a SQLite store), then it can be desirable to specify the persistent store in which newly created managed objects will be assigned.
+ 
+ **Default**: `nil`
+ */
+@property (nonatomic, weak) NSPersistentStore *persistentStore;
+
 ///-------------------------------------------
 /// @name Configuring Relationship Connections
 ///-------------------------------------------
