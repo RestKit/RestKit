@@ -1050,6 +1050,49 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
 }
 
+- (void)testMappingWithDynamicMappingContainingMixedNestedKeyPaths
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSManagedObject *orphanedParty = [NSEntityDescription insertNewObjectForEntityForName:@"Party" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
+    [dynamicMapping setForceCollectionMapping:YES];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    humanMapping.identificationAttributes = @[ @"railsID" ];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    
+    RKEntityMapping *meetingMapping = [RKEntityMapping mappingForEntityForName:@"Meeting" inManagedObjectStore:managedObjectStore];
+    [meetingMapping addAttributeMappingsFromDictionary:@{ @"location": @"location" }];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithPredicate:[NSPredicate predicateWithFormat:@"type == 'Meeting'"] objectMapping:meetingMapping]];
+
+    RKEntityMapping *partyMapping = [RKEntityMapping mappingForEntityForName:@"Party" inManagedObjectStore:managedObjectStore];
+    [partyMapping addAttributeMappingsFromDictionary:@{ @"summary": @"summary" }];
+    [partyMapping addRelationshipMappingWithSourceKeyPath:@"vips" mapping:humanMapping];
+    
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithPredicate:[NSPredicate predicateWithFormat:@"type == 'Party'"] objectMapping:partyMapping]];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:dynamicMapping pathPattern:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/NakedEvents.json" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    RKFetchRequestBlock meetingFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+        return [NSFetchRequest fetchRequestWithEntityName:@"Meeting"];
+    };
+    RKFetchRequestBlock eventFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+        return [NSFetchRequest fetchRequestWithEntityName:@"Party"];
+    };
+    managedObjectRequestOperation.fetchRequestBlocks = @[ meetingFetchRequestBlock, eventFetchRequestBlock ];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.deletesOrphanedObjects = YES; // Test deleting orphaned objects with dynamic mapping.
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    managedObjectRequestOperation.managedObjectCache = managedObjectCache;
+    [managedObjectRequestOperation start];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(2);
+    expect(orphanedParty.managedObjectContext).to.beNil();
+}
+
 - (void)testThatMappingObjectsWithTheSameIdentificationAttributesAcrossTwoObjectRequestOperationConcurrentlyDoesNotCreateDuplicateObjects
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
