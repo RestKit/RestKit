@@ -421,6 +421,7 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
 @property (nonatomic, strong) NSDictionary *mappingInfo;
 @property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
 @property (nonatomic, readonly) BOOL canSkipMapping;
+@property (nonatomic, assign) BOOL hasMemoizedCanSkipMapping;
 @end
 
 @implementation RKManagedObjectRequestOperation
@@ -496,7 +497,6 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
 // RKResponseHasBeenMappedCacheUserInfoKey is stored by RKObjectRequestOperation
 - (BOOL)canSkipMapping
 {
-    static BOOL hasMemoizedReturnValue = NO;
     BOOL (^shouldSkipMapping)(void) = ^{
         // Is the request cacheable
         if (!self.cachedResponse) return NO;
@@ -519,9 +519,9 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
         return [[cachedResponse.userInfo objectForKey:RKResponseHasBeenMappedCacheUserInfoKey] boolValue];
     };
     
-    if (! hasMemoizedReturnValue) {
+    if (! self.hasMemoizedCanSkipMapping) {
         _canSkipMapping = shouldSkipMapping();
-        hasMemoizedReturnValue = YES;
+        self.hasMemoizedCanSkipMapping = YES;
     }
     return _canSkipMapping;
 }
