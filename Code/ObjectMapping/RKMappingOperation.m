@@ -145,11 +145,6 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
         }
     } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
         // Number -> Date
-        if ([destinationType isSubclassOfClass:[NSDate class]]) {
-            return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value intValue]];
-        } else if ([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] && [destinationType isSubclassOfClass:[NSString class]]) {
-            return ([value boolValue] ? @"true" : @"false");
-        }
         return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value doubleValue]];
     } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
         // Number -> Decimal Number
