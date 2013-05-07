@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#import <objc/runtime.h>
 #import "RKManagedObjectStore.h"
 #import "RKLog.h"
 #import "RKPropertyInspector.h"
@@ -37,6 +38,81 @@ NSString * const RKSQLitePersistentStoreSeedDatabasePathOption = @"RKSQLitePersi
 NSString * const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
 
 static RKManagedObjectStore *defaultStore = nil;
+
+static BOOL RKIsManagedObjectContextDescendentOfContext(NSManagedObjectContext *childContext, NSManagedObjectContext *potentialAncestor)
+{
+    NSManagedObjectContext *context = [childContext parentContext];
+    while (context) {
+        if ([context isEqual:potentialAncestor]) return YES;
+        context = [context parentContext];
+    }
+    return NO;
+}
+
+static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(NSNotification *notification)
+{
+    NSUInteger count = [[[notification.userInfo allValues] valueForKeyPath:@"@sum.@count"] unsignedIntegerValue];
+    NSMutableSet *objectIDs = [NSMutableSet setWithCapacity:count];
+    for (NSSet *objects in [notification.userInfo allValues]) {
+        [objectIDs unionSet:[objects valueForKey:@"objectID"]];
+    }
+    return objectIDs;
+}
+
+@interface RKManagedObjectContextChangeMergingObserver : NSObject
+@property (nonatomic, weak) NSManagedObjectContext *observedContext;
+@property (nonatomic, weak) NSManagedObjectContext *mergeContext;
+@property (nonatomic, strong) NSSet *objectIDsFromChildDidSaveNotification;
+
+- (id)initWithObservedContext:(NSManagedObjectContext *)observedContext mergeContext:(NSManagedObjectContext *)mergeContext;
+@end
+
+@implementation RKManagedObjectContextChangeMergingObserver
+
+- (id)initWithObservedContext:(NSManagedObjectContext *)observedContext mergeContext:(NSManagedObjectContext *)mergeContext
+{
+    if (! observedContext) [NSException raise:NSInvalidArgumentException format:@"observedContext cannot be `nil`."];
+    if (! mergeContext) [NSException raise:NSInvalidArgumentException format:@"mergeContext cannot be `nil`."];
+    self = [super init];
+    if (self) {
+        self.observedContext = observedContext;
+        self.mergeContext = mergeContext;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleManagedObjectContextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:observedContext];
+        
+        if (RKIsManagedObjectContextDescendentOfContext(mergeContext, observedContext)) {
+            RKLogDebug(@"Detected observation of ancestor context by child: enabling child context save detection");
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleManagedObjectContextWillSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:mergeContext];
+        }
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)handleManagedObjectContextWillSaveNotification:(NSNotification *)notification
+{
+    self.objectIDsFromChildDidSaveNotification = RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification);
+}
+
+- (void)handleManagedObjectContextDidSaveNotification:(NSNotification *)notification
+{
+    NSAssert([notification object] == self.observedContext, @"Received Managed Object Context Did Save Notification for Unexpected Context: %@", [notification object]);
+    if (! [self.objectIDsFromChildDidSaveNotification isEqual:RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification)]) {
+        [self.mergeContext performBlock:^{
+            [self.mergeContext mergeChangesFromContextDidSaveNotification:notification];
+        }];
+    } else {
+        RKLogDebug(@"Skipping merge of `NSManagedObjectContextDidSaveNotification`: the save event originated from the mergeContext and thus no save is necessary.");
+    }
+    self.objectIDsFromChildDidSaveNotification = nil;
+}
+
+@end
+
+static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 
 @interface RKManagedObjectStore ()
 @property (nonatomic, strong, readwrite) NSManagedObjectModel *managedObjectModel;
@@ -173,16 +249,32 @@ static RKManagedObjectStore *defaultStore = nil;
     return YES;
 }
 
-- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType
+- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges
 {
     NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType];
     [managedObjectContext performBlockAndWait:^{
         managedObjectContext.parentContext = self.persistentStoreManagedObjectContext;
         managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     }];
+    
+    if (tracksChanges) {
+        RKManagedObjectContextChangeMergingObserver *observer = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:self.persistentStoreManagedObjectContext mergeContext:managedObjectContext];        
+        objc_setAssociatedObject(managedObjectContext,
+                                 &RKManagedObjectContextChangeMergingObserverAssociationKey,
+                                 observer,
+                                 OBJC_ASSOCIATION_RETAIN);
+    }
 
     return managedObjectContext;
 }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType
+{
+    return [self newChildManagedObjectContextWithConcurrencyType:concurrencyType tracksChanges:NO];
+}
+#pragma clang diagnostic pop
 
 - (void)createManagedObjectContexts
 {
@@ -201,10 +293,11 @@ static RKManagedObjectStore *defaultStore = nil;
     self.mainQueueManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 
     // Merge changes from a primary MOC back into the main queue when complete
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handlePersistentStoreManagedObjectContextDidSaveNotification:)
-                                                 name:NSManagedObjectContextDidSaveNotification
-                                               object:self.persistentStoreManagedObjectContext];
+    RKManagedObjectContextChangeMergingObserver *observer = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:self.persistentStoreManagedObjectContext mergeContext:self.mainQueueManagedObjectContext];
+    objc_setAssociatedObject(self.mainQueueManagedObjectContext,
+                             &RKManagedObjectContextChangeMergingObserverAssociationKey,
+                             observer,
+                             OBJC_ASSOCIATION_RETAIN);
 }
 
 - (void)recreateManagedObjectContexts
@@ -283,16 +376,6 @@ static RKManagedObjectStore *defaultStore = nil;
 
     [self recreateManagedObjectContexts];
     return YES;
-}
-
-- (void)handlePersistentStoreManagedObjectContextDidSaveNotification:(NSNotification *)notification
-{
-    RKLogDebug(@"persistentStoreManagedObjectContext was saved: merging changes to mainQueueManagedObjectContext");
-    RKLogTrace(@"Merging changes detailed in userInfo dictionary: %@", [notification userInfo]);
-    NSAssert([notification object] == self.persistentStoreManagedObjectContext, @"Received Managed Object Context Did Save Notification for Unexpected Context: %@", [notification object]);
-    [self.mainQueueManagedObjectContext performBlock:^{
-        [self.mainQueueManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-    }];
 }
 
 + (BOOL)migratePersistentStoreOfType:(NSString *)storeType

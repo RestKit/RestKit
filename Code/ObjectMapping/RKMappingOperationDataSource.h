@@ -66,4 +66,16 @@
  */
 - (BOOL)mappingOperation:(RKMappingOperation *)mappingOperation deleteExistingValueOfRelationshipWithMapping:(RKRelationshipMapping *)relationshipMapping error:(NSError **)error;
 
+/**
+ Asks the data source if it should set values for properties without checking that the value has been changed. This method can result in a performance improvement during mapping as the mapping operation will not attempt to assess the change state of the property being mapped.
+ 
+ If this method is not implemented by the data source, then the mapping operation defaults to `NO`.
+ 
+ @param mappingOperation The mapping operation that is querying the data source.
+ @return `YES` if the mapping operation should disregard property change status, else `NO`.
+ */
+- (BOOL)mappingOperationShouldSetUnchangedValues:(RKMappingOperation *)mappingOperation;
+
+- (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation;
+
 @end

@@ -20,7 +20,6 @@
 #import "RKBenchmark.h"
 
 @interface RKManagedObjectMappingOperationDataSourceTest : RKTestCase
-
 @end
 
 /**
@@ -29,7 +28,7 @@
 @implementation RKManagedObjectMappingOperationDataSourceTest
 
 - (void)setUp
-{
+{    
     [RKTestFactory setUp];
 }
 
@@ -742,6 +741,7 @@
     operation.dataSource = mappingOperationDataSource;
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
+//    expect([mappingOperationDataSource.operationQueue operationCount]).will.equal(0);
     [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.cats, isNot(nilValue()));
@@ -1040,8 +1040,8 @@
     [mapping addAttributeMappingsFromArray:@[ @"name", @"railsID" ]];
     
     // Create two contexts with common parent
-    NSManagedObjectContext *firstContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];
-    NSManagedObjectContext *secondContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];        
+    NSManagedObjectContext *firstContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
+    NSManagedObjectContext *secondContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
     
     // Map into the first context
     NSDictionary *objectRepresentation = @{ @"name": @"Blake", @"railsID": @(31337) };
@@ -1166,9 +1166,6 @@
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
     mapper.mappingOperationDataSource = mappingOperationDataSource;
 
-    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
-    RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
-
     [RKBenchmark report:@"Mapping with Fetch Request Cache" executionBlock:^{
         for (NSUInteger i = 0; i < 50; i++) {
             [mapper start];
@@ -1201,8 +1198,6 @@
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
     mapper.mappingOperationDataSource = mappingOperationDataSource;
-    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
-    RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
 
     [RKBenchmark report:@"Mapping with In Memory Cache" executionBlock:^{
         for (NSUInteger i = 0; i < 50; i++) {
@@ -1366,7 +1361,7 @@
 - (void)testDeletionOperationAfterManagedObjectContextIsDeallocated
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSManagedObjectContext *managedObjectContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    NSManagedObjectContext *managedObjectContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectContext cache:nil];
     
     

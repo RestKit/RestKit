@@ -197,6 +197,11 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     return [self.mappingResult description];
 }
 
+- (NSUInteger)count
+{
+    return [self.mappingResult count];
+}
+
 - (RKMappingResult *)refetchedMappingResult
 {
     NSAssert(!self.refetched, @"Mapping result should only be refetched once");
@@ -636,7 +641,7 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
         }
     } else {
         if (error) *error = localError;
-        RKLogError(@"Failed saving managed object context %@ %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  context);
+        RKLogError(@"Failed saving managed object context %@ %@: %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  context, localError);
         RKLogCoreDataError(localError);
     }
 
@@ -647,9 +652,14 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
 {
     if ([self.privateContext hasChanges]) {
         return [self saveContext:self.privateContext error:error];
-    } else if ([self.targetObject isKindOfClass:[NSManagedObject class]] && [(NSManagedObject *)self.targetObject isNew]) {
+    } else if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
+        NSManagedObjectContext *context = [(NSManagedObject *)self.targetObject managedObjectContext];
+        __block BOOL isNew = NO;
+        [context performBlockAndWait:^{
+            isNew = [(NSManagedObject *)self.targetObject isNew];
+        }];
         // Object was like POST'd in an unsaved state and we wish to persist
-        return [self saveContext:[self.targetObject managedObjectContext] error:error];
+        if (isNew) [self saveContext:context error:error];
     }
 
     return YES;
