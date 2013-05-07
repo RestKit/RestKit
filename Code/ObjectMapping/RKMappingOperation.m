@@ -261,7 +261,16 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
         NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
         return [self.metadata valueForKeyPath:metadataKeyPath];
     } else {
-        return [self.object valueForKeyPath:keyPath];
+        /** NOTE:
+         This happens because of the problems KVC has with dictionary keys starting with the @ sign.
+         In order to ge the value we detect those keys and pull the dictionary contenet using objectForKey instead of valueForKeyPath
+        */
+        if ([keyPath hasPrefix:@"@"]){
+            return [self.object objectForKey:keyPath];
+        }
+        else {
+            return [self.object valueForKeyPath:keyPath];
+        }
     }
 }
 
