@@ -94,9 +94,9 @@
  */
 @property (nonatomic, strong) NSEntityDescription *entity;
 
-///----------------------------------
-/// @name Identifying Managed Objects
-///----------------------------------
+///------------------------------------------------
+/// @name Configuring Managed Object Identification
+///------------------------------------------------
 
 /**
  The array of `NSAttributeDescription` objects specifying the attributes of the receiver's entity that are used during mapping to determine whether an existing object should be updated or a new managed object should be inserted. Please see the "Entity Identification" section of this document for more information.
@@ -114,7 +114,12 @@
  */
 @property (nonatomic, copy) NSPredicate *identificationPredicate;
 
-@property (nonatomic, assign) NSString *modificationKey;
+/**
+ An optional key on objects mapped with the receiver that identifies a property that can be used to detect modification to the instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object.
+ 
+ A common modification key is a 'last modified' or 'updated at' timestamp that specifies the last change to an object. When the `modificationKey` is non-nil, the mapper will compare the value returned for the key on an existing object instance with the value in the representation being mapped. If they are exactly equal, then the mapper will skip all remaining property mappings and proceed to the next object.
+ */
+@property (nonatomic, copy) NSString *modificationKey;
 
 ///-------------------------------------------
 /// @name Configuring Relationship Connections
