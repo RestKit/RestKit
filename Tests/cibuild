@@ -16,12 +16,3 @@ rake server:stop || true
 rake server:start
 rake test
 rake server:stop
-
-# Build & Publish Docs
-if [ -n $DOCS_DESTINATION ]; then
-  VERSION=`echo $GIT_BRANCH|sed -e 's/origin\///'`
-  if [ -n $VERSION ]; then
-      echo "Building documentation for branch $VERSION and publishing to '$DOCS_DESTINATION'"
-      rake docs:publish[$VERSION,$DOCS_DESTINATION,false]
-  fi
-fi
