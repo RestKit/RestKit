@@ -528,6 +528,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         RKRoute *route = [self.router.routeSet routeForObject:object method:method];
         NSDictionary *interpolatedParameters = nil;
         NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
+        if (! URL) {
+            RKLogError(@"Failed to construct a URL from the provided object. Returning nil.");
+            return operation;
+        }
         path = [URL relativeString];
         routingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
     }
