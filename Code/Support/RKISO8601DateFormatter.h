@@ -33,49 +33,61 @@ enum {
 };
 typedef NSUInteger RKISO8601DateFormat;
 
-//The default separator for time values. Currently, this is ':'.
-extern unichar RKISO8601DefaultTimeSeparatorCharacter;
-
 @interface RKISO8601DateFormatter: NSFormatter
-{
-	NSString *lastUsedFormatString;
-	NSDateFormatter *unparsingFormatter;
-    
-	NSCalendar *parsingCalendar, *unparsingCalendar;
-    
-	NSTimeZone *defaultTimeZone;
-	RKISO8601DateFormat format;
-	unichar timeSeparator;
-	BOOL includeTime;
-	BOOL parsesStrictly;
-}
 
-//Call this if you get a memory warning.
-+ (void) purgeGlobalCaches;
+/**
+ The time zone for tge formatter.
+ 
+ **Default:** `[NSTimeZone defaultTimeZone]`
+ */
+@property (nonatomic, strong) NSTimeZone *timeZone;
 
-@property(nonatomic, retain) NSTimeZone *defaultTimeZone;
+/**
+ The locale for the formatter.
+ 
+ **Default:** `[NSLocale currentLocale]`
+ */
+@property (nonatomic, strong) NSLocale *locale;
 
 #pragma mark Parsing
 
-//As a formatter, this object converts strings to dates.
+/**
+ A Boolean value that determines if the receiver parses strictly.
+ 
+ **Default**: `NO`
+ */
+@property (nonatomic, assign) BOOL parsesStrictly;
 
-@property BOOL parsesStrictly;
-
-- (NSDateComponents *) dateComponentsFromString:(NSString *)string;
-- (NSDateComponents *) dateComponentsFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone;
-- (NSDateComponents *) dateComponentsFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone range:(out NSRange *)outRange;
-
-- (NSDate *) dateFromString:(NSString *)string;
-- (NSDate *) dateFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone;
-- (NSDate *) dateFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone range:(out NSRange *)outRange;
+- (NSDateComponents *)dateComponentsFromString:(NSString *)string;
+- (NSDate *)dateFromString:(NSString *)string;
 
 #pragma mark Unparsing
 
-@property RKISO8601DateFormat format;
-@property BOOL includeTime;
-@property unichar timeSeparator;
+/**
+ **Default**: `RKISO8601DateFormatCalendar`
+ */
+@property (nonatomic, assign) RKISO8601DateFormat format;
 
-- (NSString *) stringFromDate:(NSDate *)date;
-- (NSString *) stringFromDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone;
+/**
+ A Boolean value that specifies if time should be included in the formatted strings.
+ 
+ **Default**: `NO`
+ */
+@property (nonatomic, assign) BOOL includeTime;
+
+/**
+ The separator character to use between time components.
+ 
+ **Default**: `':'`
+ */
+@property (nonatomic, assign) unichar timeSeparator;
+
+/**
+ Returns an ISO-8601 string representation of the given date.
+ 
+ @param date The date to be formatted into a string.
+ @return An ISO-8601 formatted string representation of the date.
+ */
+- (NSString *)stringFromDate:(NSDate *)date;
 
 @end

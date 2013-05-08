@@ -497,7 +497,8 @@ static NSFormatter *preferredDateFormatter = nil;
 {
     if (!preferredDateFormatter) {
         RKISO8601DateFormatter *iso8601Formatter = [[RKISO8601DateFormatter alloc] init];
-        iso8601Formatter.defaultTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        iso8601Formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        iso8601Formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         iso8601Formatter.includeTime = YES;
         preferredDateFormatter = iso8601Formatter;
     }
