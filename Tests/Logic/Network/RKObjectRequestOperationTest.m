@@ -527,7 +527,7 @@
 
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
-    expect(blockError).notTo.beNil();
+    expect(blockError).willNot.beNil();
 }
 
 #pragma mark - Will Map Data Block

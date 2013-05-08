@@ -2,7 +2,7 @@
 
 # Configure RVM
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-source .rvmrc
+rvm rvmrc load
 
 # Git submodules
 git submodule update --init

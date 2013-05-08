@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-require 'xcoder'
 require 'restkit/rake'
 require 'debugger'
 
@@ -16,37 +15,24 @@ RestKit::Rake::ServerTask.new do |t|
 end
 
 namespace :test do
-  namespace :logic do
-    desc "Run the logic tests for iOS"
-    task :ios do
-      config = Xcode.workspace(:RestKit).scheme(:RestKitTests)
-      builder = config.builder
-      build_dir = File.dirname(config.parent.workspace_root) + '/Build'
-      builder.symroot = build_dir + '/Products'
-      builder.objroot = build_dir
-      builder.test(:sdk => 'iphonesimulator')
-    end
-    
-    desc "Run the logic tests for OS X"
-    task :osx do
-      config = Xcode.workspace(:RestKit).scheme(:RestKitFrameworkTests)
-      builder = config.builder
-      build_dir = File.dirname(config.parent.workspace_root) + '/Build'
-      builder.symroot = build_dir + '/Products'
-      builder.objroot = build_dir
-    	builder.test(:sdk => 'macosx')
-    end
-  end    
+  desc "Run the unit tests for iOS"
+  task :ios do
+    system("xctool -scheme RestKit test -test-sdk iphonesimulator")
+    $ios_return_value = $?
+  end
   
-  desc "Run the unit tests for iOS and OS X"
-  task :logic => ['logic:ios', 'logic:osx']
+  desc "Run the unit tests for OS X"
+  task :osx do
+    system("xctool -scheme RestKitFramework test -test-sdk macosx -sdk macosx")
+    $osx_return_value = $?
+  end
   
-  desc "Run all tests for iOS and OS X"
   task :all do
-    Rake.application.invoke_task("test:logic")
-    unit_status = $?.exitstatus
-    puts "\033[0;31m!! Unit Tests failed with exit status of #{unit_status}" if unit_status != 0
-    puts "\033[0;32m** All Tests executed successfully" if unit_status == 0 #&& integration_status == 0
+    Rake.application.invoke_task("test:ios")
+    Rake.application.invoke_task("test:osx")
+    puts "\033[0;31m!! iOS unit tests failed" unless $ios_return_value.success?
+    puts "\033[0;31m!! OS X unit tests failed" unless $osx_return_value.success?
+    puts "\033[0;32m** All tests executed successfully" if $ios_return_value.success? && $osx_return_value.success?
   end
 end
 
