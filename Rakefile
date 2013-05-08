@@ -17,13 +17,13 @@ end
 namespace :test do
   desc "Run the unit tests for iOS"
   task :ios do
-    system("xctool -scheme RestKit test -test-sdk iphonesimulator")
+    system("xctool -workspace RestKit.xcworkspace -scheme RestKit test -test-sdk iphonesimulator")
     $ios_return_value = $?
   end
   
   desc "Run the unit tests for OS X"
   task :osx do
-    system("xctool -scheme RestKitFramework test -test-sdk macosx -sdk macosx")
+    system("xctool -workspace RestKit.xcworkspace -scheme RestKitFramework test -test-sdk macosx -sdk macosx")
     $osx_return_value = $?
   end
   
