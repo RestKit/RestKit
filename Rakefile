@@ -17,22 +17,26 @@ end
 namespace :test do
   desc "Run the unit tests for iOS"
   task :ios do
-    system("xctool -workspace RestKit.xcworkspace -scheme RestKit test -test-sdk iphonesimulator")
+    system("xctool -workspace RestKit.xcworkspace -scheme RestKitTests test -test-sdk iphonesimulator")
     $ios_return_value = $?
   end
   
   desc "Run the unit tests for OS X"
   task :osx do
-    system("xctool -workspace RestKit.xcworkspace -scheme RestKitFramework test -test-sdk macosx -sdk macosx")
+    system("xctool -workspace RestKit.xcworkspace -scheme RestKitFrameworkTests test -test-sdk macosx -sdk macosx")
     $osx_return_value = $?
   end
   
   task :all do
     Rake.application.invoke_task("test:ios")
     Rake.application.invoke_task("test:osx")
-    puts "\033[0;31m!! iOS unit tests failed" unless $ios_return_value.success?
-    puts "\033[0;31m!! OS X unit tests failed" unless $osx_return_value.success?
-    puts "\033[0;32m** All tests executed successfully" if $ios_return_value.success? && $osx_return_value.success?
+    fail "\033[0;31m!! iOS unit tests failed" unless $ios_return_value.success?
+    fail "\033[0;31m!! OS X unit tests failed" unless $osx_return_value.success?
+    if $ios_return_value.success? && $osx_return_value.success?
+      puts "\033[0;32m** All tests executed successfully"
+    else
+      exit(-1)
+    end
   end
 end
 
