@@ -678,10 +678,12 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
         return YES;
     }
     
-    NSSet *managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo);
-    if (! managedObjectsInMappingResult) return YES;
+    NSSet *managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo) ?: [NSSet set];
     NSSet *localObjects = [self localObjectsFromFetchRequestsMatchingRequestURL:error];
-    if (! localObjects) return NO;
+    if (! localObjects) {
+        RKLogError(@"Failed when attempting to fetch local candidate objects for orphan cleanup: %@", *error);
+        return NO;
+    }
     RKLogDebug(@"Checking mappings result of %ld objects for %ld potentially orphaned local objects...", (long) [managedObjectsInMappingResult count], (long) [localObjects count]);
     
     NSMutableSet *orphanedObjects = [localObjects mutableCopy];
