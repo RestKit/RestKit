@@ -681,7 +681,7 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
     NSSet *managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo) ?: [NSSet set];
     NSSet *localObjects = [self localObjectsFromFetchRequestsMatchingRequestURL:error];
     if (! localObjects) {
-        RKLogError(@"Failed when attempting to fetch local candidate objects for orphan cleanup: %@", *error);
+        RKLogError(@"Failed when attempting to fetch local candidate objects for orphan cleanup: %@", error ? *error : nil);
         return NO;
     }
     RKLogDebug(@"Checking mappings result of %ld objects for %ld potentially orphaned local objects...", (long) [managedObjectsInMappingResult count], (long) [localObjects count]);
