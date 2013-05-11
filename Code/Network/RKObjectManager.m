@@ -840,10 +840,14 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     __block dispatch_group_t dispatchGroup = dispatch_group_create();
     NSBlockOperation *batchedOperation = [NSBlockOperation blockOperationWithBlock:^{
         dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^{
+            dispatch_release(dispatchGroup);
             if (completion) {
                 completion(operations);
             }
         });
+#if !OS_OBJECT_USE_OBJC
+        dispatch_release(dispatchGroup);
+#endif
     }];
 
     for (RKObjectRequestOperation *operation in operations) {
