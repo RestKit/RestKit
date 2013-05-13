@@ -1,5 +1,6 @@
 language: objective-c
 before_install:
+    - cd `brew --prefix` && git fetch origin && git reset --hard origin/master
     - brew update
     - brew install xctool --HEAD
     - bundle update
