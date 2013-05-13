@@ -4,4 +4,6 @@ before_install:
     - brew update
     - brew install xctool --HEAD
     - bundle update
-script: "./Tests/cibuild"
+script:
+    - rake server:start
+    - rake test
