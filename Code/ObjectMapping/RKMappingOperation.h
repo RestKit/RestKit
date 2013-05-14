@@ -55,6 +55,17 @@
 - (void)mappingOperation:(RKMappingOperation *)operation didNotFindValueForKeyPath:(NSString *)keyPath mapping:(RKPropertyMapping *)propertyMapping;
 
 /**
+ Asks the delegate if the mapping operation should set a value for a given key path with an attribute or relationship mapping. This method is invoked before the value is set. If the delegate does not implement this method, then the mapping operation will determine if the value should be set by comparing the current property value with the new property value.
+ 
+ @param operation The object mapping operation being performed.
+ @param value A new value that was set on the destination object.
+ @param keyPath The key path in the destination object for which a new value has been set.
+ @param propertyMapping The `RKAttributeMapping` or `RKRelationshipMapping` found for the key path.
+ @return `YES` if the operation should set the proposed value for the key path, else `NO`.
+ */
+- (BOOL)mappingOperation:(RKMappingOperation *)operation shouldSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKPropertyMapping *)propertyMapping;
+
+/**
  Tells the delegate that the mapping operation has set a value for a given key path with an attribute or relationship mapping.
 
  @param operation The object mapping operation being performed.

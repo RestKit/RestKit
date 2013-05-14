@@ -417,8 +417,12 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     return success;
 }
 
-- (BOOL)shouldSetValue:(id *)value atKeyPath:(NSString *)keyPath
+- (BOOL)shouldSetValue:(id *)value forKeyPath:(NSString *)keyPath usingMapping:(RKPropertyMapping *)propertyMapping
 {
+    if ([self.delegate respondsToSelector:@selector(mappingOperation:shouldSetValue:forKeyPath:usingMapping:)]) {
+        return [self.delegate mappingOperation:self shouldSetValue:*value forKeyPath:keyPath usingMapping:propertyMapping];
+    }
+    
     // Always set the properties
     if ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] && [self.dataSource mappingOperationShouldSetUnchangedValues:self]) return YES;
     
@@ -522,7 +526,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     RKSetIntermediateDictionaryValuesOnObjectForKeyPath(self.destinationObject, attributeMapping.destinationKeyPath);
     
     // Ensure that the value is different
-    if ([self shouldSetValue:&value atKeyPath:attributeMapping.destinationKeyPath]) {
+    if ([self shouldSetValue:&value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
         
         if (attributeMapping.destinationKeyPath) {
@@ -648,7 +652,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     [self mapNestedObject:value toObject:destinationObject withRelationshipMapping:relationshipMapping metadata:@{ @"mapping": @{ @"collectionIndex": [NSNull null] } }];
 
     // If the relationship has changed, set it
-    if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
+    if ([self shouldSetValue:&destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
         if (! [self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
             return NO;
         }
@@ -727,7 +731,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     }
 
     // If the relationship has changed, set it
-    if ([self shouldSetValue:&valueForRelationship atKeyPath:relationshipMapping.destinationKeyPath]) {
+    if ([self shouldSetValue:&valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
         if (! [self mapCoreDataToManyRelationshipValue:valueForRelationship withMapping:relationshipMapping]) {
             RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, valueForRelationship);
             [self.destinationObject setValue:valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath];
@@ -780,7 +784,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 
             // Optionally nil out the property
             id nilReference = nil;
-            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference atKeyPath:relationshipMapping.destinationKeyPath]) {
+            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
                 RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
                 [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
             }
@@ -793,7 +797,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
             
             // Optionally nil out the property
             id nilReference = nil;
-            if ([self shouldSetValue:&nilReference atKeyPath:relationshipMapping.destinationKeyPath]) {
+            if ([self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
                 RKLogTrace(@"Setting nil for null relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
                 [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
             }

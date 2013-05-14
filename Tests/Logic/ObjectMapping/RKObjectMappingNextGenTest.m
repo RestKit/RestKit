@@ -1303,6 +1303,7 @@
     operation.delegate = mockDelegate;
     NSError *error = nil;
     [[mockDelegate expect] mappingOperation:operation didFindValue:[NSNull null] forKeyPath:@"name" mapping:nameMapping];
+    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE((BOOL){YES})] mappingOperation:operation shouldSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
     [[mockDelegate expect] mappingOperation:operation didSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
     operation.dataSource = dataSource;
     [operation performMapping:&error];
@@ -1324,6 +1325,7 @@
     operation.delegate = mockDelegate;
     NSError *error = nil;
     [[mockDelegate expect] mappingOperation:operation didFindValue:@"Blake Watters" forKeyPath:@"name" mapping:nameMapping];
+    [[mockDelegate expect] mappingOperation:operation shouldSetValue:@"Blake Watters" forKeyPath:@"name" usingMapping:nameMapping];
     [[mockDelegate expect] mappingOperation:operation didNotSetUnchangedValue:@"Blake Watters" forKeyPath:@"name" usingMapping:nameMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -1739,7 +1741,8 @@
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMappingOperationDelegate)];
-    [[mockDelegate expect] mappingOperation:operation didNotSetUnchangedValue:address forKeyPath:@"address" usingMapping:hasOneMapping];
+    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE((BOOL){NO})] mappingOperation:operation shouldSetValue:OCMOCK_ANY forKeyPath:OCMOCK_ANY usingMapping:OCMOCK_ANY];
+    [[mockDelegate expect] mappingOperation:operation didNotSetUnchangedValue:OCMOCK_ANY forKeyPath:@"address" usingMapping:hasOneMapping];
     operation.delegate = mockDelegate;
     [operation performMapping:nil];
     [mockDelegate verify];
