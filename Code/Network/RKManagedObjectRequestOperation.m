@@ -261,9 +261,11 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
                     if (RKObjectIsCollection(sourceObject)) {
                         // This is a to-many relationship, we want to refetch each item at the keyPath
                         for (id nestedObject in sourceObject) {
-                            // Refetch this object. Set it on the destination.
-                            NSManagedObject *managedObject = [nestedObject valueForKey:destinationKey];
-                            [nestedObject setValue:RKRefetchedValueInManagedObjectContext(managedObject, self.managedObjectContext) forKey:destinationKey];
+                            // NOTE: If this collection was mapped with a dynamic mapping then each instance may not respond to the key
+                            if ([nestedObject respondsToSelector:NSSelectorFromString(destinationKey)]) {
+                                NSManagedObject *managedObject = [nestedObject valueForKey:destinationKey];
+                                [nestedObject setValue:RKRefetchedValueInManagedObjectContext(managedObject, self.managedObjectContext) forKey:destinationKey];
+                            }
                         }
                     } else {
                         // This is a singular relationship. We want to refetch the object and set it directly.
