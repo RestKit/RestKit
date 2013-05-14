@@ -2819,7 +2819,7 @@
 			};
 			name = Release;
 		};
-		8B0F536016964C5D00C418C6 /* Distribution */ = {
+		8BC0B1991742BB85004F5C6D /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -2827,6 +2827,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -2835,6 +2836,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					_AFNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_,
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -2849,7 +2851,7 @@
 			};
 			name = Distribution;
 		};
-		8B0F536116964C5D00C418C6 /* Distribution */ = {
+		8BC0B19A1742BB85004F5C6D /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -2867,8 +2869,9 @@
 			};
 			name = Distribution;
 		};
-		8B0F536216964C5D00C418C6 /* Distribution */ = {
+		8BC0B19B1742BB85004F5C6D /* Distribution */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2891,7 +2894,7 @@
 			};
 			name = Distribution;
 		};
-		8B0F536316964C5D00C418C6 /* Distribution */ = {
+		8BC0B19C1742BB85004F5C6D /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
@@ -2905,6 +2908,7 @@
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -2920,17 +2924,14 @@
 			};
 			name = Distribution;
 		};
-		8B0F536416964C5D00C418C6 /* Distribution */ = {
+		8BC0B19D1742BB85004F5C6D /* Distribution */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
@@ -2944,7 +2945,7 @@
 			};
 			name = Distribution;
 		};
-		8B0F536616964C6200C418C6 /* Test */ = {
+		8BC6F7BD1742BC0F00943575 /* Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -2952,6 +2953,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -2975,7 +2977,7 @@
 			};
 			name = Test;
 		};
-		8B0F536716964C6200C418C6 /* Test */ = {
+		8BC6F7BE1742BC0F00943575 /* Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -2993,8 +2995,9 @@
 			};
 			name = Test;
 		};
-		8B0F536816964C6200C418C6 /* Test */ = {
+		8BC6F7BF1742BC0F00943575 /* Test */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3017,7 +3020,7 @@
 			};
 			name = Test;
 		};
-		8B0F536916964C6200C418C6 /* Test */ = {
+		8BC6F7C01742BC0F00943575 /* Test */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
@@ -3031,6 +3034,7 @@
 				);
 				FRAMEWORK_VERSION = A;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -3046,17 +3050,14 @@
 			};
 			name = Test;
 		};
-		8B0F536A16964C6200C418C6 /* Test */ = {
+		8BC6F7C11742BC0F00943575 /* Test */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
@@ -3077,8 +3078,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160D3814564E820060A5C5 /* Debug */,
-				8B0F536616964C6200C418C6 /* Test */,
-				8B0F536016964C5D00C418C6 /* Distribution */,
+				8BC6F7BD1742BC0F00943575 /* Test */,
+				8BC0B1991742BB85004F5C6D /* Distribution */,
 				25160D3914564E820060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -3088,8 +3089,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160D3B14564E820060A5C5 /* Debug */,
-				8B0F536716964C6200C418C6 /* Test */,
-				8B0F536116964C5D00C418C6 /* Distribution */,
+				8BC6F7BE1742BC0F00943575 /* Test */,
+				8BC0B19A1742BB85004F5C6D /* Distribution */,
 				25160D3C14564E820060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -3099,8 +3100,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160D3E14564E820060A5C5 /* Debug */,
-				8B0F536816964C6200C418C6 /* Test */,
-				8B0F536216964C5D00C418C6 /* Distribution */,
+				8BC6F7BF1742BC0F00943575 /* Test */,
+				8BC0B19B1742BB85004F5C6D /* Distribution */,
 				25160D3F14564E820060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -3110,8 +3111,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160E88145651060060A5C5 /* Debug */,
-				8B0F536916964C6200C418C6 /* Test */,
-				8B0F536316964C5D00C418C6 /* Distribution */,
+				8BC6F7C01742BC0F00943575 /* Test */,
+				8BC0B19C1742BB85004F5C6D /* Distribution */,
 				25160E89145651060060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -3121,8 +3122,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				25160E8B145651060060A5C5 /* Debug */,
-				8B0F536A16964C6200C418C6 /* Test */,
-				8B0F536416964C5D00C418C6 /* Distribution */,
+				8BC6F7C11742BC0F00943575 /* Test */,
+				8BC0B19D1742BB85004F5C6D /* Distribution */,
 				25160E8C145651060060A5C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
