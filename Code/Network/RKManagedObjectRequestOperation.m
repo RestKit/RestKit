@@ -137,31 +137,28 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     if (! value) {
         return value;
     } else if ([value isKindOfClass:[NSArray class]]) {
-        BOOL isMutable = [value isKindOfClass:[NSMutableArray class]];
         NSMutableArray *newValue = [[NSMutableArray alloc] initWithCapacity:[value count]];
         for (__strong id object in value) {
             if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
             if (object) [newValue addObject:object];
         }
-        value = (isMutable) ? newValue : [newValue copy];
+        return newValue;
     } else if ([value isKindOfClass:[NSSet class]]) {
-        BOOL isMutable = [value isKindOfClass:[NSMutableSet class]];
         NSMutableSet *newValue = [[NSMutableSet alloc] initWithCapacity:[value count]];
         for (__strong id object in value) {
             if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
             if (object) [newValue addObject:object];
         }
-        value = (isMutable) ? newValue : [newValue copy];
+        return newValue;
     } else if ([value isKindOfClass:[NSOrderedSet class]]) {
-        BOOL isMutable = [value isKindOfClass:[NSMutableOrderedSet class]];
         NSMutableOrderedSet *newValue = [NSMutableOrderedSet orderedSet];
         [(NSOrderedSet *)value enumerateObjectsUsingBlock:^(id object, NSUInteger index, BOOL *stop) {
             if ([object isKindOfClass:[NSManagedObject class]]) object = RKRefetchManagedObjectInContext(object, managedObjectContext);
             if (object) [newValue setObject:object atIndex:index];
         }];
-        value = (isMutable) ? newValue : [newValue copy];
+        return newValue;
     } else if ([value isKindOfClass:[NSManagedObject class]]) {
-        value = RKRefetchManagedObjectInContext(value, managedObjectContext);
+        return RKRefetchManagedObjectInContext(value, managedObjectContext);
     }
     
     return value;

@@ -207,22 +207,25 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
         }
     }
 
-    // Ensure we are mapping onto a mutable collection if there is a target
     NSMutableArray *mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[representations count]];
-    if (NO == [mappedObjects respondsToSelector:@selector(addObject:)]) {
-        NSString *errorMessage = [NSString stringWithFormat:
-                                  @"Cannot map a collection of objects onto a non-mutable collection. Unexpected destination object type '%@'",
-                                  NSStringFromClass([mappedObjects class])];
-        [self addErrorWithCode:RKMappingErrorTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
-        return nil;
-    }
-
     [objectsToMap enumerateObjectsUsingBlock:^(id mappableObject, NSUInteger index, BOOL *stop) {
         id destinationObject = [self objectForRepresentation:mappableObject withMapping:mapping];
         if (destinationObject) {
             BOOL success = [self mapRepresentation:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping metadata:@{ @"mapping": @{ @"collectionIndex": @(index) } }];
             if (success) {
-                [mappedObjects addObject:destinationObject];
+                @try {
+                    [mappedObjects addObject:destinationObject];
+                }
+                @catch (NSException *exception) {
+                    if ([[exception name] isEqualToString:NSInvalidArgumentException]) {
+                        NSString *errorMessage = [NSString stringWithFormat:
+                                                  @"Cannot map a collection of objects onto a non-mutable collection: %@", exception];
+                        [self addErrorWithCode:RKMappingErrorTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
+                        *stop = YES;
+                    } else {
+                        [exception raise];
+                    }
+                }
             }
         }
         *stop = [self isCancelled];
