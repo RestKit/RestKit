@@ -772,7 +772,6 @@
     [userMapping addAttributeMappingsFromDictionary:@{ @"@metadata.phoneNumber": @"phone" }];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
-    [[RKObjectRequestOperation responseMappingQueue] setSuspended:YES];
     NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
     request.HTTPMethod = @"POST";
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
@@ -780,10 +779,13 @@
     [requestOperation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
         invoked = YES;
     }];
+    __weak __typeof(&*requestOperation)weakOperation = requestOperation;
+    [requestOperation setWillMapDeserializedResponseBlock:^id(id deserializedResponseBody) {
+        [weakOperation cancel];
+        return deserializedResponseBody;
+    }];
     [requestOperation start];
     expect([requestOperation isExecuting]).to.equal(YES);
-    [requestOperation cancel];
-    [[RKObjectRequestOperation responseMappingQueue] setSuspended:NO];
     expect([requestOperation isFinished]).will.equal(YES);
     expect(invoked).will.equal(YES);
     expect(requestOperation.error).notTo.beNil();
