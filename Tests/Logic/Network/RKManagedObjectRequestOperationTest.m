@@ -231,6 +231,43 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(mappedObjects).to.haveCountOf(1);
 }
 
+- (void)testThatThe304CanSkipMappingOptimizationIsNotAppliedIfThereIsAMixtureOfEntityAndObjectMappingsMatchingTheResponse
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+
+    // Store a cache entry indicating that the response has been previously mapped
+    NSData *responseData = [@"{\"human\": { \"name\": \"Blake\"}, \"user\": { \"name\": \"Blake\" }}" dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *headers = @{ @"Etag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:headers];
+    NSAssert(response, @"Failed to build cached response");
+    NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData userInfo:@{RKResponseHasBeenMappedCacheUserInfoKey: @YES} storagePolicy:NSURLCacheStorageAllowed];
+    [[NSURLCache sharedURLCache] storeCachedResponse:cachedResponse forRequest:request];
+
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:@"user" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+        return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    };
+
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor, userResponseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
+
+    [managedObjectRequestOperation start];
+    expect([managedObjectRequestOperation isFinished]).will.beTruthy();
+    expect(managedObjectRequestOperation.mappingResult).notTo.beNil();
+    NSArray *mappedObjects = [managedObjectRequestOperation.mappingResult array];
+    expect(mappedObjects).notTo.beNil();
+    expect(mappedObjects).to.haveCountOf(2);
+}
+
 - (void)testThatCachedNotModifiedResponseIsNotUsedWhenMappingFailedToComplete
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];

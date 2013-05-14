@@ -410,6 +410,9 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
     return managedObjectsInMappingResult;
 }
 
+// Defined in RKObjectManager.h
+BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors);
+
 @interface RKManagedObjectRequestOperation ()
 // Core Data specific
 @property (nonatomic, strong) NSManagedObjectContext *privateContext;
@@ -505,6 +508,13 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
         NSHTTPURLResponse *response = (NSHTTPURLResponse *)self.HTTPRequestOperation.response;
         if (! [RKCacheableStatusCodes() containsIndex:response.statusCode]) return NO;
         
+        // Check if all the response descriptors are backed by Core Data
+        NSMutableArray *matchingResponseDescriptors = [NSMutableArray array];
+        for (RKResponseDescriptor *responseDescriptor in self.responseDescriptors) {
+            if ([responseDescriptor matchesResponse:response]) [matchingResponseDescriptors addObject:responseDescriptor];
+        }
+        if (! RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(matchingResponseDescriptors)) return NO;
+
         // Check for a change in the Etag
         NSString *cachedEtag = [[(NSHTTPURLResponse *)[self.cachedResponse response] allHeaderFields] objectForKey:@"Etag"];
         NSString *responseEtag = [[response allHeaderFields] objectForKey:@"Etag"];

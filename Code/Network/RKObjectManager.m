@@ -221,6 +221,40 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     return NO;
 }
 
+BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors);
+BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors)
+{
+    // Visit all mappings accessible from the object graphs of all response descriptors
+    NSMutableSet *accessibleMappings = [NSMutableSet set];
+    for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+        if (! [accessibleMappings containsObject:responseDescriptor.mapping]) {
+            RKMappingGraphVisitor *graphVisitor = [[RKMappingGraphVisitor alloc] initWithMapping:responseDescriptor.mapping];
+            [accessibleMappings unionSet:graphVisitor.mappings];
+        }
+    }
+
+    NSMutableSet *mappingClasses = [NSMutableSet set];
+    // Enumerate all mappings and search for an `RKEntityMapping`
+    for (RKMapping *mapping in accessibleMappings) {
+        if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+            [mappingClasses addObjectsFromArray:[[(RKDynamicMapping *)mapping objectMappings] valueForKey:@"class"]];
+        } else {
+            [mappingClasses addObject:mapping.class];
+        }
+    }
+
+    if ([mappingClasses count]) {
+        for (Class mappingClass in mappingClasses) {
+            if (! [mappingClass isSubclassOfClass:[RKEntityMapping class]]) {
+                return NO;
+            }
+        }
+        return YES;
+    }
+
+    return NO;
+}
+
 static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *responseDescriptors, Class classToBeMapped)
 {
     // Visit all mappings accessible from the object graphs of all response descriptors
