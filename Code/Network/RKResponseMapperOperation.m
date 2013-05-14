@@ -236,11 +236,10 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 
 - (void)willFinish
 {
-    // TODO: We may want to add an explicit error for cancellation rather than radio silence...
-    if (! self.isCancelled) {
-        if (self.error && self.didFinishMappingBlock) self.didFinishMappingBlock(nil, self.error);
-        else if (self.didFinishMappingBlock) self.didFinishMappingBlock(self.mappingResult, nil);
-    }
+    if (self.isCancelled && !self.error) self.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:nil];
+    
+    if (self.error && self.didFinishMappingBlock) self.didFinishMappingBlock(nil, self.error);
+    else if (self.didFinishMappingBlock) self.didFinishMappingBlock(self.mappingResult, nil);
 }
 
 - (void)main

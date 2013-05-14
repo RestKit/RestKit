@@ -1,0 +1,9 @@
+language: objective-c
+before_install:
+    - cd `brew --prefix` && git fetch origin && git reset --hard origin/master && cd $TRAVIS_BUILD_DIR
+    - brew update
+    - brew install xctool --HEAD
+    - bundle install
+script:
+    - rake server:start
+    - rake test

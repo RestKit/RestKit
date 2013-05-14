@@ -697,7 +697,7 @@
     expect(nameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
 }
 
-- (void)testMappingConstructsMappingInfoDictionaryWithMergedRelationshipInfo
+- (void)testAccessingPropertyAndRelationshipSpecificMappingInfo
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [mapping addAttributeMappingsFromArray:@[ @"name" ]];
@@ -711,10 +711,12 @@
     expect(mappingOperation.mappingInfo).notTo.beNil();
     RKPropertyMapping *friendsMapping = mappingOperation.mappingInfo[@"friends"];
     RKPropertyMapping *nameMapping = mappingOperation.mappingInfo[@"name"];
-    RKPropertyMapping *nestedNameMapping = mappingOperation.mappingInfo[@"friends.name"];
     expect(nameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
     expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
-    expect(nestedNameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
+    
+    NSArray *relationshipMappingInfo = [mappingOperation.mappingInfo relationshipMappingInfo][@"friends"];
+    expect([relationshipMappingInfo count]).to.equal(1);
+    expect(relationshipMappingInfo[0][@"name"]).notTo.beNil();
 }
 
 - (void)testThatMappingHasManyDoesNotDuplicateRelationshipMappingInMappingInfo
@@ -751,7 +753,7 @@
     mapperOperation.mappingOperationDataSource = dataSource;
     [mapperOperation start];
     expect(mapperOperation.mappingInfo).notTo.beNil();
-    RKPropertyMapping *friendsMapping = mapperOperation.mappingInfo[[NSNull null]][@"friends"];
+    RKPropertyMapping *friendsMapping = mapperOperation.mappingInfo[[NSNull null]][0][@"friends"];
     expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
 }
 
@@ -2600,7 +2602,62 @@
     expect(user.country).to.equal(@"United States of America");
 }
 
-// RKResponseMapperOperation sets up Metadata for HTTP request/response
-// RKMapperOperation sets up mapping.rootKey, also collectionIndex for outer arrays
+#pragma mark - Persistent Stores
+
+- (void)testMappingObjectToInMemoryPersistentStore
+{
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"InMemoryTest.sqlite"];
+    NSError *error = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storePath]) [[NSFileManager defaultManager] removeItemAtPath:storePath error:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    NSPersistentStore __unused *sqlStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    NSPersistentStore __unused *inMemoryStore = [managedObjectStore addInMemoryPersistentStore:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    [managedObjectStore createManagedObjectContexts];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    humanMapping.persistentStore = inMemoryStore;
+    [humanMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    
+    NSDictionary *representation = @{ @"name": @"Blake Watters" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:humanMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    [operation performMapping:&error];
+    expect(operation.destinationObject).notTo.beNil();
+    expect([(NSManagedObject *)operation.destinationObject objectID].persistentStore).to.equal(inMemoryStore);
+}
+
+- (void)testMappingObjectToSQLitePersistentStore
+{
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"SQLiteTest.sqlite"];
+    NSError *error = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storePath]) [[NSFileManager defaultManager] removeItemAtPath:storePath error:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    NSPersistentStore __unused *sqlStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    NSPersistentStore __unused *inMemoryStore = [managedObjectStore addInMemoryPersistentStore:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    [managedObjectStore createManagedObjectContexts];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    humanMapping.persistentStore = sqlStore;
+    [humanMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    
+    NSDictionary *representation = @{ @"name": @"Blake Watters" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:humanMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    [operation performMapping:&error];
+    expect(operation.destinationObject).notTo.beNil();
+    expect([(NSManagedObject *)operation.destinationObject objectID].persistentStore).to.equal(sqlStore);
+}
 
 @end

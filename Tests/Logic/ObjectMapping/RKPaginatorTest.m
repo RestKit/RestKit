@@ -185,7 +185,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     [paginator loadPage:1];
     [paginator waitUntilFinished];
-    expect(paginator.isLoaded).to.equal(YES);
+    expect(paginator.isLoaded).will.equal(YES);
 }
 
 - (void)testLoadingPageOfObjectMapsPerPage
@@ -221,7 +221,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     [paginator loadPage:1];
     [paginator waitUntilFinished];
-    expect([paginator.mappingResult array]).to.haveCountOf(3);
+    expect([paginator.mappingResult array]).will.haveCountOf(3);
     NSArray *expectedNames = @[ @"Blake", @"Sarah", @"Colin" ];
     expect([[paginator.mappingResult array] valueForKey:@"name"]).to.equal(expectedNames);
 }

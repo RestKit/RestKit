@@ -1,0 +1,5 @@
+[
+  "-workspace", "RestKit.xcworkspace",
+  "-scheme", "RestKit",
+  "-configuration", "Debug"
+]

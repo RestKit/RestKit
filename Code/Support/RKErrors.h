@@ -28,12 +28,8 @@
 extern NSString * const RKErrorDomain;
 
 typedef enum {
-    RKObjectLoaderRemoteSystemError             =   1,
-    RKRequestBaseURLOfflineError                =   2,
-    RKRequestUnexpectedResponseError            =   3,
-    RKObjectLoaderUnexpectedResponseError       =   4,
-    RKRequestConnectionTimeoutError             =   5,
-    RKUnsupportedMIMETypeError                  =   6
+    RKUnsupportedMIMETypeError                  =   1,
+    RKOperationCancelledError                   =   2
 } RKRestKitError;
 
 

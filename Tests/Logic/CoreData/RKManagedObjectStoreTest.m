@@ -139,7 +139,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     assertThatBool(success, is(equalToBool(YES)));
     
     // Spin the run loop to allow the did save notifications to propogate
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
 
     success = [managedObjectStore resetPersistentStores:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -171,7 +171,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     assertThatBool(success, is(equalToBool(YES)));
 
     // Spin the run loop to allow the did save notifications to propogate
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
     
     success = [managedObjectStore resetPersistentStores:&error];
     assertThatBool(success, is(equalToBool(YES)));

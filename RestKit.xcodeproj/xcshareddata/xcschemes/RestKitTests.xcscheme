@@ -9,15 +9,15 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "25160D2514564E820060A5C5"
-               BuildableName = "RestKitTests.octest"
-               BlueprintName = "RestKitTests"
-               ReferencedContainer = "container:RestKit.xcodeproj">
+               BlueprintIdentifier = "CB3795D5841A4DFF9BC60966"
+               BuildableName = "libPods-ios.a"
+               BlueprintName = "Pods-ios"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

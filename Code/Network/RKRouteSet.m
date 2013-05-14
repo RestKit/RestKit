@@ -146,7 +146,7 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 - (RKRoute *)routeForRelationship:(NSString *)relationshipName ofClass:(Class)objectClass method:(RKRequestMethod)method
 {
     for (RKRoute *route in [self relationshipRoutes]) {
-        if ([route.name isEqualToString:relationshipName] && [route.objectClass isEqual:objectClass] && (route.method == method || method == RKRequestMethodAny)) {
+        if ([route.name isEqualToString:relationshipName] && [route.objectClass isEqual:objectClass] && (route.method == method || route.method == RKRequestMethodAny)) {
             return route;
         }
     }

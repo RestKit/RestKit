@@ -527,7 +527,7 @@
 
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
-    expect(blockError).notTo.beNil();
+    expect(blockError).willNot.beNil();
 }
 
 #pragma mark - Will Map Data Block
@@ -764,6 +764,32 @@
     NSCachedURLResponse *response = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
     expect(response).notTo.beNil();
     expect([response.userInfo valueForKey:RKResponseHasBeenMappedCacheUserInfoKey]).to.beFalsy();
+}
+
+- (void)testThatCancellationOfOperationReturnsCancelledCodeAndInvokesFailureBlock
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"@metadata.phoneNumber": @"phone" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"POST";
+    RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    __block BOOL invoked = NO;
+    [requestOperation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        invoked = YES;
+    }];
+    __weak __typeof(&*requestOperation)weakOperation = requestOperation;
+    [requestOperation setWillMapDeserializedResponseBlock:^id(id deserializedResponseBody) {
+        [weakOperation cancel];
+        return deserializedResponseBody;
+    }];
+    [requestOperation start];
+    expect([requestOperation isExecuting]).to.equal(YES);
+    expect([requestOperation isFinished]).will.equal(YES);
+    expect(invoked).will.equal(YES);
+    expect(requestOperation.error).notTo.beNil();
+    expect(requestOperation.error.code).to.equal(RKOperationCancelledError);
 }
 
 @end

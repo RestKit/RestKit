@@ -331,34 +331,6 @@
     assertThat(route.pathPattern, is(equalTo(@"/users/:userID/2")));
 }
 
-//- (void)testResourcePathForObject
-//{
-//    RKRouter *router = [RKRouter new];
-//    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID" method:RKRequestMethodAny];
-//    RKTestUser *user = [RKTestUser new];
-//    user.userID = [NSNumber numberWithInteger:12345];
-//    NSString *resourcePath = [router resourcePathForObject:user method:RKRequestMethodGET];
-//    assertThat(resourcePath, is(equalTo(@"/users/12345")));
-//}
-//
-//- (void)testResourcePathForRouteNamed
-//{
-//    RKRouter *router = [RKRouter new];
-//    [router addRoute:[RKRoute routeWithName:@"airlines_list" pathPattern:@"/airlines.json"];
-//    NSString *resourcePath = [router resourcePathForRouteNamed:@"airlines_list"];
-//    assertThat(resourcePath, is(equalTo(@"/airlines.json")));
-//}
-//
-//- (void)testResourcePathForRouteNamedInterpolatedWithObject
-//{
-//    RKRouter *router = [RKRouter new];
-//    [router addRoute:[RKRoute routeWithName:@"user_bookmarks_path" pathPattern:@"/users/:userID/bookmarks"];
-//    RKTestUser *user = [RKTestUser new];
-//    user.userID = [NSNumber numberWithInteger:12345];
-//    NSString *resourcePath = [router resourcePathForRouteNamed:@"user_bookmarks_path" interpolatedWithObject:user];
-//    assertThat(resourcePath, is(equalTo(@"/users/12345/bookmarks")));
-//}
-
 // TODO: Add tests for superclass match in routeForObject:
 
 - (void)testRouteForRelationshipOfClass
@@ -375,12 +347,12 @@
 - (void)testRouteForRelationshipOfClassWithAny
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithRelationshipName:@"friends" objectClass:[RKTestUser class] pathPattern:@"/friends" method:RKRequestMethodGET]];
-    RKRoute *route = [router routeForRelationship:@"friends" ofClass:[RKTestUser class] method:RKRequestMethodAny];
+    [router addRoute:[RKRoute routeWithRelationshipName:@"friends" objectClass:[RKTestUser class] pathPattern:@"/friends" method:RKRequestMethodAny]];
+    RKRoute *route = [router routeForRelationship:@"friends" ofClass:[RKTestUser class] method:RKRequestMethodGET];
     assertThat(route, is(notNilValue()));
     assertThat(route.name, is(equalTo(@"friends")));
     assertThat(route.pathPattern, is(equalTo(@"/friends")));
-    assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
+    assertThatInteger(route.method, is(equalToInteger(RKRequestMethodAny)));
 }
 
 - (void)testRoutesForRelationship
