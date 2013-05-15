@@ -145,11 +145,6 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
         }
     } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
         // Number -> Date
-        if ([destinationType isSubclassOfClass:[NSDate class]]) {
-            return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value intValue]];
-        } else if ([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] && [destinationType isSubclassOfClass:[NSString class]]) {
-            return ([value boolValue] ? @"true" : @"false");
-        }
         return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value doubleValue]];
     } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
         // Number -> Decimal Number
@@ -277,6 +272,67 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 
 @end
 
+@interface RKMappingInfo ()
+@property (nonatomic, assign, readwrite) NSUInteger collectionIndex;
+@property (nonatomic, strong) NSMutableSet *mutablePropertyMappings;
+@property (nonatomic, strong) NSMutableDictionary *mutableRelationshipMappingInfo;
+
+- (id)initWithObjectMapping:(RKObjectMapping *)objectMapping dynamicMapping:(RKDynamicMapping *)dynamicMapping;
+- (void)addPropertyMapping:(RKPropertyMapping *)propertyMapping;
+@end
+
+@implementation RKMappingInfo
+
+- (id)initWithObjectMapping:(RKObjectMapping *)objectMapping dynamicMapping:(RKDynamicMapping *)dynamicMapping
+{
+    self = [self init];
+    if (self) {
+        _objectMapping = objectMapping;
+        _dynamicMapping = dynamicMapping;
+        _mutablePropertyMappings = [NSMutableSet setWithCapacity:[objectMapping.propertyMappings count]];
+        _mutableRelationshipMappingInfo = [NSMutableDictionary dictionaryWithCapacity:[objectMapping.relationshipMappings count]];
+    }
+    return self;
+}
+
+- (NSSet *)propertyMappings
+{
+    return [self.mutablePropertyMappings copy];
+}
+
+- (NSDictionary *)relationshipMappingInfo
+{
+    return [self.mutableRelationshipMappingInfo copy];
+}
+
+- (void)addPropertyMapping:(RKPropertyMapping *)propertyMapping
+{
+    [self.mutablePropertyMappings addObject:propertyMapping];
+}
+
+- (void)addMappingInfo:(RKMappingInfo *)mappingInfo forRelationshipMapping:(RKRelationshipMapping *)relationshipMapping
+{
+    NSMutableArray *arrayOfMappingInfo = [self.mutableRelationshipMappingInfo objectForKey:relationshipMapping.destinationKeyPath];
+    if (arrayOfMappingInfo) {
+        [arrayOfMappingInfo addObject:mappingInfo];
+    } else {
+        arrayOfMappingInfo = [NSMutableArray arrayWithObject:mappingInfo];
+        [self.mutableRelationshipMappingInfo setObject:arrayOfMappingInfo forKey:relationshipMapping.destinationKeyPath];
+    }
+}
+
+- (id)objectForKeyedSubscript:(id)key
+{
+    for (RKPropertyMapping *propertyMapping in self.mutablePropertyMappings) {
+        if ([propertyMapping.destinationKeyPath isEqualToString:key]) {
+            return propertyMapping;
+        }
+    }
+    return nil;
+}
+
+@end
+
 @interface RKMappingOperation ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
@@ -284,8 +340,8 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 @property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping; // The concrete mapping
-@property (nonatomic, strong, readwrite) NSMutableDictionary *mutableMappingInfo;
 @property (nonatomic, strong) NSArray *nestedAttributeMappings;
+@property (nonatomic, strong) RKMappingInfo *mappingInfo;
 @end
 
 @implementation RKMappingOperation
@@ -305,11 +361,6 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     return self;
 }
 
-- (NSDictionary *)mappingInfo
-{
-    return _mutableMappingInfo;
-}
-
 - (id)destinationObjectForMappingRepresentation:(id)representation withMapping:(RKMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
 {
     RKObjectMapping *concreteMapping = nil;
@@ -324,7 +375,8 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     }
     
     NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
-    return [self.dataSource mappingOperation:self targetObjectForRepresentation:dictionaryRepresentation withMapping:concreteMapping inRelationship:relationshipMapping];
+    id mappingSourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation metadata:self.metadata];
+    return [self.dataSource mappingOperation:self targetObjectForRepresentation:mappingSourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
 - (NSDate *)parseDateFromString:(NSString *)string
@@ -366,8 +418,15 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     return success;
 }
 
-- (BOOL)shouldSetValue:(id *)value atKeyPath:(NSString *)keyPath
+- (BOOL)shouldSetValue:(id *)value forKeyPath:(NSString *)keyPath usingMapping:(RKPropertyMapping *)propertyMapping
 {
+    if ([self.delegate respondsToSelector:@selector(mappingOperation:shouldSetValue:forKeyPath:usingMapping:)]) {
+        return [self.delegate mappingOperation:self shouldSetValue:*value forKeyPath:keyPath usingMapping:propertyMapping];
+    }
+    
+    // Always set the properties
+    if ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] && [self.dataSource mappingOperationShouldSetUnchangedValues:self]) return YES;
+    
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null]) {
         currentValue = nil;
@@ -442,14 +501,6 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     return [self applyNestingToMappings:self.objectMapping.relationshipMappings];
 }
 
-- (void)addPropertyMappingToMappingInfo:(RKPropertyMapping *)propertyMapping
-{
-    RKPropertyMapping *existingValue = [self.mappingInfo valueForKey:propertyMapping.destinationKeyPath];
-    if (existingValue == propertyMapping) return;
-    id value = (existingValue) ? @[ existingValue, propertyMapping ] : propertyMapping;
-    [self.mutableMappingInfo setObject:value forKey:(propertyMapping.destinationKeyPath ?: [NSNull null])];
-}
-
 - (void)applyAttributeMapping:(RKAttributeMapping *)attributeMapping withValue:(id)value
 {
     if ([self.delegate respondsToSelector:@selector(mappingOperation:didFindValue:forKeyPath:mapping:)]) {
@@ -476,7 +527,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     RKSetIntermediateDictionaryValuesOnObjectForKeyPath(self.destinationObject, attributeMapping.destinationKeyPath);
     
     // Ensure that the value is different
-    if ([self shouldSetValue:&value atKeyPath:attributeMapping.destinationKeyPath]) {
+    if ([self shouldSetValue:&value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
         
         if (attributeMapping.destinationKeyPath) {
@@ -493,7 +544,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
             [self.delegate mappingOperation:self didNotSetUnchangedValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
     }
-    [self addPropertyMappingToMappingInfo:attributeMapping];
+    [self.mappingInfo addPropertyMapping:attributeMapping];
 }
 
 // Return YES if we mapped any attributes
@@ -557,14 +608,8 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     if (subOperation.error) {
         RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
     } else {
-        [self addPropertyMappingToMappingInfo:relationshipMapping];
-        
-        // Merge the nested mappingInfo
-        NSMutableDictionary *nestedInfo = [NSMutableDictionary dictionaryWithCapacity:[subOperation.mappingInfo count]];
-        [subOperation.mappingInfo enumerateKeysAndObjectsUsingBlock:^(NSString *nestedKeyPath, RKPropertyMapping *propertyMapping, BOOL *stop) {
-            [nestedInfo setValue:propertyMapping forKey:[NSString stringWithFormat:@"%@.%@", relationshipMapping.destinationKeyPath, nestedKeyPath]];
-        }];
-        [self.mutableMappingInfo addEntriesFromDictionary:nestedInfo];
+        [self.mappingInfo addPropertyMapping:relationshipMapping];
+        [self.mappingInfo addMappingInfo:subOperation.mappingInfo forRelationshipMapping:relationshipMapping];
     }
 
     return YES;
@@ -608,7 +653,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     [self mapNestedObject:value toObject:destinationObject withRelationshipMapping:relationshipMapping metadata:@{ @"mapping": @{ @"collectionIndex": [NSNull null] } }];
 
     // If the relationship has changed, set it
-    if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
+    if ([self shouldSetValue:&destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
         if (! [self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
             return NO;
         }
@@ -687,7 +732,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     }
 
     // If the relationship has changed, set it
-    if ([self shouldSetValue:&valueForRelationship atKeyPath:relationshipMapping.destinationKeyPath]) {
+    if ([self shouldSetValue:&valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
         if (! [self mapCoreDataToManyRelationshipValue:valueForRelationship withMapping:relationshipMapping]) {
             RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, valueForRelationship);
             [self.destinationObject setValue:valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath];
@@ -740,7 +785,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 
             // Optionally nil out the property
             id nilReference = nil;
-            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference atKeyPath:relationshipMapping.destinationKeyPath]) {
+            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
                 RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
                 [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
             }
@@ -753,7 +798,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
             
             // Optionally nil out the property
             id nilReference = nil;
-            if ([self shouldSetValue:&nilReference atKeyPath:relationshipMapping.destinationKeyPath]) {
+            if ([self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
                 RKLogTrace(@"Setting nil for null relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
                 [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
             }
@@ -854,7 +899,6 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 - (void)main
 {
     if ([self isCancelled]) return;
-    self.mutableMappingInfo = [NSMutableDictionary dictionary];
 
     // Handle metadata
     self.sourceObject = [[RKMappingSourceObject alloc] initWithObject:self.sourceObject metadata:self.metadata];
@@ -885,33 +929,38 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSelectObjectMapping:forDynamicMapping:)]) {
             [self.delegate mappingOperation:self didSelectObjectMapping:self.objectMapping forDynamicMapping:(RKDynamicMapping *)self.mapping];
         }
+        self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:self.objectMapping dynamicMapping:(RKDynamicMapping *)self.mapping];
     } else if ([self.mapping isKindOfClass:[RKObjectMapping class]]) {
         self.objectMapping = (RKObjectMapping *)self.mapping;
-    }
-
-    [self applyNestedMappings];
-    if ([self isCancelled]) return;
-    BOOL mappedSimpleAttributes = [self applyAttributeMappings:[self simpleAttributeMappings]];
-    if ([self isCancelled]) return;
-    BOOL mappedRelationships = [[self relationshipMappings] count] ? [self applyRelationshipMappings] : NO;
-    if ([self isCancelled]) return;
-    // NOTE: We map key path attributes last to allow you to map across the object graphs for objects created/updated by the relationship mappings
-    BOOL mappedKeyPathAttributes = [self applyAttributeMappings:[self keyPathAttributeMappings]];
-    
-    if (!mappedSimpleAttributes && !mappedRelationships && !mappedKeyPathAttributes) {
-        // We did not find anything to do
-        RKLogDebug(@"Mapping operation did not find any mappable values for the attribute and relationship mappings in the given object representation");
-        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"No mappable values found for any of the attributes or relationship mappings" };
-        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:userInfo];
+        self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:self.objectMapping dynamicMapping:nil];
     }
     
-    // We did some mapping work, if there's no error let's commit our changes to the data source
-    if (self.error == nil) {
-        if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:error:)]) {
-            NSError *error = nil;
-            BOOL success = [self.dataSource commitChangesForMappingOperation:self error:&error];
-            if (! success) {
-                self.error = error;
+    BOOL canSkipMapping = [self.dataSource respondsToSelector:@selector(mappingOperationShouldSkipPropertyMapping:)] && [self.dataSource mappingOperationShouldSkipPropertyMapping:self];
+    if (! canSkipMapping) {
+        [self applyNestedMappings];
+        if ([self isCancelled]) return;
+        BOOL mappedSimpleAttributes = [self applyAttributeMappings:[self simpleAttributeMappings]];
+        if ([self isCancelled]) return;
+        BOOL mappedRelationships = [[self relationshipMappings] count] ? [self applyRelationshipMappings] : NO;
+        if ([self isCancelled]) return;
+        // NOTE: We map key path attributes last to allow you to map across the object graphs for objects created/updated by the relationship mappings
+        BOOL mappedKeyPathAttributes = [self applyAttributeMappings:[self keyPathAttributeMappings]];
+        
+        if (!mappedSimpleAttributes && !mappedRelationships && !mappedKeyPathAttributes) {
+            // We did not find anything to do
+            RKLogDebug(@"Mapping operation did not find any mappable values for the attribute and relationship mappings in the given object representation");
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"No mappable values found for any of the attributes or relationship mappings" };
+            self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:userInfo];
+        }
+    
+        // We did some mapping work, if there's no error let's commit our changes to the data source
+        if (self.error == nil) {
+            if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:error:)]) {
+                NSError *error = nil;
+                BOOL success = [self.dataSource commitChangesForMappingOperation:self error:&error];
+                if (! success) {
+                    self.error = error;
+                }
             }
         }
     }

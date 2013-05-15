@@ -19,7 +19,7 @@
 {
     RKISO8601DateFormatter *formatter = [[RKISO8601DateFormatter alloc] init];
     [formatter setIncludeTime:YES];
-    [formatter setDefaultTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]]; // UTC
+    [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]]; // UTC
     
     NSDateFormatter *nsformatter = [[NSDateFormatter alloc] init];
     [nsformatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];

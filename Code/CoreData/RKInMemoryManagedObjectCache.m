@@ -27,8 +27,29 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
+static NSPersistentStoreCoordinator *RKPersistentStoreCoordinatorFromManagedObjectContext(NSManagedObjectContext *managedObjectContext)
+{
+    NSManagedObjectContext *currentContext = managedObjectContext;
+    do {
+        if ([currentContext persistentStoreCoordinator]) return [currentContext persistentStoreCoordinator];
+        currentContext = [currentContext parentContext];
+    } while (currentContext);
+    return nil;
+}
+
+static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
+{
+    static dispatch_once_t onceToken;
+    static dispatch_queue_t callbackQueue;
+    dispatch_once(&onceToken, ^{
+        callbackQueue = dispatch_queue_create("org.restkit.core-data.in-memory-cache.callback-queue", DISPATCH_QUEUE_CONCURRENT);
+    });
+    return callbackQueue;
+}
+
 @interface RKInMemoryManagedObjectCache ()
 @property (nonatomic, strong, readwrite) RKEntityCache *entityCache;
+@property (nonatomic, assign) dispatch_queue_t callbackQueue;
 @end
 
 @implementation RKInMemoryManagedObjectCache
@@ -37,9 +58,13 @@
 {
     self = [super init];
     if (self) {
-        self.entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
+        NSManagedObjectContext *cacheContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [cacheContext setPersistentStoreCoordinator:RKPersistentStoreCoordinatorFromManagedObjectContext(managedObjectContext)];
+        self.entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:cacheContext];
+        self.entityCache.callbackQueue = RKInMemoryManagedObjectCacheCallbackQueue();
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleManagedObjectContextDidChangeNotification:) name:NSManagedObjectContextObjectsDidChangeNotification object:managedObjectContext];
     }
-
     return self;
 }
 
@@ -51,9 +76,14 @@
                                  userInfo:nil];
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (NSSet *)managedObjectsWithEntity:(NSEntityDescription *)entity
-                      attributeValues:(NSDictionary *)attributeValues
-               inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                    attributeValues:(NSDictionary *)attributeValues
+             inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSParameterAssert(entity);
     NSParameterAssert(attributeValues);
@@ -62,8 +92,38 @@
     NSArray *attributes = [attributeValues allKeys];
     if (! [self.entityCache isEntity:entity cachedByAttributes:attributes]) {
         RKLogInfo(@"Caching instances of Entity '%@' by attributes '%@'", entity.name, [attributes componentsJoinedByString:@", "]);
-        [self.entityCache cacheObjectsForEntity:entity byAttributes:attributes];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        [self.entityCache cacheObjectsForEntity:entity byAttributes:attributes completion:^{
+            dispatch_semaphore_signal(semaphore);
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        
         RKEntityByAttributeCache *attributeCache = [self.entityCache attributeCacheForEntity:entity attributes:attributes];
+        
+        // Fetch any pending objects and add them to the cache
+        NSFetchRequest *fetchRequest = [NSFetchRequest new];
+        fetchRequest.entity = entity;
+        fetchRequest.includesPendingChanges = YES;
+        
+        [managedObjectContext performBlockAndWait:^{
+            NSError *error = nil;
+            NSArray *objects = nil;
+            objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+            if (objects) {
+                [attributeCache addObjects:[NSSet setWithArray:objects] completion:^{
+                    dispatch_semaphore_signal(semaphore);
+                }];
+            } else {
+                RKLogError(@"Fetched pre-loading existing managed objects with error: %@", error);
+                dispatch_semaphore_signal(semaphore);
+            }
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        
+#if !OS_OBJECT_USE_OBJC
+        dispatch_release(semaphore);
+#endif
+        
         RKLogTrace(@"Cached %ld objects", (long)[attributeCache count]);
     }
     
@@ -72,27 +132,33 @@
 
 - (void)didFetchObject:(NSManagedObject *)object
 {
-    [self.entityCache addObject:object];
+    [self.entityCache addObjects:[NSSet setWithObject:object] completion:nil];
 }
 
 - (void)didCreateObject:(NSManagedObject *)object
 {
-    /**
-     NOTE: When an object with a temporary ID is added to the cache, we obtain a permanent ID to avoid the potential for duplicated objects being created due to concurrenct access
-     */
-    if ([[object objectID] isTemporaryID]) {
-        NSError *error = nil;
-        RKLogTrace(@"Obtaining permanent managed object ID for temporary managed object: %@", object);
-        if (! [[object managedObjectContext] obtainPermanentIDsForObjects:@[ object ] error:&error]) {
-            RKLogError(@"Failed to obtain permanent managed object ID: %@", error);
-        }
-    }
-    [self.entityCache addObject:object];
+    [self.entityCache addObjects:[NSSet setWithObject:object] completion:nil];
 }
 
 - (void)didDeleteObject:(NSManagedObject *)object
 {
-    [self.entityCache removeObject:object];
+    [self.entityCache removeObjects:[NSSet setWithObject:object] completion:nil];
+}
+
+- (void)handleManagedObjectContextDidChangeNotification:(NSNotification *)notification
+{
+    // Observe the parent context for changes and update the caches
+    NSDictionary *userInfo = notification.userInfo;
+    NSSet *insertedObjects = [userInfo objectForKey:NSInsertedObjectsKey];
+    NSSet *updatedObjects = [userInfo objectForKey:NSUpdatedObjectsKey];
+    NSSet *deletedObjects = [userInfo objectForKey:NSDeletedObjectsKey];
+    RKLogTrace(@"insertedObjects=%@, updatedObjects=%@, deletedObjects=%@", insertedObjects, updatedObjects, deletedObjects);
+    
+    NSMutableSet *objectsToAdd = [NSMutableSet setWithSet:insertedObjects];
+    [objectsToAdd unionSet:updatedObjects];
+    
+    [self.entityCache addObjects:objectsToAdd completion:nil];
+    [self.entityCache removeObjects:deletedObjects completion:nil];
 }
 
 @end

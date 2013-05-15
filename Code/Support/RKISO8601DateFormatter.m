@@ -14,83 +14,98 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitSupport
 
-#ifndef DEFAULT_TIME_SEPARATOR
-#	define DEFAULT_TIME_SEPARATOR ':'
-#endif
-unichar RKISO8601DefaultTimeSeparatorCharacter = DEFAULT_TIME_SEPARATOR;
+unichar RKISO8601DefaultTimeSeparatorCharacter = ':';
 
-//Unicode date formats.
+// Unicode date formats.
 #define RK_ISOCALENDAR_DATE_FORMAT @"yyyy-MM-dd"
-//#define RK_ISOWEEK_DATE_FORMAT @"YYYY-'W'ww-ee" //Doesn't actually work because NSDateComponents counts the weekday starting at 1.
 #define RK_ISOORDINAL_DATE_FORMAT @"yyyy-DDD"
 #define RK_ISOTIME_FORMAT @"HH:mm:ss"
 #define RK_ISOTIME_WITH_TIMEZONE_FORMAT  RK_ISOTIME_FORMAT @"Z"
-//printf formats.
+
+// printf formats.
 #define RK_ISOTIMEZONE_UTC_FORMAT @"Z"
 #define RK_ISOTIMEZONE_OFFSET_FORMAT @"%+.2ld%.2ld"
 
-@interface RKISO8601DateFormatter(UnparsingPrivate)
-
-- (NSString *) replaceColonsInString:(NSString *)timeFormat withTimeSeparator:(unichar)timeSep;
-
-- (NSString *) stringFromDate:(NSDate *)date formatString:(NSString *)dateFormat timeZone:(NSTimeZone *)timeZone;
-- (NSString *) weekDateStringForDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone;
-
-@end
-
-static NSMutableDictionary *timeZonesByOffset;
-
-@implementation RKISO8601DateFormatter
-
-+ (void) initialize {
-	if (!timeZonesByOffset) {
-		timeZonesByOffset = [[NSMutableDictionary alloc] init];
-	}
-}
-
-+ (void) purgeGlobalCaches {
-	timeZonesByOffset = nil;
-}
-
-- (NSCalendar *) makeCalendarWithDesiredConfiguration {
-	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-	calendar.firstWeekday = 2; //Monday
-	calendar.timeZone = [NSTimeZone defaultTimeZone];
-	return calendar;
-}
-
-- (id) init {
-	if ((self = [super init])) {
-		parsingCalendar = [self makeCalendarWithDesiredConfiguration];
-		unparsingCalendar = [self makeCalendarWithDesiredConfiguration];
-        
-		format = RKISO8601DateFormatCalendar;
-		timeSeparator = RKISO8601DefaultTimeSeparatorCharacter;
-		includeTime = NO;
-		parsesStrictly = NO;
-	}
-	return self;
-}
-
-@synthesize defaultTimeZone;
-- (void) setDefaultTimeZone:(NSTimeZone *)tz {
-	if (defaultTimeZone != tz) {
-		defaultTimeZone = tz;
-		unparsingCalendar.timeZone = defaultTimeZone;
-	}
-}
-
-//The following properties are only here because GCC doesn't like @synthesize in category implementations.
-
-#pragma mark Parsing
-
-@synthesize parsesStrictly;
-
+// Parsing Helpers
 static NSUInteger read_segment(const unsigned char *str, const unsigned char **next, NSUInteger *out_num_digits);
 static NSUInteger read_segment_4digits(const unsigned char *str, const unsigned char **next, NSUInteger *out_num_digits);
 static NSUInteger read_segment_2digits(const unsigned char *str, const unsigned char **next);
 static double read_double(const unsigned char *str, const unsigned char **next);
 static BOOL is_leap_year(NSUInteger year);
+
+@interface RKISO8601DateFormatter(UnparsingPrivate)
+
+- (NSString *)replaceColonsInString:(NSString *)timeFormat withTimeSeparator:(unichar)timeSep;
+- (NSString *)stringFromDate:(NSDate *)date formatString:(NSString *)dateFormat timeZone:(NSTimeZone *)timeZone;
+- (NSString *)weekDateStringForDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone;
+
+@end
+
+static NSMutableDictionary *timeZonesByOffset;
+
+@interface RKISO8601DateFormatter ()
+@property (nonatomic, strong) NSCalendar *parsingCalendar;
+@property (nonatomic, strong) NSCalendar *unparsingCalendar;
+@property (nonatomic, strong) NSDateFormatter *unparsingFormatter;
+@property (nonatomic, copy) NSString *lastUsedFormatString;
+@end
+
+@implementation RKISO8601DateFormatter
+
++ (void)initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        timeZonesByOffset = [[NSMutableDictionary alloc] init];
+    });
+}
+
+- (id)init
+{
+    self = [super init];
+	if (self) {
+        self.timeZone = [NSTimeZone defaultTimeZone];
+        self.locale = [NSLocale currentLocale];
+        
+		self.parsingCalendar = [self newCalendar];
+		self.unparsingCalendar = [self newCalendar];
+        
+		self.format = RKISO8601DateFormatCalendar;
+		self.timeSeparator = RKISO8601DefaultTimeSeparatorCharacter;
+		self.includeTime = NO;
+		self.parsesStrictly = NO;
+	}
+	return self;
+}
+
+- (NSCalendar *)newCalendar
+{
+	NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+	calendar.firstWeekday = 2; //Monday
+	calendar.timeZone = self.timeZone;
+    calendar.locale = self.locale;
+	return calendar;
+}
+
+- (void)setTimeZone:(NSTimeZone *)timeZone
+{
+	if (_timeZone != timeZone) {
+		_timeZone = timeZone;
+		_unparsingCalendar.timeZone = timeZone;
+        _unparsingFormatter.timeZone = timeZone;
+	}
+}
+
+- (void)setLocale:(NSLocale *)locale
+{
+	if (_locale != locale) {
+		_locale = locale;
+		_unparsingCalendar.locale = locale;
+        _unparsingFormatter.locale = locale;
+	}
+}
+
+#pragma mark Parsing
 
 /*Valid ISO 8601 date formats:
  *
@@ -140,17 +155,22 @@ static BOOL is_leap_year(NSUInteger year);
  *  -W-d
  */
 
-- (NSDateComponents *) dateComponentsFromString:(NSString *)string {
+- (NSDateComponents *) dateComponentsFromString:(NSString *)string
+{
 	return [self dateComponentsFromString:string timeZone:NULL];
 }
-- (NSDateComponents *) dateComponentsFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone {
+
+- (NSDateComponents *) dateComponentsFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone
+{
 	return [self dateComponentsFromString:string timeZone:outTimeZone range:NULL];
 }
-- (NSDateComponents *) dateComponentsFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone range:(out NSRange *)outRange {
+
+- (NSDateComponents *) dateComponentsFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone range:(out NSRange *)outRange\
+{
 	NSDate *now = [NSDate date];
     
 	NSDateComponents *components = [[NSDateComponents alloc] init];
-	NSDateComponents *nowComponents = [parsingCalendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:now];
+	NSDateComponents *nowComponents = [self.parsingCalendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:now];
     
 	NSUInteger
     //Date
@@ -604,26 +624,28 @@ static BOOL is_leap_year(NSUInteger year);
 	return isValidDate ? components : nil;
 }
 
-- (NSDate *) dateFromString:(NSString *)string {
+- (NSDate *)dateFromString:(NSString *)string
+{
 	return [self dateFromString:string timeZone:NULL];
 }
-- (NSDate *) dateFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone {
+
+- (NSDate *)dateFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone
+{
 	return [self dateFromString:string timeZone:outTimeZone range:NULL];
 }
+
 - (NSDate *)dateFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone range:(out NSRange *)outRange {
 	NSTimeZone *timeZone = nil;
 	NSDateComponents *components = [self dateComponentsFromString:string timeZone:&timeZone range:outRange];
     if (! components) return nil;
 	if (outTimeZone)
 		*outTimeZone = timeZone;
-	parsingCalendar.timeZone = timeZone;
-    
-    RKLogDebug(@"TIMEZONE: %@", timeZone);
-    
-	return [parsingCalendar dateFromComponents:components];
+	self.parsingCalendar.timeZone = timeZone;
+	return [self.parsingCalendar dateFromComponents:components];
 }
 
-- (BOOL)getObjectValue:(id *)outValue forString:(NSString *)string errorDescription:(NSString **)error {
+- (BOOL)getObjectValue:(id *)outValue forString:(NSString *)string errorDescription:(NSString **)error
+{
 	NSDate *date = [self dateFromString:string];
 	if (outValue)
 		*outValue = date;
@@ -632,11 +654,8 @@ static BOOL is_leap_year(NSUInteger year);
 
 #pragma mark Unparsing
 
-@synthesize format;
-@synthesize includeTime;
-@synthesize timeSeparator;
-
-- (NSString *) replaceColonsInString:(NSString *)timeFormat withTimeSeparator:(unichar)timeSep {
+- (NSString *) replaceColonsInString:(NSString *)timeFormat withTimeSeparator:(unichar)timeSep
+{
 	if (timeSep != ':') {
 		NSMutableString *timeFormatMutable = [timeFormat mutableCopy];
 		[timeFormatMutable replaceOccurrencesOfString:@":"
@@ -648,48 +667,42 @@ static BOOL is_leap_year(NSUInteger year);
 	return timeFormat;
 }
 
-- (NSString *) stringFromDate:(NSDate *)date {
-	NSTimeZone *timeZone = self.defaultTimeZone;
-	if (!timeZone) timeZone = [NSTimeZone defaultTimeZone];
-	return [self stringFromDate:date timeZone:timeZone];
-}
-
-- (NSString *) stringFromDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone {
+- (NSString *)stringFromDate:(NSDate *)date
+{
 	switch (self.format) {
 		case RKISO8601DateFormatCalendar:
-			return [self stringFromDate:date formatString:RK_ISOCALENDAR_DATE_FORMAT timeZone:timeZone];
+			return [self stringFromDate:date formatString:RK_ISOCALENDAR_DATE_FORMAT];
 		case RKISO8601DateFormatWeek:
-			return [self weekDateStringForDate:date timeZone:timeZone];
+			return [self weekDateStringForDate:date timeZone:self.timeZone];
 		case RKISO8601DateFormatOrdinal:
-			return [self stringFromDate:date formatString:RK_ISOORDINAL_DATE_FORMAT timeZone:timeZone];
+			return [self stringFromDate:date formatString:RK_ISOORDINAL_DATE_FORMAT];
 		default:
 			[NSException raise:NSInternalInconsistencyException format:@"self.format was %ld, not calendar (%d), week (%d), or ordinal (%d)", (unsigned long) self.format, RKISO8601DateFormatCalendar, RKISO8601DateFormatWeek, RKISO8601DateFormatOrdinal];
 			return nil;
 	}
 }
 
-- (NSString *) stringFromDate:(NSDate *)date formatString:(NSString *)dateFormat timeZone:(NSTimeZone *)timeZone {
-	if (includeTime)
-		dateFormat = [dateFormat stringByAppendingFormat:@"'T'%@", [self replaceColonsInString:RK_ISOTIME_FORMAT withTimeSeparator:self.timeSeparator]];
+- (NSString *)stringFromDate:(NSDate *)date formatString:(NSString *)dateFormat
+{
+	if (self.includeTime) dateFormat = [dateFormat stringByAppendingFormat:@"'T'%@", [self replaceColonsInString:RK_ISOTIME_FORMAT withTimeSeparator:self.timeSeparator]];
     
-	if (dateFormat != lastUsedFormatString) {
-		unparsingFormatter = nil;
-		lastUsedFormatString = dateFormat;
+	if (! [dateFormat isEqualToString:self.lastUsedFormatString]) {
+		self.unparsingFormatter = nil;
+		self.lastUsedFormatString = dateFormat;
 	}
     
-	if (!unparsingFormatter) {
-		unparsingFormatter = [[NSDateFormatter alloc] init];
-		unparsingFormatter.formatterBehavior = NSDateFormatterBehavior10_4;
-		unparsingFormatter.dateFormat = dateFormat;
-		unparsingFormatter.calendar = unparsingCalendar;
+	if (!self.unparsingFormatter) {
+		self.unparsingFormatter = [[NSDateFormatter alloc] init];
+		self.unparsingFormatter.formatterBehavior = NSDateFormatterBehavior10_4;
+		self.unparsingFormatter.dateFormat = dateFormat;
+		self.unparsingFormatter.calendar = self.unparsingCalendar;
+        self.unparsingFormatter.timeZone = self.timeZone;
+        self.unparsingFormatter.locale = self.locale;
 	}
     
-    unparsingCalendar.timeZone = timeZone;
-    unparsingFormatter.timeZone = timeZone;
-	NSString *str = [unparsingFormatter stringForObjectValue:date];
-    
-	if (includeTime) {
-		NSInteger offset = [timeZone secondsFromGMT];
+	NSString *str = [self.unparsingFormatter stringForObjectValue:date];    
+	if (self.includeTime) {
+		NSInteger offset = [self.timeZone secondsFromGMT];
 		offset /= 60;  //bring down to minutes
 		if (offset == 0)
 			str = [str stringByAppendingString:RK_ISOTIMEZONE_UTC_FORMAT];
@@ -697,16 +710,12 @@ static BOOL is_leap_year(NSUInteger year);
 			str = [str stringByAppendingFormat:RK_ISOTIMEZONE_OFFSET_FORMAT, (long) (offset / 60), (long) (offset % 60)];
 	}
     
-	//Undo the change we made earlier
-	unparsingCalendar.timeZone = self.defaultTimeZone;
-    unparsingFormatter.timeZone = self.defaultTimeZone;
-    
 	return str;
 }
 
-- (NSString *) stringForObjectValue:(id)value {
+- (NSString *)stringForObjectValue:(id)value
+{
 	NSParameterAssert([value isKindOfClass:[NSDate class]]);
-    
 	return [self stringFromDate:(NSDate *)value];
 }
 
@@ -715,15 +724,17 @@ static BOOL is_leap_year(NSUInteger year);
  *	Rick McCarty, 1999
  *	http://personal.ecu.edu/mccartyr/ISOwdALG.txt
  */
-- (NSString *) weekDateStringForDate:(NSDate *)date timeZone:(NSTimeZone *)timeZone {
-	unparsingCalendar.timeZone = timeZone;
-	NSDateComponents *components = [unparsingCalendar components:NSYearCalendarUnit | NSWeekdayCalendarUnit | NSDayCalendarUnit fromDate:date];
+- (NSString *)weekDateStringForDate:(NSDate *)date
+{
+	self.unparsingCalendar.timeZone = self.timeZone;
+    self.unparsingCalendar.locale = self.locale;
+	NSDateComponents *components = [self.unparsingCalendar components:NSYearCalendarUnit | NSWeekdayCalendarUnit | NSDayCalendarUnit fromDate:date];
     
 	//Determine the ordinal date.
-	NSDateComponents *startOfYearComponents = [unparsingCalendar components:NSYearCalendarUnit fromDate:date];
+	NSDateComponents *startOfYearComponents = [self.unparsingCalendar components:NSYearCalendarUnit fromDate:date];
 	startOfYearComponents.month = 1;
 	startOfYearComponents.day = 1;
-	NSDateComponents *ordinalComponents = [unparsingCalendar components:NSDayCalendarUnit fromDate:[unparsingCalendar dateFromComponents:startOfYearComponents] toDate:date options:0];
+	NSDateComponents *ordinalComponents = [self.unparsingCalendar components:NSDayCalendarUnit fromDate:[self.unparsingCalendar dateFromComponents:startOfYearComponents] toDate:date options:0];
 	ordinalComponents.day += 1;
     
 	enum {
@@ -754,12 +765,12 @@ static BOOL is_leap_year(NSUInteger year);
     
 	NSInteger weekday = ((dayOfYear + Jan1Weekday) - 1) % 7;
     
-	if((dayOfYear <= (7 - Jan1Weekday)) && (Jan1Weekday > thursday)) {
+	if ((dayOfYear <= (7 - Jan1Weekday)) && (Jan1Weekday > thursday)) {
 		week = 52 + ((Jan1Weekday == friday) || ((Jan1Weekday == saturday) && prevYearIsLeapYear));
 		--year;
 	} else {
 		NSInteger lengthOfYear = 365 + yearIsLeapYear;
-		if((lengthOfYear - dayOfYear) < (thursday - weekday)) {
+		if ((lengthOfYear - dayOfYear) < (thursday - weekday)) {
 			++year;
 			week = 1;
 		} else {
@@ -769,7 +780,7 @@ static BOOL is_leap_year(NSUInteger year);
 	}
     
 	NSString *timeString;
-	if(includeTime) {
+	if (self.includeTime) {
 		NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 		unichar timeSep = self.timeSeparator;
 		if (!timeSep) timeSep = RKISO8601DefaultTimeSeparatorCharacter;

@@ -46,7 +46,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 @property (nonatomic, strong) NSMutableDictionary *invertedMappings;
 
 - (id)initWithMapping:(RKObjectMapping *)mapping;
-- (RKObjectMapping *)inverseMapping;
+- (RKObjectMapping *)inverseMappingWithPredicate:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate;
 @end
 
 @implementation RKMappingInverter
@@ -61,7 +61,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     return self;
 }
 
-- (RKObjectMapping *)invertMapping:(RKObjectMapping *)mapping
+- (RKObjectMapping *)invertMapping:(RKObjectMapping *)mapping withPredicate:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate
 {
     // Use an NSValue to obtain a non-copied key into our inversed mappings dictionary
     NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:mapping];
@@ -73,6 +73,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     [inverseMapping copyPropertiesFromMapping:mapping];
     
     for (RKAttributeMapping *attributeMapping in mapping.attributeMappings) {
+        if (predicate && !predicate(attributeMapping)) continue;
         [inverseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeMapping.destinationKeyPath toKeyPath:attributeMapping.sourceKeyPath]];
     }
     
@@ -82,16 +83,17 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
             RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", relationshipMapping.sourceKeyPath, NSStringFromClass([mapping class]));
             continue;
         }
-        RKMapping *inverseRelationshipMapping = [self invertMapping:mapping];
+        if (predicate && !predicate(relationshipMapping)) continue;
+        RKMapping *inverseRelationshipMapping = [self invertMapping:mapping withPredicate:predicate];
         if (inverseRelationshipMapping) [inverseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withMapping:inverseRelationshipMapping]];
     }
     
     return inverseMapping;
 }
 
-- (RKObjectMapping *)inverseMapping
+- (RKObjectMapping *)inverseMappingWithPredicate:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate
 {
-    return [self invertMapping:self.mapping];
+    return [self invertMapping:self.mapping withPredicate:predicate];
 }
 
 @end
@@ -332,10 +334,15 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     }
 }
 
-- (instancetype)inverseMapping
+- (instancetype)inverseMappingWithPropertyMappingsPassingTest:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate
 {
     RKMappingInverter *mappingInverter = [[RKMappingInverter alloc] initWithMapping:self];
-    return [mappingInverter inverseMapping];
+    return [mappingInverter inverseMappingWithPredicate:predicate];
+}
+
+- (instancetype)inverseMapping
+{
+    return [self inverseMappingWithPropertyMappingsPassingTest:nil];
 }
 
 - (void)addAttributeMappingFromKeyOfRepresentationToAttribute:(NSString *)attributeName
@@ -490,7 +497,8 @@ static NSFormatter *preferredDateFormatter = nil;
 {
     if (!preferredDateFormatter) {
         RKISO8601DateFormatter *iso8601Formatter = [[RKISO8601DateFormatter alloc] init];
-        iso8601Formatter.defaultTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        iso8601Formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        iso8601Formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         iso8601Formatter.includeTime = YES;
         preferredDateFormatter = iso8601Formatter;
     }

@@ -43,6 +43,13 @@ extern RKRequestMethod const RKRequestMethodAny;
 - (void)addRoute:(RKRoute *)route;
 
 /**
+ Adds all routes from the given array to the receiver. All objects within the given array must be an instance of `RKRoute` or else an `NSInvalidArgumentException` will be raised.
+ 
+ @param routes An array of `RKRoute` objects to be added to the receiver.
+ */
+- (void)addRoutes:(NSArray *)routes;
+
+/**
  Removes a route from the receiver.
 
  @param route The route to be removed.

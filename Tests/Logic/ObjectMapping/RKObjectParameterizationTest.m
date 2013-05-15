@@ -654,4 +654,34 @@ typedef enum {
     assertThat(catNames, is(equalTo([NSArray arrayWithObjects:@"Asia", @"Roy", nil])));
 }
 
+- (void)testParameterizingHasManyRelationshipToNestedKeyPath
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromArray:@[@"name"]];
+    RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    [addressMapping addAttributeMappingsFromArray:@[@"city", @"state"]];
+    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"friends" withMapping:addressMapping]];
+    
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake Watters";
+    RKTestAddress *address1 = [RKTestAddress new];
+    address1.city = @"Carrboro";
+    RKTestAddress *address2 = [RKTestAddress new];
+    address2.city = @"New York City";
+    user.friends = [NSArray arrayWithObjects:address1, address2, nil];
+    
+    
+    RKObjectMapping *requestMapping = [RKObjectMapping requestMapping];
+    [requestMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKObjectMapping *cityMapping = [RKObjectMapping requestMapping];
+    [cityMapping addAttributeMappingsFromArray:@[ @"city" ]];
+    [requestMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"friends" toKeyPath:@"cities.eastCoast" withMapping:cityMapping]];;
+    NSDictionary *params = [RKObjectParameterization parametersWithObject:user requestDescriptor:[RKRequestDescriptor requestDescriptorWithMapping:requestMapping objectClass:[RKTestUser class] rootKeyPath:nil] error:nil];
+    NSError *error = nil;
+    NSDictionary *parsedJSON = [NSJSONSerialization JSONObjectWithData:[RKMIMETypeSerialization dataFromObject:params MIMEType:RKMIMETypeJSON error:nil] options:0 error:nil];
+    assertThat(error, is(nilValue()));
+    assertThat(parsedJSON[@"name"], is(equalTo(@"Blake Watters")));
+    assertThat([parsedJSON valueForKeyPath:@"cities.eastCoast.city"], hasItems(@"Carrboro", @"New York City", nil));
+}
+
 @end

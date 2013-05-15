@@ -24,6 +24,9 @@
     // Initialize RestKit
     NSURL *baseURL = [NSURL URLWithString:@"https://twitter.com"];
     RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:baseURL];
+    
+    // HACK: Set User-Agent to Mac OS X so that Twitter will let us access the Timeline
+    [objectManager.HTTPClient setDefaultHeader:@"User-Agent" value:[NSString stringWithFormat:@"%@/%@ (Mac OS X %@)", [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleExecutableKey] ?: [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleIdentifierKey], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] ?: [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey], [[NSProcessInfo processInfo] operatingSystemVersionString]]];
 
     // Enable Activity Indicator Spinner
     [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;

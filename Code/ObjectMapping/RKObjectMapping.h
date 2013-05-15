@@ -325,6 +325,10 @@
  */
 @property (nonatomic, strong) NSFormatter *preferredDateFormatter;
 
+///----------------------------------
+/// @name Generating Inverse Mappings
+///----------------------------------
+
 /**
  Generates an inverse mapping for the rules specified within this object mapping. 
  
@@ -333,6 +337,15 @@
  @return A new mapping that will map the inverse of the receiver.
  */
 - (instancetype)inverseMapping;
+
+/**
+ Generates an inverse mapping with all property mappings of the receiver that pass the given test. Each `RKAttributeMapping` and `RKRelationshipMapping` added to the receiver is yielded to the block for evaluation. The block is also invoked for any nested relationships that are traversed during the inversion process.
+
+ @param predicate A block object to be invoked for each `RKPropertyMapping` that is considered for inversion. The block has a Boolean return value and accepts a single argument: the property mapping that is being evaluated for inversion.
+ @return A new mapping that will map the inverse of the receiver.
+ @see inverseMapping
+ */
+- (instancetype)inverseMappingWithPropertyMappingsPassingTest:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate;
 
 ///---------------------------------------------------
 /// @name Obtaining Information About the Target Class

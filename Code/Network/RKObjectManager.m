@@ -221,6 +221,40 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
     return NO;
 }
 
+BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors);
+BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors)
+{
+    // Visit all mappings accessible from the object graphs of all response descriptors
+    NSMutableSet *accessibleMappings = [NSMutableSet set];
+    for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
+        if (! [accessibleMappings containsObject:responseDescriptor.mapping]) {
+            RKMappingGraphVisitor *graphVisitor = [[RKMappingGraphVisitor alloc] initWithMapping:responseDescriptor.mapping];
+            [accessibleMappings unionSet:graphVisitor.mappings];
+        }
+    }
+
+    NSMutableSet *mappingClasses = [NSMutableSet set];
+    // Enumerate all mappings and search for an `RKEntityMapping`
+    for (RKMapping *mapping in accessibleMappings) {
+        if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+            [mappingClasses addObjectsFromArray:[[(RKDynamicMapping *)mapping objectMappings] valueForKey:@"class"]];
+        } else {
+            [mappingClasses addObject:mapping.class];
+        }
+    }
+
+    if ([mappingClasses count]) {
+        for (Class mappingClass in mappingClasses) {
+            if (! [mappingClass isSubclassOfClass:[RKEntityMapping class]]) {
+                return NO;
+            }
+        }
+        return YES;
+    }
+
+    return NO;
+}
+
 static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *responseDescriptors, Class classToBeMapped)
 {
     // Visit all mappings accessible from the object graphs of all response descriptors
@@ -528,6 +562,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         RKRoute *route = [self.router.routeSet routeForObject:object method:method];
         NSDictionary *interpolatedParameters = nil;
         NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
+        if (! URL) {
+            RKLogError(@"Failed to construct a URL from the provided object. Returning nil.");
+            return operation;
+        }
         path = [URL relativeString];
         routingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
     }
@@ -781,20 +819,29 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     [self.operationQueue addOperation:objectRequestOperation];
 }
 
-- (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern
+- (NSArray *)enqueuedObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern
 {
+    NSMutableArray *matches = [NSMutableArray array];
     NSString *methodName = RKStringFromRequestMethod(method);
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
     for (NSOperation *operation in [self.operationQueue operations]) {
         if (![operation isKindOfClass:[RKObjectRequestOperation class]]) {
             continue;
         }
-        
         NSURLRequest *request = [(RKObjectRequestOperation *)operation HTTPRequestOperation].request;
         NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL([request URL], self.baseURL);
+
         if ((!methodName || [methodName isEqualToString:[request HTTPMethod]]) && [pathMatcher matchesPath:pathAndQueryString tokenizeQueryStrings:NO parsedArguments:nil]) {
-            [operation cancel];
+            [matches addObject:operation];
         }
+    }
+    return [matches copy];
+}
+
+- (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern
+{
+    for (RKObjectRequestOperation *operation in [self enqueuedObjectRequestOperationsWithMethod:method matchingPathPattern:pathPattern]) {
+        [operation cancel];
     }
 }
 
@@ -831,6 +878,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                 completion(operations);
             }
         });
+#if !OS_OBJECT_USE_OBJC
+        dispatch_release(dispatchGroup);
+#endif
     }];
 
     for (RKObjectRequestOperation *operation in operations) {

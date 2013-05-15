@@ -1,9 +1,21 @@
 //
-//  RKFetchRequestMappingCache.m
+//  RKFetchRequestManagedObjectCache.m
 //  RestKit
 //
 //  Created by Jeff Arena on 1/24/12.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKFetchRequestManagedObjectCache.h"
@@ -21,13 +33,12 @@
  */
 static NSString *RKPredicateCacheKeyForAttributeValues(NSDictionary *attributesValues)
 {
-    NSArray *sortedKeys = [[attributesValues allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    NSArray *sortedKeys = [[attributesValues allKeys] sortedArrayUsingSelector:@selector(compare:)];
     NSMutableArray *keyFragments = [NSMutableArray array];
     for (NSString *attributeName in sortedKeys) {
         id value = [attributesValues objectForKey:attributeName];
-        char suffix = ([value respondsToSelector:@selector(count)]) ? '+' : '.';
-        NSString *attributeKey = [NSString stringWithFormat:@"%@%c", attributeName, suffix];
-        [keyFragments addObject:attributeKey];
+        char *suffix = [value respondsToSelector:@selector(count)] ? "+" : ".";
+        [keyFragments addObject:[attributeName stringByAppendingString:[NSString stringWithUTF8String:suffix]]];
     }
     return [keyFragments componentsJoinedByString:@":"];
 }
@@ -48,7 +59,8 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
 }
 
 @interface RKFetchRequestManagedObjectCache ()
-@property (nonatomic, strong) NSCache *predicateCache;
+@property (nonatomic, strong) NSMutableDictionary *predicateCache;
+@property (nonatomic, assign) dispatch_queue_t cacheQueue;
 @end
 
 @implementation RKFetchRequestManagedObjectCache
@@ -57,31 +69,51 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
 {
     self = [super init];
     if (self) {
-        self.predicateCache = [NSCache new];
+        self.predicateCache = [NSMutableDictionary dictionary];
+        self.cacheQueue = dispatch_queue_create("org.restkit.core-data.fetch-request-cache-queue", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
+}
+
+- (void)dealloc
+{
+#if !OS_OBJECT_USE_OBJC
+    if (_cacheQueue) dispatch_release(_cacheQueue);
+#endif
+    _cacheQueue = NULL;
 }
 
 - (NSSet *)managedObjectsWithEntity:(NSEntityDescription *)entity
                     attributeValues:(NSDictionary *)attributeValues
              inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-
     NSAssert(entity, @"Cannot find existing managed object without a target class");
     NSAssert(attributeValues, @"Cannot retrieve cached objects without attribute values to identify them with.");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a nil context");
     
+    if ([attributeValues count] == 0) return [NSSet set];
+    
     NSString *predicateCacheKey = RKPredicateCacheKeyForAttributeValues(attributeValues);
-    NSPredicate *substitutionPredicate = [self.predicateCache objectForKey:predicateCacheKey];
+    
+    __block NSPredicate *substitutionPredicate;
+    dispatch_sync(self.cacheQueue, ^{
+        substitutionPredicate = [self.predicateCache objectForKey:predicateCacheKey];
+    });
+         
     if (! substitutionPredicate) {
         substitutionPredicate = RKPredicateWithSubsitutionVariablesForAttributeValues(attributeValues);
-        [self.predicateCache setObject:substitutionPredicate forKey:predicateCacheKey];
+        dispatch_barrier_async(self.cacheQueue, ^{
+            [self.predicateCache setObject:substitutionPredicate forKey:predicateCacheKey];
+        });
     }
     
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[entity name]];
     fetchRequest.predicate = [substitutionPredicate predicateWithSubstitutionVariables:attributeValues];
-    NSError *error = nil;
-    NSArray *objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    __block NSError *error = nil;
+    __block NSArray *objects = nil;
+    [managedObjectContext performBlockAndWait:^{
+        objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    }];
     if (! objects) {
         RKLogError(@"Failed to execute fetch request due to error: %@", error);
     }

@@ -94,9 +94,9 @@
  */
 @property (nonatomic, strong) NSEntityDescription *entity;
 
-///----------------------------------
-/// @name Identifying Managed Objects
-///----------------------------------
+///------------------------------------------------
+/// @name Configuring Managed Object Identification
+///------------------------------------------------
 
 /**
  The array of `NSAttributeDescription` objects specifying the attributes of the receiver's entity that are used during mapping to determine whether an existing object should be updated or a new managed object should be inserted. Please see the "Entity Identification" section of this document for more information.
@@ -114,6 +114,25 @@
  */
 @property (nonatomic, copy) NSPredicate *identificationPredicate;
 
+/**
+ An optional key on objects mapped with the receiver that identifies a property that can be used to detect modification to the instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object.
+ 
+ A common modification key is a 'last modified' or 'updated at' timestamp that specifies the last change to an object. When the `modificationKey` is non-nil, the mapper will compare the value returned for the key on an existing object instance with the value in the representation being mapped. If they are exactly equal, then the mapper will skip all remaining property mappings and proceed to the next object.
+ */
+@property (nonatomic, copy) NSString *modificationKey;
+
+///---------------------------------------------------------------
+/// @name Specifying a Persistent Store for Newly Inserted Objects
+///---------------------------------------------------------------
+
+/**
+ The persistent store in which new object instances mapped with the receiver should be inserted.
+ 
+ If your application makes use of more than one persistent store (i.e. a combination of an in-memory store and a SQLite store), then it can be desirable to specify the persistent store in which newly created managed objects will be assigned.
+ 
+ **Default**: `nil`
+ */
+@property (nonatomic, weak) NSPersistentStore *persistentStore;
 
 ///-------------------------------------------
 /// @name Configuring Relationship Connections
@@ -197,7 +216,16 @@
 /**
  A predicate that identifies objects for the receiver's entity that are to be deleted from the local store.
 
- This property provides support for local deletion of managed objects mapped as a 'tombstone' record from the source representation.
+ This property provides support for local deletion of managed objects mapped as a 'tombstone' record from the source representation. The deletion predicate is used in conjunction with the entity associated with the receiver to construct an `NSFetchRequest` that identifies managed objects that should be deleted when a mapping operation is committed. For example, given the following JSON:
+ 
+    { "userID": 12345, "is_deleted": true }
+ 
+ We could map the `is_deleted` key to a Boolean attribute on the model such as `shouldBeDeleted` and configure a deletion predicate using this attribute:
+ 
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"is_deleted": @"shouldBeDeleted" }];
+    entityMapping.deletionPredicate = [NSPredicate predicateWithFormat:@"shouldBeDeleted = true"];
+ 
+ When a mapping operation completes, a `NSFetchRequest` will be constructed and executed. Any objects in the store whose `shouldBeDeleted` value is true will be deleted.
  */
 @property (nonatomic, copy) NSPredicate *deletionPredicate;
 

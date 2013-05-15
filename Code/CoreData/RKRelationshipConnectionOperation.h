@@ -40,12 +40,12 @@
  Initializes the receiver with a given managed object, connection mapping, and managed object cache.
 
  @param managedObject The object to attempt to connect a relationship to.
- @param connectionMapping A mapping describing the relationship and attributes necessary to perform the connection.
+ @param connections An array of connection objects describing how establish a Core Data relationship between objects.
  @param managedObjectCache The managed object cache from which to attempt to fetch a matching object to satisfy the connection.
  @return The receiver, initialized with the given managed object, connection mapping, and managed object cache.
  */
 - (id)initWithManagedObject:(NSManagedObject *)managedObject
-                 connection:(RKConnectionDescription *)connection
+                connections:(NSArray *)connections
          managedObjectCache:(id<RKManagedObjectCaching>)managedObjectCache;
 
 ///--------------------------------------------
@@ -58,9 +58,9 @@
 @property (nonatomic, strong, readonly) NSManagedObject *managedObject;
 
 /**
- The connection mapping describing the relationship connection the receiver will attempt to connect.
+ An array of `RKConnectionDescription` objects describing the relationship connection the receiver will attempt to connect.
  */
-@property (nonatomic, strong, readonly) RKConnectionDescription *connection;
+@property (nonatomic, strong, readonly) NSArray *connections;
 
 /**
  The managed object cache the receiver will use to fetch a related object satisfying the connection mapping.
@@ -68,11 +68,11 @@
 @property (nonatomic, strong, readonly) id<RKManagedObjectCaching> managedObjectCache;
 
 /**
- The object or collection of objects that was connected by the operation.
+ A dictionary keyed by the name of each relationship that was established by the receiver wherein each value is the objects or objects that were connected.
  
- The connected object will either be `nil`, indicating that the relationship could not be connected, a single `NSManagedObject` object (if the relationship is one-to-one), or an array of `NSManagedObject` objects (if the relationship is one-to-many).
+ For each key in the dictionary, the value will either be `[NSNull null]`, indicating that the relationship could not be connected, a single `NSManagedObject` object (if the relationship is one-to-one), or an array of `NSManagedObject` objects (if the relationship is one-to-many).
  */
-@property (nonatomic, strong, readonly) id connectedValue;
+@property (nonatomic, strong, readonly) NSDictionary *connectedValuesByRelationshipName;
 
 ///-----------------------------------
 /// @name Setting the Connection Block
@@ -85,6 +85,6 @@
  
  @param block A block object to be executed when the connection is evaluated. The block accepts two arguments: the operation itself and the value, if any, that was set for the relationship targetted by the connection description.
  */
-- (void)setConnectionBlock:(void (^)(RKRelationshipConnectionOperation *operation, id connectedValue))block;
+- (void)setConnectionBlock:(void (^)(RKRelationshipConnectionOperation *operation, RKConnectionDescription *connection, id connectedValue))block;
 
 @end

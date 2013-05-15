@@ -31,7 +31,7 @@
 {
     NSString *unicode = [NSString stringWithFormat:@"%CNo ser ni%Co, ser b%Cfalo%C%C", (unichar)0x00A1, (unichar)0x00F1, (unichar)0x00FA, (unichar)0x2026, (unichar)0x0021];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:unicode forKey:@"utf8"];
-    NSString *validUnicode = @"utf8=%C2%A1No%20ser%20ni%C3%B1o,%20ser%20b%C3%BAfalo%E2%80%A6%21";
+    NSString *validUnicode = @"utf8=%C2%A1No%20ser%20ni%C3%B1o%2C%20ser%20b%C3%BAfalo%E2%80%A6%21";
     NSString *encodedString = RKURLEncodedStringFromDictionaryWithEncoding(dictionary, NSUTF8StringEncoding);
     expect(encodedString).to.equal(validUnicode);
 }

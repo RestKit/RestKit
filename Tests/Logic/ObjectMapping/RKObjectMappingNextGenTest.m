@@ -697,7 +697,7 @@
     expect(nameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
 }
 
-- (void)testMappingConstructsMappingInfoDictionaryWithMergedRelationshipInfo
+- (void)testAccessingPropertyAndRelationshipSpecificMappingInfo
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [mapping addAttributeMappingsFromArray:@[ @"name" ]];
@@ -711,10 +711,12 @@
     expect(mappingOperation.mappingInfo).notTo.beNil();
     RKPropertyMapping *friendsMapping = mappingOperation.mappingInfo[@"friends"];
     RKPropertyMapping *nameMapping = mappingOperation.mappingInfo[@"name"];
-    RKPropertyMapping *nestedNameMapping = mappingOperation.mappingInfo[@"friends.name"];
     expect(nameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
     expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
-    expect(nestedNameMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"name"]);
+    
+    NSArray *relationshipMappingInfo = [mappingOperation.mappingInfo relationshipMappingInfo][@"friends"];
+    expect([relationshipMappingInfo count]).to.equal(1);
+    expect(relationshipMappingInfo[0][@"name"]).notTo.beNil();
 }
 
 - (void)testThatMappingHasManyDoesNotDuplicateRelationshipMappingInMappingInfo
@@ -751,7 +753,7 @@
     mapperOperation.mappingOperationDataSource = dataSource;
     [mapperOperation start];
     expect(mapperOperation.mappingInfo).notTo.beNil();
-    RKPropertyMapping *friendsMapping = mapperOperation.mappingInfo[[NSNull null]][@"friends"];
+    RKPropertyMapping *friendsMapping = mapperOperation.mappingInfo[[NSNull null]][0][@"friends"];
     expect(friendsMapping).to.equal([mapping propertyMappingsByDestinationKeyPath][@"friends"]);
 }
 
@@ -770,6 +772,8 @@
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     RKTestUser *exampleUser = [RKTestUser new];
+    id mockInspector = [OCMockObject partialMockForObject:[RKPropertyInspector sharedInspector]];
+    [[[mockInspector stub] andReturn:nil] propertyInspectionForClass:OCMOCK_ANY];
     id mockObject = [OCMockObject partialMockForObject:exampleUser];
     [[[mockObject expect] andCall:@selector(fakeValidateValue:forKeyPath:error:) onObject:self] validateValue:(id __autoreleasing *)[OCMArg anyPointer] forKeyPath:OCMOCK_ANY error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
     mapper.targetObject = mockObject;
@@ -778,6 +782,7 @@
     [mapper start];
     [mockObject verify];
     [mockDelegate verify];
+    [mockInspector stopMocking];
 }
 
 #pragma mark - RKObjectMappingOperationTests
@@ -1298,6 +1303,7 @@
     operation.delegate = mockDelegate;
     NSError *error = nil;
     [[mockDelegate expect] mappingOperation:operation didFindValue:[NSNull null] forKeyPath:@"name" mapping:nameMapping];
+    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE((BOOL){YES})] mappingOperation:operation shouldSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
     [[mockDelegate expect] mappingOperation:operation didSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
     operation.dataSource = dataSource;
     [operation performMapping:&error];
@@ -1319,6 +1325,7 @@
     operation.delegate = mockDelegate;
     NSError *error = nil;
     [[mockDelegate expect] mappingOperation:operation didFindValue:@"Blake Watters" forKeyPath:@"name" mapping:nameMapping];
+    [[mockDelegate expect] mappingOperation:operation shouldSetValue:@"Blake Watters" forKeyPath:@"name" usingMapping:nameMapping];
     [[mockDelegate expect] mappingOperation:operation didNotSetUnchangedValue:@"Blake Watters" forKeyPath:@"name" usingMapping:nameMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -1734,7 +1741,8 @@
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMappingOperationDelegate)];
-    [[mockDelegate expect] mappingOperation:operation didNotSetUnchangedValue:address forKeyPath:@"address" usingMapping:hasOneMapping];
+    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE((BOOL){NO})] mappingOperation:operation shouldSetValue:OCMOCK_ANY forKeyPath:OCMOCK_ANY usingMapping:OCMOCK_ANY];
+    [[mockDelegate expect] mappingOperation:operation didNotSetUnchangedValue:OCMOCK_ANY forKeyPath:@"address" usingMapping:hasOneMapping];
     operation.delegate = mockDelegate;
     [operation performMapping:nil];
     [mockDelegate verify];
@@ -2597,7 +2605,62 @@
     expect(user.country).to.equal(@"United States of America");
 }
 
-// RKResponseMapperOperation sets up Metadata for HTTP request/response
-// RKMapperOperation sets up mapping.rootKey, also collectionIndex for outer arrays
+#pragma mark - Persistent Stores
+
+- (void)testMappingObjectToInMemoryPersistentStore
+{
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"InMemoryTest.sqlite"];
+    NSError *error = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storePath]) [[NSFileManager defaultManager] removeItemAtPath:storePath error:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    NSPersistentStore __unused *sqlStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    NSPersistentStore __unused *inMemoryStore = [managedObjectStore addInMemoryPersistentStore:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    [managedObjectStore createManagedObjectContexts];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    humanMapping.persistentStore = inMemoryStore;
+    [humanMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    
+    NSDictionary *representation = @{ @"name": @"Blake Watters" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:humanMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    [operation performMapping:&error];
+    expect(operation.destinationObject).notTo.beNil();
+    expect([(NSManagedObject *)operation.destinationObject objectID].persistentStore).to.equal(inMemoryStore);
+}
+
+- (void)testMappingObjectToSQLitePersistentStore
+{
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"SQLiteTest.sqlite"];
+    NSError *error = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storePath]) [[NSFileManager defaultManager] removeItemAtPath:storePath error:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    NSPersistentStore __unused *sqlStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    NSPersistentStore __unused *inMemoryStore = [managedObjectStore addInMemoryPersistentStore:&error];
+    NSAssert(error == nil, @"Unexpectedly failed with error: %@", error);
+    [managedObjectStore createManagedObjectContexts];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    humanMapping.persistentStore = sqlStore;
+    [humanMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    
+    NSDictionary *representation = @{ @"name": @"Blake Watters" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:humanMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    [operation performMapping:&error];
+    expect(operation.destinationObject).notTo.beNil();
+    expect([(NSManagedObject *)operation.destinationObject objectID].persistentStore).to.equal(sqlStore);
+}
 
 @end

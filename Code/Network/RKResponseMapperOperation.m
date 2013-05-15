@@ -126,7 +126,8 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 @property (nonatomic, strong, readwrite) NSArray *matchingResponseDescriptors;
 @property (nonatomic, strong, readwrite) NSDictionary *responseMappingsDictionary;
 @property (nonatomic, strong) RKMapperOperation *mapperOperation;
-@property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
+@property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id);
+@property (nonatomic, copy) void(^didFinishMappingBlock)(RKMappingResult *, NSError *);
 @end
 
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
@@ -233,15 +234,24 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     [self.mapperOperation cancel];
 }
 
+- (void)willFinish
+{
+    if (self.isCancelled && !self.error) self.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:nil];
+    
+    if (self.error && self.didFinishMappingBlock) self.didFinishMappingBlock(nil, self.error);
+    else if (self.didFinishMappingBlock) self.didFinishMappingBlock(self.mappingResult, nil);
+}
+
 - (void)main
 {
-    if (self.isCancelled) return;
+    if (self.isCancelled) return [self willFinish];
 
     BOOL isErrorStatusCode = [RKErrorStatusCodes() containsIndex:self.response.statusCode];
     
     // If we are an error response and empty, we emit an error that the content is unmappable
     if (isErrorStatusCode && [self hasEmptyResponse]) {
         self.error = RKUnprocessableErrorFromResponse(self.response);
+        [self willFinish];
         return;
     }
 
@@ -255,19 +265,21 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
             self.mappingResult = nil;
         }
 
+        [self willFinish];
         return;
     }
 
     // Parse the response
     NSError *error;
     id parsedBody = [self parseResponseData:&error];
-    if (self.isCancelled) return;
+    if (self.isCancelled) return [self willFinish];
     if (! parsedBody) {
         RKLogError(@"Failed to parse response data: %@", [error localizedDescription]);
         self.error = error;
+        [self willFinish];
         return;
     }
-    if (self.isCancelled) return;        
+    if (self.isCancelled) return [self willFinish];        
     
     // Invoke the will map deserialized response block
     if (self.willMapDeserializedResponseBlock) {
@@ -276,6 +288,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Mapping was declined due to a `willMapDeserializedResponseBlock` returning nil." };
             self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorFromMappingResult userInfo:userInfo];
             RKLogError(@"Failed to parse response data: %@", [error localizedDescription]);
+            [self willFinish];
             return;
         }
     }
@@ -292,6 +305,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
             if (! error) error = RKUnprocessableErrorFromResponse(self.response);
         }
         self.error = error;
+        [self willFinish];
         return;
     }
     
@@ -304,13 +318,12 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
                                     NSURLErrorFailingURLStringErrorKey: [self.response.URL absoluteString],
                                     NSUnderlyingErrorKey: error};
         self.error = [[NSError alloc] initWithDomain:RKErrorDomain code:RKMappingErrorNotFound userInfo:userInfo];
+        [self willFinish];
         return;
     }
     
-    if (! self.mappingResult) {
-        self.error = error;
-        return;
-    }
+    if (! self.mappingResult) self.error = error;    
+    [self willFinish];
 }
 
 @end
