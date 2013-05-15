@@ -121,14 +121,15 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
 static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managedObject, NSManagedObjectContext *managedObjectContext)
 {
     NSManagedObjectID *managedObjectID = [managedObject objectID];
-    if (! [managedObject managedObjectContext]) return nil; // Object has been deleted
     if ([managedObjectID isTemporaryID]) {
         RKLogWarning(@"Unable to refetch managed object %@: the object has a temporary managed object ID.", managedObject);
         return managedObject;
     }
     NSError *error = nil;
     NSManagedObject *refetchedObject = [managedObjectContext existingObjectWithID:managedObjectID error:&error];
-    NSCAssert(refetchedObject, @"Failed to find existing object with ID %@ in context %@: %@", managedObjectID, managedObjectContext, error);
+    if (! refetchedObject) {
+        RKLogWarning(@"Failed to refetch managed object with ID %@: %@", managedObjectID, error);
+    }
     return refetchedObject;
 }
 
