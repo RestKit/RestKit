@@ -1500,4 +1500,23 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect([human hasBeenDeleted]).to.equal(YES);
 }
 
+- (void)testThatWillSaveMappingContextBlockIsInvoked
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    __block NSManagedObjectContext *blockMappingContext = nil;
+    [managedObjectRequestOperation setWillSaveMappingContextBlock:^(NSManagedObjectContext *mappingContext) {
+        blockMappingContext = mappingContext;
+    }];
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect(blockMappingContext).notTo.beNil();
+}
+
 @end

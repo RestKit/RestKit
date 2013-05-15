@@ -425,6 +425,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 @property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
 @property (nonatomic, readonly) BOOL canSkipMapping;
 @property (nonatomic, assign) BOOL hasMemoizedCanSkipMapping;
+@property (nonatomic, copy) void (^willSaveMappingContextBlock)(NSManagedObjectContext *mappingContext);
 @end
 
 @implementation RKManagedObjectRequestOperation
@@ -615,6 +616,11 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         success = [weakSelf obtainPermanentObjectIDsForInsertedObjects:&error];
         if (! success || [weakSelf isCancelled]) {
             return completionBlock(nil, error);
+        }
+        if (weakSelf.willSaveMappingContextBlock) {
+            [weakSelf.privateContext performBlockAndWait:^{
+                weakSelf.willSaveMappingContextBlock(weakSelf.privateContext);
+            }];
         }
         success = [weakSelf saveContext:&error];
         if (! success || [weakSelf isCancelled]) {
