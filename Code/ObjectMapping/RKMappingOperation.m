@@ -374,8 +374,8 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
         concreteMapping = (RKObjectMapping *)mapping;
     }
     
-    NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
-    return [self.dataSource mappingOperation:self targetObjectForRepresentation:dictionaryRepresentation withMapping:concreteMapping inRelationship:relationshipMapping];
+    id mappingSourceObject = [[RKMappingSourceObject alloc] initWithObject:representation metadata:self.metadata];
+    return [self.dataSource mappingOperation:self targetObjectForRepresentation:mappingSourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
 - (NSDate *)parseDateFromString:(NSString *)string
