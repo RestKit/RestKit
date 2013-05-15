@@ -1,17 +1,13 @@
 require 'rubygems'
 require 'bundler/setup'
-require 'restkit/rake'
+require 'rakeup'
 require 'debugger'
 
-RestKit::Rake::ServerTask.new do |t|
+RakeUp::ServerTask.new do |t|
   t.port = 4567
   t.pid_file = 'Tests/Server/server.pid'
   t.rackup_file = 'Tests/Server/server.ru'
-  t.log_file = 'Tests/Server/server.log'
-
-  t.adapter(:thin) do |thin|
-    thin.config_file = 'Tests/Server/thin.yml'
-  end
+  t.server = :thin
 end
 
 namespace :test do
