@@ -1398,6 +1398,34 @@
     expect(mappedObjectIDs).to.equal(tagObjectIDs);
     NSUInteger tagsCount = [managedObjectStore.mainQueueManagedObjectContext countForEntityForName:@"Tag" predicate:nil error:nil];
     expect(tagsCount).to.equal(2);
-};
+}
+
+- (void)testShouldPropagateDeletionsUpToPersistentStore
+{
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext withProperties:nil];
+    temporaryHuman.name = @"My Name";
+    temporaryHuman.railsID = @1;
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping addAttributeMappingsFromArray:@[@"name"]];
+    
+    // Save it to ensure the object is persisted before we delete it
+    [[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext save:nil];
+    
+    RKHuman *persistedHuman = (RKHuman *)[[RKTestFactory managedObjectStore].mainQueueManagedObjectContext objectWithID:temporaryHuman.objectID];
+    expect(persistedHuman).toNot.beNil();
+    
+    RKManagedObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:persistedHuman method:RKRequestMethodDELETE path:nil parameters:nil];
+    operation.managedObjectContext = persistedHuman.managedObjectContext;
+    RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
+    operation.managedObjectCache = cache;
+    [operation start];
+    expect([operation isFinished]).will.beTruthy();
+    
+    NSError *error = nil;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    NSArray *humans = [[RKTestFactory managedObjectStore].persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    expect(error).to.beNil();
+    expect(humans).to.haveCountOf(0);
+}
 
 @end
