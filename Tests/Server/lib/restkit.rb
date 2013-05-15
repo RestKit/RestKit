@@ -1,1 +1,0 @@
-require 'restkit/network/authentication'

@@ -1,24 +1,10 @@
 #!/usr/bin/env ruby
 # RestKit Test Server
-
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
 require 'json'
-begin
-  require 'ruby-debug'
-  Debugger.start
-rescue LoadError
-  # No debugging...
-end
-
-# Import the RestKit Test server
-$: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
-require File.expand_path(File.dirname(__FILE__)) + '/fixtures'
-require 'restkit/network/authentication'
-require 'restkit/network/etags'
-require 'restkit/network/timeout'
-require 'restkit/network/redirection'
+require 'debugger'
 
 class Person < Struct.new(:name, :age)
   def to_json(*args)
@@ -34,11 +20,6 @@ class RestKitTestServer < Sinatra::Base
     set :public_folder, Proc.new { File.expand_path(File.join(root, '../Fixtures')) }
     set :uploads_path, Proc.new { File.expand_path(File.join(root, '../Fixtures/Uploads')) }
   end
-  
-  use RestKit::Network::Authentication
-  use RestKit::Network::ETags
-  use RestKit::Network::Timeout
-  use RestKit::Network::Redirection
 
   def render_fixture(path, options = {})
     send_file File.join(settings.public_folder, path), options
