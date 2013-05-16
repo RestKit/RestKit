@@ -1428,4 +1428,37 @@
     expect(humans).to.haveCountOf(0);
 }
 
+- (void)testPostingAnObjectAndGettingBackOtherObjectsCanConnectRelationsById
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    managedObjectStore.managedObjectCache = managedObjectCache;
+
+    RKEntityMapping *humanEntityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    humanEntityMapping.identificationAttributes = @[ @"railsID" ];
+    [humanEntityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID", @"catIDs": @"catIDs" }];
+    [humanEntityMapping addConnectionForRelationship:@"cats" connectedBy:@{ @"catIDs" : @"railsID" }];
+
+    RKEntityMapping *catEntityMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    catEntityMapping.identificationAttributes = @[ @"railsID" ];
+    [catEntityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID" }];
+
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    [childContext setParentContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:childContext];
+
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    objectManager.managedObjectStore = managedObjectStore;
+    [objectManager addResponseDescriptor:[RKResponseDescriptor responseDescriptorWithMapping:humanEntityMapping pathPattern:@"/humans/and_cats" keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:201]]];
+    [objectManager addResponseDescriptor:[RKResponseDescriptor responseDescriptorWithMapping:catEntityMapping pathPattern:@"/humans/and_cats" keyPath:@"cats" statusCodes:[NSIndexSet indexSetWithIndex:201]]];
+    __block RKMappingResult *mappingResult = nil;
+
+    [objectManager postObject:human path:@"/humans/and_cats" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+
+    expect(mappingResult).willNot.beNil();
+    expect(human.cats).to.haveCountOf(2);
+}
+
 @end

@@ -20,6 +20,7 @@
 
 #import "RKMapperOperation.h"
 #import "RKMapperOperation_Private.h"
+#import "RKObjectMapping.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
 #import "RKResponseDescriptor.h"
@@ -206,27 +207,13 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             RKLogWarning(@"Collection mapping forced but representations is of type '%@' rather than NSDictionary", NSStringFromClass([representations class]));
         }
     }
-
-    NSMutableArray *mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[representations count]];
+    
+    NSMutableArray *mappedObjects = [NSMutableArray arrayWithCapacity:[representations count]];
     [objectsToMap enumerateObjectsUsingBlock:^(id mappableObject, NSUInteger index, BOOL *stop) {
         id destinationObject = [self objectForRepresentation:mappableObject withMapping:mapping];
         if (destinationObject) {
             BOOL success = [self mapRepresentation:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping metadata:@{ @"mapping": @{ @"collectionIndex": @(index) } }];
-            if (success) {
-                @try {
-                    [mappedObjects addObject:destinationObject];
-                }
-                @catch (NSException *exception) {
-                    if ([[exception name] isEqualToString:NSInvalidArgumentException]) {
-                        NSString *errorMessage = [NSString stringWithFormat:
-                                                  @"Cannot map a collection of objects onto a non-mutable collection: %@", exception];
-                        [self addErrorWithCode:RKMappingErrorTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
-                        *stop = YES;
-                    } else {
-                        [exception raise];
-                    }
-                }
-            }
+            if (success) [mappedObjects addObject:destinationObject];
         }
         *stop = [self isCancelled];
     }];

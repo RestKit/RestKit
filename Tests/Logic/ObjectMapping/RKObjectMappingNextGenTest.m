@@ -557,7 +557,7 @@
 
 #pragma mark Mapping Error States
 
-- (void)testShouldAddAnErrorWhenYouTryToMapAnArrayToATargetObject
+- (void)testThatMappingWithTargetObjectThatDoesNotMatchRepresentationWorks
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
@@ -569,7 +569,8 @@
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
     mapper.targetObject = [RKTestUser user];
     [mapper start];
-    assertThatInteger(mapper.error.code, is(equalToInt(RKMappingErrorTypeMismatch)));
+    assertThat(mapper.error, is(nilValue()));
+    assertThat(mapper.mappingResult, hasCountOf(3));
 }
 
 - (void)testShouldAddAnErrorWhenAttemptingToMapADictionaryWithoutAnObjectMapping

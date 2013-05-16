@@ -1,0 +1,17 @@
+{
+    "cats" : [
+        {
+            "name": "Asia",
+            "id": 1234
+        },
+        {
+            "name": "Roy",
+            "id": 5678
+        }
+    ],
+    "human": {
+        "name": "Blake Watters",
+        "id": 1,
+        "catIDs" : [ 1234, 5678 ]
+    }
+}
