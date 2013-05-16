@@ -20,6 +20,7 @@
 
 #import "RKMapperOperation.h"
 #import "RKMapperOperation_Private.h"
+#import "RKObjectMapping.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
 #import "RKResponseDescriptor.h"
@@ -206,8 +207,16 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             RKLogWarning(@"Collection mapping forced but representations is of type '%@' rather than NSDictionary", NSStringFromClass([representations class]));
         }
     }
-
-    NSMutableArray *mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[representations count]];
+    
+    // Only try to map the target object if it is of the right class
+    BOOL shouldMapTargetObject = (self.targetObject != nil);
+    if ([mapping isKindOfClass:[RKObjectMapping class]])
+    {
+        Class mappingObjectClass = [(RKObjectMapping *)mapping objectClass];
+        shouldMapTargetObject = [self.targetObject isKindOfClass:mappingObjectClass];
+    }
+    
+    NSMutableArray *mappedObjects = shouldMapTargetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[representations count]];
     [objectsToMap enumerateObjectsUsingBlock:^(id mappableObject, NSUInteger index, BOOL *stop) {
         id destinationObject = [self objectForRepresentation:mappableObject withMapping:mapping];
         if (destinationObject) {
