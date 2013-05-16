@@ -117,8 +117,14 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
             if ([booleanStrings containsObject:lowercasedString]) {
                 // Handle booleans encoded as Strings
                 return [NSNumber numberWithBool:[trueStrings containsObject:lowercasedString]];
-            } else {
+            } else if ([(NSString *)value rangeOfString:@"."].location != NSNotFound) {
+                // String -> Floating Point Number
+                // Only use floating point if needed to avoid losing precision
+                // on large integers
                 return [NSNumber numberWithDouble:[(NSString *)value doubleValue]];
+            } else {
+                // String -> Signed Integer
+                return [NSNumber numberWithLongLong:[(NSString *)value longLongValue]];
             }
         }
     } else if ([value isEqual:[NSNull null]]) {

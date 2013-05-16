@@ -37,6 +37,7 @@
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSString *boolString;
 @property (nonatomic, strong) NSNumber *boolNumber;
+@property (nonatomic, strong) NSNumber *number;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, strong) NSOrderedSet *orderedSet;
 @property (nonatomic, strong) NSArray *array;
@@ -167,6 +168,44 @@
     BOOL success = (operation.error == nil);
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"123")));
+}
+
+- (void)testShouldSuccessfullyMapLongIntegerStringsToNumbers
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"numberString" toKeyPath:@"number"]];
+    TestMappable *object = [[TestMappable alloc] init];
+
+    NSData *data = [@"{\"numberString\":\"69726278940360707\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    [operation start];
+    BOOL success = (operation.error == nil);
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThatUnsignedLongLong([object.number unsignedLongLongValue], is(equalToUnsignedLongLong(69726278940360707)));
+    
+}
+
+- (void)testShouldSuccessfullyMapFloatingPointNumberStringsToNumbers
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"numberString" toKeyPath:@"number"]];
+    TestMappable *object = [[TestMappable alloc] init];
+
+    NSData *data = [@"{\"numberString\":\"1234.5678\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    [operation start];
+    BOOL success = (operation.error == nil);
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThatDouble([object.number doubleValue], is(equalToDouble(1234.5678)));
+    
 }
 
 - (void)testShouldSuccessfullyMapPropertiesBeforeKeyPathAttributes
