@@ -160,9 +160,12 @@
     NSDictionary *representation = @{ @"name": @"Blake Watters" };
     NSDictionary *metadata = @{ @"URL": [NSURL URLWithString:@"http://restkit.org"] };
 
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKMetadataExample class]];
-    [mapping addAttributeMappingsFromDicitonary:@{ @"name": @"name", @"@metadata.URL": @"URL" }];
-    RKMappingOperation *mappingOperation = [[RKObjectMapping alloc] initWithSourceObject:representation destinationObject:example mapping:
+    RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[RKMetadataExample class]];
+    [objectMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.URL": @"URL" }];
+ 
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:example mapping:objectMapping];
+    mappingOperation.metadata = metadata;
+ 
     NSError *error = nil;
     BOOL success = [mappingOperation execute:&error];
 
