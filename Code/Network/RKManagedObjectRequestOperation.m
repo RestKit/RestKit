@@ -666,7 +666,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     return _blockSuccess;
 }
 
-- (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error
+- (NSSet *)localObjectsFromFetchRequests:(NSArray *)fetchRequests matchingRequestURL:(NSError **)error
 {
     NSMutableSet *localObjects = [NSMutableSet set];    
     __block NSError *_blockError;
@@ -699,6 +699,23 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     return localObjects;
 }
 
+- (NSArray *)fetchRequestsMatchingResponseURL
+{
+    // Pass the fetch request blocks a relative `NSURL` object if possible
+    NSMutableArray *fetchRequests = [NSMutableArray array];
+    NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
+    for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
+        NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
+        if (fetchRequest) {
+            // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
+            [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
+            RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
+            [fetchRequests addObject:fetchRequest];
+        }
+    }
+    return fetchRequests;
+}
+
 - (BOOL)deleteLocalObjectsMissingFromMappingResult:(RKMappingResult *)mappingResult error:(NSError **)error
 {
     if (! self.deletesOrphanedObjects) {
@@ -716,8 +733,13 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         return YES;
     }
     
+    // Determine if there are any fetch request blocks to use for orphaned object cleanup
+    NSArray *fetchRequests = [self fetchRequestsMatchingResponseURL];
+    if (! [fetchRequests count]) return YES;
+    
+    // Proceed with cleanup
     NSSet *managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo) ?: [NSSet set];
-    NSSet *localObjects = [self localObjectsFromFetchRequestsMatchingRequestURL:error];
+    NSSet *localObjects = [self localObjectsFromFetchRequests:fetchRequests matchingRequestURL:error];
     if (! localObjects) {
         RKLogError(@"Failed when attempting to fetch local candidate objects for orphan cleanup: %@", error ? *error : nil);
         return NO;
