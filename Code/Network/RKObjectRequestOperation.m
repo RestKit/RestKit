@@ -604,7 +604,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 - (BOOL)isReady
 {
-    return [self.stateMachine isReady];
+    return [self.stateMachine isReady] && [super isReady];
 }
 
 - (BOOL)isExecuting
