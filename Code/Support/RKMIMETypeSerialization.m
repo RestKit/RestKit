@@ -133,7 +133,7 @@
 {
     NSArray *registrationsCopy = [[self sharedSerialization].registrations copy];
     for (RKMIMETypeSerializationRegistration *registration in registrationsCopy) {
-        if (registration.class == serializationClass) {
+        if (registration.serializationClass == serializationClass) {
             [[self sharedSerialization].registrations removeObject:registration];
         }
     }
