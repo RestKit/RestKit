@@ -195,6 +195,14 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                                                 error:(NSError **)error
 {
     if (! self.persistentStoreCoordinator) [self createPersistentStoreCoordinator];
+    
+    
+    NSString *parentStorePath = [storePath stringByDeletingLastPathComponent];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:parentStorePath] == NO) {
+        BOOL isDirectoryCreated = [[NSFileManager defaultManager] createDirectoryAtPath:parentStorePath withIntermediateDirectories:YES attributes:nil error:error];
+        if (!isDirectoryCreated)
+            return nil;
+    }
 
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     
