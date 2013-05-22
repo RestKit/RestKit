@@ -257,6 +257,9 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 [operation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
     // The `description` method of the class the error is mapped to is used to construct the value of the localizedDescription
 	NSLog(@"Loaded this error: %@", [error localizedDescription]);
+    
+    // You can access the model object used to construct the `NSError` via the `userInfo`
+    RKErrorMessage *errorMessage =  [[error.userInfo objectForKey:RKObjectMapperErrorObjectsKey] firstObject];
 }];
 ```
 
