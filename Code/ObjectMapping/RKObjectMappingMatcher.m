@@ -17,8 +17,10 @@
 
 @interface RKKeyPathObjectMappingMatcher : RKObjectMappingMatcher
 @property (nonatomic, copy) NSString *keyPath;
+@property (nonatomic, copy) NSString *destinationKeyPath;
 @property (nonatomic, strong, readwrite) id expectedValue;
 
+- (id)initWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping;
 - (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping;
 @end
 
@@ -31,6 +33,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation RKObjectMappingMatcher
+
++ (instancetype)matcherWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
+{
+    return [[RKKeyPathObjectMappingMatcher alloc] initWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath expectedValue:expectedValue objectMapping:objectMapping];
+}
 
 + (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
@@ -65,6 +72,23 @@
 @end
 
 @implementation RKKeyPathObjectMappingMatcher
+
+- (id)initWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
+{
+    NSParameterAssert(sourceKeyPath);
+    NSParameterAssert(destinationKeyPath);
+    NSParameterAssert(expectedValue);
+    NSParameterAssert(objectMapping);
+    self = [super init];
+    if (self) {
+        self.keyPath = sourceKeyPath;
+        self.destinationKeyPath = destinationKeyPath;
+        self.expectedValue = expectedValue;
+        self.objectMapping = objectMapping;
+    }
+    
+    return self;
+}
 
 - (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
