@@ -27,6 +27,17 @@
 ///-------------------------------------
 
 /**
+ Creates and returns an invertable key path matcher object with a given source key path, destination key path, expected value, and an object mapping that applies in the event of a positive match.
+ 
+ @param sourceKeyPath The key path to obtain the comparison value from the object being matched via `valueForKeyPath:`.
+ @param destinationKeyPath This will replace the source key path if the matcher is inverted.
+ @param expectedValue The value that is expected to be read from `keyPath` if there is a match.
+ @param objectMapping The object mapping object that applies if the comparison value is equal to the expected value.
+ @return The receiver, initialized with the given key path, expected value, and object mapping.
+ */
++ (instancetype)matcherWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping;
+
+/**
  Creates and returns a key path matcher object with a given key path, expected value, and an object mapping that applies in the event of a positive match.
 
  @param keyPath The key path to obtain the comparison value from the object being matched via `valueForKeyPath:`.
