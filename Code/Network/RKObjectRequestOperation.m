@@ -165,9 +165,9 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
         NSString *body = nil;
         if ([operation.request HTTPBody]) {
             body = RKLogTruncateString([[NSString alloc] initWithData:[operation.request HTTPBody] encoding:NSUTF8StringEncoding]);
-        } else if ([operation.request HTTPBodyStream]) {
+        } /*else if ([operation.request HTTPBodyStream]) {
             body = RKStringDescribingStream([operation.request HTTPBodyStream]);
-        }
+        }*/
         
         RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
     } else {
