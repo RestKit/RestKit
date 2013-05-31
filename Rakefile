@@ -12,7 +12,7 @@ end
 
 namespace :test do
   task :prepare do
-    system(%Q{mkdir -p "RestKit.xcodeproj/xcshareddata/xcschemes" && cp Tests/Schemes/*.xcscheme "RestKit.xcodeproj/xcshareddata/xcschemes/"})
+    system(%Q{mkdir -p "RestKit.xcworkspace/xcshareddata/xcschemes" && cp Tests/Schemes/*.xcscheme "RestKit.xcworkspace/xcshareddata/xcschemes/"})
   end
   
   desc "Run the unit tests for iOS"
