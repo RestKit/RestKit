@@ -11,13 +11,17 @@ RakeUp::ServerTask.new do |t|
 end
 
 namespace :test do
+  task :prepare do
+    system(%Q{mkdir -p "RestKit.xcodeproj/xcshareddata/xcschemes" && cp Tests/Schemes/*.xcscheme "RestKit.xcodeproj/xcshareddata/xcschemes/"})
+  end
+  
   desc "Run the unit tests for iOS"
-  task :ios do
+  task :ios => :prepare do
     $ios_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitTests test -test-sdk iphonesimulator")
   end
   
   desc "Run the unit tests for OS X"
-  task :osx do
+  task :osx => :prepare do
     $osx_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitFrameworkTests test -test-sdk macosx -sdk macosx")
   end
 end

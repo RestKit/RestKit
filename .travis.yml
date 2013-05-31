@@ -4,7 +4,6 @@ before_install:
     - brew update
     - brew install xctool --HEAD
     - bundle install
-    - mkdir -p "RestKit.xcodeproj/xcshareddata/xcschemes" && cp Tests/Schemes/*.xcscheme "RestKit.xcodeproj/xcshareddata/xcschemes/"
 script:
     - rake server:start
     - rake test
