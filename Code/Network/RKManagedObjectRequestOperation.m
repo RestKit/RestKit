@@ -526,6 +526,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     BOOL (^shouldSkipMapping)(void) = ^{
         // Is the request cacheable
         if (!self.cachedResponse) return NO;
+        if (!self.managedObjectCache) return NO;
         NSURLRequest *request = self.HTTPRequestOperation.request;
         if (! [[request HTTPMethod] isEqualToString:@"GET"] && ! [[request HTTPMethod] isEqualToString:@"HEAD"]) return NO;
         NSHTTPURLResponse *response = (NSHTTPURLResponse *)self.HTTPRequestOperation.response;
