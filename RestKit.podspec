@@ -69,6 +69,6 @@ EOS
   s.subspec 'Support' do |ss|
     ss.header_dir     = 'RestKit/Support'
     ss.source_files   = 'Code/Support'
-    ss.dependency 'TransitionKit', '1.1.0'
+    ss.dependency 'TransitionKit', '1.1.1'
   end
 end
