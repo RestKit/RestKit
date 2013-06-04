@@ -44,7 +44,7 @@ EOS
     ns.ios.frameworks = 'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration'
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
     ns.dependency       'SOCKit'
-    ns.dependency       'AFNetworking', '~> 1.2.0'
+    ns.dependency       'AFNetworking', '~> 1.3.0'
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
   end    
