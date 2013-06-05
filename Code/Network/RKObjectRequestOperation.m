@@ -151,7 +151,7 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
     // Weakly tag the HTTP operation with its parent object request operation
     RKObjectRequestOperation *objectRequestOperation = [notification object];
     objc_setAssociatedObject(objectRequestOperation, RKOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(objectRequestOperation.HTTPRequestOperation, RKParentObjectRequestOperation, objectRequestOperation, OBJC_ASSOCIATION_ASSIGN);
+    objc_setAssociatedObject(objectRequestOperation.HTTPRequestOperation, RKParentObjectRequestOperation, objectRequestOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)HTTPOperationDidStart:(NSNotification *)notification
@@ -165,9 +165,9 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
         NSString *body = nil;
         if ([operation.request HTTPBody]) {
             body = RKLogTruncateString([[NSString alloc] initWithData:[operation.request HTTPBody] encoding:NSUTF8StringEncoding]);
-        } else if ([operation.request HTTPBodyStream]) {
+        } /*else if ([operation.request HTTPBodyStream]) {
             body = RKStringDescribingStream([operation.request HTTPBodyStream]);
-        }
+        }*/
         
         RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
     } else {
@@ -182,6 +182,7 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
     
     // NOTE: if we have a parent object request operation, we'll wait it to finish to emit the logging info
     RKObjectRequestOperation *parentOperation = objc_getAssociatedObject(operation, RKParentObjectRequestOperation);
+    objc_setAssociatedObject(operation, RKParentObjectRequestOperation, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if (parentOperation) {
         objc_setAssociatedObject(operation, RKOperationFinishDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         return;
@@ -604,7 +605,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 - (BOOL)isReady
 {
-    return [self.stateMachine isReady];
+    return [self.stateMachine isReady] && [super isReady];
 }
 
 - (BOOL)isExecuting

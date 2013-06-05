@@ -19,6 +19,7 @@
 //
 
 #import <objc/message.h>
+#import <objc/runtime.h>
 #import "RKObjectUtilities.h"
 
 BOOL RKObjectIsEqualToObject(id object, id anotherObject) {
@@ -84,9 +85,8 @@ BOOL RKObjectIsCollectionOfCollections(id object)
 Class RKKeyValueCodingClassForObjCType(const char *type)
 {
     if (type) {
-        // https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html
         switch (type[0]) {
-            case '@': {
+            case _C_ID: {
                 char *openingQuoteLoc = strchr(type, '"');
                 if (openingQuoteLoc) {
                     char *closingQuoteLoc = strchr(openingQuoteLoc+1, '"');
@@ -102,38 +102,38 @@ Class RKKeyValueCodingClassForObjCType(const char *type)
                 // If there is no quoted class type (id), it can be used as-is.
                 return Nil;
             }
-                
-            case 'c': // char
-            case 'C': // unsigned char
-            case 's': // short
-            case 'S': // unsigned short
-            case 'i': // int
-            case 'I': // unsigned int
-            case 'l': // long
-            case 'L': // unsigned long
-            case 'q': // long long
-            case 'Q': // unsigned long long
-            case 'f': // float
-            case 'd': // double
+
+            case _C_CHR: // char
+            case _C_UCHR: // unsigned char
+            case _C_SHT: // short
+            case _C_USHT: // unsigned short
+            case _C_INT: // int
+            case _C_UINT: // unsigned int
+            case _C_LNG: // long
+            case _C_ULNG: // unsigned long
+            case _C_LNG_LNG: // long long
+            case _C_ULNG_LNG: // unsigned long long
+            case _C_FLT: // float
+            case _C_DBL: // double
                 return [NSNumber class];
                 
-            case 'B': // C++ bool or C99 _Bool
+            case _C_BOOL: // C++ bool or C99 _Bool
                 return objc_getClass("NSCFBoolean")
                 ?: objc_getClass("__NSCFBoolean")
                 ?: [NSNumber class];
                 
-            case '{': // struct
-            case 'b': // bitfield
-            case '(': // union
+            case _C_STRUCT_B: // struct
+            case _C_BFLD: // bitfield
+            case _C_UNION_B: // union
                 return [NSValue class];
                 
-            case '[': // c array
-            case '^': // pointer
-            case 'v': // void
-            case '*': // char *
-            case '#': // Class
-            case ':': // selector
-            case '?': // unknown type (function pointer, etc)
+            case _C_ARY_B: // c array
+            case _C_PTR: // pointer
+            case _C_VOID: // void
+            case _C_CHARPTR: // char *
+            case _C_CLASS: // Class
+            case _C_SEL: // selector
+            case _C_UNDEF: // unknown type (function pointer, etc)
             default:
                 break;
         }

@@ -792,4 +792,21 @@
     expect(requestOperation.error.code).to.equal(RKOperationCancelledError);
 }
 
+- (void)testThatOperationDependenciesAreRespected
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *requestOperation1 = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    RKObjectRequestOperation *requestOperation2 = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [requestOperation2 addDependency:requestOperation1];
+    expect(requestOperation1.isReady).to.beTruthy();
+    expect(requestOperation2.isReady).to.beFalsy();
+    [requestOperation1 start];
+    expect(requestOperation1.isFinished).will.beTruthy();
+    expect(requestOperation2.isReady).will.beTruthy();
+}
+
 @end

@@ -17,7 +17,7 @@
 #import "RKPost.h"
 
 @interface RKManagedObjectRequestOperation ()
-- (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;
+- (NSArray *)fetchRequestsMatchingResponseURL;
 @end
 NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
@@ -95,8 +95,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     };
     
     operation.fetchRequestBlocks = @[fetchRequesBlock];
-    NSError *error;
-    [operation localObjectsFromFetchRequestsMatchingRequestURL:&error];
+    [operation fetchRequestsMatchingResponseURL];
     expect(blockURL).notTo.beNil();
     expect([blockURL.baseURL absoluteString]).to.equal(@"http://restkit.org/api/v1/");
     expect(blockURL.relativePath).to.equal(@"categories/1234");
@@ -119,8 +118,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     };
     
     operation.fetchRequestBlocks = @[fetchRequesBlock];
-    NSError *error;
-    [operation localObjectsFromFetchRequestsMatchingRequestURL:&error];
+    [operation fetchRequestsMatchingResponseURL];
 }
 
 - (void)testThatFetchRequestBlocksInvokedWithRelativeURLAreInAgreementWithPathPattern
@@ -143,8 +141,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     };
     
     operation.fetchRequestBlocks = @[fetchRequesBlock];
-    NSError *error;
-    [operation localObjectsFromFetchRequestsMatchingRequestURL:&error];
+    [operation fetchRequestsMatchingResponseURL];
     expect(blockURL).notTo.beNil();
     expect([blockURL absoluteString]).to.equal(@"http://restkit.org/api/v1/library/");
     expect([blockURL.baseURL absoluteString]).to.equal(@"http://restkit.org/api/v1/");
@@ -197,6 +194,8 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     managedObjectRequestOperation.fetchRequestBlocks = @[fetchRequestBlock];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
+    managedObjectRequestOperation.managedObjectCache = cache;
     
     [managedObjectRequestOperation start];
     expect([managedObjectRequestOperation isFinished]).will.beTruthy();

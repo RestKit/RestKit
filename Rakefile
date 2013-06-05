@@ -10,15 +10,28 @@ RakeUp::ServerTask.new do |t|
   t.server = :thin
 end
 
+def build_and_run_tests(command, sdk_name)
+  %w{build build-tests test}.each do |action|
+    sdk = (action == 'test') ? "-test-sdk #{sdk_name}" : "-sdk #{sdk_name}"
+    cmd = command % { action: action, sdk: sdk }
+    puts "Executing `#{cmd}`..."
+    return unless system(cmd)
+  end  
+end
+
 namespace :test do
+  task :prepare do    
+    system(%Q{mkdir -p "RestKit.xcworkspace/xcshareddata/xcschemes" && cp Tests/Schemes/*.xcscheme "RestKit.xcworkspace/xcshareddata/xcschemes/"})
+  end
+  
   desc "Run the unit tests for iOS"
-  task :ios do
-    $ios_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitTests test -test-sdk iphonesimulator")
+  task :ios => :prepare do
+    $ios_success = build_and_run_tests("xctool -workspace RestKit.xcworkspace -scheme RestKitTests %{action} %{sdk}", :iphonesimulator)
   end
   
   desc "Run the unit tests for OS X"
-  task :osx do
-    $osx_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitFrameworkTests test -test-sdk macosx -sdk macosx")
+  task :osx => :prepare do
+    $osx_success = build_and_run_tests("xctool -workspace RestKit.xcworkspace -scheme RestKitFrameworkTests %{action} %{sdk}", :macosx)
   end
 end
 

@@ -68,9 +68,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
         [executingState setWillEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
             [self.operation willChangeValueForKey:@"isExecuting"];
         }];
-        [executingState setDidEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation didChangeValueForKey:@"isExecuting"];
-        }];
+        // NOTE: isExecuting KVO for `setDidEnterStateBlock:` configured below in `setExecutionBlock`
         [executingState setWillExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
             [self.operation willChangeValueForKey:@"isExecuting"];
         }];
@@ -172,6 +170,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 {
     TKState *executingState = [self.stateMachine stateNamed:RKOperationStateExecuting];
     [executingState setDidEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [self.operation didChangeValueForKey:@"isExecuting"];
         dispatch_async(self.dispatchQueue, ^{
             block();
         });

@@ -25,3 +25,6 @@ test-reports/
 
 # CocoaPods
 Pods
+RestKit.xcodeproj/xcshareddata/
+RestKit.xcworkspace/xcshareddata/xcschemes/
+DerivedData
