@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/RestKit/RestKit.png?branch=master,development)](https://travis-ci.org/RestKit/RestKit)
 ![Pod Version](http://cocoapod-badges.herokuapp.com/v/RestKit/badge.png)
 ![Pod Platform](http://cocoapod-badges.herokuapp.com/p/RestKit/badge.png)
+[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/RestKit.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=rkuser|?&theme=basic#RestKit)
 
 RestKit is a modern Objective-C framework for implementing RESTful web services clients on iOS and Mac OS X. It provides a powerful [object mapping](https://github.com/RestKit/RestKit/wiki/Object-mapping) engine that seamlessly integrates with [Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html) and a simple set of networking primitives for mapping HTTP requests and responses built on top of [AFNetworking](https://github.com/AFNetworking/AFNetworking). It has an elegant, carefully designed set of APIs that make accessing and modeling RESTful resources feel almost magical. For example, here's how to access the Twitter public timeline and turn the JSON contents into an array of Tweet objects:
 
@@ -37,7 +38,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 - Upgrading from RestKit 0.9.x or 0.10.x? Read the ["Upgrading to RestKit 0.20.x"](https://github.com/RestKit/RestKit/wiki/Upgrading-from-v0.10.x-to-v0.20.0) guide in the wiki
 - Adding RestKit to an existing [AFNetworking](http://afnetworking.org) application? Read the [AFNetworking Integration](https://github.com/RestKit/RestKit/wiki/AFNetworking-Integration) document to learn details about how the frameworks fit together.
 - Review the [source code API documentation](http://restkit.org/api/latest) for a detailed look at the classes and API's in RestKit. A great place to start is [RKObjectManager](http://restkit.org/api/latest/Classes/RKObjectManager.html).
-- Still need some help? Get support from [Stack Overflow](http://stackoverflow.com/questions/tagged/restkit), the [RestKit mailing list](http://groups.google.com/group/restkit) or ping us on [Twitter](http://twitter.com/RestKit)
+- Still need some help? Ask questions on [Stack Overflow](http://stackoverflow.com/questions/tagged/restkit) or the [mailing list](http://groups.google.com/group/restkit), ping us on [Twitter](http://twitter.com/RestKit) or chat with us on [IRC](https://kiwiirc.com/client/irc.freenode.net/?nick=rkuser|?&theme=basic#RestKit).
 
 ## Overview
 
@@ -623,5 +624,3 @@ Support is provided by the following organizations:
 
 * [GateGuru](http://www.gateguruapp.com/)
 * [Two Toasters](http://www.twotoasters.com/)
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/RestKit/RestKit/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
