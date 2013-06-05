@@ -397,11 +397,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     BOOL foundMappable = NO;
     NSMutableDictionary *results = [self mapSourceRepresentationWithMappingsDictionary:self.mappingsDictionary];
     if ([self isCancelled]) return;
-    foundMappable = (results != nil);
-
-    if ([self.delegate respondsToSelector:@selector(mapperDidFinishMapping:)]) {
-        [self.delegate mapperDidFinishMapping:self];
-    }
+    foundMappable = (results != nil);    
 
     // If we found nothing eligible for mapping in the content, add an unmappable key path error and fail mapping
     // If the content is empty, we don't consider it an error
@@ -413,12 +409,14 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
                                             RKDetailedErrorsKey: self.errors} mutableCopy];
         NSError *compositeError = [[NSError alloc] initWithDomain:RKErrorDomain code:RKMappingErrorNotFound userInfo:userInfo];
         self.error = compositeError;
-        return;
+    } else {
+        if (results) self.mappingResult = [[RKMappingResult alloc] initWithDictionary:results];
     }
 
     RKLogDebug(@"Finished performing object mapping. Results: %@", results);
-
-    if (results) self.mappingResult = [[RKMappingResult alloc] initWithDictionary:results];
+    if ([self.delegate respondsToSelector:@selector(mapperDidFinishMapping:)]) {
+        [self.delegate mapperDidFinishMapping:self];
+    }
 }
 
 - (BOOL)execute:(NSError **)error

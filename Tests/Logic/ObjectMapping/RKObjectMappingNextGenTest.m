@@ -641,6 +641,26 @@
     [mockDelegate verify];
 }
 
+- (void)testThatMappingResultIsSetBeforeDidFinishMappingIsInvoked
+{
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:@{ [NSNull null]: mapping }];
+    [[mockDelegate stub] mapperWillStartMapping:mapper];
+    __block RKMappingResult *mappingResult;
+    [[[mockDelegate expect] andDo:^(NSInvocation *invocation) {
+        __unsafe_unretained RKMapperOperation *mapperOperationArgument;
+        [invocation getArgument:&mapperOperationArgument atIndex:2];
+        mappingResult = mapperOperationArgument.mappingResult;
+    }] mapperDidFinishMapping:mapper];
+    mapper.delegate = mockDelegate;
+    [mapper start];
+    [mockDelegate verify];
+    expect(mappingResult).notTo.beNil();
+}
+
 - (void)testShouldInformTheDelegateWhenCheckingForObjectMappingForKeyPathIsSuccessful
 {
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
