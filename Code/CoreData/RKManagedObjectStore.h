@@ -296,5 +296,12 @@
 
 @end
 
-// Option containing the path to the seed database a SQLite store was initialized with
-extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
+/**
+ Option containing the path to the seed database a SQLite store was initialized with
+ **/
+extern NSString *const RKSQLitePersistentStoreSeedDatabasePathOption;
+
+/**
+ Posted when a managed object context has reset its persistent stores.
+ */
+extern NSString *const RKManagedObjectStoreDidResetPersistentStoresNotification;
