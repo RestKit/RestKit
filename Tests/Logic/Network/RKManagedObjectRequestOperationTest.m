@@ -194,6 +194,8 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     managedObjectRequestOperation.fetchRequestBlocks = @[fetchRequestBlock];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
+    managedObjectRequestOperation.managedObjectCache = cache;
     
     [managedObjectRequestOperation start];
     expect([managedObjectRequestOperation isFinished]).will.beTruthy();
