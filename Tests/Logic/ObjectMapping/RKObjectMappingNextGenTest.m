@@ -40,6 +40,7 @@
 // Managed Object Serialization Testific
 #import "RKHuman.h"
 #import "RKCat.h"
+#import "RKHouse.h"
 
 @interface RKObjectMapping ()
 + (void)resetDefaultDateFormatters;
@@ -2718,12 +2719,6 @@
     RKHuman *blake = [mapperOperation.mappingResult firstObject];
     expect(blake.friends).notTo.beNil();
     expect([blake.friends anyObject]).to.equal(secondJeff);
-//    expect(user.name).to.equal(@"Blake Watters");
-//    expect(user.friendsSet).to.haveCountOf(1);
-//    RKTestUser *jeff = [user.friendsSet anyObject];
-//    expect(jeff.name).to.equal(@"Jeff Arena");
-//    expect(jeff.userID).notTo.beNil();
-//    expect(jeff.userID).to.equal(0);
 }
 
 @end
