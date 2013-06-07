@@ -224,21 +224,24 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
 }
 
 static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
+static NSString * const RKParentKeyPathPrefix = @"@parent.";
 
 @interface RKMappingSourceObject : NSProxy
-- (id)initWithObject:(id)object metadata:(NSDictionary *)metadata;
+- (id)initWithObject:(id)object parentObject:(id)parentObject metadata:(NSDictionary *)metadata;
 @end
 
 @interface RKMappingSourceObject ()
 @property (nonatomic, strong) id object;
+@property (nonatomic, strong) id parentObject;
 @property (nonatomic, strong) NSDictionary *metadata;
 @end
 
 @implementation RKMappingSourceObject
 
-- (id)initWithObject:(id)object metadata:(NSDictionary *)metadata
+- (id)initWithObject:(id)object parentObject:(id)parentObject metadata:(NSDictionary *)metadata
 {
     self.object = object;
+    self.parentObject = parentObject;
     self.metadata = metadata;
     return self;
 }
@@ -261,6 +264,9 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     if ([keyPath hasPrefix:RKMetadataKeyPathPrefix]) {
         NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
         return [self.metadata valueForKeyPath:metadataKeyPath];
+    } else if ([keyPath hasPrefix:RKParentKeyPathPrefix]) {
+        NSString *parentKeyPath = [keyPath substringFromIndex:[RKParentKeyPathPrefix length]];
+        return [self.parentObject valueForKeyPath:parentKeyPath];
     } else {
         return [self.object valueForKeyPath:keyPath];
     }
@@ -342,6 +348,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 @interface RKMappingOperation ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
+@property (nonatomic, strong, readwrite) id parentSourceObject;
 @property (nonatomic, strong, readwrite) id destinationObject;
 @property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
 @property (nonatomic, strong, readwrite) NSError *error;
@@ -367,7 +374,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     return self;
 }
 
-- (id)destinationObjectForMappingRepresentation:(id)representation withMapping:(RKMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
+- (id)destinationObjectForMappingRepresentation:(id)representation parentRepresentation:(id)parentRepresentation withMapping:(RKMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
 {
     RKObjectMapping *concreteMapping = nil;
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
@@ -383,7 +390,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
     NSMutableDictionary *metadata = [self.metadata mutableCopy];
     [metadata setObject:self.destinationObject ?: [NSNull null] forKey:@"parentObject"];
-    RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation metadata:metadata];
+    RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation parentObject:parentRepresentation metadata:metadata];
     return [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
@@ -611,6 +618,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     subOperation.dataSource = self.dataSource;
     subOperation.delegate = self.delegate;
     subOperation.metadata = subOperationMetadata;
+    subOperation.parentSourceObject = self.sourceObject;
     [subOperation start];
     
     if (subOperation.error) {
@@ -653,7 +661,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
         return NO;
     }
 
-    id destinationObject = [self destinationObjectForMappingRepresentation:value withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
+    id destinationObject = [self destinationObjectForMappingRepresentation:value parentRepresentation:self.sourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
     if (! destinationObject) {
         RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, destinationObject);
         return NO;
@@ -722,7 +730,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     }
 
     [value enumerateObjectsUsingBlock:^(id nestedObject, NSUInteger collectionIndex, BOOL *stop) {
-        id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
+        id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject parentRepresentation:self.sourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
         if (mappableObject) {
             if ([self mapNestedObject:nestedObject toObject:mappableObject withRelationshipMapping:relationshipMapping metadata:@{ @"mapping": @{ @"collectionIndex": @(collectionIndex) } }]) {
                 [relationshipCollection addObject:mappableObject];
@@ -909,13 +917,13 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     if ([self isCancelled]) return;
 
     // Handle metadata
-    self.sourceObject = [[RKMappingSourceObject alloc] initWithObject:self.sourceObject metadata:self.metadata];
+    self.sourceObject = [[RKMappingSourceObject alloc] initWithObject:self.sourceObject parentObject:self.parentSourceObject metadata:self.metadata];
 
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
     
     if (! self.destinationObject) {
-        self.destinationObject = [self destinationObjectForMappingRepresentation:self.sourceObject withMapping:self.mapping inRelationship:nil];
+        self.destinationObject = [self destinationObjectForMappingRepresentation:self.sourceObject parentRepresentation:self.parentSourceObject withMapping:self.mapping inRelationship:nil];
         if (! self.destinationObject) {
             RKLogDebug(@"Mapping operation failed: Given nil destination object and unable to instantiate a destination object for mapping.");
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Cannot perform a mapping operation with a nil destination object." };
