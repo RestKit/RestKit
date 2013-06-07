@@ -174,6 +174,7 @@
  In addition to any metadata provided to the mapping operation via the `metadata` property, the operation itself makes the following metadata key paths available for mapping:
 
  1. `@metadata.mapping.collectionIndex` - An `NSNumber` object specifying the index of the current object within a collection being mapped. This key is only available if the current representation exists within a collection.
+ 1. `@metadata.parentObject` - The direct parent object of the object that is currently being mapped. This key is only available for objects that are mapped as relationships of a parent object.
  */
 @interface RKMappingOperation : NSOperation
 

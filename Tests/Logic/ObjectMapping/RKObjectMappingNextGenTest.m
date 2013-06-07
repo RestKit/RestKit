@@ -2683,4 +2683,47 @@
     expect([(NSManagedObject *)operation.destinationObject objectID].persistentStore).to.equal(sqlStore);
 }
 
+- (void)testIdentifyingNestedObjectsUsingMetadataTraversalToParentObject
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+
+    // Do same as above, but use the "friends" relationship
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"house_id": @12345, @"friends": @[ @{ @"name": @"Jeff Arena" } ] };
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"house_id": @"houseID" }];
+    RKEntityMapping *friendMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [friendMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.parentObject.houseID": @"houseID" }];
+    friendMapping.identificationAttributes = @[ @"houseID", @"name" ];
+    [humanMapping addRelationshipMappingWithSourceKeyPath:@"friends" mapping:friendMapping];
+
+    RKHouse *house = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    house.railsID = @12345;
+
+    RKHuman *firstJeff = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    firstJeff.name = @"Jeff Arena";
+    firstJeff.houseID = @99999;
+    RKHuman *secondJeff = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    secondJeff.name = @"Jeff Arena";
+    secondJeff.houseID = @12345;
+
+    RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:cache];
+
+    RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: humanMapping }];
+    mapperOperation.mappingOperationDataSource = dataSource;
+    NSError *error = nil;
+    [mapperOperation execute:&error];
+
+    expect(mapperOperation.error).to.beNil();
+    RKHuman *blake = [mapperOperation.mappingResult firstObject];
+    expect(blake.friends).notTo.beNil();
+    expect([blake.friends anyObject]).to.equal(secondJeff);
+//    expect(user.name).to.equal(@"Blake Watters");
+//    expect(user.friendsSet).to.haveCountOf(1);
+//    RKTestUser *jeff = [user.friendsSet anyObject];
+//    expect(jeff.name).to.equal(@"Jeff Arena");
+//    expect(jeff.userID).notTo.beNil();
+//    expect(jeff.userID).to.equal(0);
+}
+
 @end

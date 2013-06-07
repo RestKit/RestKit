@@ -381,8 +381,10 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     }
     
     NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
-    id mappingSourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation metadata:self.metadata];
-    return [self.dataSource mappingOperation:self targetObjectForRepresentation:mappingSourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
+    NSMutableDictionary *metadata = [self.metadata mutableCopy];
+    [metadata setObject:self.destinationObject forKey:@"parentObject"];
+    RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation metadata:metadata];
+    return [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
 - (NSDate *)parseDateFromString:(NSString *)string
