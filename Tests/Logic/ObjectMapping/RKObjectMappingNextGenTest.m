@@ -2726,8 +2726,8 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
 
-    // Do same as above, but use the "friends" relationship
-    NSDictionary *representation = @{ @"name": @"Blake Watters", @"house_id": @12345, @"friends": @[ @{ @"name": @"Jeff Arena" } ] };
+    // Do same as above, but use the "@parent" key path
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"house_id": @23456, @"friends": @[ @{ @"name": @"Jeff Arena" } ] };
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"house_id": @"houseID" }];
     RKEntityMapping *friendMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
@@ -2736,14 +2736,14 @@
     [humanMapping addRelationshipMappingWithSourceKeyPath:@"friends" mapping:friendMapping];
 
     RKHouse *house = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
-    house.railsID = @12345;
+    house.railsID = @23456;
 
     RKHuman *firstJeff = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     firstJeff.name = @"Jeff Arena";
     firstJeff.houseID = @99999;
     RKHuman *secondJeff = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     secondJeff.name = @"Jeff Arena";
-    secondJeff.houseID = @12345;
+    secondJeff.houseID = @23456;
 
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:cache];
