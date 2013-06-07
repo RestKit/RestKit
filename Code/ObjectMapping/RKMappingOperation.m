@@ -225,23 +225,26 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
 
 static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
 static NSString * const RKParentKeyPathPrefix = @"@parent.";
+static NSString * const RKRootKeyPathPrefix = @"@root.";
 
 @interface RKMappingSourceObject : NSProxy
-- (id)initWithObject:(id)object parentObject:(id)parentObject metadata:(NSDictionary *)metadata;
+- (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSDictionary *)metadata;
 @end
 
 @interface RKMappingSourceObject ()
 @property (nonatomic, strong) id object;
 @property (nonatomic, strong) id parentObject;
+@property (nonatomic, strong) id rootObject;
 @property (nonatomic, strong) NSDictionary *metadata;
 @end
 
 @implementation RKMappingSourceObject
 
-- (id)initWithObject:(id)object parentObject:(id)parentObject metadata:(NSDictionary *)metadata
+- (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSDictionary *)metadata
 {
     self.object = object;
     self.parentObject = parentObject;
+    self.rootObject = rootObject;
     self.metadata = metadata;
     return self;
 }
@@ -267,6 +270,9 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
     } else if ([keyPath hasPrefix:RKParentKeyPathPrefix]) {
         NSString *parentKeyPath = [keyPath substringFromIndex:[RKParentKeyPathPrefix length]];
         return [self.parentObject valueForKeyPath:parentKeyPath];
+    } else if ([keyPath hasPrefix:RKRootKeyPathPrefix]) {
+        NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
+        return [self.rootObject valueForKeyPath:rootKeyPath];
     } else {
         return [self.object valueForKeyPath:keyPath];
     }
@@ -349,6 +355,7 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
 @property (nonatomic, strong, readwrite) id parentSourceObject;
+@property (nonatomic, strong, readwrite) id rootSourceObject;
 @property (nonatomic, strong, readwrite) id destinationObject;
 @property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
 @property (nonatomic, strong, readwrite) NSError *error;
@@ -367,6 +374,7 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
     self = [super init];
     if (self) {
         self.sourceObject = sourceObject;
+        self.rootSourceObject = sourceObject;
         self.destinationObject = destinationObject;
         self.mapping = objectOrDynamicMapping;
     }
@@ -385,6 +393,7 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
         {
             parentSourceObject = [[RKMappingSourceObject alloc] initWithObject:[parentSourceObject valueForKey:key]
                                                                   parentObject:parentSourceObject
+                                                                    rootObject:self.rootSourceObject
                                                                       metadata:self.metadata];
         }
     }
@@ -407,7 +416,7 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
     
     NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
     NSDictionary *metadata = RKDictionaryByMergingDictionaryWithDictionary(self.metadata, @{ @"mapping": @{ @"parentObject": (self.destinationObject ?: [NSNull null]) } });
-    RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation parentObject:parentRepresentation metadata:metadata];
+    RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation parentObject:parentRepresentation rootObject:self.rootSourceObject metadata:metadata];
     return [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
@@ -636,6 +645,7 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
     subOperation.delegate = self.delegate;
     subOperation.metadata = subOperationMetadata;
     subOperation.parentSourceObject = [self parentObjectForRelationshipMapping:relationshipMapping];
+    subOperation.rootSourceObject = self.rootSourceObject;
     [subOperation start];
     
     if (subOperation.error) {
@@ -937,7 +947,7 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
     if ([self isCancelled]) return;
 
     // Handle metadata
-    self.sourceObject = [[RKMappingSourceObject alloc] initWithObject:self.sourceObject parentObject:self.parentSourceObject metadata:self.metadata];
+    self.sourceObject = [[RKMappingSourceObject alloc] initWithObject:self.sourceObject parentObject:self.parentSourceObject rootObject:self.rootSourceObject metadata:self.metadata];
 
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
