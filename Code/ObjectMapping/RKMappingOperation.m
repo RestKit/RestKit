@@ -374,6 +374,24 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
     return self;
 }
 
+- (id)parentObjectForRelationshipMapping:(RKRelationshipMapping *)mapping
+{
+    id parentSourceObject = self.sourceObject;
+    
+    NSArray *sourceKeyComponents = [mapping.sourceKeyPath componentsSeparatedByString:@"."];
+    if (sourceKeyComponents.count > 1)
+    {
+        for (NSString *key in [sourceKeyComponents subarrayWithRange:NSMakeRange(0, sourceKeyComponents.count - 1)])
+        {
+            parentSourceObject = [[RKMappingSourceObject alloc] initWithObject:[parentSourceObject valueForKey:key]
+                                                                  parentObject:parentSourceObject
+                                                                      metadata:self.metadata];
+        }
+    }
+    
+    return parentSourceObject;
+}
+
 - (id)destinationObjectForMappingRepresentation:(id)representation parentRepresentation:(id)parentRepresentation withMapping:(RKMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
 {
     RKObjectMapping *concreteMapping = nil;
@@ -618,7 +636,7 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
     subOperation.dataSource = self.dataSource;
     subOperation.delegate = self.delegate;
     subOperation.metadata = subOperationMetadata;
-    subOperation.parentSourceObject = self.sourceObject;
+    subOperation.parentSourceObject = [self parentObjectForRelationshipMapping:relationshipMapping];
     [subOperation start];
     
     if (subOperation.error) {
@@ -661,7 +679,8 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
         return NO;
     }
 
-    id destinationObject = [self destinationObjectForMappingRepresentation:value parentRepresentation:self.sourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
+    id parentSourceObject = [self parentObjectForRelationshipMapping:relationshipMapping];
+    id destinationObject = [self destinationObjectForMappingRepresentation:value parentRepresentation:parentSourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
     if (! destinationObject) {
         RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, destinationObject);
         return NO;
@@ -730,7 +749,9 @@ static NSString * const RKParentKeyPathPrefix = @"@parent.";
     }
 
     [value enumerateObjectsUsingBlock:^(id nestedObject, NSUInteger collectionIndex, BOOL *stop) {
-        id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject parentRepresentation:self.sourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
+        
+        id parentSourceObject = [self parentObjectForRelationshipMapping:relationshipMapping];
+        id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject parentRepresentation:parentSourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
         if (mappableObject) {
             if ([self mapNestedObject:nestedObject toObject:mappableObject withRelationshipMapping:relationshipMapping metadata:@{ @"mapping": @{ @"collectionIndex": @(collectionIndex) } }]) {
                 [relationshipCollection addObject:mappableObject];
