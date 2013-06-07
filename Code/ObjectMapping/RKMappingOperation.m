@@ -381,8 +381,7 @@ static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
     }
     
     NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
-    NSMutableDictionary *metadata = [self.metadata mutableCopy];
-    [metadata setObject:self.destinationObject ?: [NSNull null] forKey:@"parentObject"];
+    NSDictionary *metadata = RKDictionaryByMergingDictionaryWithDictionary(self.metadata, @{ @"mapping": @{ @"parentObject": (self.destinationObject ?: [NSNull null]) } });
     RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation metadata:metadata];
     return [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
 }

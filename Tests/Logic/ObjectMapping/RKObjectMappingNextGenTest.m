@@ -2693,7 +2693,7 @@
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [humanMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"house_id": @"houseID" }];
     RKEntityMapping *friendMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    [friendMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.parentObject.houseID": @"houseID" }];
+    [friendMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.mapping.parentObject.houseID": @"houseID" }];
     friendMapping.identificationAttributes = @[ @"houseID", @"name" ];
     [humanMapping addRelationshipMappingWithSourceKeyPath:@"friends" mapping:friendMapping];
 
