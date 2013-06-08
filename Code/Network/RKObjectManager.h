@@ -153,7 +153,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  1. If a `nil` root key path is used, then it must be used for all objects in the array. This is because the objects will be parameterized into a dictionary and then each dictionary will be added to an array. This array is then serialized for transport, so objects parameterized to a non-nil key path cannot be merged with the array.
  1. If a `nil` root key path is used to parameterize the array of objects, then you cannot provide additional parameters to be merged with the request. This is again because you cannot merge a dictionary with an array.
 
- If non-nil key paths are used, then each object will be set in the parameters dictionary at the specified key-path. If more than one object uses the same root key path, then the parameters will be combined into an array for transport.
+ If non-nil key paths are used, then each object will be set in the parameters dictionary at the specified key path. If more than one object uses the same root key path, then the parameters will be combined into an array for transport.
 
  ## MIME Types
  
