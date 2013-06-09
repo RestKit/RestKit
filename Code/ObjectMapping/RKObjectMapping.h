@@ -231,8 +231,8 @@
 
      { "users":
          {
-             "blake": { "id": 1234, "email": "blake@restkit.org" },
-             "rachit": { "id": 5678", "email": "rachit@restkit.org" }
+             "blake": {  "id": 1234, "email": "blake@restkit.org" },
+             "rachit": { "id": 5678, "email": "rachit@restkit.org" }
          }
      }
 
