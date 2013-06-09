@@ -116,13 +116,20 @@
 
 #pragma mark -
 
-@interface RKObjectMappingNextGenTest : RKTestCase {
-
-}
-
+@interface RKObjectMappingNextGenTest : RKTestCase
 @end
 
 @implementation RKObjectMappingNextGenTest
+
+- (void)setUp
+{
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown
+{
+    [RKTestFactory tearDown];
+}
 
 #pragma mark - RKObjectKeyPathMapping Tests
 
@@ -2908,6 +2915,7 @@
     mappingOperation.dataSource = dataSource;
     BOOL success = [mappingOperation performMapping:&error];
     
+    expect(success).to.beTruthy();
     expect(error).to.beNil();
     RKHuman *blake = mappingOperation.destinationObject;
     expect(blake.friends).notTo.beNil();
