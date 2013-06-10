@@ -84,6 +84,8 @@ namespace :appledoc do
       puts "appledoc not found at /usr/local/bin/appledoc: Install via homebrew and try again: `brew install --HEAD appledoc`"
       exit 1
     end
+    appledoc_temp_path = ENV['HOME']+"/Library/Application Support/appledoc"
+    Dir.mkdir(appledoc_temp_path) unless Dir.exists?(appledoc_temp_path)
   end
 end
 
