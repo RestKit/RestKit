@@ -81,7 +81,7 @@ task :docs => 'docs:generate'
 namespace :appledoc do
   task :check do
     unless File.exists?('/usr/local/bin/appledoc')
-      "appledoc not found at /usr/local/bin/appledoc: Install via homebrew and try again: `brew install --HEAD appledoc`"
+      puts "appledoc not found at /usr/local/bin/appledoc: Install via homebrew and try again: `brew install --HEAD appledoc`"
       exit 1
     end
   end
