@@ -10,9 +10,8 @@ seeks to outline the process for marking up RestKit headers to generate great en
 
 ## Generating Documentation
 
-RestKit ships with a set of Rake tasks that simplify the task of generating documentation. A compiled x86_64 executable of the Appledoc
-utility is provided with the RestKit distribution at the Vendor/appledoc path. Most authors will not need to interact directly with
-Appledoc since the process has been automated.
+RestKit ships with a set of Rake tasks that simplify the task of generating documentation. Install the Appledoc utility using Homebrew with
+`brew install --HEAD appledoc`. Most authors will not need to interact directly with Appledoc since the process has been automated.
 
 The tasks available for working with Appledoc are:
 
