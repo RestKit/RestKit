@@ -332,7 +332,8 @@ static Class RKObjectResponseMapperOperationRegisteredDataSourceClass;
 
 @implementation RKObjectResponseMapperOperation
 
-+ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass {
++ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass
+{
     RKObjectResponseMapperOperationRegisteredDataSourceClass = dataSourceClass;
 }
 
@@ -377,7 +378,8 @@ static Class RKManagedObjectResponseMapperOperationRegisteredDataSourceClass;
 
 @implementation RKManagedObjectResponseMapperOperation
 
-+ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass {
++ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass
+{
     RKManagedObjectResponseMapperOperationRegisteredDataSourceClass = dataSourceClass;
 }
 
