@@ -187,6 +187,14 @@
  `RKObjectResponseMapperOperation` is an `RKResponseMapperOperation` subclass that provides support for performing object mapping for mappings that target `NSObject` derived classes. It does not require a data source to perform its work.
  */
 @interface RKObjectResponseMapperOperation : RKResponseMapperOperation
+
+/**
+ Registers the given data source class to to be used for mapper operations.
+ 
+ @param dataSourceClass The class conforming to the RKMappingOperationDataSource protocol to be registered for use with mapper operations.
+ */
++ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass;
+
 @end
 
 /**
@@ -201,6 +209,13 @@
  @see `[NSManagedObjectContext obtainPermanentIDsForObjects:error:]`
  */
 @interface RKManagedObjectResponseMapperOperation : RKResponseMapperOperation
+
+/**
+ Registers the given data source class to to be used for mapper operations.
+ 
+ @param dataSourceClass The class conforming to the RKMappingOperationDataSource protocol to be registered for use with mapper operations.
+ */
++ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass;
 
 ///----------------------------
 /// @name Configuring Core Data
