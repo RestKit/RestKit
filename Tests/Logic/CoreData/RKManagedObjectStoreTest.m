@@ -388,7 +388,12 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
     BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:nil];
     expect(success).to.equal(NO);
+#if (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000) || \
+(defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 1090)
+    expect(error.code).to.equal(NSFileReadNoSuchFileError);
+#else
     expect(error.code).to.equal(0);
+#endif
 }
 
 - (void)testThatAttemptingToMigrateToANonVersionedModelReturnsError
