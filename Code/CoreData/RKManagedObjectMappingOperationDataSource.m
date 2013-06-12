@@ -82,8 +82,7 @@ static NSDictionary *RKEntityIdentificationAttributesForEntityMappingWithReprese
     NSCParameterAssert(entityMapping);
     NSCAssert([representation isKindOfClass:[NSDictionary class]], @"Expected a dictionary representation");
     
-    RKDateToStringValueTransformer *dateToStringTransformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:entityMapping.preferredDateFormatter
-                                                                                                             stringToDateFormatters:entityMapping.dateFormatters];
+    RKDateToStringValueTransformer *dateToStringTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:entityMapping.preferredDateFormatter stringToDateFormatters:entityMapping.dateFormatters];
     NSArray *attributeMappings = entityMapping.attributeMappings;
     
     // If the representation is mapped with a nesting attribute, we must apply the nesting value to the representation before constructing the identification attributes
@@ -466,7 +465,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     
     RKPropertyMapping *propertyMappingForModificationKey = [[(RKEntityMapping *)mappingOperation.mapping propertyMappingsByDestinationKeyPath] objectForKey:modificationKey];
     id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];    
-    RKDateToStringValueTransformer *transformer = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:entityMapping.preferredDateFormatter stringToDateFormatters:entityMapping.dateFormatters];
+    RKDateToStringValueTransformer *transformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:entityMapping.preferredDateFormatter stringToDateFormatters:entityMapping.dateFormatters];
     Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
     id transformedValue = RKTransformedValueWithClass(rawValue, attributeClass, transformer);
     if (! transformedValue) return NO;
