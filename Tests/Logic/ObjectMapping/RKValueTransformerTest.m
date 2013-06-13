@@ -19,7 +19,6 @@
 {
     [super setUp];
     // Put setup code here; it will be run once, before the first test case.
-    [RKValueTransformer class];
 }
 
 - (void)tearDown
@@ -109,6 +108,161 @@
     expect(error).to.beNil();
 }
 
+#pragma mark -
+#pragma mark Default Transformers
 
+- (void)testDefaultStringToURLTransformer
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultStringToURLTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSString *input = @"http://restkit.org/";
+    NSURL *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beInstanceOf([NSURL class]);
+    expect(output).to.equal([NSURL URLWithString:input]);
+    expect(error).to.beNil();
+}
+
+- (void)testDefaultStringToNumberTransformerWithInteger
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultStringToNumberTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSString *input = @"100";
+    NSNumber *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beKindOf([NSNumber class]);
+    expect(output).to.equal(@100);
+    expect(error).to.beNil();
+}
+
+- (void)testDefaultNumberToDateTransformer
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultNumberToDateTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSNumber *input = @100;
+    NSDate *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beKindOf([NSDate class]);
+    expect(output).to.equal([NSDate dateWithTimeIntervalSince1970:100]);
+    expect(error).to.beNil();
+}
+
+- (void)testDefaultOrderedSetToArrayTransformer
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultOrderedSetToArrayTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSOrderedSet *input = [NSOrderedSet orderedSetWithObjects:@"One", @"Two", @"Three", nil];
+    NSArray *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beKindOf([NSArray class]);
+    expect(output).to.equal((@[@"One", @"Two", @"Three"]));
+    expect(error).to.beNil();
+}
+
+- (void)testDefaultSetToArrayTransformer
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultSetToArrayTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSSet *input = [NSSet setWithObjects:@"One", @"Two", @"Three", nil];
+    NSArray *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beKindOf([NSArray class]);
+    expect(output).to.equal((@[@"One", @"Two", @"Three"]));
+    expect(error).to.beNil();
+}
+
+- (void)testDefaultStringToDecimalNumberTransformer
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultStringToDecimalNumberTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSString *input = @"1234765";
+    NSDecimalNumber *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beKindOf([NSDecimalNumber class]);
+    expect(output).to.equal([NSDecimalNumber decimalNumberWithDecimal:[@1234765 decimalValue]]);
+    expect(error).to.beNil();
+}
+
+- (void)testDefaultNumberToDecimalNumberTransformer
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultNumberToDecimalNumberTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSNumber *input = @1234765;
+    NSDecimalNumber *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beKindOf([NSDecimalNumber class]);
+    expect(output).to.equal([NSDecimalNumber decimalNumberWithDecimal:[@1234765 decimalValue]]);
+    expect(error).to.beNil();
+}
+
+- (void)testDefaultObjectToDataTransformer
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultObjectToDataTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSObject<NSCoding> *input = @[@"One", @"Two", @"Three"];
+    NSData *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beKindOf([NSData class]);
+    expect(output).to.equal([NSKeyedArchiver archivedDataWithRootObject:input]);
+    expect(error).to.beNil();
+    
+    expect([NSKeyedUnarchiver unarchiveObjectWithData:output]).to.equal(input);
+}
+
+- (void)testDefaultNullTransformer
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultNullTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSNull *input = [NSNull null];
+    NSData *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beNil();
+    expect(error).to.beNil();
+}
 
 @end
