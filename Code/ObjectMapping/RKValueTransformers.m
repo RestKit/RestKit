@@ -116,7 +116,7 @@ static NSMutableDictionary *_reverseRegistry;
     return array;
 }
 
-- (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue error:(NSError *__autoreleasing *)error
+- (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue error:(NSError **)error
 {
     if ([inputValue class] == self.destinationClass && self.reverseTransformationBlock) {
         return self.reverseTransformationBlock(inputValue, outputValue, error);
