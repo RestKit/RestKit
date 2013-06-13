@@ -37,6 +37,9 @@ static NSMutableDictionary *_reverseRegistry;
                             transformationBlock:(RKValueTransformationBlock)transformationBlock
                      reverseTransformationBlock:(RKValueTransformationBlock)reverseTransformationBlock
 {
+    if (! sourceClass) [NSException raise:NSInvalidArgumentException format:@"`sourceClass` cannot be `Nil`."];
+    if (! destinationClass) [NSException raise:NSInvalidArgumentException format:@"`destinationClass` cannot be `Nil`."];
+    if (!transformationBlock) [NSException raise:NSInvalidArgumentException format:@"`transformationBlock` cannot be `nil`."];
     RKValueTransformer *transformer = [[self alloc] initWithSourceClass:sourceClass
                                                        destinationClass:destinationClass
                                                     transformationBlock:transformationBlock
