@@ -350,6 +350,9 @@ static NSMutableDictionary *_reverseRegistry;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         transformer = [self valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSData class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            if (![inputValue conformsToProtocol:@protocol(NSCoding)]) {
+                return NO;
+            }
             *outputValue = [NSKeyedArchiver archivedDataWithRootObject:inputValue];
             return YES;
         } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
