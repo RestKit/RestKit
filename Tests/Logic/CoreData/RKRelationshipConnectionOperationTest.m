@@ -153,7 +153,7 @@
     RKHuman *homeowner4 = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     house2.ownersInChronologicalOrder = [NSOrderedSet orderedSetWithObjects:homeowner3, homeowner4, nil];
 
-    human.housesResidedAt = [NSOrderedSet orderedSetWithObjects:house1, house2, nil];
+    human.housesResidedAt = [NSSet setWithObjects:house1, house2, nil];
 
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connections:@[ connection ] managedObjectCache:managedObjectCache];
@@ -183,7 +183,7 @@
     RKHuman *homeowner4 = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     house2.ownersInChronologicalOrder = [NSOrderedSet orderedSetWithObjects:homeowner3, homeowner4, nil];
 
-    human.housesResidedAt = [NSOrderedSet orderedSetWithObjects:house1, house2, nil];
+    human.housesResidedAt = [NSSet setWithObjects:house1, house2, nil];
 
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connections:@[ connection ] managedObjectCache:managedObjectCache];
