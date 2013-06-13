@@ -85,8 +85,13 @@ static NSMutableDictionary *_reverseRegistry;
 
 + (NSArray *)valueTransformersForTransformingFromClass:(Class)sourceClass toClass:(Class)destinationClass
 {
-    NSArray *array = _registry[NSStringFromClass(destinationClass)];
-    if (!array) array = [NSArray array];
+    NSArray *array = [NSArray array];
+    Class currentClass = sourceClass;
+    do {
+       array = [array arrayByAddingObjectsFromArray:_registry[NSStringFromClass(currentClass)]];
+       array = [array arrayByAddingObjectsFromArray:_reverseRegistry[NSStringFromClass(currentClass)]];
+    } while ((currentClass = [currentClass superclass]));
+    
     NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(RKValueTransformer *evaluatedObject, NSDictionary *bindings) {
         return [sourceClass isSubclassOfClass:evaluatedObject.sourceClass];
     }];
@@ -94,7 +99,7 @@ static NSMutableDictionary *_reverseRegistry;
     if ([sourceClass isSubclassOfClass:destinationClass]) {
         array = [array arrayByAddingObject:[self identityTransformer]];
     }
-    if ([sourceClass instancesRespondToSelector:@selector(stringValue)]) {
+    if (destinationClass == [NSString class] && [sourceClass instancesRespondToSelector:@selector(stringValue)]) {
         array = [array arrayByAddingObject:[self stringValueTransformer]];
     }
     if ([sourceClass isSubclassOfClass:[NSNull class]]) {
@@ -213,6 +218,25 @@ static NSMutableDictionary *_reverseRegistry;
         return YES;
     }];
     [self registerValueTransformer:transformer];
+    transformer = [self valueTransformerWithSourceClass:[NSString class] destinationClass:[NSDecimalNumber class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+        *outputValue = [NSDecimalNumber decimalNumberWithString:inputValue];
+        return YES;
+    } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+        *outputValue = [inputValue stringValue];
+        return YES;
+    }];
+    [self registerValueTransformer:transformer];
+    transformer = [self valueTransformerWithSourceClass:[NSNumber class] destinationClass:[NSDecimalNumber class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+        *outputValue = [NSDecimalNumber decimalNumberWithDecimal:[inputValue decimalValue]];
+        return YES;
+    } reverseTransformationBlock:nil];
+    transformer = [self valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSData class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+        *outputValue = [NSKeyedArchiver archivedDataWithRootObject:inputValue];
+        return YES;
+    } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+        *outputValue = [NSKeyedUnarchiver unarchiveObjectWithData:inputValue];
+        return YES;
+    }];
 }
 
 - (instancetype)reverseTransformer
@@ -226,7 +250,7 @@ static NSMutableDictionary *_reverseRegistry;
     static RKValueTransformer *identityTransformer;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        identityTransformer = [RKValueTransformer valueTransformerWithSourceClass:nil destinationClass:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+        identityTransformer = [RKValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSObject class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
             *outputValue = inputValue;
             return YES;
         } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
@@ -298,23 +322,23 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 
 - (id)initWithDateToStringFormatter:(NSFormatter *)dateToStringFormatter stringToDateFormatters:(NSArray *)stringToDateFormatters
 {
-    self = [super initWithSourceClass:[NSString class] destinationClass:[NSDate class] transformationBlock:nil reverseTransformationBlock:nil];
+    self = [super initWithSourceClass:[NSDate class] destinationClass:[NSString class] transformationBlock:nil reverseTransformationBlock:nil];
     if (self) {
         self.dateToStringFormatter = dateToStringFormatter;
         self.stringToDateFormatters = stringToDateFormatters;
         __weak id weakSelf = self;
         self.transformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
             RKDateToStringValueTransformer *strongSelf = weakSelf;
-            if (strongSelf.stringToDateFormatters.count <= 0) return NO;
-            *outputValue = RKDateFromStringWithFormatters(inputValue, strongSelf.stringToDateFormatters);
-            return YES;
-        };
-        self.reverseTransformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-            RKDateToStringValueTransformer *strongSelf = weakSelf;
             if (!strongSelf.dateToStringFormatter) return NO;
             @synchronized(strongSelf.dateToStringFormatter) {
                 *outputValue = [strongSelf.dateToStringFormatter stringForObjectValue:inputValue];
             }
+            return YES;
+        };
+        self.reverseTransformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            RKDateToStringValueTransformer *strongSelf = weakSelf;
+            if (strongSelf.stringToDateFormatters.count <= 0) return NO;
+            *outputValue = RKDateFromStringWithFormatters(inputValue, strongSelf.stringToDateFormatters);
             return YES;
         };
     }

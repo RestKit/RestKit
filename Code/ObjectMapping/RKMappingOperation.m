@@ -431,9 +431,7 @@ static NSString * const RKRootKeyPathPrefix = @"@root.";
 {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     RKDateToStringValueTransformer *dateTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
-    RKDateToStringValueTransformer *reverseDateTransformer = dateTransformer.reverseTransformer;
     [RKValueTransformer registerValueTransformer:dateTransformer];
-    [RKValueTransformer registerValueTransformer:reverseDateTransformer];
     NSArray *transformers = [NSArray array];
     if ([[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]) transformers = [transformers arrayByAddingObjectsFromArray:[[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]];
     if (self.objectMapping.valueTransformers) transformers = [transformers arrayByAddingObjectsFromArray:self.objectMapping.valueTransformers];
@@ -450,7 +448,11 @@ static NSString * const RKRootKeyPathPrefix = @"@root.";
         }
     }];
     [RKValueTransformer unregisterValueTransformer:dateTransformer];
-    [RKValueTransformer unregisterValueTransformer:reverseDateTransformer];
+    
+    if (RKIsMutableTypeTransformation(transformedValue, destinationType)) {
+        transformedValue = [transformedValue mutableCopy];
+    }
+    
     if (transformedValue != value) return transformedValue;
     
     RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
