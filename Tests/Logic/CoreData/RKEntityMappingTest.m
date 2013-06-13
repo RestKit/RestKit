@@ -587,7 +587,7 @@
     expect(caughtException.reason).to.equal(@"`requestMapping` is not meant to be invoked on `RKEntityMapping`. You probably want to invoke `[RKObjectMapping requestMapping]`.");
 }
 
-- (void)testMappingArrayToMutableArray
+- (void)testMappingArrayToMutableSet
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
@@ -601,8 +601,8 @@
     NSError *error = nil;
     [operation performMapping:&error];
     
-    assertThat(human.mutableFavoriteColors, is(equalTo(@[ @"Blue", @"Red" ])));
-    assertThat(human.mutableFavoriteColors, is(instanceOf([NSMutableArray class])));
+    assertThat(human.mutableFavoriteColors, is(equalTo([NSMutableSet setWithArray:@[ @"Blue", @"Red" ]])));
+    assertThat(human.mutableFavoriteColors, is(instanceOf([NSMutableSet class])));
 }
 
 @end
