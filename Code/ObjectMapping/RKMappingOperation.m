@@ -75,6 +75,7 @@ static BOOL RKIsMutableTypeTransformation(id value, Class destinationType)
     else if ([destinationType isEqual:[NSMutableString class]]) return YES;
     else if ([destinationType isEqual:[NSMutableSet class]]) return YES;
     else if ([destinationType isEqual:[NSMutableOrderedSet class]]) return YES;
+    else if ([destinationType instancesRespondToSelector:@selector(mutableCopy)]) return YES;
     else return NO;
 }
 
