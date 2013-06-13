@@ -596,6 +596,8 @@
 		73D3907914CA1DD40093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		7F9CBC6174004E31AEC35813 /* libPods-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86EC453810D648768BF62304 /* libPods-osx.a */; };
+		C05CFFFB176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */; };
+		C05CFFFC176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
 /* End PBXBuildFile section */
 
@@ -971,6 +973,7 @@
 		73D3907814CA1D710093E3D6 /* channels.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = channels.xml; sourceTree = "<group>"; };
 		86EC453810D648768BF62304 /* libPods-osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-osx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.xcconfig"; path = "Pods/Pods-ios.xcconfig"; sourceTree = SOURCE_ROOT; };
+		C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKValueTransformerTest.m; sourceTree = "<group>"; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
@@ -1513,6 +1516,7 @@
 				2519764215823BA1004FE9DD /* RKAttributeMappingTest.m */,
 				2519764715824455004FE9DD /* RKRelationshipMappingTest.m */,
 				2519764B158244F8004FE9DD /* RKObjectMappingTest.m */,
+				C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */,
 			);
 			name = ObjectMapping;
 			path = Logic/ObjectMapping;
@@ -2318,6 +2322,7 @@
 				251610AA1456F2330060A5C5 /* RKHouse.m in Sources */,
 				251610AC1456F2330060A5C5 /* RKHuman.m in Sources */,
 				251610AE1456F2330060A5C5 /* RKMappableAssociation.m in Sources */,
+				C05CFFFB176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */,
 				251610B01456F2330060A5C5 /* RKMappableObject.m in Sources */,
 				251610B21456F2330060A5C5 /* RKObjectLoaderTestResultModel.m in Sources */,
 				251610B41456F2330060A5C5 /* RKObjectMapperTestModel.m in Sources */,
@@ -2476,6 +2481,7 @@
 				251610AB1456F2330060A5C5 /* RKHouse.m in Sources */,
 				251610AD1456F2330060A5C5 /* RKHuman.m in Sources */,
 				251610AF1456F2330060A5C5 /* RKMappableAssociation.m in Sources */,
+				C05CFFFC176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */,
 				251610B11456F2330060A5C5 /* RKMappableObject.m in Sources */,
 				251610B31456F2330060A5C5 /* RKObjectLoaderTestResultModel.m in Sources */,
 				251610B51456F2330060A5C5 /* RKObjectMapperTestModel.m in Sources */,
