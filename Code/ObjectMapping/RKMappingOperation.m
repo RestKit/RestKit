@@ -431,7 +431,7 @@ static NSString * const RKRootKeyPathPrefix = @"@root.";
 {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     RKDateToStringValueTransformer *dateTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
-    [RKValueTransformer registerValueTransformer:dateTransformer];
+//    [RKValueTransformer registerValueTransformer:dateTransformer];
     NSArray *transformers = [NSArray array];
     if ([[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]) transformers = [transformers arrayByAddingObjectsFromArray:[[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]];
     if (self.objectMapping.valueTransformers) transformers = [transformers arrayByAddingObjectsFromArray:self.objectMapping.valueTransformers];
@@ -447,7 +447,7 @@ static NSString * const RKRootKeyPathPrefix = @"@root.";
             transformedValue = outVal;
         }
     }];
-    [RKValueTransformer unregisterValueTransformer:dateTransformer];
+//    [RKValueTransformer unregisterValueTransformer:dateTransformer];
     
     if (RKIsMutableTypeTransformation(transformedValue, destinationType)) {
         transformedValue = [transformedValue mutableCopy];
