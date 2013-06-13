@@ -101,11 +101,14 @@
     NSURL *output;
     NSError *error;
     
-    expect([transformer transformValue:input toValue:&output error:&error]).to.beTruthy();
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
     
     expect(output).to.beInstanceOf([NSURL class]);
     expect(output).to.equal([NSURL URLWithString:input]);
     expect(error).to.beNil();
 }
+
+
 
 @end
