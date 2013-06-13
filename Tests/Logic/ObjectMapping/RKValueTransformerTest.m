@@ -59,4 +59,53 @@
     expect(^{[RKValueTransformer valueTransformerWithSourceClass:source destinationClass:nil transformationBlock:forward reverseTransformationBlock:reverse];}).to.raise(NSInvalidArgumentException);
 }
 
+- (void)testValueTransformerPropertiesYieldAssignedValues
+{
+    Class source = nil, destination = nil;
+    RKValueTransformationBlock forward = nil, reverse = nil;
+    source = [NSString class];
+    destination = [NSURL class];
+    forward = ^BOOL(id inputValue, id *outputValue, NSError **error) {
+        *outputValue = [NSURL URLWithString:inputValue];
+        return YES;
+    };
+    reverse = ^BOOL(id inputValue, id *outputValue, NSError **error) {
+        *outputValue = [inputValue absoluteString];
+        return YES;
+    };
+    
+    RKValueTransformer *transformer = [RKValueTransformer valueTransformerWithSourceClass:source destinationClass:destination transformationBlock:forward reverseTransformationBlock:reverse];
+    
+    expect(transformer.sourceClass).to.equal(source);
+    expect(transformer.destinationClass).to.equal(destination);
+}
+
+- (void)testTransformationSetsOutputValue
+{
+    Class source = nil, destination = nil;
+    RKValueTransformationBlock forward = nil, reverse = nil;
+    source = [NSString class];
+    destination = [NSURL class];
+    forward = ^BOOL(id inputValue, id *outputValue, NSError **error) {
+        *outputValue = [NSURL URLWithString:inputValue];
+        return YES;
+    };
+    reverse = ^BOOL(id inputValue, id *outputValue, NSError **error) {
+        *outputValue = [inputValue absoluteString];
+        return YES;
+    };
+    
+    RKValueTransformer *transformer = [RKValueTransformer valueTransformerWithSourceClass:source destinationClass:destination transformationBlock:forward reverseTransformationBlock:reverse];
+    
+    NSString *input = @"http://restkit.org/";
+    NSURL *output;
+    NSError *error;
+    
+    expect([transformer transformValue:input toValue:&output error:&error]).to.beTruthy();
+    
+    expect(output).to.beInstanceOf([NSURL class]);
+    expect(output).to.equal([NSURL URLWithString:input]);
+    expect(error).to.beNil();
+}
+
 @end
