@@ -33,7 +33,19 @@ typedef BOOL(^RKValueTransformationBlock)(id inputValue, id *outputValue, NSErro
 /// @name Transforming a Value
 
 - (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue error:(NSError **)error; // Mapper will always use this interface instead of NSValueTransformer
-- (instancetype)reverseTransformer;
+
+/// @name Default Transformers
+
++ (instancetype)defaultStringToURLTransformer;
++ (NSArray *)defaultBooleanToStringTransformers;
++ (instancetype)defaultStringToNumberTransformer;
++ (instancetype)defaultNumberToDateTransformer;
++ (instancetype)defaultOrderedSetToArrayTransformer;
++ (instancetype)defaultSetToArrayTransformer;
++ (instancetype)defaultStringToDecimalNumberTransformer;
++ (instancetype)defaultNumberToDecimalNumberTransformer;
++ (instancetype)defaultObjectToDataTransformer;
++ (instancetype)defaultNullTransformer;
 
 @end
 

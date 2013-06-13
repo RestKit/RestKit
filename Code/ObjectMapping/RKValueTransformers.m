@@ -111,7 +111,7 @@ static NSMutableDictionary *_reverseRegistry;
         array = [array arrayByAddingObject:[self stringValueTransformer]];
     }
     if ([sourceClass isSubclassOfClass:[NSNull class]]) {
-        array = [array arrayByAddingObject:[self nullTransformer]];
+        array = [array arrayByAddingObject:[self defaultNullTransformer]];
     }
     return array;
 }
@@ -122,6 +122,11 @@ static NSMutableDictionary *_reverseRegistry;
         return self.reverseTransformationBlock(inputValue, outputValue, error);
     }
     return self.transformationBlock(inputValue, outputValue, error);
+}
+
+- (void)_register
+{
+    [RKValueTransformer registerValueTransformer:self];
 }
 
 + (void)registerValueTransformer:(RKValueTransformer *)valueTransformer
@@ -171,95 +176,188 @@ static NSMutableDictionary *_reverseRegistry;
     if ([RKValueTransformer class] != self) return;
     _registry = [NSMutableDictionary dictionary];
     _reverseRegistry = [NSMutableDictionary dictionary];
-    RKValueTransformer *transformer = [self valueTransformerWithSourceClass:[NSString class] destinationClass:[NSURL class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSURL URLWithString:inputValue];
-        return YES;
-    } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [inputValue absoluteString];
-        return YES;
-    }];
-    [self registerValueTransformer:transformer];
-    RKValueTransformationBlock forwardBool = ^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [inputValue boolValue] ? @"true" : @"false";
-        return YES;
-    };
-    if (NSClassFromString(@"NSCFBoolean")) {
-        transformer = [self valueTransformerWithSourceClass:NSClassFromString(@"NSCFBoolean") destinationClass:[NSString class] transformationBlock:forwardBool reverseTransformationBlock:nil];
-        [self registerValueTransformer:transformer];
+    [[self defaultStringToURLTransformer] _register];
+    for (RKValueTransformer *transformer in [self defaultBooleanToStringTransformers]) {
+        [transformer _register];
     }
-    if (NSClassFromString(@"__NSCFBoolean")) {
-        transformer = [self valueTransformerWithSourceClass:NSClassFromString(@"__NSCFBoolean") destinationClass:[NSString class] transformationBlock:forwardBool reverseTransformationBlock:nil];
-        [self registerValueTransformer:transformer];
-    }
-    transformer = [self valueTransformerWithSourceClass:[NSString class] destinationClass:[NSNumber class] transformationBlock:^BOOL(NSString* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        NSString *lowercasedString = [inputValue lowercaseString];
-        NSSet *trueStrings = [NSSet setWithObjects:@"true", @"t", @"yes", @"y", nil];
-        NSSet *booleanStrings = [trueStrings setByAddingObjectsFromSet:[NSSet setWithObjects:@"false", @"f", @"no", @"n", nil]];
-        if ([booleanStrings containsObject:lowercasedString]) {
-            // Handle booleans encoded as Strings
-            *outputValue = [NSNumber numberWithBool:[trueStrings containsObject:lowercasedString]];
+    [[self defaultStringToNumberTransformer] _register];
+    [[self defaultNumberToDateTransformer] _register];
+    [[self defaultOrderedSetToArrayTransformer] _register];
+    [[self defaultSetToArrayTransformer] _register];
+    [[self defaultStringToDecimalNumberTransformer] _register];
+    [[self defaultNumberToDecimalNumberTransformer] _register];
+    [[self defaultObjectToDataTransformer] _register];
+}
+
++ (instancetype)defaultStringToURLTransformer
+{
+    static RKValueTransformer *transformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        transformer = [self valueTransformerWithSourceClass:[NSString class] destinationClass:[NSURL class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSURL URLWithString:inputValue];
             return YES;
-        } else if ([lowercasedString rangeOfString:@"."].location != NSNotFound) {
-            // String -> Floating Point Number
-            // Only use floating point if needed to avoid losing precision
-            // on large integers
-            *outputValue = [NSNumber numberWithDouble:[lowercasedString doubleValue]];
+        } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [inputValue absoluteString];
             return YES;
-        } else {
-            // String -> Signed Integer
-            *outputValue = [NSNumber numberWithLongLong:[lowercasedString longLongValue]];
+        }];
+    });
+    return transformer;
+}
+
++ (NSArray *)defaultBooleanToStringTransformers
+{
+    static NSArray *transformers;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSMutableArray *_transformers;
+        RKValueTransformationBlock forwardBool = ^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [inputValue boolValue] ? @"true" : @"false";
             return YES;
+        };
+        RKValueTransformer *transformer1;
+        if (NSClassFromString(@"NSCFBoolean")) {
+            transformer1 = [self valueTransformerWithSourceClass:NSClassFromString(@"NSCFBoolean") destinationClass:[NSString class] transformationBlock:forwardBool reverseTransformationBlock:nil];
+            [_transformers addObject:transformer1];
         }
-    } reverseTransformationBlock:^BOOL(NSNumber* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [inputValue stringValue];
-        return YES;
-    }];
-    [self registerValueTransformer:transformer];
-    transformer = [self valueTransformerWithSourceClass:[NSNumber class] destinationClass:[NSDate class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSDate dateWithTimeIntervalSince1970:[inputValue doubleValue]];
-        return YES;
-    } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSNumber numberWithDouble:[inputValue timeIntervalSince1970]];
-        return YES;
-    }];
-    [self registerValueTransformer:transformer];
-    transformer = [self valueTransformerWithSourceClass:[NSOrderedSet class] destinationClass:[NSArray class] transformationBlock:^BOOL(NSOrderedSet* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [inputValue array];
-        return YES;
-    } reverseTransformationBlock:^BOOL(NSArray* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSOrderedSet orderedSetWithArray:inputValue];
-        return YES;
-    }];
-    [self registerValueTransformer:transformer];
-    transformer = [self valueTransformerWithSourceClass:[NSSet class] destinationClass:[NSArray class] transformationBlock:^BOOL(NSSet* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [inputValue allObjects];
-        return YES;
-    } reverseTransformationBlock:^BOOL(NSArray* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSSet setWithArray:inputValue];
-        return YES;
-    }];
-    [self registerValueTransformer:transformer];
-    transformer = [self valueTransformerWithSourceClass:[NSString class] destinationClass:[NSDecimalNumber class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSDecimalNumber decimalNumberWithString:inputValue];
-        return YES;
-    } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [inputValue stringValue];
-        return YES;
-    }];
-    [self registerValueTransformer:transformer];
-    transformer = [self valueTransformerWithSourceClass:[NSNumber class] destinationClass:[NSDecimalNumber class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSDecimalNumber decimalNumberWithDecimal:[inputValue decimalValue]];
-        return YES;
-    } reverseTransformationBlock:nil];
-    [self registerValueTransformer:transformer];
-    transformer = [self valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSData class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSKeyedArchiver archivedDataWithRootObject:inputValue];
-        return YES;
-    } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-        *outputValue = [NSKeyedUnarchiver unarchiveObjectWithData:inputValue];
-        return YES;
-    }];
-    [self registerValueTransformer:transformer];
+        RKValueTransformer *transformer2;
+        if (NSClassFromString(@"__NSCFBoolean")) {
+            transformer2 = [self valueTransformerWithSourceClass:NSClassFromString(@"__NSCFBoolean") destinationClass:[NSString class] transformationBlock:forwardBool reverseTransformationBlock:nil];
+            [_transformers addObject:transformer2];
+        }
+        transformers = [NSArray arrayWithArray:_transformers];
+    });
+    return transformers;
+}
+
++ (instancetype)defaultStringToNumberTransformer
+{
+    static RKValueTransformer *transformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        transformer = [self valueTransformerWithSourceClass:[NSString class] destinationClass:[NSNumber class] transformationBlock:^BOOL(NSString* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            NSString *lowercasedString = [inputValue lowercaseString];
+            NSSet *trueStrings = [NSSet setWithObjects:@"true", @"t", @"yes", @"y", nil];
+            NSSet *booleanStrings = [trueStrings setByAddingObjectsFromSet:[NSSet setWithObjects:@"false", @"f", @"no", @"n", nil]];
+            if ([booleanStrings containsObject:lowercasedString]) {
+                // Handle booleans encoded as Strings
+                *outputValue = [NSNumber numberWithBool:[trueStrings containsObject:lowercasedString]];
+                return YES;
+            } else if ([lowercasedString rangeOfString:@"."].location != NSNotFound) {
+                // String -> Floating Point Number
+                // Only use floating point if needed to avoid losing precision
+                // on large integers
+                *outputValue = [NSNumber numberWithDouble:[lowercasedString doubleValue]];
+                return YES;
+            } else {
+                // String -> Signed Integer
+                *outputValue = [NSNumber numberWithLongLong:[lowercasedString longLongValue]];
+                return YES;
+            }
+        } reverseTransformationBlock:^BOOL(NSNumber* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [inputValue stringValue];
+            return YES;
+        }];
+
+    });
+    return transformer;
+}
+
++ (instancetype)defaultNumberToDateTransformer
+{
+    static RKValueTransformer *transformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        transformer = [self valueTransformerWithSourceClass:[NSNumber class] destinationClass:[NSDate class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSDate dateWithTimeIntervalSince1970:[inputValue doubleValue]];
+            return YES;
+        } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSNumber numberWithDouble:[inputValue timeIntervalSince1970]];
+            return YES;
+        }];
+
+    });
+    return transformer;
+}
+
++ (instancetype)defaultOrderedSetToArrayTransformer
+{
+    static RKValueTransformer *transformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        transformer = [self valueTransformerWithSourceClass:[NSOrderedSet class] destinationClass:[NSArray class] transformationBlock:^BOOL(NSOrderedSet* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [inputValue array];
+            return YES;
+        } reverseTransformationBlock:^BOOL(NSArray* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSOrderedSet orderedSetWithArray:inputValue];
+            return YES;
+        }];
+    });
+    return transformer;
+}
+
++ (instancetype)defaultSetToArrayTransformer
+{
+    static RKValueTransformer *transformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        transformer = [self valueTransformerWithSourceClass:[NSSet class] destinationClass:[NSArray class] transformationBlock:^BOOL(NSSet* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [inputValue allObjects];
+            return YES;
+        } reverseTransformationBlock:^BOOL(NSArray* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSSet setWithArray:inputValue];
+            return YES;
+        }];
+    });
+    return transformer;
+}
+
++ (instancetype)defaultStringToDecimalNumberTransformer
+{
+    static RKValueTransformer *transformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        transformer = [self valueTransformerWithSourceClass:[NSString class] destinationClass:[NSDecimalNumber class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSDecimalNumber decimalNumberWithString:inputValue];
+            return YES;
+        } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [inputValue stringValue];
+            return YES;
+        }];
+    });
+    return transformer;
+}
+
++ (instancetype)defaultNumberToDecimalNumberTransformer
+{
+    static RKValueTransformer *transformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        transformer = [self valueTransformerWithSourceClass:[NSNumber class] destinationClass:[NSDecimalNumber class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSDecimalNumber decimalNumberWithDecimal:[inputValue decimalValue]];
+            return YES;
+        } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = inputValue;
+            return YES;
+        }];
+    });
+    return transformer;
+}
+
++ (instancetype)defaultObjectToDataTransformer
+{
+    static RKValueTransformer *transformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        transformer = [self valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSData class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSKeyedArchiver archivedDataWithRootObject:inputValue];
+            return YES;
+        } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+            *outputValue = [NSKeyedUnarchiver unarchiveObjectWithData:inputValue];
+            return YES;
+        }];
+    });
+    return transformer;
 }
 
 - (instancetype)reverseTransformer
@@ -297,7 +395,7 @@ static NSMutableDictionary *_reverseRegistry;
     return stringValueTransformer;
 }
 
-+ (instancetype)nullTransformer
++ (instancetype)defaultNullTransformer
 {
     static RKValueTransformer *nullTransformer;
     static dispatch_once_t onceToken;
