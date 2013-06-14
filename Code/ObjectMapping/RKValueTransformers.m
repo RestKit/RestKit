@@ -23,6 +23,9 @@
 
 @end
 
+@interface RKIdentityValueTransformer : RKValueTransformer
+@end
+
 @implementation RKValueTransformer
 
 + (Class)transformedValueClass {
@@ -176,17 +179,18 @@
 {
     [super initialize];
     if ([RKValueTransformer class] != self) return;
-//    [[self defaultStringToURLTransformer] _register];
-//    for (RKValueTransformer *transformer in [self defaultBooleanToStringTransformers]) {
-//        [transformer _register];
-//    }
-//    [[self defaultStringToNumberTransformer] _register];
-//    [[self defaultNumberToDateTransformer] _register];
-//    [[self defaultOrderedSetToArrayTransformer] _register];
-//    [[self defaultSetToArrayTransformer] _register];
-//    [[self defaultStringToDecimalNumberTransformer] _register];
-//    [[self defaultNumberToDecimalNumberTransformer] _register];
-//    [[self defaultObjectToDataTransformer] _register];
+    [[self defaultStringToURLTransformer] _register];
+    for (RKValueTransformer *transformer in [self defaultBooleanToStringTransformers]) {
+        [transformer _register];
+    }
+    [[self defaultStringToNumberTransformer] _register];
+    [[self defaultNumberToDateTransformer] _register];
+    [[self defaultOrderedSetToArrayTransformer] _register];
+    [[self defaultSetToArrayTransformer] _register];
+    [[self defaultStringToDecimalNumberTransformer] _register];
+    [[self defaultNumberToDecimalNumberTransformer] _register];
+    [[self defaultObjectToDataTransformer] _register];
+    [[self identityTransformer] _register];
 }
 
 + (instancetype)defaultStringToURLTransformer
@@ -374,7 +378,7 @@
     static RKValueTransformer *identityTransformer;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        identityTransformer = [RKValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSObject class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+        identityTransformer = [RKIdentityValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSObject class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
             *outputValue = inputValue;
             return YES;
         } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
@@ -484,6 +488,16 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 - (id)init
 {
     return [self initWithDateToStringFormatter:nil stringToDateFormatters:nil];
+}
+
+@end
+
+@implementation RKIdentityValueTransformer
+
+- (BOOL)canTransformClass:(Class)sourceClass toClass:(Class)destinationClass
+{
+    if ([sourceClass isSubclassOfClass:destinationClass] || [destinationClass isSubclassOfClass:sourceClass]) return YES;
+    else return NO;
 }
 
 @end

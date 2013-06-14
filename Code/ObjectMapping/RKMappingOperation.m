@@ -70,12 +70,12 @@ static BOOL RKIsManagedObject(id object)
  */
 static BOOL RKIsMutableTypeTransformation(id value, Class destinationType)
 {
+    if (![value respondsToSelector:@selector(mutableCopy)]) return NO;
     if ([destinationType isEqual:[NSMutableArray class]]) return YES;
     else if ([destinationType isEqual:[NSMutableDictionary class]]) return YES;
     else if ([destinationType isEqual:[NSMutableString class]]) return YES;
     else if ([destinationType isEqual:[NSMutableSet class]]) return YES;
     else if ([destinationType isEqual:[NSMutableOrderedSet class]]) return YES;
-    else if ([destinationType instancesRespondToSelector:@selector(mutableCopy)]) return YES;
     else return NO;
 }
 
@@ -103,9 +103,17 @@ BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class
 
 id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer)
 {
+    [RKValueTransformer registerValueTransformer:(RKValueTransformer *)dateToStringValueTransformer];
     id retVal;
     BOOL success = RKTransformedValueToValueOfClassError(value, &retVal, destinationType, nil);
-    return success ? retVal : nil;
+    [RKValueTransformer unregisterValueTransformer:(RKValueTransformer *)dateToStringValueTransformer];
+    if (success) {
+        return retVal;
+    } else {
+        return nil;
+    }
+    
+    
     Class sourceType = [value class];
     
     if ([value isKindOfClass:destinationType]) {
