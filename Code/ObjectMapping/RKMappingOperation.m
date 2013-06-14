@@ -432,32 +432,37 @@ static NSString * const RKRootKeyPathPrefix = @"@root.";
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     RKDateToStringValueTransformer *dateTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
 //    [RKValueTransformer registerValueTransformer:dateTransformer];
-    NSArray *transformers = [NSArray array];
-    if ([[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]) transformers = [transformers arrayByAddingObjectsFromArray:[[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]];
-    if (self.objectMapping.valueTransformers) transformers = [transformers arrayByAddingObjectsFromArray:self.objectMapping.valueTransformers];
-    transformers = [transformers arrayByAddingObjectsFromArray:[RKValueTransformer valueTransformersForTransformingFromClass:[value class] toClass:destinationType]];
-    
-    __block id transformedValue = nil;
-    [transformers enumerateObjectsUsingBlock:^(RKValueTransformer *obj, NSUInteger idx, BOOL *stop) {
-        NSError *error;
-        id outVal;
-        BOOL success = [obj transformValue:value toValue:&outVal error:&error];
-        if (success) {
-            *stop = YES;
-            transformedValue = outVal;
+    id transformedValue;
+    NSError *error;
+    BOOL success = [self transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
+    if (success) {
+        if (RKIsMutableTypeTransformation(transformedValue, destinationType)) {
+            transformedValue = [transformedValue mutableCopy];
         }
-    }];
-//    [RKValueTransformer unregisterValueTransformer:dateTransformer];
+    }
+    [RKValueTransformer unregisterValueTransformer:dateTransformer];
     
-    if (RKIsMutableTypeTransformation(transformedValue, destinationType)) {
-        transformedValue = [transformedValue mutableCopy];
+    return transformedValue;    
+}
+
+- (BOOL)transformValue:(in id)inputValue toValue:(out id *)outputValue ofClass:(Class)destinationClass error:(NSError **)error
+{
+    NSArray *matchingTransformers = [RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
+    for (RKValueTransformer *valueTransformer in matchingTransformers) {
+        if ([valueTransformer transformValue:inputValue toValue:outputValue error:error]) {
+            return YES;
+        } else {
+            // An error occurred while attempting to perform the transformation, return to the caller
+            if (*error) {
+                *outputValue = nil;
+                return NO;
+            }
+        }
     }
     
-    if (transformedValue != value) return transformedValue;
-    
-    RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
-
-    return nil;
+    *outputValue = nil;
+    *error = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
+    return NO;
 }
 
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString *)keyPath

@@ -123,8 +123,25 @@
     BOOL success = [transformer transformValue:input toValue:&output error:&error];
     expect(success).to.beTruthy();
     
-    expect(output).to.beInstanceOf([NSURL class]);
+    expect(output).to.beKindOf([NSURL class]);
     expect(output).to.equal([NSURL URLWithString:input]);
+    expect(error).to.beNil();
+}
+
+- (void)testDefaultStringToURLTransformerReverse
+{
+    RKValueTransformer *transformer = [RKValueTransformer defaultStringToURLTransformer];
+    expect(transformer).toNot.beNil();
+    
+    NSURL *input = [NSURL URLWithString:@"http://restkit.org/"];
+    NSString *output;
+    NSError *error;
+    
+    BOOL success = [transformer transformValue:input toValue:&output error:&error];
+    expect(success).to.beTruthy();
+    
+    expect(output).to.beKindOf([NSString class]);
+    expect(output).to.equal(@"http://restkit.org/");
     expect(error).to.beNil();
 }
 
@@ -263,6 +280,35 @@
     
     expect(output).to.beNil();
     expect(error).to.beNil();
+}
+
+
+#pragma mark -
+#pragma mark Correct Block Invoked
+
+- (void)unregisterAllTransformers
+{
+    // TODO
+}
+
+- (void)registerDefaultTransformers
+{
+    // TODO
+}
+
+- (void)testNoBlockInvokedWhenTransformerDoesntMatch
+{
+    expect(NO).to.equal(YES);
+}
+
+- (void)testReverseBlockNotInvokedIfForwardSucceeds
+{
+    expect(NO).to.equal(YES);
+}
+
+- (void)testReverseBlockInvokedIfForwardFails
+{
+    expect(NO).to.equal(YES);
 }
 
 @end
