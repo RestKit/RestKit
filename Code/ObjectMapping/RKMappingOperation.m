@@ -80,8 +80,32 @@ static BOOL RKIsMutableTypeTransformation(id value, Class destinationType)
 }
 
 id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer);
+BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error);
+BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error)
+{
+    NSArray *matchingTransformers = [RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
+    for (RKValueTransformer *valueTransformer in matchingTransformers) {
+        if ([valueTransformer transformValue:inputValue toValue:outputValue error:error]) {
+            return YES;
+        } else {
+            // An error occurred while attempting to perform the transformation, return to the caller
+            if (*error) {
+                *outputValue = nil;
+                return NO;
+            }
+        }
+    }
+    
+    *outputValue = nil;
+    if (error) *error = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
+    return NO;
+}
+
 id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer)
 {
+    id retVal;
+    BOOL success = RKTransformedValueToValueOfClassError(value, &retVal, destinationType, nil);
+    return success ? retVal : nil;
     Class sourceType = [value class];
     
     if ([value isKindOfClass:destinationType]) {
