@@ -282,33 +282,4 @@
     expect(error).to.beNil();
 }
 
-
-#pragma mark -
-#pragma mark Correct Block Invoked
-
-- (void)unregisterAllTransformers
-{
-    // TODO
-}
-
-- (void)registerDefaultTransformers
-{
-    // TODO
-}
-
-- (void)testNoBlockInvokedWhenTransformerDoesntMatch
-{
-    expect(NO).to.equal(YES);
-}
-
-- (void)testReverseBlockNotInvokedIfForwardSucceeds
-{
-    expect(NO).to.equal(YES);
-}
-
-- (void)testReverseBlockInvokedIfForwardFails
-{
-    expect(NO).to.equal(YES);
-}
-
 @end
