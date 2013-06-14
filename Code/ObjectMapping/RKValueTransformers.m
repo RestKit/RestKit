@@ -26,6 +26,9 @@
 @interface RKIdentityValueTransformer : RKValueTransformer
 @end
 
+@interface RKStringValueTransformer : RKValueTransformer
+@end
+
 @implementation RKValueTransformer
 
 + (Class)transformedValueClass {
@@ -153,6 +156,8 @@
 
 + (void)registerValueTransformer:(RKValueTransformer *)valueTransformer
 {
+    if (![valueTransformer isKindOfClass:[RKValueTransformer class]])
+        [NSException raise:NSInvalidArgumentException format:@"`valueTransformer` must be a valid `RKValueTransformer`"];
     NSMutableArray *transformers = [self registeredValueTransformers];
     if ([transformers containsObject:valueTransformer]) return;
     [transformers insertObject:valueTransformer atIndex:0];
@@ -180,9 +185,6 @@
     [super initialize];
     if ([RKValueTransformer class] != self) return;
     [[self defaultStringToURLTransformer] _register];
-    for (RKValueTransformer *transformer in [self defaultBooleanToStringTransformers]) {
-        [transformer _register];
-    }
     [[self defaultStringToNumberTransformer] _register];
     [[self defaultNumberToDateTransformer] _register];
     [[self defaultOrderedSetToArrayTransformer] _register];
@@ -190,6 +192,7 @@
     [[self defaultStringToDecimalNumberTransformer] _register];
     [[self defaultNumberToDecimalNumberTransformer] _register];
     [[self defaultObjectToDataTransformer] _register];
+    [[self defaultNullTransformer] _register];
     [[self identityTransformer] _register];
 }
 
@@ -207,31 +210,6 @@
         }];
     });
     return transformer;
-}
-
-+ (NSArray *)defaultBooleanToStringTransformers
-{
-    static NSArray *transformers;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSMutableArray *_transformers;
-        RKValueTransformationBlock forwardBool = ^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-            *outputValue = [inputValue boolValue] ? @"true" : @"false";
-            return YES;
-        };
-        RKValueTransformer *transformer1;
-        if (NSClassFromString(@"NSCFBoolean")) {
-            transformer1 = [self valueTransformerWithSourceClass:NSClassFromString(@"NSCFBoolean") destinationClass:[NSString class] transformationBlock:forwardBool reverseTransformationBlock:nil];
-            [_transformers addObject:transformer1];
-        }
-        RKValueTransformer *transformer2;
-        if (NSClassFromString(@"__NSCFBoolean")) {
-            transformer2 = [self valueTransformerWithSourceClass:NSClassFromString(@"__NSCFBoolean") destinationClass:[NSString class] transformationBlock:forwardBool reverseTransformationBlock:nil];
-            [_transformers addObject:transformer2];
-        }
-        transformers = [NSArray arrayWithArray:_transformers];
-    });
-    return transformers;
 }
 
 + (instancetype)defaultStringToNumberTransformer
@@ -259,7 +237,13 @@
                 return YES;
             }
         } reverseTransformationBlock:^BOOL(NSNumber* inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
-            *outputValue = [inputValue stringValue];
+            if (NSClassFromString(@"__NSCFBoolean") && [inputValue isKindOfClass:NSClassFromString(@"__NSCFBoolean")]) {
+                *outputValue = [inputValue boolValue] ? @"true" : @"false";
+            } else if (NSClassFromString(@"NSCFBoolean") && [inputValue isKindOfClass:NSClassFromString(@"NSCFBoolean")]) {
+                *outputValue = [inputValue boolValue] ? @"true" : @"false";
+            } else {
+                *outputValue = [inputValue stringValue];
+            }
             return YES;
         }];
 
@@ -394,7 +378,7 @@
     static RKValueTransformer *stringValueTransformer;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        stringValueTransformer = [RKValueTransformer valueTransformerWithSourceClass:nil destinationClass:[NSString class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+        stringValueTransformer = [RKStringValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSString class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
             *outputValue = [inputValue stringValue];
             return YES;
         } reverseTransformationBlock:nil];
@@ -492,12 +476,27 @@ NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters
 
 @end
 
+BOOL RKIsMutableTypeTransformation(id value, Class destinationType);
+
 @implementation RKIdentityValueTransformer
 
 - (BOOL)canTransformClass:(Class)sourceClass toClass:(Class)destinationClass
 {
+    if (RKIsMutableTypeTransformation(nil, destinationClass)) {
+        return [self canTransformClass:sourceClass toClass:[destinationClass superclass]];
+    }
     if ([sourceClass isSubclassOfClass:destinationClass] || [destinationClass isSubclassOfClass:sourceClass]) return YES;
     else return NO;
+}
+
+@end
+
+@implementation RKStringValueTransformer
+
+- (BOOL)canTransformClass:(Class)sourceClass toClass:(Class)destinationClass
+{
+    if ([sourceClass instancesRespondToSelector:@selector(stringValue)]) return YES;
+    return NO;
 }
 
 @end

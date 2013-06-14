@@ -68,14 +68,15 @@ static BOOL RKIsManagedObject(id object)
 /**
  NOTE: Because most Foundation classes are implemented as class-clusters, we cannot introspect them for mutability. Instead, we evaluate the destination type and if it is a mutable class, we return `YES` to trigger an invocation of `mutableCopy`.
  */
-static BOOL RKIsMutableTypeTransformation(id value, Class destinationType)
+BOOL RKIsMutableTypeTransformation(id value, Class destinationType);
+BOOL RKIsMutableTypeTransformation(id value, Class destinationType)
 {
-    if (![value respondsToSelector:@selector(mutableCopy)]) return NO;
-    if ([destinationType isEqual:[NSMutableArray class]]) return YES;
-    else if ([destinationType isEqual:[NSMutableDictionary class]]) return YES;
-    else if ([destinationType isEqual:[NSMutableString class]]) return YES;
-    else if ([destinationType isEqual:[NSMutableSet class]]) return YES;
-    else if ([destinationType isEqual:[NSMutableOrderedSet class]]) return YES;
+    if (value && ![value respondsToSelector:@selector(mutableCopy)]) return NO;
+    if ([destinationType isSubclassOfClass:[NSMutableArray class]]) return YES;
+    else if ([destinationType isSubclassOfClass:[NSMutableDictionary class]]) return YES;
+    else if ([destinationType isSubclassOfClass:[NSMutableString class]]) return YES;
+    else if ([destinationType isSubclassOfClass:[NSMutableSet class]]) return YES;
+    else if ([destinationType isSubclassOfClass:[NSMutableOrderedSet class]]) return YES;
     else return NO;
 }
 
@@ -96,17 +97,31 @@ BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class
         }
     }
     
+    if ([destinationClass isSubclassOfClass:[NSDictionary class]]) {
+        *outputValue = [NSMutableDictionary dictionaryWithObject:[NSMutableDictionary dictionary] forKey:inputValue];
+        return YES;
+    } else if (RKClassIsCollection(destinationClass) && !RKObjectIsCollection(inputValue)) {
+        // Call ourself recursively with an array value to transform as appropriate
+        return RKTransformedValueToValueOfClassError(@[ inputValue ], outputValue, destinationClass, error);
+    }
+    
     *outputValue = nil;
+    NSError *RKUntransformableValueError = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
     if (error) *error = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
+    RKLogError(@"Error Transforming %@ to class %@: %@",inputValue, destinationClass, RKUntransformableValueError);
     return NO;
 }
 
 id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer)
 {
-    [RKValueTransformer registerValueTransformer:(RKValueTransformer *)dateToStringValueTransformer];
     id retVal;
-    BOOL success = RKTransformedValueToValueOfClassError(value, &retVal, destinationType, nil);
-    [RKValueTransformer unregisterValueTransformer:(RKValueTransformer *)dateToStringValueTransformer];
+    BOOL success = FALSE;
+
+    if ([dateToStringValueTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateToStringValueTransformer canTransformClass:[value class] toClass:destinationType]) {
+        success = [(RKDateToStringValueTransformer *)dateToStringValueTransformer transformValue:value toValue:&retVal error:nil];
+    }
+    if (!success)
+        success = RKTransformedValueToValueOfClassError(value, &retVal, destinationType, nil);
     if (success) {
         return retVal;
     } else {
@@ -463,38 +478,41 @@ static NSString * const RKRootKeyPathPrefix = @"@root.";
 {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     RKDateToStringValueTransformer *dateTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
-//    [RKValueTransformer registerValueTransformer:dateTransformer];
+    BOOL success = FALSE;
     id transformedValue;
     NSError *error;
-    BOOL success = [self transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
+    if ([dateTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateTransformer canTransformClass:[value class] toClass:destinationType]) {
+        success = [(RKDateToStringValueTransformer *)dateTransformer transformValue:value toValue:&transformedValue error:&error];
+    }
+    
+    for (RKValueTransformer *transformer in [[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]) {
+        if (!success && [transformer canTransformClass:[value class] toClass:destinationType]) {
+            success = [transformer transformValue:value toValue:&transformedValue error:&error];
+        }
+    }
+    for (RKValueTransformer *transformer in self.objectMapping.valueTransformers) {
+        if (!success && [transformer canTransformClass:[value class] toClass:destinationType]) {
+            success = [transformer transformValue:value toValue:&transformedValue error:&error];
+        }
+    }
+    if (!success)
+        success = [self transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
     if (success) {
         if (RKIsMutableTypeTransformation(transformedValue, destinationType)) {
             transformedValue = [transformedValue mutableCopy];
         }
     }
-    [RKValueTransformer unregisterValueTransformer:dateTransformer];
     
     return transformedValue;    
 }
 
 - (BOOL)transformValue:(in id)inputValue toValue:(out id *)outputValue ofClass:(Class)destinationClass error:(NSError **)error
 {
-    NSArray *matchingTransformers = [RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
-    for (RKValueTransformer *valueTransformer in matchingTransformers) {
-        if ([valueTransformer transformValue:inputValue toValue:outputValue error:error]) {
-            return YES;
-        } else {
-            // An error occurred while attempting to perform the transformation, return to the caller
-            if (*error) {
-                *outputValue = nil;
-                return NO;
-            }
-        }
-    }
+    BOOL success = FALSE;
     
-    *outputValue = nil;
-    *error = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
-    return NO;
+    success = RKTransformedValueToValueOfClassError(inputValue, outputValue, destinationClass, error);
+    
+    return success;
 }
 
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString *)keyPath

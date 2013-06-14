@@ -22,6 +22,7 @@ typedef BOOL(^RKValueTransformationBlock)(id inputValue, id *outputValue, NSErro
 
 @property (nonatomic, strong, readonly) Class sourceClass;
 @property (nonatomic, strong, readonly) Class destinationClass;
+- (BOOL)canTransformClass:(Class)sourceClass toClass:(Class)destinationClass;
 @property (nonatomic, readonly) NSString *name; // Built by concatenating the source and destination classes... i.e. `RKNSStringToNSDateValueTransformer`. Useful for registering with the `NSValueTransformer` name based registry.
 
 /// @name Using the Class-based Registry
@@ -37,7 +38,6 @@ typedef BOOL(^RKValueTransformationBlock)(id inputValue, id *outputValue, NSErro
 /// @name Default Transformers
 
 + (instancetype)defaultStringToURLTransformer;
-+ (NSArray *)defaultBooleanToStringTransformers;
 + (instancetype)defaultStringToNumberTransformer;
 + (instancetype)defaultNumberToDateTransformer;
 + (instancetype)defaultOrderedSetToArrayTransformer;
