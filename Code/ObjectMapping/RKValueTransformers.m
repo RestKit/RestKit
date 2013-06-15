@@ -159,14 +159,18 @@
     if (![valueTransformer isKindOfClass:[RKValueTransformer class]])
         [NSException raise:NSInvalidArgumentException format:@"`valueTransformer` must be a valid `RKValueTransformer`"];
     NSMutableArray *transformers = [self registeredValueTransformers];
-    if ([transformers containsObject:valueTransformer]) return;
-    [transformers insertObject:valueTransformer atIndex:0];
+    @synchronized(self) {
+        if ([transformers containsObject:valueTransformer]) return;
+        [transformers insertObject:valueTransformer atIndex:0];
+    }
 }
 
 + (void)unregisterValueTransformer:(RKValueTransformer *)valueTransformer
 {
-    NSMutableArray *transformers = [self registeredValueTransformers];
-    [transformers removeObject:valueTransformer];
+    @synchronized(self) {
+        NSMutableArray *transformers = [self registeredValueTransformers];
+        [transformers removeObject:valueTransformer];
+    }
 }
 
 - (NSString *)name
