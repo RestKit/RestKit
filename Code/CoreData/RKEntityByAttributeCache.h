@@ -136,7 +136,7 @@
  Returns a Boolean value that indicates whether one of more objects is present
  in the cache with a given value of the cache key attribute.
 
- @param attributeValue The value with which to check the cache for objects with a matching value.
+ @param attributeValues The value with which to check the cache for objects with a matching value.
  @return YES if one or more objects with the given value for the cache key attribute is present in the cache, otherwise NO.
  */
 - (BOOL)containsObjectWithAttributeValues:(NSDictionary *)attributeValues;
@@ -153,7 +153,7 @@
 /**
  Returns the collection of objects with a matching value for the cache key attribute in a given managed object context.
 
- @param attributeValue A value for the cache key attribute.
+ @param attributeValues A value for the cache key attribute.
  @param context The managed object context to retrieve the objects from.
  @return An array of objects with the value of attribute matching attributeValue or an empty array.
  */
@@ -168,7 +168,7 @@
 
  The object must be an instance of the cached entity.
 
- @param object The managed object to add to the cache.
+ @param managedObjects The managed object to add to the cache.
  @param completion An optional block to execute once the object has been added to the cache.
  */
 - (void)addObjects:(NSSet *)managedObjects completion:(void (^)(void))completion;
@@ -178,7 +178,7 @@
 
  The object must be an instance of the cached entity.
 
- @param object The managed object to remove from the cache.
+ @param managedObjects The managed object to remove from the cache.
  @param completion An optional block to execute once the object has been removed from the cache.
  */
 - (void)removeObjects:(NSSet *)managedObjects completion:(void (^)(void))completion;

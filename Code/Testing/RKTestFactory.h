@@ -120,7 +120,6 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 
  @param factoryName The name to assign the factory.
  @param block A block to execute when building an object instance for the factory name.
- @return A configured object instance.
  */
 + (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
 

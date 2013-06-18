@@ -411,7 +411,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
  
- @param relationshipName The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
+ @param relationship The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
  @param object The object for which related objects are being loaded. Evaluated against the `RKRoute` for the relationship for the object's class with the given name to compute the path. Cannot be nil.
  @param method The HTTP method for the request.
  @param parameters The parameters to be encoded and appended as the query string for the request URL, or parameterized and set as the request body. May be nil.
@@ -832,7 +832,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  Adds the given `RKFetchRequestBlock` block to the manager.
  
- @param A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
+ @param block A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
  */
 - (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
 

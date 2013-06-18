@@ -194,7 +194,7 @@ extern NSString * const RKSearchableAttributeNamesUserInfoKey;
  @param searchIndexer The search indexer object performing the indexing.
  @param managedObject The managed object the indexer has just finished indexing.
  */
-- (void)searchIndexer:(RKSearchIndexer *)searchIndxer didIndexManagedObject:(NSManagedObject *)managedObject;
+- (void)searchIndexer:(RKSearchIndexer *)searchIndexer didIndexManagedObject:(NSManagedObject *)managedObject;
 
 ///-----------------------------------------
 /// @name Tracking Insertion of Search Words
