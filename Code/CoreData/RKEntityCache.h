@@ -106,7 +106,7 @@
  Retrieves the underlying entity attribute cache for a given entity and attribute.
 
  @param entity The entity to retrieve the entity attribute cache object for.
- @param attributeName  The attribute to retrieve the entity attribute cache object for.
+ @param attributeNames  The attribute to retrieve the entity attribute cache object for.
  @return The entity attribute cache for the given entity and attribute, or nil if none was found.
  */
 - (RKEntityByAttributeCache *)attributeCacheForEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames;
