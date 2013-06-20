@@ -266,10 +266,6 @@
 		251610E91456F2330060A5C5 /* RKMIMETypeSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610271456F2330060A5C5 /* RKMIMETypeSerializationTest.m */; };
 		251610F01456F2340060A5C5 /* RKTestEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610361456F2330060A5C5 /* RKTestEnvironment.m */; };
 		251610F11456F2340060A5C5 /* RKTestEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610361456F2330060A5C5 /* RKTestEnvironment.m */; };
-		251611031456F2340060A5C5 /* authentication.rb in Resources */ = {isa = PBXBuildFile; fileRef = 2516104B1456F2330060A5C5 /* authentication.rb */; };
-		251611051456F2340060A5C5 /* etags.rb in Resources */ = {isa = PBXBuildFile; fileRef = 2516104C1456F2330060A5C5 /* etags.rb */; };
-		251611091456F2340060A5C5 /* timeout.rb in Resources */ = {isa = PBXBuildFile; fileRef = 2516104E1456F2330060A5C5 /* timeout.rb */; };
-		2516110B1456F2340060A5C5 /* restkit.rb in Resources */ = {isa = PBXBuildFile; fileRef = 2516104F1456F2330060A5C5 /* restkit.rb */; };
 		2516110D1456F2340060A5C5 /* server.rb in Resources */ = {isa = PBXBuildFile; fileRef = 251610501456F2330060A5C5 /* server.rb */; };
 		2516110E1456F2340060A5C5 /* RKURLEncodedSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610521456F2330060A5C5 /* RKURLEncodedSerializationTest.m */; };
 		2516110F1456F2340060A5C5 /* RKURLEncodedSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610521456F2330060A5C5 /* RKURLEncodedSerializationTest.m */; };
@@ -790,11 +786,6 @@
 		251610271456F2330060A5C5 /* RKMIMETypeSerializationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMIMETypeSerializationTest.m; sourceTree = "<group>"; };
 		251610351456F2330060A5C5 /* RKTestEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTestEnvironment.h; sourceTree = "<group>"; };
 		251610361456F2330060A5C5 /* RKTestEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTestEnvironment.m; sourceTree = "<group>"; };
-		2516104B1456F2330060A5C5 /* authentication.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = authentication.rb; sourceTree = "<group>"; };
-		2516104C1456F2330060A5C5 /* etags.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = etags.rb; sourceTree = "<group>"; };
-		2516104D1456F2330060A5C5 /* oauth2.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = oauth2.rb; sourceTree = "<group>"; };
-		2516104E1456F2330060A5C5 /* timeout.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = timeout.rb; sourceTree = "<group>"; };
-		2516104F1456F2330060A5C5 /* restkit.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = restkit.rb; sourceTree = "<group>"; };
 		251610501456F2330060A5C5 /* server.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = server.rb; sourceTree = "<group>"; };
 		251610521456F2330060A5C5 /* RKURLEncodedSerializationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURLEncodedSerializationTest.m; sourceTree = "<group>"; };
 		251610531456F2330060A5C5 /* NSStringRestKitTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringRestKitTest.m; sourceTree = "<group>"; };
@@ -968,7 +959,6 @@
 		25FBB851159272DD00955D27 /* RKRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouter.m; sourceTree = "<group>"; };
 		3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = has_many_with_to_one_relationship.json; sourceTree = "<group>"; };
 		3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty_human.json; sourceTree = "<group>"; };
-		41A4EBF715374D1800740BC8 /* redirection.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = redirection.rb; sourceTree = "<group>"; };
 		5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilitiesTest.m; sourceTree = "<group>"; };
 		5CCC295515B7124A0045F0F5 /* RKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMacros.h; sourceTree = "<group>"; };
 		7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCaching.h; sourceTree = "<group>"; };
@@ -983,6 +973,7 @@
 		8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.xcconfig"; path = "Pods/Pods-ios.xcconfig"; sourceTree = SOURCE_ROOT; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
+		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1424,6 +1415,7 @@
 				3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */,
 				3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */,
 				25160FE31456F2330060A5C5 /* with_to_one_relationship.json */,
+				F66056291744FF9000A87A45 /* and_cats.json */,
 			);
 			path = humans;
 			sourceTree = "<group>";
@@ -1539,7 +1531,6 @@
 			isa = PBXGroup;
 			children = (
 				251610491456F2330060A5C5 /* restkit */,
-				2516104F1456F2330060A5C5 /* restkit.rb */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -1547,21 +1538,8 @@
 		251610491456F2330060A5C5 /* restkit */ = {
 			isa = PBXGroup;
 			children = (
-				2516104A1456F2330060A5C5 /* network */,
 			);
 			path = restkit;
-			sourceTree = "<group>";
-		};
-		2516104A1456F2330060A5C5 /* network */ = {
-			isa = PBXGroup;
-			children = (
-				41A4EBF715374D1800740BC8 /* redirection.rb */,
-				2516104B1456F2330060A5C5 /* authentication.rb */,
-				2516104C1456F2330060A5C5 /* etags.rb */,
-				2516104D1456F2330060A5C5 /* oauth2.rb */,
-				2516104E1456F2330060A5C5 /* timeout.rb */,
-			);
-			path = network;
 			sourceTree = "<group>";
 		};
 		251610511456F2330060A5C5 /* Support */ = {
@@ -2167,10 +2145,6 @@
 				2516109D1456F2330060A5C5 /* orders.xml in Resources */,
 				2516109F1456F2330060A5C5 /* tab_data.xml in Resources */,
 				251610A11456F2330060A5C5 /* zend.xml in Resources */,
-				251611031456F2340060A5C5 /* authentication.rb in Resources */,
-				251611051456F2340060A5C5 /* etags.rb in Resources */,
-				251611091456F2340060A5C5 /* timeout.rb in Resources */,
-				2516110B1456F2340060A5C5 /* restkit.rb in Resources */,
 				2516110D1456F2340060A5C5 /* server.rb in Resources */,
 				73D3907514CA1AE20093E3D6 /* parent.json in Resources */,
 				73D3907714CA1AE60093E3D6 /* child.json in Resources */,

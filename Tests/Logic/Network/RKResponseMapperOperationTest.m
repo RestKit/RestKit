@@ -28,10 +28,42 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
 
 @end
 
+@interface RKTestObjectMappingOperationDataSource : NSObject <RKMappingOperationDataSource>
+@end
+@implementation RKTestObjectMappingOperationDataSource
+
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
+{
+    return nil;
+}
+
+@end
+
+@interface RKTestManagedObjectMappingOperationDataSource : RKManagedObjectMappingOperationDataSource
+@end
+@implementation RKTestManagedObjectMappingOperationDataSource
+
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
+{
+    return nil;
+}
+
+@end
+
 @interface RKObjectResponseMapperOperationTest : RKTestCase
 @end
 
+@interface RKResponseMapperOperation ()
+@property (nonatomic, strong) RKMapperOperation *mapperOperation; // For testing data source registration
+@end
+
 @implementation RKObjectResponseMapperOperationTest
+
+- (void)tearDown
+{
+    [RKObjectResponseMapperOperation registerMappingOperationDataSourceClass:nil];
+    [RKManagedObjectResponseMapperOperation registerMappingOperationDataSourceClass:nil];
+}
 
 #pragma mark - Successful Empty Responses
 
@@ -484,6 +516,51 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     [mapper start];
     expect(testUser.name).to.equal(@"This is the value");
     expect([testUser.website absoluteString]).to.equal(@"http://restkit.org/api/v1/users");
+}
+
+- (void)testRegisteringObjectMappingOperationDataSource
+{
+    [RKObjectResponseMapperOperation registerMappingOperationDataSourceClass:[RKTestObjectMappingOperationDataSource class]];
+    
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:responseURL];
+    [request setAllHTTPHeaderFields:@{ @"Content-Type": @"application/xml" }];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"name\": \"Blake\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithRequest:request response:response data:data responseDescriptors:@[ responseDescriptor ]];
+    [mapper start];
+    expect(mapper.mapperOperation.mappingOperationDataSource).to.beInstanceOf([RKTestObjectMappingOperationDataSource class]);
+}
+
+- (void)testRegisteringManagedObjectMappingOperationDataSource
+{
+    [RKManagedObjectResponseMapperOperation registerMappingOperationDataSourceClass:[RKTestManagedObjectMappingOperationDataSource class]];
+    
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:responseURL];
+    [request setAllHTTPHeaderFields:@{ @"Content-Type": @"application/xml" }];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"name\": \"Blake\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    RKManagedObjectResponseMapperOperation *mapper = [[RKManagedObjectResponseMapperOperation alloc] initWithRequest:request response:response data:data responseDescriptors:@[ responseDescriptor ]];
+    mapper.managedObjectContext = [RKTestFactory managedObjectStore].mainQueueManagedObjectContext;
+    [mapper start];
+    expect(mapper.mapperOperation.mappingOperationDataSource).to.beInstanceOf([RKTestManagedObjectMappingOperationDataSource class]);
+}
+
+- (void)testThatAttemptingToRegisterNonConformantClassRaisesException
+{
+    expect(^{ [RKObjectResponseMapperOperation registerMappingOperationDataSourceClass:[NSString class]]; }).to.raiseWithReason(NSInvalidArgumentException, @"Registered data source class 'NSString' does not conform to the `RKMappingOperationDataSource` protocol.");
+}
+
+- (void)testThatAttemptingToRegisterNonSublassOfManagedObjectMappingOperationDataSourceRaisesException
+{
+    expect(^{ [RKManagedObjectResponseMapperOperation registerMappingOperationDataSourceClass:[RKTestObjectMappingOperationDataSource class]]; }).to.raiseWithReason(NSInvalidArgumentException, @"Registered data source class 'RKTestObjectMappingOperationDataSource' does not inherit from the `RKManagedObjectMappingOperationDataSource` class: You must subclass `RKManagedObjectMappingOperationDataSource` in order to register a data source class for `RKManagedObjectResponseMapperOperation`.");
 }
 
 @end

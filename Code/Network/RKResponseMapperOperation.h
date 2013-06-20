@@ -181,6 +181,19 @@
  */
 - (void)setDidFinishMappingBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))block;
 
+///--------------------------------------------------------
+/// @name Registering a Mapping Operation Data Source Class
+///--------------------------------------------------------
+
+/**
+ Registers the given data source class to to be used for mapper operations constructed by instances of the receiver.
+ 
+ **NOTE**: The receiver class is significant to the registration: `[RKObjectResponseMapperOperation registerMappingOperationDataSourceClass:[MyDataSourceClass class]]` registers a data source for use with instances of `RKObjectResponseMapperOperation` exclusively. When registering a data source for `RKManagedObjectResponseMapperOperation` the given class must inherit from `RKManagedObjectMappingOperationDataSource`.
+ 
+ @param dataSourceClass The class conforming to the RKMappingOperationDataSource protocol to be registered for use with mapper operations.
+ */
++ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass;
+
 @end
 
 /**

@@ -1,10 +1,4 @@
 GIT
-  remote: git://github.com/RestKit/RestKit-Gem.git
-  revision: 96058139a46c46aa344c1481e8c75b390c82d5e9
-  specs:
-    restkit (0.0.0)
-
-GIT
   remote: git://github.com/sinatra/sinatra.git
   revision: f12a26cdf86c66baa6d6958aad20fea327558e04
   specs:
@@ -20,24 +14,24 @@ GEM
       i18n (= 0.6.1)
       multi_json (~> 1.0)
     addressable (2.3.4)
-    claide (0.2.0)
-    cocoapods (0.19.1)
+    claide (0.3.2)
+    cocoapods (0.20.2)
       activesupport (~> 3.2.13)
-      claide (~> 0.2.0)
-      cocoapods-core (= 0.19.1)
-      cocoapods-downloader (~> 0.1.0)
+      claide (~> 0.3.2)
+      cocoapods-core (= 0.20.2)
+      cocoapods-downloader (~> 0.1.1)
       colored (~> 1.2)
       escape (~> 0.0.4)
       faraday (~> 0.8.1)
-      json (~> 1.7.3)
+      json (~> 1.8.0)
       octokit (~> 1.7)
       open4 (~> 1.3.0)
       rake (~> 10.0.0)
-      xcodeproj (~> 0.5.5)
-    cocoapods-core (0.19.1)
+      xcodeproj (~> 0.6.0)
+    cocoapods-core (0.20.2)
       activesupport (~> 3.2.13)
       rake (~> 10.0.0)
-    cocoapods-downloader (0.1.0)
+    cocoapods-downloader (0.1.1)
     colored (1.2)
     columnize (0.3.6)
     daemons (1.1.9)
@@ -54,10 +48,10 @@ GEM
       multipart-post (~> 1.1)
     faraday_middleware (0.9.0)
       faraday (>= 0.7.4, < 0.9)
-    hashie (2.0.4)
+    hashie (2.0.5)
     i18n (0.6.1)
-    json (1.7.7)
-    multi_json (1.7.3)
+    json (1.8.0)
+    multi_json (1.7.4)
     multipart-post (1.2.0)
     netrc (0.7.7)
     octokit (1.24.0)
@@ -72,12 +66,15 @@ GEM
     rack-protection (1.5.0)
       rack
     rake (10.0.4)
+    rakeup (1.0.1)
+      rack (~> 1.5.0)
+      rake (~> 10.0.0)
     thin (1.5.1)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     tilt (1.4.0)
-    xcodeproj (0.5.5)
+    xcodeproj (0.6.0)
       activesupport (~> 3.2.13)
       colored (~> 1.2)
 
@@ -86,9 +83,9 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.3.0)
-  cocoapods (= 0.19.1)
+  cocoapods (= 0.20.2)
   debugger (~> 1.3.0)
   rake (~> 10.0.0)
-  restkit!
+  rakeup (~> 1.0.0)
   sinatra!
   thin (~> 1.5.0)

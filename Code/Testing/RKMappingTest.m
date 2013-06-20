@@ -344,7 +344,8 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
         RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:self.destinationObject mapping:self.mapping];
-        mappingOperation.dataSource = [self dataSourceForMappingOperation:mappingOperation];
+        id<RKMappingOperationDataSource> dataSource = [self dataSourceForMappingOperation:mappingOperation];
+        mappingOperation.dataSource = dataSource;
         NSError *error = nil;
         mappingOperation.delegate = self;
         [mappingOperation start];

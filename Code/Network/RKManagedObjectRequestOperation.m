@@ -121,14 +121,15 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths)
 static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managedObject, NSManagedObjectContext *managedObjectContext)
 {
     NSManagedObjectID *managedObjectID = [managedObject objectID];
-    if (! [managedObject managedObjectContext]) return nil; // Object has been deleted
     if ([managedObjectID isTemporaryID]) {
         RKLogWarning(@"Unable to refetch managed object %@: the object has a temporary managed object ID.", managedObject);
         return managedObject;
     }
     NSError *error = nil;
     NSManagedObject *refetchedObject = [managedObjectContext existingObjectWithID:managedObjectID error:&error];
-    NSCAssert(refetchedObject, @"Failed to find existing object with ID %@ in context %@: %@", managedObjectID, managedObjectContext, error);
+    if (! refetchedObject) {
+        RKLogWarning(@"Failed to refetch managed object with ID %@: %@", managedObjectID, error);
+    }
     return refetchedObject;
 }
 
@@ -261,9 +262,11 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
                     if (RKObjectIsCollection(sourceObject)) {
                         // This is a to-many relationship, we want to refetch each item at the keyPath
                         for (id nestedObject in sourceObject) {
-                            // Refetch this object. Set it on the destination.
-                            NSManagedObject *managedObject = [nestedObject valueForKey:destinationKey];
-                            [nestedObject setValue:RKRefetchedValueInManagedObjectContext(managedObject, self.managedObjectContext) forKey:destinationKey];
+                            // NOTE: If this collection was mapped with a dynamic mapping then each instance may not respond to the key
+                            if ([nestedObject respondsToSelector:NSSelectorFromString(destinationKey)]) {
+                                NSManagedObject *managedObject = [nestedObject valueForKey:destinationKey];
+                                [nestedObject setValue:RKRefetchedValueInManagedObjectContext(managedObject, self.managedObjectContext) forKey:destinationKey];
+                            }
                         }
                     } else {
                         // This is a singular relationship. We want to refetch the object and set it directly.
@@ -422,6 +425,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 @property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
 @property (nonatomic, readonly) BOOL canSkipMapping;
 @property (nonatomic, assign) BOOL hasMemoizedCanSkipMapping;
+@property (nonatomic, copy) void (^willSaveMappingContextBlock)(NSManagedObjectContext *mappingContext);
 @end
 
 @implementation RKManagedObjectRequestOperation
@@ -475,6 +479,28 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     _managedObjectContext = managedObjectContext;
 
     if (managedObjectContext) {
+        [managedObjectContext performBlockAndWait:^{
+            if ([managedObjectContext hasChanges]) {
+                if ([managedObjectContext.insertedObjects count] && [self.managedObjectCache respondsToSelector:@selector(didCreateObject:)]) {
+                    for (NSManagedObject *managedObject in managedObjectContext.insertedObjects) {
+                        [self.managedObjectCache didCreateObject:managedObject];
+                    }
+                }
+                
+                if ([managedObjectContext.updatedObjects count] && [self.managedObjectCache respondsToSelector:@selector(didFetchObject:)]) {
+                    for (NSManagedObject *managedObject in managedObjectContext.updatedObjects) {
+                        [self.managedObjectCache didFetchObject:managedObject];
+                    }
+                }
+                
+                if ([managedObjectContext.deletedObjects count] && [self.managedObjectCache respondsToSelector:@selector(didDeleteObject:)]) {
+                    for (NSManagedObject *managedObject in managedObjectContext.deletedObjects) {
+                        [self.managedObjectCache didDeleteObject:managedObject];
+                    }
+                }
+            }
+        }];
+        
         // Create a private context
         NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         [privateContext setParentContext:managedObjectContext];
@@ -500,6 +526,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     BOOL (^shouldSkipMapping)(void) = ^{
         // Is the request cacheable
         if (!self.cachedResponse) return NO;
+        if (!self.managedObjectCache) return NO;
         NSURLRequest *request = self.HTTPRequestOperation.request;
         if (! [[request HTTPMethod] isEqualToString:@"GET"] && ! [[request HTTPMethod] isEqualToString:@"HEAD"]) return NO;
         NSHTTPURLResponse *response = (NSHTTPURLResponse *)self.HTTPRequestOperation.response;
@@ -591,6 +618,11 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         if (! success || [weakSelf isCancelled]) {
             return completionBlock(nil, error);
         }
+        if (weakSelf.willSaveMappingContextBlock) {
+            [weakSelf.privateContext performBlockAndWait:^{
+                weakSelf.willSaveMappingContextBlock(weakSelf.privateContext);
+            }];
+        }
         success = [weakSelf saveContext:&error];
         if (! success || [weakSelf isCancelled]) {
             return completionBlock(nil, error);
@@ -635,7 +667,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     return _blockSuccess;
 }
 
-- (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error
+- (NSSet *)localObjectsFromFetchRequests:(NSArray *)fetchRequests matchingRequestURL:(NSError **)error
 {
     NSMutableSet *localObjects = [NSMutableSet set];    
     __block NSError *_blockError;
@@ -668,6 +700,23 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     return localObjects;
 }
 
+- (NSArray *)fetchRequestsMatchingResponseURL
+{
+    // Pass the fetch request blocks a relative `NSURL` object if possible
+    NSMutableArray *fetchRequests = [NSMutableArray array];
+    NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
+    for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
+        NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
+        if (fetchRequest) {
+            // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
+            [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
+            RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
+            [fetchRequests addObject:fetchRequest];
+        }
+    }
+    return fetchRequests;
+}
+
 - (BOOL)deleteLocalObjectsMissingFromMappingResult:(RKMappingResult *)mappingResult error:(NSError **)error
 {
     if (! self.deletesOrphanedObjects) {
@@ -685,8 +734,13 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         return YES;
     }
     
+    // Determine if there are any fetch request blocks to use for orphaned object cleanup
+    NSArray *fetchRequests = [self fetchRequestsMatchingResponseURL];
+    if (! [fetchRequests count]) return YES;
+    
+    // Proceed with cleanup
     NSSet *managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo) ?: [NSSet set];
-    NSSet *localObjects = [self localObjectsFromFetchRequestsMatchingRequestURL:error];
+    NSSet *localObjects = [self localObjectsFromFetchRequests:fetchRequests matchingRequestURL:error];
     if (! localObjects) {
         RKLogError(@"Failed when attempting to fetch local candidate objects for orphan cleanup: %@", error ? *error : nil);
         return NO;

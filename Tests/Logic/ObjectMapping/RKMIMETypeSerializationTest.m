@@ -63,6 +63,16 @@
     assertThat(NSStringFromClass(parserClass), is(equalTo(@"RKNSJSONSerialization")));
 }
 
+- (void)testUnregisteringSerialization
+{
+    [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:RKMIMETypeJSON];
+    Class parserClass = [RKMIMETypeSerialization serializationClassForMIMEType:RKMIMETypeJSON];
+    assertThat(NSStringFromClass(parserClass), is(equalTo(@"RKNSJSONSerialization")));
+    [RKMIMETypeSerialization unregisterClass:[RKNSJSONSerialization class]];
+    parserClass = [RKMIMETypeSerialization serializationClassForMIMEType:RKMIMETypeJSON];
+    assertThat(NSStringFromClass(parserClass), is(nilValue()));
+}
+
 - (void)testShouldAutoconfigureBasedOnReflection
 {
     [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];

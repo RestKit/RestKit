@@ -1,28 +1,37 @@
 require 'rubygems'
 require 'bundler/setup'
-require 'restkit/rake'
+require 'rakeup'
 require 'debugger'
 
-RestKit::Rake::ServerTask.new do |t|
+RakeUp::ServerTask.new do |t|
   t.port = 4567
   t.pid_file = 'Tests/Server/server.pid'
   t.rackup_file = 'Tests/Server/server.ru'
-  t.log_file = 'Tests/Server/server.log'
+  t.server = :thin
+end
 
-  t.adapter(:thin) do |thin|
-    thin.config_file = 'Tests/Server/thin.yml'
-  end
+def build_and_run_tests(command, sdk_name)
+  %w{build build-tests test}.each do |action|
+    sdk = (action == 'test') ? "-test-sdk #{sdk_name}" : "-sdk #{sdk_name}"
+    cmd = command % { action: action, sdk: sdk }
+    puts "Executing `#{cmd}`..."
+    return unless system(cmd)
+  end  
 end
 
 namespace :test do
+  task :prepare do    
+    system(%Q{mkdir -p "RestKit.xcworkspace/xcshareddata/xcschemes" && cp Tests/Schemes/*.xcscheme "RestKit.xcworkspace/xcshareddata/xcschemes/"})
+  end
+  
   desc "Run the unit tests for iOS"
-  task :ios do
-    $ios_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitTests test -test-sdk iphonesimulator")
+  task :ios => :prepare do
+    $ios_success = build_and_run_tests("xctool -workspace RestKit.xcworkspace -scheme RestKitTests %{action} %{sdk}", :iphonesimulator)
   end
   
   desc "Run the unit tests for OS X"
-  task :osx do
-    $osx_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitFrameworkTests test -test-sdk macosx -sdk macosx")
+  task :osx => :prepare do
+    $osx_success = build_and_run_tests("xctool -workspace RestKit.xcworkspace -scheme RestKitFrameworkTests %{action} %{sdk}", :macosx)
   end
 end
 
@@ -44,7 +53,7 @@ def restkit_version
 end
 
 def apple_doc_command
-  "/usr/local/bin/appledoc -t ~/Library/Application\\ Support/appledoc -o Docs/API -p RestKit -v #{restkit_version} -c \"RestKit\" " +
+  "/usr/local/bin/appledoc -o Docs/API -p RestKit -v #{restkit_version} -c \"RestKit\" " +
   "--company-id org.restkit --warn-undocumented-object --warn-undocumented-member  --warn-empty-description  --warn-unknown-directive " +
   "--warn-invalid-crossref --warn-missing-arg --no-repeat-first-par "
 end
@@ -72,7 +81,7 @@ task :docs => 'docs:generate'
 namespace :appledoc do
   task :check do
     unless File.exists?('/usr/local/bin/appledoc')
-      "appledoc not found at /usr/local/bin/appledoc: Install via homebrew and try again: `brew install --HEAD appledoc`"
+      puts "appledoc not found at /usr/local/bin/appledoc: Install via homebrew and try again: `brew install --HEAD appledoc`"
       exit 1
     end
   end

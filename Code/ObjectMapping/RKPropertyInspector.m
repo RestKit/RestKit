@@ -32,7 +32,11 @@ NSString * const RKPropertyInspectionKeyValueCodingClassKey = @"keyValueCodingCl
 NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
 
 @interface RKPropertyInspector ()
+#if OS_OBJECT_USE_OBJC
+@property (nonatomic, strong) dispatch_queue_t queue;
+#else
 @property (nonatomic, assign) dispatch_queue_t queue;
+#endif
 @property (nonatomic, strong) NSMutableDictionary *inspectionCache;
 @end
 

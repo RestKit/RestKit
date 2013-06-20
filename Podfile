@@ -3,7 +3,7 @@ inhibit_all_warnings!
 def import_pods
   pod 'Specta', '0.1.8'
   pod 'OCMock', '2.1.1'
-  pod 'OCHamcrest', '2.0.0'
+  pod 'OCHamcrest', '2.0.1'
   pod 'Expecta', '0.2.1'
 end
 

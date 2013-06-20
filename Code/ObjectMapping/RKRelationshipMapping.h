@@ -33,7 +33,7 @@ typedef enum {
 
  `RKRelationshipMapping` extends `RKPropertyMapping` to describe features specific to relationships, including the `RKMapping` object describing how to map the destination object.
  
- Relationship mappings are described in terms of a source key path, which identifies a key in the parent object representation under which the data for the relationship is nested, and a destination key path, which specifies the key path at which the mapped object is to be assigned on the parent entity. The key-paths of the property mappings of the `RKMapping` object in the relationship mapping are evaluated against the nested object representationship at the source key path.
+ Relationship mappings are described in terms of a source key path, which identifies a key in the parent object representation under which the data for the relationship is nested, and a destination key path, which specifies the key path at which the mapped object is to be assigned on the parent entity. The key paths of the property mappings of the `RKMapping` object in the relationship mapping are evaluated against the nested object representationship at the source key path.
  
  ## Mapping a Non-nested Relationship from the Parent Representation
  

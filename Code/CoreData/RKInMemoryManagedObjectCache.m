@@ -82,8 +82,8 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
 }
 
 - (NSSet *)managedObjectsWithEntity:(NSEntityDescription *)entity
-                      attributeValues:(NSDictionary *)attributeValues
-               inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                    attributeValues:(NSDictionary *)attributeValues
+             inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSParameterAssert(entity);
     NSParameterAssert(attributeValues);
@@ -98,10 +98,32 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
         }];
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
         
+        RKEntityByAttributeCache *attributeCache = [self.entityCache attributeCacheForEntity:entity attributes:attributes];
+        
+        // Fetch any pending objects and add them to the cache
+        NSFetchRequest *fetchRequest = [NSFetchRequest new];
+        fetchRequest.entity = entity;
+        fetchRequest.includesPendingChanges = YES;
+        
+        [managedObjectContext performBlockAndWait:^{
+            NSError *error = nil;
+            NSArray *objects = nil;
+            objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+            if (objects) {
+                [attributeCache addObjects:[NSSet setWithArray:objects] completion:^{
+                    dispatch_semaphore_signal(semaphore);
+                }];
+            } else {
+                RKLogError(@"Fetched pre-loading existing managed objects with error: %@", error);
+                dispatch_semaphore_signal(semaphore);
+            }
+        }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        
 #if !OS_OBJECT_USE_OBJC
         dispatch_release(semaphore);
 #endif
-        RKEntityByAttributeCache *attributeCache = [self.entityCache attributeCacheForEntity:entity attributes:attributes];
+        
         RKLogTrace(@"Cached %ld objects", (long)[attributeCache count]);
     }
     

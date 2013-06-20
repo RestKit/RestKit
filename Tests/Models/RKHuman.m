@@ -49,5 +49,6 @@
 @dynamic housesResidedAt;
 @dynamic friends;
 @dynamic friendsInTheOrderWeMet;
+@dynamic houseID;
 
 @end

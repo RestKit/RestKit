@@ -590,7 +590,7 @@
 - (void)testMappingArrayToMutableArray
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [mapping addAttributeMappingsFromDictionary:@{ @"favoriteColors": @"mutableFavoriteColors" }];
     
     NSDictionary *dictionary = @{ @"favoriteColors": @[ @"Blue", @"Red" ] };
@@ -603,6 +603,48 @@
     
     assertThat(human.mutableFavoriteColors, is(equalTo(@[ @"Blue", @"Red" ])));
     assertThat(human.mutableFavoriteColors, is(instanceOf([NSMutableArray class])));
+}
+
+- (void)testSettingModificationAttributeForName
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [mapping setModificationAttributeForName:@"railsID"];
+    expect(mapping.modificationAttribute).notTo.beNil();
+    expect(mapping.modificationAttribute).to.equal(mapping.entity.attributesByName[@"railsID"]);
+}
+
+- (void)testSettingModificationAttributeForNameRaisesErrorIfNameIsInvalid
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    expect(^{ [mapping setModificationAttributeForName:@"INVALID"]; }).to.raiseWithReason(NSInvalidArgumentException, @"No attribute with the name 'INVALID' was found in the 'Human' entity.");
+}
+
+- (void)testAssigningAttributeFromOtherEntityRaisesInvalidArgumentException
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    NSEntityDescription *catEntity = managedObjectStore.managedObjectModel.entitiesByName[@"Cat"];
+    expect(^{ mapping.modificationAttribute = catEntity.attributesByName[@"name"]; }).to.raiseWithReason(NSInvalidArgumentException, @"The attribute given is not a property of the 'Human' entity.");
+}
+
+- (void)testAssigningNilModificationAttribute
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    mapping.modificationAttribute = mapping.entity.attributesByName[@"railsID"];
+    mapping.modificationAttribute = nil;
+    expect(mapping.modificationAttribute).to.beNil();
+}
+
+- (void)testSettingNilModificationAttributeForName
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    mapping.modificationAttribute = mapping.entity.attributesByName[@"railsID"];
+    [mapping setModificationAttributeForName:nil];
+    expect(mapping.modificationAttribute).to.beNil();
 }
 
 @end

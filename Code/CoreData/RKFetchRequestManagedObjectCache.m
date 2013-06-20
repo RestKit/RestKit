@@ -60,7 +60,11 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
 
 @interface RKFetchRequestManagedObjectCache ()
 @property (nonatomic, strong) NSMutableDictionary *predicateCache;
+#if OS_OBJECT_USE_OBJC
+@property (nonatomic, strong) dispatch_queue_t cacheQueue;
+#else
 @property (nonatomic, assign) dispatch_queue_t cacheQueue;
+#endif
 @end
 
 @implementation RKFetchRequestManagedObjectCache

@@ -138,6 +138,33 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 
 @implementation RKResponseMapperOperation
 
+#pragma mark Data Source Registration
+
+static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses = nil;
+
++ (void)initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        RKRegisteredResponseMapperOperationDataSourceClasses = [NSMutableDictionary new];
+    });
+}
+
++ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass
+{
+    if (dataSourceClass && ![(Class)dataSourceClass conformsToProtocol:@protocol(RKMappingOperationDataSource)]) {
+        [NSException raise:NSInvalidArgumentException format:@"Registered data source class '%@' does not conform to the `RKMappingOperationDataSource` protocol.", NSStringFromClass(dataSourceClass)];
+    }
+    
+    if (dataSourceClass) {
+        [RKRegisteredResponseMapperOperationDataSourceClasses setObject:dataSourceClass forKey:(id<NSCopying>)self];
+    } else {
+        [RKRegisteredResponseMapperOperationDataSourceClasses removeObjectForKey:(id<NSCopying>)self];
+    }
+}
+
+#pragma mark 
+
 - (id)initWithRequest:(NSURLRequest *)request
              response:(NSHTTPURLResponse *)response
                  data:(NSData *)data
@@ -332,7 +359,8 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
 {
-    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    Class dataSourceClass = [RKRegisteredResponseMapperOperationDataSourceClasses objectForKey:[self class]] ?: [RKObjectMappingOperationDataSource class];
+    id<RKMappingOperationDataSource> dataSource = [dataSourceClass new];
     self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     self.mapperOperation.mappingOperationDataSource = dataSource;
     self.mapperOperation.delegate = self.mapperDelegate;
@@ -360,6 +388,14 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
 
 @implementation RKManagedObjectResponseMapperOperation
 
++ (void)registerMappingOperationDataSourceClass:(Class<RKMappingOperationDataSource>)dataSourceClass
+{
+    if (dataSourceClass && ![(Class)dataSourceClass isSubclassOfClass:[RKManagedObjectMappingOperationDataSource class]]) {
+        [NSException raise:NSInvalidArgumentException format:@"Registered data source class '%@' does not inherit from the `RKManagedObjectMappingOperationDataSource` class: You must subclass `RKManagedObjectMappingOperationDataSource` in order to register a data source class for `RKManagedObjectResponseMapperOperation`.", NSStringFromClass(dataSourceClass)];
+    }
+    [super registerMappingOperationDataSourceClass:dataSourceClass];
+}
+
 - (void)cancel
 {
     [super cancel];
@@ -383,12 +419,14 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         self.mapperOperation.metadata = self.mappingMetadata;
         
         // Configure a data source to defer execution of connection operations until mapping is complete
-        RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext
-                                                                                                                                          cache:self.managedObjectCache];
-        [self.operationQueue setMaxConcurrentOperationCount:1];
-        [self.operationQueue setName:[NSString stringWithFormat:@"Relationship Connection Queue for '%@'", self.mapperOperation]];
+        Class dataSourceClass = [RKRegisteredResponseMapperOperationDataSourceClasses objectForKey:[self class]] ?: [RKManagedObjectMappingOperationDataSource class];
+        RKManagedObjectMappingOperationDataSource *dataSource = [[dataSourceClass alloc] initWithManagedObjectContext:self.managedObjectContext
+                                                                                                                cache:self.managedObjectCache];
         dataSource.operationQueue = self.operationQueue;
         dataSource.parentOperation = self.mapperOperation;
+
+        [self.operationQueue setMaxConcurrentOperationCount:1];
+        [self.operationQueue setName:[NSString stringWithFormat:@"Relationship Connection Queue for '%@'", self.mapperOperation]];
         self.mapperOperation.mappingOperationDataSource = dataSource;
         
         if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {

@@ -11,12 +11,13 @@
 #import "RKEntityMapping.h"
 #import "RKHuman.h"
 #import "RKTestUser.h"
+#import "RKTestAddress.h"
 #import "RKMappingErrors.h"
 #import "RKMappableObject.h"
 #import "RKPost.h"
 
 @interface RKManagedObjectRequestOperation ()
-- (NSSet *)localObjectsFromFetchRequestsMatchingRequestURL:(NSError **)error;
+- (NSArray *)fetchRequestsMatchingResponseURL;
 @end
 NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
@@ -38,6 +39,8 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 @end
 @implementation RKTestListOfLists
 @end
+
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface RKManagedObjectRequestOperationTest : RKTestCase
 
@@ -92,8 +95,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     };
     
     operation.fetchRequestBlocks = @[fetchRequesBlock];
-    NSError *error;
-    [operation localObjectsFromFetchRequestsMatchingRequestURL:&error];
+    [operation fetchRequestsMatchingResponseURL];
     expect(blockURL).notTo.beNil();
     expect([blockURL.baseURL absoluteString]).to.equal(@"http://restkit.org/api/v1/");
     expect(blockURL.relativePath).to.equal(@"categories/1234");
@@ -116,8 +118,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     };
     
     operation.fetchRequestBlocks = @[fetchRequesBlock];
-    NSError *error;
-    [operation localObjectsFromFetchRequestsMatchingRequestURL:&error];
+    [operation fetchRequestsMatchingResponseURL];
 }
 
 - (void)testThatFetchRequestBlocksInvokedWithRelativeURLAreInAgreementWithPathPattern
@@ -140,8 +141,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     };
     
     operation.fetchRequestBlocks = @[fetchRequesBlock];
-    NSError *error;
-    [operation localObjectsFromFetchRequestsMatchingRequestURL:&error];
+    [operation fetchRequestsMatchingResponseURL];
     expect(blockURL).notTo.beNil();
     expect([blockURL absoluteString]).to.equal(@"http://restkit.org/api/v1/library/");
     expect([blockURL.baseURL absoluteString]).to.equal(@"http://restkit.org/api/v1/");
@@ -194,6 +194,8 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     managedObjectRequestOperation.fetchRequestBlocks = @[fetchRequestBlock];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
+    managedObjectRequestOperation.managedObjectCache = cache;
     
     [managedObjectRequestOperation start];
     expect([managedObjectRequestOperation isFinished]).will.beTruthy();
@@ -485,17 +487,22 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
     [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favorite_cat" toKeyPath:@"friends" withMapping:entityMapping]];
+    
+    RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    [addressMapping addAttributeMappingsFromDictionary:@{ @"name": @"city" }];    
+    
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
     [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"name" expectedValue:@"Blake Watters" objectMapping:userMapping]];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"name" expectedValue:@"Other" objectMapping:addressMapping]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:dynamicMapping pathPattern:nil keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/all.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
     [managedObjectRequestOperation start];
     [managedObjectRequestOperation waitUntilFinished];
     expect(managedObjectRequestOperation.error).to.beNil();
-    expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
+    expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(2);
     RKTestUser *testUser = [managedObjectRequestOperation.mappingResult firstObject];
     expect([[testUser.friends lastObject] managedObjectContext]).to.equal(managedObjectStore.persistentStoreManagedObjectContext);
 }
@@ -1347,13 +1354,38 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(mappedHuman).to.equal(human);
 }
 
+- (void)testThatManuallyCreatedObjectsThatAreNotSavedBeforePostingAreNotDuplicatedWhenMappedWithInMemoryManagedObjectCache
+{
+    [Expecta setAsynchronousTestTimeout:15];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID", @"name": @"name" }];
+    entityMapping.identificationAttributes = @[ @"railsID" ];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:nil];
+    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    human.railsID = @1;
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+    [request setHTTPMethod:@"POST"];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    managedObjectRequestOperation.managedObjectCache = managedObjectCache;
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue addOperation:managedObjectRequestOperation];
+    expect(managedObjectRequestOperation.isFinished).will.equal(YES);
+    RKHuman *mappedHuman = [managedObjectRequestOperation.mappingResult firstObject];
+    expect(mappedHuman).to.equal(human);
+    NSUInteger count = [managedObjectStore.mainQueueManagedObjectContext countForEntityForName:@"Human" predicate:[NSPredicate predicateWithFormat:@"railsID = 1"] error:nil];
+    expect(count).to.equal(1);
+}
+
 - (void)testThatModificationKeyAttributeDoesNotInapproproiatelyTriggerManagedObjectDeletion
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [entityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID", @"name": @"name" }];
     entityMapping.identificationAttributes = @[ @"railsID" ];
-    entityMapping.modificationKey = @"railsID";
+    [entityMapping setModificationAttributeForName:@"railsID"];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:nil];
     RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
@@ -1379,7 +1411,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKEntityMapping *postMapping = [RKEntityMapping mappingForEntityForName:@"Post" inManagedObjectStore:managedObjectStore];
     [postMapping addAttributeMappingsFromDictionary:@{ @"title": @"title", @"body": @"body" }];
     postMapping.identificationAttributes = @[ @"title" ];
-    postMapping.modificationKey = @"title";
+    [postMapping setModificationAttributeForName:@"title"];
     RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
     [tagMapping addAttributeMappingsFromArray:@[ @"name" ]];
     [postMapping addRelationshipMappingWithSourceKeyPath:@"tags" mapping:tagMapping];
@@ -1465,6 +1497,25 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     expect([managedObjectRequestOperation isFinished]).will.equal(YES);
     expect([human hasBeenDeleted]).to.equal(YES);
+}
+
+- (void)testThatWillSaveMappingContextBlockIsInvoked
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    __block NSManagedObjectContext *blockMappingContext = nil;
+    [managedObjectRequestOperation setWillSaveMappingContextBlock:^(NSManagedObjectContext *mappingContext) {
+        blockMappingContext = mappingContext;
+    }];
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect(blockMappingContext).notTo.beNil();
 }
 
 @end

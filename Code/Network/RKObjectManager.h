@@ -153,7 +153,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  1. If a `nil` root key path is used, then it must be used for all objects in the array. This is because the objects will be parameterized into a dictionary and then each dictionary will be added to an array. This array is then serialized for transport, so objects parameterized to a non-nil key path cannot be merged with the array.
  1. If a `nil` root key path is used to parameterize the array of objects, then you cannot provide additional parameters to be merged with the request. This is again because you cannot merge a dictionary with an array.
 
- If non-nil key paths are used, then each object will be set in the parameters dictionary at the specified key-path. If more than one object uses the same root key path, then the parameters will be combined into an array for transport.
+ If non-nil key paths are used, then each object will be set in the parameters dictionary at the specified key path. If more than one object uses the same root key path, then the parameters will be combined into an array for transport.
 
  ## MIME Types
  
@@ -411,7 +411,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
  
- @param relationshipName The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
+ @param relationship The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
  @param object The object for which related objects are being loaded. Evaluated against the `RKRoute` for the relationship for the object's class with the given name to compute the path. Cannot be nil.
  @param method The HTTP method for the request.
  @param parameters The parameters to be encoded and appended as the query string for the request URL, or parameterized and set as the request body. May be nil.
@@ -832,7 +832,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  Adds the given `RKFetchRequestBlock` block to the manager.
  
- @param A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
+ @param block A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
  */
 - (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
 

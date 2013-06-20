@@ -171,6 +171,15 @@
  */
 @property (nonatomic, assign) BOOL savesToPersistentStore;
 
+/**
+ Sets a block to be invoked just before the operation saves the private mapping context.
+ 
+ The mapping context is saved just before the object request operation completes its work and transitions into the finished state. All managed objects mapped during the operation will have permanent object ID's. The `mappingResult` will contain managed object instances local to the context yielded to the block. The block will be invoked synchronously on the private queue of the context. After the block is executed, the save operation will take place, optionally saving the mapping results back to the persistent store.
+ 
+ @param block The block to execute just before the context is saved.
+ */
+- (void)setWillSaveMappingContextBlock:(void (^)(NSManagedObjectContext *mappingContext))block;
+
 @end
 
 /**
