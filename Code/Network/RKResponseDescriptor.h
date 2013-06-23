@@ -134,7 +134,7 @@
 ///-------------------------
 
 /**
- Returns `YES` if the receiver and the specified response descrptor are considered equivalent.
+ Returns `YES` if the receiver and the specified response descriptor are considered equivalent.
 
  */
 - (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *)otherDescriptor;
