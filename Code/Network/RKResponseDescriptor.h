@@ -129,4 +129,14 @@
  */
 - (BOOL)matchesResponse:(NSHTTPURLResponse *)response;
 
+///-------------------------
+/// @name Comparing Response Descriptors
+///-------------------------
+
+/**
+ Returns `YES` if the receiver and the specified response descrptor are considered equivalent.
+
+ */
+- (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *)otherDescriptor;
+
 @end
