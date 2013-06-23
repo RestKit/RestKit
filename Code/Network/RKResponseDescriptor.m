@@ -131,6 +131,10 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
 
 - (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *)otherDescriptor
 {
+    if (![otherDescriptor isKindOfClass:[RKResponseDescriptor class]]) {
+        return NO;
+    }
+    
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     [self.pathPattern isEqualToString:otherDescriptor.pathPattern] &&

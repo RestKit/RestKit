@@ -89,6 +89,10 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
 
 - (BOOL)isEqualToRequestDescriptor:(RKRequestDescriptor *)otherDescriptor
 {
+    if (![otherDescriptor isKindOfClass:[RKRequestDescriptor class]]) {
+        return NO;
+    }
+    
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.objectClass == otherDescriptor.objectClass &&
