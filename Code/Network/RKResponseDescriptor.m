@@ -21,6 +21,7 @@
 #import "RKPathMatcher.h"
 #import "RKResponseDescriptor.h"
 #import "RKHTTPUtilities.h"
+#import "RKMapping.h"
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 NSString *RKStringFromIndexSet(NSIndexSet *indexSet);
@@ -115,6 +116,38 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
     }
     
     return YES;
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (self == object) {
+        return YES;
+    }
+    if ([self class] != [object class]) {
+        return NO;
+    }
+    return [self isEqualToResponseDescriptor:object];
+}
+
+#define NSUINT_BIT (CHAR_BIT * sizeof(NSUInteger))
+#define NSUINTROTATE(val, howmuch) ((((NSUInteger)val) << howmuch) | (((NSUInteger)val) >> (NSUINT_BIT - howmuch)))
+
+- (NSUInteger)hash
+{
+    return NSUINTROTATE(NSUINTROTATE(NSUINTROTATE([self.mapping hash], NSUINT_BIT / 4) ^ [self.pathPattern hash], NSUINT_BIT / 4) ^ [self.keyPath hash], NSUINT_BIT / 4) ^ [self.statusCodes hash];
+}
+
+- (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *)otherDescriptor
+{
+    if (![otherDescriptor isKindOfClass:[RKResponseDescriptor class]]) {
+        return NO;
+    }
+    
+    return
+    [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
+    [self.pathPattern isEqualToString:otherDescriptor.pathPattern] &&
+    [self.keyPath isEqualToString:otherDescriptor.keyPath] &&
+    [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes];
 }
 
 @end
