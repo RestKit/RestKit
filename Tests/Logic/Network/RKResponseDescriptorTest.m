@@ -284,4 +284,68 @@ describe(@"matchesResponse:", ^{
     });
 });
 
+describe(@"isEqualToResponseDescriptor:", ^{
+    __block RKResponseDescriptor *firstDescriptor;
+    __block RKResponseDescriptor *secondDescriptor;
+    
+    __block RKMapping *defaultMapping;
+    __block NSString *defaultPathPattern;
+    __block NSString *defaultKeyPath;
+    __block NSIndexSet *defaultStatusCodes;
+    
+    beforeEach(^{
+        defaultMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+        defaultKeyPath = @"";
+        defaultPathPattern = @"/issues";
+        defaultStatusCodes = [NSIndexSet indexSetWithIndex:200];
+        firstDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
+                                                                  pathPattern:defaultPathPattern
+                                                                      keyPath:defaultKeyPath
+                                                                  statusCodes:defaultStatusCodes];
+    });
+    
+    context(@"descriptors are equal", ^{
+        it(@"with the same attributes", ^{
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
+                                                                       pathPattern:defaultPathPattern
+                                                                           keyPath:defaultKeyPath
+                                                                       statusCodes:defaultStatusCodes];
+            expect(firstDescriptor).to.equal(secondDescriptor);
+        });
+    });
+    
+    context(@"descriptors are not equal", ^{
+        it(@"with different mappings", ^{
+            RKMapping *mapping = [RKObjectMapping mappingForClass:[NSObject class]];
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping
+                                                                       pathPattern:defaultPathPattern
+                                                                           keyPath:defaultKeyPath
+                                                                       statusCodes:defaultStatusCodes];
+            expect(firstDescriptor).toNot.equal(secondDescriptor);
+        });
+        it(@"with different path patterns", ^{
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
+                                                                       pathPattern:@"/pull_requests"
+                                                                           keyPath:defaultKeyPath
+                                                                       statusCodes:defaultStatusCodes];
+            expect(firstDescriptor).toNot.equal(secondDescriptor);
+        });
+        it(@"with different key paths", ^{
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
+                                                                       pathPattern:defaultPathPattern
+                                                                           keyPath:@"/pull_request"
+                                                                       statusCodes:defaultStatusCodes];
+            expect(firstDescriptor).toNot.equal(secondDescriptor);
+        });
+        it(@"with different status codes", ^{
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
+                                                                       pathPattern:defaultPathPattern
+                                                                           keyPath:defaultKeyPath
+                                                                       statusCodes:[NSIndexSet indexSetWithIndex:404]];
+            expect(firstDescriptor).toNot.equal(secondDescriptor);
+        });
+    });
+    
+});
+
 SpecEnd
