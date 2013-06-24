@@ -129,6 +129,14 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
     return [self isEqualToResponseDescriptor:object];
 }
 
+#define NSUINT_BIT (CHAR_BIT * sizeof(NSUInteger))
+#define NSUINTROTATE(val, howmuch) ((((NSUInteger)val) << howmuch) | (((NSUInteger)val) >> (NSUINT_BIT - howmuch)))
+
+- (NSUInteger)hash
+{
+    return NSUINTROTATE(NSUINTROTATE(NSUINTROTATE([self.mapping hash], NSUINT_BIT / 4) ^ [self.pathPattern hash], NSUINT_BIT / 4) ^ [self.keyPath hash], NSUINT_BIT / 4) ^ [self.statusCodes hash];
+}
+
 - (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *)otherDescriptor
 {
     if (![otherDescriptor isKindOfClass:[RKResponseDescriptor class]]) {
