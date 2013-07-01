@@ -44,7 +44,7 @@ typedef NS_OPTIONS(NSInteger, RKRequestMethod) {
 /**
  Returns YES if the given HTTP request method is an exact match of the RKRequestMethod enum, and NO if it's a bit mask combination.
  */
-BOOL RKIsAnExactRequestMethodMatch(RKRequestMethod);
+BOOL RKAssertRequestMethodSpecifiesHTTPMethod(RKRequestMethod);
 
 /**
  Returns the corresponding string for value for a given HTTP request method.
