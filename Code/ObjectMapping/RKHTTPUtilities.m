@@ -48,7 +48,7 @@ NSIndexSet *RKCacheableStatusCodes(void)
 
 BOOL RKIsAnExactRequestMethodMatch(RKRequestMethod method)
 {
-    if (method == RKRequestMethodInvalid) {
+    if (method == RKRequestMethodAny) {
         return YES;
     }
 

@@ -22,6 +22,11 @@
     expect(RKIsAnExactRequestMethodMatch(RKRequestMethodPOST)).to.beTruthy();
 }
 
+- (void)testThatYesIsReturnedWhenTheGivenRequestMethodIsAny
+{
+    expect(RKIsAnExactRequestMethodMatch(RKRequestMethodAny)).to.beTruthy();
+}
+
 - (void)testThatNoIsReturnedWhenTheGivenRequestMethodIsNotAnExactMatch
 {
     expect(RKIsAnExactRequestMethodMatch(RKRequestMethodGET | RKRequestMethodPOST)).to.beFalsy();
