@@ -42,7 +42,7 @@
 {
     NSParameterAssert(name);
     NSParameterAssert(pathPattern);
-    if (!RKIsAnExactRequestMethodMatch(method)) [NSException raise:NSInvalidArgumentException format:@"Cannot create a route with a bitmask request method value."];
+    if (method != RKRequestMethodAny && !RKAssertRequestMethodSpecifiesHTTPMethod(method)) [NSException raise:NSInvalidArgumentException format:@"Cannot create a route with a bitmask request method value."];
     RKNamedRoute *route = [RKNamedRoute new];
     route.name = name;
     route.pathPattern = pathPattern;
@@ -54,7 +54,7 @@
 {
     NSParameterAssert(objectClass);
     NSParameterAssert(pathPattern);
-    if (!RKIsAnExactRequestMethodMatch(method)) [NSException raise:NSInvalidArgumentException format:@"Cannot create a route with a bitmask request method value."];
+    if (method != RKRequestMethodAny && !RKAssertRequestMethodSpecifiesHTTPMethod(method)) [NSException raise:NSInvalidArgumentException format:@"Cannot create a route with a bitmask request method value."];
     RKClassRoute *route = [RKClassRoute new];
     route.objectClass = objectClass;
     route.pathPattern = pathPattern;
@@ -67,7 +67,7 @@
     NSParameterAssert(relationshipName);
     NSParameterAssert(objectClass);
     NSParameterAssert(pathPattern);
-    if (!RKIsAnExactRequestMethodMatch(method)) [NSException raise:NSInvalidArgumentException format:@"Cannot create a route with a bitmask request method value."];
+    if (method != RKRequestMethodAny && !RKAssertRequestMethodSpecifiesHTTPMethod(method)) [NSException raise:NSInvalidArgumentException format:@"Cannot create a route with a bitmask request method value."];
     RKRelationshipRoute *route = [RKRelationshipRoute new];
     route.name = relationshipName;
     route.objectClass = objectClass;
