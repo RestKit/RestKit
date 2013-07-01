@@ -23,8 +23,8 @@
 /**
  HTTP methods for requests
  */
-typedef enum RKRequestMethod {
-    RKRequestMethodInvalid		= -1,
+typedef NS_OPTIONS(NSInteger, RKRequestMethod) {
+	RKRequestMethodInvalid		= -1,
     RKRequestMethodGET          = 1 << 0,
     RKRequestMethodPOST         = 1 << 1,
     RKRequestMethodPUT          = 1 << 2,
@@ -32,7 +32,7 @@ typedef enum RKRequestMethod {
     RKRequestMethodHEAD         = 1 << 4,
     RKRequestMethodPATCH        = 1 << 5,
     RKRequestMethodOPTIONS      = 1 << 6
-} RKRequestMethod;  // RKHTTPMethod? RKStringFromHTTPMethod... RKHTTPMethodFromString
+};  // RKHTTPMethod? RKStringFromHTTPMethod... RKHTTPMethodFromString
 
 /**
  Returns the corresponding string for value for a given HTTP request method.
