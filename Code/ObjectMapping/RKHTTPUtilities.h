@@ -24,14 +24,14 @@
  HTTP methods for requests
  */
 typedef enum RKRequestMethod {
-    RKRequestMethodInvalid = -1,
-    RKRequestMethodGET,
-    RKRequestMethodPOST,
-    RKRequestMethodPUT,
-    RKRequestMethodDELETE,
-    RKRequestMethodHEAD,
-    RKRequestMethodPATCH,
-    RKRequestMethodOPTIONS
+    RKRequestMethodInvalid		= -1,
+    RKRequestMethodGET          = 1 << 0,
+    RKRequestMethodPOST         = 1 << 1,
+    RKRequestMethodPUT          = 1 << 2,
+    RKRequestMethodDELETE       = 1 << 3,
+    RKRequestMethodHEAD         = 1 << 4,
+    RKRequestMethodPATCH        = 1 << 5,
+    RKRequestMethodOPTIONS      = 1 << 6
 } RKRequestMethod;  // RKHTTPMethod? RKStringFromHTTPMethod... RKHTTPMethodFromString
 
 /**
