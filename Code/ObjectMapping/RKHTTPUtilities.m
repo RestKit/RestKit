@@ -46,6 +46,16 @@ NSIndexSet *RKCacheableStatusCodes(void)
     return cacheableStatusCodes;
 }
 
+BOOL RKIsAnExactRequestMethodMatch(RKRequestMethod method)
+{
+    if (method == RKRequestMethodInvalid) {
+        return YES;
+    }
+
+    // check for a power of two
+    return !(method & (method - 1));
+}
+
 NSString *RKStringFromRequestMethod(RKRequestMethod method)
 {
     switch (method) {
