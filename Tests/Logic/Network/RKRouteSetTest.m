@@ -35,7 +35,7 @@
 {
     RKRouteSet *router = [RKRouteSet new];
     assertThat([router allRoutes], is(notNilValue()));
-    assertThat([router allRoutes], is(empty()));
+    assertThat([router allRoutes], isEmpty());
 }
 
 - (void)testAddingRoute
