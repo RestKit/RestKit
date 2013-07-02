@@ -119,7 +119,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Blake"];
     NSArray *array = [seededStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-    assertThat(array, isNot(empty()));
+    assertThat(array, isNot(isEmpty()));
     RKHuman *seededHuman = [array objectAtIndex:0];
     assertThat([[seededHuman.objectID URIRepresentation] URLByDeletingLastPathComponent], is(equalTo([[seedObjectID URIRepresentation] URLByDeletingLastPathComponent])));
 }
@@ -152,7 +152,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Blake"];
     NSArray *array = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-    assertThat(array, is(empty()));
+    assertThat(array, isEmpty());
 }
 
 - (void)testResetPersistentStoresRecreatesSQLiteStoreThusDeletingAllManagedObjects
@@ -180,7 +180,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Blake"];
     NSArray *array = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-    assertThat(array, is(empty()));
+    assertThat(array, isEmpty());
 }
 
 
@@ -252,7 +252,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Blake"];
     NSArray *array = [seededStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-    assertThat(array, isNot(empty()));
+    assertThat(array, isNot(isEmpty()));
     RKHuman *seededHuman = [array objectAtIndex:0];
     assertThat([[seededHuman.objectID URIRepresentation] URLByDeletingLastPathComponent], is(equalTo([[seedObjectID URIRepresentation] URLByDeletingLastPathComponent])));
 
@@ -260,7 +260,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Sarah"];
     array = [seededStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
-    assertThat(array, is(empty()));
+    assertThat(array, isEmpty());
 }
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED

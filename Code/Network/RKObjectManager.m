@@ -187,7 +187,7 @@ static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequest
 /**
  Returns `YES` if the given array of `RKResponseDescriptor` objects contains an `RKEntityMapping` anywhere in its object graph.
  
- @param responseDescriptor An array of `RKResponseDescriptor` objects.
+ @param responseDescriptors An array of `RKResponseDescriptor` objects.
  @return `YES` if the `mapping` property of any of the response descriptor objects in the given array is an instance of `RKEntityMapping`, else `NO`.
  */
 static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *responseDescriptors)

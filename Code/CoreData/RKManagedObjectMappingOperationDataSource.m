@@ -459,10 +459,11 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 {
     if (! [mappingOperation.mapping isKindOfClass:[RKEntityMapping class]]) return NO;
     RKEntityMapping *entityMapping = (RKEntityMapping *)mappingOperation.mapping;
-    NSString *modificationKey = [entityMapping modificationKey];
+    NSString *modificationKey = [entityMapping.modificationAttribute name];
     if (! modificationKey) return NO;
     id currentValue = [mappingOperation.destinationObject valueForKey:modificationKey];
     if (! currentValue) return NO;
+    if (! [currentValue respondsToSelector:@selector(compare:)]) return NO;
     
     RKPropertyMapping *propertyMappingForModificationKey = [[(RKEntityMapping *)mappingOperation.mapping propertyMappingsByDestinationKeyPath] objectForKey:modificationKey];
     id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];    
@@ -470,7 +471,12 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
     id transformedValue = RKTransformedValueWithClass(rawValue, attributeClass, transformer);
     if (! transformedValue) return NO;
-    return RKObjectIsEqualToObject(transformedValue, currentValue);
+    
+    if ([currentValue isKindOfClass:[NSString class]]) {
+        return [currentValue isEqualToString:transformedValue];
+    } else {
+        return [currentValue compare:transformedValue] != NSOrderedAscending;
+    }
 }
 
 @end

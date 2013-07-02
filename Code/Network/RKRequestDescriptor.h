@@ -89,4 +89,14 @@
  */
 - (BOOL)matchesObject:(id)object method:(RKRequestMethod)method exactMatch:(BOOL)exact;
 
+///-------------------------
+/// @name Comparing Request Descriptors
+///-------------------------
+
+/**
+ Returns `YES` if the receiver and the specified request descriptor are considered equivalent.
+ 
+ */
+- (BOOL)isEqualToRequestDescriptor:(RKRequestDescriptor *)otherDescriptor;
+
 @end
