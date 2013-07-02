@@ -47,6 +47,7 @@
  @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
  @param method The request method of the route.
  @return A new named route object with the given name, path pattern and request method.
+ @raise NSInvalidArgumentException Raised if the given HTTP request method is not an exact match of the RKRequestMethod enum
  */
 + (instancetype)routeWithName:(NSString *)name pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
 
@@ -57,6 +58,7 @@
  @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
  @param method The request method of the route.
  @return A new class route object with the given object class, path pattern and request method.
+ @raise NSInvalidArgumentException Raised if the given HTTP request method is not an exact match of the RKRequestMethod enum
  */
 + (instancetype)routeWithClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
 
@@ -68,6 +70,7 @@
  @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
  @param method The request method of the route.
  @return A new class route object with the given object class, path pattern and request method.
+ @raise NSInvalidArgumentException Raised if the given HTTP request method is not an exact match of the RKRequestMethod enum
  */
 + (instancetype)routeWithRelationshipName:(NSString *)name objectClass:(Class)objectClass pathPattern:(NSString *)pathPattern method:(RKRequestMethod)method;
 

@@ -17,6 +17,21 @@
 
 #pragma mark - RKPathAndQueryStringFromURLRelativeToURL
 
+- (void)testThatYesIsReturnedWhenTheGivenRequestMethodIsAnExactMatch
+{
+    expect(RKAssertRequestMethodSpecifiesHTTPMethod(RKRequestMethodPOST)).to.beTruthy();
+}
+
+- (void)testThatNoIsReturnedWhenTheGivenRequestMethodIsAny
+{
+    expect(RKAssertRequestMethodSpecifiesHTTPMethod(RKRequestMethodAny)).to.beFalsy();
+}
+
+- (void)testThatNoIsReturnedWhenTheGivenRequestMethodIsNotAnExactMatch
+{
+    expect(RKAssertRequestMethodSpecifiesHTTPMethod(RKRequestMethodGET | RKRequestMethodPOST)).to.beFalsy();
+}
+
 - (void)testThatNilIsReturnedWhenTheGivenURLIsNotRelativeToTheBaseURL
 {
     NSURL *baseURL = [NSURL URLWithString:@"http://google.com/path"];
