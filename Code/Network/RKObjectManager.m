@@ -69,16 +69,14 @@ static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPath(NSArray *respon
  @param object The object to find a matching request descriptor for.
  @return An `RKRequestDescriptor` object matching the given object, or `nil` if none could be found.
  */
-static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObject(NSArray *requestDescriptors, id object)
+static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod)
 {
     Class searchClass = [object class];
     do {
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([requestDescriptor.objectClass isEqual:searchClass]) return requestDescriptor;
+            if ([requestDescriptor matchesObject:object requestMethod:requestMethod exactMatch:YES]) return requestDescriptor;
         }
-        searchClass = [searchClass superclass];
-    } while (searchClass);
-    
+    } while ((searchClass = [searchClass superclass]));
     return nil;
 }
 
@@ -429,7 +427,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSArray *objectsToParameterize = ([object isKindOfClass:[NSArray class]] || object == nil) ? object : @[ object ];
     RKObjectParameters *objectParameters = [RKObjectParameters new];
     for (id objectToParameterize in objectsToParameterize) {
-        RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, objectToParameterize);
+        RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(self.requestDescriptors, objectToParameterize, method);
         if ((method != RKRequestMethodGET && method != RKRequestMethodDELETE) && requestDescriptor) {
             NSError *error = nil;
             NSDictionary *parametersForObject = [RKObjectParameterization parametersWithObject:objectToParameterize requestDescriptor:requestDescriptor error:&error];

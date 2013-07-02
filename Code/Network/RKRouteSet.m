@@ -21,7 +21,7 @@
 #import "RKRouteSet.h"
 #import "RKPathMatcher.h"
 
-RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
+//RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 @interface RKRouteSet ()
 

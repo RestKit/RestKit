@@ -47,12 +47,18 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) Class objectClass;
 @property (nonatomic, copy, readwrite) NSString *rootKeyPath;
+@property (nonatomic, assign, readwrite) RKRequestMethod requestMethod;
 
 @end
 
 @implementation RKRequestDescriptor
 
 + (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath
+{
+    return [self requestDescriptorWithMapping:mapping objectClass:objectClass rootKeyPath:rootKeyPath requestMethod:RKRequestMethodAny];
+}
+
++ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath requestMethod:(RKRequestMethod)requestMethod
 {
     NSParameterAssert(mapping);
     NSParameterAssert(objectClass);
@@ -62,6 +68,7 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
     requestDescriptor.mapping = mapping;
     requestDescriptor.objectClass = objectClass;
     requestDescriptor.rootKeyPath = rootKeyPath;
+    requestDescriptor.requestMethod = requestMethod;
     return requestDescriptor;
 }
 
@@ -71,9 +78,9 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
 }
 
-- (BOOL)matchesObject:(id)object
+- (BOOL)matchesObject:(id)object requestMethod:(RKRequestMethod)requestMethod exactMatch:(BOOL)exact
 {
-    return [object isKindOfClass:self.objectClass];
+    return (exact ? [object class] == self.objectClass : [object isKindOfClass:self.objectClass] ) && (requestMethod & self.requestMethod) != 0;
 }
 
 @end

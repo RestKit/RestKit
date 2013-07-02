@@ -21,7 +21,7 @@
 #import "RKRoute.h"
 
 // Wildcard matches on objects
-extern RKRequestMethod const RKRequestMethodAny;
+//extern RKRequestMethod const RKRequestMethodAny;
 
 /**
  The `RKRouteSet` class provides for the storage and retrieval of `RKRoute` objects. Route objects are added and removed the route set to manipulate the routing table of the application.
