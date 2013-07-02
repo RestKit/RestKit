@@ -54,7 +54,7 @@
 + (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
                                  objectClass:(Class)objectClass
                                  rootKeyPath:(NSString *)rootKeyPath
-                               requestMethod:(RKRequestMethod)requestMethod;
+                                      method:(RKRequestMethod)method;
 
 ///-----------------------------------------------------
 /// @name Getting Information About a Request Descriptor
@@ -75,7 +75,7 @@
  */
 @property (nonatomic, copy, readonly) NSString *rootKeyPath;
 
-@property (nonatomic, assign, readonly) RKRequestMethod requestMethod;
+@property (nonatomic, assign, readonly) RKRequestMethod method;
 
 ///--------------------------------
 /// @name Using Request Descriptors
@@ -87,6 +87,6 @@
  @param object The object to be matched against the receiver.
  @return `YES` if the given object matches objectClass, else `NO`.
  */
-- (BOOL)matchesObject:(id)object requestMethod:(RKRequestMethod)requestMethod exactMatch:(BOOL)exact;
+- (BOOL)matchesObject:(id)object method:(RKRequestMethod)method exactMatch:(BOOL)exact;
 
 @end

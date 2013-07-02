@@ -74,7 +74,7 @@ static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequest
     Class searchClass = [object class];
     do {
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([requestDescriptor matchesObject:object requestMethod:requestMethod exactMatch:YES]) return requestDescriptor;
+            if ([requestDescriptor matchesObject:object method:requestMethod exactMatch:YES]) return requestDescriptor;
         }
     } while ((searchClass = [searchClass superclass]));
     return nil;
