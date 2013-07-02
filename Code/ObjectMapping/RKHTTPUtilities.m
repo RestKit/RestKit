@@ -46,6 +46,12 @@ NSIndexSet *RKCacheableStatusCodes(void)
     return cacheableStatusCodes;
 }
 
+BOOL RKIsSpecificRequestMethod(RKRequestMethod method)
+{
+    // check for a power of two
+    return !(method & (method - 1));
+}
+
 NSString *RKStringFromRequestMethod(RKRequestMethod method)
 {
     switch (method) {
@@ -70,7 +76,9 @@ RKRequestMethod RKRequestMethodFromString(NSString *methodName)
     else if ([methodName isEqualToString:@"HEAD"])    return RKRequestMethodHEAD;
     else if ([methodName isEqualToString:@"PATCH"])   return RKRequestMethodPATCH;
     else if ([methodName isEqualToString:@"OPTIONS"]) return RKRequestMethodOPTIONS;
-    else                                              return RKRequestMethodInvalid;
+    else                                              @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                                                                     reason:[NSString stringWithFormat:@"The given HTTP request method name `%@` does not correspond to any known request methods.", methodName]
+                                                                                   userInfo:nil];
 }
 
 // Built from http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
