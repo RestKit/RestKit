@@ -21,11 +21,6 @@
 #import "RKRouteSet.h"
 #import "RKPathMatcher.h"
 
-<<<<<<< HEAD
-//RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
-
-=======
->>>>>>> refs/heads/development
 @interface RKRouteSet ()
 
 @property (nonatomic, strong) NSMutableArray *routes;
