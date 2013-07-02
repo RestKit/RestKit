@@ -57,23 +57,24 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
         // NOTE: State transitions are guarded by a lock via start/finish/cancel action methods
         TKState *readyState = [TKState stateWithName:RKOperationStateReady];
+        __weak __typeof(&*self)weakSelf = self;
         [readyState setWillExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation willChangeValueForKey:@"isReady"];
+            [weakSelf.operation willChangeValueForKey:@"isReady"];
         }];
         [readyState setDidExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation didChangeValueForKey:@"isReady"];
+            [weakSelf.operation didChangeValueForKey:@"isReady"];
         }];
 
         TKState *executingState = [TKState stateWithName:RKOperationStateExecuting];
         [executingState setWillEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation willChangeValueForKey:@"isExecuting"];
+            [weakSelf.operation willChangeValueForKey:@"isExecuting"];
         }];
         // NOTE: isExecuting KVO for `setDidEnterStateBlock:` configured below in `setExecutionBlock`
         [executingState setWillExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation willChangeValueForKey:@"isExecuting"];
+            [weakSelf.operation willChangeValueForKey:@"isExecuting"];
         }];
         [executingState setDidExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation didChangeValueForKey:@"isExecuting"];
+            [weakSelf.operation didChangeValueForKey:@"isExecuting"];
         }];
         [executingState setDidEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
             [NSException raise:NSInternalInconsistencyException format:@"You must configure an execution block via `setExecutionBlock:`."];
@@ -81,16 +82,16 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
         TKState *finishedState = [TKState stateWithName:RKOperationStateFinished];
         [finishedState setWillEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation willChangeValueForKey:@"isFinished"];
+            [weakSelf.operation willChangeValueForKey:@"isFinished"];
         }];
         [finishedState setDidEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation didChangeValueForKey:@"isFinished"];
+            [weakSelf.operation didChangeValueForKey:@"isFinished"];
         }];
         [finishedState setWillExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation willChangeValueForKey:@"isFinished"];
+            [weakSelf.operation willChangeValueForKey:@"isFinished"];
         }];
         [finishedState setDidExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
-            [self.operation didChangeValueForKey:@"isFinished"];
+            [weakSelf.operation didChangeValueForKey:@"isFinished"];
         }];
 
         [self.stateMachine addStates:@[ readyState, executingState, finishedState ]];

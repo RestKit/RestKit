@@ -76,4 +76,35 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
     return [object isKindOfClass:self.objectClass];
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (self == object) {
+        return YES;
+    }
+    if ([self class] != [object class]) {
+        return NO;
+    }
+    return [self isEqualToRequestDescriptor:object];
+}
+
+#define NSUINT_BIT (CHAR_BIT * sizeof(NSUInteger))
+#define NSUINTROTATE(val, howmuch) ((((NSUInteger)val) << howmuch) | (((NSUInteger)val) >> (NSUINT_BIT - howmuch)))
+
+- (NSUInteger)hash
+{
+    return NSUINTROTATE(NSUINTROTATE([self.mapping hash], NSUINT_BIT / 3) ^ [self.objectClass hash], NSUINT_BIT / 3) ^ [self.rootKeyPath hash];
+}
+
+- (BOOL)isEqualToRequestDescriptor:(RKRequestDescriptor *)otherDescriptor
+{
+    if (![otherDescriptor isKindOfClass:[RKRequestDescriptor class]]) {
+        return NO;
+    }
+    
+    return
+    [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
+    self.objectClass == otherDescriptor.objectClass &&
+    [self.rootKeyPath isEqualToString:otherDescriptor.rootKeyPath];
+}
+
 @end
