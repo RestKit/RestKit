@@ -127,4 +127,9 @@
     expect(pathAndQueryString).to.equal(@"/api/v1/search/?this=that&type=search");
 }
 
+- (void)testRequestMethodStringForSimpleValue
+{
+    expect(RKStringFromRequestMethod(RKRequestMethodGET)).to.equal(@"GET");
+}
+
 @end
