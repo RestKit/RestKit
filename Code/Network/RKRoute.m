@@ -42,7 +42,7 @@
 {
     NSParameterAssert(name);
     NSParameterAssert(pathPattern);
-    if (method != RKRequestMethodAny && !RKAssertRequestMethodSpecifiesHTTPMethod(method)) [NSException raise:NSInvalidArgumentException format:@"Cannot create a route with a bitmask request method value."];
+    if (!RKIsSpecificRequestMethod(method)) [NSException raise:NSInvalidArgumentException format:@"The `method` parameter must specify an HTTP method for requests that use the named route."];
     RKNamedRoute *route = [RKNamedRoute new];
     route.name = name;
     route.pathPattern = pathPattern;

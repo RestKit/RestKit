@@ -19,17 +19,17 @@
 
 - (void)testThatYesIsReturnedWhenTheGivenRequestMethodIsAnExactMatch
 {
-    expect(RKAssertRequestMethodSpecifiesHTTPMethod(RKRequestMethodPOST)).to.beTruthy();
+    expect(RKIsSpecificRequestMethod(RKRequestMethodPOST)).to.beTruthy();
 }
 
 - (void)testThatNoIsReturnedWhenTheGivenRequestMethodIsAny
 {
-    expect(RKAssertRequestMethodSpecifiesHTTPMethod(RKRequestMethodAny)).to.beFalsy();
+    expect(RKIsSpecificRequestMethod(RKRequestMethodAny)).to.beFalsy();
 }
 
 - (void)testThatNoIsReturnedWhenTheGivenRequestMethodIsNotAnExactMatch
 {
-    expect(RKAssertRequestMethodSpecifiesHTTPMethod(RKRequestMethodGET | RKRequestMethodPOST)).to.beFalsy();
+    expect(RKIsSpecificRequestMethod(RKRequestMethodGET | RKRequestMethodPOST)).to.beFalsy();
 }
 
 - (void)testThatNilIsReturnedWhenTheGivenURLIsNotRelativeToTheBaseURL
