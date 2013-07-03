@@ -52,7 +52,8 @@ static RKObjectManager  *sharedManager = nil;
  
  @param responseDescriptors An array of `RKResponseDescriptor` objects.
  @param path The path for which to select matching response descriptors.
- @return An `NSArray` object whose elements are `RKResponseDescriptor` objects matching the given path.
+ @param method The method for which to select matching response descriptors.
+ @return An `NSArray` object whose elements are `RKResponseDescriptor` objects matching the given path and method.
  */
 static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(NSArray *responseDescriptors, NSString *path, RKRequestMethod method)
 {

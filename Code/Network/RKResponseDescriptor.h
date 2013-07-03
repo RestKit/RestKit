@@ -48,12 +48,13 @@
 + (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
                                   pathPattern:(NSString *)pathPattern
                                       keyPath:(NSString *)keyPath
-                                  statusCodes:(NSIndexSet *)statusCodes;
+                                  statusCodes:(NSIndexSet *)statusCodes DEPRECATED_ATTRIBUTE;
 
 /**
  Creates and returns a new `RKResponseDescriptor` object.
  
  @param mapping The mapping for the response descriptor.
+ @param method The HTTP method(s) for which the mapping is to be used.
  @param pathPattern A path pattern that matches against URLs for which the mapping should be used.
  @param keyPath A key path specifying the subset of the parsed response for which the mapping is to be used.
  @param statusCodes A set of HTTP status codes for which the mapping is to be used.
@@ -74,6 +75,9 @@
  */
 @property (nonatomic, strong, readonly) RKMapping *mapping;
 
+/**
+ The HTTP method(s) for which the mapping is to be used.
+ */
 @property (nonatomic, assign, readonly) RKRequestMethod method;
 
 /**

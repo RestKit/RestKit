@@ -47,11 +47,9 @@
  @see [RKObjectMapping requestMapping]
  @warning An exception will be raised if the objectClass of the given mapping is not `[NSMutableDictionary class]`.
  */
-
- // will be deprecated
 + (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
                                  objectClass:(Class)objectClass
-                                 rootKeyPath:(NSString *)rootKeyPath;
+                                 rootKeyPath:(NSString *)rootKeyPath DEPRECATED_ATTRIBUTE;
 
 /**
 Creates and returns a new `RKRequestDescriptor` object.
@@ -59,7 +57,7 @@ Creates and returns a new `RKRequestDescriptor` object.
 @param mapping The mapping to be used when parameterizing an object using the request descriptor. Cannot be nil and must have an objectClass equal to `[NSMutableDictionary class]`.
 @param objectClass The class of objects for which the request descriptor should be used. Cannot be nil.
 @param rootKeyPath The root key path under which paramters constructed using the response descriptor will be nested. If nil, the parameters will not be nested and returned as a flat dictionary object.
-@param method The HTTP method for which the request descriptor should be used. A bit mask composed of `RKRequestMethod`s
+@param method The HTTP method(s) for which the mapping is to be used.
 @return A new `RKRequestDescriptor` object.
 
 @see [RKObjectMapping requestMapping]
@@ -89,6 +87,9 @@ Creates and returns a new `RKRequestDescriptor` object.
  */
 @property (nonatomic, copy, readonly) NSString *rootKeyPath;
 
+/**
+ The HTTP method(s) for which the mapping is to be used.
+ */
 @property (nonatomic, assign, readonly) RKRequestMethod method;
 
 ///--------------------------------
@@ -99,7 +100,9 @@ Creates and returns a new `RKRequestDescriptor` object.
  Returns `YES` if the given object is instance of objectClass or any class that inherits from objectClass, else `NO`.
 
  @param object The object to be matched against the receiver.
- @return `YES` if the given object matches objectClass, else `NO`.
+ @param method The HTTP method to be matched against the receiver
+ @param exact  Whether `object` can be a subclass of the receiver's `objectClass`
+ @return `YES` if the given object matches objectClass and method, else `NO`.
  */
 - (BOOL)matchesObject:(id)object method:(RKRequestMethod)method exactMatch:(BOOL)exact;
 
