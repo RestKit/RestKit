@@ -43,8 +43,6 @@
  @param statusCodes A set of HTTP status codes for which the mapping is to be used.
  @return A new `RKResponseDescriptor` object.
  */
-
- // will be deprecated
 + (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
                                   pathPattern:(NSString *)pathPattern
                                       keyPath:(NSString *)keyPath

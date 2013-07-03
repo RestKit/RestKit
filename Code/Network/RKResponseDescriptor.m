@@ -57,6 +57,8 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
     return string;
 }
 
+extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
+
 @interface RKResponseDescriptor ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, assign, readwrite) RKRequestMethod method;
@@ -67,6 +69,8 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
 
 @implementation RKResponseDescriptor
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 + (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
                                   pathPattern:(NSString *)pathPattern
                                       keyPath:(NSString *)keyPath
@@ -74,6 +78,7 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
 {
     return [self responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:pathPattern keyPath:keyPath statusCodes:statusCodes];
 }
+#pragma clang diagnostic pop
 
 + (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
                                        method:(RKRequestMethod)method
@@ -88,14 +93,14 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
     mappingDescriptor.pathPattern = pathPattern;
     mappingDescriptor.keyPath = keyPath;
     mappingDescriptor.statusCodes = statusCodes;
-    
+
     return mappingDescriptor;
 }
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p pathPattern=%@ keyPath=%@ statusCodes=%@ : %@>",
-            NSStringFromClass([self class]), self, self.pathPattern, self.keyPath, self.statusCodes ? RKStringFromIndexSet(self.statusCodes) : self.statusCodes, self.mapping];
+    return [NSString stringWithFormat:@"<%@: %p method=%@ pathPattern=%@ keyPath=%@ statusCodes=%@ : %@>",
+            NSStringFromClass([self class]), self, RKStringDescribingRequestMethod(self.method), self.pathPattern, self.keyPath, self.statusCodes ? RKStringFromIndexSet(self.statusCodes) : self.statusCodes, self.mapping];
 }
 
 - (BOOL)matchesPath:(NSString *)path
@@ -119,13 +124,13 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
 - (BOOL)matchesResponse:(NSHTTPURLResponse *)response
 {
     if (! [self matchesURL:response.URL]) return NO;
-    
+
     if (self.statusCodes) {
         if (! [self.statusCodes containsIndex:response.statusCode]) {
             return NO;
         }
     }
-    
+
     return YES;
 }
 
@@ -158,7 +163,7 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
     if (![otherDescriptor isKindOfClass:[RKResponseDescriptor class]]) {
         return NO;
     }
-    
+
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.method == otherDescriptor.method &&
