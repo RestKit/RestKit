@@ -440,4 +440,42 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     expect(paginator.offset).to.equal(3);
 }
 
+- (void)testLoadingAPageWhileOtherPageLoads
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
+    NSException *exception = nil;
+    @try {
+        RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+        [paginator loadPage:1];
+        [paginator loadPage:2];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    expect(exception).notTo.beNil();
+    expect([exception reason]).to.equal(@"Cannot perform a load while one is already in progress.");
+}
+
+- (void)testHavingRequestOperationUponCompletion
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    [paginator loadPage:1];
+    [paginator waitUntilFinished];
+    expect(paginator.objectRequestOperation).willNot.beNil();
+}
+
+- (void)testChangeOfRequestOperationOnSubsequentRequests
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
+    RKObjectRequestOperation *operation = nil;
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    [paginator loadPage:1];
+    [paginator waitUntilFinished];
+    operation = paginator.objectRequestOperation;
+    [paginator loadPage:2];
+    [paginator waitUntilFinished];
+    expect(paginator.objectRequestOperation).willNot.equal(operation);
+}
+
 @end
