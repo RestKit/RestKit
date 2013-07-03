@@ -59,6 +59,7 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
 
 @interface RKResponseDescriptor ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
+@property (nonatomic, assign, readwrite) RKRequestMethod method;
 @property (nonatomic, copy, readwrite) NSString *pathPattern;
 @property (nonatomic, copy, readwrite) NSString *keyPath;
 @property (nonatomic, copy, readwrite) NSIndexSet *statusCodes;
@@ -71,13 +72,23 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
                                       keyPath:(NSString *)keyPath
                                   statusCodes:(NSIndexSet *)statusCodes
 {
+    return [self responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:pathPattern keyPath:keyPath statusCodes:statusCodes];
+}
+
++ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
+                                       method:(RKRequestMethod)method
+                                  pathPattern:(NSString *)pathPattern
+                                      keyPath:(NSString *)keyPath
+                                  statusCodes:(NSIndexSet *)statusCodes
+{
     NSParameterAssert(mapping);
     RKResponseDescriptor *mappingDescriptor = [self new];
     mappingDescriptor.mapping = mapping;
+    mappingDescriptor.method = method;
     mappingDescriptor.pathPattern = pathPattern;
     mappingDescriptor.keyPath = keyPath;
     mappingDescriptor.statusCodes = statusCodes;
-
+    
     return mappingDescriptor;
 }
 
@@ -118,6 +129,11 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
     return YES;
 }
 
+- (BOOL)matchesMethod:(RKRequestMethod)method
+{
+    return self.method & method;
+}
+
 - (BOOL)isEqual:(id)object
 {
     if (self == object) {
@@ -145,6 +161,7 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
     
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
+    self.method == otherDescriptor.method &&
     [self.pathPattern isEqualToString:otherDescriptor.pathPattern] &&
     [self.keyPath isEqualToString:otherDescriptor.keyPath] &&
     [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes];

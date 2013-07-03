@@ -47,10 +47,24 @@
  @see [RKObjectMapping requestMapping]
  @warning An exception will be raised if the objectClass of the given mapping is not `[NSMutableDictionary class]`.
  */
+
+ // will be deprecated
 + (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
                                  objectClass:(Class)objectClass
                                  rootKeyPath:(NSString *)rootKeyPath;
 
+/**
+Creates and returns a new `RKRequestDescriptor` object.
+
+@param mapping The mapping to be used when parameterizing an object using the request descriptor. Cannot be nil and must have an objectClass equal to `[NSMutableDictionary class]`.
+@param objectClass The class of objects for which the request descriptor should be used. Cannot be nil.
+@param rootKeyPath The root key path under which paramters constructed using the response descriptor will be nested. If nil, the parameters will not be nested and returned as a flat dictionary object.
+@param method The HTTP method for which the request descriptor should be used. A bit mask composed of `RKRequestMethod`s
+@return A new `RKRequestDescriptor` object.
+
+@see [RKObjectMapping requestMapping]
+@warning An exception will be raised if the objectClass of the given mapping is not `[NSMutableDictionary class]`.
+*/
 + (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
                                  objectClass:(Class)objectClass
                                  rootKeyPath:(NSString *)rootKeyPath
