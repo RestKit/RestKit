@@ -20,7 +20,8 @@
 
 #import "RKRoute.h"
 
-static NSString *RKStringDescribingRequestMethod(RKRequestMethod method)
+NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
+NSString *RKStringDescribingRequestMethod(RKRequestMethod method)
 {
     if (method == RKRequestMethodAny) return @"*";
     NSMutableArray *methods = [NSMutableArray array];

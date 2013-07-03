@@ -396,6 +396,26 @@
     expect([[_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@":objectID/cancel"] count]).to.equal(1);
 }
 
+- (void)testEnqueuedObjectRequestOperationByMultipleBitmaskMethodAndPath
+{
+    NSURLRequest *request1 = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
+    NSMutableURLRequest *request2 = [request1 mutableCopy];
+    request2.HTTPMethod = @"POST";
+    NSMutableURLRequest *request3 = [request1 mutableCopy];
+    request3.HTTPMethod = @"DELETE";
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request1 responseDescriptors:self.objectManager.responseDescriptors];
+    
+    RKObjectRequestOperation *secondOperation = [[RKObjectRequestOperation alloc] initWithRequest:request2 responseDescriptors:self.objectManager.responseDescriptors];
+    RKObjectRequestOperation *thirdOperation = [[RKObjectRequestOperation alloc] initWithRequest:request3 responseDescriptors:self.objectManager.responseDescriptors];
+    [_objectManager enqueueObjectRequestOperation:operation];
+    [_objectManager enqueueObjectRequestOperation:secondOperation];
+    [_objectManager enqueueObjectRequestOperation:thirdOperation];
+    NSArray *operations = [_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET | RKRequestMethodPOST matchingPathPattern:@"/object_manager/cancel"];
+    expect(operations).to.haveCountOf(2);
+    expect(operations).to.contain(operation);
+    expect(operations).to.contain(secondOperation);
+}
+
 - (void)testShouldProperlyFireABatchOfOperations
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];

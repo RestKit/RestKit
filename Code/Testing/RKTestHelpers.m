@@ -63,13 +63,13 @@
     return stubbedRoute;
 }
 
-+ (RKRoute *)stubRouteForRelationship:(NSString *)relationshipName ofClass:(Class)objectClass pathPattern:(NSString *)pathPattern onObjectManager:(RKObjectManager *)nilOrObjectManager
++ (RKRoute *)stubRouteForRelationship:(NSString *)relationshipName ofClass:(Class)objectClass method:(RKRequestMethod)method pathPattern:(NSString *)pathPattern onObjectManager:(RKObjectManager *)nilOrObjectManager
 {
     RKObjectManager *objectManager = nilOrObjectManager ?: [RKObjectManager sharedManager];
-    RKRoute *route = [objectManager.router.routeSet routeForRelationship:relationshipName ofClass:objectClass method:RKRequestMethodGET];
+    RKRoute *route = [objectManager.router.routeSet routeForRelationship:relationshipName ofClass:objectClass method:method];
     NSAssert(route, @"Expected to retrieve a route, but got nil");
     [objectManager.router.routeSet removeRoute:route];
-    RKRoute *stubbedRoute = [RKRoute routeWithRelationshipName:relationshipName objectClass:objectClass pathPattern:pathPattern method:RKRequestMethodGET];
+    RKRoute *stubbedRoute = [RKRoute routeWithRelationshipName:relationshipName objectClass:objectClass pathPattern:pathPattern method:method];
     [objectManager.router.routeSet addRoute:stubbedRoute];
     [self copyFetchRequestBlocksMatchingPathPattern:route.pathPattern toBlocksMatchingRelativeString:pathPattern onObjectManager:objectManager];
     return stubbedRoute;
