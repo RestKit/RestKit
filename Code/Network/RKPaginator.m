@@ -20,7 +20,6 @@
 
 #import "RKPaginator.h"
 #import "RKMappingOperation.h"
-#import "RKObjectRequestOperation.h"
 #import "RKManagedObjectRequestOperation.h"
 #import "SOCKit.h"
 #import "RKLog.h"
@@ -33,7 +32,6 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 @interface RKPaginator ()
 @property (nonatomic, copy) NSURLRequest *request;
 @property (nonatomic, strong) Class HTTPOperationClass;
-@property (nonatomic, strong) RKObjectRequestOperation *objectRequestOperation;
 @property (nonatomic, copy) NSArray *responseDescriptors;
 @property (nonatomic, assign, readwrite) NSUInteger currentPage;
 @property (nonatomic, assign, readwrite) NSUInteger offset;
@@ -172,6 +170,11 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (void)loadPage:(NSUInteger)pageNumber
 {
+    if (self.objectRequestOperation) {
+        // The user by calling loadPage is ready to perform the next request so invalidate objectRequestOperation
+        _objectRequestOperation = nil;
+    }
+    
     NSAssert(self.responseDescriptors, @"Cannot perform a load with nil response descriptors.");
     NSAssert(! self.objectRequestOperation, @"Cannot perform a load while one is already in progress.");
     self.currentPage = pageNumber;
@@ -187,9 +190,9 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         managedObjectRequestOperation.fetchRequestBlocks = self.fetchRequestBlocks;
         managedObjectRequestOperation.deletesOrphanedObjects = NO;
         
-        self.objectRequestOperation = managedObjectRequestOperation;
+        _objectRequestOperation = managedObjectRequestOperation;
     } else {
-        self.objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
+        _objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
     }
     
     // Add KVO to ensure notification of loaded state prior to execution of completion block
@@ -254,7 +257,6 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         self.loaded = (self.objectRequestOperation.mappingResult != nil);
         self.mappingResult = self.objectRequestOperation.mappingResult;
         self.error = self.objectRequestOperation.error;
-        self.objectRequestOperation = nil;
         [object removeObserver:self forKeyPath:@"isFinished"];
     }
 }
