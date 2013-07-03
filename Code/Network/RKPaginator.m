@@ -170,7 +170,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (void)loadPage:(NSUInteger)pageNumber
 {
-    if (self.objectRequestOperation) {
+    if (self.objectRequestOperation.HTTPRequestOperation.response) {
         // The user by calling loadPage is ready to perform the next request so invalidate objectRequestOperation
         _objectRequestOperation = nil;
     }
