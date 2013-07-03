@@ -172,7 +172,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 {
     if (self.objectRequestOperation) {
         // The user by calling loadPage is ready to perform the next request so invalidate objectRequestOperation
-        self.objectRequestOperation = nil;
+        _objectRequestOperation = nil;
     }
     
     NSAssert(self.responseDescriptors, @"Cannot perform a load with nil response descriptors.");
@@ -190,9 +190,9 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         managedObjectRequestOperation.fetchRequestBlocks = self.fetchRequestBlocks;
         managedObjectRequestOperation.deletesOrphanedObjects = NO;
         
-        self.objectRequestOperation = managedObjectRequestOperation;
+        _objectRequestOperation = managedObjectRequestOperation;
     } else {
-        self.objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
+        _objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
     }
     
     // Add KVO to ensure notification of loaded state prior to execution of completion block

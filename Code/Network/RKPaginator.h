@@ -101,7 +101,7 @@
 /**
  Returns the ObjectRequestOperation used by the paginator to load the request
  */
-@property (nonatomic, strong) RKObjectRequestOperation *objectRequestOperation;
+@property (nonatomic, readonly) RKObjectRequestOperation *objectRequestOperation;
 
 /**
  Sets the `RKHTTPRequestOperation` subclass to be used when constructing HTTP request operations for requests dispatched by the paginator.
