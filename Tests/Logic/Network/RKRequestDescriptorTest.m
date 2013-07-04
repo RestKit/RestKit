@@ -111,7 +111,7 @@
     expect(firstDescriptor).toNot.equal(secondDescriptor);
 }
 
-- (void)testThatDescriptorsWithDifferentRottKeyPathsAreNotConsideredEqual
+- (void)testThatDescriptorsWithDifferentRootKeyPathsAreNotConsideredEqual
 {
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     RKRequestDescriptor *firstDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping

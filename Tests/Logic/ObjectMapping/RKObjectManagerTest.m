@@ -1504,4 +1504,49 @@
     expect(human.weight).will.equal(@131.3);
 }
 
+- (void)testThatRequestDescriptorExactMethodMatchFavoredOverRKRequestMethodAny
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping requestMapping];
+    [mapping1 addAttributeMappingsFromArray:@[ @"name" ]];
+    RKObjectMapping *mapping2 = [RKObjectMapping requestMapping];
+    [mapping2 addAttributeMappingsFromArray:@[ @"age" ]];
+    
+    RKRequestDescriptor *requestDesriptor1 = [RKRequestDescriptor requestDescriptorWithMapping:mapping1 objectClass:[RKObjectMapperTestModel class] rootKeyPath:nil method:RKRequestMethodAny];
+    RKRequestDescriptor *requestDesriptor2 = [RKRequestDescriptor requestDescriptorWithMapping:mapping2 objectClass:[RKObjectMapperTestModel class] rootKeyPath:nil method:RKRequestMethodPOST];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:requestDesriptor1];
+    [objectManager addRequestDescriptor:requestDesriptor2];
+    
+    RKObjectMapperTestModel *model = [RKObjectMapperTestModel new];
+    model.name = @"Blake";
+    model.age = @30;
+    NSURLRequest *request = [objectManager requestWithObject:model method:RKRequestMethodPOST path:@"/path" parameters:nil];
+    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    expect(dictionary).to.equal(@{ @"age": @(30) });
+}
+
+- (void)testThatResponseDescriptorExactMethodMatchFavoredOverRKRequestMethodAny
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping1 addAttributeMappingsFromArray:@[ @"name" ]];
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping2 addAttributeMappingsFromArray:@[ @"weight" ]];
+    
+    RKResponseDescriptor *responseDescriptor2 = [RKResponseDescriptor responseDescriptorWithMapping:mapping2 method:RKRequestMethodGET pathPattern:@"/user" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    RKResponseDescriptor *responseDescriptor1 = [RKResponseDescriptor responseDescriptorWithMapping:mapping1 method:RKRequestMethodAny pathPattern:@"/user" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addResponseDescriptorsFromArray:@[responseDescriptor1, responseDescriptor2]];
+    
+    __block RKTestUser *human;
+    [[RKTestFactory objectManager] getObject:nil path:@"/user" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        human = mappingResult.firstObject;
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        
+    }];
+    expect(human.name).will.beNil();
+    expect(human.weight).will.equal(@131.3);
+}
+
 @end

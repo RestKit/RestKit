@@ -83,11 +83,6 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
             NSStringFromClass([self class]), self, RKStringDescribingRequestMethod(self.method), NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
 }
 
-- (BOOL)matchesObject:(id)object method:(RKRequestMethod)method exactMatch:(BOOL)exact
-{
-    return (exact ? [object class] == self.objectClass : [object isKindOfClass:self.objectClass] ) && (method & self.method) != 0;
-}
-
 - (BOOL)isEqual:(id)object
 {
     if (self == object) {
@@ -116,6 +111,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.objectClass == otherDescriptor.objectClass &&
+    self.method == otherDescriptor.method &&
     [self.rootKeyPath isEqualToString:otherDescriptor.rootKeyPath];
 }
 
