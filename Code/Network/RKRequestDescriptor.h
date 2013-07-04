@@ -38,6 +38,11 @@
 
 /**
  Creates and returns a new `RKRequestDescriptor` object.
+ 
+ This method is deprecated. Use `+ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
+ objectClass:(Class)objectClass
+ rootKeyPath:(NSString *)rootKeyPath
+ method:(RKRequestMethod)method` instead.
 
  @param mapping The mapping to be used when parameterizing an object using the request descriptor. Cannot be nil and must have an objectClass equal to `[NSMutableDictionary class]`.
  @param objectClass The class of objects for which the request descriptor should be used. Cannot be nil.

@@ -36,6 +36,12 @@
 
 /**
  Creates and returns a new `RKResponseDescriptor` object.
+ 
+ This method is deprecated. Use `+ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
+ method:(RKRequestMethod)method
+ pathPattern:(NSString *)pathPattern
+ keyPath:(NSString *)keyPath
+ statusCodes:(NSIndexSet *)statusCodes` instead.
 
  @param mapping The mapping for the response descriptor.
  @param pathPattern A path pattern that matches against URLs for which the mapping should be used.
