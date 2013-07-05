@@ -1481,4 +1481,27 @@
     expect(human.cats).to.haveCountOf(2);
 }
 
+- (void)testManagerUsesResponseDescriptorForMethod
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping1 addAttributeMappingsFromArray:@[ @"name" ]];
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping2 addAttributeMappingsFromArray:@[ @"weight" ]];
+    
+    RKResponseDescriptor *responseDescriptor1 = [RKResponseDescriptor responseDescriptorWithMapping:mapping1 method:RKRequestMethodPOST pathPattern:@"/user" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    RKResponseDescriptor *responseDescriptor2 = [RKResponseDescriptor responseDescriptorWithMapping:mapping2 method:RKRequestMethodGET pathPattern:@"/user" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addResponseDescriptorsFromArray:@[responseDescriptor1, responseDescriptor2]];
+    
+    __block RKTestUser *human;
+    [[RKTestFactory objectManager] getObject:nil path:@"/user" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        human = mappingResult.firstObject;
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        
+    }];
+    expect(human.name).will.beNil();
+    expect(human.weight).will.equal(@131.3);
+}
+
 @end
