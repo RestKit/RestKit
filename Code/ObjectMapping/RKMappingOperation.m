@@ -103,14 +103,16 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     } else if ([destinationType isSubclassOfClass:[NSData class]]) {
         return [NSKeyedArchiver archivedDataWithRootObject:value];
     } else if ([sourceType isSubclassOfClass:[NSString class]]) {
+        // String -> URL
         if ([destinationType isSubclassOfClass:[NSURL class]]) {
-            // String -> URL
             return [NSURL URLWithString:(NSString *)value];
-        } else if ([destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
-            // String -> Decimal Number
+        }
+        // String -> Decimal Number
+        if ([destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
             return [NSDecimalNumber decimalNumberWithString:(NSString *)value];
-        } else if ([destinationType isSubclassOfClass:[NSNumber class]]) {
-            // String -> Number
+        }
+        // String -> Number
+        if ([destinationType isSubclassOfClass:[NSNumber class]]) {
             NSString *lowercasedString = [(NSString *)value lowercaseString];
             NSSet *trueStrings = [NSSet setWithObjects:@"true", @"t", @"yes", @"y", nil];
             NSSet *booleanStrings = [trueStrings setByAddingObjectsFromSet:[NSSet setWithObjects:@"false", @"f", @"no", @"n", nil]];
@@ -119,8 +121,7 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
                 return [NSNumber numberWithBool:[trueStrings containsObject:lowercasedString]];
             } else if ([(NSString *)value rangeOfString:@"."].location != NSNotFound) {
                 // String -> Floating Point Number
-                // Only use floating point if needed to avoid losing precision
-                // on large integers
+                // Only use floating point if needed to avoid losing precision on large integers
                 return [NSNumber numberWithDouble:[(NSString *)value doubleValue]];
             } else {
                 // String -> Signed Integer
@@ -149,20 +150,25 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
         if ([destinationType isSubclassOfClass:[NSOrderedSet class]]) {
             return [[NSOrderedSet class] orderedSetWithArray:value];
         }
-    } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
+    } else if ([sourceType isSubclassOfClass:[NSNumber class]]) {
         // Number -> Date
-        return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value doubleValue]];
-    } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
-        // Number -> Decimal Number
-        return [NSDecimalNumber decimalNumberWithDecimal:[value decimalValue]];
-    } else if ( ([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] ||
-                 [sourceType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")] ) &&
-               [destinationType isSubclassOfClass:[NSString class]]) {
-        return ([value boolValue] ? @"true" : @"false");
         if ([destinationType isSubclassOfClass:[NSDate class]]) {
-            return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value intValue]];
-        } else if (([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] || [sourceType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")]) && [destinationType isSubclassOfClass:[NSString class]]) {
-            return ([value boolValue] ? @"true" : @"false");
+            return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value doubleValue]];
+        }
+        // Number -> Decimal Number
+        if ([destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
+            return [NSDecimalNumber decimalNumberWithDecimal:[value decimalValue]];
+        }
+        // Number -> Boolean
+        if ([destinationType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] ||
+            [destinationType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")]) {
+            return [NSNumber numberWithBool:[value boolValue]];
+        }
+    } else if ([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] ||
+               [sourceType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")]) {
+        // Boolean -> String
+        if ([destinationType isSubclassOfClass:[NSString class]]) {
+            return [value boolValue] ? @"true" : @"false";
         }
     } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
         return [value stringValue];
