@@ -656,7 +656,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSDictionary *interpolatedParameters = nil;
     NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
     NSAssert(URL, @"No route found named '%@'", routeName);
-    NSAssert(route.method == RKRequestMethodGET, @"Expected route named '%@' to specify a GET, but it does not", routeName);
+    NSAssert(route.method & RKRequestMethodGET, @"Expected route named '%@' to specify a GET, but it does not", routeName);
     
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
     operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
