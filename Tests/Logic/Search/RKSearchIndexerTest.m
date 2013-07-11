@@ -374,7 +374,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
     assertThatBool([operations[0] isCancelled], is(equalToBool(YES)));
     
     NSSet *searchWords = [human valueForKey:RKSearchWordsRelationshipName];
-    assertThat([searchWords valueForKey:@"word"], is(empty()));
+    assertThat([searchWords valueForKey:@"word"], isEmpty());
 }
 
 #pragma mark - Delegate Tests

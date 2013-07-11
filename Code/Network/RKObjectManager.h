@@ -527,7 +527,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Paths are matches against the `path` of the `NSURL` of the `NSURLRequest` of each `RKObjectRequestOperation` contained in the receiver's operation queue using a `RKPathMatcher` object.
  
- @param method The HTTP method to match for the cancelled requests, such as `RKRequestMethodGET`, `RKRequestMethodPOST`, `RKRequestMethodPUT`, `RKRequestMethodPatch`, or `RKRequestMethodDELETE`. If `RKRequestMethodAny`, all object request operations with URLs matching the given path pattern will be cancelled.
+ @param method The HTTP method to match for the cancelled requests, such as `RKRequestMethodGET`, `RKRequestMethodPOST`, `RKRequestMethodPUT`, `RKRequestMethodPatch`, or `RKRequestMethodDELETE`. If `RKRequestMethodAny`, all object request operations with URLs matching the given path pattern will be cancelled. Multiple methods may be specified by using a bitwise OR operation.
  @param pathPattern The pattern to match against the path of the request URL for executing object request operations considered for cancellation.
  @return A new array containing all enqueued `RKObjectRequestOperation` objects that match the given HTTP method and path pattern.
  @see `RKPathMatcher`

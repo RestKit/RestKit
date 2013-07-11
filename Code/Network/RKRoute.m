@@ -20,6 +20,21 @@
 
 #import "RKRoute.h"
 
+NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
+NSString *RKStringDescribingRequestMethod(RKRequestMethod method)
+{
+    if (method == RKRequestMethodAny) return @"*";
+    NSMutableArray *methods = [NSMutableArray array];
+    if (method & RKRequestMethodGET) [methods addObject:@"GET"];
+    if (method & RKRequestMethodPOST) [methods addObject:@"POST"];
+    if (method & RKRequestMethodPUT) [methods addObject:@"PUT"];
+    if (method & RKRequestMethodDELETE) [methods addObject:@"DELETE"];
+    if (method & RKRequestMethodHEAD) [methods addObject:@"HEAD"];
+    if (method & RKRequestMethodPATCH) [methods addObject:@"PATCH"];
+    if (method & RKRequestMethodOPTIONS) [methods addObject:@"OPTIONS"];
+    return [NSString stringWithFormat:@"(%@)", [methods componentsJoinedByString:@"|"]];
+}
+
 @interface RKRoute ()
 @property (nonatomic, strong, readwrite) NSString *name;
 @property (nonatomic, strong, readwrite) Class objectClass;
@@ -42,6 +57,7 @@
 {
     NSParameterAssert(name);
     NSParameterAssert(pathPattern);
+    if (!RKIsSpecificRequestMethod(method)) [NSException raise:NSInvalidArgumentException format:@"The `method` parameter must specify a single, non-ambiguous HTTP method. Bitmask values and `RKRequestMethodAny` are invalid arguments."];
     RKNamedRoute *route = [RKNamedRoute new];
     route.name = name;
     route.pathPattern = pathPattern;
@@ -115,7 +131,7 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p name=%@ method=%@ pathPattern=%@>",
-            NSStringFromClass([self class]), self, self.name, RKStringFromRequestMethod(self.method), self.pathPattern];
+            NSStringFromClass([self class]), self, self.name, RKStringDescribingRequestMethod(self.method), self.pathPattern];
 }
 
 @end
@@ -131,7 +147,7 @@
 {
     return [NSString stringWithFormat:@"<%@: %p objectClass=%@ method=%@ pathPattern=%@>",
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass),
-            RKStringFromRequestMethod(self.method), self.pathPattern];
+            RKStringDescribingRequestMethod(self.method), self.pathPattern];
 }
 
 @end
@@ -147,7 +163,7 @@
 {
     return [NSString stringWithFormat:@"<%@: %p relationshipName=%@ objectClass=%@ method=%@ pathPattern=%@>",
             NSStringFromClass([self class]), self, self.name, NSStringFromClass(self.objectClass),
-            RKStringFromRequestMethod(self.method), self.pathPattern];
+            RKStringDescribingRequestMethod(self.method), self.pathPattern];
 }
 
 @end
