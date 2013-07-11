@@ -132,4 +132,9 @@
     expect(RKStringFromRequestMethod(RKRequestMethodGET)).to.equal(@"GET");
 }
 
+- (void)testRequestMethodStringForCompoundValueReturnsNil
+{
+    expect(RKStringFromRequestMethod(RKRequestMethodGET|RKRequestMethodDELETE)).to.beNil();
+}
+
 @end
