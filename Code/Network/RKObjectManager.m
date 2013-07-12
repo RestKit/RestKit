@@ -271,8 +271,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainMappingForClass(NSArray *resp
     NSMutableSet *accessibleMappings = [NSMutableSet set];
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
         if (! [accessibleMappings containsObject:responseDescriptor.mapping]) {
-            RKMappingGraphVisitor *graphVisitor = [[RKMappingGraphVisitor alloc] initWithMapping:responseDescriptor.mapping];
-            [accessibleMappings unionSet:graphVisitor.mappings];
+            [accessibleMappings addObject:responseDescriptor.mapping];
         }
     }
     
@@ -625,7 +624,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         operation = [self objectRequestOperationWithRequest:request success:nil failure:nil];
     }
     
-    if (RKDoesArrayOfResponseDescriptorsContainMappingForClass(self.responseDescriptors, [object class])) operation.targetObject = object;
+    if (RKDoesArrayOfResponseDescriptorsContainMappingForClass(matchingDescriptors, [object class])) operation.targetObject = object;
     operation.mappingMetadata = routingMetadata;
     return operation;
 }
