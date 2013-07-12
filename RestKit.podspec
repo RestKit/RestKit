@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name         =  'RestKit'
-  s.version      =  '0.20.2'
+  s.version      =  '0.20.3'
   s.summary      =  'RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X.'
   s.homepage     =  'http://www.restkit.org'
   s.author       =  { 'Blake Watters' => 'blakewatters@gmail.com' }
-  s.source       =  { :git => 'https://github.com/RestKit/RestKit.git', :tag => 'v0.20.2' }
+  s.source       =  { :git => 'https://github.com/RestKit/RestKit.git', :tag => 'v0.20.3' }
   s.license      =  'Apache License, Version 2.0'
   
   # Platform setup
@@ -47,6 +47,22 @@ EOS
     ns.dependency       'AFNetworking', '~> 1.3.0'
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
+    
+    ns.prefix_header_contents = <<-EOS
+#import <Availability.h>
+
+#define _AFNETWORKING_PIN_SSL_CERTIFICATES_
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+  #import <SystemConfiguration/SystemConfiguration.h>
+  #import <MobileCoreServices/MobileCoreServices.h>
+  #import <Security/Security.h>
+#else
+  #import <SystemConfiguration/SystemConfiguration.h>
+  #import <CoreServices/CoreServices.h>
+  #import <Security/Security.h>
+#endif
+EOS
   end    
   
   s.subspec 'CoreData' do |cdos|

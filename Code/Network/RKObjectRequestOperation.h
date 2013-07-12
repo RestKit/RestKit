@@ -81,7 +81,7 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
  
  This is the designated initializer.
  
- @param request The request object to be used with the underlying network operation.
+ @param requestOperation The request object to be used with the underlying network operation.
  @param responseDescriptors An array of `RKResponseDescriptor` objects specifying how object mapping is to be performed on the response loaded by the network operation.
  @return The receiver, initialized with the given request and response descriptors.
  */

@@ -115,11 +115,25 @@
 @property (nonatomic, copy) NSPredicate *identificationPredicate;
 
 /**
- An optional key on objects mapped with the receiver that identifies a property that can be used to detect modification to the instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object.
+ An optional attribute of the receiver's entity that can be used to detect modification of a given instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object if it is found to be not modified.
  
- A common modification key is a 'last modified' or 'updated at' timestamp that specifies the last change to an object. When the `modificationKey` is non-nil, the mapper will compare the value returned for the key on an existing object instance with the value in the representation being mapped. If they are exactly equal, then the mapper will skip all remaining property mappings and proceed to the next object.
+ A common modification attribute is a 'last modified' or 'updated at' timestamp that specifies the timestamp of the last change to an object. When the `modificationAttribute` is non-nil, the mapper will compare the value returned of the attribute on an existing object instance with the value in the representation being mapped. 
+ 
+ The semantics of the comparison are dependent on the data type of the modification attribute. If the attribute is a string, then the values are compared for equality. If the attribute is a date or a numeric value, then the values will be compared numerically and mapping will be skipped if the value in the representation is greater than the value of the modification attribute stored on the object.
+ 
+ @raises NSInvalidArgumentException Raised if the attribute given is not a property of the receiver's entity.
  */
-@property (nonatomic, copy) NSString *modificationKey;
+@property (nonatomic, strong) NSAttributeDescription *modificationAttribute;
+
+/**
+ Sets the `modificationAttribute` to the receiver to the attribute with the specified name.
+ 
+ The given name must correspond to the name of an attribute within the receiver's entity.
+ 
+ @param attributeName The name of an attribute in the entity of the receiver.
+ @raises NSInvalidArgumentException Raised if no attribute could be found with the given name.
+ */
+- (void)setModificationAttributeForName:(NSString *)attributeName;
 
 ///---------------------------------------------------------------
 /// @name Specifying a Persistent Store for Newly Inserted Objects
@@ -279,3 +293,8 @@ extern NSString * const RKEntityIdentificationAttributesUserInfoKey;
  @return An array containing identifying attributes inferred from the given entity or `nil` if none could be inferred.
  */
 NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entity);
+
+
+@interface RKEntityMapping (Deprecations)
+@property (nonatomic, copy) NSString *modificationKey DEPRECATED_ATTRIBUTE_MESSAGE("Use `setModificationAttributeForName:` instead");
+@end

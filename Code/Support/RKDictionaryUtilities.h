@@ -23,8 +23,8 @@
 /**
  Reverse merges two dictionary to produce a new dictionary wherein the keys in the second dictionary have taken precedence in instances where keys overlap. The merge is performed recursively such that subdictionaries are reverse merged as well.
  
- @param dictionary The dictionary to be reverse merged.
- @param anotherDictionary A secondary dictionary to perform the reverse merging with.
+ @param dict1 The dictionary to be reverse merged.
+ @param dict2 A secondary dictionary to perform the reverse merging with.
  @return A new `NSDicionary` object that is the product of the reverse merge.
  */
 NSDictionary *RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2);

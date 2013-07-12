@@ -169,11 +169,58 @@
     NSError *error = nil;
     BOOL success = [mappingOperation execute:&error];
 
- Note the use of the special keyPath `@"@metadata.URL"`. The `@metadata` prefix indicates that the property is to be mapped from the metadata dictionary instead of from the source object representation. If any relationships were mapped, it would have access to this same metadata information as well.
+ Note the use of the special key path `@"@metadata.URL"`. The `@metadata` prefix indicates that the property is to be mapped from the metadata dictionary instead of from the source object representation. If any relationships were mapped, it would have access to this same metadata information as well.
 
  In addition to any metadata provided to the mapping operation via the `metadata` property, the operation itself makes the following metadata key paths available for mapping:
 
  1. `@metadata.mapping.collectionIndex` - An `NSNumber` object specifying the index of the current object within a collection being mapped. This key is only available if the current representation exists within a collection.
+ 1. `@metadata.mapping.parentObject` - The direct parent object of the object that is currently being mapped. This key is only available for objects that are mapped as relationships of a parent object.
+ 
+ ## Traversing the Representation Hierarchy
+ 
+ In certain mapping scenarios it can become desirable to access ancestors of the current source object. For example, consider the following example JSON:
+ 
+    {
+        "user": {
+            "id": 1,
+            "name": "Blake Watters",
+            "preferences": [
+                {
+                    { 
+                        "name": "push_notifications_enabled",
+                        "value": true,
+                    },
+                    {
+                        "name": "subscribed_to_mailing_list",
+                        "value": false
+                    }
+                }
+            ]
+        }
+    }
+ 
+ And it's corresponding model:
+ 
+    @interface RKPreferenceExample : NSObject
+    @property (nonatomic, strong) NSNumber *userID;
+    @property (nonatomic, copy) NSString *name;
+    @property (nonatomic, strong) id value;
+    @end
+ 
+ Notice that `userID` is a field that we wish to model as part of our local `RKPreferenceExample` class, but its not available within the `@"preferences"` key path that our 
+ mapping will target. In this case we'd up like to reach "up" in the parsed JSON hierarchy to access our parent node, as demonstrated in the following mapping:
+ 
+    RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[RKPreferenceExample class]];
+    [objectMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"value": @"value", @"@parent.id": @"userID" }];
+ 
+ Note the use of the `@parent` key in the final attribute mapping: this pseudo-key always points to the direct parent node of the representation being mapped (or `nil` if there is none). Parent access can be chained to traverse upward all the way to the root node of the representation.
+ 
+ ### Representation Traversal Keys
+ 
+ There are currently two keys provided for traversing the representation hierarchy:
+ 
+ 1. `@"root"` - Returns the root node of the representation being mapped. When a large JSON document is being mapped by an instance of `RKMapperOperation` this will point to the parsed JSON document that was used to initialize the operation.
+ 1. `@"parent"` - Returns the direct parent node of the `sourceObject` being mapped or `nil` if the `sourceObject` is itself a root node.
  */
 @interface RKMappingOperation : NSOperation
 
@@ -304,7 +351,7 @@
 /**
  Retrieves the property mapping with the specified destination key path.
  
- @param key An `NSString` object specifying the destination key-path for the property that is to be retrieved.
+ @param key An `NSString` object specifying the destination key path for the property that is to be retrieved.
  @return The `RKPropertyMapping` with the specified destination key path or `nil` if none was found.
  */
 - (id)objectForKeyedSubscript:(id)key;

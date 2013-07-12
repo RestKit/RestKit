@@ -159,7 +159,7 @@
 /**
  Adds an array of `RKAttributeMapping` or `RKRelationshipMapping` objects to the receiver.
 
- @param propertyMappings The array of property mappings to be added to the object mapping.
+ @param arrayOfPropertyMappings The array of property mappings to be added to the object mapping.
  */
 - (void)addPropertyMappingsFromArray:(NSArray *)arrayOfPropertyMappings;
 
@@ -182,7 +182,7 @@
 
  The array can contain `RKAttributeMapping` objects or `NSString` values. If an `NSString` is given, then a new `RKAttributeMapping` object is instantiated with a `sourceKeyPath` and `destinationKeyPath` equal to the string value.
 
- @param An array of `RKAttributeMapping` or `NSString` values to be added to the receiver's set of attribute mappings,
+ @param arrayOfAttributeNamesOrMappings An array of `RKAttributeMapping` or `NSString` values to be added to the receiver's set of attribute mappings,
  */
 - (void)addAttributeMappingsFromArray:(NSArray *)arrayOfAttributeNamesOrMappings;
 
@@ -231,8 +231,8 @@
 
      { "users":
          {
-             "blake": { "id": 1234, "email": "blake@restkit.org" },
-             "rachit": { "id": 5678", "email": "rachit@restkit.org" }
+             "blake": {  "id": 1234, "email": "blake@restkit.org" },
+             "rachit": { "id": 5678, "email": "rachit@restkit.org" }
          }
      }
 
@@ -366,7 +366,7 @@
 
  Given a key path to a string property, this will return an `NSString`, etc.
 
- @param propertyName The name of the property we would like to retrieve the type of.
+ @param keyPath The name of the property we would like to retrieve the type of.
  @return The class of the property at the given key path.
  */
 - (Class)classForKeyPath:(NSString *)keyPath;
@@ -413,7 +413,6 @@
 
  @param dateFormatString The dateFormat string to assign to the newly constructed `NSDateFormatter` instance
  @param nilOrTimeZone The NSTimeZone object to configure on the `NSDateFormatter` instance. Defaults to UTC time.
- @return A new `NSDateFormatter` will be prepended to the `defaultDateFormatters` with the specified date format and time zone
  @see `NSDateFormatter`
  */
 + (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone;

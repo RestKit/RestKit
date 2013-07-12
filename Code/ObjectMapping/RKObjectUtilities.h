@@ -91,7 +91,7 @@ Class RKKeyValueCodingClassForObjCType(const char *type);
 /**
  Returns an appropriate class to use for KVC access based on the output obtained via the `property_getAttributes` reflection API.
  
- @param attributeString A c string containing encoding attribute information.
+ @param attr A c string containing encoding attribute information.
  @return The class name for the property type encoded in the given attribute string, an appropriate class for wrapping/unwrapping the primitive type, or `Nil` when no transformation is required or possible.
  */
 Class RKKeyValueCodingClassFromPropertyAttributes(const char *attr);

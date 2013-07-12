@@ -32,10 +32,11 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
-extern NSString * const RKErrorDomain;
+extern NSString *const RKErrorDomain;
 
-NSString * const RKSQLitePersistentStoreSeedDatabasePathOption = @"RKSQLitePersistentStoreSeedDatabasePathOption";
-NSString * const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
+NSString *const RKSQLitePersistentStoreSeedDatabasePathOption = @"RKSQLitePersistentStoreSeedDatabasePathOption";
+NSString *const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
+NSString *const RKManagedObjectStoreDidResetPersistentStoresNotification = @"RKManagedObjectStoreDidResetPersistentStoresNotification";
 
 static RKManagedObjectStore *defaultStore = nil;
 
@@ -375,6 +376,9 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     }
 
     [self recreateManagedObjectContexts];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidResetPersistentStoresNotification object:self];
+    
     return YES;
 }
 
