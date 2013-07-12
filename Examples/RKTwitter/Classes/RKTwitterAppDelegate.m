@@ -68,9 +68,10 @@
 
     // Register our mappings with the provider using a response descriptor
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:statusMapping
-                                                                                     pathPattern:@"/status/user_timeline/:username"
-                                                                                         keyPath:nil
-                                                                                     statusCodes:[NSIndexSet indexSetWithIndex:200]];
+                                                                                            method:RKRequestMethodGET
+                                                                                       pathPattern:@"/status/user_timeline/:username"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:[NSIndexSet indexSetWithIndex:200]];
     [objectManager addResponseDescriptor:responseDescriptor];
 
     // Create Window and View Controllers
