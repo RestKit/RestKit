@@ -42,6 +42,8 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
     }
 }
 
+extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
+
 @interface RKRequestDescriptor ()
 
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
@@ -53,10 +55,13 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
 
 @implementation RKRequestDescriptor
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 + (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath
 {
     return [self requestDescriptorWithMapping:mapping objectClass:objectClass rootKeyPath:rootKeyPath method:RKRequestMethodAny];
 }
+#pragma clang diagnostic pop
 
 + (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath method:(RKRequestMethod)method
 {
@@ -74,13 +79,8 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p objectClass=%@ rootKeyPath=%@ : %@>",
-            NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
-}
-
-- (BOOL)matchesObject:(id)object method:(RKRequestMethod)method exactMatch:(BOOL)exact
-{
-    return (exact ? [object class] == self.objectClass : [object isKindOfClass:self.objectClass] ) && (method & self.method) != 0;
+    return [NSString stringWithFormat:@"<%@: %p method=%@ objectClass=%@ rootKeyPath=%@ : %@>",
+            NSStringFromClass([self class]), self, RKStringDescribingRequestMethod(self.method), NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
 }
 
 - (BOOL)isEqual:(id)object
@@ -107,10 +107,11 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
     if (![otherDescriptor isKindOfClass:[RKRequestDescriptor class]]) {
         return NO;
     }
-    
+
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.objectClass == otherDescriptor.objectClass &&
+    self.method == otherDescriptor.method &&
     [self.rootKeyPath isEqualToString:otherDescriptor.rootKeyPath];
 }
 

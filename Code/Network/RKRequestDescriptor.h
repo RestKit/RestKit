@@ -38,6 +38,11 @@
 
 /**
  Creates and returns a new `RKRequestDescriptor` object.
+ 
+ This method is deprecated. Use `+ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
+ objectClass:(Class)objectClass
+ rootKeyPath:(NSString *)rootKeyPath
+ method:(RKRequestMethod)method` instead.
 
  @param mapping The mapping to be used when parameterizing an object using the request descriptor. Cannot be nil and must have an objectClass equal to `[NSMutableDictionary class]`.
  @param objectClass The class of objects for which the request descriptor should be used. Cannot be nil.
@@ -92,27 +97,13 @@ Creates and returns a new `RKRequestDescriptor` object.
  */
 @property (nonatomic, assign, readonly) RKRequestMethod method;
 
-///--------------------------------
-/// @name Using Request Descriptors
-///--------------------------------
-
-/**
- Returns `YES` if the given object is instance of objectClass or any class that inherits from objectClass, else `NO`.
-
- @param object The object to be matched against the receiver.
- @param method The HTTP method to be matched against the receiver
- @param exact  Whether `object` can be a subclass of the receiver's `objectClass`
- @return `YES` if the given object matches objectClass and method, else `NO`.
- */
-- (BOOL)matchesObject:(id)object method:(RKRequestMethod)method exactMatch:(BOOL)exact;
-
 ///-------------------------
 /// @name Comparing Request Descriptors
 ///-------------------------
 
 /**
  Returns `YES` if the receiver and the specified request descriptor are considered equivalent.
- 
+
  */
 - (BOOL)isEqualToRequestDescriptor:(RKRequestDescriptor *)otherDescriptor;
 

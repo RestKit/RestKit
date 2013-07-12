@@ -72,14 +72,25 @@ static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(NSArra
  */
 static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod)
 {
+    RKRequestDescriptor *descriptor;
     Class searchClass = [object class];
     do {
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([requestDescriptor matchesObject:object method:requestMethod exactMatch:YES]) return requestDescriptor;
+            if ([object isMemberOfClass:requestDescriptor.objectClass] && (requestMethod == requestDescriptor.method)) descriptor = requestDescriptor;
         }
     } while ((searchClass = [searchClass superclass]));
-    return nil;
+    
+    searchClass = [object class];
+    do {
+        for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
+            if ([object isMemberOfClass:requestDescriptor.objectClass] && (requestMethod &  requestDescriptor.method)) descriptor = requestDescriptor;
+        }
+    } while ((searchClass = [searchClass superclass]));
+    
+    return descriptor;
 }
+
+extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @interface RKObjectParameters : NSObject
 
@@ -752,7 +763,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     if ([self.requestDescriptors containsObject:requestDescriptor]) return;
     NSAssert([requestDescriptor isKindOfClass:[RKRequestDescriptor class]], @"Expected an object of type RKRequestDescriptor, got '%@'", [requestDescriptor class]);
     [self.requestDescriptors enumerateObjectsUsingBlock:^(RKRequestDescriptor *registeredDescriptor, NSUInteger idx, BOOL *stop) {
-        NSAssert(![registeredDescriptor.objectClass isEqual:requestDescriptor.objectClass], @"Cannot add a request descriptor for the same object class as an existing request descriptor.");
+        NSAssert(!([registeredDescriptor.objectClass isEqual:requestDescriptor.objectClass] && (requestDescriptor.method == registeredDescriptor.method)), @"Cannot add request descriptor: An existing descriptor is already registered for the class '%@' and HTTP method'%@'.", requestDescriptor.objectClass, RKStringDescribingRequestMethod(requestDescriptor.method));
     }];
     [self.mutableRequestDescriptors addObject:requestDescriptor];
 }
