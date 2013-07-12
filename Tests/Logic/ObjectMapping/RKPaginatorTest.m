@@ -53,7 +53,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
     
-    return [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:nil keyPath:@"entries" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    return [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:@"entries" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
 }
 
 - (RKObjectMapping *)paginationMapping
