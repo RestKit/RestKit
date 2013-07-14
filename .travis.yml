@@ -1,7 +1,7 @@
 language: objective-c
 before_install:
     - brew update
-    - brew install https://raw.github.com/fpotter/homebrew/246a1439dab49542d4531ad7e1bac7048151f601/Library/Formula/xctool.rb
+    - brew uninstall xctool && brew install https://raw.github.com/fpotter/homebrew/246a1439dab49542d4531ad7e1bac7048151f601/Library/Formula/xctool.rb
     - bundle install
 script:
     - rake server:start
