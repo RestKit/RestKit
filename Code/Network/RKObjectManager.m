@@ -536,13 +536,22 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 #pragma mark - Object Request Operations
 
+- (void)copyStateFromHTTPClientToHTTPRequestOperation:(AFHTTPRequestOperation *)operation
+{
+    operation.credential = self.HTTPClient.defaultCredential;
+    operation.allowsInvalidSSLCertificate = self.HTTPClient.allowsInvalidSSLCertificate;
+#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+    operation.SSLPinningMode = self.HTTPClient.defaultSSLPinningMode;
+#endif
+}
+
 - (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
                                                         success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                         failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
     RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request];
-    HTTPRequestOperation.credential = self.HTTPClient.defaultCredential;
+    [self copyStateFromHTTPClientToHTTPRequestOperation:HTTPRequestOperation];
     Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredObjectRequestOperationClasses] ?: [RKObjectRequestOperation class];
     RKObjectRequestOperation *operation = [[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
@@ -556,7 +565,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 {
     Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
     RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request];
-    HTTPRequestOperation.credential = self.HTTPClient.defaultCredential;
+    [self copyStateFromHTTPClientToHTTPRequestOperation:HTTPRequestOperation];
     Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredManagedObjectRequestOperationClasses] ?: [RKManagedObjectRequestOperation class];
     RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];        
     [operation setCompletionBlockWithSuccess:success failure:failure];
