@@ -112,8 +112,14 @@ class RestKitTestServer < Sinatra::Base
 
   get '/404' do
     status 404
-    content_type 'text/html'
-    "File Not Found"
+    content_type 'application/json'
+    { :error => "Resource not found." }.to_json
+  end
+  
+  get '/410' do
+    status 410
+    content_type 'application/json'
+    { :error => "Resource is gone." }.to_json
   end
 
   get '/503' do

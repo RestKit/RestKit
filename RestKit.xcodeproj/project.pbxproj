@@ -575,8 +575,8 @@
 		25F53AE315E7B612008B54E6 /* RKHTTPUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25F53AE415E7B612008B54E6 /* RKHTTPUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */; };
 		25F53AE515E7B612008B54E6 /* RKHTTPUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */; };
-		25F53F391606269400A093BE /* RKRequestOperationSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53F381606269400A093BE /* RKRequestOperationSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25F53F3A1606269400A093BE /* RKRequestOperationSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53F381606269400A093BE /* RKRequestOperationSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25F53F391606269400A093BE /* RKObjectRequestOperationSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53F381606269400A093BE /* RKObjectRequestOperationSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25F53F3A1606269400A093BE /* RKObjectRequestOperationSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53F381606269400A093BE /* RKObjectRequestOperationSubclass.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FABED014E3796400E609E7 /* RKTestNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */; };
 		25FABED114E3796400E609E7 /* RKTestNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */; };
 		25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -956,7 +956,7 @@
 		25EC1B1F14F8220800C3CF3F /* RestKitResources-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RestKitResources-Info.plist"; sourceTree = "<group>"; };
 		25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKHTTPUtilities.h; path = ../ObjectMapping/RKHTTPUtilities.h; sourceTree = "<group>"; };
 		25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKHTTPUtilities.m; path = ../ObjectMapping/RKHTTPUtilities.m; sourceTree = "<group>"; };
-		25F53F381606269400A093BE /* RKRequestOperationSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestOperationSubclass.h; sourceTree = "<group>"; };
+		25F53F381606269400A093BE /* RKObjectRequestOperationSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectRequestOperationSubclass.h; sourceTree = "<group>"; };
 		25FBB850159272DD00955D27 /* RKRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRouter.h; sourceTree = "<group>"; };
 		25FBB851159272DD00955D27 /* RKRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouter.m; sourceTree = "<group>"; };
 		3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = has_many_with_to_one_relationship.json; sourceTree = "<group>"; };
@@ -1695,7 +1695,7 @@
 				254372AB15F54C3F006E8424 /* RKHTTPRequestOperation.m */,
 				254372B015F54C3F006E8424 /* RKObjectRequestOperation.h */,
 				254372B115F54C3F006E8424 /* RKObjectRequestOperation.m */,
-				25F53F381606269400A093BE /* RKRequestOperationSubclass.h */,
+				25F53F381606269400A093BE /* RKObjectRequestOperationSubclass.h */,
 			);
 			name = ObjectRequestOperations;
 			sourceTree = "<group>";
@@ -1831,7 +1831,7 @@
 				259B96F51604CCCC0000C250 /* AFNetworkActivityIndicatorManager.h in Headers */,
 				259B96F71604CCCC0000C250 /* UIImageView+AFNetworking.h in Headers */,
 				259B96F91604CCCC0000C250 /* AFNetworking.h in Headers */,
-				25F53F391606269400A093BE /* RKRequestOperationSubclass.h in Headers */,
+				25F53F391606269400A093BE /* RKObjectRequestOperationSubclass.h in Headers */,
 				25A226D61618A57500952D72 /* RKObjectUtilities.h in Headers */,
 				2507C327161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 				25CDA0DC161E7ED400F583F3 /* RKISO8601DateFormatter.h in Headers */,
@@ -1937,7 +1937,7 @@
 				259B96F61604CCCC0000C250 /* AFNetworkActivityIndicatorManager.h in Headers */,
 				259B96F81604CCCC0000C250 /* UIImageView+AFNetworking.h in Headers */,
 				259B96FA1604CCCC0000C250 /* AFNetworking.h in Headers */,
-				25F53F3A1606269400A093BE /* RKRequestOperationSubclass.h in Headers */,
+				25F53F3A1606269400A093BE /* RKObjectRequestOperationSubclass.h in Headers */,
 				25A226D71618A57500952D72 /* RKObjectUtilities.h in Headers */,
 				2507C328161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 				25CDA0DD161E7ED400F583F3 /* RKISO8601DateFormatter.h in Headers */,

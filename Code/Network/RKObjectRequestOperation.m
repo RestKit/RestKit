@@ -171,9 +171,7 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
         NSString *body = nil;
         if ([operation.request HTTPBody]) {
             body = RKLogTruncateString([[NSString alloc] initWithData:[operation.request HTTPBody] encoding:NSUTF8StringEncoding]);
-        } /*else if ([operation.request HTTPBodyStream]) {
-            body = RKStringDescribingStream([operation.request HTTPBodyStream]);
-        }*/
+        }
         
         RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
     } else {
@@ -398,6 +396,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
             }
         }];
         [self.stateMachine setFinalizationBlock:^{
+            [weakSelf willFinish];
             RKDecrementNetworkAcitivityIndicator();
             [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: weakSelf.mappingDidStartDate ?: [NSNull null], RKObjectRequestOperationMappingDidFinishUserInfoKey: weakSelf.mappingDidFinishDate ?: [NSNull null] }];
         }];
@@ -586,6 +585,11 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     return [NSString stringWithFormat:@"<%@: %p, state: %@, isCancelled=%@, request: %@, response: %@>",
             NSStringFromClass([self class]), self, RKStringForStateOfObjectRequestOperation(self), [self isCancelled] ? @"YES" : @"NO",
             self.HTTPRequestOperation.request, RKStringDescribingURLResponseWithData(self.HTTPRequestOperation.response, self.HTTPRequestOperation.responseData)];
+}
+
+- (void)willFinish
+{
+    // Default implementation does nothing
 }
 
 #pragma mark - NSCopying
