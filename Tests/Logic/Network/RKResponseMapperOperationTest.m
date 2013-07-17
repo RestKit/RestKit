@@ -563,4 +563,39 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     expect(^{ [RKManagedObjectResponseMapperOperation registerMappingOperationDataSourceClass:[RKTestObjectMappingOperationDataSource class]]; }).to.raiseWithReason(NSInvalidArgumentException, @"Registered data source class 'RKTestObjectMappingOperationDataSource' does not inherit from the `RKManagedObjectMappingOperationDataSource` class: You must subclass `RKManagedObjectMappingOperationDataSource` in order to register a data source class for `RKManagedObjectResponseMapperOperation`.");
 }
 
+# pragma mark Cancellation
+
+- (void)testThatDidFinishMappingBlockIsInvokedWithErrorOnCancel
+{
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:responseURL];
+    [request setAllHTTPHeaderFields:@{ @"Content-Type": @"application/xml" }];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"name\": \"Blake\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    RKTestUser *testUser = [RKTestUser new];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"@metadata.customKey": @"name" }];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithRequest:request response:response data:data responseDescriptors:@[ responseDescriptor ]];
+    mapper.mappingMetadata = @{ @"customKey": @"This is the value" };
+    mapper.targetObject = testUser;
+    __block NSError *error = nil;
+    __block RKMappingResult *mappingResult = nil;
+    [mapper setDidFinishMappingBlock:^(RKMappingResult *blockMappingResult, NSError *blockError) {
+        mappingResult = blockMappingResult;
+        error = blockError;
+    }];
+    
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue setSuspended:YES];
+    [operationQueue addOperation:mapper];
+    [operationQueue cancelAllOperations];
+    expect(error).willNot.beNil();
+    expect(mappingResult).to.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKOperationCancelledError);    
+}
+
 @end

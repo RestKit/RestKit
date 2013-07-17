@@ -175,7 +175,7 @@
 - (void)setWillMapDeserializedResponseBlock:(id (^)(id deserializedResponseBody))block;
 
 /**
- Sets a block to be executed when the response mapper operation has completed its mapping activities. This method is distinct from the `completionBlock` because it is invoked while the operation is still executing.
+ Sets a block to be executed when the response mapper operation has completed its mapping activities. This method is distinct from the `completionBlock` because it is invoked while the operation is still executing. This block is guaranteed to be called even if the receiver is cancelled before it has been started.
  
  @param block A block object to be executed when the response mapping is finished. The block has no return value and accepts two arguments: an `RKNappingResult` object that was mapped from the response or an `NSError` error indicating that the mapping has failed.
  */
