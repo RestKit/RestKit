@@ -809,4 +809,40 @@
     expect(requestOperation2.isReady).will.beTruthy();
 }
 
+- (void)testThatCancelledOperationsAreClearedFromSuspendedQueue
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{}];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue setSuspended:YES];
+    [operationQueue addOperation:operation];
+    [operationQueue addOperation:blockOperation];
+    [operationQueue cancelAllOperations];
+    [operationQueue setSuspended:NO];
+    expect([operationQueue operationCount]).will.equal(0);
+}
+
+- (void)testThatCancelledOperationsAreClearedFromUnsuspendedQueueWhenTheMappingQueueIsSuspended
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    [operationQueue setSuspended:NO];
+    [[RKObjectRequestOperation responseMappingQueue] setSuspended:YES];
+    [operationQueue addOperation:operation];
+    expect([operation isExecuting]).will.beTruthy();
+    [operationQueue cancelAllOperations];
+    expect([operationQueue operationCount]).will.equal(0);
+    [[RKObjectRequestOperation responseMappingQueue] setSuspended:NO];
+}
+
 @end
