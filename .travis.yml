@@ -1,7 +1,7 @@
 language: objective-c
 before_install:
     - brew update
-    - brew upgrade xctool
+    - brew uninstall xctool && brew install xctool
     - bundle install
 script:
     - rake server:start
