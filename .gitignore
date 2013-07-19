@@ -28,3 +28,7 @@ Pods
 RestKit.xcodeproj/xcshareddata/
 RestKit.xcworkspace/xcshareddata/xcschemes/
 DerivedData
+
+# Bundler binstubs
+.bundle
+bin
