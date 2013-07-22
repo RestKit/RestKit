@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#ifdef _COREDATADEFINES_H
+
 #import "RKManagedObjectRequestOperation.h"
 #import "RKLog.h"
 #import "RKHTTPUtilities.h"
@@ -898,3 +900,5 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 }
 
 @end
+
+#endif

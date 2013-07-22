@@ -204,6 +204,7 @@ void RKLogConfigureFromEnvironment(void);
  */
 void RKLogValidationError(NSError *error);
 
+#ifdef _COREDATADEFINES_H
 /**
  Logs extensive information an NSError generated as the result of a
  failed Core Data interaction, such as the execution of a fetch request
@@ -214,6 +215,7 @@ void RKLogValidationError(NSError *error);
  at invocation time.
  */
 void RKLogCoreDataError(NSError *error);
+#endif
 
 /**
  Logs the value of an NSUInteger as a binary string. Useful when

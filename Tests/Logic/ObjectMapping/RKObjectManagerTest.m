@@ -29,6 +29,8 @@
 #import "RKDynamicMapping.h"
 #import "RKTestAddress.h"
 #import "RKPost.h"
+#import "RKObjectRequestOperation.h"
+#import "RKManagedObjectRequestOperation.h"
 
 @interface RKSubclassedTestModel : RKObjectMapperTestModel
 @end

@@ -21,7 +21,6 @@
 #import <objc/runtime.h>
 #import "RKObjectManager.h"
 #import "RKObjectParameterization.h"
-#import "RKManagedObjectStore.h"
 #import "RKRequestDescriptor.h"
 #import "RKResponseDescriptor.h"
 #import "RKDictionaryUtilities.h"
@@ -33,6 +32,15 @@
 #import "RKPaginator.h"
 #import "RKDynamicMapping.h"
 #import "RKRelationshipMapping.h"
+#import "RKObjectRequestOperation.h"
+#import "RKRouter.h"
+#import "RKRoute.h"
+#import "RKRouteSet.h"
+
+#ifdef _COREDATADEFINES_H
+#import "RKManagedObjectStore.h"
+#import "RKManagedObjectRequestOperation.h"
+#endif
 
 #if !__has_feature(objc_arc)
 #error RestKit must be built with ARC.
@@ -204,6 +212,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
  */
 static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *responseDescriptors)
 {
+#ifdef _COREDATADEFINES_H
     // Visit all mappings accessible from the object graphs of all response descriptors
     NSMutableSet *accessibleMappings = [NSMutableSet set];
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
@@ -227,6 +236,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
             }
         }
     }
+#endif
     
     return NO;
 }
@@ -234,6 +244,7 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
 BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors);
 BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors)
 {
+#ifdef _COREDATADEFINES_H
     // Visit all mappings accessible from the object graphs of all response descriptors
     NSMutableSet *accessibleMappings = [NSMutableSet set];
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
@@ -261,7 +272,8 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         }
         return YES;
     }
-
+#endif
+    
     return NO;
 }
 
@@ -499,7 +511,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 - (BOOL)registerRequestOperationClass:(Class)operationClass
 {
-    if ([operationClass isSubclassOfClass:[RKManagedObjectRequestOperation class]]) {
+    Class managedObjectRequestOperationClass = NSClassFromString(@"RKManagedObjectRequestOperation");
+    if (managedObjectRequestOperationClass && [operationClass isSubclassOfClass:managedObjectRequestOperationClass]) {
         [self.registeredManagedObjectRequestOperationClasses removeObject:operationClass];
         [self.registeredManagedObjectRequestOperationClasses insertObject:operationClass atIndex:0];
         return YES;
@@ -558,6 +571,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return operation;
 }
 
+#ifdef _COREDATADEFINES_H
 - (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
                                                          managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
@@ -574,6 +588,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     operation.fetchRequestBlocks = self.fetchRequestBlocks;
     return operation;
 }
+#endif
 
 - (id)appropriateObjectRequestOperationWithObject:(id)object
                                            method:(RKRequestMethod)method
@@ -595,6 +610,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         routingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
     }
     
+#ifdef _COREDATADEFINES_H
     NSArray *matchingDescriptors = RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(self.responseDescriptors, path, method);
     BOOL containsEntityMapping = RKDoesArrayOfResponseDescriptorsContainEntityMapping(matchingDescriptors);
     BOOL isManagedObjectRequestOperation = (containsEntityMapping || [object isKindOfClass:[NSManagedObject class]]);
@@ -624,6 +640,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         // Non-Core Data operation
         operation = [self objectRequestOperationWithRequest:request success:nil failure:nil];
     }
+#else
+    // Non-Core Data operation
+    operation = [self objectRequestOperationWithRequest:request success:nil failure:nil];
+#endif
     
     if (RKDoesArrayOfResponseDescriptorsContainMappingForClass(self.responseDescriptors, [object class])) operation.targetObject = object;
     operation.mappingMetadata = routingMetadata;
@@ -756,9 +776,11 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSAssert(self.paginationMapping, @"Cannot instantiate a paginator when `paginationMapping` is nil.");
     NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:pathPattern parameters:nil];
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:self.responseDescriptors];
+#ifdef _COREDATADEFINES_H
     paginator.managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
     paginator.managedObjectCache = self.managedObjectStore.managedObjectCache;
     paginator.fetchRequestBlocks = self.fetchRequestBlocks;
+#endif
     paginator.operationQueue = self.operationQueue;
     Class HTTPOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses];
     if (HTTPOperationClass) [paginator setHTTPOperationClass:HTTPOperationClass];
@@ -826,16 +848,20 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 #pragma mark - Fetch Request Blocks
 
+#ifdef _COREDATADEFINES_H
+
 - (NSArray *)fetchRequestBlocks
 {
     return [NSArray arrayWithArray:self.mutableFetchRequestBlocks];
 }
 
-- (void)addFetchRequestBlock:(RKFetchRequestBlock)block
+- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL))block
 {
     NSParameterAssert(block);
     [self.mutableFetchRequestBlocks addObject:block];
 }
+
+#endif
 
 #pragma mark - Queue Management
 
