@@ -24,6 +24,11 @@
 #import "RKPathUtilities.h"
 #import "RKLog.h"
 #import "SOCKit.h"
+#import "RKRouteSet.h"
+
+#ifdef _COREDATADEFINES_H
+#import "RKManagedObjectRequestOperation.h"
+#endif
 
 @interface SOCPattern (RKTestHelpers)
 @property (nonatomic, strong, readonly) NSArray* parameters;
