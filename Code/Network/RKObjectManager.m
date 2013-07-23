@@ -72,6 +72,7 @@ static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(NSArra
  */
 static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod)
 {
+    
     RKRequestDescriptor *descriptor;
     Class searchClass = [object class];
     do {
@@ -86,6 +87,11 @@ static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequest
             if ((searchClass == requestDescriptor.objectClass) && (requestMethod &  requestDescriptor.method)) descriptor = requestDescriptor;
         }
     } while ((searchClass = [searchClass superclass]));
+    
+    for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
+        if ([object isMemberOfClass:requestDescriptor.objectClass] &&
+            ((requestMethod == requestDescriptor.method) || (requestMethod & requestDescriptor.method))) descriptor = requestDescriptor;
+    }
     
     return descriptor;
 }
