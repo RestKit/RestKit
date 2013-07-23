@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <RestKit/RestKit.h>
+#import <Foundation/Foundation.h>
 
 /**
  The `RKOperationStateMachine` class provides an implementation of a state machine that is suitable for implementing a concurrent `NSOperation` subclass via composition. The concurrency mechanism is a dispatch queue. The state machine takes care of correctly implementing all aspects of a concurrent `NSOperation` including:
