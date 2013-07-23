@@ -70,24 +70,22 @@ static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(NSArra
  @param object The object to find a matching request descriptor for.
  @return An `RKRequestDescriptor` object matching the given object, or `nil` if none could be found.
  */
-static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod)
+RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod);
+RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod)
 {
-    RKRequestDescriptor *descriptor;
     Class searchClass = [object class];
     do {
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([object isMemberOfClass:requestDescriptor.objectClass] && (requestMethod == requestDescriptor.method)) descriptor = requestDescriptor;
+            if ([requestDescriptor.objectClass isEqual:searchClass] && (requestMethod == requestDescriptor.method)) return requestDescriptor;
         }
-    } while ((searchClass = [searchClass superclass]));
-    
-    searchClass = [object class];
-    do {
+        
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([object isMemberOfClass:requestDescriptor.objectClass] && (requestMethod &  requestDescriptor.method)) descriptor = requestDescriptor;
+            if ([requestDescriptor.objectClass isEqual:searchClass] && (requestMethod & requestDescriptor.method)) return requestDescriptor;
         }
-    } while ((searchClass = [searchClass superclass]));
+        searchClass = [searchClass superclass];
+    } while (searchClass);
     
-    return descriptor;
+    return nil;
 }
 
 extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
