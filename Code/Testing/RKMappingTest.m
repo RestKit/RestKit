@@ -19,7 +19,6 @@
 //
 
 #import "RKMappingTest.h"
-#import "RKEntityMapping.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKRelationshipMapping.h"
 #import "RKErrors.h"
@@ -27,10 +26,13 @@
 #import "RKLog.h"
 
 // Core Data
+#ifdef _COREDATADEFINES_H
+#import "RKEntityMapping.h"
 #import "RKConnectionDescription.h"
 #import "RKConnectionTestExpectation.h"
 #import "RKFetchRequestManagedObjectCache.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
+#endif
 
 // Error Constants
 NSString * const RKMappingTestErrorDomain = @"org.restkit.RKMappingTest.ErrorDomain";
@@ -45,21 +47,28 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 @interface RKMappingTestEvent : NSObject
 
 @property (nonatomic, strong, readonly) RKPropertyMapping *propertyMapping;
+#ifdef _COREDATADEFINES_H
 @property (nonatomic, strong, readonly) RKConnectionDescription *connection;
+#endif
 @property (nonatomic, strong, readonly) id value;
 
 @property (weak, nonatomic, readonly) NSString *sourceKeyPath;
 @property (weak, nonatomic, readonly) NSString *destinationKeyPath;
 
 + (RKMappingTestEvent *)eventWithMapping:(RKPropertyMapping *)propertyMapping value:(id)value;
+
+#ifdef _COREDATADEFINES_H
 + (RKMappingTestEvent *)eventWithConnection:(RKConnectionDescription *)connection value:(id)value;
+#endif
 
 @end
 
 @interface RKMappingTestEvent ()
 @property (nonatomic, strong, readwrite) id value;
 @property (nonatomic, strong, readwrite) RKPropertyMapping *propertyMapping;
+#ifdef _COREDATADEFINES_H
 @property (nonatomic, strong, readwrite) RKConnectionDescription *connection;
+#endif
 @end
 
 @implementation RKMappingTestEvent
@@ -73,6 +82,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     return event;
 }
 
+#ifdef _COREDATADEFINES_H
 + (RKMappingTestEvent *)eventWithConnection:(RKConnectionDescription *)connection value:(id)value
 {
     RKMappingTestEvent *event = [RKMappingTestEvent new];
@@ -80,6 +90,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     event.value = value;
     return event;
 }
+#endif
 
 - (NSString *)sourceKeyPath
 {
@@ -96,7 +107,9 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     if (self.propertyMapping) {
         return [NSString stringWithFormat:@"%@ mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@>", [self class],
                 self.sourceKeyPath, self.destinationKeyPath, self.value];
-    } else if (self.connection) {
+    }
+#ifdef _COREDATADEFINES_H
+    else if (self.connection) {
         if ([self.connection isForeignKeyConnection]) {
             return [NSString stringWithFormat:@"%@ connected Relationship '%@' using attributes '%@' to value: %@>", [self class],
                     [self.connection.relationship name], [self.connection.attributes valueForKey:@"name"], self.value];
@@ -105,6 +118,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                     [self.connection.relationship name], self.connection.keyPath, self.value];
         }
     }
+#endif
     
     return [super description];
 }
@@ -156,28 +170,33 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 - (void)addExpectation:(id)expectation
 {
     NSParameterAssert(expectation);
-    if (![expectation isKindOfClass:[RKPropertyMappingTestExpectation class]] && ![expectation isKindOfClass:[RKConnectionTestExpectation class]]) {
+    Class connectionTestExpectation = NSClassFromString(@"RKConnectionTestExpectation");
+    if (![expectation isKindOfClass:[RKPropertyMappingTestExpectation class]] && ![expectation isKindOfClass:connectionTestExpectation]) {
         [NSException raise:NSInvalidArgumentException
                     format:@"Invalid expectation: expected an object of type `%@` or `%@`, but instead got a `%@`",
-                           [RKPropertyMappingTestExpectation class], [RKConnectionTestExpectation class], expectation];
+                           [RKPropertyMappingTestExpectation class], @"RKConnectionTestExpectation", expectation];
     }
     [self.expectations addObject:expectation];
 }
 
 - (RKMappingTestEvent *)eventMatchingExpectation:(id)expectation
 {
+    Class connectionTestExpectation = NSClassFromString(@"RKConnectionTestExpectation");
     for (RKMappingTestEvent *event in [self.events copy]) {
         if ([expectation isKindOfClass:[RKPropertyMappingTestExpectation class]]) {
             RKPropertyMappingTestExpectation *propertyExpectation = (RKPropertyMappingTestExpectation *) expectation;
             if ([event.sourceKeyPath isEqualToString:propertyExpectation.sourceKeyPath] && [event.destinationKeyPath isEqualToString:propertyExpectation.destinationKeyPath]) {
                 return event;
             }
-        } else if ([expectation isKindOfClass:[RKConnectionTestExpectation class]]) {
+        }
+#ifdef _COREDATADEFINES_H
+        else if ([expectation isKindOfClass:connectionTestExpectation]) {
             RKConnectionTestExpectation *connectionExpectation = (RKConnectionTestExpectation *) expectation;
             if ([[event.connection.relationship name] isEqualToString:connectionExpectation.relationshipName]) {
                 return event;
             }
         }
+#endif
     }
 
     return nil;
@@ -280,7 +299,9 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
             // We only wanted to know that a mapping occured between the keyPaths
             success = YES;
         }
-    } else if ([expectation isKindOfClass:[RKConnectionTestExpectation class]]) {
+    }
+#ifdef _COREDATADEFINES_H
+    else if ([expectation isKindOfClass:[RKConnectionTestExpectation class]]) {
         RKConnectionTestExpectation *connectionExpectation = (RKConnectionTestExpectation *)expectation;
         id expectedValue = connectionExpectation.value;
         id connectedValue = event.value;
@@ -311,6 +332,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         
         return YES;
     }
+#endif
     return success;
 }
 
@@ -355,6 +377,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         }
         
         // Let the connection operations execute to completion
+#ifdef _COREDATADEFINES_H
         Class managedObjectMappingOperationDataSourceClass = NSClassFromString(@"RKManagedObjectMappingOperationDataSource");
         if ([mappingOperation.dataSource isKindOfClass:managedObjectMappingOperationDataSourceClass]) {
             NSOperationQueue *operationQueue = [(RKManagedObjectMappingOperationDataSource *)mappingOperation.dataSource operationQueue];
@@ -362,6 +385,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                 [operationQueue waitUntilAllOperationsAreFinished];
             }
         }
+#endif
 
         self.performedMapping = YES;
         
@@ -473,9 +497,11 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
 }
 
+#ifdef _COREDATADEFINES_H
 - (void)mappingOperation:(RKMappingOperation *)operation didConnectRelationship:(NSRelationshipDescription *)relationship toValue:(id)value usingConnection:(RKConnectionDescription *)connection
 {
     [self addEvent:[RKMappingTestEvent eventWithConnection:connection value:value]];
 }
+#endif
 
 @end

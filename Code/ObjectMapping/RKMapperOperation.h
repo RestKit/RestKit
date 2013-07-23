@@ -18,7 +18,6 @@
 //  limitations under the License.
 //
 
-#import <CoreData/CoreData.h>
 #import <Foundation/Foundation.h>
 #import "RKObjectMapping.h"
 #import "RKMappingOperation.h"
