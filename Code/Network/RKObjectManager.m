@@ -76,14 +76,14 @@ static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequest
     Class searchClass = [object class];
     do {
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([object isMemberOfClass:requestDescriptor.objectClass] && (requestMethod == requestDescriptor.method)) descriptor = requestDescriptor;
+            if ((searchClass == requestDescriptor.objectClass) && (requestMethod == requestDescriptor.method)) descriptor = requestDescriptor;
         }
     } while ((searchClass = [searchClass superclass]));
     
     searchClass = [object class];
     do {
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([object isMemberOfClass:requestDescriptor.objectClass] && (requestMethod &  requestDescriptor.method)) descriptor = requestDescriptor;
+            if ((searchClass == requestDescriptor.objectClass) && (requestMethod &  requestDescriptor.method)) descriptor = requestDescriptor;
         }
     } while ((searchClass = [searchClass superclass]));
     
