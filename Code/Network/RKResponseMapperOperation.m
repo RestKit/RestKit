@@ -180,8 +180,6 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
         self.response = response;
         self.data = data;
         self.responseDescriptors = responseDescriptors;
-        self.matchingResponseDescriptors = [self buildMatchingResponseDescriptors];
-        self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
         self.treatsEmptyResponseAsSuccess = YES;
         self.mappingMetadata = @{}; // Initialize the metadata
     }
@@ -212,22 +210,27 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     return object;
 }
 
-- (NSArray *)buildMatchingResponseDescriptors
+- (NSArray *)matchingResponseDescriptors
 {
-    NSIndexSet *indexSet = [self.responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
-        return [responseDescriptor matchesResponse:self.response];
-    }];
-    return [self.responseDescriptors objectsAtIndexes:indexSet];
+    if (!_matchingResponseDescriptors) {
+        NSIndexSet *indexSet = [self.responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
+            return [responseDescriptor matchesResponse:self.response] && (RKRequestMethodFromString(self.request.HTTPMethod) & responseDescriptor.method);
+        }];
+        _matchingResponseDescriptors = [self.responseDescriptors objectsAtIndexes:indexSet];
+    }
+    return _matchingResponseDescriptors;
 }
 
-- (NSDictionary *)buildResponseMappingsDictionary
+- (NSDictionary *)responseMappingsDictionary
 {
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    for (RKResponseDescriptor *responseDescriptor in self.matchingResponseDescriptors) {
-        [dictionary setObject:responseDescriptor.mapping forKey:(responseDescriptor.keyPath ?: [NSNull null])];
+    if(!_responseMappingsDictionary) {
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        for (RKResponseDescriptor *responseDescriptor in self.matchingResponseDescriptors) {
+            [dictionary setObject:responseDescriptor.mapping forKey:(responseDescriptor.keyPath ?: [NSNull null])];
+        }
+        _responseMappingsDictionary = dictionary;
     }
-
-    return dictionary;
+    return _responseMappingsDictionary;
 }
 
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
