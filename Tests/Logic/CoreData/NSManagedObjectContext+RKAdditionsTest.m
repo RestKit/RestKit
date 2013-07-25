@@ -41,7 +41,7 @@
 
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Test"];
-    NSArray *objects = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    NSArray *objects = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     assertThat(objects, hasCountOf(1));
     RKHuman *fetchedHuman = [objects objectAtIndex:0];
     assertThatBool([fetchedHuman.objectID isTemporaryID], is(equalToBool(NO)));

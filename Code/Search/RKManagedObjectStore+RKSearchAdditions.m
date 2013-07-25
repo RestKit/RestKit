@@ -55,14 +55,14 @@ static char searchIndexerAssociationKey;
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:attributes];
 }
 
-- (void)startIndexingPersistentStoreManagedObjectContext
+- (void)startIndexingMainQueueManagedObjectContext
 {
-    [self.searchIndexer startObservingManagedObjectContext:self.persistentStoreManagedObjectContext];
+    [self.searchIndexer startObservingManagedObjectContext:self.mainQueueManagedObjectContext];
 }
 
-- (void)stopIndexingPersistentStoreManagedObjectContext
+- (void)stopIndexingMainQueueManagedObjectContext
 {
-    [self.searchIndexer stopObservingManagedObjectContext:self.persistentStoreManagedObjectContext];
+    [self.searchIndexer stopObservingManagedObjectContext:self.mainQueueManagedObjectContext];
 }
 
 @end

@@ -211,7 +211,7 @@
 - (void)testConnectingToSubentities
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"Child" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"Child" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     NSRelationshipDescription *relationship = [childEntity relationshipsByName][@"friends"];
     RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"friendIDs": @"railsID" }];
     connection.includesSubentities = YES;
@@ -235,7 +235,7 @@
 - (void)testNotConnectingToSubentities
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"Child" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"Child" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     NSRelationshipDescription *relationship = [childEntity relationshipsByName][@"friends"];
     RKConnectionDescription *connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:@{ @"friendIDs": @"railsID" }];
     connection.includesSubentities = NO;

@@ -28,10 +28,9 @@
 {
     [RKTestFactory setUp];
     self.managedObjectStore = [RKTestFactory managedObjectStore];
-    self.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    self.managedObjectContext = [self.managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:YES];
+    self.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.managedObjectContext];
     
-    self.managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-    [self.managedObjectContext setParentContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     self.humanEntity = [self.managedObjectStore.managedObjectModel entitiesByName][@"Human"];
     NSSet __unused *objects = [self.managedObjectCache managedObjectsWithEntity:self.humanEntity attributeValues:@{ @"railsID": @12345 } inManagedObjectContext:self.managedObjectContext];
 }
@@ -43,9 +42,9 @@
 
 - (void)waitForPendingChangesToProcess
 {
-    [self.managedObjectStore.persistentStoreManagedObjectContext processPendingChanges];
+    [self.managedObjectContext processPendingChanges];
     __block BOOL processingComplete = NO;
-    [self.managedObjectStore.persistentStoreManagedObjectContext performBlock:^{
+    [self.managedObjectContext performBlock:^{
         // As soon as we make it onto the context, the notification has been processed
         processingComplete = YES;
     }];
@@ -54,20 +53,20 @@
 
 - (void)testManagedObjectContextProcessPendingChangesAddsNewObjectsToCache
 {
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
     [self waitForPendingChangesToProcess];
-    NSSet *objects = [self.managedObjectCache managedObjectsWithEntity:self.humanEntity attributeValues:@{ @"railsID": @12345 } inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    NSSet *objects = [self.managedObjectCache managedObjectsWithEntity:self.humanEntity attributeValues:@{ @"railsID": @12345 } inManagedObjectContext:self.managedObjectContext];
     expect([objects containsObject:human1]).will.equal(YES);
 }
 
 - (void)testManagedObjectContextProcessPendingChangesIgnoresObjectsOfDifferentEntityTypes
 {
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
     
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Cloud" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    NSManagedObject *cloud = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Cloud" inManagedObjectContext:self.managedObjectContext];
+    NSManagedObject *cloud = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext];
     [cloud setValue:@"Cumulus" forKey:@"name"];
     
     [self waitForPendingChangesToProcess];
@@ -77,7 +76,7 @@
 
 - (void)testManagedObjectContextProcessPendingChangesAddsUpdatedObjectsToCache
 {
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
     [self waitForPendingChangesToProcess];
     
@@ -97,13 +96,13 @@
 {
     // PENDING: This test is brittle when run in the full suite
     return;
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
     [self waitForPendingChangesToProcess];
     expect([self.managedObjectCache.entityCache containsObject:human1]).will.beTruthy();
-    [self.managedObjectStore.persistentStoreManagedObjectContext deleteObject:human1];
+    [self.managedObjectContext deleteObject:human1];
     [self waitForPendingChangesToProcess];
-    [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+    [self.managedObjectContext performBlockAndWait:^{
         // Nothing
     }];
     expect([self.managedObjectCache.entityCache containsObject:human1]).will.beFalsy();
@@ -111,19 +110,19 @@
 
 - (void)testCreatingProcessingAndDeletingObjectsWorksAsExpected
 {
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
     human1.railsID = [NSNumber numberWithInteger:12345];
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
     [self waitForPendingChangesToProcess];
     
     expect([self.managedObjectCache.entityCache containsObject:human1]).will.equal(YES);
     expect([self.managedObjectCache.entityCache containsObject:human2]).will.equal(YES);
-    [self.managedObjectStore.persistentStoreManagedObjectContext deleteObject:human2];
+    [self.managedObjectContext deleteObject:human2];
     
     // Save and reload the cache. This will result in the cached temporary
     // object ID's being released during the cache flush.
-    [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    [self.managedObjectContext save:nil];
     [self waitForPendingChangesToProcess];
     [self.managedObjectCache.entityCache cacheObjectsForEntity:self.humanEntity byAttributes:@[ @"railsID" ] completion:^{
         expect([self.managedObjectCache.entityCache containsObject:human1]).will.equal(YES);

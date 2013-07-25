@@ -128,7 +128,8 @@
     [managedObjectStore createManagedObjectContexts];
     
     // Configure a managed object cache to ensure we do not create duplicate objects
-    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSManagedObjectContext *managedObjectContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:YES];
+    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectContext];
 #endif
 
     return YES;
