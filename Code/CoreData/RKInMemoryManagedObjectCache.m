@@ -27,16 +27,6 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
 
-static NSPersistentStoreCoordinator *RKPersistentStoreCoordinatorFromManagedObjectContext(NSManagedObjectContext *managedObjectContext)
-{
-    NSManagedObjectContext *currentContext = managedObjectContext;
-    do {
-        if ([currentContext persistentStoreCoordinator]) return [currentContext persistentStoreCoordinator];
-        currentContext = [currentContext parentContext];
-    } while (currentContext);
-    return nil;
-}
-
 static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
 {
     static dispatch_once_t onceToken;
@@ -58,9 +48,11 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
 {
     self = [super init];
     if (self) {
-        NSManagedObjectContext *cacheContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [cacheContext setPersistentStoreCoordinator:RKPersistentStoreCoordinatorFromManagedObjectContext(managedObjectContext)];
-        self.entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:cacheContext];
+        if (managedObjectContext.concurrencyType == NSMainQueueConcurrencyType) {
+            RKLogWarning(@"RKInMemoryManagedObjectCache was configured with a managedObjectContext with the `NSMainQueueConcurrencyType` concurrency type");
+        }
+        
+        self.entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
         self.entityCache.callbackQueue = RKInMemoryManagedObjectCacheCallbackQueue();
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleManagedObjectContextDidChangeNotification:) name:NSManagedObjectContextObjectsDidChangeNotification object:managedObjectContext];

@@ -19,7 +19,7 @@
 {
     [RKTestFactory setUp];
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     self.relationship = [entity relationshipsByName][@"cats"];
 }
 

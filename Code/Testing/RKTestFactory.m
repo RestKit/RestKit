@@ -261,9 +261,9 @@
 
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
-    if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
+    if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingMainQueueManagedObjectContext)]) {
         // Search component is optional
-        [[RKManagedObjectStore defaultStore] performSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)];
+        [[RKManagedObjectStore defaultStore] performSelector:@selector(stopIndexingMainQueueManagedObjectContext)];
         
         if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(searchIndexer)]) {
             id searchIndexer = [[RKManagedObjectStore defaultStore] valueForKey:@"searchIndexer"];

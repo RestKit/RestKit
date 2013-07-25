@@ -155,6 +155,7 @@
 @interface RKMappingTestCoreDataIntegrationTest : RKTestCase
 @property (nonatomic, strong) id objectRepresentation;
 @property (nonatomic, strong) RKManagedObjectStore *managedObjectStore;
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong) RKMappingTest *mappingTest;
 @property (nonatomic, strong) RKEntityMapping *entityMapping;
 @property (nonatomic, strong) RKCat *asia;
@@ -168,6 +169,7 @@
     
     self.objectRepresentation = [RKTestFixture parsedObjectWithContentsOfFixture:@"with_to_one_relationship.json"];
     self.managedObjectStore = [RKTestFactory managedObjectStore];
+    self.managedObjectContext = [self.managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:YES];
     self.entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:self.managedObjectStore];
     [self.entityMapping addAttributeMappingsFromDictionary:@{
      @"name":               @"name",
@@ -177,10 +179,10 @@
     self.mappingTest = [[RKMappingTest alloc] initWithMapping:self.entityMapping sourceObject:self.objectRepresentation destinationObject:nil];
     self.mappingTest.rootKeyPath = @"human";
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
-    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext cache:managedObjectCache];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext cache:managedObjectCache];
     dataSource.operationQueue = [NSOperationQueue new];
     self.mappingTest.mappingOperationDataSource = dataSource;
-    self.mappingTest.managedObjectContext = self.managedObjectStore.persistentStoreManagedObjectContext;
+    self.mappingTest.managedObjectContext = self.managedObjectContext;
     self.mappingTest.managedObjectCache = managedObjectCache;
     
     self.asia = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:self.mappingTest.managedObjectContext];

@@ -58,16 +58,16 @@
 ///------------------------------------------
 
 /**
- Tells the search indexer to begin observing the persistent store managed object context for changes to searchable entities and updating the search words.
+ Tells the search indexer to begin observing the main queue managed object context for changes to searchable entities and updating the search words.
 
  This is a convenience method that is equivalent to the following example code:
 
     RKSearchIndexer *searchIndexer = managedObjectStore.searchIndexer;
-    [searchIndexer startObservingManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [searchIndexer startObservingManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
 
  @see `RKSearchIndexer`
  */
-- (void)startIndexingPersistentStoreManagedObjectContext;
+- (void)startIndexingMainQueueManagedObjectContext;
 
 /**
  Tells the search indexer to stop observing the persistent store managed object context for changes to searchable entities.
@@ -75,10 +75,10 @@
  This is a convenience method that is equivalent to the following example code:
 
     RKSearchIndexer *searchIndexer = managedObjectStore.searchIndexer;
-    [searchIndexer stopObservingManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [searchIndexer stopObservingManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
 
  @see `RKSearchIndexer`
  */
-- (void)stopIndexingPersistentStoreManagedObjectContext;
+- (void)stopIndexingMainQueueManagedObjectContext;
 
 @end

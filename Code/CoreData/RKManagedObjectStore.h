@@ -152,7 +152,7 @@
  As an alternative to resetting the persistent store, you may wish to consider simply deleting all managed objects out of the managed object context. If your data set is not very large, this can be a performant operation and is significantly easier to implement correctly. An example implementation for truncating all managed objects from the store is provided below:
  
     NSBlockOpertation *operation = [NSBlockOperation blockOperationWithBlock:^{
-        NSManagedObjectContext *managedObjectContext = [RKManagedObjectStore defaultStore].persistentStoreManagedObjectContext;
+        NSManagedObjectContext *managedObjectContext = [RKManagedObjectStore defaultStore].mainQueueManagedObjectContext;
         [managedObjectContext performBlockAndWait:^{
             NSError *error = nil;
             for (NSEntityDescription *entity in [RKManagedObjectStore defaultStore].managedObjectModel) {
@@ -212,36 +212,26 @@
 ///-------------------------------------------
 
 /**
- Creates the persistent store and main queue managed object contexts for the receiver.
+ Creates the main queue managed object context for the receiver.
 
- @see `persistentStoreManagedObjectContext`
  @see `mainQueueManagedObjectContext`
  @raises NSInternalInconsistencyException Raised if the managed object contexts have already been created.
  */
 - (void)createManagedObjectContexts;
 
 /**
- Returns the managed object context of the receiver that is associated with the persistent store coordinator and is responsible for managing persistence.
-
- The persistent store context is created with the `NSPrivateQueueConcurrencyType` and as such must be interacted with using `[NSManagedObjectContext performBlock:]` or `[NSManagedObjectContext performBlockAndWait:]`. This context typically serves as the parent context for scratch contexts or main queue contexts for interacting with the user interface. Created by the invocation of `createManagedObjectContexts`.
-
- @see `createManagedObjectContexts`
- */
-@property (nonatomic, strong, readonly) NSManagedObjectContext *persistentStoreManagedObjectContext;
-
-/**
  The main queue managed object context of the receiver.
 
- The main queue context is available for usage on the main queue to drive user interface needs. The context is created with the NSMainQueueConcurrencyType and as such may be messaged directly from the main thread. The context is a child context of the persistentStoreManagedObjectContext and can persist changes up to the parent via a save.
+ The main queue context is available for usage on the main queue to drive user interface needs. The context is created with the NSMainQueueConcurrencyType and as such may be messaged directly from the main thread.
  */
 @property (nonatomic, strong, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 /**
- Creates a new child managed object context of the persistent store managed object context with a given concurrency type, optionally tracking changes saved to the parent context and merging them on save.
+ Creates a new managed object context with a given concurrency type, optionally tracking changes saved to the main queue context and merging them on save.
 
  @param concurrencyType The desired concurrency type for the new context.
- @param tracksChanges When `YES`, the new context will observe the `persistentStoreManagedObjectContext` for save events and merge in any changes via `[NSManagedObjectContext mergeChangesFromContextDidSaveNotification:]`.
- @return A newly created managed object context with the given concurrency type whose parent is the `persistentStoreManagedObjectContext`.
+ @param tracksChanges When `YES`, the new context will observe the `mainQueueManagedObjectContext` for save events and merge in any changes via `[NSManagedObjectContext mergeChangesFromContextDidSaveNotification:]`.
+ @return A newly created managed object context with the given concurrency type.
  */
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges;
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType DEPRECATED_ATTRIBUTE; // invokes above with `tracksChanges:NO`
