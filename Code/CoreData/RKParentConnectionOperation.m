@@ -43,10 +43,17 @@
                 NSString *selectorName = [NSString stringWithFormat:@"add%@%@Object:", firstLetter, restOfName];
                 SEL addSelector = NSSelectorFromString(selectorName);
                 if (![self.parentObject respondsToSelector:addSelector]) {
-                    NSLog(@"Parent object does not respond to expected selector %@", selectorName);
+                    RKLogDebug(@"Parent object %@ does not respond to expected selector %@ when attemping to connection child object %@ for relationship named %@.", self.parentObject, selectorName, self.managedObject, self.relationshipName);
                     return;
                 }
+                // We are not worried about memory management in this call.
+                // The addXObject: methods which CoreData generates return nothing.
+                // This means there is nothing to leak.
+                // Thus we can safely disable that warning for this call only.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                 [self.parentObject performSelector:addSelector withObject:self.managedObject];
+#pragma clang diagnostic pop
             } else {
                 [self.parentObject setValue:self.managedObject forKey:self.relationshipName];
             }
