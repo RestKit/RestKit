@@ -113,6 +113,15 @@
  */
 @property (nonatomic, assign) BOOL shouldEscapePath;
 
+/**
+ A Boolean value that determines whether the objects of a relationship route should be connected to the object provided to the route.
+ 
+ Only valid for relationship routes. Ignored for named/object routes.
+ 
+ *Default*: `NO`
+ */
+@property (nonatomic, assign) BOOL connectRelatedObjects;
+
 ///-----------------------------
 /// @name Inspecting Route Types
 ///-----------------------------

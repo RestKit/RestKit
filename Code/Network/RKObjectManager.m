@@ -654,6 +654,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSAssert(URL, @"Failed to generate URL for relationship named '%@' for object: %@", relationshipName, object);
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
     operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
+    if (object && [object isKindOfClass:[NSManagedObject class]]) {
+        operation.mappingMetadata = RKDictionaryByMergingDictionaryWithDictionary(operation.mappingMetadata, @{@"parentObjectID" : [object objectID]});
+    }
     [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }

@@ -595,6 +595,10 @@
 		73D3907714CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
 		73D3907914CA1DD40093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
+		7D507B5E17A2D072005E6C14 /* RKParentConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D507B5C17A2D072005E6C14 /* RKParentConnectionOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D507B5F17A2D072005E6C14 /* RKParentConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D507B5C17A2D072005E6C14 /* RKParentConnectionOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D507B6017A2D072005E6C14 /* RKParentConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D507B5D17A2D072005E6C14 /* RKParentConnectionOperation.m */; };
+		7D507B6117A2D072005E6C14 /* RKParentConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D507B5D17A2D072005E6C14 /* RKParentConnectionOperation.m */; };
 		7F9CBC6174004E31AEC35813 /* libPods-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86EC453810D648768BF62304 /* libPods-osx.a */; };
 		BE05BDD11782109F00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
 		BE05BDD2178214AA00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
@@ -971,6 +975,8 @@
 		73D3907114CA19F90093E3D6 /* parent.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = parent.json; sourceTree = "<group>"; };
 		73D3907314CA1A4A0093E3D6 /* child.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = child.json; sourceTree = "<group>"; };
 		73D3907814CA1D710093E3D6 /* channels.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = channels.xml; sourceTree = "<group>"; };
+		7D507B5C17A2D072005E6C14 /* RKParentConnectionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKParentConnectionOperation.h; sourceTree = "<group>"; };
+		7D507B5D17A2D072005E6C14 /* RKParentConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKParentConnectionOperation.m; sourceTree = "<group>"; };
 		86EC453810D648768BF62304 /* libPods-osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-osx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.xcconfig"; path = "Pods/Pods-ios.xcconfig"; sourceTree = SOURCE_ROOT; };
 		BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouteTest.m; sourceTree = "<group>"; };
@@ -1147,6 +1153,8 @@
 				E4081E0915FB8FD800364948 /* Mapping */,
 				25160D52145650490060A5C5 /* RKManagedObjectStore.h */,
 				25160D53145650490060A5C5 /* RKManagedObjectStore.m */,
+				7D507B5C17A2D072005E6C14 /* RKParentConnectionOperation.h */,
+				7D507B5D17A2D072005E6C14 /* RKParentConnectionOperation.m */,
 				2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */,
 				2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */,
 			);
@@ -1750,6 +1758,7 @@
 				25160E0B145650490060A5C5 /* RKErrorMessage.h in Headers */,
 				25160E0F145650490060A5C5 /* RKAttributeMapping.h in Headers */,
 				25160E16145650490060A5C5 /* RKMapperOperation.h in Headers */,
+				7D507B5E17A2D072005E6C14 /* RKParentConnectionOperation.h in Headers */,
 				25160E18145650490060A5C5 /* RKMapperOperation_Private.h in Headers */,
 				25160E1A145650490060A5C5 /* RKObjectMapping.h in Headers */,
 				25160E1C145650490060A5C5 /* RKMapping.h in Headers */,
@@ -1859,6 +1868,7 @@
 				25160F4A145655C60060A5C5 /* RKAttributeMapping.h in Headers */,
 				25160F51145655C60060A5C5 /* RKMapperOperation.h in Headers */,
 				25160F53145655C60060A5C5 /* RKMapperOperation_Private.h in Headers */,
+				7D507B5F17A2D072005E6C14 /* RKParentConnectionOperation.h in Headers */,
 				25160F55145655C60060A5C5 /* RKObjectMapping.h in Headers */,
 				25160F57145655C60060A5C5 /* RKMapping.h in Headers */,
 				25160F58145655C60060A5C5 /* RKMappingOperation.h in Headers */,
@@ -2272,6 +2282,7 @@
 				25104F3D15C30F2100829135 /* RKSearchWordEntity.m in Sources */,
 				25A763DD15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */,
 				25F53AE415E7B612008B54E6 /* RKHTTPUtilities.m in Sources */,
+				7D507B6017A2D072005E6C14 /* RKParentConnectionOperation.m in Sources */,
 				2598888F15EC169E006CAE95 /* RKPropertyMapping.m in Sources */,
 				254372A915F54995006E8424 /* RKObjectParameterization.m in Sources */,
 				254372BA15F54C3F006E8424 /* RKHTTPRequestOperation.m in Sources */,
@@ -2431,6 +2442,7 @@
 				25104F3E15C30F2100829135 /* RKSearchWordEntity.m in Sources */,
 				25A763DE15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */,
 				25F53AE515E7B612008B54E6 /* RKHTTPUtilities.m in Sources */,
+				7D507B6117A2D072005E6C14 /* RKParentConnectionOperation.m in Sources */,
 				2598889015EC169E006CAE95 /* RKPropertyMapping.m in Sources */,
 				254372BB15F54C3F006E8424 /* RKHTTPRequestOperation.m in Sources */,
 				254372BF15F54C3F006E8424 /* RKObjectManager.m in Sources */,

@@ -34,6 +34,9 @@
 #import "RKObjectUtilities.h"
 #import "NSManagedObject+RKAdditions.h"
 
+#import "RKRoute.h"
+#import "RKParentConnectionOperation.h"
+
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 static char kRKManagedObjectMappingOperationDataSourceAssociatedObjectKey;
@@ -359,6 +362,20 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             [deletionOperation addDependency:operation];
             [operationQueue addOperation:operation];
             RKLogTrace(@"Enqueued %@ dependent upon parent operation %@ to operation queue %@", operation, self.parentOperation, operationQueue);
+        }
+        
+        RKRoute *route = [[mappingOperation.metadata objectForKey:@"routing"] objectForKey:@"route"];
+        if (route && route.isRelationshipRoute && route.connectRelatedObjects && [mappingOperation.destinationObject isKindOfClass:[NSManagedObject class]]) {
+            NSManagedObjectContext *context = [(NSManagedObject*)mappingOperation.destinationObject managedObjectContext];
+            NSManagedObjectID *parentID = [mappingOperation.metadata objectForKey:@"parentObjectID"];
+            if (parentID) {
+                id parent = [context objectWithID:parentID];
+                RKParentConnectionOperation *operation = [[RKParentConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject parentObject:parent relationship:route.name];
+                if (self.parentOperation) [operation addDependency:self.parentOperation];
+                [deletionOperation addDependency:operation];
+                [operationQueue addOperation:operation];
+                RKLogTrace(@"Enqueued %@ dependent upon parent operation %@ to operation queue %@", operation, self.parentOperation, operationQueue);
+            }
         }
         
         // Enqueue our deletion operation for execution after all the connections
