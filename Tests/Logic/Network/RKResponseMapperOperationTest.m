@@ -286,6 +286,47 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     expect(mapper.responseMappingsDictionary).to.equal(expectedMappingsDictionary);
 }
 
+- (void)testThatResponseMapperMatchesCorrectResponseDescriptorWhenOnlyMethodsDiffer
+{
+    NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org"];
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/organizations/"];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+
+    NSMutableURLRequest *getRequest = [NSMutableURLRequest requestWithURL:responseURL];
+    getRequest.HTTPMethod = RKStringFromRequestMethod(RKRequestMethodGET);
+    NSData *getData = [@"{ \"getKey\" : 42 }" dataUsingEncoding:NSUTF8StringEncoding];
+
+    NSMutableURLRequest *postRequest = [NSMutableURLRequest requestWithURL:responseURL];
+    postRequest.HTTPMethod = RKStringFromRequestMethod(RKRequestMethodPOST);
+    NSData *postData = [@"{ \"postKey\" : 41 }" dataUsingEncoding:NSUTF8StringEncoding];
+
+    RKObjectMapping *getResponseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [getResponseMapping addAttributeMappingsFromArray:@[ @"getKey" ]];
+    RKResponseDescriptor *getResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:getResponseMapping method:RKRequestMethodGET pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    getResponseDescriptor.baseURL = baseURL;
+
+    RKObjectMapping *postResponseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [postResponseMapping addAttributeMappingsFromArray:@[ @"postKey" ]];
+    RKResponseDescriptor *postResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:postResponseMapping method:RKRequestMethodPOST pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    postResponseDescriptor.baseURL = baseURL;
+
+    NSArray *responseDescriptors = @[ getResponseDescriptor, postResponseDescriptor ];
+
+    RKObjectResponseMapperOperation *getResponseMapper = [[RKObjectResponseMapperOperation alloc] initWithRequest:getRequest response:response data:getData responseDescriptors:responseDescriptors];
+    [getResponseMapper start];
+    expect(getResponseMapper.error).to.beNil();
+
+    NSDictionary *expectedGetMappingsDictionary = @{ [NSNull null] : getResponseMapping };
+    expect(getResponseMapper.responseMappingsDictionary).to.equal(expectedGetMappingsDictionary);
+
+    RKObjectResponseMapperOperation *postResponseMapper = [[RKObjectResponseMapperOperation alloc] initWithRequest:postRequest response:response data:postData responseDescriptors:responseDescriptors];
+    [postResponseMapper start];
+    expect(postResponseMapper.error).to.beNil();
+
+    NSDictionary *expectedPostMappingsDictionary = @{ [NSNull null] : postResponseMapping };
+    expect(postResponseMapper.responseMappingsDictionary).to.equal(expectedPostMappingsDictionary);
+}
+
 - (void)testThatResponseDescriptorMismatchesIncludeHelpfulError
 {
     NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];
