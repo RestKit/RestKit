@@ -22,6 +22,11 @@
 #import "RKEntityMapping.h"
 #import "RKManagedObjectCaching.h"
 
+typedef enum {
+    RKNestedManagedObjectContextTopology     = 0,
+    RKNonNestedManagedObjectContextTopology  = 1
+} RKManagedObjectContextTopology;
+
 @class RKManagedObjectStore;
 
 /**
@@ -212,8 +217,22 @@
 ///-------------------------------------------
 
 /**
+ The topology of the managed object contexts for the store.
+ 
+ If this is RKNestedManagedObjectContextTopology, then the MOCs will be set up with a `persistentStoreManagedObjectContext` connected to the persistent store; a `mainQueueManagedObjectContext` as its child; and other contexts as children of the `mainQueueManagedObjectContext`.
+ 
+ If this is RKNonNestedManagedObjectContextTopology, then the `persistentStoreManagedObjectContext` and `mainQueueManagedObjectContext` will both be connected to the persistent store, as will other contexts.
+ 
+ If the managed object contexts have already been created, setting this property will recreate them.
+ 
+ @see `createManagedObjectContexts`
+ */
+@property (nonatomic, assign) RKManagedObjectContextTopology managedObjectContextTopology;
+
+/**
  Creates the persistent store and main queue managed object contexts for the receiver.
 
+ @see `managedObjectContextTopology`
  @see `persistentStoreManagedObjectContext`
  @see `mainQueueManagedObjectContext`
  @raises NSInternalInconsistencyException Raised if the managed object contexts have already been created.
@@ -221,10 +240,13 @@
 - (void)createManagedObjectContexts;
 
 /**
- Returns the managed object context of the receiver that is associated with the persistent store coordinator and is responsible for managing persistence.
+ Returns the managed object context of the receiver that is associated with the persistent store coordinator and is responsible for managing persistence in a nested context topology.
 
  The persistent store context is created with the `NSPrivateQueueConcurrencyType` and as such must be interacted with using `[NSManagedObjectContext performBlock:]` or `[NSManagedObjectContext performBlockAndWait:]`. This context typically serves as the parent context for scratch contexts or main queue contexts for interacting with the user interface. Created by the invocation of `createManagedObjectContexts`.
-
+ 
+ In a non-nested topology, this store is nil.
+ 
+ @see `managedObjectContextTopology`
  @see `createManagedObjectContexts`
  */
 @property (nonatomic, strong, readonly) NSManagedObjectContext *persistentStoreManagedObjectContext;
@@ -232,19 +254,39 @@
 /**
  The main queue managed object context of the receiver.
 
- The main queue context is available for usage on the main queue to drive user interface needs. The context is created with the NSMainQueueConcurrencyType and as such may be messaged directly from the main thread. The context is a child context of the persistentStoreManagedObjectContext and can persist changes up to the parent via a save.
+ The main queue context is available for usage on the main queue to drive user interface needs. The context is created with the NSMainQueueConcurrencyType and as such may be messaged directly from the main thread. In a nested topology, the context is a child context of the persistentStoreManagedObjectContext and can persist changes up to the parent via a save.  In a non-nested topology, it is connected directly to the persistent store coordinator.
+ 
+ @see `managedObjectContextTopology`
  */
 @property (nonatomic, strong, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 /**
- Creates a new child managed object context of the persistent store managed object context with a given concurrency type, optionally tracking changes saved to the parent context and merging them on save.
-
+ Creates a new managed object context with a given concurrency type, optionally tracking changes saved to the parent context and merging them on save.
+ 
+ In a nested topology, the context is a child context of the provided context.  In a non-nested topology, it is connected directly to the persistent store coordinator; however, when it is saved the provided context will be notified and the changes will be merged.
+ 
+ @see `managedObjectContextTopology`
+ @param managedObjectContext The desired parent for the new context.
  @param concurrencyType The desired concurrency type for the new context.
- @param tracksChanges When `YES`, the new context will observe the `persistentStoreManagedObjectContext` for save events and merge in any changes via `[NSManagedObjectContext mergeChangesFromContextDidSaveNotification:]`.
- @return A newly created managed object context with the given concurrency type whose parent is the `persistentStoreManagedObjectContext`.
+ @param tracksChanges When `YES`, the new context will observe the parent context for save events and merge in any changes via `[NSManagedObjectContext mergeChangesFromContextDidSaveNotification:]`.
+ @return A newly created managed object context with the given concurrency type.
+ */
+- (NSManagedObjectContext *)newChildOfManagedObjectContext:(NSManagedObjectContext *)managedObjectContext withConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges;
+
+/**
+ Creates a new managed object context with a given concurrency type, optionally tracking changes saved to the parent context and merging them on save.
+ 
+ In a nested topology, the context is a child context of the persistentStoreManagedObjectContext.  In a non-nested topology, it is connected directly to the persistent store coordinator; however, when it is saved the main context will be notified and the changes will be merged.
+ 
+ @see `managedObjectContextTopology`
+ @param concurrencyType The desired concurrency type for the new context.
+ @param tracksChanges When `YES`, the new context will observe the `persistentStoreManagedObjectContext` (if nested) or `mainQueueManagedObjectContext` (if not nested) for save events and merge in any changes via `[NSManagedObjectContext mergeChangesFromContextDidSaveNotification:]`.
+ @return A newly created managed object context with the given concurrency type.
  */
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges;
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType DEPRECATED_ATTRIBUTE; // invokes above with `tracksChanges:NO`
+
+
 
 ///----------------------------
 /// @name Performing Migrations

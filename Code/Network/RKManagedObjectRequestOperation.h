@@ -167,6 +167,8 @@
  
  When `YES`, the receiver will invoke `saveToPersistentStore:` on its private managed object context to persist the mapping results all the way back to the persistent store coordinator. If `NO`, the private mapping context will be saved causing the mapped objects to be 'pushed' to the parent context as represented by the `managedObjectContext` property.
  
+ This has no effect if the managed object store is using non-nested contexts, as all the contexts will be connected directly to the persistent store.
+ 
  **Default**: `YES`
  */
 @property (nonatomic, assign) BOOL savesToPersistentStore;

@@ -415,7 +415,6 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 
 @interface RKManagedObjectRequestOperation ()
 // Core Data specific
-@property (nonatomic, strong) NSManagedObjectContext *privateContext;
 @property (nonatomic, copy) NSManagedObjectID *targetObjectID;
 @property (nonatomic, strong) RKManagedObjectResponseMapperOperation *responseMapperOperation;
 @property (nonatomic, strong, readwrite) NSError *error;
@@ -453,7 +452,6 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 {
     _mappingResult = nil;
     _responseMapperOperation = nil;
-    _privateContext = nil;
 }
 
 - (void)setTargetObject:(id)targetObject
@@ -476,6 +474,10 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 
 - (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
+    if ([managedObjectContext concurrencyType] == NSMainQueueConcurrencyType) {
+        RKLogWarning(@"RKManagedObjectRequestOperation was configured with a managedObjectContext with the `NSMainQueueConcurrencyType` concurrency type");
+    }
+    
     _managedObjectContext = managedObjectContext;
 
     if (managedObjectContext) {
@@ -500,15 +502,6 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
                 }
             }
         }];
-        
-        // Create a private context
-        NSManagedObjectContext *privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [privateContext setParentContext:managedObjectContext];
-        [privateContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
-
-        self.privateContext = privateContext;
-    } else {
-        self.privateContext = nil;
     }
 }
 
@@ -567,10 +560,10 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     if ([fetchRequests count] && [self canSkipMapping]) {
         RKLogDebug(@"Managed object mapping requested for cached response which was previously mapped: skipping...");
         NSMutableArray *managedObjects = [NSMutableArray array];
-        [self.privateContext performBlockAndWait:^{
+        [self.managedObjectContext performBlockAndWait:^{
             NSError *error = nil;
             for (NSFetchRequest *fetchRequest in fetchRequests) {
-                NSArray *fetchedObjects = [self.privateContext executeFetchRequest:fetchRequest error:&error];
+                NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
                 if (fetchedObjects) {
                     [managedObjects addObjectsFromArray:fetchedObjects];
                 } else {
@@ -591,7 +584,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     self.responseMapperOperation.mappingMetadata = self.mappingMetadata;
     self.responseMapperOperation.targetObject = self.targetObject;
     self.responseMapperOperation.targetObjectID = self.targetObjectID;
-    self.responseMapperOperation.managedObjectContext = self.privateContext;
+    self.responseMapperOperation.managedObjectContext = self.managedObjectContext;
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];    
@@ -647,11 +640,11 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     if (self.targetObjectID) {
         // 2xx/404/410 DELETE request, proceed with deletion from the MOC
         __block NSError *_blockError = nil;
-        [self.privateContext performBlockAndWait:^{
-            NSManagedObject *backgroundThreadObject = [self.privateContext existingObjectWithID:self.targetObjectID error:&_blockError];
+        [self.managedObjectContext performBlockAndWait:^{
+            NSManagedObject *backgroundThreadObject = [self.managedObjectContext existingObjectWithID:self.targetObjectID error:&_blockError];
             if (backgroundThreadObject) {
                 RKLogInfo(@"Deleting local object %@ due to `DELETE` request", backgroundThreadObject);
-                [self.privateContext deleteObject:backgroundThreadObject];
+                [self.managedObjectContext deleteObject:backgroundThreadObject];
             } else {
                 RKLogWarning(@"Unable to delete object sent with `DELETE` request: Failed to retrieve object with objectID %@", self.targetObjectID);
                 RKLogCoreDataError(_blockError);
@@ -676,11 +669,11 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
         if (fetchRequest) {
             // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
-            [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
+            [fetchRequest setEntity:[[[[self.managedObjectContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
             RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
 
-            [self.privateContext performBlockAndWait:^{
-                _blockObjects = [self.privateContext executeFetchRequest:fetchRequest error:&_blockError];
+            [self.managedObjectContext performBlockAndWait:^{
+                _blockObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&_blockError];
             }];
 
             if (_blockObjects == nil) {
@@ -706,7 +699,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
         if (fetchRequest) {
             // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
-            [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
+            [fetchRequest setEntity:[[[[self.managedObjectContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
             RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
             [fetchRequests addObject:fetchRequest];
         }
@@ -749,9 +742,9 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     RKLogDebug(@"Deleting %lu orphaned objects found in local database, but missing from mapping result", (unsigned long) [orphanedObjects count]);
     
     if ([orphanedObjects count]) {
-        [self.privateContext performBlockAndWait:^{
+        [self.managedObjectContext performBlockAndWait:^{
             for (NSManagedObject *orphanedObject in orphanedObjects) {
-                [self.privateContext deleteObject:orphanedObject];
+                [self.managedObjectContext deleteObject:orphanedObject];
             }
         }];
     }
@@ -805,9 +798,10 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     }
     if (success) {
         if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
-            [self.managedObjectContext performBlock:^{
-                RKLogDebug(@"Refreshing mapped target object %@ in context %@", self.targetObject, self.managedObjectContext);
-                if (! [self isCancelled]) [self.managedObjectContext refreshObject:self.targetObject mergeChanges:YES];
+            NSManagedObjectContext *managedObjectContext = [self.targetObject managedObjectContext];
+            [managedObjectContext performBlock:^{
+                RKLogDebug(@"Refreshing mapped target object %@ in context %@", self.targetObject, managedObjectContext);
+                if (! [self isCancelled]) [managedObjectContext refreshObject:self.targetObject mergeChanges:YES];
             }];
         }
     } else {
@@ -822,13 +816,13 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 - (BOOL)saveContext:(NSError **)error
 {
     if (self.willSaveMappingContextBlock) {
-        [self.privateContext performBlockAndWait:^{
-            self.willSaveMappingContextBlock(self.privateContext);
+        [self.managedObjectContext performBlockAndWait:^{
+            self.willSaveMappingContextBlock(self.managedObjectContext);
         }];
     }
     
-    if ([self.privateContext hasChanges]) {
-        return [self saveContext:self.privateContext error:error];
+    if ([self.managedObjectContext hasChanges]) {
+        return [self saveContext:self.managedObjectContext error:error];
     } else if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
         NSManagedObjectContext *context = [(NSManagedObject *)self.targetObject managedObjectContext];
         __block BOOL isNew = NO;
@@ -846,10 +840,10 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 {
     __block BOOL _blockSuccess = YES;
     __block NSError *localError = nil;
-    [self.privateContext performBlockAndWait:^{
-        NSArray *insertedObjects = [[self.privateContext insertedObjects] allObjects];
+    [self.managedObjectContext performBlockAndWait:^{
+        NSArray *insertedObjects = [[self.managedObjectContext insertedObjects] allObjects];
         RKLogDebug(@"Obtaining permanent ID's for %ld managed objects", (unsigned long) [insertedObjects count]);
-        _blockSuccess = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:nil];
+        _blockSuccess = [self.managedObjectContext obtainPermanentIDsForObjects:insertedObjects error:nil];
     }];
     if (!_blockSuccess && error) *error = localError;
 

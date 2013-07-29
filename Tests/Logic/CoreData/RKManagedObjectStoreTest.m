@@ -378,6 +378,29 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
 }
 
+- (void)testCreatingManagedObjectContextsWithNonNestedTopology
+{
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    NSError *error;
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Test.sqlite"];
+    [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+ 
+    [managedObjectStore setManagedObjectContextTopology:RKNonNestedManagedObjectContextTopology];
+    [managedObjectStore createManagedObjectContexts];
+    
+    expect(managedObjectStore.persistentStoreManagedObjectContext).to.beNil();
+    assertThat(managedObjectStore.mainQueueManagedObjectContext, is(notNilValue()));
+    expect(managedObjectStore.mainQueueManagedObjectContext.parentContext).to.beNil();
+    assertThat(managedObjectStore.mainQueueManagedObjectContext.persistentStoreCoordinator, equalTo(managedObjectStore.persistentStoreCoordinator));
+    
+    NSManagedObjectContext *childContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:YES];
+    
+    expect(childContext.parentContext).to.beNil();
+    assertThat(childContext.persistentStoreCoordinator, equalTo(managedObjectStore.persistentStoreCoordinator));
+}
+
 #pragma mark - Versioning Tests
 
 - (void)testThatAttemptToMigrateStoreAtNonExistantFileURLReturnsError

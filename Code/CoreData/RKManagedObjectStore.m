@@ -113,7 +113,8 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
 
 @end
 
-static char RKManagedObjectContextChangeMergingObserverAssociationKey;
+static char RKManagedObjectContextParentChangeMergingObserverAssociationKey;
+static char RKManagedObjectContextNonNestedChangeMergingObserverAssociationKey;
 
 @interface RKManagedObjectStore ()
 @property (nonatomic, strong, readwrite) NSManagedObjectModel *managedObjectModel;
@@ -250,23 +251,81 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     return YES;
 }
 
+- (void)setManagedObjectContextTopology:(RKManagedObjectContextTopology)managedObjectContextTopology
+{
+    _managedObjectContextTopology = managedObjectContextTopology;
+    
+    if (self.mainQueueManagedObjectContext || self.persistentStoreManagedObjectContext) {
+        RKLogInfo(@"Managed object context topology changed; recreating contexts");
+        [self recreateManagedObjectContexts];
+    }
+        
+}
+
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges
 {
-    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType];
-    [managedObjectContext performBlockAndWait:^{
-        managedObjectContext.parentContext = self.persistentStoreManagedObjectContext;
-        managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+    switch (self.managedObjectContextTopology) {
+        case RKNestedManagedObjectContextTopology:
+            return [self newChildOfManagedObjectContext:self.persistentStoreManagedObjectContext withConcurrencyType:concurrencyType tracksChanges:tracksChanges];
+            
+        case RKNonNestedManagedObjectContextTopology:
+            return [self newChildOfManagedObjectContext:self.mainQueueManagedObjectContext withConcurrencyType:concurrencyType tracksChanges:tracksChanges];
+    }
+}
+
+- (NSManagedObjectContext *)newChildOfManagedObjectContext:(NSManagedObjectContext *)managedObjectContext withConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges
+{
+    switch (self.managedObjectContextTopology) {
+        case RKNestedManagedObjectContextTopology:
+            return [self newNestedChildOfManagedObjectContext:managedObjectContext withConcurrencyType:concurrencyType tracksChanges:tracksChanges];
+            
+        case RKNonNestedManagedObjectContextTopology:
+            return [self newNonNestedChildOfManagedObjectContext:managedObjectContext withConcurrencyType:concurrencyType tracksChanges:tracksChanges];
+    }
+}
+
+- (NSManagedObjectContext *)newNestedChildOfManagedObjectContext:(NSManagedObjectContext *)managedObjectContext withConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges
+{
+    NSManagedObjectContext *childManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType];
+    
+    [childManagedObjectContext performBlockAndWait:^{
+        childManagedObjectContext.parentContext = managedObjectContext;
+        childManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     }];
     
     if (tracksChanges) {
-        RKManagedObjectContextChangeMergingObserver *observer = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:self.persistentStoreManagedObjectContext mergeContext:managedObjectContext];        
-        objc_setAssociatedObject(managedObjectContext,
-                                 &RKManagedObjectContextChangeMergingObserverAssociationKey,
-                                 observer,
+        RKManagedObjectContextChangeMergingObserver *parentObserver = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:managedObjectContext mergeContext:childManagedObjectContext];
+        objc_setAssociatedObject(childManagedObjectContext,
+                                 &RKManagedObjectContextParentChangeMergingObserverAssociationKey,
+                                 parentObserver,
                                  OBJC_ASSOCIATION_RETAIN);
     }
 
-    return managedObjectContext;
+    return childManagedObjectContext;
+}
+
+- (NSManagedObjectContext *)newNonNestedChildOfManagedObjectContext:(NSManagedObjectContext *)managedObjectContext withConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType tracksChanges:(BOOL)tracksChanges
+{
+    NSManagedObjectContext *childManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType];
+    childManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
+    childManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+    
+    // when the "child" is saved, update our main context
+    RKManagedObjectContextChangeMergingObserver *childObserver = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:childManagedObjectContext mergeContext:managedObjectContext];
+    objc_setAssociatedObject(childManagedObjectContext,
+                             &RKManagedObjectContextNonNestedChangeMergingObserverAssociationKey,
+                             childObserver,
+                             OBJC_ASSOCIATION_RETAIN);
+    
+    if (tracksChanges) {
+        RKManagedObjectContextChangeMergingObserver *parentObserver = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:managedObjectContext mergeContext:childManagedObjectContext];
+        objc_setAssociatedObject(childManagedObjectContext,
+                                 &RKManagedObjectContextParentChangeMergingObserverAssociationKey,
+                                 parentObserver,
+                                 OBJC_ASSOCIATION_RETAIN);
+    }
+    
+    return childManagedObjectContext;
 }
 
 #pragma clang diagnostic push
@@ -283,6 +342,21 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     NSAssert(!self.mainQueueManagedObjectContext, @"Unable to create managed object contexts: A main queue managed object context already exists.");
     NSAssert([[self.persistentStoreCoordinator persistentStores] count], @"Cannot create managed object contexts: The persistent store coordinator does not have any persistent stores. This likely means that you forgot to add a persistent store or your attempt to do so failed with an error.");
 
+ 
+    switch (self.managedObjectContextTopology)
+    {
+        case RKNestedManagedObjectContextTopology:
+            [self createNestedManagedObjectContexts];
+            break;
+            
+        case RKNonNestedManagedObjectContextTopology:
+            [self createNonNestedManagedObjectContexts];
+            break;
+    }
+}
+
+- (void)createNestedManagedObjectContexts
+{
     // Our primary MOC is a private queue concurrency type
     self.persistentStoreManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     self.persistentStoreManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
@@ -296,9 +370,20 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     // Merge changes from a primary MOC back into the main queue when complete
     RKManagedObjectContextChangeMergingObserver *observer = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:self.persistentStoreManagedObjectContext mergeContext:self.mainQueueManagedObjectContext];
     objc_setAssociatedObject(self.mainQueueManagedObjectContext,
-                             &RKManagedObjectContextChangeMergingObserverAssociationKey,
+                             &RKManagedObjectContextParentChangeMergingObserverAssociationKey,
                              observer,
                              OBJC_ASSOCIATION_RETAIN);
+}
+
+- (void)createNonNestedManagedObjectContexts
+{
+    // Create an MOC for use on the main queue
+    self.mainQueueManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    self.mainQueueManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
+    self.mainQueueManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+    
+    // The main MOC is connected to the PSC, so there's no need for a PSMOC.
+    self.persistentStoreManagedObjectContext = nil;
 }
 
 - (void)recreateManagedObjectContexts
