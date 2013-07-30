@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
+require 'sinatra/multi_route'
 require 'json'
 require 'debugger'
 
@@ -13,6 +14,8 @@ class Person < Struct.new(:name, :age)
 end
 
 class RestKitTestServer < Sinatra::Base
+  register Sinatra::MultiRoute
+  
   self.app_file = __FILE__
 
   configure do
@@ -287,9 +290,11 @@ class RestKitTestServer < Sinatra::Base
     status 304
   end
 
-  no_content_type_response = lambda {|code| response.header['Content-Type'] = ''; status code; '';}
-  get '/no_content_type/:code', &no_content_type_response
-  head '/no_content_type/:code', &no_content_type_response
+  route :get, :head, '/no_content_type/:code' do
+    response.header['Content-Type'] = ''
+    status params[:code]
+    ''
+  end
 
   delete '/humans/1234/whitespace' do
     content_type 'application/json'
