@@ -23,9 +23,12 @@
 @class RKMapping;
 
 typedef enum {
-    RKSetAssignmentPolicy,       // Set the relationship to the new value and leave the existing objects alone, breaking the relationship to existing objects at the destination. This is the default policy for `RKRelationshipMapping`.
-    RKReplaceAssignmentPolicy,  // Set the relationship to the new value and destroy the previous value, replacing the existing objects at the destination of the relationship.
-    RKUnionAssignmentPolicy,    // Set the relationship to the union of the existing value and the new value being assigned. Only applicable for to-many relationships.
+    RKAssignmentPolicySet, // Set the relationship to the new value and leave the existing objects alone, breaking the relationship to existing objects at the destination. This is the default policy for `RKRelationshipMapping`.
+    RKAssignmentPolicyReplace, // Set the relationship to the new value and destroy the previous value, replacing the existing objects at the destination of the relationship.
+    RKAssignmentPolicyUnion, // Set the relationship to the union of the existing value and the new value being assigned. Only applicable for to-many relationships.
+    RKSetAssignmentPolicy = RKAssignmentPolicySet,
+    RKReplaceAssignmentPolicy = RKAssignmentPolicyReplace,
+    RKUnionAssignmentPolicy = RKAssignmentPolicyUnion,
 } RKAssignmentPolicy;
 
 /**
