@@ -287,6 +287,10 @@ class RestKitTestServer < Sinatra::Base
     status 304
   end
 
+  no_content_type_response = lambda {|code| response.header['Content-Type'] = ''; status code; '';}
+  get '/no_content_type/:code', &no_content_type_response
+  head '/no_content_type/:code', &no_content_type_response
+
   delete '/humans/1234/whitespace' do
     content_type 'application/json'
     status 200

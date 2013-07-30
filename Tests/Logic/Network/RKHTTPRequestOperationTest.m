@@ -41,4 +41,41 @@
     expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200), got 503");
 }
 
+- (void)testThatLoadingAHeadResponseWithNoContentTypeDoesNotReturnAnError
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/200" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = RKStringFromRequestMethod(RKRequestMethodHEAD);
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).to.beNil();
+}
+
+- (void)testThatLoadingA304StatusDoesNotReturnExpectedContentTypeErrorWithMissingContentType
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/304" relativeToURL:[RKTestFactory baseURL]]];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:304];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).to.beNil();
+}
+
+- (void)testThatLoadingA204StatusDoesNotReturnExpectedContentTypeErrorWithMissingContentType
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/204" relativeToURL:[RKTestFactory baseURL]]];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:204];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).to.beNil();
+}
+
 @end
