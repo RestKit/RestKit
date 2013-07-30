@@ -137,6 +137,17 @@
  */
 @property (nonatomic, assign, readonly) dispatch_queue_t dispatchQueue;
 
+///------------------------------------------
+/// @name Performing Blocks that Mutate State
+///------------------------------------------
+
+/**
+ Executes a block after acquiring an exclusive lock on the receiver. This enables the block to safely mutate the state of the operation. The execution context of the block is not changed -- it is always executed within the caller's thread context. If you wish to guarantee execution on the dispatch queue backing the state machine then you must dispatch onto the queue before submitting your block for execution.
+ 
+ @param block The block to execute after acquiring an exclusive lock on the receiver.
+ */
+- (void)performBlockWithLock:(void (^)())block;
+
 @end
 
 /**
