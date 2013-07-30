@@ -1,5 +1,5 @@
 //
-//  RKRequestOperationSubclass.h
+//  RKObjectRequestOperationSubclass.h
 //  RestKit
 //
 //  Created by Blake Watters on 9/16/12.
@@ -35,7 +35,7 @@
  @param error A pointer to an `NSError` object to be set in the event that the object mapping process has failed.
  @return A mapping result or `nil` if an error has occurred.
  */
-- (RKMappingResult *)performMappingOnResponse:(NSError **)error;
+- (void)performMappingOnResponseWithCompletionBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))completionBlock;
 
 /**
  Invoked to tell the receiver that the object request operation is finishing its work and is about to transition into the finished state. Used to perform any necessary cleanup before the operation is finished.

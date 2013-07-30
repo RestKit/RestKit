@@ -20,7 +20,7 @@
     RKObjectMapping *invalidMapping = [RKObjectMapping requestMapping];
     NSException *exception = nil;
     @try {
-        [RKRequestDescriptor requestDescriptorWithMapping:invalidMapping objectClass:[RKRequestDescriptorTest class] rootKeyPath:nil];
+        [RKRequestDescriptor requestDescriptorWithMapping:invalidMapping objectClass:[RKRequestDescriptorTest class] rootKeyPath:nil method:RKRequestMethodAny];
     }
     @catch (NSException *caughtExpection) {
         exception = caughtExpection;
@@ -35,7 +35,7 @@
     RKObjectMapping *invalidMapping = [RKObjectMapping mappingForClass:[RKRequestDescriptorTest class]];
     NSException *exception = nil;
     @try {
-        [RKRequestDescriptor requestDescriptorWithMapping:invalidMapping objectClass:[RKRequestDescriptorTest class] rootKeyPath:nil];
+        [RKRequestDescriptor requestDescriptorWithMapping:invalidMapping objectClass:[RKRequestDescriptorTest class] rootKeyPath:nil method:RKRequestMethodAny];
     }
     @catch (NSException *caughtExpection) {
         exception = caughtExpection;
@@ -55,7 +55,7 @@
     
     NSException *exception = nil;
     @try {
-        [RKRequestDescriptor requestDescriptorWithMapping:dynamicMapping objectClass:[RKRequestDescriptorTest class] rootKeyPath:nil];
+        [RKRequestDescriptor requestDescriptorWithMapping:dynamicMapping objectClass:[RKRequestDescriptorTest class] rootKeyPath:nil method:RKRequestMethodAny];
     }
     @catch (NSException *caughtExpection) {
         exception = caughtExpection;
@@ -72,11 +72,13 @@
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     RKRequestDescriptor *firstDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                  objectClass:[RKRequestDescriptorTest class]
-                                                                                 rootKeyPath:@"/issues"];
+                                                                                 rootKeyPath:@"/issues"
+                                                                                      method:RKRequestMethodAny];
     
     RKRequestDescriptor *secondDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                   objectClass:[RKRequestDescriptorTest class]
-                                                                                  rootKeyPath:@"/issues"];
+                                                                                  rootKeyPath:@"/issues"
+                                                                                       method:RKRequestMethodAny];
     expect(firstDescriptor).to.equal(secondDescriptor);
 }
 
@@ -84,11 +86,13 @@
 {
     RKRequestDescriptor *firstDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[RKObjectMapping requestMapping]
                                                                                  objectClass:[RKRequestDescriptorTest class]
-                                                                                 rootKeyPath:@"/issues"];
+                                                                                 rootKeyPath:@"/issues"
+                                                                                      method:RKRequestMethodAny];
     
     RKRequestDescriptor *secondDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[RKDynamicMapping new]
                                                                                   objectClass:[RKRequestDescriptorTest class]
-                                                                                  rootKeyPath:@"/issues"];
+                                                                                  rootKeyPath:@"/issues"
+                                                                                       method:RKRequestMethodAny];
     expect(firstDescriptor).toNot.equal(secondDescriptor);
 }
 
@@ -97,24 +101,28 @@
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     RKRequestDescriptor *firstDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                  objectClass:[RKRequestDescriptorTest class]
-                                                                                 rootKeyPath:@"/issues"];
+                                                                                 rootKeyPath:@"/issues"
+                                                                                      method:RKRequestMethodAny];
     
     RKRequestDescriptor *secondDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                   objectClass:[NSObject class]
-                                                                                  rootKeyPath:@"/issues"];
+                                                                                  rootKeyPath:@"/issues"
+                                                                                       method:RKRequestMethodAny];
     expect(firstDescriptor).toNot.equal(secondDescriptor);
 }
 
-- (void)testThatDescriptorsWithDifferentRottKeyPathsAreNotConsideredEqual
+- (void)testThatDescriptorsWithDifferentRootKeyPathsAreNotConsideredEqual
 {
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     RKRequestDescriptor *firstDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                  objectClass:[RKRequestDescriptorTest class]
-                                                                                 rootKeyPath:@"/issues"];
+                                                                                 rootKeyPath:@"/issues"
+                                                                                      method:RKRequestMethodAny];
     
     RKRequestDescriptor *secondDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                   objectClass:[RKRequestDescriptorTest class]
-                                                                                  rootKeyPath:@"/"];
+                                                                                  rootKeyPath:@"/"
+                                                                                       method:RKRequestMethodAny];
     expect(firstDescriptor).toNot.equal(secondDescriptor);
 }
 

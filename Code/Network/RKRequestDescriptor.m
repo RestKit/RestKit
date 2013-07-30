@@ -42,17 +42,28 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
     }
 }
 
+extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
+
 @interface RKRequestDescriptor ()
 
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) Class objectClass;
 @property (nonatomic, copy, readwrite) NSString *rootKeyPath;
+@property (nonatomic, assign, readwrite) RKRequestMethod method;
 
 @end
 
 @implementation RKRequestDescriptor
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 + (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath
+{
+    return [self requestDescriptorWithMapping:mapping objectClass:objectClass rootKeyPath:rootKeyPath method:RKRequestMethodAny];
+}
+#pragma clang diagnostic pop
+
++ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath method:(RKRequestMethod)method
 {
     NSParameterAssert(mapping);
     NSParameterAssert(objectClass);
@@ -62,18 +73,14 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
     requestDescriptor.mapping = mapping;
     requestDescriptor.objectClass = objectClass;
     requestDescriptor.rootKeyPath = rootKeyPath;
+    requestDescriptor.method = method;
     return requestDescriptor;
 }
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p objectClass=%@ rootKeyPath=%@ : %@>",
-            NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
-}
-
-- (BOOL)matchesObject:(id)object
-{
-    return [object isKindOfClass:self.objectClass];
+    return [NSString stringWithFormat:@"<%@: %p method=%@ objectClass=%@ rootKeyPath=%@ : %@>",
+            NSStringFromClass([self class]), self, RKStringDescribingRequestMethod(self.method), NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
 }
 
 - (BOOL)isEqual:(id)object
@@ -100,10 +107,11 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
     if (![otherDescriptor isKindOfClass:[RKRequestDescriptor class]]) {
         return NO;
     }
-    
+
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.objectClass == otherDescriptor.objectClass &&
+    self.method == otherDescriptor.method &&
     [self.rootKeyPath isEqualToString:otherDescriptor.rootKeyPath];
 }
 

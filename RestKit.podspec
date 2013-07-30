@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name         =  'RestKit'
-  s.version      =  '0.20.3-dev'
+  s.version      =  '0.20.4-dev'
   s.summary      =  'RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X.'
   s.homepage     =  'http://www.restkit.org'
   s.author       =  { 'Blake Watters' => 'blakewatters@gmail.com' }
-  s.source       =  { :git => 'https://github.com/RestKit/RestKit.git', :branch => 'development' }
+  s.source       =  { :git => 'https://github.com/RestKit/RestKit.git', :tag => "v#{s.version}" }
   s.license      =  'Apache License, Version 2.0'
   
   # Platform setup
@@ -25,7 +25,7 @@ EOS
   ### Subspecs
   
   s.subspec 'Core' do |cs|
-    cs.source_files =  'Code/*.h', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'
+    cs.source_files =  'Code/*.h'
     cs.header_dir   =  'RestKit'
     
     cs.dependency 'RestKit/ObjectMapping'
@@ -36,6 +36,7 @@ EOS
   s.subspec 'ObjectMapping' do |os|
     os.header_dir     = 'RestKit/ObjectMapping'
     os.source_files   = 'Code/ObjectMapping'
+    os.dependency       'RestKit/Support'
   end
   
   s.subspec 'Network' do |ns|
@@ -47,6 +48,22 @@ EOS
     ns.dependency       'AFNetworking', '~> 1.3.0'
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
+    
+    ns.prefix_header_contents = <<-EOS
+#import <Availability.h>
+
+#define _AFNETWORKING_PIN_SSL_CERTIFICATES_
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+  #import <SystemConfiguration/SystemConfiguration.h>
+  #import <MobileCoreServices/MobileCoreServices.h>
+  #import <Security/Security.h>
+#else
+  #import <SystemConfiguration/SystemConfiguration.h>
+  #import <CoreServices/CoreServices.h>
+  #import <Security/Security.h>
+#endif
+EOS
   end    
   
   s.subspec 'CoreData' do |cdos|
@@ -68,7 +85,7 @@ EOS
   
   s.subspec 'Support' do |ss|
     ss.header_dir     = 'RestKit/Support'
-    ss.source_files   = 'Code/Support'
+    ss.source_files   = 'Code/Support', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'
     ss.dependency 'TransitionKit', '1.1.1'
   end
 end

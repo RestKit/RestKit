@@ -2634,6 +2634,28 @@
     expect(user.country).to.equal(@"United States of America");
 }
 
+- (void)testMappingCustomMetadataAsRelationship
+{
+    NSArray *representations = @[ @{ @"name": @"Blake Watters" } ];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKObjectMapping *friendsMapping = [userMapping copy];
+    
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"@metadata.custom" toKeyPath:@"friends" withMapping:friendsMapping];
+    [userMapping addPropertyMapping:relationshipMapping];    
+    RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representations mappingsDictionary:@{ [NSNull null]: userMapping }];
+    mapperOperation.metadata = @{ @"custom": @{ @"name": @"Valerio Mazzeo" } };
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    mapperOperation.mappingOperationDataSource = dataSource;
+    NSError *error = nil;
+    [mapperOperation execute:&error];
+    RKTestUser *user = [mapperOperation.mappingResult firstObject];
+    expect(error).to.beNil();
+    expect(user.name).to.equal(@"Blake Watters");
+    expect(user.friends).to.haveCountOf(1);
+    expect([user.friends[0] name]).to.equal(@"Valerio Mazzeo");
+}
+
 #pragma mark - Persistent Stores
 
 - (void)testMappingObjectToInMemoryPersistentStore

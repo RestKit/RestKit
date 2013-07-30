@@ -52,12 +52,13 @@ static RKObjectManager  *sharedManager = nil;
  
  @param responseDescriptors An array of `RKResponseDescriptor` objects.
  @param path The path for which to select matching response descriptors.
- @return An `NSArray` object whose elements are `RKResponseDescriptor` objects matching the given path.
+ @param method The method for which to select matching response descriptors.
+ @return An `NSArray` object whose elements are `RKResponseDescriptor` objects matching the given path and method.
  */
-static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPath(NSArray *responseDescriptors, NSString *path)
+static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(NSArray *responseDescriptors, NSString *path, RKRequestMethod method)
 {
     NSIndexSet *indexSet = [responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
-        return [responseDescriptor matchesPath:path];
+        return [responseDescriptor matchesPath:path] && (method & responseDescriptor.method);
     }];
     return [responseDescriptors objectsAtIndexes:indexSet];
 }
@@ -69,18 +70,25 @@ static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPath(NSArray *respon
  @param object The object to find a matching request descriptor for.
  @return An `RKRequestDescriptor` object matching the given object, or `nil` if none could be found.
  */
-static RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObject(NSArray *requestDescriptors, id object)
+RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod);
+RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod)
 {
     Class searchClass = [object class];
     do {
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([requestDescriptor.objectClass isEqual:searchClass]) return requestDescriptor;
+            if ([requestDescriptor.objectClass isEqual:searchClass] && (requestMethod == requestDescriptor.method)) return requestDescriptor;
+        }
+        
+        for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
+            if ([requestDescriptor.objectClass isEqual:searchClass] && (requestMethod & requestDescriptor.method)) return requestDescriptor;
         }
         searchClass = [searchClass superclass];
     } while (searchClass);
     
     return nil;
 }
+
+extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @interface RKObjectParameters : NSObject
 
@@ -305,6 +313,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return RKMIMETypeFormURLEncoded;
 }
 
+@interface AFHTTPClient ()
+@property (readonly, nonatomic, strong) NSURLCredential *defaultCredential;
+@end
+
 ///////////////////////////////////
 
 @interface RKObjectManager ()
@@ -429,7 +441,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSArray *objectsToParameterize = ([object isKindOfClass:[NSArray class]] || object == nil) ? object : @[ object ];
     RKObjectParameters *objectParameters = [RKObjectParameters new];
     for (id objectToParameterize in objectsToParameterize) {
-        RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObject(self.requestDescriptors, objectToParameterize);
+        RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(self.requestDescriptors, objectToParameterize, method);
         if ((method != RKRequestMethodGET && method != RKRequestMethodDELETE) && requestDescriptor) {
             NSError *error = nil;
             NSDictionary *parametersForObject = [RKObjectParameterization parametersWithObject:objectToParameterize requestDescriptor:requestDescriptor error:&error];
@@ -522,12 +534,22 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 #pragma mark - Object Request Operations
 
+- (void)copyStateFromHTTPClientToHTTPRequestOperation:(AFHTTPRequestOperation *)operation
+{
+    operation.credential = self.HTTPClient.defaultCredential;
+    operation.allowsInvalidSSLCertificate = self.HTTPClient.allowsInvalidSSLCertificate;
+#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+    operation.SSLPinningMode = self.HTTPClient.defaultSSLPinningMode;
+#endif
+}
+
 - (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
                                                         success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                         failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
     RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request];
+    [self copyStateFromHTTPClientToHTTPRequestOperation:HTTPRequestOperation];
     Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredObjectRequestOperationClasses] ?: [RKObjectRequestOperation class];
     RKObjectRequestOperation *operation = [[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
@@ -541,6 +563,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 {
     Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
     RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request];
+    [self copyStateFromHTTPClientToHTTPRequestOperation:HTTPRequestOperation];
     Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredManagedObjectRequestOperationClasses] ?: [RKManagedObjectRequestOperation class];
     RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];        
     [operation setCompletionBlockWithSuccess:success failure:failure];
@@ -570,7 +593,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         routingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
     }
     
-    NSArray *matchingDescriptors = RKFilteredArrayOfResponseDescriptorsMatchingPath(self.responseDescriptors, path);
+    NSArray *matchingDescriptors = RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(self.responseDescriptors, path, method);
     BOOL containsEntityMapping = RKDoesArrayOfResponseDescriptorsContainEntityMapping(matchingDescriptors);
     BOOL isManagedObjectRequestOperation = (containsEntityMapping || [object isKindOfClass:[NSManagedObject class]]);
     
@@ -646,7 +669,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSDictionary *interpolatedParameters = nil;
     NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
     NSAssert(URL, @"No route found named '%@'", routeName);
-    NSAssert(route.method == RKRequestMethodGET, @"Expected route named '%@' to specify a GET, but it does not", routeName);
+    NSAssert(route.method & RKRequestMethodGET, @"Expected route named '%@' to specify a GET, but it does not", routeName);
     
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
     operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
@@ -753,7 +776,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     if ([self.requestDescriptors containsObject:requestDescriptor]) return;
     NSAssert([requestDescriptor isKindOfClass:[RKRequestDescriptor class]], @"Expected an object of type RKRequestDescriptor, got '%@'", [requestDescriptor class]);
     [self.requestDescriptors enumerateObjectsUsingBlock:^(RKRequestDescriptor *registeredDescriptor, NSUInteger idx, BOOL *stop) {
-        NSAssert(![registeredDescriptor.objectClass isEqual:requestDescriptor.objectClass], @"Cannot add a request descriptor for the same object class as an existing request descriptor.");
+        NSAssert(!([registeredDescriptor.objectClass isEqual:requestDescriptor.objectClass] && (requestDescriptor.method == registeredDescriptor.method)), @"Cannot add request descriptor: An existing descriptor is already registered for the class '%@' and HTTP method'%@'.", requestDescriptor.objectClass, RKStringDescribingRequestMethod(requestDescriptor.method));
     }];
     [self.mutableRequestDescriptors addObject:requestDescriptor];
 }
@@ -822,7 +845,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 - (NSArray *)enqueuedObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern
 {
     NSMutableArray *matches = [NSMutableArray array];
-    NSString *methodName = RKStringFromRequestMethod(method);
     RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
     for (NSOperation *operation in [self.operationQueue operations]) {
         if (![operation isKindOfClass:[RKObjectRequestOperation class]]) {
@@ -830,8 +852,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         }
         NSURLRequest *request = [(RKObjectRequestOperation *)operation HTTPRequestOperation].request;
         NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL([request URL], self.baseURL);
-
-        if ((!methodName || [methodName isEqualToString:[request HTTPMethod]]) && [pathMatcher matchesPath:pathAndQueryString tokenizeQueryStrings:NO parsedArguments:nil]) {
+        
+        RKRequestMethod operationMethod = RKRequestMethodFromString([request HTTPMethod]);
+        if ((method & operationMethod) && [pathMatcher matchesPath:pathAndQueryString tokenizeQueryStrings:NO parsedArguments:nil]) {
             [matches addObject:operation];
         }
     }

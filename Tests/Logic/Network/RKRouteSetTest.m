@@ -35,13 +35,13 @@
 {
     RKRouteSet *router = [RKRouteSet new];
     assertThat([router allRoutes], is(notNilValue()));
-    assertThat([router allRoutes], is(empty()));
+    assertThat([router allRoutes], isEmpty());
 }
 
 - (void)testAddingRoute
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route];
     assertThat([router allRoutes], hasCountOf(1));
 }
@@ -49,7 +49,7 @@
 - (void)testRemovingRoute
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route];
     assertThat([router allRoutes], hasCountOf(1));
     [router removeRoute:route];
@@ -59,7 +59,7 @@
 - (void)testCannotAddARouteThatIsAlreadyAdded
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route];
     STAssertThrowsSpecificNamed([router addRoute:route], NSException, NSInternalInconsistencyException, @"Cannot add a route that is already added to the router.");
 }
@@ -67,18 +67,18 @@
 - (void)testCannotAddARouteWithAnExistingName
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route1];
-    RKRoute *route2 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes2" method:RKRequestMethodAny];
+    RKRoute *route2 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes2" method:RKRequestMethodGET];
     STAssertThrowsSpecificNamed([router addRoute:route2], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same name as an existing route.");
 }
 
 - (void)testCanAddARouteWithAnExistingResourcePathPattern
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route1];
-    RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes" method:RKRequestMethodGET];
     STAssertNoThrowSpecificNamed([router addRoute:route2], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same path pattern as an existing route.");
 }
 
@@ -128,9 +128,9 @@
 - (void)testAllRoutes
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route1];
-    RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes2" method:RKRequestMethodAny];
+    RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes2" method:RKRequestMethodGET];
     [router addRoute:route2];
     assertThat([router allRoutes], contains(route1, route2, nil));
 }
@@ -138,9 +138,9 @@
 - (void)testNamedRoutes
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route1];
-    RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes2" method:RKRequestMethodAny];
+    RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes2" method:RKRequestMethodGET];
     [router addRoute:route2];
     RKRoute *route3 = [RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/routes2" method:RKRequestMethodPUT];
     [router addRoute:route3];
@@ -150,9 +150,9 @@
 - (void)testClassRoutes
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route1];
-    RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes2" method:RKRequestMethodAny];
+    RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes2" method:RKRequestMethodGET];
     [router addRoute:route2];
     RKRoute *route3 = [RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/routes2" method:RKRequestMethodPUT];
     [router addRoute:route3];
@@ -162,7 +162,7 @@
 - (void)testHasRouteForName
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route];
     assertThat([router routeForName:@"test_router"], is(notNilValue()));
     assertThat([router routeForName:@"test_router2"], is(nilValue()));
@@ -171,7 +171,7 @@
 - (void)testRouteForName
 {
     RKRouteSet *router = [RKRouteSet new];
-    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny];
+    RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route];
     assertThat([router routeForName:@"test_router"], is(equalTo(route)));
 }
@@ -202,6 +202,25 @@
     RKRoute *route = [router routeForClass:[RKTestUser class] method:RKRequestMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestUser class])));
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodAny)));
+}
+
+- (void)testRetrievingRouteForClassAndMethodWithBitmaskMatch
+{
+    RKRouteSet *router = [RKRouteSet new];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID" method:RKRequestMethodHEAD | RKRequestMethodGET]];
+    RKRoute *route = [router routeForClass:[RKTestUser class] method:RKRequestMethodGET];
+    assertThat(route.objectClass, is(equalTo([RKTestUser class])));
+    assertThatInteger(route.method, is(equalToInteger(RKRequestMethodHEAD | RKRequestMethodGET)));
+}
+
+- (void)testRetrievingRouteForClassAndMethodFavorsBitmaskMatchOverWildcard
+{
+    RKRouteSet *router = [RKRouteSet new];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID/whatever" method:RKRequestMethodAny]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID" method:RKRequestMethodHEAD | RKRequestMethodGET]];
+    RKRoute *route = [router routeForClass:[RKTestUser class] method:RKRequestMethodGET];
+    assertThat(route.objectClass, is(equalTo([RKTestUser class])));
+    assertThatInteger(route.method, is(equalToInteger(RKRequestMethodHEAD | RKRequestMethodGET)));
 }
 
 - (void)testRouteForObjectAndMethodWithExactMatch
@@ -315,6 +334,20 @@
     RKRoute *route = [router routeForObject:subclassed method:RKRequestMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
+    assertThat(route.pathPattern, is(equalTo(@"/users/:userID/1")));
+}
+
+- (void)testRouteForObjectAndMethodFavorsExactSuperclassBitmaskMethodMatchOverWildcard
+{
+    RKRouteSet *router = [RKRouteSet new];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/1" method:RKRequestMethodGET | RKRequestMethodHEAD]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/2" method:RKRequestMethodAny]];
+    
+    RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
+    RKRoute *route = [router routeForObject:subclassed method:RKRequestMethodGET];
+    assertThat(route, is(notNilValue()));
+    assertThat(route.objectClass, is(equalTo([RKTestObject class])));
+    assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET | RKRequestMethodHEAD)));
     assertThat(route.pathPattern, is(equalTo(@"/users/:userID/1")));
 }
 
