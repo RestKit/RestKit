@@ -337,6 +337,11 @@ class RestKitTestServer < Sinatra::Base
     render_fixture('/JSON/user.json', :status => 200)
   end
 
+  get '/key_with_dots' do
+    content_type 'application/json'
+    render_fixture('/JSON/key_with_dots.json', :status => 200)
+  end
+
   # start the server if ruby file executed directly
   run! if app_file == $0
 end
