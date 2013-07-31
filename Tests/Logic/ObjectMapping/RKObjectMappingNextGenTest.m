@@ -980,7 +980,7 @@
     assertThat(error, isNot(nilValue()));
 }
 
-- (void)testShouldBeAbleToMapKeysWithDots
+- (void)testShouldBeAbleToMapKeysWithDotsIndirectly
 {
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
@@ -995,7 +995,7 @@
     [outerMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"data" toKeyPath:@"userGroup" withMapping:innerMapping]];
     
     id groupInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"keys_with_dots.json"];
-    RKExampleGroupWithGroup *group = [RKExampleGroupWithGroup new];
+    RKExampleGroupWithGroup *group = [RKExampleGroupWithGroup group];
     
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:groupInfo destinationObject:group mapping:outerMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -1003,6 +1003,26 @@
     [operation start];
     assertThat(group.userGroup.user.name, is(equalTo(@"Simon")));
     assertThatInt([group.userGroup.user.userID intValue], is(equalToInt(12345)));
+}
+
+- (void)testShouldBeAbleToMapKeysWithDotsDirectly
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"data.users.current.details.id" toKeyPath:@"userID"];
+    [userMapping addPropertyMapping:idMapping];
+    RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"data.users.current.details.name" toKeyPath:@"name"];
+    [userMapping addPropertyMapping:nameMapping];
+    
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"keys_with_dots.json"];
+    RKTestUser *user = [RKTestUser user];
+    
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:userInfo destinationObject:user mapping:userMapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    [operation start];
+    assertThat(user.name, is(equalTo(@"Simon")));
+    assertThatInt([user.userID intValue], is(equalToInt(12345)));
+    
 }
 
 #pragma mark - Attribute Mapping

@@ -32,6 +32,7 @@
 #import "RKObjectUtilities.h"
 #import "RKValueTransformers.h"
 #import "RKDictionaryUtilities.h"
+#import "NSObject+RKKVC.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -280,17 +281,56 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
  */
 - (id)valueForKeyPath:(NSString *)keyPath
 {
+    return [self rk_valueForKeyPath:keyPath];
+}
+
+- (NSString *)rk_firstKeyInKeyPath:(NSString *)keyPath
+{
+    for (NSString *key in @[RKMetadataKey, RKParentKey, RKRootKey]) {
+        if ([keyPath isEqualToString:key] || [keyPath hasPrefix:[key stringByAppendingString:@"."]]) {
+            return key;
+        }
+    }
+
+    return [self.object rk_firstKeyInKeyPath:keyPath];
+}
+
+- (id)rk_firstValueForKeyPath:(NSString *)keyPath outKeyPath:(NSString **)outKeyPath
+{
+    id value = nil;
+    NSString *key = [self rk_firstKeyInKeyPath:keyPath];
+    
+    if (key.length > 0)
+    {
+        value = [self valueForKey:key];
+        
+        if (outKeyPath) {
+            if (key.length >= keyPath.length) {
+                keyPath = nil;
+            } else {
+                keyPath = [keyPath substringFromIndex:key.length + 1];
+            }
+            
+            *outKeyPath = keyPath;
+        }
+    }
+    
+    return value;
+}
+
+- (id)rk_valueForKeyPath:(NSString *)keyPath
+{
     if ([keyPath hasPrefix:RKMetadataKeyPathPrefix]) {
         NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
-        return [self.metadata valueForKeyPath:metadataKeyPath];
+        return [self.metadata rk_valueForKeyPath:metadataKeyPath];
     } else if ([keyPath hasPrefix:RKParentKeyPathPrefix]) {
         NSString *parentKeyPath = [keyPath substringFromIndex:[RKParentKeyPathPrefix length]];
-        return [self.parentObject valueForKeyPath:parentKeyPath];
+        return [self.parentObject rk_valueForKeyPath:parentKeyPath];
     } else if ([keyPath hasPrefix:RKRootKeyPathPrefix]) {
         NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
-        return [self.rootObject valueForKeyPath:rootKeyPath];
+        return [self.rootObject rk_valueForKeyPath:rootKeyPath];
     } else {
-        return [self.object valueForKeyPath:keyPath];
+        return [self.object rk_valueForKeyPath:keyPath];
     }
 }
 
@@ -401,27 +441,19 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 - (id)parentObjectForRelationshipMapping:(RKRelationshipMapping *)mapping
 {
     id parentSourceObject = self.sourceObject;
-
-    NSArray *sourceKeyComponents = [mapping.sourceKeyPath componentsSeparatedByString:@"."];
-    if (sourceKeyComponents.count > 1)
+    NSString *keyPath = mapping.sourceKeyPath;
+    
+    while (keyPath.length > 0)
     {
-        @try {
-            for (NSString *key in [sourceKeyComponents subarrayWithRange:NSMakeRange(0, sourceKeyComponents.count - 1)])
-            {
-                parentSourceObject = [[RKMappingSourceObject alloc] initWithObject:[parentSourceObject valueForKey:key]
-                                                                      parentObject:parentSourceObject
-                                                                        rootObject:self.rootSourceObject
-                                                                          metadata:self.metadata];
-            }
-        }
-        @catch (NSException *exception) {
-            if ([exception.name isEqualToString:NSInvalidArgumentException]) {
-                RKLogDebug(@"Caught NSInvalidArgumentException while creating parent object chain. Assuming this is caused by a key containing dots and directly using source object.");
-                parentSourceObject = self.sourceObject;
-            } else {
-                [exception raise];
-            }
-        }
+        NSString *firstKey = [parentSourceObject rk_firstKeyInKeyPath:keyPath];
+        if ([firstKey isEqualToString:keyPath]) break;
+        
+        parentSourceObject = [[RKMappingSourceObject alloc] initWithObject:[parentSourceObject valueForKey:firstKey]
+                                                              parentObject:parentSourceObject
+                                                                rootObject:self.rootSourceObject
+                                                                  metadata:self.metadata];
+        
+        keyPath = [keyPath substringFromIndex:firstKey.length + 1];
     }
 
     return parentSourceObject;
@@ -632,7 +664,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
             continue;
         }
 
-        id value = (attributeMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
+        id value = (attributeMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject rk_valueForKeyPath:attributeMapping.sourceKeyPath];
         if (value) {
             appliedMappings = YES;
             [self applyAttributeMapping:attributeMapping withValue:value];
