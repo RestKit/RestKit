@@ -135,7 +135,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
     [self performBlockWithLock:^{
         NSError *error = nil;
         BOOL success = [self.stateMachine fireEvent:RKOperationEventStart error:&error];
-        if (! success) [NSException raise:RKOperationFailureException format:@"The operation unexpected failed to start due to an error: %@", error];
+        if (! success) [NSException raise:RKOperationFailureException format:@"The operation unexpectedly failed to start due to an error: %@", error];
     }];
 }
 
@@ -146,7 +146,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
         [self performBlockWithLock:^{
             NSError *error = nil;
             BOOL success = [self.stateMachine fireEvent:RKOperationEventFinish error:&error];
-            if (! success) [NSException raise:RKOperationFailureException format:@"The operation unexpected failed to finish due to an error: %@", error];
+            if (! success) [NSException raise:RKOperationFailureException format:@"The operation unexpectedly failed to finish due to an error: %@", error];
         }];
     });
 }
