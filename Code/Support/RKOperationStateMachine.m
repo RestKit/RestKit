@@ -153,7 +153,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
 - (void)cancel
 {
-    if ([self isCancelled]) return;
+    if ([self isCancelled] || [self isFinished]) return;
     [self performBlockWithLock:^{
         self.cancelled = YES;
     }];
