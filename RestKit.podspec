@@ -15,11 +15,11 @@ Pod::Spec.new do |s|
   # Exclude optional Search and Testing modules
   s.default_subspec = 'Core'
   
-  # Add Core Data to the PCH (This should be part of the Core Data Subspec, but CocoaPods does not allow)
+  # Add Core Data to the PCH if the Core Data subspec is imported. This enables conditional compilation to kick in.
   s.prefix_header_contents = <<-EOS
-#ifdef __OBJC__
-#import <CoreData/CoreData.h>
-#endif /* __OBJC__*/
+#ifdef COCOAPODS_POD_AVAILABLE_RestKit_CoreData
+    #import <CoreData/CoreData.h>
+#endif
 EOS
 
   ### Subspecs
@@ -69,12 +69,28 @@ EOS
   s.subspec 'CoreData' do |cdos|
     cdos.header_dir   = 'RestKit/CoreData'
     cdos.source_files = 'Code/CoreData'
-    cdos.frameworks   = 'CoreData'        
+    cdos.frameworks   = 'CoreData'
   end
   
   s.subspec 'Testing' do |ts|
     ts.header_dir   = 'RestKit/Testing'
     ts.source_files = 'Code/Testing'
+    ts.dependency     'SOCKit'
+    ts.prefix_header_contents = <<-EOS
+#import <Availability.h>
+
+#define _AFNETWORKING_PIN_SSL_CERTIFICATES_
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+  #import <SystemConfiguration/SystemConfiguration.h>
+  #import <MobileCoreServices/MobileCoreServices.h>
+  #import <Security/Security.h>
+#else
+  #import <SystemConfiguration/SystemConfiguration.h>
+  #import <CoreServices/CoreServices.h>
+  #import <Security/Security.h>
+#endif
+EOS
   end
   
   s.subspec 'Search' do |ss|

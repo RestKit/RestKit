@@ -18,8 +18,6 @@
 //  limitations under the License.
 //
 
-#import <CoreData/CoreData.h>
-
 /**
  The default filename used for managed object stores created via the factory.
  */
@@ -144,6 +142,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  */
 + (id)sharedObjectFromFactory:(NSString *)factoryName;
 
+#ifdef _COREDATADEFINES_H
 /**
  Inserts a new managed object for the `NSEntityDescription` with the given name into the specified  managed object context and sets properties on the instance from the given dictionary. A permanent managed object ID is obtained for the object so that it can be referenced across threads without any further work.
  
@@ -155,6 +154,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 + (id)insertManagedObjectForEntityForName:(NSString *)entityName
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
                            withProperties:(NSDictionary *)properties;
+#endif
 
 /**
  Returns a set of names for all defined factories.
@@ -181,6 +181,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  */
 + (id)objectManager;
 
+#ifdef _COREDATADEFINES_H
 /**
  Fetches the shared an `RKManagedObjectStore` object using the factory defined for the name `RKTestFactoryDefaultNamesManagedObjectStore`.
 
@@ -189,6 +190,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  @return The shared managed object store instance.
  */
 + (RKManagedObjectStore *)managedObjectStore;
+#endif
 
 ///----------------------------------------------
 /// @name Configuring Set Up and Tear Down Blocks
