@@ -19,6 +19,7 @@
 //
 
 #import "RKHTTPRequestOperation.h"
+#import "RKObjectRequestOperation.h"
 #import "RKManagedObjectCaching.h"
 #import "RKObjectMapping.h"
 #import "RKMappingResult.h"
@@ -96,6 +97,11 @@
  An optional operation queue on which object request operations constructed by the paginator are to be enqueued for processing.
  */
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
+
+/**
+ Returns the ObjectRequestOperation used by the paginator to load the request
+ */
+@property (nonatomic, readonly) RKObjectRequestOperation *objectRequestOperation;
 
 /**
  Sets the `RKHTTPRequestOperation` subclass to be used when constructing HTTP request operations for requests dispatched by the paginator.
