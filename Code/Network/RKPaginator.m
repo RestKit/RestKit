@@ -40,6 +40,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 @property (nonatomic, assign, readwrite) BOOL loaded;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong, readwrite) RKObjectRequestOperation *objectRequestOperation;
 
 // iOS 5.x compatible proxy attributes
 @property (nonatomic, assign, readwrite) NSNumber *perPageNumber;
@@ -172,7 +173,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 {
     if (self.objectRequestOperation.HTTPRequestOperation.response) {
         // The user by calling loadPage is ready to perform the next request so invalidate objectRequestOperation
-        _objectRequestOperation = nil;
+        self.objectRequestOperation = nil;
     }
 
     NSAssert(self.responseDescriptors, @"Cannot perform a load with nil response descriptors.");
@@ -190,9 +191,9 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         managedObjectRequestOperation.fetchRequestBlocks = self.fetchRequestBlocks;
         managedObjectRequestOperation.deletesOrphanedObjects = NO;
         
-        _objectRequestOperation = managedObjectRequestOperation;
+        self.objectRequestOperation = managedObjectRequestOperation;
     } else {
-        _objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
+        self.objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
     }
     
     // Add KVO to ensure notification of loaded state prior to execution of completion block
