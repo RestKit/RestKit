@@ -24,7 +24,6 @@ EOS
 
   # Preserve the layout of headers in the Code directory
   s.header_mappings_dir = 'Code'
-  s.source_files   = 'Code/RestKit.h'
 
   ### Subspecs
   
@@ -96,7 +95,7 @@ EOS
   end
   
   s.subspec 'Support' do |ss|
-    ss.source_files   = 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'
+    ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'
     ss.dependency 'TransitionKit', '1.1.1'
   end
 end
