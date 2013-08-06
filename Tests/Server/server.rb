@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
+require 'sinatra/multi_route'
 require 'json'
 require 'debugger'
 
@@ -13,6 +14,8 @@ class Person < Struct.new(:name, :age)
 end
 
 class RestKitTestServer < Sinatra::Base
+  register Sinatra::MultiRoute
+  
   self.app_file = __FILE__
 
   configure do
@@ -285,6 +288,12 @@ class RestKitTestServer < Sinatra::Base
 
   get '/304' do
     status 304
+  end
+
+  route :get, :head, '/no_content_type/:code' do
+    response.header['Content-Type'] = ''
+    status params[:code]
+    ''
   end
 
   delete '/humans/1234/whitespace' do
