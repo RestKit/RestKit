@@ -92,6 +92,30 @@
  */
 - (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary;
 
+/**
+ Initializes the operation with a source object and a mappings dictionary.
+ 
+ @param representation An `NSDictionary` or `NSArray` of `NSDictionary` object representations to be mapped into local domain objects.
+ @param mappingsDictionary An `NSDictionary` wherein the keys are mappable key paths in `object` and the values are `RKMapping` objects specifying how the representations at its key path are to be mapped.
+ @param progress A block object to be executed upon the completion of each request operation in the batch. This block has no return value and takes two arguments: the number of operations that have already finished execution, and the total number of operations.
+ @param completion A block object to be executed upon the completion of all of the request operations in the batch. This block has no return value.
+ @return The receiver, initialized with the given object and and dictionary of key paths to mappings.
+ */
+- (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary
+                    progress:(void ( ^ ) ( NSUInteger numberOfFinishedOperations , NSUInteger totalNumberOfOperations ))progress
+                  completion:(void ( ^ ) ( void ))completion;
+
+///-------------------------------
+/// @name Accessing Progress block
+///-------------------------------
+
+/**
+ The progress block.
+ */
+
+typedef void (^ProgressBlock)(NSUInteger,NSUInteger);
+@property (nonatomic, copy) ProgressBlock progressBlock;
+
 ///------------------------------------------
 /// @name Accessing Mapping Result and Errors
 ///------------------------------------------

@@ -129,9 +129,11 @@
     mappable content is not contained in a nesting attribute, the key path should be specified as nil.
  @param error On input, a pointer to an error object. If an error occurs, this pointer is set to an actual error object containing
     the error information. You may specify nil for this parameter if you do not want the error information.
+ @param progress A block object to be executed upon the completion of each request operation in the batch. This block has no return value and takes two arguments: the number of operations that have already finished execution, and the total number of operations.
+ @param completion A block object to be executed upon the completion of all of the request operations in the batch. This block has no return value.
  @return A count of the number of managed object imported from the given path or NSNotFound if an error occurred during import.
  */
-- (NSUInteger)importObjectsFromItemAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error;
+- (NSUInteger)importObjectsFromItemAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error progress:(void ( ^ ) ( NSUInteger numberOfFinishedOperations , NSUInteger totalNumberOfOperations ))progress completion:(void ( ^ ) ( void ))completion;
 
 /**
  Finishes the import process by saving the managed object context to the persistent store, ensuring all

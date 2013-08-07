@@ -180,14 +180,14 @@
     self.hasPerformedResetIfNecessary = YES;
 }
 
-- (NSUInteger)importObjectsFromFileAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error
+- (NSUInteger)importObjectsFromFileAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error progress:(void ( ^ ) ( NSUInteger numberOfFinishedOperations , NSUInteger totalNumberOfOperations ))progress completion:(void ( ^ ) ( void ))completion
 {
     NSParameterAssert(path);
     NSParameterAssert(mapping);
-
+    
     // Perform the reset on the first import action if requested
     [self resetPersistentStoreIfNecessary];
-
+    
     __block NSError *localError = nil;
     NSData *payload = [NSData dataWithContentsOfFile:path options:0 error:&localError];
     if (! payload) {
@@ -195,7 +195,7 @@
         if (error) *error = localError;
         return NSNotFound;
     }
-
+    
     NSString *MIMEType = RKMIMETypeFromPathExtension(path);
     id parsedData = [RKMIMETypeSerialization objectFromData:payload MIMEType:MIMEType error:&localError];
     if (!parsedData) {
@@ -206,9 +206,9 @@
         if (error) *error = localError;
         return NSNotFound;
     }
-
+    
     NSDictionary *mappingDictionary = @{ (keyPath ?: [NSNull null]) : mapping };
-    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappingDictionary];
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappingDictionary progress:progress completion:completion];
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
     __block RKMappingResult *mappingResult;
     [self.managedObjectContext performBlockAndWait:^{
@@ -221,13 +221,13 @@
         RKLogError(@"Importing file at path '%@' failed with error: %@", path, localError);
         return NSNotFound;
     }
-
+    
     NSUInteger objectCount = [mappingResult count];
     RKLogInfo(@"Imported %lu objects from file at path '%@'", (unsigned long)objectCount, path);
     return objectCount;
 }
 
-- (NSUInteger)importObjectsFromDirectoryAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error
+- (NSUInteger)importObjectsFromDirectoryAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error progress:(void ( ^ ) ( NSUInteger numberOfFinishedOperations , NSUInteger totalNumberOfOperations ))progress completion:(void ( ^ ) ( void ))completion
 {
     NSError *localError = nil;
     NSArray *entries = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:&localError];
@@ -236,10 +236,10 @@
         if (error) *error = localError;
         return NSNotFound;
     }
-
+    
     NSUInteger aggregateObjectCount = 0;
     for (NSString *entry in entries) {
-        NSUInteger objectCount = [self importObjectsFromFileAtPath:path withMapping:mapping keyPath:keyPath error:&localError];
+        NSUInteger objectCount = [self importObjectsFromFileAtPath:path withMapping:mapping keyPath:keyPath error:&localError progress:progress completion:completion];
         if (objectCount == NSNotFound) {
             if (error) *error = localError;
             return NSNotFound;
@@ -247,22 +247,22 @@
             aggregateObjectCount += objectCount;
         }
     }
-
+    
     return aggregateObjectCount;
 }
 
-- (NSUInteger)importObjectsFromItemAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error
+- (NSUInteger)importObjectsFromItemAtPath:(NSString *)path withMapping:(RKMapping *)mapping keyPath:(NSString *)keyPath error:(NSError **)error progress:(void ( ^ ) ( NSUInteger numberOfFinishedOperations , NSUInteger totalNumberOfOperations ))progress completion:(void ( ^ ) ( void ))completion
 {
     NSParameterAssert(path);
     NSParameterAssert(mapping);
-
+    
     BOOL isDirectory;
     [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory];
     if (isDirectory) {
-        return [self importObjectsFromDirectoryAtPath:path withMapping:mapping keyPath:keyPath error:error];
+        return [self importObjectsFromDirectoryAtPath:path withMapping:mapping keyPath:keyPath error:error progress:progress completion:completion];
     }
-
-    return [self importObjectsFromFileAtPath:path withMapping:mapping keyPath:keyPath error:error];
+    
+    return [self importObjectsFromFileAtPath:path withMapping:mapping keyPath:keyPath error:error progress:progress completion:completion];
 }
 
 - (BOOL)finishImporting:(NSError **)error
