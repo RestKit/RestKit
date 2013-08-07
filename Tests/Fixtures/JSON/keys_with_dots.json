@@ -1,0 +1,9 @@
+{
+    "data": {
+        "users.current.details": {
+            "id": 12345,
+            "name": "Simon"
+        }
+    },
+    "success": true
+}
