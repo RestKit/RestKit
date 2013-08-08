@@ -92,6 +92,16 @@
  */
 - (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary;
 
+///-------------------------------
+/// @name Accessing Progress block
+///-------------------------------
+
+/**
+ The progress block.
+ */
+
+@property (nonatomic, copy) void (^progressBlock)(NSUInteger,NSUInteger);
+
 ///------------------------------------------
 /// @name Accessing Mapping Result and Errors
 ///------------------------------------------

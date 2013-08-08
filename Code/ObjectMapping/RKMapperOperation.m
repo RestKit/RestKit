@@ -68,7 +68,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
 @implementation RKMapperOperation
 
-- (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary;
+- (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary
 {
     self = [super init];
     if (self) {
@@ -215,6 +215,8 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             BOOL success = [self mapRepresentation:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping metadata:@{ @"mapping": @{ @"collectionIndex": @(index) } }];
             if (success) [mappedObjects addObject:destinationObject];
         }
+        
+        if (self.progressBlock) self.progressBlock(index + 1, [objectsToMap count]);
         *stop = [self isCancelled];
     }];
 

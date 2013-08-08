@@ -32,14 +32,6 @@ extern NSString * const RKErrorDomain;
 
 NSString *RKStringFromIndexSet(NSIndexSet *indexSet); // Defined in RKResponseDescriptor.m
 
-static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSURLRequest *request)
-{
-    if (RKRequestMethodFromString(request.HTTPMethod) == RKRequestMethodHEAD) return NO;
-    if (response.statusCode == 304) return NO;
-    if (response.statusCode == 204) return NO;
-    return YES;
-}
-
 @interface AFURLConnectionOperation () <NSURLConnectionDataDelegate>
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @end
@@ -76,7 +68,6 @@ static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSUR
 - (BOOL)hasAcceptableContentType
 {
     if (! self.response) return NO;
-    if (!RKResponseRequiresContentTypeMatch(self.response, self.request)) return YES;
     NSString *contentType = [self.response MIMEType] ?: @"application/octet-stream";
     return self.acceptableContentTypes ? RKMIMETypeInSet(contentType, self.acceptableContentTypes) : [super hasAcceptableContentType];
 }
