@@ -68,7 +68,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
 @implementation RKMapperOperation
 
-- (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary;
+- (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary
 {
     self = [super init];
     if (self) {
@@ -77,17 +77,6 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
         self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
 
-    return self;
-}
-
-- (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary progress:(void ( ^ ) ( NSUInteger numberOfFinishedOperations , NSUInteger totalNumberOfOperations ))progress completion:(void ( ^ ) ( void ))completion
-{
-    self = [self initWithRepresentation:representation mappingsDictionary:mappingsDictionary];
-    if (self) {
-        self.progressBlock = progress;
-        self.completionBlock = completion;
-    }
-    
     return self;
 }
 
@@ -203,7 +192,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 {
     NSAssert(representations != nil, @"Cannot map without an collection of mappable objects");
     NSAssert(mapping != nil, @"Cannot map without a mapping to consult");
-    
+
     NSArray *objectsToMap = representations;
     if (mapping.forceCollectionMapping) {
         // If we have forced mapping of a dictionary, map each subdictionary
@@ -226,12 +215,11 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             BOOL success = [self mapRepresentation:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping metadata:@{ @"mapping": @{ @"collectionIndex": @(index) } }];
             if (success) [mappedObjects addObject:destinationObject];
         }
-        NSLog(@"%d de total de %d", index + 1, [objectsToMap count]);
-        self.progressBlock(index + 1, [objectsToMap count]);
+        
+        if (self.progressBlock) self.progressBlock(index + 1, [objectsToMap count]);
         *stop = [self isCancelled];
     }];
-    self.completionBlock();
-    
+
     return mappedObjects;
 }
 

@@ -223,12 +223,9 @@ static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPath
     return NO;
 }
 
-static NSString *const RKMetadataKey = @"@metadata";
-static NSString *const RKMetadataKeyPathPrefix = @"@metadata.";
-static NSString *const RKParentKey = @"@parent";
-static NSString *const RKParentKeyPathPrefix = @"@parent.";
-static NSString *const RKRootKey = @"@root";
-static NSString *const RKRootKeyPathPrefix = @"@root.";
+static NSString * const RKMetadataKeyPathPrefix = @"@metadata.";
+static NSString * const RKParentKeyPathPrefix = @"@parent.";
+static NSString * const RKRootKeyPathPrefix = @"@root.";
 
 @interface RKMappingSourceObject : NSProxy
 - (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSDictionary *)metadata;
@@ -260,19 +257,6 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
     [invocation invokeWithTarget:self.object];
-}
-
-- (id)valueForKey:(NSString *)key
-{
-    if ([key isEqualToString:RKMetadataKey]) {
-        return self.metadata;
-    } else if ([key isEqualToString:RKParentKey]) {
-        return self.parentObject;
-    } else if ([key isEqualToString:RKRootKey]) {
-        return self.rootObject;
-    } else {
-        return [self.object valueForKey:key];
-    }
 }
 
 /**
