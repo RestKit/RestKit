@@ -19,7 +19,6 @@
 //
 
 #import "RKSearchPredicate.h"
-#import "RKSearchTokenizer.h"
 
 #ifdef _COREDATADEFINES_H
 #import "RKSearchIndexer.h"

@@ -474,10 +474,6 @@
 		25A34245147D8AAA0009758D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A34244147D8AAA0009758D /* Security.framework */; };
 		25A73362169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 25A73360169C8C230090A930 /* VersionedModel.xcdatamodeld */; };
 		25A73363169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 25A73360169C8C230090A930 /* VersionedModel.xcdatamodeld */; };
-		25A763DB15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25A763DC15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25A763DD15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763DA15C7240100A9DF31 /* RKSearchTokenizer.m */; };
-		25A763DE15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763DA15C7240100A9DF31 /* RKSearchTokenizer.m */; };
 		25A763E115C72B9D00A9DF31 /* RKSearchTokenizerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763E015C72B9D00A9DF31 /* RKSearchTokenizerTest.m */; };
 		25A763E215C72B9D00A9DF31 /* RKSearchTokenizerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763E015C72B9D00A9DF31 /* RKSearchTokenizerTest.m */; };
 		25A763E515C7424500A9DF31 /* RKSearchIndexerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A763E415C7424500A9DF31 /* RKSearchIndexerTest.m */; };
@@ -585,6 +581,10 @@
 		25FBB853159272DD00955D27 /* RKRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FBB850159272DD00955D27 /* RKRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FBB854159272DD00955D27 /* RKRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FBB851159272DD00955D27 /* RKRouter.m */; };
 		25FBB855159272DD00955D27 /* RKRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FBB851159272DD00955D27 /* RKRouter.m */; };
+		54CDB45B17B408B100FAC285 /* RKSearchTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKSearchTokenizer.h */; };
+		54CDB45C17B408B100FAC285 /* RKSearchTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKSearchTokenizer.h */; };
+		54CDB45D17B408B100FAC285 /* RKSearchTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKSearchTokenizer.m */; };
+		54CDB45E17B408B100FAC285 /* RKSearchTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKSearchTokenizer.m */; };
 		5C927E141608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5C927E151608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -903,8 +903,6 @@
 		25A73365169C8CD80090A930 /* VersionedModel 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VersionedModel 2.xcdatamodel"; sourceTree = "<group>"; };
 		25A73366169C8CF30090A930 /* VersionedModel 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VersionedModel 3.xcdatamodel"; sourceTree = "<group>"; };
 		25A73367169C8D500090A930 /* VersionedModel 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "VersionedModel 4.xcdatamodel"; sourceTree = "<group>"; };
-		25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchTokenizer.h; sourceTree = "<group>"; };
-		25A763DA15C7240100A9DF31 /* RKSearchTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTokenizer.m; sourceTree = "<group>"; };
 		25A763E015C72B9D00A9DF31 /* RKSearchTokenizerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTokenizerTest.m; sourceTree = "<group>"; };
 		25A763E415C7424500A9DF31 /* RKSearchIndexerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchIndexerTest.m; sourceTree = "<group>"; };
 		25A8C2321673BD480014D9A6 /* RKConnectionTestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKConnectionTestExpectation.h; path = Testing/RKConnectionTestExpectation.h; sourceTree = "<group>"; };
@@ -961,6 +959,8 @@
 		25FBB851159272DD00955D27 /* RKRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouter.m; sourceTree = "<group>"; };
 		3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = has_many_with_to_one_relationship.json; sourceTree = "<group>"; };
 		3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty_human.json; sourceTree = "<group>"; };
+		54CDB45917B408B100FAC285 /* RKSearchTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchTokenizer.h; sourceTree = "<group>"; };
+		54CDB45A17B408B100FAC285 /* RKSearchTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchTokenizer.m; sourceTree = "<group>"; };
 		5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilitiesTest.m; sourceTree = "<group>"; };
 		5CCC295515B7124A0045F0F5 /* RKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMacros.h; sourceTree = "<group>"; };
 		7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCaching.h; sourceTree = "<group>"; };
@@ -1048,8 +1048,6 @@
 				25104F3415C30EF500829135 /* RKSearchPredicate.m */,
 				25104F3915C30F2000829135 /* RKSearchWordEntity.h */,
 				25104F3A15C30F2100829135 /* RKSearchWordEntity.m */,
-				25A763D915C7240100A9DF31 /* RKSearchTokenizer.h */,
-				25A763DA15C7240100A9DF31 /* RKSearchTokenizer.m */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -1219,6 +1217,8 @@
 		25160DA2145650490060A5C5 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				54CDB45917B408B100FAC285 /* RKSearchTokenizer.h */,
+				54CDB45A17B408B100FAC285 /* RKSearchTokenizer.m */,
 				2534781515FFD4A6002C0E4E /* RKURLEncodedSerialization.h */,
 				2534781415FFD4A6002C0E4E /* RKURLEncodedSerialization.m */,
 				2595B46B15F670530087A59B /* RKMIMETypeSerialization.h */,
@@ -1799,7 +1799,6 @@
 				25104F2F15C30E7400829135 /* RKSearchIndexer.h in Headers */,
 				25104F3515C30EF500829135 /* RKSearchPredicate.h in Headers */,
 				25104F3B15C30F2100829135 /* RKSearchWordEntity.h in Headers */,
-				25A763DB15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */,
 				25F53AE215E7B612008B54E6 /* RKHTTPUtilities.h in Headers */,
 				2598888D15EC169E006CAE95 /* RKPropertyMapping.h in Headers */,
 				254372A815F54995006E8424 /* RKObjectParameterization.h in Headers */,
@@ -1844,6 +1843,7 @@
 				25C6C0C51716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				25C6C0CB1716F6F800C98A73 /* TransitionKit.h in Headers */,
 				25C6C0E81716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
+				54CDB45B17B408B100FAC285 /* RKSearchTokenizer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1906,7 +1906,6 @@
 				25104F3015C30E7400829135 /* RKSearchIndexer.h in Headers */,
 				25104F3615C30EF500829135 /* RKSearchPredicate.h in Headers */,
 				25104F3C15C30F2100829135 /* RKSearchWordEntity.h in Headers */,
-				25A763DC15C7240200A9DF31 /* RKSearchTokenizer.h in Headers */,
 				25F53AE315E7B612008B54E6 /* RKHTTPUtilities.h in Headers */,
 				2598888E15EC169E006CAE95 /* RKPropertyMapping.h in Headers */,
 				254372B915F54C3F006E8424 /* RKHTTPRequestOperation.h in Headers */,
@@ -1953,6 +1952,7 @@
 				25C6C0C61716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				25C6C0CC1716F6F800C98A73 /* TransitionKit.h in Headers */,
 				25C6C0E91716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
+				54CDB45C17B408B100FAC285 /* RKSearchTokenizer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2270,7 +2270,6 @@
 				25104F3115C30E7400829135 /* RKSearchIndexer.m in Sources */,
 				25104F3715C30EF500829135 /* RKSearchPredicate.m in Sources */,
 				25104F3D15C30F2100829135 /* RKSearchWordEntity.m in Sources */,
-				25A763DD15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */,
 				25F53AE415E7B612008B54E6 /* RKHTTPUtilities.m in Sources */,
 				2598888F15EC169E006CAE95 /* RKPropertyMapping.m in Sources */,
 				254372A915F54995006E8424 /* RKObjectParameterization.m in Sources */,
@@ -2307,6 +2306,7 @@
 				25C6C0C31716F6F800C98A73 /* TKState.m in Sources */,
 				25C6C0C71716F6F800C98A73 /* TKStateMachine.m in Sources */,
 				25C6C0EA1716F79B00C98A73 /* RKOperationStateMachine.m in Sources */,
+				54CDB45D17B408B100FAC285 /* RKSearchTokenizer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2429,7 +2429,6 @@
 				25104F3215C30E7400829135 /* RKSearchIndexer.m in Sources */,
 				25104F3815C30EF500829135 /* RKSearchPredicate.m in Sources */,
 				25104F3E15C30F2100829135 /* RKSearchWordEntity.m in Sources */,
-				25A763DE15C7240200A9DF31 /* RKSearchTokenizer.m in Sources */,
 				25F53AE515E7B612008B54E6 /* RKHTTPUtilities.m in Sources */,
 				2598889015EC169E006CAE95 /* RKPropertyMapping.m in Sources */,
 				254372BB15F54C3F006E8424 /* RKHTTPRequestOperation.m in Sources */,
@@ -2466,6 +2465,7 @@
 				25C6C0C41716F6F800C98A73 /* TKState.m in Sources */,
 				25C6C0C81716F6F800C98A73 /* TKStateMachine.m in Sources */,
 				25C6C0EB1716F79B00C98A73 /* RKOperationStateMachine.m in Sources */,
+				54CDB45E17B408B100FAC285 /* RKSearchTokenizer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
