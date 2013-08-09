@@ -832,7 +832,7 @@
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
-    assertThat([human catsInOrderByAge], isNot(empty()));
+    assertThat([human catsInOrderByAge], isNot(isEmpty()));
 }
 
 - (void)testShouldMapNullToAHasManyRelationship
@@ -855,7 +855,7 @@
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
-    assertThat(human.cats, is(empty()));
+    assertThat(human.cats, isEmpty());
 }
 
 - (void)testShouldLoadNestedHasManyRelationshipWithoutABackingClass

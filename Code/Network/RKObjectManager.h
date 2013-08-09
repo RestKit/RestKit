@@ -411,7 +411,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
  
- @param relationshipName The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
+ @param relationship The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
  @param object The object for which related objects are being loaded. Evaluated against the `RKRoute` for the relationship for the object's class with the given name to compute the path. Cannot be nil.
  @param method The HTTP method for the request.
  @param parameters The parameters to be encoded and appended as the query string for the request URL, or parameterized and set as the request body. May be nil.
@@ -527,7 +527,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  Paths are matches against the `path` of the `NSURL` of the `NSURLRequest` of each `RKObjectRequestOperation` contained in the receiver's operation queue using a `RKPathMatcher` object.
  
- @param method The HTTP method to match for the cancelled requests, such as `RKRequestMethodGET`, `RKRequestMethodPOST`, `RKRequestMethodPUT`, `RKRequestMethodPatch`, or `RKRequestMethodDELETE`. If `RKRequestMethodAny`, all object request operations with URLs matching the given path pattern will be cancelled.
+ @param method The HTTP method to match for the cancelled requests, such as `RKRequestMethodGET`, `RKRequestMethodPOST`, `RKRequestMethodPUT`, `RKRequestMethodPatch`, or `RKRequestMethodDELETE`. If `RKRequestMethodAny`, all object request operations with URLs matching the given path pattern will be cancelled. Multiple methods may be specified by using a bitwise OR operation.
  @param pathPattern The pattern to match against the path of the request URL for executing object request operations considered for cancellation.
  @return A new array containing all enqueued `RKObjectRequestOperation` objects that match the given HTTP method and path pattern.
  @see `RKPathMatcher`
@@ -832,7 +832,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  Adds the given `RKFetchRequestBlock` block to the manager.
  
- @param A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
+ @param block A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
  */
 - (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
 

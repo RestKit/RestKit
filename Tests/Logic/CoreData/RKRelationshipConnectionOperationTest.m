@@ -79,7 +79,7 @@
     roy.sex = @"male";
 
     human.cats = [NSSet setWithObjects:asia, lola, roy, nil];
-    assertThat(human.cats, isNot(empty()));
+    assertThat(human.cats, isNot(isEmpty()));
 
     // No cats with a sex of 'invalid'
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
@@ -88,7 +88,7 @@
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connections:@[ connection ] managedObjectCache:managedObjectCache];
     [operation start];
-    assertThat(human.cats, is(empty()));
+    assertThat(human.cats, isEmpty());
 }
 
 #pragma mark - Key Path Connections

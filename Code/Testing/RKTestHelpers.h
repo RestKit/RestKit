@@ -69,6 +69,7 @@
  */
 + (RKRoute *)stubRouteForRelationship:(NSString *)relationshipName
                               ofClass:(Class)objectClass
+                               method:(RKRequestMethod)method
                           pathPattern:(NSString *)pathPattern
                       onObjectManager:(RKObjectManager *)nilOrObjectManager;
 

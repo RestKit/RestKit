@@ -152,9 +152,9 @@
     }];
     expect(done).will.equal(YES);
     objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"railsID": @(12345) } inContext:childContext];
-    assertThat(objects, is(empty()));
+    assertThat(objects, isEmpty());
     objects = [self.cache objectsForEntity:self.entity withAttributeValues:@{ @"name": @"Blake" } inContext:childContext];
-    assertThat(objects, is(empty()));
+    assertThat(objects, isEmpty());
 }
 
 - (void)testAddingObjectAddsToEachUnderlyingEntityAttributeCaches
