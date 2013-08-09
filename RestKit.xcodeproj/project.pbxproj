@@ -598,6 +598,10 @@
 		7F9CBC6174004E31AEC35813 /* libPods-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86EC453810D648768BF62304 /* libPods-osx.a */; };
 		BE05BDD11782109F00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
 		BE05BDD2178214AA00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
+		80910F3D174BAD4C008195D8 /* RKMappingInverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 80910F3B174BAD4C008195D8 /* RKMappingInverter.h */; };
+		80910F3E174BAD4C008195D8 /* RKMappingInverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 80910F3C174BAD4C008195D8 /* RKMappingInverter.m */; };
+		80910F3F174BAD5A008195D8 /* RKMappingInverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 80910F3B174BAD4C008195D8 /* RKMappingInverter.h */; };
+		80910F40174BAD5A008195D8 /* RKMappingInverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 80910F3C174BAD4C008195D8 /* RKMappingInverter.m */; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
 /* End PBXBuildFile section */
 
@@ -971,6 +975,8 @@
 		73D3907114CA19F90093E3D6 /* parent.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = parent.json; sourceTree = "<group>"; };
 		73D3907314CA1A4A0093E3D6 /* child.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = child.json; sourceTree = "<group>"; };
 		73D3907814CA1D710093E3D6 /* channels.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = channels.xml; sourceTree = "<group>"; };
+		80910F3B174BAD4C008195D8 /* RKMappingInverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMappingInverter.h; sourceTree = "<group>"; };
+		80910F3C174BAD4C008195D8 /* RKMappingInverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMappingInverter.m; sourceTree = "<group>"; };
 		86EC453810D648768BF62304 /* libPods-osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-osx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.xcconfig"; path = "Pods/Pods-ios.xcconfig"; sourceTree = SOURCE_ROOT; };
 		BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouteTest.m; sourceTree = "<group>"; };
@@ -1212,6 +1218,8 @@
 				25A226D51618A57500952D72 /* RKObjectUtilities.m */,
 				25019493166406E30081D68A /* RKValueTransformers.h */,
 				25019494166406E30081D68A /* RKValueTransformers.m */,
+				80910F3B174BAD4C008195D8 /* RKMappingInverter.h */,
+				80910F3C174BAD4C008195D8 /* RKMappingInverter.m */,
 			);
 			path = ObjectMapping;
 			sourceTree = "<group>";
@@ -1844,6 +1852,7 @@
 				25C6C0C51716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				25C6C0CB1716F6F800C98A73 /* TransitionKit.h in Headers */,
 				25C6C0E81716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
+				80910F3D174BAD4C008195D8 /* RKMappingInverter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1953,6 +1962,7 @@
 				25C6C0C61716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				25C6C0CC1716F6F800C98A73 /* TransitionKit.h in Headers */,
 				25C6C0E91716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
+				80910F3F174BAD5A008195D8 /* RKMappingInverter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2307,6 +2317,7 @@
 				25C6C0C31716F6F800C98A73 /* TKState.m in Sources */,
 				25C6C0C71716F6F800C98A73 /* TKStateMachine.m in Sources */,
 				25C6C0EA1716F79B00C98A73 /* RKOperationStateMachine.m in Sources */,
+				80910F3E174BAD4C008195D8 /* RKMappingInverter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2466,6 +2477,7 @@
 				25C6C0C41716F6F800C98A73 /* TKState.m in Sources */,
 				25C6C0C81716F6F800C98A73 /* TKStateMachine.m in Sources */,
 				25C6C0EB1716F79B00C98A73 /* RKOperationStateMachine.m in Sources */,
+				80910F40174BAD5A008195D8 /* RKMappingInverter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
