@@ -24,6 +24,12 @@ namespace :test do
   task :osx => :prepare do
     $osx_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitFrameworkTests -sdk macosx test -test-sdk macosx")
   end
+  
+  # Provides validation that RestKit continues to build without Core Data. This requires conditional compilation that is error prone
+  task :building_without_core_data do
+    system("cd Examples/RKTwitter && pod install")
+    system("xctool -workspace Examples/RKTwitter/RKTwitter.xcworkspace -scheme RKTwitterCocoaPods -sdk iphonesimulator clean build ONLY_ACTIVE_ARCH=NO")
+  end
 end
 
 desc 'Run all the RestKit tests'
