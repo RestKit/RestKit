@@ -30,4 +30,4 @@
 #import "RKURLEncodedSerialization.h"
 #import "RKNSJSONSerialization.h"
 #import "RKMIMETypeSerialization.h"
-#import "RKSearchTokenizer.h"
+#import "RKStringTokenizer.h"

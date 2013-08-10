@@ -1,5 +1,5 @@
 //
-//  RKSearchTokenizerTest.m
+//  RKStringTokenizerTest.m
 //  RestKit
 //
 //  Created by Blake Watters on 7/30/12.
@@ -7,17 +7,17 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKSearchTokenizer.h"
+#import "RKStringTokenizer.h"
 
-@interface RKSearchTokenizerTest : RKTestCase
+@interface RKStringTokenizerTest : RKTestCase
 
 @end
 
-@implementation RKSearchTokenizerTest
+@implementation RKStringTokenizerTest
 
 - (void)testTokenizingString
 {
-    RKSearchTokenizer *stringTokenizer = [RKSearchTokenizer new];
+    RKStringTokenizer *stringTokenizer = [RKStringTokenizer new];
     NSSet *tokens = [stringTokenizer tokenize:@"This is a test"];
     NSSet *expectedTokens = [NSSet setWithArray:@[ @"this", @"is", @"a", @"test" ]];
     expect(tokens).to.equal(expectedTokens);
@@ -25,7 +25,7 @@
 
 - (void)testTokenizingStringWithStopWords
 {
-    RKSearchTokenizer *stringTokenizer = [RKSearchTokenizer new];
+    RKStringTokenizer *stringTokenizer = [RKStringTokenizer new];
     stringTokenizer.stopWords = [NSSet setWithObjects:@"is", @"a", nil];
     NSSet *tokens = [stringTokenizer tokenize:@"This is a test"];
     NSSet *expectedTokens = [NSSet setWithArray:@[ @"this", @"test" ]];

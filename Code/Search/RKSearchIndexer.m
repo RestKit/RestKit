@@ -22,7 +22,7 @@
 #import "RKSearchWordEntity.h"
 #import "RKSearchWord.h"
 #import "RKLog.h"
-#import "RKSearchTokenizer.h"
+#import "RKStringTokenizer.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 
 // Set Logging Component
@@ -153,7 +153,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
             return NSNotFound;
         }
 
-        RKSearchTokenizer *searchTokenizer = [RKSearchTokenizer new];
+        RKStringTokenizer *searchTokenizer = [RKStringTokenizer new];
         searchTokenizer.stopWords = self.stopWords;
 
         __block NSUInteger searchWordCount;
