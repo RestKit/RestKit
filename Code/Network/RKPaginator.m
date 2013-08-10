@@ -20,11 +20,14 @@
 
 #import "RKPaginator.h"
 #import "RKMappingOperation.h"
-#import "RKManagedObjectRequestOperation.h"
 #import "SOCKit.h"
 #import "RKLog.h"
 #import "RKPathUtilities.h"
 #import "RKHTTPUtilities.h"
+
+#ifdef _COREDATADEFINES_H
+#import "RKManagedObjectRequestOperation.h"
+#endif
 
 static NSUInteger RKPaginatorDefaultPerPage = 25;
 
@@ -183,6 +186,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     NSMutableURLRequest *mutableRequest = [self.request mutableCopy];
     mutableRequest.URL = self.URL;
 
+#ifdef _COREDATADEFINES_H
     if (self.managedObjectContext) {
         RKHTTPRequestOperation *requestOperation = [[self.HTTPOperationClass alloc] initWithRequest:mutableRequest];
         RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:self.responseDescriptors];
@@ -195,6 +199,9 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     } else {
         self.objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
     }
+#else
+    self.objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
+#endif
     
     // Add KVO to ensure notification of loaded state prior to execution of completion block
     [self.objectRequestOperation addObserver:self forKeyPath:@"isFinished" options:0 context:nil];

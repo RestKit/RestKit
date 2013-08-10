@@ -1,0 +1,7 @@
+platform :ios, '6.0'
+
+# Install via CocoaPods pointing at current local codebase
+target 'RKTwitterCocoaPods' do
+  pod 'RestKit/Network', :path => '../../'
+  pod 'RestKit/ObjectMapping', :path => '../../'
+end

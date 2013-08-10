@@ -25,6 +25,7 @@
 		259C803A15D20C3500F447D2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803915D20C3500F447D2 /* MobileCoreServices.framework */; };
 		259C803C15D20C4000F447D2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803B15D20C4000F447D2 /* libxml2.dylib */; };
 		25AA7D1415D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 25AA7D1215D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld */; };
+		25AABCF017B69B590061DC5B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25AABCEF17B69B590061DC5B /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 		259C803915D20C3500F447D2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		259C803B15D20C4000F447D2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		25AA7D1315D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RKSearchExampleModel.xcdatamodel; sourceTree = "<group>"; };
+		25AABCEF17B69B590061DC5B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 		259C7FEB15D20B5600F447D2 = {
 			isa = PBXGroup;
 			children = (
+				25AABCEF17B69B590061DC5B /* Default-568h@2x.png */,
 				259C800015D20B5600F447D2 /* RKSearchExample */,
 				259C7FF915D20B5600F447D2 /* Frameworks */,
 				259C7FF715D20B5600F447D2 /* Products */,
@@ -278,6 +281,7 @@
 				259C800515D20B5600F447D2 /* InfoPlist.strings in Resources */,
 				259C800E15D20B5600F447D2 /* MainStoryboard.storyboard in Resources */,
 				2583C49C15D96D4000E05CAE /* contacts.json in Resources */,
+				25AABCF017B69B590061DC5B /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

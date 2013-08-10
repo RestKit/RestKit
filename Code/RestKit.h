@@ -24,7 +24,10 @@
 #import "ObjectMapping.h"
 #import "Network.h"
 #import "Support.h"
+
+#ifdef _COREDATADEFINES_H
 #import "CoreData.h"
+#endif
 
 /**
  Set the App logging component. This header

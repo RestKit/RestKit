@@ -1,5 +1,5 @@
 //
-//  RKSearchTokenizer.h
+//  RKStringTokenizer.h
 //  RestKit
 //
 //  Created by Blake Watters on 7/30/12.
@@ -21,9 +21,9 @@
 #import <Foundation/Foundation.h>
 
 /**
- The `RKSearchTokenizer` class provides an interface for tokenizing input text into a set of searchable words. Diacritics are removed and the input text is tokenized case insensitively. A set of stop words can be optionally trimmed from the result token set.
+ The `RKStringTokenizer` class provides an interface for tokenizing input text into a set of searchable words. Diacritics are removed and the input text is tokenized case insensitively. A set of stop words can be optionally trimmed from the result token set.
  */
-@interface RKSearchTokenizer : NSObject
+@interface RKStringTokenizer : NSObject
 
 ///-------------------------------
 /// @name Configuring Tokenization
