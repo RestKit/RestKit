@@ -136,7 +136,7 @@ end
 namespace :build do
   desc "Build all Example projects to ensure they are building properly"
   task :examples do
-    ios_sdks = %w{iphoneos iphonesimulator5.0 iphonesimulator6.0}
+    ios_sdks = %w{iphonesimulator5.0 iphonesimulator6.0}
     osx_sdks = %w{macosx}
     osx_projects = %w{RKMacOSX}
     
@@ -149,14 +149,13 @@ namespace :build do
       sdks.each do |sdk|
         puts "Building '#{example_project}' with SDK #{sdk}..."
         scheme = project_name
-        run("xcodebuild -workspace #{example_project}/project.xcworkspace -scheme #{scheme} -sdk #{sdk} clean build")
-        #run("xcodebuild -project #{example_project} -alltargets -sdk #{sdk} clean build")
+        run("xctool -workspace #{example_project}/project.xcworkspace -scheme #{scheme} -sdk #{sdk} clean build")
       end
     end
   end
 end
 
 desc "Validate a branch is ready for merging by checking for common issues"
-task :validate => [:build, 'docs:check', 'uispec:all'] do  
+task :validate => ['build:examples', 'docs:check', :test] do  
   puts "Project state validated successfully. Proceed with merge."
 end
