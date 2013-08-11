@@ -427,6 +427,23 @@
     assertThat(newObject.boolString, is(equalTo(@"11-27-1982")));
 }
 
+- (void)testShouldMapAStringToAURL
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"url" toKeyPath:@"url"]];
+    TestMappable *object = [[TestMappable alloc] init];
+    object.url = [NSURL URLWithString:@"http://www.restkit.org"];
+    TestMappable *newObject = [TestMappable new];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:newObject mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(newObject.url, is(equalTo([NSURL URLWithString:@"http://www.restkit.org"])));
+
+}
+
 - (void)testShouldLogADebugMessageIfTheRelationshipMappingTargetsAnArrayOfArrays
 {
     // Create a dictionary with a dictionary containing an array
