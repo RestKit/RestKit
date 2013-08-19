@@ -84,7 +84,7 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
 BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error);
 BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error)
 {
-    NSArray *matchingTransformers = [RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
+    NSArray *matchingTransformers = @[];//[RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
     for (RKValueTransformer *valueTransformer in matchingTransformers) {
         if ([valueTransformer transformValue:inputValue toValue:outputValue error:error]) {
             return YES;
@@ -117,7 +117,7 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     id retVal;
     BOOL success = FALSE;
 
-    if ([dateToStringValueTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateToStringValueTransformer canTransformClass:[value class] toClass:destinationType]) {
+    if ([dateToStringValueTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateToStringValueTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
         success = [(RKDateToStringValueTransformer *)dateToStringValueTransformer transformValue:value toValue:&retVal error:nil];
     }
     if (!success)
@@ -497,19 +497,18 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     BOOL success = FALSE;
     id transformedValue;
     NSError *error;
-    if ([dateTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateTransformer canTransformClass:[value class] toClass:destinationType]) {
+    if ([dateTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
         success = [(RKDateToStringValueTransformer *)dateTransformer transformValue:value toValue:&transformedValue error:&error];
     }
     
-    for (RKValueTransformer *transformer in [[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]) {
-        if (!success && [transformer canTransformClass:[value class] toClass:destinationType]) {
-            success = [transformer transformValue:value toValue:&transformedValue error:&error];
-        }
-    }
-    for (RKValueTransformer *transformer in self.objectMapping.valueTransformers) {
-        if (!success && [transformer canTransformClass:[value class] toClass:destinationType]) {
-            success = [transformer transformValue:value toValue:&transformedValue error:&error];
-        }
+    // TODO: Why do we need subscripted access to the transformers here????
+//    for (RKValueTransformer *transformer in [[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]) {
+//        if (!success && [transformer validateTransformationFromClass:[value class] toClass:destinationType]) {
+//            success = [transformer transformValue:value toValue:&transformedValue error:&error];
+//        }
+//    }
+    if (!success && [self.objectMapping.valueTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
+        success = [self.objectMapping.valueTransformer transformValue:value toValue:&transformedValue error:&error];
     }
     if (!success)
         success = [self transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];

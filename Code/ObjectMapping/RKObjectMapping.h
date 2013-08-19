@@ -22,6 +22,7 @@
 #import "RKMapping.h"
 
 @class RKPropertyMapping, RKAttributeMapping, RKRelationshipMapping;
+@protocol RKValueTransforming;
 
 /**
  An `RKObjectMapping` object describes a transformation between object represenations using key-value coding and run-time type introspection. The mapping is defined in terms of a source object class and a collection of `RKPropertyMapping` objects describing how key paths in the source representation should be transformed into attributes and relationships on the target object. Object mappings are provided to instances of `RKMapperOperation` and `RKMappingOperation` to perform the transformations they describe.
@@ -293,6 +294,11 @@
  @see `validateValue:forKey:error:`
  */
 @property (nonatomic, assign) BOOL performKeyValueValidation;
+
+/**
+ A value transformer with which to process input values being mapped with the receiver. If `nil`, then the `valueTransformer` of the parent `objectMapping` will be used instead.
+ */
+@property (nonatomic, strong) id<RKValueTransforming> valueTransformer;
 
 /**
  Returns the default value to be assigned to the specified attribute when it is missing from a mappable payload.
