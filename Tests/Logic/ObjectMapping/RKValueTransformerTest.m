@@ -569,6 +569,75 @@
 
 #pragma mark Keyed Archiving
 
+- (void)testKeyedArchivingTransformerValidationSuccessFromNSCodingCompliantToData
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSDictionary class] toClass:[NSData class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testKeyedArchivingTransformerValidationSuccessFromDataToNSCodingCompliant
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSData class] toClass:[NSDictionary class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testKeyedArchivingTransformerValidationFailure
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSData class] toClass:[NSObject class]];
+    expect(success).to.beFalsy();
+}
+
+- (void)testKeyedArchivingTransformerSuccessFromDataToDictionary
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    NSDictionary *dictionary = @{ @"key": @"value" };
+    NSData *data = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:dictionary toValue:&data error:&error];
+    expect(success).to.beTruthy();
+    expect(data).notTo.beNil();
+    id<NSCoding> decodedObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    expect(decodedObject).to.equal(dictionary);
+}
+
+- (void)testKeyedArchivingTransformerSuccessFromDictionaryToData
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    NSDictionary *dictionary = @{ @"key": @"value" };
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:dictionary];
+    NSError *error = nil;
+    id<NSCoding> result = nil;
+    BOOL success = [valueTransformer transformValue:data toValue:&result error:&error];
+    expect(success).to.beTruthy();
+    expect(result).notTo.beNil();
+    expect(result).to.equal(dictionary);
+}
+
+- (void)testKeyedArchivingTransformerFailureWithInvalidInputValue
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    id<NSCoding> result = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:[NSObject new] toValue:&result error:&error];
+    expect(success).to.beFalsy();
+    expect(result).to.beNil();
+    expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testKeyedArchivingTransformerFailureWithNonDecodableData
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    id<NSCoding> result = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:[@"this is invalid" dataUsingEncoding:NSUTF8StringEncoding] toValue:&result error:&error];
+    expect(success).to.beFalsy();
+    expect(result).to.beNil();
+    expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
+}
+
 //#pragma mark -
 //#pragma mark Default Transformers
 //- (void)testDefaultObjectToDataTransformer

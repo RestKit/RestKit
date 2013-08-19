@@ -238,8 +238,6 @@
             *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo];
             return NO;
         }
-        RKValueTransformerTestInputValueIsKindOfClass(inputValue, [NSNull class], error);
-        *outputValue = nil;
         return YES;
     }];
 }
