@@ -34,10 +34,11 @@
  
  @param inputValue The value to be transformed.
  @param outputValue A pointer to an `id` object that will be assigned to the transformed representation. May be assigned to `nil` if that is the result of the transformation.
+ @param outputValueClass The class of the `outputValue` variable. Specifies the expected type of a successful transformation. May be `nil` to indicate that the type is unknown or unimportant.
  @param error A pointer to an `NSError` object that must be assigned to a newly constructed `NSError` object if the transformation cannot be performed.
  @return A Boolean value indicating if the transformation was successful.
  */
-- (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue error:(NSError **)error;
+- (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue ofClass:(Class)outputValueClass error:(NSError **)error;
 
 @optional
 
@@ -121,7 +122,7 @@ return NO; \
 
 // transformationBlock may be `nil`.
 + (instancetype)valueTransformerWithValidationBlock:(BOOL (^)(Class sourceClass, Class destinationClass))validationBlock
-                                transformationBlock:(BOOL (^)(id inputValue, id *outputValue, NSError **error))transformationBlock;
+                                transformationBlock:(BOOL (^)(id inputValue, id *outputValue, Class outputClass, NSError **error))transformationBlock;
 
 ///---------------------------
 /// @name Default Transformers
@@ -136,12 +137,7 @@ return NO; \
 + (instancetype)arrayToSetValueTransformer;
 + (instancetype)decimalNumberToNumberValueTransformer;
 + (instancetype)decimalNumberToStringValueTransformer;
-
-
-//+ (instancetype)objectToDataValueTransformer; keyedArchivingValueTransformer
-// nullToNilValueTransformer??? NOTE: Only transforms `[NSNull null]` to `nil`.
-+ (instancetype)nullValueTransformer;
-
++ (instancetype)nullValueTransformer; // TODO: nullToNilValueTransformer??? NOTE: Only transforms `[NSNull null]` to `nil`.
 + (instancetype)keyedArchivingValueTransformer;
 
 // TODO: stringValueTransformer:
@@ -176,8 +172,7 @@ return NO; \
 
 - (NSUInteger)numberOfValueTransformers;
 
-// Do we need/want both??
+// Note: pass `Nil` `Nil` to get all of them
 - (NSArray *)valueTransformersForTransformingFromClass:(Class)sourceClass toClass:(Class)destinationClass;
-- (NSArray *)valueTransformersForTransformingValue:(id)value toClass:(Class)destinationClass;
 
 @end

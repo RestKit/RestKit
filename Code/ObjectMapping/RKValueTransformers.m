@@ -13,13 +13,13 @@
 
 @interface RKValueTransformer ()
 @property (nonatomic, copy) BOOL (^validationBlock)(Class, Class);
-@property (nonatomic, copy) BOOL (^transformationBlock)(id, id *, NSError **);
+@property (nonatomic, copy) BOOL (^transformationBlock)(id, id *, Class, NSError **);
 @end
 
 @implementation RKValueTransformer
 
 + (instancetype)valueTransformerWithValidationBlock:(BOOL (^)(Class sourceClass, Class destinationClass))validationBlock
-                                transformationBlock:(BOOL (^)(id inputValue, id *outputValue, NSError **error))transformationBlock
+                                transformationBlock:(BOOL (^)(id inputValue, id *outputValue, Class outputClass, NSError **error))transformationBlock
 {
     if (! transformationBlock) [NSException raise:NSInvalidArgumentException format:@"The `transformationBlock` cannot be `nil`."];
     RKValueTransformer *valueTransformer = [self new];
@@ -28,9 +28,9 @@
     return valueTransformer;
 }
 
-- (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue error:(NSError **)error
+- (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue ofClass:(Class)outputValueClass error:(NSError *__autoreleasing *)error
 {
-    return self.transformationBlock(inputValue, outputValue, error);
+    return self.transformationBlock(inputValue, outputValue, outputValueClass, error);
 }
 
 - (BOOL)validateTransformationFromClass:(Class)sourceClass toClass:(Class)destinationClass
@@ -44,7 +44,7 @@
 + (instancetype)singletonValueTransformer:(RKValueTransformer * __strong *)valueTransformer
                                 onceToken:(dispatch_once_t *)onceToken
                                        validationBlock:(BOOL (^)(Class sourceClass, Class destinationClass))validationBlock
-                                   transformationBlock:(BOOL (^)(id inputValue, id *outputValue, NSError **error))transformationBlock
+                                   transformationBlock:(BOOL (^)(id inputValue, id *outputValue, Class outputValueClass, NSError **error))transformationBlock
 {
     dispatch_once(onceToken, ^{
         *valueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:validationBlock transformationBlock:transformationBlock];
@@ -59,7 +59,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSURL class]]) ||
                 ([sourceClass isSubclassOfClass:[NSURL class]] && [destinationClass isSubclassOfClass:[NSString class]]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSString class], [NSURL class]]), error);
         if ([inputValue isKindOfClass:[NSString class]]) {
             NSURL *URL = [NSURL URLWithString:inputValue];
@@ -79,7 +79,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSString class]]) ||
                 ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSNumber class]]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSNumber class], [NSString class] ]), error);
         if ([inputValue isKindOfClass:[NSString class]]) {
             NSString *lowercasedString = [inputValue lowercaseString];
@@ -116,7 +116,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSDate class]]) ||
                 ([sourceClass isSubclassOfClass:[NSDate class]] && [destinationClass isSubclassOfClass:[NSNumber class]]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSNumber class], [NSDate class]]), error);
         if ([inputValue isKindOfClass:[NSNumber class]]) {
             *outputValue = [NSDate dateWithTimeIntervalSince1970:[inputValue doubleValue]];
@@ -134,7 +134,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSArray class]] && [destinationClass isSubclassOfClass:[NSOrderedSet class]]) ||
                 ([sourceClass isSubclassOfClass:[NSOrderedSet class]] && [destinationClass isSubclassOfClass:[NSArray class]]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSArray class], [NSOrderedSet class]]), error);
         if ([inputValue isKindOfClass:[NSArray class]]) {
             *outputValue = [NSOrderedSet orderedSetWithArray:inputValue];
@@ -152,7 +152,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSArray class]] && [destinationClass isSubclassOfClass:[NSSet class]]) ||
                 ([sourceClass isSubclassOfClass:[NSSet class]] && [destinationClass isSubclassOfClass:[NSArray class]]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSSet class], [NSArray class]]), error);
         if ([inputValue isKindOfClass:[NSArray class]]) {
             *outputValue = [NSSet setWithArray:inputValue];
@@ -170,7 +170,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSDecimalNumber class]] && [destinationClass isSubclassOfClass:[NSString class]]) ||
                 ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSString class], [NSDecimalNumber class]]), error);
         if ([inputValue isKindOfClass:[NSString class]]) {
             NSDecimalNumber *decimalNumber = [NSDecimalNumber decimalNumberWithString:inputValue];
@@ -190,7 +190,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSDecimalNumber class]] && [destinationClass isSubclassOfClass:[NSNumber class]]) ||
                 ([sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSNumber class], [NSDecimalNumber class]]), error);
         if ([inputValue isKindOfClass:[NSNumber class]]) {
             *outputValue = [NSDecimalNumber decimalNumberWithDecimal:[inputValue decimalValue]];
@@ -205,7 +205,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, [NSNull class], error);
         *outputValue = nil;
         return YES;
@@ -219,7 +219,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass conformsToProtocol:@protocol(NSCoding)] && [destinationClass isSubclassOfClass:[NSData class]]) ||
                 ([sourceClass isSubclassOfClass:[NSData class]] && [destinationClass conformsToProtocol:@protocol(NSCoding)]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         if ([inputValue isKindOfClass:[NSData class]]) {
             id unarchivedValue = nil;
             @try {
@@ -267,28 +267,40 @@
 
 + (instancetype)compoundValueTransformerWithValueTransformers:(NSArray *)valueTransformers
 {
-    // TODO: Assert that all objects are value transformers;
+    for (id<RKValueTransforming> valueTransformer in valueTransformers) {
+        if (! [valueTransformer conformsToProtocol:@protocol(RKValueTransforming)]) {
+            [NSException raise:NSInvalidArgumentException format:@"All objects in the given `valueTransformers` collection must conform to the `RKValueTransforming` protocol."];
+        }
+    }
     RKCompoundValueTransformer *valueTransformer = [self new];
     valueTransformer.valueTransformers = [valueTransformers mutableCopy];
     return valueTransformer;
 }
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.valueTransformers = [NSMutableArray new];
+    }
+    return self;
+}
+
 - (void)addValueTransformer:(id<RKValueTransforming>)valueTransformer
 {
-    // TODO: Assert that the given value adopts the protocol. not `nil`.
+    if (! valueTransformer) [NSException raise:NSInvalidArgumentException format:@"Cannot add `nil` to a compound transformer."];
     [self.valueTransformers addObject:valueTransformer];
 }
 
 - (void)removeValueTransformer:(id<RKValueTransforming>)valueTransformer
 {
-    // TODO: Assert that the given value adopts the protocol. not `nil`.
+    if (! valueTransformer) [NSException raise:NSInvalidArgumentException format:@"Cannot remove `nil` from a compound transformer."];
     [self.valueTransformers removeObject:valueTransformer];
 }
 
-// performs a move or insert
 - (void)insertValueTransformer:(id<RKValueTransforming>)valueTransformer atIndex:(NSUInteger)index
 {
-    // TODO: Assert that the given value adopts the protocol. not `nil`.
+    if (! valueTransformer) [NSException raise:NSInvalidArgumentException format:@"Cannot insert `nil` into a compound transformer."];
     [self.valueTransformers insertObject:valueTransformer atIndex:index];
 }
 
@@ -297,22 +309,57 @@
     return [self.valueTransformers count];
 }
 
-// Do we need/want both??
 - (NSArray *)valueTransformersForTransformingFromClass:(Class)sourceClass toClass:(Class)destinationClass
 {
-    
-}
-
-- (NSArray *)valueTransformersForTransformingValue:(id)value toClass:(Class)destinationClass
-{
-    
+    if (sourceClass == Nil && destinationClass == Nil) return [self.valueTransformers copy];
+    else if (sourceClass == Nil || destinationClass == Nil) [NSException raise:NSInvalidArgumentException format:@"If you specify a source or destination class then you must specify both."];
+    NSMutableArray *matchingTransformers = [NSMutableArray arrayWithCapacity:[self.valueTransformers count]];
+    for (RKValueTransformer *valueTransformer in self) {
+        if (! [valueTransformer respondsToSelector:@selector(validateTransformationFromClass:toClass:)]
+            || [valueTransformer validateTransformationFromClass:sourceClass toClass:destinationClass]) {
+            [matchingTransformers addObject:valueTransformer];
+        }
+    }
+    return [matchingTransformers copy];
 }
 
 #pragma mark RKValueTransforming
 
+- (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue ofClass:(__unsafe_unretained Class)outputValueClass error:(NSError *__autoreleasing *)error
+{
+    NSArray *matchingTransformers = [self valueTransformersForTransformingFromClass:[inputValue class] toClass:outputValueClass];
+    NSMutableArray *errors = [NSMutableArray array];
+    NSError *underlyingError = nil;
+    for (id<RKValueTransforming> valueTransformer in matchingTransformers) {
+        BOOL success = [valueTransformer transformValue:inputValue toValue:outputValue ofClass:outputValueClass error:&underlyingError];
+        if (success) return YES;
+        else [errors addObject:underlyingError];
+    }
+    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Failed transformation of value '%@' to %@: none of the %d value transformers consulted were successful.", inputValue, outputValueClass, [matchingTransformers count]], RKDetailedErrorsKey: errors };
+    *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo];
+    return NO;
+}
+
+- (BOOL)validateTransformationFromClass:(Class)sourceClass toClass:(Class)destinationClass
+{
+    return [[self valueTransformersForTransformingFromClass:sourceClass toClass:destinationClass] count] > 0;
+}
+
 #pragma mark NSCopying
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [[[self class] allocWithZone:zone] init];
+    compoundValueTransformer.valueTransformers = [self.valueTransformers mutableCopy];
+    return compoundValueTransformer;
+}
+
 #pragma mark NSFastEnumeration
+
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained [])buffer count:(NSUInteger)len
+{
+    return [self.valueTransformers countByEnumeratingWithState:state objects:buffer count:len];
+}
 
 @end
 
@@ -342,10 +389,10 @@
 //    static RKValueTransformer *identityTransformer;
 //    static dispatch_once_t onceToken;
 //    dispatch_once(&onceToken, ^{
-//        identityTransformer = [RKIdentityValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSObject class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+//        identityTransformer = [RKIdentityValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSObject class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
 //            *outputValue = inputValue;
 //            return YES;
-//        } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+//        } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
 //            *outputValue = inputValue;
 //            return YES;
 //        }];
@@ -358,7 +405,7 @@
 //    static RKValueTransformer *stringValueTransformer;
 //    static dispatch_once_t onceToken;
 //    dispatch_once(&onceToken, ^{
-//        stringValueTransformer = [RKStringValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSString class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+//        stringValueTransformer = [RKStringValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSString class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
 //            *outputValue = [inputValue stringValue];
 //            return YES;
 //        } reverseTransformationBlock:nil];
@@ -395,7 +442,7 @@
 //        self.dateToStringFormatter = dateToStringFormatter;
 //        self.stringToDateFormatters = stringToDateFormatters;
 //        __weak id weakSelf = self;
-//        self.transformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+//        self.transformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
 //            RKDateToStringValueTransformer *strongSelf = weakSelf;
 //            NSCAssert(strongSelf.dateToStringFormatter, @"Cannot transform an `NSDate` to an `NSString`: dateToStringFormatter is nil");
 //            if (!strongSelf.dateToStringFormatter) return NO;
@@ -404,7 +451,7 @@
 //            }
 //            return YES;
 //        };
-//        self.reverseTransformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, NSError *__autoreleasing *error) {
+//        self.reverseTransformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
 //            RKDateToStringValueTransformer *strongSelf = weakSelf;
 //            NSCAssert(strongSelf.stringToDateFormatters, @"Cannot transform an `NSDate` to an `NSString`: stringToDateFormatters is nil");
 //            if (strongSelf.stringToDateFormatters.count <= 0) return NO;

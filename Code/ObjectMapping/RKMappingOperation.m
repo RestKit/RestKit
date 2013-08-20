@@ -86,7 +86,7 @@ BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class
 {
     NSArray *matchingTransformers = @[];//[RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
     for (RKValueTransformer *valueTransformer in matchingTransformers) {
-        if ([valueTransformer transformValue:inputValue toValue:outputValue error:error]) {
+        if ([valueTransformer transformValue:inputValue toValue:outputValue ofClass:destinationClass error:error]) {
             return YES;
         } else {
             // An error occurred while attempting to perform the transformation, return to the caller
@@ -118,7 +118,7 @@ id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransform
     BOOL success = FALSE;
 
     if ([dateToStringValueTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateToStringValueTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
-        success = [(RKDateToStringValueTransformer *)dateToStringValueTransformer transformValue:value toValue:&retVal error:nil];
+        success = [(RKDateToStringValueTransformer *)dateToStringValueTransformer transformValue:value toValue:&retVal ofClass:destinationType error:nil];
     }
     if (!success)
         success = RKTransformedValueToValueOfClassError(value, &retVal, destinationType, nil);
@@ -498,7 +498,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     id transformedValue;
     NSError *error;
     if ([dateTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
-        success = [(RKDateToStringValueTransformer *)dateTransformer transformValue:value toValue:&transformedValue error:&error];
+        success = [(RKDateToStringValueTransformer *)dateTransformer transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
     }
     
     // TODO: Why do we need subscripted access to the transformers here????
@@ -508,7 +508,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 //        }
 //    }
     if (!success && [self.objectMapping.valueTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
-        success = [self.objectMapping.valueTransformer transformValue:value toValue:&transformedValue error:&error];
+        success = [self.objectMapping.valueTransformer transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
     }
     if (!success)
         success = [self transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];

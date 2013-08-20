@@ -56,7 +56,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer stringToURLValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSURL class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beInstanceOf([NSURL class]);
     expect(value).to.equal([NSURL URLWithString:@"http://restkit.org"]);
@@ -67,7 +67,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer stringToURLValueTransformer];
     NSString *value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[NSURL URLWithString:@"http://restkit.org"] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:[NSURL URLWithString:@"http://restkit.org"] toValue:&value ofClass:[NSString class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSString class]);
     expect(value).to.equal(@"http://restkit.org");
@@ -78,7 +78,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer stringToURLValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@12345 toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSString class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -91,7 +91,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer stringToURLValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@":*7vxck#sf#adsa" toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@":*7vxck#sf#adsa" toValue:&value ofClass:[NSURL class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -127,7 +127,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer numberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@"12345" toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@"12345" toValue:&value  ofClass:[NSNumber class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSNumber class]);
     expect(value).to.equal(@12345);
@@ -138,7 +138,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer numberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@12345 toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSString class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSString class]);
     expect(value).to.equal(@"12345");
@@ -149,7 +149,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer numberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@12345 toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSString class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSString class]);
     expect(value).to.equal(@"12345");
@@ -160,9 +160,9 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer numberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    [valueTransformer transformValue:[NSNumber numberWithBool:YES] toValue:&value error:&error];
+    [valueTransformer transformValue:[NSNumber numberWithBool:YES] toValue:&value ofClass:[NSString class] error:&error];
     expect(value).to.equal(@"true");
-    [valueTransformer transformValue:[NSNumber numberWithBool:NO] toValue:&value error:&error];
+    [valueTransformer transformValue:[NSNumber numberWithBool:NO] toValue:&value ofClass:[NSString class] error:&error];
     expect(value).to.equal(@"false");
 }
 
@@ -173,39 +173,39 @@
     NSError *error = nil;
     
     // True
-    [valueTransformer transformValue:@"true" toValue:&value error:&error];
+    [valueTransformer transformValue:@"true" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:YES]);
-    [valueTransformer transformValue:@"TRUE" toValue:&value error:&error];
+    [valueTransformer transformValue:@"TRUE" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:YES]);
-    [valueTransformer transformValue:@"t" toValue:&value error:&error];
+    [valueTransformer transformValue:@"t" toValue:&value ofClass:[NSNumber class]error:&error];
     expect(value).to.equal([NSNumber numberWithBool:YES]);
-    [valueTransformer transformValue:@"T" toValue:&value error:&error];
+    [valueTransformer transformValue:@"T" toValue:&value ofClass:[NSNumber class]error:&error];
     expect(value).to.equal([NSNumber numberWithBool:YES]);
-    [valueTransformer transformValue:@"yes" toValue:&value error:&error];
+    [valueTransformer transformValue:@"yes" toValue:&value ofClass:[NSNumber class]error:&error];
     expect(value).to.equal([NSNumber numberWithBool:YES]);
-    [valueTransformer transformValue:@"YES" toValue:&value error:&error];
+    [valueTransformer transformValue:@"YES" toValue:&value ofClass:[NSNumber class]error:&error];
     expect(value).to.equal([NSNumber numberWithBool:YES]);
-    [valueTransformer transformValue:@"y" toValue:&value error:&error];
+    [valueTransformer transformValue:@"y" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:YES]);
-    [valueTransformer transformValue:@"Y" toValue:&value error:&error];
+    [valueTransformer transformValue:@"Y" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:YES]);
     
     // False
-    [valueTransformer transformValue:@"false" toValue:&value error:&error];
+    [valueTransformer transformValue:@"false" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:NO]);
-    [valueTransformer transformValue:@"FALSE" toValue:&value error:&error];
+    [valueTransformer transformValue:@"FALSE" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:NO]);
-    [valueTransformer transformValue:@"f" toValue:&value error:&error];
+    [valueTransformer transformValue:@"f" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:NO]);
-    [valueTransformer transformValue:@"F" toValue:&value error:&error];
+    [valueTransformer transformValue:@"F" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:NO]);
-    [valueTransformer transformValue:@"no" toValue:&value error:&error];
+    [valueTransformer transformValue:@"no" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:NO]);
-    [valueTransformer transformValue:@"NO" toValue:&value error:&error];
+    [valueTransformer transformValue:@"NO" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:NO]);
-    [valueTransformer transformValue:@"f" toValue:&value error:&error];
+    [valueTransformer transformValue:@"f" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:NO]);
-    [valueTransformer transformValue:@"F" toValue:&value error:&error];
+    [valueTransformer transformValue:@"F" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(value).to.equal([NSNumber numberWithBool:NO]);
 }
 
@@ -214,7 +214,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer numberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@[] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSNumber class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -227,7 +227,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer numberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@":*7vxck#sf#adsa" toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@":*7vxck#sf#adsa" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.equal(0);
 }
@@ -260,7 +260,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer dateToNumberValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[NSDate dateWithTimeIntervalSince1970:0] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:[NSDate dateWithTimeIntervalSince1970:0] toValue:&value ofClass:[NSNumber class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSNumber class]);
     expect(value).to.equal(@0);
@@ -271,7 +271,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer dateToNumberValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@([[NSDate dateWithTimeIntervalSince1970:0] timeIntervalSince1970]) toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@([[NSDate dateWithTimeIntervalSince1970:0] timeIntervalSince1970]) toValue:&value ofClass:[NSDate class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSDate class]);
     expect(value).to.equal([NSDate dateWithTimeIntervalSince1970:0]);
@@ -282,7 +282,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer dateToNumberValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@"invalid" toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@"invalid" toValue:&value ofClass:[NSNumber class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -318,7 +318,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer arrayToOrderedSetValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@[ @"one", @"two", @"three" ] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@[ @"one", @"two", @"three" ] toValue:&value ofClass:[NSOrderedSet class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSOrderedSet class]);
     expect(value).to.equal(([NSOrderedSet orderedSetWithArray:@[ @"one", @"two", @"three" ]]));
@@ -329,7 +329,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer arrayToOrderedSetValueTransformer];
     NSString *value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[NSOrderedSet orderedSetWithArray:@[ @"one", @"two", @"three" ]] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:[NSOrderedSet orderedSetWithArray:@[ @"one", @"two", @"three" ]] toValue:&value ofClass:[NSArray class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSArray class]);
     expect(value).to.equal((@[ @"one", @"two", @"three" ]));
@@ -340,7 +340,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer arrayToOrderedSetValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@12345 toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSOrderedSet class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -376,7 +376,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer arrayToSetValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@[ @"one", @"two", @"three" ] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@[ @"one", @"two", @"three" ] toValue:&value ofClass:[NSSet class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSSet class]);
     expect(value).to.equal(([NSSet setWithArray:@[ @"one", @"two", @"three" ]]));
@@ -387,7 +387,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer arrayToSetValueTransformer];
     NSString *value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[NSSet setWithArray:@[ @"one", @"two", @"three" ]] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:[NSSet setWithArray:@[ @"one", @"two", @"three" ]] toValue:&value ofClass:[NSSet class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSArray class]);
     expect(value).to.equal((@[ @"one", @"two", @"three" ]));
@@ -398,7 +398,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer arrayToSetValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@12345 toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSArray class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -434,7 +434,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[NSDecimalNumber decimalNumberWithString:@"123456.7890"] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:[NSDecimalNumber decimalNumberWithString:@"123456.7890"] toValue:&value ofClass:[NSString class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSString class]);
     expect(value).to.equal(@"123456.789");
@@ -445,7 +445,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToStringValueTransformer];
     NSString *value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@"123456.7890" toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@"123456.7890" toValue:&value ofClass:[NSDecimalNumber class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSDecimalNumber class]);
     expect(value).to.equal([NSDecimalNumber decimalNumberWithString:@"123456.7890"]);
@@ -456,7 +456,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@[] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSString class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -469,7 +469,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToStringValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@"abdskjfsdkfjs" toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@"abdskjfsdkfjs" toValue:&value ofClass:[NSDecimalNumber class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -505,7 +505,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToNumberValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[NSDecimalNumber decimalNumberWithString:@"123456.7890"] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:[NSDecimalNumber decimalNumberWithString:@"123456.7890"] toValue:&value ofClass:[NSNumber class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSNumber class]);
     expect(value).to.equal([NSDecimalNumber decimalNumberWithString:@"123456.7890"]);
@@ -516,7 +516,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToNumberValueTransformer];
     NSNumber *value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@123456.7890 toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@123456.7890 toValue:&value ofClass:[NSDecimalNumber class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSDecimalNumber class]);
     expect(value).to.equal([NSDecimalNumber decimalNumberWithString:@"123456.7890"]);
@@ -527,7 +527,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToNumberValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@[] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSNumber class] error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -549,7 +549,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer nullValueTransformer];
     NSNumber *value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[NSNull null] toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:[NSNull null] toValue:&value ofClass:Nil error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beNil();
 }
@@ -559,7 +559,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer nullValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@12345 toValue:&value error:&error];
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:Nil error:&error];
     expect(success).to.beFalsy();
     expect(value).to.beNil();
     expect(error).notTo.beNil();
@@ -596,7 +596,7 @@
     NSDictionary *dictionary = @{ @"key": @"value" };
     NSData *data = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:dictionary toValue:&data error:&error];
+    BOOL success = [valueTransformer transformValue:dictionary toValue:&data ofClass:[NSData class] error:&error];
     expect(success).to.beTruthy();
     expect(data).notTo.beNil();
     id<NSCoding> decodedObject = [NSKeyedUnarchiver unarchiveObjectWithData:data];
@@ -610,7 +610,7 @@
     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:dictionary];
     NSError *error = nil;
     id<NSCoding> result = nil;
-    BOOL success = [valueTransformer transformValue:data toValue:&result error:&error];
+    BOOL success = [valueTransformer transformValue:data toValue:&result ofClass:[NSDictionary class] error:&error];
     expect(success).to.beTruthy();
     expect(result).notTo.beNil();
     expect(result).to.equal(dictionary);
@@ -621,7 +621,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
     id<NSCoding> result = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[NSObject new] toValue:&result error:&error];
+    BOOL success = [valueTransformer transformValue:[NSObject new] toValue:&result ofClass:[NSData class] error:&error];
     expect(success).to.beFalsy();
     expect(result).to.beNil();
     expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
@@ -632,43 +632,206 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
     id<NSCoding> result = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:[@"this is invalid" dataUsingEncoding:NSUTF8StringEncoding] toValue:&result error:&error];
+    BOOL success = [valueTransformer transformValue:[@"this is invalid" dataUsingEncoding:NSUTF8StringEncoding] toValue:&result ofClass:[NSDictionary class] error:&error];
     expect(success).to.beFalsy();
     expect(result).to.beNil();
     expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
 }
 
-//#pragma mark -
-//#pragma mark Default Transformers
-//- (void)testDefaultObjectToDataTransformer
-//{
-//    RKValueTransformer *transformer = [RKValueTransformer defaultObjectToDataTransformer];
-//    expect(transformer).toNot.beNil();
-//    
-//    NSObject<NSCoding> *input = @[@"One", @"Two", @"Three"];
-//    NSData *output;
-//    NSError *error;
-//    
-//    BOOL success = [transformer transformValue:input toValue:&output error:&error];
-//    expect(success).to.beTruthy();
-//    
-//    expect(output).to.beKindOf([NSData class]);
-//    expect(output).to.equal([NSKeyedArchiver archivedDataWithRootObject:input]);
-//    expect(error).to.beNil();
-//    
-//    expect([NSKeyedUnarchiver unarchiveObjectWithData:output]).to.equal(input);
-//}
+// TODO: Test transformation failure due to failure to decode into expected type...
 
 @end
+
+static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutputValue)
+{
+    return [RKValueTransformer valueTransformerWithValidationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
+        *outputValue = staticOutputValue;
+        return YES;
+    }];
+}
 
 @interface RKCompoundValueTransformerTest : SenTestCase
 @end
 
 @implementation RKCompoundValueTransformerTest
 
-#pragma mark NSCopying
+- (void)testAddingValueTransformer
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    expect([compoundValueTransformer numberOfValueTransformers]).to.equal(0);
+    [compoundValueTransformer addValueTransformer:RKTestValueTransformerWithOutputValue(@"OK")];
+    expect([compoundValueTransformer numberOfValueTransformers]).to.equal(1);
+}
+
+- (void)testRemovingValueTransformer
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    expect([compoundValueTransformer numberOfValueTransformers]).to.equal(0);
+    RKValueTransformer *addedTransformer = RKTestValueTransformerWithOutputValue(@"OK");
+    [compoundValueTransformer addValueTransformer:addedTransformer];
+    expect([compoundValueTransformer numberOfValueTransformers]).to.equal(1);
+    [compoundValueTransformer removeValueTransformer:RKTestValueTransformerWithOutputValue(@"invalid")];
+    expect([compoundValueTransformer numberOfValueTransformers]).to.equal(1);
+    [compoundValueTransformer removeValueTransformer:addedTransformer];
+    expect([compoundValueTransformer numberOfValueTransformers]).to.equal(0);
+}
+
+- (void)testInsertingValueTransformer
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    RKValueTransformer *firstTransformer = RKTestValueTransformerWithOutputValue(@"1");
+    [compoundValueTransformer addValueTransformer:firstTransformer];
+    RKValueTransformer *secondTransformer = RKTestValueTransformerWithOutputValue(@"2");
+    [compoundValueTransformer addValueTransformer:secondTransformer];
+    RKValueTransformer *thirdTransformer = RKTestValueTransformerWithOutputValue(@"3");
+    [compoundValueTransformer insertValueTransformer:thirdTransformer atIndex:0];
+    NSArray *valueTransformers = [compoundValueTransformer valueTransformersForTransformingFromClass:Nil toClass:Nil];
+    expect(valueTransformers[0]).to.equal(thirdTransformer);
+}
+
+- (void)testRetrievingValueTransformersBySourceToDestinationClass
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    RKValueTransformer *stringToValueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSValue class]];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        return NO;
+    }];
+    [compoundValueTransformer addValueTransformer:stringToValueTransformer];
+    RKValueTransformer *stringToNumberTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSNumber class]];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        return NO;
+    }];
+    [compoundValueTransformer addValueTransformer:stringToNumberTransformer];
+    RKValueTransformer *stringToDecimalNumberTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        return NO;
+    }];
+    [compoundValueTransformer addValueTransformer:stringToDecimalNumberTransformer];
+    RKValueTransformer *numberToStringValueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSString class]];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        return NO;
+    }];
+    [compoundValueTransformer addValueTransformer:numberToStringValueTransformer];
+    
+    expect([compoundValueTransformer valueTransformersForTransformingFromClass:[NSString class] toClass:[NSValue class]]).to.equal((@[ stringToValueTransformer ]));
+    expect([compoundValueTransformer valueTransformersForTransformingFromClass:[NSString class] toClass:[NSNumber class]]).to.equal((@[ stringToValueTransformer, stringToNumberTransformer ]));
+    expect([compoundValueTransformer valueTransformersForTransformingFromClass:[NSString class] toClass:[NSDecimalNumber class]]).to.equal((@[ stringToValueTransformer, stringToNumberTransformer, stringToDecimalNumberTransformer ]));
+    expect([compoundValueTransformer valueTransformersForTransformingFromClass:[NSNumber class] toClass:[NSString class]]).to.equal((@[ numberToStringValueTransformer ]));
+    expect([compoundValueTransformer valueTransformersForTransformingFromClass:[NSNumber class] toClass:[NSArray class]]).to.beEmpty();
+}
 
 #pragma mark RKValueTransforming
 
-#pragma <#arguments#>
+- (void)testValidatingValueTransformation
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    RKValueTransformer *stringToValueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSValue class]];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        return NO;
+    }];
+    [compoundValueTransformer addValueTransformer:stringToValueTransformer];
+    RKValueTransformer *stringToNumberTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSNumber class]];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        return NO;
+    }];
+    [compoundValueTransformer addValueTransformer:stringToNumberTransformer];
+    RKValueTransformer *stringToDecimalNumberTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        return NO;
+    }];
+    [compoundValueTransformer addValueTransformer:stringToDecimalNumberTransformer];
+    RKValueTransformer *numberToStringValueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSString class]];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        return NO;
+    }];
+    [compoundValueTransformer addValueTransformer:numberToStringValueTransformer];
+    
+    expect([compoundValueTransformer validateTransformationFromClass:[NSString class] toClass:[NSValue class]]).to.beTruthy();
+    expect([compoundValueTransformer validateTransformationFromClass:[NSString class] toClass:[NSNumber class]]).to.beTruthy();
+    expect([compoundValueTransformer validateTransformationFromClass:[NSString class] toClass:[NSDecimalNumber class]]).to.beTruthy();
+    expect([compoundValueTransformer validateTransformationFromClass:[NSNumber class] toClass:[NSString class]]).to.beTruthy();
+    expect([compoundValueTransformer validateTransformationFromClass:[NSString class] toClass:[NSData class]]).to.beFalsy();
+}
+
+- (void)testTransformingValueSuccessfully
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    RKValueTransformer *firstTransformer = RKTestValueTransformerWithOutputValue(@"1");
+    [compoundValueTransformer addValueTransformer:firstTransformer];
+    NSString *outputValue;
+    NSError *error = nil;
+    BOOL success = [compoundValueTransformer transformValue:@"2" toValue:&outputValue ofClass:[NSString class] error:&error];
+    expect(success).to.beTruthy();
+    expect(outputValue).to.equal(@"1");
+}
+
+- (void)testTransformingValueSuccessfullyRespectsOrderingOfTransformers
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    [compoundValueTransformer addValueTransformer:RKTestValueTransformerWithOutputValue(@"1")];
+    [compoundValueTransformer addValueTransformer:RKTestValueTransformerWithOutputValue(@"2")];
+    [compoundValueTransformer insertValueTransformer:RKTestValueTransformerWithOutputValue(@"3") atIndex:0];
+    NSString *outputValue;
+    NSError *error = nil;
+    BOOL success = [compoundValueTransformer transformValue:@"2" toValue:&outputValue ofClass:[NSString class] error:&error];
+    expect(success).to.beTruthy();
+    expect(outputValue).to.equal(@"3");
+}
+
+- (void)testTransformingValueFailsWithError
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    [compoundValueTransformer addValueTransformer:[RKValueTransformer valueTransformerWithValidationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        // Always fails
+        RKValueTransformerTestTransformation(NO, error, @"This is an underlying error.");
+        return YES;
+    }]];
+    NSString *outputValue;
+    NSError *error = nil;
+    BOOL success = [compoundValueTransformer transformValue:@"2" toValue:&outputValue ofClass:[NSString class] error:&error];
+    expect(success).to.beFalsy();
+    expect(outputValue).to.beNil();
+    expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
+    expect(error.localizedDescription).to.equal(@"Failed transformation of value '2' to NSString: none of the 1 value transformers consulted were successful.");
+}
+
+#pragma mark NSCopying
+
+- (void)testCopying
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    RKValueTransformer *firstTransformer = RKTestValueTransformerWithOutputValue(@"1");
+    [compoundValueTransformer addValueTransformer:firstTransformer];
+    RKValueTransformer *secondTransformer = RKTestValueTransformerWithOutputValue(@"2");
+    [compoundValueTransformer addValueTransformer:secondTransformer];
+    RKCompoundValueTransformer *copiedTransformer = [compoundValueTransformer copy];
+    expect(copiedTransformer).notTo.beNil();
+    NSArray *valueTransformers = [copiedTransformer valueTransformersForTransformingFromClass:Nil toClass:Nil];
+    expect(valueTransformers).to.equal((@[ firstTransformer, secondTransformer ]));
+}
+
+#pragma mark NSFastEnumeration
+
+- (void)testFastEnumeration
+{
+    RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
+    RKValueTransformer *firstTransformer = RKTestValueTransformerWithOutputValue(@"1");
+    [compoundValueTransformer addValueTransformer:firstTransformer];
+    RKValueTransformer *secondTransformer = RKTestValueTransformerWithOutputValue(@"2");
+    [compoundValueTransformer addValueTransformer:secondTransformer];
+    NSMutableArray *enumeratedTransformers = [NSMutableArray new];
+    for (id<RKValueTransforming> valueTransformer in compoundValueTransformer) {
+        [enumeratedTransformers addObject:valueTransformer];
+    }
+    expect(enumeratedTransformers).to.equal((@[ firstTransformer, secondTransformer ]));
+}
+
 @end
