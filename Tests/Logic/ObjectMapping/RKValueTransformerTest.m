@@ -99,6 +99,19 @@
     expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
 }
 
+- (void)testStringToURLTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer stringToURLValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
 #pragma mark Number to String
 
 - (void)testNumberToStringTransformerValidationSuccessFromStringToNumber
@@ -232,6 +245,19 @@
     expect(value).to.equal(0);
 }
 
+- (void)testNumberToStringTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer numberToStringValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
 #pragma mark Date to Number
 
 - (void)testDateToNumberTransformerValidationSuccessFromDateToNumber
@@ -288,6 +314,19 @@
     expect(error).notTo.beNil();
     expect(error.domain).to.equal(RKErrorDomain);
     expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testDateToNumberTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer dateToNumberValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
 }
 
 #pragma mark Array to Ordered Set
@@ -348,6 +387,19 @@
     expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
 }
 
+- (void)testArrayToOrderedSetTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer arrayToOrderedSetValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
 #pragma mark Array to Set
 
 - (void)testArrayToSetTransformerValidationSuccessFromArrayToSet
@@ -404,6 +456,19 @@
     expect(error).notTo.beNil();
     expect(error.domain).to.equal(RKErrorDomain);
     expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testArrayToSetTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer arrayToSetValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
 }
 
 #pragma mark Decimal Number to String
@@ -477,6 +542,19 @@
     expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
 }
 
+- (void)testDecimalNumberToStringTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToStringValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"12345.00" toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
 #pragma mark Decimal Number to Number
 
 - (void)testDecimalNumberToNumberTransformerValidationSuccessFromDecimalNumberToNumber
@@ -535,6 +613,19 @@
     expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
 }
 
+- (void)testDecimalNumberToNumberTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer decimalNumberToNumberValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
 #pragma mark Null
 
 - (void)testNullTransformerValidationSuccessFromObjectToObject
@@ -565,6 +656,16 @@
     expect(error).notTo.beNil();
     expect(error.domain).to.equal(RKErrorDomain);
     expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testDecimalNumberToNumberTransformerSucceedsWithAnyOutputClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer nullValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:[NSNull null] toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beNil();
 }
 
 #pragma mark Keyed Archiving
@@ -638,7 +739,33 @@
     expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
 }
 
-// TODO: Test transformation failure due to failure to decode into expected type...
+- (void)testKeyedArchivingTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@{ @"key": @"value" } toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
+- (void)testKeyedArchivingTransformerFailureDueToDesintationTypeMismatch
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyedArchivingValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    NSDictionary *dictionary = @{ @"key": @"value" };
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:dictionary];
+    BOOL success = [valueTransformer transformValue:data toValue:&value ofClass:[NSArray class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
+}
 
 @end
 

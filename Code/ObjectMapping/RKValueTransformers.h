@@ -62,7 +62,8 @@
 
 typedef NS_ENUM(NSUInteger, RKValueTransformationError) {
     RKValueTransformationErrorUntransformableInputValue     = 3000,     // The input value was determined to be unacceptable and no transformation was performed.
-    RKValueTransformationErrorTransformationFailed          = 3001      // A transformation was attempted, but failed.
+    RKValueTransformationErrorUnsupportedOutputClass        = 3001,     // The specified class type for the output value is unsupported and no transformation was performed.
+    RKValueTransformationErrorTransformationFailed          = 3002      // A transformation was attempted, but failed.
 };
 
 /**
@@ -84,10 +85,35 @@ typedef NS_ENUM(NSUInteger, RKValueTransformationError) {
         }; \
     } \
     if (! success) { \
-        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` of type `NSString`, but got a `%@`.", [inputValue class]] };\
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` of type `%@`, but got a `%@`.", expectedClass, [inputValue class]] };\
         *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
         return NO; \
     } \
+})
+
+/**
+ Tests if a given output value class is of an expected class and returns a failure if it is not.
+ 
+ This macro is useful for quickly verifying that a transformer can work with a given input value by checking if the value is an instance of an expected class. On failure, the macro constructs an error describing the class mismatch.
+ 
+ @param outputValueClass The input value to test.
+ @param expectedClass The expected class or array of classes of the input value.
+ @param error A pointer to an `NSError` object in which to assign a newly constructed error if the test fails. Cannot be `nil`.
+ */
+#define RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, expectedClass, error) ({ \
+NSArray *supportedClasses = [expectedClass isKindOfClass:[NSArray class]] ? (NSArray *)expectedClass : @[ expectedClass ];\
+BOOL success = NO; \
+for (Class supportedClass in supportedClasses) {\
+if ([outputValueClass isSubclassOfClass:supportedClass]) { \
+success = YES; \
+break; \
+}; \
+} \
+if (! success) { \
+NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `outputValueClass` of type `%@`, but got a `%@`.", expectedClass, outputValueClass] };\
+*error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUnsupportedOutputClass userInfo:userInfo]; \
+return NO; \
+} \
 })
 
 /**

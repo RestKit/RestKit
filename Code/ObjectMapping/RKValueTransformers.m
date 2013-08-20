@@ -61,6 +61,7 @@
                 ([sourceClass isSubclassOfClass:[NSURL class]] && [destinationClass isSubclassOfClass:[NSString class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSString class], [NSURL class]]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSString class], [NSURL class]]), error);
         if ([inputValue isKindOfClass:[NSString class]]) {
             NSURL *URL = [NSURL URLWithString:inputValue];
             RKValueTransformerTestTransformation(URL != nil, error, @"Failed transformation of '%@' to URL: the string is malformed and cannot be transformed to an `NSURL` representation.", inputValue);
@@ -81,6 +82,7 @@
                 ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSNumber class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSNumber class], [NSString class] ]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSNumber class], [NSString class]]), error);
         if ([inputValue isKindOfClass:[NSString class]]) {
             NSString *lowercasedString = [inputValue lowercaseString];
             NSSet *trueStrings = [NSSet setWithObjects:@"true", @"t", @"yes", @"y", nil];
@@ -118,6 +120,7 @@
                 ([sourceClass isSubclassOfClass:[NSDate class]] && [destinationClass isSubclassOfClass:[NSNumber class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSNumber class], [NSDate class]]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSNumber class], [NSDate class]]), error);
         if ([inputValue isKindOfClass:[NSNumber class]]) {
             *outputValue = [NSDate dateWithTimeIntervalSince1970:[inputValue doubleValue]];
         } else if ([inputValue isKindOfClass:[NSDate class]]) {
@@ -136,6 +139,7 @@
                 ([sourceClass isSubclassOfClass:[NSOrderedSet class]] && [destinationClass isSubclassOfClass:[NSArray class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSArray class], [NSOrderedSet class]]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSArray class], [NSOrderedSet class]]), error);
         if ([inputValue isKindOfClass:[NSArray class]]) {
             *outputValue = [NSOrderedSet orderedSetWithArray:inputValue];
         } else if ([inputValue isKindOfClass:[NSOrderedSet class]]) {
@@ -154,6 +158,7 @@
                 ([sourceClass isSubclassOfClass:[NSSet class]] && [destinationClass isSubclassOfClass:[NSArray class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSSet class], [NSArray class]]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSSet class], [NSArray class]]), error);
         if ([inputValue isKindOfClass:[NSArray class]]) {
             *outputValue = [NSSet setWithArray:inputValue];
         } else if ([inputValue isKindOfClass:[NSSet class]]) {
@@ -172,6 +177,7 @@
                 ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSString class], [NSDecimalNumber class]]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSString class], [NSDecimalNumber class]]), error);
         if ([inputValue isKindOfClass:[NSString class]]) {
             NSDecimalNumber *decimalNumber = [NSDecimalNumber decimalNumberWithString:inputValue];
             RKValueTransformerTestTransformation(! [decimalNumber isEqual:[NSDecimalNumber notANumber]], error, @"Failed transformation of '%@' to `NSDecimalNumber`: the input string was transformed into Not a Number (NaN) value.", inputValue);
@@ -192,6 +198,7 @@
                 ([sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSNumber class], [NSDecimalNumber class]]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSNumber class], [NSDecimalNumber class]]), error);
         if ([inputValue isKindOfClass:[NSNumber class]]) {
             *outputValue = [NSDecimalNumber decimalNumberWithDecimal:[inputValue decimalValue]];
         } else if ([inputValue isKindOfClass:[NSDecimalNumber class]]) {
@@ -230,8 +237,14 @@
                 *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo];
                 return NO;
             }
+            if (! [unarchivedValue isKindOfClass:outputValueClass]) {
+                NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `outputValueClass` of type `%@`, but the unarchived object is a `%@`.", outputValueClass, [unarchivedValue class]] };
+                *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo]; \
+                return NO;
+            }
             *outputValue = unarchivedValue;
         } else if ([inputValue conformsToProtocol:@protocol(NSCoding)]) {
+            RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, [NSData class], error);
             *outputValue = [NSKeyedArchiver archivedDataWithRootObject:inputValue];
         } else {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` of type `NSData` or conforming to `NSCoding`, but got a `%@` which does not satisfy these expectation.", [inputValue class]] };
