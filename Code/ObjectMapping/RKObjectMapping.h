@@ -296,7 +296,7 @@
 @property (nonatomic, assign) BOOL performKeyValueValidation;
 
 /**
- A value transformer with which to process input values being mapped with the receiver. If `nil`, then the `valueTransformer` of the parent `objectMapping` will be used instead.
+ A value transformer with which to process input values being mapped with the receiver. Defaults to `[RKValueTransformer defaultTransformer]`.
  */
 @property (nonatomic, strong) id<RKValueTransforming> valueTransformer;
 
@@ -320,6 +320,7 @@
 
  @see `[RKObjectMapping defaultDateFormatters]`
  */
+// TODO: Deprecate. Should mine `self.valueTransformer` to return any transformers capable of transforming from `NSDate` to `NSString`
 @property (nonatomic, strong) NSArray *dateFormatters;
 
 /**
@@ -329,6 +330,7 @@
 
  @see `[RKObjectMapping preferredDateFormatter]`
  */
+// TODO: Deprecate. Should search `self.valueTransformer` to find the first transformer capable of transforming from `NSDate` to `NSString`
 @property (nonatomic, strong) NSFormatter *preferredDateFormatter;
 
 ///----------------------------------
@@ -396,6 +398,7 @@
 
  @return An array of `NSFormatter` objects used when mapping strings into NSDate attributes
  */
+// TODO: Deprecate. This should access `[RKValueTransformer defaultTransformer]` and return all `NSDate` <-> `NSString` value transformers.
 + (NSArray *)defaultDateFormatters;
 
 /**
@@ -404,6 +407,7 @@
  @param dateFormatters An array of date formatters to replace the existing defaults.
  @see `defaultDateFormatters`
  */
+// TODO: Deprecate. This should access `[RKValueTransformer defaultTransformer]` and remove all `NSDate` <-> `NSString` value transformers, replacing them with new instances of `RKDateToStringValueTransformer`
 + (void)setDefaultDateFormatters:(NSArray *)dateFormatters;
 
 /**
@@ -412,6 +416,7 @@
  @param dateFormatter An `NSFormatter` object to prepend to the default formatters collection
  @see `defaultDateFormatters`
  */
+// TODO: Deprecate. This should manipulate `[RKValueTransformer defaultValueTransformer]` by prepending the transformer to the list.
 + (void)addDefaultDateFormatter:(NSFormatter *)dateFormatter;
 
 /**
@@ -421,6 +426,7 @@
  @param nilOrTimeZone The NSTimeZone object to configure on the `NSDateFormatter` instance. Defaults to UTC time.
  @see `NSDateFormatter`
  */
+// TODO: Invoke `[RKDateToStringValueTransformer dateToStringValueTransformerWithFormatString:timeZone:]` and add it to the default transformer
 + (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone;
 
 /**
@@ -432,6 +438,7 @@
 
  @return The preferred NSFormatter object to use when serializing dates into strings
  */
+// TODO: Deprecate. Return the first `NSString` -> `NSDate` transformer
 + (NSFormatter *)preferredDateFormatter;
 
 /**
@@ -439,6 +446,7 @@
 
  @param dateFormatter The NSFormatter object to designate as the new preferred instance
  */
+// TODO: Deprecate. Create a new transformer and add it at position zero of `[RKValueTransformer defaultValueTransformer]` first `NSString` -> `NSDate` transformer
 + (void)setPreferredDateFormatter:(NSFormatter *)dateFormatter;
 
 @end
@@ -454,6 +462,7 @@
  @return An `NSDate` object parsed from the given string, or `nil` if the string was found to be unparsable by all default date formatters.
  @see [RKObjectMapping defaultDateFormatters]
  */
+// TODO: Access the `[RKValueTransformer defaultValueTransformer]` to find the first `NSString` -> `NSDate` transformer and invoke it.
 NSDate *RKDateFromString(NSString *dateString);
 
 /**
@@ -467,4 +476,5 @@ NSDate *RKDateFromString(NSString *dateString);
  @return An `NSString` object representation of the given date formatted by the preferred date formatter.
  @see [RKObjectMapping preferredDateFormatter]
  */
+// TODO: Access the `[RKValueTransformer defaultValueTransformer]` to find the first `NSDate` -> `NSString` transformer and invoke it.
 NSString *RKStringFromDate(NSDate *date);

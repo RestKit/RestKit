@@ -47,14 +47,12 @@
  
  This is an optional method that need only be implemented by transformers that are tightly bound to values with specific types.
  
- @param sourceClass The `Class` of an input value being inspected.
- @param destinationClass The `Class` of an output value being inspected.
+ @param inputValueClass The `Class` of an input value being inspected.
+ @param outputValueClass The `Class` of an output value being inspected.
  @return `YES` if the receiver can perform a transformation between the given source and destination classes.
  */
 // TODO: should this be `validateTransformationFromValue:toClass:` instead?
-// NOTE: destination class _must_ be a class because we can't determine runtime type of an unassigned variable
-// TODO: should this be `inputClass` and `outputClass` instead to match the above? We use source and destination elsewhere...
-- (BOOL)validateTransformationFromClass:(Class)sourceClass toClass:(Class)destinationClass;
+- (BOOL)validateTransformationFromClass:(Class)inputValueClass toClass:(Class)outputValueClass;
 
 @end
 
@@ -139,6 +137,7 @@ return NO; \
 @class RKCompoundValueTransformer;
 
 /**
+ The `RKValueTransformer` class provides a concrete implementation of the `RKValueTransforming` protocol using blocks to provide the implementation of the transformer. It additionally encapsulates accessors for the default value transformer implementations that are provided with RestKit.
  */
 @interface RKValueTransformer : NSObject <RKValueTransforming>
 
@@ -146,13 +145,17 @@ return NO; \
 /// @name Create a Block Transformer
 ///---------------------------------
 
-// transformationBlock may be `nil`.
-+ (instancetype)valueTransformerWithValidationBlock:(BOOL (^)(Class sourceClass, Class destinationClass))validationBlock
+/**
+ Creates and returns a new value transformer with the given validation and transformation blocks. The blocks are used to provide the implementation of the corresponding methods from the `RKValueTransforming` protocol.
+ 
+ @param validationBlock A block that evaluates whether the transformer can perform a transformation between a given pair of input and output classes.
+ */
++ (instancetype)valueTransformerWithValidationBlock:(BOOL (^)(Class inputValueClass, Class outputValueClass))validationBlock
                                 transformationBlock:(BOOL (^)(id inputValue, id *outputValue, Class outputClass, NSError **error))transformationBlock;
 
-///---------------------------
-/// @name Default Transformers
-///---------------------------
+///--------------------------------------
+/// @name Retrieving Default Transformers
+///--------------------------------------
 
 // NOTE: alphabetize by convention???
 
@@ -170,21 +173,29 @@ return NO; \
 // TODO: objectToCollectionValueTransformer... Can this be handled with this architecture?? Probably has to be done via a compound transformer...
 
 // TODO: Need to figure out what to do with these...
-+ (instancetype)stringToDateValueTransformerWithFormatter:(NSFormatter *)stringToDateFormatter;
-+ (instancetype)dateToStringValueTransformerWithFormatter:(NSFormatter *)dateToStringFormatter;
+//+ (instancetype)stringToDateValueTransformerWithFormatter:(NSFormatter *)stringToDateFormatter;
+//+ (instancetype)dateToStringValueTransformerWithFormatter:(NSFormatter *)dateToStringFormatter;
 
 + (RKCompoundValueTransformer *)defaultValueTransformer;
 
 @end
 
-@interface RKDateToStringValueTransformer : RKValueTransformer
+// TODO: Should I be named `RKDateValueTransformer`? We could probably handle numeric transformations within this class as well...
+@interface RKDateToStringValueTransformer : NSObject <RKValueTransforming>
 
-@property (nonatomic, copy) NSFormatter *dateToStringFormatter;
-@property (nonatomic, copy) NSArray *stringToDateFormatters;
-
-+ (instancetype)dateToStringValueTransformerWithDateToStringFormatter:(NSFormatter *)dateToStringFormatter stringToDateFormatters:(NSArray *)stringToDateFormatters;
++ (instancetype)dateToStringValueTransformerWithFormatter:(NSFormatter *)dateToStringFormatter;
++ (instancetype)ISO8601DateValueTransformerWithTimeZone:(NSTimeZone *)timeZone;
++ (instancetype)dateToStringValueTransformerWithFormatString:(NSString *)dateFormatString timeZone:(NSTimeZone *)nilOrTimeZone;
 
 @end
+
+//@interface RKDateToStringValueTransformer : RKValueTransformer
+//
+//@property (nonatomic, copy) NSFormatter *dateToStringFormatter;
+//@property (nonatomic, copy) NSArray *stringToDateFormatters;
+//
+//+ (instancetype)dateToStringValueTransformerWithDateToStringFormatter:(NSFormatter *)dateToStringFormatter stringToDateFormatters:(NSArray *)stringToDateFormatters;
+//@end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
