@@ -104,7 +104,7 @@
                               withMapping:userMapping
                                   keyPath:@"user"
                                     error:&error];
-    BOOL success = [importer finishImporting:&error];
+    success = [importer finishImporting:&error];
     if (success) {
         [importer logSeedingInfo];
     } else {
