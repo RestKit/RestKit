@@ -201,7 +201,7 @@ return NO; \
 @interface NSNumberFormatter (RKValueTransformers) <RKValueTransforming>
 @end
 
-// Adopts `RKValueTransforming` to provide transformation from `NSString` <-> `NSNumber`
+// Adopts `RKValueTransforming` to provide transformation from `NSString` <-> `NSDate`
 @interface NSDateFormatter (RKValueTransformers) <RKValueTransforming>
 @end
 

@@ -1175,3 +1175,193 @@ static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutput
 }
 
 @end
+
+@interface RKValueTransformers_NSDateFormatterTests : SenTestCase
+@end
+
+@implementation RKValueTransformers_NSDateFormatterTests
+
+- (void)testValidationFromStringToDate
+{
+    NSDateFormatter *valueTransformer = [NSDateFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSString class] toClass:[NSDate class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testValidationFromDateToString
+{
+    NSDateFormatter *valueTransformer = [NSDateFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSDate class] toClass:[NSString class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testValidationFailure
+{
+    NSDateFormatter *valueTransformer = [NSDateFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSURL class] toClass:[NSString class]];
+    expect(success).to.beFalsy();
+}
+
+- (void)testTransformationFromDateToString
+{
+    NSDateFormatter *valueTransformer = [NSDateFormatter new];
+    valueTransformer.dateStyle = NSDateFormatterFullStyle;
+    valueTransformer.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    valueTransformer.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:[NSDate dateWithTimeIntervalSince1970:0] toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSString class]);
+    expect(value).to.equal(@"Thursday, January 1, 1970");
+}
+
+- (void)testTransformationFromStringToDAte
+{
+    NSDateFormatter *valueTransformer = [NSDateFormatter new];
+    valueTransformer.dateStyle = NSDateFormatterFullStyle;
+    valueTransformer.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    valueTransformer.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"Thursday, January 1, 1970" toValue:&value ofClass:[NSDate class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSDate class]);
+    expect([value description]).to.equal(@"1970-01-01 00:00:00 +0000");
+}
+
+- (void)testTransformationFailureWithUntransformableInputValue
+{
+    NSDateFormatter *valueTransformer = [NSDateFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testTransformationFailureFailureWithInvalidInputValue
+{
+    NSDateFormatter *valueTransformer = [NSDateFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@":*7vxck#sf#adsa" toValue:&value ofClass:[NSDate class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
+}
+
+- (void)testTransformationFailureWithInvalidDestinationClass
+{
+    NSDateFormatter *valueTransformer = [NSDateFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
+@end
+
+@interface RKValueTransformers_RKISO8601DateFormatterTests : SenTestCase
+@end
+
+@implementation RKValueTransformers_RKISO8601DateFormatterTests
+
+- (void)testValidationFromStringToDate
+{
+    RKISO8601DateFormatter *valueTransformer = [RKISO8601DateFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSString class] toClass:[NSDate class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testValidationFromDateToString
+{
+    RKISO8601DateFormatter *valueTransformer = [RKISO8601DateFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSDate class] toClass:[NSString class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testValidationFailure
+{
+    RKISO8601DateFormatter *valueTransformer = [RKISO8601DateFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSURL class] toClass:[NSString class]];
+    expect(success).to.beFalsy();
+}
+
+- (void)testTransformationFromDateToString
+{
+    RKISO8601DateFormatter *valueTransformer = [RKISO8601DateFormatter new];
+    valueTransformer.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    valueTransformer.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    valueTransformer.includeTime = YES;
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:[NSDate dateWithTimeIntervalSince1970:0] toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSString class]);
+    expect(value).to.equal(@"1970-01-01T00:00:00Z");
+}
+
+- (void)testTransformationFromStringToDAte
+{
+    RKISO8601DateFormatter *valueTransformer = [RKISO8601DateFormatter new];
+    valueTransformer.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    valueTransformer.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    valueTransformer.includeTime = YES;
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"1970-01-01T00:00:00Z" toValue:&value ofClass:[NSDate class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSDate class]);
+    expect([value description]).to.equal(@"1970-01-01 00:00:00 +0000");
+}
+
+- (void)testTransformationFailureWithUntransformableInputValue
+{
+    RKISO8601DateFormatter *valueTransformer = [RKISO8601DateFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testTransformationFailureFailureWithInvalidInputValue
+{
+    RKISO8601DateFormatter *valueTransformer = [RKISO8601DateFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@":*7vxck#sf#adsa" toValue:&value ofClass:[NSDate class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
+}
+
+- (void)testTransformationFailureWithInvalidDestinationClass
+{
+    RKISO8601DateFormatter *valueTransformer = [RKISO8601DateFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
+@end

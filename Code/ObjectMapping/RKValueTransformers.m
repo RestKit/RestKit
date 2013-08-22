@@ -477,5 +477,53 @@
 
 @end
 
+@implementation NSDateFormatter (RKValueTransformers)
+
+- (BOOL)validateTransformationFromClass:(Class)inputValueClass toClass:(Class)outputValueClass
+{
+    return (([inputValueClass isSubclassOfClass:[NSDate class]] && [outputValueClass isSubclassOfClass:[NSString class]]) ||
+            ([inputValueClass isSubclassOfClass:[NSString class]] && [outputValueClass isSubclassOfClass:[NSDate class]]));
+}
+
+- (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue ofClass:(Class)outputValueClass error:(NSError **)error
+{
+    RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSString class], [NSDate class] ]), error);
+    RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSString class], [NSDate class] ]), error);
+    if ([inputValue isKindOfClass:[NSString class]]) {
+        NSString *errorDescription = nil;
+        BOOL success = [self getObjectValue:outputValue forString:inputValue errorDescription:&errorDescription];
+        RKValueTransformerTestTransformation(success, error, @"%@", errorDescription);
+    } else if ([inputValue isKindOfClass:[NSDate class]]) {
+        *outputValue = [self stringFromDate:inputValue];
+    }
+    return YES;
+}
+
+@end
+
+@implementation RKISO8601DateFormatter (RKValueTransformers)
+
+- (BOOL)validateTransformationFromClass:(Class)inputValueClass toClass:(Class)outputValueClass
+{
+    return (([inputValueClass isSubclassOfClass:[NSDate class]] && [outputValueClass isSubclassOfClass:[NSString class]]) ||
+            ([inputValueClass isSubclassOfClass:[NSString class]] && [outputValueClass isSubclassOfClass:[NSDate class]]));
+}
+
+- (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue ofClass:(Class)outputValueClass error:(NSError **)error
+{
+    RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSString class], [NSDate class] ]), error);
+    RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSString class], [NSDate class] ]), error);
+    if ([inputValue isKindOfClass:[NSString class]]) {
+        NSString *errorDescription = nil;
+        BOOL success = [self getObjectValue:outputValue forString:inputValue errorDescription:&errorDescription];
+        RKValueTransformerTestTransformation(success, error, @"%@", errorDescription);
+    } else if ([inputValue isKindOfClass:[NSDate class]]) {
+        *outputValue = [self stringFromDate:inputValue];
+    }
+    return YES;
+}
+
+@end
+
 @implementation RKDateToStringValueTransformer
 @end
