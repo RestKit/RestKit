@@ -255,14 +255,39 @@
     }];
 }
 
-+ (instancetype)stringToDateValueTransformerWithFormatter:(NSFormatter *)stringToDateFormatter
++ (instancetype)timeIntervalSince1970ToDateValueTransformer
 {
-    
-}
-
-+ (instancetype)dateToStringValueTransformerWithFormatter:(NSFormatter *)dateToStringFormatter
-{
-    
+    static dispatch_once_t onceToken;
+    static RKValueTransformer *valueTransformer;
+    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return ((([sourceClass isSubclassOfClass:[NSString class]] || [sourceClass isSubclassOfClass:[NSNumber class]]) && [destinationClass isSubclassOfClass:[NSDate class]]) ||
+                ([sourceClass isSubclassOfClass:[NSDate class]] && ([destinationClass isSubclassOfClass:[NSNumber class]] || [destinationClass isSubclassOfClass:[NSString class]])));
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputValueClass, NSError *__autoreleasing *error) {
+        static dispatch_once_t onceToken;
+        static NSNumberFormatter *numberFormatter;
+        dispatch_once(&onceToken, ^{
+            numberFormatter = [NSNumberFormatter new];
+            numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+        });
+        RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSNumber class], [NSString class], [NSDate class] ]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSNumber class], [NSString class], [NSDate class] ]), error);
+        if ([outputValueClass isSubclassOfClass:[NSDate class]]) {
+            if ([inputValue isKindOfClass:[NSNumber class]]) {
+                *outputValue = [NSDate dateWithTimeIntervalSince1970:[inputValue doubleValue]];
+            } else if ([inputValue isKindOfClass:[NSString class]]) {
+                NSString *errorDescription = nil;
+                NSNumber *formattedNumber;
+                BOOL success = [numberFormatter getObjectValue:&formattedNumber forString:inputValue errorDescription:&errorDescription];
+                RKValueTransformerTestTransformation(success, error, @"%@", errorDescription);
+                *outputValue = [NSDate dateWithTimeIntervalSince1970:[formattedNumber doubleValue]];
+            }
+        } else if ([outputValueClass isSubclassOfClass:[NSNumber class]]) {
+            *outputValue = @([inputValue timeIntervalSince1970]);
+        } else if ([outputValueClass isSubclassOfClass:[NSString class]]) {
+            *outputValue = [numberFormatter stringForObjectValue:@([inputValue timeIntervalSince1970])];
+        }
+        return YES;
+    }];
 }
 
 + (RKCompoundValueTransformer *)defaultValueTransformer

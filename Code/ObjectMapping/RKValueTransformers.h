@@ -19,6 +19,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RKISO8601DateFormatter.h"
 
 /**
  Objects wish to perform transformation on values as part of a RestKit object mapping operation much adopt the `RKValueTransforming` protocol. Value transformers must introspect a given input value to determine if they are capable of performing a transformation and if so, perform the transformation and assign the new value to the given pointer to an output value and return `YES` or else construct an error describing the failure and return `NO`. Value transformers may also optionally implement a validation method that enables callers to determine if a given value transformer object is capable of performing a transformation on an input value.
@@ -36,7 +37,7 @@
  @param outputValue A pointer to an `id` object that will be assigned to the transformed representation. May be assigned to `nil` if that is the result of the transformation.
  @param outputValueClass The class of the `outputValue` variable. Specifies the expected type of a successful transformation. May be `nil` to indicate that the type is unknown or unimportant.
  @param error A pointer to an `NSError` object that must be assigned to a newly constructed `NSError` object if the transformation cannot be performed.
- @return A Boolean value indicating if the transformation was successful.
+ @return A Boolean value indicating if the transformation was successful. This is used to determine whether another transformer should be given an opportunity to attempt a transformation.
  */
 - (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue ofClass:(Class)outputValueClass error:(NSError **)error;
 
@@ -169,33 +170,15 @@ return NO; \
 + (instancetype)nullValueTransformer; // TODO: nullToNilValueTransformer??? NOTE: Only transforms `[NSNull null]` to `nil`.
 + (instancetype)keyedArchivingValueTransformer;
 
+// NOTE: Supports `NSDate` <-> (`NSString` | `NSNumber`) using time interval since the UNIX epoch. Numbers are treated as doubles to support fractional seconds
++ (instancetype)timeIntervalSince1970ToDateValueTransformer;
+
 // TODO: stringValueTransformer:
 // TODO: objectToCollectionValueTransformer... Can this be handled with this architecture?? Probably has to be done via a compound transformer...
-
-// TODO: Need to figure out what to do with these...
-//+ (instancetype)stringToDateValueTransformerWithFormatter:(NSFormatter *)stringToDateFormatter;
-//+ (instancetype)dateToStringValueTransformerWithFormatter:(NSFormatter *)dateToStringFormatter;
 
 + (RKCompoundValueTransformer *)defaultValueTransformer;
 
 @end
-
-// TODO: Should I be named `RKDateValueTransformer`? We could probably handle numeric transformations within this class as well...
-@interface RKDateToStringValueTransformer : NSObject <RKValueTransforming>
-
-+ (instancetype)dateToStringValueTransformerWithFormatter:(NSFormatter *)dateToStringFormatter;
-+ (instancetype)ISO8601DateValueTransformerWithTimeZone:(NSTimeZone *)timeZone;
-+ (instancetype)dateToStringValueTransformerWithFormatString:(NSString *)dateFormatString timeZone:(NSTimeZone *)nilOrTimeZone;
-
-@end
-
-//@interface RKDateToStringValueTransformer : RKValueTransformer
-//
-//@property (nonatomic, copy) NSFormatter *dateToStringFormatter;
-//@property (nonatomic, copy) NSArray *stringToDateFormatters;
-//
-//+ (instancetype)dateToStringValueTransformerWithDateToStringFormatter:(NSFormatter *)dateToStringFormatter stringToDateFormatters:(NSArray *)stringToDateFormatters;
-//@end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -212,4 +195,20 @@ return NO; \
 // Note: pass `Nil` `Nil` to get all of them
 - (NSArray *)valueTransformersForTransformingFromClass:(Class)sourceClass toClass:(Class)destinationClass;
 
+@end
+
+// Adopts `RKValueTransforming` to provide transformation from `NSString` <-> `NSNumber`
+@interface NSNumberFormatter (RKValueTransformers) <RKValueTransforming>
+@end
+
+// Adopts `RKValueTransforming` to provide transformation from `NSString` <-> `NSNumber`
+@interface NSDateFormatter (RKValueTransformers) <RKValueTransforming>
+@end
+
+@interface RKISO8601DateFormatter (RKValueTransformers) <RKValueTransforming>
+@end
+
+
+// TODO: Eliminate
+@interface RKDateToStringValueTransformer : NSObject <RKValueTransforming>
 @end

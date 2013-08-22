@@ -767,6 +767,132 @@
     expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
 }
 
+#pragma mark - Time Interval Since 1970 to Date
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerValidationSuccessFromNumberToDate
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSNumber class] toClass:[NSDate class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerValidationSuccessFromStringToDate
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSString class] toClass:[NSDate class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerValidationSuccessFromDateToNumber
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSDate class] toClass:[NSNumber class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerValidationSuccessFromDateToString
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSDate class] toClass:[NSString class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerValidationFailure
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSNumber class] toClass:[NSURL class]];
+    expect(success).to.beFalsy();
+}
+
+// Test Date -> String
+// Test Date -> Number
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerTransformationSuccessFromNumberToDate
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@0 toValue:&value ofClass:[NSDate class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSDate class]);
+    expect([value description]).to.equal(@"1970-01-01 00:00:00 +0000");
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerTransformationSuccessFromStringToDate
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"" toValue:&value ofClass:[NSDate class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSDate class]);
+    expect([value description]).to.equal(@"1970-01-01 00:00:00 +0000");
+}
+
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerTransformationSuccessFromDateToNumber
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    NSDate *inputValue = [NSDate dateWithTimeIntervalSince1970:0];
+    BOOL success = [valueTransformer transformValue:inputValue toValue:&value ofClass:[NSNumber class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSNumber class]);
+    expect(value).to.equal(0);
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerTransformationSuccessFromDateToString
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    NSDate *inputValue = [NSDate dateWithTimeIntervalSince1970:0];
+    BOOL success = [valueTransformer transformValue:inputValue toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSString class]);
+    expect(value).to.equal(@"0");
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerFailureWithUntransformableInputValue
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerFailureWithInvalidInputValue
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@":*7vxck#sf#adsa" toValue:&value ofClass:[NSDate class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
+}
+
+- (void)testTimeIntervalSince1970ToDateValueTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
 @end
 
 static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutputValue)
