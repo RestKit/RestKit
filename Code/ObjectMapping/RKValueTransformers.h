@@ -158,23 +158,63 @@ return NO; \
 /// @name Retrieving Default Transformers
 ///--------------------------------------
 
-// NOTE: alphabetize by convention???
-
+/**
+ Returns a transformer capable of transforming between `NSString` and `NSURL` representations.
+ */
 + (instancetype)stringToURLValueTransformer;
+
+/**
+ Returns a transformer capable of transforming between `NSNumber` and `NSURL` representations.
+ */
 + (instancetype)numberToStringValueTransformer;
-+ (instancetype)dateToNumberValueTransformer;
+
+/**
+ Returns a transformer capable of transforming between `NSArray` and `NSOrderedSet` representations.
+ */
 + (instancetype)arrayToOrderedSetValueTransformer;
+
+/**
+ Returns a transformer capable of transforming between `NSArray` and `NSSet` representations.
+ */
 + (instancetype)arrayToSetValueTransformer;
+
+/**
+ Returns a transformer capable of transforming between `NSDecimalNumber` and `NSNumber` representations.
+ */
 + (instancetype)decimalNumberToNumberValueTransformer;
+
+/**
+ Returns a transformer capable of transforming between `NSDecimalNumber` and `NSString` representations.
+ */
 + (instancetype)decimalNumberToStringValueTransformer;
-+ (instancetype)nullValueTransformer; // TODO: nullToNilValueTransformer??? NOTE: Only transforms `[NSNull null]` to `nil`.
+
+/**
+ Returns a transformer capable of transforming from `[NSNull null]` to `nil` representations.
+ */
++ (instancetype)nullValueTransformer;
+
+/**
+ Returns a transformer capable of transforming between objects that conform to the `NSCoding` protocol and `NSData` representations by using an `NSKeyedArchiver`/`NSKeyedUnarchiver` to serialize as a property list.
+ */
 + (instancetype)keyedArchivingValueTransformer;
 
-// NOTE: Supports `NSDate` <-> (`NSString` | `NSNumber`) using time interval since the UNIX epoch. Numbers are treated as doubles to support fractional seconds
+/**
+ Returns a transformer capable of transforming between `NSNumber` or `NSString` and `NSDate` representations by evaluating the input value as a time interval since the UNIX epoch (1 January 1970, GMT).
+
+ The transformation treats numeric values as a `double` in order to provide sub-second accuracy.
+ */
 + (instancetype)timeIntervalSince1970ToDateValueTransformer;
 
-// TODO: stringValueTransformer:
-// TODO: objectToCollectionValueTransformer... Can this be handled with this architecture?? Probably has to be done via a compound transformer...
+/**
+ Returns a transformer capable of transforming any `NSObject` that implements the `stringValue` method into an `NSString` representation.
+ */
++ (instancetype)stringValueTransformer;
+
+/**
+ Returns a transformer capable of enclosing any singular `NSObject` into a collection type such as `NSArray`, `NSSet`, or `NSOrderedSet` (and its mutable descendents).
+ */
++ (instancetype)objectToCollectionValueTransformer;
+
 
 + (RKCompoundValueTransformer *)defaultValueTransformer;
 

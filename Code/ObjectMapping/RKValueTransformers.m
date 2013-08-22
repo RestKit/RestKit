@@ -10,6 +10,7 @@
 #import "RKMacros.h"
 #import "RKLog.h"
 #import "RKErrors.h"
+#import "RKObjectUtilities.h"
 
 @interface RKValueTransformer ()
 @property (nonatomic, copy) BOOL (^validationBlock)(Class, Class);
@@ -106,25 +107,6 @@
             } else {
                 *outputValue = [inputValue stringValue];
             }
-        }
-        return YES;
-    }];
-}
-
-+ (instancetype)dateToNumberValueTransformer
-{
-    static dispatch_once_t onceToken;
-    static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
-        return (([sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSDate class]]) ||
-                ([sourceClass isSubclassOfClass:[NSDate class]] && [destinationClass isSubclassOfClass:[NSNumber class]]));
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
-        RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSNumber class], [NSDate class]]), error);
-        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSNumber class], [NSDate class]]), error);
-        if ([inputValue isKindOfClass:[NSNumber class]]) {
-            *outputValue = [NSDate dateWithTimeIntervalSince1970:[inputValue doubleValue]];
-        } else if ([inputValue isKindOfClass:[NSDate class]]) {
-            *outputValue = [NSNumber numberWithDouble:[inputValue timeIntervalSince1970]];
         }
         return YES;
     }];
@@ -286,6 +268,30 @@
         } else if ([outputValueClass isSubclassOfClass:[NSString class]]) {
             *outputValue = [numberFormatter stringForObjectValue:@([inputValue timeIntervalSince1970])];
         }
+        return YES;
+    }];
+}
+
++ (instancetype)objectToCollectionValueTransformer
+{
+    static dispatch_once_t onceToken;
+    static RKValueTransformer *valueTransformer;
+    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return (!RKClassIsCollection(sourceClass) && RKClassIsCollection(destinationClass));
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
+        if (! RKObjectIsCollection(inputValue)) {
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` that is not a collection, but got a `%@`.", [inputValue class]] };
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
+            return NO; \
+        }
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSArray class], [NSSet class], [NSOrderedSet class]]), error);
+        if ([outputValueClass isSubclassOfClass:[NSMutableArray class]]) *outputValue = [NSMutableArray arrayWithObject:inputValue];
+        else if ([outputValueClass isSubclassOfClass:[NSMutableSet class]]) *outputValue = [NSMutableSet setWithObject:inputValue];
+        else if ([outputValueClass isSubclassOfClass:[NSMutableOrderedSet class]]) *outputValue = [NSMutableOrderedSet orderedSetWithObject:inputValue];
+        else if ([outputValueClass isSubclassOfClass:[NSArray class]]) *outputValue = @[ inputValue ];
+        else if ([outputValueClass isSubclassOfClass:[NSSet class]]) *outputValue = [NSSet setWithObject:inputValue];
+        else if ([outputValueClass isSubclassOfClass:[NSOrderedSet class]]) *outputValue = [NSSet setWithObject:inputValue];
+        RKValueTransformerTestTransformation(*outputValue, error, @"Failed to transform value into collection %@", outputValueClass);
         return YES;
     }];
 }
