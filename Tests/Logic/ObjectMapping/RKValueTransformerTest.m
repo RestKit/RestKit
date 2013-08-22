@@ -804,9 +804,6 @@
     expect(success).to.beFalsy();
 }
 
-// Test Date -> String
-// Test Date -> Number
-
 - (void)testTimeIntervalSince1970ToDateValueTransformerTransformationSuccessFromNumberToDate
 {
     RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
@@ -828,7 +825,6 @@
     expect(value).to.beKindOf([NSDate class]);
     expect([value description]).to.equal(@"1970-01-01 00:00:00 +0000");
 }
-
 
 - (void)testTimeIntervalSince1970ToDateValueTransformerTransformationSuccessFromDateToNumber
 {
@@ -1085,6 +1081,97 @@ static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutput
         [enumeratedTransformers addObject:valueTransformer];
     }
     expect(enumeratedTransformers).to.equal((@[ firstTransformer, secondTransformer ]));
+}
+
+@end
+
+@interface RKValueTransformers_NSNumberFormatterTests : SenTestCase
+@end
+
+@implementation RKValueTransformers_NSNumberFormatterTests
+
+- (void)testValidationFromStringToNumber
+{
+    NSNumberFormatter *valueTransformer = [NSNumberFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSString class] toClass:[NSNumber class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testValidationFromNumberToString
+{
+    NSNumberFormatter *valueTransformer = [NSNumberFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSNumber class] toClass:[NSString class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testValidationFailure
+{
+    NSNumberFormatter *valueTransformer = [NSNumberFormatter new];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSURL class] toClass:[NSString class]];
+    expect(success).to.beFalsy();
+}
+
+- (void)testTransformationFromNumberToString
+{
+    NSNumberFormatter *valueTransformer = [NSNumberFormatter new];
+    valueTransformer.numberStyle = NSNumberFormatterCurrencyStyle;
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@932480932840923 toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSString class]);
+    expect(value).to.equal(@"$932,480,932,840,923.00");
+}
+
+- (void)testTransformationFromStringToNumber
+{
+    NSNumberFormatter *valueTransformer = [NSNumberFormatter new];
+    valueTransformer.numberStyle = NSNumberFormatterCurrencyStyle;
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"$932,480,932,840,923.00" toValue:&value ofClass:[NSNumber class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSNumber class]);
+    expect(value).to.equal(@932480932840923);
+}
+
+- (void)testTransformationFailureWithUntransformableInputValue
+{
+    NSNumberFormatter *valueTransformer = [NSNumberFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@[] toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testTransformationFailureFailureWithInvalidInputValue
+{
+    NSNumberFormatter *valueTransformer = [NSNumberFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@":*7vxck#sf#adsa" toValue:&value ofClass:[NSNumber class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorTransformationFailed);
+}
+
+- (void)testTransformationFailureWithInvalidDestinationClass
+{
+    NSNumberFormatter *valueTransformer = [NSNumberFormatter new];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
 }
 
 @end
