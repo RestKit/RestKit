@@ -452,95 +452,30 @@
 //}
 //
 //@end
-//
-//// Implementation lives in RKObjectMapping.m at the moment
-//NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
-//
-//@implementation RKDateToStringValueTransformer
-//
-//+ (Class)transformedValueClass
-//{
-//    return [NSDate class];
-//}
-//
-//+ (BOOL)allowsReverseTransformation
-//{
-//    return YES;
-//}
-//
-//+ (instancetype)dateToStringValueTransformerWithDateToStringFormatter:(NSFormatter *)dateToStringFormatter stringToDateFormatters:(NSArray *)stringToDateFormatters
-//{
-//    return [[self alloc] initWithDateToStringFormatter:dateToStringFormatter stringToDateFormatters:stringToDateFormatters];
-//}
-//
-//- (id)initWithDateToStringFormatter:(NSFormatter *)dateToStringFormatter stringToDateFormatters:(NSArray *)stringToDateFormatters
-//{
-//    self = [super initWithSourceClass:[NSDate class] destinationClass:[NSString class] transformationBlock:nil reverseTransformationBlock:nil];
-//    if (self) {
-//        self.dateToStringFormatter = dateToStringFormatter;
-//        self.stringToDateFormatters = stringToDateFormatters;
-//        __weak id weakSelf = self;
-//        self.transformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
-//            RKDateToStringValueTransformer *strongSelf = weakSelf;
-//            NSCAssert(strongSelf.dateToStringFormatter, @"Cannot transform an `NSDate` to an `NSString`: dateToStringFormatter is nil");
-//            if (!strongSelf.dateToStringFormatter) return NO;
-//            @synchronized(strongSelf.dateToStringFormatter) {
-//                *outputValue = [strongSelf.dateToStringFormatter stringForObjectValue:inputValue];
-//            }
-//            return YES;
-//        };
-//        self.reverseTransformationBlock = ^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
-//            RKDateToStringValueTransformer *strongSelf = weakSelf;
-//            NSCAssert(strongSelf.stringToDateFormatters, @"Cannot transform an `NSDate` to an `NSString`: stringToDateFormatters is nil");
-//            if (strongSelf.stringToDateFormatters.count <= 0) return NO;
-//            *outputValue = RKDateFromStringWithFormatters(inputValue, strongSelf.stringToDateFormatters);
-//            return YES;
-//        };
-//    }
-//    return self;
-//}
-//
-//- (instancetype)reverseTransformer
-//{
-//    RKDateToStringValueTransformer *reverse = [[RKDateToStringValueTransformer alloc] initWithDateToStringFormatter:self.dateToStringFormatter stringToDateFormatters:self.stringToDateFormatters];
-//    reverse.destinationClass = self.sourceClass;
-//    reverse.sourceClass = self.destinationClass;
-//    reverse.transformationBlock = self.reverseTransformationBlock;
-//    reverse.reverseTransformationBlock = self.transformationBlock;
-//    return reverse;
-//}
-//
-//- (id)init
-//{
-//    return [self initWithDateToStringFormatter:nil stringToDateFormatters:nil];
-//}
-//
-//@end
-//
-//BOOL RKIsMutableTypeTransformation(id value, Class destinationType);
-//
-//@implementation RKIdentityValueTransformer
-//
-//- (BOOL)canTransformClass:(Class)sourceClass toClass:(Class)destinationClass
-//{
-//    if (RKIsMutableTypeTransformation(nil, destinationClass)) {
-//        return [self canTransformClass:sourceClass toClass:[destinationClass superclass]];
-//    }
-//    if ([sourceClass isSubclassOfClass:destinationClass] || [destinationClass isSubclassOfClass:sourceClass]) return YES;
-//    else return NO;
-//}
-//
-//@end
-//
-//@implementation RKStringValueTransformer
-//
-//- (BOOL)canTransformClass:(Class)sourceClass toClass:(Class)destinationClass
-//{
-//    if ([sourceClass instancesRespondToSelector:@selector(stringValue)]) return YES;
-//    return NO;
-//}
-//
-//@end
+
+@implementation NSNumberFormatter (RKValueTransformers)
+
+- (BOOL)validateTransformationFromClass:(Class)inputValueClass toClass:(Class)outputValueClass
+{
+    return (([inputValueClass isSubclassOfClass:[NSNumber class]] && [outputValueClass isSubclassOfClass:[NSString class]]) ||
+            ([inputValueClass isSubclassOfClass:[NSString class]] && [outputValueClass isSubclassOfClass:[NSNumber class]]));
+}
+
+- (BOOL)transformValue:(id)inputValue toValue:(id *)outputValue ofClass:(Class)outputValueClass error:(NSError **)error
+{
+    RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSString class], [NSNumber class] ]), error);
+    RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSString class], [NSNumber class] ]), error);
+    if ([inputValue isKindOfClass:[NSString class]]) {
+        NSString *errorDescription = nil;
+        BOOL success = [self getObjectValue:outputValue forString:inputValue errorDescription:&errorDescription];
+        RKValueTransformerTestTransformation(success, error, @"%@", errorDescription);
+    } else if ([inputValue isKindOfClass:[NSNumber class]]) {
+        *outputValue = [self stringFromNumber:inputValue];
+    }
+    return YES;
+}
+
+@end
 
 @implementation RKDateToStringValueTransformer
 @end
