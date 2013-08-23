@@ -159,6 +159,10 @@ return NO; \
 ///--------------------------------------
 
 /**
+ */
++ (instancetype)identityValueTransformer;
+
+/**
  Returns a transformer capable of transforming between `NSString` and `NSURL` representations.
  */
 + (instancetype)stringToURLValueTransformer;
@@ -215,6 +219,7 @@ return NO; \
  */
 + (instancetype)objectToCollectionValueTransformer;
 
++ (instancetype)mutableValueTransformer;
 
 + (RKCompoundValueTransformer *)defaultValueTransformer;
 
@@ -248,7 +253,30 @@ return NO; \
 @interface RKISO8601DateFormatter (RKValueTransformers) <RKValueTransforming>
 @end
 
+///----------------
+/// @name Functions
+///----------------
 
-// TODO: Eliminate
-@interface RKDateToStringValueTransformer : NSObject <RKValueTransforming>
-@end
+/**
+ Returns an date representation of a given string value by attempting to parse the string with all default date formatters in turn.
+
+ @param dateString A string object encoding a date value.
+ @return An `NSDate` object parsed from the given string, or `nil` if the string was found to be unparsable by all default date formatters.
+ @see [RKObjectMapping defaultDateFormatters]
+ */
+// TODO: Access the `[RKValueTransformer defaultValueTransformer]` to find the first `NSString` -> `NSDate` transformer and invoke it.
+NSDate *RKDateFromString(NSString *dateString);
+
+/**
+ Returns a string representation of a given date formatted with the preferred date formatter.
+
+ This is a convenience function that is equivalent to the following example code:
+
+ NSString *string = [[RKObjectMapping preferredDateFormatter] stringForObjectValue:date]
+
+ @param date The date object to be formatted.
+ @return An `NSString` object representation of the given date formatted by the preferred date formatter.
+ @see [RKObjectMapping preferredDateFormatter]
+ */
+// TODO: Access the `[RKValueTransformer defaultValueTransformer]` to find the first `NSDate` -> `NSString` transformer and invoke it.
+NSString *RKStringFromDate(NSDate *date);

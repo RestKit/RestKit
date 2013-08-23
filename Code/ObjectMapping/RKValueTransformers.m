@@ -56,6 +56,17 @@
     return *valueTransformer;
 }
 
++ (instancetype)identityValueTransformer
+{
+    static dispatch_once_t onceToken;
+    static RKValueTransformer *valueTransformer;
+    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputValueClass, NSError *__autoreleasing *error) {
+        RKValueTransformerTestTransformation([inputValue isKindOfClass:outputValueClass], error, @"The given value is not already an instance of '%@'", outputValueClass);
+        *outputValue = inputValue;
+        return YES;
+    }];
+}
+
 + (instancetype)stringToURLValueTransformer
 {
     static dispatch_once_t onceToken;
@@ -275,6 +286,24 @@
     }];
 }
 
++ (instancetype)stringValueTransformer
+{
+    static dispatch_once_t onceToken;
+    static RKValueTransformer *valueTransformer;
+    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return ([sourceClass instancesRespondToSelector:@selector(stringValue)] && [destinationClass isSubclassOfClass:[NSString class]]);
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
+        if (! [inputValue respondsToSelector:@selector(stringValue)]) {
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Expected an `inputValue` that responds to `stringValue`, but it does not." };
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
+            return NO;
+        }
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, [NSString class], error);
+        *outputValue = [inputValue stringValue];
+        return YES;
+    }];
+}
+
 + (instancetype)objectToCollectionValueTransformer
 {
     static dispatch_once_t onceToken;
@@ -285,7 +314,7 @@
         if (! RKObjectIsCollection(inputValue)) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` that is not a collection, but got a `%@`.", [inputValue class]] };
             *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
-            return NO; \
+            return NO;
         }
         RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSArray class], [NSSet class], [NSOrderedSet class]]), error);
         if ([outputValueClass isSubclassOfClass:[NSMutableArray class]]) *outputValue = [NSMutableArray arrayWithObject:inputValue];
@@ -293,15 +322,67 @@
         else if ([outputValueClass isSubclassOfClass:[NSMutableOrderedSet class]]) *outputValue = [NSMutableOrderedSet orderedSetWithObject:inputValue];
         else if ([outputValueClass isSubclassOfClass:[NSArray class]]) *outputValue = @[ inputValue ];
         else if ([outputValueClass isSubclassOfClass:[NSSet class]]) *outputValue = [NSSet setWithObject:inputValue];
-        else if ([outputValueClass isSubclassOfClass:[NSOrderedSet class]]) *outputValue = [NSSet setWithObject:inputValue];
+        else if ([outputValueClass isSubclassOfClass:[NSOrderedSet class]]) *outputValue = [NSOrderedSet orderedSetWithObject:inputValue];
         RKValueTransformerTestTransformation(*outputValue, error, @"Failed to transform value into collection %@", outputValueClass);
+        return YES;
+    }];
+}
+
++ (instancetype)mutableValueTransformer
+{
+    static dispatch_once_t onceToken;
+    static RKValueTransformer *valueTransformer;
+    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return [sourceClass conformsToProtocol:@protocol(NSMutableCopying)];
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputValueClass, NSError *__autoreleasing *error) {
+        if (! [inputValue conformsToProtocol:@protocol(NSMutableCopying)]) {
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` that conforms to `NSMutableCopying`, but `%@` objects do not.", [inputValue class]] };
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
+            return NO;
+        }
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSMutableArray class], [NSMutableDictionary class], [NSMutableString class], [NSMutableSet class], [NSMutableOrderedSet class] ]), error);
+        *outputValue = [inputValue mutableCopy];
         return YES;
     }];
 }
 
 + (RKCompoundValueTransformer *)defaultValueTransformer
 {
-    return nil;
+    static RKCompoundValueTransformer *defaultValueTransformer;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        defaultValueTransformer = [RKCompoundValueTransformer compoundValueTransformerWithValueTransformers:@[
+                                   [self identityValueTransformer],
+                                   [self stringToURLValueTransformer],
+                                   [self numberToStringValueTransformer],
+                                   [self arrayToOrderedSetValueTransformer],
+                                   [self arrayToSetValueTransformer],
+                                   [self decimalNumberToNumberValueTransformer],
+                                   [self decimalNumberToStringValueTransformer],
+                                   [self nullValueTransformer],
+                                   [self keyedArchivingValueTransformer],
+                                   [self timeIntervalSince1970ToDateValueTransformer],
+                                   [self stringValueTransformer],
+                                   [self objectToCollectionValueTransformer],
+                                   [self stringValueTransformer],
+                                   ]];
+
+        // Default date formatters
+        RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
+        iso8601DateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        iso8601DateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        iso8601DateFormatter.includeTime = YES;
+        [defaultValueTransformer addValueTransformer:iso8601DateFormatter];
+
+        NSArray *defaultDateFormatStrings = @[ @"MM/dd/yyyy", @"yyyy-MM-dd'T'HH:mm:ss'Z'", @"yyyy-MM-dd" ];
+        for (NSString *dateFormatString in defaultDateFormatStrings) {
+            NSDateFormatter *dateFormatter = [NSDateFormatter new];
+            dateFormatter.dateFormat = dateFormatString;
+            dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+            dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        }
+    });
+    return defaultValueTransformer;
 }
 
 @end
@@ -410,58 +491,6 @@
 
 @end
 
-//
-//// Set up the built-in transformers
-//+ (void)initialize
-//{
-//    [super initialize];
-//    if ([RKValueTransformer class] != self) return;
-//    [[self defaultStringToURLTransformer] _register];
-//    [[self defaultStringToNumberTransformer] _register];
-
-
-//    [[self defaultNumberToDateTransformer] _register];
-//    [[self defaultOrderedSetToArrayTransformer] _register];
-//    [[self defaultSetToArrayTransformer] _register];
-//    [[self defaultStringToDecimalNumberTransformer] _register];
-//    [[self defaultNumberToDecimalNumberTransformer] _register];
-//    [[self defaultObjectToDataTransformer] _register];
-//    [[self defaultNullTransformer] _register];
-//    [[self identityTransformer] _register];
-//}
-//
-//
-//+ (instancetype)identityTransformer
-//{
-//    static RKValueTransformer *identityTransformer;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        identityTransformer = [RKIdentityValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSObject class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
-//            *outputValue = inputValue;
-//            return YES;
-//        } reverseTransformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
-//            *outputValue = inputValue;
-//            return YES;
-//        }];
-//    });
-//    return identityTransformer;
-//}
-//
-//+ (instancetype)stringValueTransformer
-//{
-//    static RKValueTransformer *stringValueTransformer;
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        stringValueTransformer = [RKStringValueTransformer valueTransformerWithSourceClass:[NSObject class] destinationClass:[NSString class] transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
-//            *outputValue = [inputValue stringValue];
-//            return YES;
-//        } reverseTransformationBlock:nil];
-//    });
-//    return stringValueTransformer;
-//}
-//
-//@end
-
 @implementation NSNumberFormatter (RKValueTransformers)
 
 - (BOOL)validateTransformationFromClass:(Class)inputValueClass toClass:(Class)outputValueClass
@@ -534,5 +563,20 @@
 
 @end
 
-@implementation RKDateToStringValueTransformer
-@end
+#pragma mark - Functions
+
+NSDate *RKDateFromString(NSString *dateString)
+{
+    NSDate *outputDate = nil;
+    NSError *error = nil;
+    BOOL success = [[RKValueTransformer defaultValueTransformer] transformValue:dateString toValue:&outputDate ofClass:[NSDate class] error:&error];
+    return success ? outputDate : nil;
+}
+
+NSString *RKStringFromDate(NSDate *date)
+{
+    NSString *outputString = nil;
+    NSError *error = nil;
+    BOOL success = [[RKValueTransformer defaultValueTransformer] transformValue:date toValue:&outputString ofClass:[NSString class] error:&error];
+    return success ? outputString : nil;
+}
