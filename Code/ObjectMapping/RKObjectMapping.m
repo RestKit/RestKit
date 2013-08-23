@@ -397,6 +397,11 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     return propertyClass;
 }
 
+- (id<RKValueTransforming>)valueTransformer
+{
+    return _valueTransformer ?: [RKValueTransformer defaultValueTransformer];
+}
+
 #pragma mark - Date and Time
 
 - (NSFormatter *)preferredDateFormatter
