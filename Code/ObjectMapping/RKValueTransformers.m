@@ -381,6 +381,7 @@
             dateFormatter.dateFormat = dateFormatString;
             dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
             dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+            [defaultValueTransformer addValueTransformer:dateFormatter];
         }
     });
     return defaultValueTransformer;

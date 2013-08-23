@@ -129,8 +129,9 @@
 
 - (void)resetDateFormatterTransformers
 {
-    for (id<RKValueTransforming> valueTransformer in [RKValueTransformer defaultValueTransformer]) {
-        if ([valueTransformer isKindOfClass:[NSDateFormatter class]]) [[RKValueTransformer defaultValueTransformer] removeValueTransformer:valueTransformer];
+    NSArray *dateTransformers = [[RKValueTransformer defaultValueTransformer] valueTransformersForTransformingFromClass:[NSString class] toClass:[NSDate class]];
+    for (id<RKValueTransforming> valueTransformer in dateTransformers) {
+        if ([valueTransformer respondsToSelector:@selector(dateFromString:)]) [[RKValueTransformer defaultValueTransformer] removeValueTransformer:valueTransformer];
     }
 
     RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
@@ -145,6 +146,7 @@
         dateFormatter.dateFormat = dateFormatString;
         dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        [[RKValueTransformer defaultValueTransformer] addValueTransformer:dateFormatter];
     }
 }
 
@@ -2431,9 +2433,9 @@
 - (void)testShouldConfigureANewDateFormatterInTheUTCTimeZoneIfPassedANilTimeZone
 {
     [self resetDateFormatterTransformers];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:nil];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     assertThat(dateFormatter.timeZone, is(equalTo(UTCTimeZone)));
