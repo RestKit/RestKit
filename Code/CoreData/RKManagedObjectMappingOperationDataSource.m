@@ -38,21 +38,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 static void *RKManagedObjectMappingOperationDataSourceAssociatedObjectKey = &RKManagedObjectMappingOperationDataSourceAssociatedObjectKey;
 
-id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer);
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings);
-
-// Return YES if the entity is identified by an attribute that acts as the nesting key in the source representation
-static BOOL RKEntityMappingIsIdentifiedByNestingAttribute(RKEntityMapping *entityMapping)
-{
-    for (NSAttributeDescription *attribute in [entityMapping identificationAttributes]) {
-        RKAttributeMapping *attributeMapping = [[entityMapping propertyMappingsByDestinationKeyPath] objectForKey:[attribute name]];
-        if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
-            return YES;
-        }
-    }
-    
-    return NO;
-}
 
 static id RKValueForAttributeMappingInRepresentation(RKAttributeMapping *attributeMapping, NSDictionary *representation)
 {
@@ -81,15 +67,15 @@ static NSDictionary *RKEntityIdentificationAttributesForEntityMappingWithReprese
 {
     NSCParameterAssert(entityMapping);
     NSCAssert([representation isKindOfClass:[NSDictionary class]], @"Expected a dictionary representation");
-    
-    RKDateToStringValueTransformer *dateToStringTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:entityMapping.preferredDateFormatter stringToDateFormatters:entityMapping.dateFormatters];
     NSArray *attributeMappings = entityMapping.attributeMappings;
-    
+    __block NSError *error = nil;
+
     // If the representation is mapped with a nesting attribute, we must apply the nesting value to the representation before constructing the identification attributes
     RKAttributeMapping *nestingAttributeMapping = [[entityMapping propertyMappingsBySourceKeyPath] objectForKey:RKObjectMappingNestingAttributeKeyName];
     if (nestingAttributeMapping) {
         Class attributeClass = [entityMapping classForProperty:nestingAttributeMapping.destinationKeyPath];
-        id attributeValue = RKTransformedValueWithClass([[representation allKeys] lastObject], attributeClass, dateToStringTransformer);
+        id attributeValue = nil;
+        [entityMapping.valueTransformer transformValue:[[representation allKeys] lastObject] toValue:&attributeValue ofClass:attributeClass error:&error];
         attributeMappings = RKApplyNestingAttributeValueToMappings(nestingAttributeMapping.destinationKeyPath, attributeValue, attributeMappings);
     }
     
@@ -99,7 +85,8 @@ static NSDictionary *RKEntityIdentificationAttributesForEntityMappingWithReprese
         RKAttributeMapping *attributeMapping = RKAttributeMappingForNameInMappings([attribute name], attributeMappings);
         Class attributeClass = [entityMapping classForProperty:[attribute name]];
         id sourceValue = RKValueForAttributeMappingInRepresentation(attributeMapping, representation);
-        id attributeValue = RKTransformedValueWithClass(sourceValue, attributeClass, dateToStringTransformer);
+        id attributeValue = nil;
+        [entityMapping.valueTransformer transformValue:sourceValue toValue:&attributeValue ofClass:attributeClass error:&error];
         [entityIdentifierAttributes setObject:attributeValue ?: [NSNull null] forKey:[attribute name]];
     }];
     
@@ -465,10 +452,12 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     if (! [currentValue respondsToSelector:@selector(compare:)]) return NO;
     
     RKPropertyMapping *propertyMappingForModificationKey = [[(RKEntityMapping *)mappingOperation.mapping propertyMappingsByDestinationKeyPath] objectForKey:modificationKey];
-    id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];    
-    RKDateToStringValueTransformer *transformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:entityMapping.preferredDateFormatter stringToDateFormatters:entityMapping.dateFormatters];
+    id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];
     Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
-    id transformedValue = RKTransformedValueWithClass(rawValue, attributeClass, transformer);
+
+    id transformedValue = nil;
+    NSError *error = nil;
+    [entityMapping.valueTransformer transformValue:rawValue toValue:&transformedValue ofClass:attributeClass error:&error];
     if (! transformedValue) return NO;
     
     if ([currentValue isKindOfClass:[NSString class]]) {

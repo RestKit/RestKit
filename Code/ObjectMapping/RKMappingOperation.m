@@ -39,9 +39,6 @@
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
-// Defined in RKObjectMapping.h
-NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
-
 /**
  This function ensures that attribute mappings apply cleanly to an `NSMutableDictionary` target class to support mapping to nested keyPaths. See issue #882
  */
@@ -65,159 +62,36 @@ static BOOL RKIsManagedObject(id object)
     return managedObjectClass && [object isKindOfClass:managedObjectClass];
 }
 
-/**
- NOTE: Because most Foundation classes are implemented as class-clusters, we cannot introspect them for mutability. Instead, we evaluate the destination type and if it is a mutable class, we return `YES` to trigger an invocation of `mutableCopy`.
- */
-BOOL RKIsMutableTypeTransformation(id value, Class destinationType);
-BOOL RKIsMutableTypeTransformation(id value, Class destinationType)
-{
-    if (value && ![value respondsToSelector:@selector(mutableCopy)]) return NO;
-    if ([destinationType isSubclassOfClass:[NSMutableArray class]]) return YES;
-    else if ([destinationType isSubclassOfClass:[NSMutableDictionary class]]) return YES;
-    else if ([destinationType isSubclassOfClass:[NSMutableString class]]) return YES;
-    else if ([destinationType isSubclassOfClass:[NSMutableSet class]]) return YES;
-    else if ([destinationType isSubclassOfClass:[NSMutableOrderedSet class]]) return YES;
-    else return NO;
-}
-
-id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer);
-BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error);
-BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error)
-{
-    NSArray *matchingTransformers = @[];//[RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
-    for (RKValueTransformer *valueTransformer in matchingTransformers) {
-        if ([valueTransformer transformValue:inputValue toValue:outputValue ofClass:destinationClass error:error]) {
-            return YES;
-        } else {
-            // An error occurred while attempting to perform the transformation, return to the caller
-            if (*error) {
-                *outputValue = nil;
-                return NO;
-            }
-        }
-    }
-    
-    if ([destinationClass isSubclassOfClass:[NSDictionary class]]) {
-        *outputValue = [NSMutableDictionary dictionaryWithObject:[NSMutableDictionary dictionary] forKey:inputValue];
-        return YES;
-    } else if (RKClassIsCollection(destinationClass) && !RKObjectIsCollection(inputValue)) {
-        // Call ourself recursively with an array value to transform as appropriate
-        return RKTransformedValueToValueOfClassError(@[ inputValue ], outputValue, destinationClass, error);
-    }
-    
-    *outputValue = nil;
-    NSError *RKUntransformableValueError = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
-    if (error) *error = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
-    RKLogError(@"Error Transforming %@ to class %@: %@",inputValue, destinationClass, RKUntransformableValueError);
-    return NO;
-}
-
-id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer)
-{
-    id retVal;
-    BOOL success = FALSE;
-
-    if ([dateToStringValueTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateToStringValueTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
-        success = [(RKDateToStringValueTransformer *)dateToStringValueTransformer transformValue:value toValue:&retVal ofClass:destinationType error:nil];
-    }
-    if (!success)
-        success = RKTransformedValueToValueOfClassError(value, &retVal, destinationType, nil);
-    if (success) {
-        return retVal;
-    } else {
-        return nil;
-    }
-    
-    
-    Class sourceType = [value class];
-    
-    if ([value isKindOfClass:destinationType]) {
-        // No transformation necessary
-        return value;
-    } else if ([destinationType isSubclassOfClass:[NSDictionary class]]) {
-        return [NSMutableDictionary dictionaryWithObject:[NSMutableDictionary dictionary] forKey:value];
-    } else if (RKClassIsCollection(destinationType) && !RKObjectIsCollection(value)) {
-        // Call ourself recursively with an array value to transform as appropriate
-        return RKTransformedValueWithClass(@[ value ], destinationType, dateToStringValueTransformer);
-    } else if (RKIsMutableTypeTransformation(value, destinationType)) {
-        return [value mutableCopy];
-    } else if ([sourceType isSubclassOfClass:[NSString class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
-        // String -> Date
-        return [dateToStringValueTransformer transformedValue:value];
-    } else if ([destinationType isSubclassOfClass:[NSString class]] && [value isKindOfClass:[NSDate class]]) {
-        // NSDate -> NSString
-        // Transform using the preferred date formatter
-        return [dateToStringValueTransformer reverseTransformedValue:value];
-    } else if ([destinationType isSubclassOfClass:[NSData class]]) {
-        return [NSKeyedArchiver archivedDataWithRootObject:value];
-    } else if ([sourceType isSubclassOfClass:[NSString class]]) {
-        if ([destinationType isSubclassOfClass:[NSURL class]]) {
-            // String -> URL
-            return [NSURL URLWithString:(NSString *)value];
-        } else if ([destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
-            // String -> Decimal Number
-            return [NSDecimalNumber decimalNumberWithString:(NSString *)value];
-        } else if ([destinationType isSubclassOfClass:[NSNumber class]]) {
-            // String -> Number
-            NSString *lowercasedString = [(NSString *)value lowercaseString];
-            NSSet *trueStrings = [NSSet setWithObjects:@"true", @"t", @"yes", @"y", nil];
-            NSSet *booleanStrings = [trueStrings setByAddingObjectsFromSet:[NSSet setWithObjects:@"false", @"f", @"no", @"n", nil]];
-            if ([booleanStrings containsObject:lowercasedString]) {
-                // Handle booleans encoded as Strings
-                return [NSNumber numberWithBool:[trueStrings containsObject:lowercasedString]];
-            } else if ([(NSString *)value rangeOfString:@"."].location != NSNotFound) {
-                // String -> Floating Point Number
-                // Only use floating point if needed to avoid losing precision
-                // on large integers
-                return [NSNumber numberWithDouble:[(NSString *)value doubleValue]];
-            } else {
-                // String -> Signed Integer
-                return [NSNumber numberWithLongLong:[(NSString *)value longLongValue]];
-            }
-        }
-    } else if ([value isEqual:[NSNull null]]) {
-        // Transform NSNull -> nil for simplicity
-        return nil;
-    } else if ([sourceType isSubclassOfClass:[NSSet class]]) {
-        // Set -> Array
-        if ([destinationType isSubclassOfClass:[NSArray class]]) {
-            return [(NSSet *)value allObjects];
-        }
-    } else if ([sourceType isSubclassOfClass:[NSOrderedSet class]]) {
-        // OrderedSet -> Array
-        if ([destinationType isSubclassOfClass:[NSArray class]]) {
-            return [value array];
-        }
-    } else if ([sourceType isSubclassOfClass:[NSArray class]]) {
-        // Array -> Set
-        if ([destinationType isSubclassOfClass:[NSSet class]]) {
-            return [NSSet setWithArray:value];
-        }
-        // Array -> OrderedSet
-        if ([destinationType isSubclassOfClass:[NSOrderedSet class]]) {
-            return [[NSOrderedSet class] orderedSetWithArray:value];
-        }
-    } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
-        // Number -> Date
-        return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value doubleValue]];
-    } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
-        // Number -> Decimal Number
-        return [NSDecimalNumber decimalNumberWithDecimal:[value decimalValue]];
-    } else if ( ([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] ||
-                 [sourceType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")] ) &&
-               [destinationType isSubclassOfClass:[NSString class]]) {
-        return ([value boolValue] ? @"true" : @"false");
-        if ([destinationType isSubclassOfClass:[NSDate class]]) {
-            return [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)value intValue]];
-        } else if (([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] || [sourceType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")]) && [destinationType isSubclassOfClass:[NSString class]]) {
-            return ([value boolValue] ? @"true" : @"false");
-        }
-    } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
-        return [value stringValue];
-    }
-    
-    return nil;
-}
+//BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error);
+//BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error)
+//{
+//    NSArray *matchingTransformers = @[];//[RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
+//    for (RKValueTransformer *valueTransformer in matchingTransformers) {
+//        if ([valueTransformer transformValue:inputValue toValue:outputValue ofClass:destinationClass error:error]) {
+//            return YES;
+//        } else {
+//            // An error occurred while attempting to perform the transformation, return to the caller
+//            if (*error) {
+//                *outputValue = nil;
+//                return NO;
+//            }
+//        }
+//    }
+//    
+//    if ([destinationClass isSubclassOfClass:[NSDictionary class]]) {
+//        *outputValue = [NSMutableDictionary dictionaryWithObject:[NSMutableDictionary dictionary] forKey:inputValue];
+//        return YES;
+//    } else if (RKClassIsCollection(destinationClass) && !RKObjectIsCollection(inputValue)) {
+//        // Call ourself recursively with an array value to transform as appropriate
+//        return RKTransformedValueToValueOfClassError(@[ inputValue ], outputValue, destinationClass, error);
+//    }
+//    
+//    *outputValue = nil;
+//    NSError *RKUntransformableValueError = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
+//    if (error) *error = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
+//    RKLogError(@"Error Transforming %@ to class %@: %@",inputValue, destinationClass, RKUntransformableValueError);
+//    return NO;
+//}
 
 // Returns the appropriate value for `nil` value of a primitive type
 static id RKPrimitiveValueForNilValueOfClass(Class keyValueCodingClass)
@@ -484,50 +358,34 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     return [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
-- (NSDate *)parseDateFromString:(NSString *)string
-{
-    RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
-    return RKDateFromStringWithFormatters(string, self.objectMapping.dateFormatters);
-}
-
 - (id)transformValue:(id)value atKeyPath:(NSString *)keyPath toType:(Class)destinationType
 {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
-    RKDateToStringValueTransformer *dateTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
+//    RKDateToStringValueTransformer *dateTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
     BOOL success = FALSE;
     id transformedValue;
     NSError *error;
-    if ([dateTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
-        success = [(RKDateToStringValueTransformer *)dateTransformer transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
-    }
-    
+//    if ([dateTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
+//        success = [(RKDateToStringValueTransformer *)dateTransformer transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
+//    }
+
     // TODO: Why do we need subscripted access to the transformers here????
 //    for (RKValueTransformer *transformer in [[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]) {
 //        if (!success && [transformer validateTransformationFromClass:[value class] toClass:destinationType]) {
 //            success = [transformer transformValue:value toValue:&transformedValue error:&error];
 //        }
 //    }
-    if (!success && [self.objectMapping.valueTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
+//    if (!success && [self.objectMapping.valueTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
         success = [self.objectMapping.valueTransformer transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
-    }
-    if (!success)
-        success = [self transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
-    if (success) {
-        if (RKIsMutableTypeTransformation(transformedValue, destinationType)) {
-            transformedValue = [transformedValue mutableCopy];
-        }
-    }
-    
-    return transformedValue;    
-}
+//    }
+//    if (!success) success = RKTransformedValueToValueOfClassError(value, &transformedValue, destinationType, &error);
+//    if (success) {
+//        if (RKIsMutableTypeTransformation(transformedValue, destinationType)) {
+//            transformedValue = [transformedValue mutableCopy];
+//        }
+//    }
 
-- (BOOL)transformValue:(in id)inputValue toValue:(out id *)outputValue ofClass:(Class)destinationClass error:(NSError **)error
-{
-    BOOL success = FALSE;
-    
-    success = RKTransformedValueToValueOfClassError(inputValue, outputValue, destinationClass, error);
-    
-    return success;
+    return transformedValue;    
 }
 
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString *)keyPath
@@ -840,7 +698,9 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
         RKLogDebug(@"Mapping relationship with union assignment policy: constructing combined relationship value.");
         id existingObjects = [self.destinationObject valueForKeyPath:relationshipMapping.destinationKeyPath] ?: @[];
-        NSArray *existingObjectsArray = RKTransformedValueWithClass(existingObjects, [NSArray class], nil);
+        NSArray *existingObjectsArray = nil;
+        NSError *error = nil;
+        [[RKValueTransformer defaultValueTransformer] transformValue:existingObjects toValue:&existingObjects ofClass:[NSArray class] error:&error];
         [relationshipCollection addObjectsFromArray:existingObjectsArray];
     }
     else if (relationshipMapping.assignmentPolicy == RKReplaceAssignmentPolicy) {
