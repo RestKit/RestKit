@@ -333,7 +333,7 @@
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
-        return [sourceClass conformsToProtocol:@protocol(NSMutableCopying)];
+        return [destinationClass isSubclassOfClass:[sourceClass class]] && [sourceClass conformsToProtocol:@protocol(NSMutableCopying)];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputValueClass, NSError *__autoreleasing *error) {
         if (! [inputValue conformsToProtocol:@protocol(NSMutableCopying)]) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` that conforms to `NSMutableCopying`, but `%@` objects do not.", [inputValue class]] };
