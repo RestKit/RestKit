@@ -124,6 +124,9 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
                                                NSStringFromClass(self)]
                                      userInfo:nil];
     }
+
+    // TODO: Hook up value transformers from `RKObjectParameterization`
+
     return [self mappingForClass:[NSMutableDictionary class]];
 }
 
@@ -467,7 +470,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 + (void)addDefaultDateFormatter:(id)dateFormatter
 {
-    [[RKValueTransformer defaultValueTransformer] addValueTransformer:dateFormatter];
+    [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
 }
 
 + (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone
@@ -475,12 +478,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.dateFormat = dateFormatString;
     dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    if (nilOrTimeZone) {
-        dateFormatter.timeZone = nilOrTimeZone;
-    } else {
-        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    }
-
+    dateFormatter.timeZone = nilOrTimeZone ?: [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     [self addDefaultDateFormatter:dateFormatter];
 }
 

@@ -2343,7 +2343,7 @@
 {
     [self resetDateFormatterTransformers];
     NSArray *dateFormatters = [RKObjectMapping defaultDateFormatters];
-    expect(dateFormatters).to.haveCountOf(5);
+    expect(dateFormatters).to.haveCountOf(4);
     expect([dateFormatters[0] dateFormat]).to.equal(@"yyyy-MM-dd");
     expect([dateFormatters[1] dateFormat]).to.equal(@"yyyy-MM-dd'T'HH:mm:ss'Z'");
     expect([dateFormatters[2] dateFormat]).to.equal(@"MM/dd/yyyy");
@@ -2403,10 +2403,10 @@
 - (void)testShouldLetYouConfigureANewDateFormatterFromAStringAndATimeZone
 {
     [self resetDateFormatterTransformers];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:EDTTimeZone];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     assertThat(dateFormatter.timeZone, is(equalTo(EDTTimeZone)));
 }
