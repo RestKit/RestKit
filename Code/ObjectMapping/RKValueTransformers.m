@@ -311,7 +311,7 @@
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (!RKClassIsCollection(sourceClass) && RKClassIsCollection(destinationClass));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
-        if (! RKObjectIsCollection(inputValue)) {
+        if (RKObjectIsCollection(inputValue)) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` that is not a collection, but got a `%@`.", [inputValue class]] };
             *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
             return NO;
