@@ -365,6 +365,7 @@
                                    [self stringValueTransformer],
                                    [self objectToCollectionValueTransformer],
                                    [self stringValueTransformer],
+                                   [self mutableValueTransformer],
                                    ]];
 
         // Default date formatters
