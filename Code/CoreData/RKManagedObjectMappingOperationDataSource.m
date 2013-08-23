@@ -36,7 +36,7 @@
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
-static char kRKManagedObjectMappingOperationDataSourceAssociatedObjectKey;
+static void *RKManagedObjectMappingOperationDataSourceAssociatedObjectKey = &RKManagedObjectMappingOperationDataSourceAssociatedObjectKey;
 
 id RKTransformedValueWithClass(id value, Class destinationType, NSValueTransformer *dateToStringValueTransformer);
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings);
@@ -368,10 +368,10 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             RKManagedObjectDeletionOperation *deletionOperation = nil;
             if (self.parentOperation) {
                 // Attach a deletion operation for execution after the parent operation completes
-                deletionOperation = (RKManagedObjectDeletionOperation *)objc_getAssociatedObject(self.parentOperation, &kRKManagedObjectMappingOperationDataSourceAssociatedObjectKey);
+                deletionOperation = (RKManagedObjectDeletionOperation *)objc_getAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey);
                 if (! deletionOperation) {
                     deletionOperation = [[RKManagedObjectDeletionOperation alloc] initWithManagedObjectContext:self.managedObjectContext];
-                    objc_setAssociatedObject(self.parentOperation, &kRKManagedObjectMappingOperationDataSourceAssociatedObjectKey, deletionOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    objc_setAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey, deletionOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
                     [deletionOperation addDependency:self.parentOperation];
                     NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
                     [operationQueue addOperation:deletionOperation];
