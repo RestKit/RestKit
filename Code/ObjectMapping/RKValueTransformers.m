@@ -31,7 +31,10 @@
 
 - (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue ofClass:(Class)outputValueClass error:(NSError *__autoreleasing *)error
 {
-    return self.transformationBlock(inputValue, outputValue, outputValueClass, error);
+    NSError *blockError = nil;
+    BOOL success = self.transformationBlock(inputValue, outputValue, outputValueClass, &blockError);
+    if (error) *error = blockError;
+    return success;
 }
 
 - (BOOL)validateTransformationFromClass:(Class)sourceClass toClass:(Class)destinationClass
@@ -380,7 +383,7 @@
         else [errors addObject:underlyingError];
     }
     NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Failed transformation of value '%@' to %@: none of the %d value transformers consulted were successful.", inputValue, outputValueClass, [matchingTransformers count]], RKDetailedErrorsKey: errors };
-    *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo];
+    if (error) *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo];
     return NO;
 }
 

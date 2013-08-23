@@ -85,7 +85,7 @@ typedef NS_ENUM(NSUInteger, RKValueTransformationError) {
     } \
     if (! success) { \
         NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` of type `%@`, but got a `%@`.", expectedClass, [inputValue class]] };\
-        *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
+        if (error) *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
         return NO; \
     } \
 })
@@ -110,7 +110,7 @@ break; \
 } \
 if (! success) { \
 NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `outputValueClass` of type `%@`, but got a `%@`.", expectedClass, outputValueClass] };\
-*error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUnsupportedOutputClass userInfo:userInfo]; \
+if (error) *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUnsupportedOutputClass userInfo:userInfo]; \
 return NO; \
 } \
 })
@@ -128,7 +128,7 @@ return NO; \
 #define RKValueTransformerTestTransformation(condition, error, ...) ({ \
 if (! (condition)) { \
 NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:__VA_ARGS__] };\
-*error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo]; \
+if (error) *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo]; \
 return NO; \
 } \
 })
