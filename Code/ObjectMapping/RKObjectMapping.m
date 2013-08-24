@@ -463,7 +463,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
         [[RKValueTransformer defaultValueTransformer] removeValueTransformer:dateFormatter];
     }
 
-    for (NSDateFormatter *dateFormatter in defaultDateFormatters) {
+    for (NSDateFormatter *dateFormatter in dateFormatters) {
         [[RKValueTransformer defaultValueTransformer] addValueTransformer:dateFormatter];
     }
 }

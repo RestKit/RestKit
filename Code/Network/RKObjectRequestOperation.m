@@ -59,22 +59,6 @@ static NSString *RKLogTruncateString(NSString *string)
        (long) maxMessageLength];
 }
 
-static NSString *RKStringFromStreamStatus(NSStreamStatus streamStatus)
-{
-    switch (streamStatus) {
-        case NSStreamStatusNotOpen:     return @"Not Open";
-        case NSStreamStatusOpening:     return @"Opening";
-        case NSStreamStatusOpen:        return @"Open";
-        case NSStreamStatusReading:     return @"Reading";
-        case NSStreamStatusWriting:     return @"Writing";
-        case NSStreamStatusAtEnd:       return @"At End";
-        case NSStreamStatusClosed:      return @"Closed";
-        case NSStreamStatusError:       return @"Error";
-        default:                        break;
-    }
-    return nil;
-}
-
 @interface NSCachedURLResponse (RKLeakFix)
 
 - (NSData *)rkData;

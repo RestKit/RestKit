@@ -271,6 +271,10 @@
             if ([inputValue isKindOfClass:[NSNumber class]]) {
                 *outputValue = [NSDate dateWithTimeIntervalSince1970:[inputValue doubleValue]];
             } else if ([inputValue isKindOfClass:[NSString class]]) {
+                if ([[inputValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] == 0) {
+                    *outputValue = nil;
+                    return YES;
+                }
                 NSString *errorDescription = nil;
                 NSNumber *formattedNumber;
                 BOOL success = [numberFormatter getObjectValue:&formattedNumber forString:inputValue errorDescription:&errorDescription];
@@ -332,15 +336,19 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
+    NSArray *mutableClasses = @[ [NSMutableArray class], [NSMutableDictionary class], [NSMutableString class], [NSMutableSet class], [NSMutableOrderedSet class], [NSMutableData class], [NSMutableIndexSet class], [NSMutableString class], [NSMutableAttributedString class] ];
     return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
-        return [destinationClass isSubclassOfClass:[sourceClass class]] && [sourceClass conformsToProtocol:@protocol(NSMutableCopying)];
+        /**
+         NOTE: Because of class clusters in Foundation you cannot make any assumptions about mutability based on classes. For example, given `__NSArrayI` (immutable array) and a destination class of `NSMutableArray`, `isSubClassOfClass:` will not evaluate to `YES`. If you want a mutable result, you need to invoke `mutableCopy`.
+         */
+        return [sourceClass conformsToProtocol:@protocol(NSMutableCopying)] && [mutableClasses containsObject:destinationClass];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputValueClass, NSError *__autoreleasing *error) {
         if (! [inputValue conformsToProtocol:@protocol(NSMutableCopying)]) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` that conforms to `NSMutableCopying`, but `%@` objects do not.", [inputValue class]] };
             *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
             return NO;
         }
-        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSMutableArray class], [NSMutableDictionary class], [NSMutableString class], [NSMutableSet class], [NSMutableOrderedSet class] ]), error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, mutableClasses, error);
         *outputValue = [inputValue mutableCopy];
         return YES;
     }];
@@ -354,11 +362,14 @@
         defaultValueTransformer = [RKCompoundValueTransformer compoundValueTransformerWithValueTransformers:@[
                                    [self identityValueTransformer],
                                    [self stringToURLValueTransformer],
+                                   
+                                   // `NSDecimalNumber` transformers must be consulted ahead of `NSNumber` transformers because `NSDecimalNumber` is a subclass thereof
+                                   [self decimalNumberToNumberValueTransformer],
+                                   [self decimalNumberToStringValueTransformer],
+                                   
                                    [self numberToStringValueTransformer],
                                    [self arrayToOrderedSetValueTransformer],
                                    [self arrayToSetValueTransformer],
-                                   [self decimalNumberToNumberValueTransformer],
-                                   [self decimalNumberToStringValueTransformer],
                                    [self nullValueTransformer],
                                    [self keyedArchivingValueTransformer],
                                    [self timeIntervalSince1970ToDateValueTransformer],
@@ -369,12 +380,6 @@
                                    ]];
 
         // Default date formatters
-        RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
-        iso8601DateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        iso8601DateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        iso8601DateFormatter.includeTime = YES;
-        [defaultValueTransformer addValueTransformer:iso8601DateFormatter];
-
         NSArray *defaultDateFormatStrings = @[ @"MM/dd/yyyy", @"yyyy-MM-dd'T'HH:mm:ss'Z'", @"yyyy-MM-dd" ];
         for (NSString *dateFormatString in defaultDateFormatStrings) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
@@ -383,6 +388,13 @@
             dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
             [defaultValueTransformer addValueTransformer:dateFormatter];
         }
+        
+        RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
+        iso8601DateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        iso8601DateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        iso8601DateFormatter.includeTime = YES;
+        iso8601DateFormatter.parsesStrictly = YES;
+        [defaultValueTransformer addValueTransformer:iso8601DateFormatter];
     });
     return defaultValueTransformer;
 }

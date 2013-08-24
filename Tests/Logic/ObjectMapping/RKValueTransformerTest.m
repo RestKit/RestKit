@@ -749,7 +749,7 @@
     RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
     id value = nil;
     NSError *error = nil;
-    BOOL success = [valueTransformer transformValue:@"" toValue:&value ofClass:[NSDate class] error:&error];
+    BOOL success = [valueTransformer transformValue:@"0" toValue:&value ofClass:[NSDate class] error:&error];
     expect(success).to.beTruthy();
     expect(value).to.beKindOf([NSDate class]);
     expect([value description]).to.equal(@"1970-01-01 00:00:00 +0000");
@@ -808,6 +808,84 @@
 - (void)testTimeIntervalSince1970ToDateValueTransformerFailureWithInvalidDestinationClass
 {
     RKValueTransformer *valueTransformer = [RKValueTransformer timeIntervalSince1970ToDateValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSData class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
+#pragma mark Mutable Value
+
+- (void)testMutableValueTransformerValidationSuccessFromString
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer mutableValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSString class] toClass:[NSMutableString class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testMutableValueTransformerValidationSuccessFromArray
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer mutableValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSArray class] toClass:[NSMutableArray class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testMutableValueTransformerValidationSuccessFromSet
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer mutableValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSSet class] toClass:[NSMutableSet class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testMutableValueTransformerValidationFailure
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer mutableValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSNumber class] toClass:[NSURL class]];
+    expect(success).to.beFalsy();
+}
+
+- (void)testMutableValueTransformerTransformationSuccessFromString
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer mutableValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSMutableString class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSMutableString class]);
+    expect(value).to.equal([NSMutableString stringWithString:@"http://restkit.org"]);
+}
+
+- (void)testMutableValueTransformerTransformationSuccessFromArray
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer mutableValueTransformer];
+    NSString *value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@[ @"one", @"two" ] toValue:&value ofClass:[NSMutableArray class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSMutableArray class]);
+    expect(value).to.equal(([NSMutableArray arrayWithObjects:@"one", @"two", nil]));
+}
+
+- (void)testMutableValueTransformerFailureWithUntransformableInputValue
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer mutableValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@12345 toValue:&value ofClass:[NSString class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testMutableValueTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer mutableValueTransformer];
     id value = nil;
     NSError *error = nil;
     BOOL success = [valueTransformer transformValue:@"http://restkit.org" toValue:&value ofClass:[NSData class] error:&error];
@@ -1294,3 +1372,6 @@ static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutput
 }
 
 @end
+
+
+// test objectToCollectionValueTransformer, mutableValueTransformer

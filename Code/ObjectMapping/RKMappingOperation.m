@@ -62,37 +62,6 @@ static BOOL RKIsManagedObject(id object)
     return managedObjectClass && [object isKindOfClass:managedObjectClass];
 }
 
-//BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error);
-//BOOL RKTransformedValueToValueOfClassError(id inputValue, id *outputValue, Class destinationClass, NSError **error)
-//{
-//    NSArray *matchingTransformers = @[];//[RKValueTransformer valueTransformersForTransformingFromClass:[inputValue class] toClass:destinationClass];
-//    for (RKValueTransformer *valueTransformer in matchingTransformers) {
-//        if ([valueTransformer transformValue:inputValue toValue:outputValue ofClass:destinationClass error:error]) {
-//            return YES;
-//        } else {
-//            // An error occurred while attempting to perform the transformation, return to the caller
-//            if (*error) {
-//                *outputValue = nil;
-//                return NO;
-//            }
-//        }
-//    }
-//    
-//    if ([destinationClass isSubclassOfClass:[NSDictionary class]]) {
-//        *outputValue = [NSMutableDictionary dictionaryWithObject:[NSMutableDictionary dictionary] forKey:inputValue];
-//        return YES;
-//    } else if (RKClassIsCollection(destinationClass) && !RKObjectIsCollection(inputValue)) {
-//        // Call ourself recursively with an array value to transform as appropriate
-//        return RKTransformedValueToValueOfClassError(@[ inputValue ], outputValue, destinationClass, error);
-//    }
-//    
-//    *outputValue = nil;
-//    NSError *RKUntransformableValueError = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
-//    if (error) *error = [NSError errorWithDomain:RKErrorDomain code:500/*RKUntransformableValueError*/ userInfo:nil];
-//    RKLogError(@"Error Transforming %@ to class %@: %@",inputValue, destinationClass, RKUntransformableValueError);
-//    return NO;
-//}
-
 // Returns the appropriate value for `nil` value of a primitive type
 static id RKPrimitiveValueForNilValueOfClass(Class keyValueCodingClass)
 {
@@ -358,36 +327,6 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     return [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
 }
 
-- (id)transformValue:(id)value atKeyPath:(NSString *)keyPath toType:(Class)destinationType
-{
-    RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
-//    RKDateToStringValueTransformer *dateTransformer = [RKDateToStringValueTransformer dateToStringValueTransformerWithDateToStringFormatter:self.objectMapping.preferredDateFormatter stringToDateFormatters:self.objectMapping.dateFormatters];
-    BOOL success = FALSE;
-    id transformedValue;
-    NSError *error;
-//    if ([dateTransformer isKindOfClass:[RKDateToStringValueTransformer class]] && [(RKDateToStringValueTransformer *)dateTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
-//        success = [(RKDateToStringValueTransformer *)dateTransformer transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
-//    }
-
-    // TODO: Why do we need subscripted access to the transformers here????
-//    for (RKValueTransformer *transformer in [[self.mappingInfo objectForKeyedSubscript:keyPath] valueTransformers]) {
-//        if (!success && [transformer validateTransformationFromClass:[value class] toClass:destinationType]) {
-//            success = [transformer transformValue:value toValue:&transformedValue error:&error];
-//        }
-//    }
-//    if (!success && [self.objectMapping.valueTransformer validateTransformationFromClass:[value class] toClass:destinationType]) {
-        success = [self.objectMapping.valueTransformer transformValue:value toValue:&transformedValue ofClass:destinationType error:&error];
-//    }
-//    if (!success) success = RKTransformedValueToValueOfClassError(value, &transformedValue, destinationType, &error);
-//    if (success) {
-//        if (RKIsMutableTypeTransformation(transformedValue, destinationType)) {
-//            transformedValue = [transformedValue mutableCopy];
-//        }
-//    }
-
-    return transformedValue;    
-}
-
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString *)keyPath
 {
     BOOL success = YES;
@@ -492,6 +431,17 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     return [self applyNestingToMappings:self.objectMapping.relationshipMappings];
 }
 
+- (id)transformValue:(id)inputValue forPropertyMapping:(RKPropertyMapping *)propertyMapping
+{
+    Class transformedValueClass = [self.objectMapping classForKeyPath:propertyMapping.destinationKeyPath];
+    if (! transformedValueClass) return inputValue;
+    RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from class '%@' to '%@'", propertyMapping.sourceKeyPath, NSStringFromClass([inputValue class]), NSStringFromClass(transformedValueClass));
+    id transformedValue;
+    NSError *error;
+    BOOL success = [self.objectMapping.valueTransformer transformValue:inputValue toValue:&transformedValue ofClass:transformedValueClass error:&error];
+    return success ? transformedValue : inputValue;
+}
+
 - (void)applyAttributeMapping:(RKAttributeMapping *)attributeMapping withValue:(id)value
 {
     if ([self.delegate respondsToSelector:@selector(mappingOperation:didFindValue:forKeyPath:mapping:)]) {
@@ -499,16 +449,12 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     }
     RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
 
-    // Inspect the property type to handle any value transformations
-    Class type = [self.objectMapping classForKeyPath:attributeMapping.destinationKeyPath];
-    if (type && NO == [[value class] isSubclassOfClass:type]) {
-        value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
-    }
+    value = [self transformValue:value forPropertyMapping:attributeMapping];
     
     // If we have a nil value for a primitive property, we need to coerce it into a KVC usable value or bail out
     if (value == nil && RKPropertyInspectorIsPropertyAtKeyPathOfObjectPrimitive(attributeMapping.destinationKeyPath, self.destinationObject)) {
         RKLogDebug(@"Detected `nil` value transformation for primitive property at keyPath '%@'", attributeMapping.destinationKeyPath);
-        value = RKPrimitiveValueForNilValueOfClass(type);
+        value = RKPrimitiveValueForNilValueOfClass([self.objectMapping classForKeyPath:attributeMapping.destinationKeyPath]);
         if (! value) {
             RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- Unable to transform `nil` into primitive value representation", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
             return;
@@ -700,7 +646,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         id existingObjects = [self.destinationObject valueForKeyPath:relationshipMapping.destinationKeyPath] ?: @[];
         NSArray *existingObjectsArray = nil;
         NSError *error = nil;
-        [[RKValueTransformer defaultValueTransformer] transformValue:existingObjects toValue:&existingObjects ofClass:[NSArray class] error:&error];
+        [[RKValueTransformer defaultValueTransformer] transformValue:existingObjects toValue:&existingObjectsArray ofClass:[NSArray class] error:&error];
         [relationshipCollection addObjectsFromArray:existingObjectsArray];
     }
     else if (relationshipMapping.assignmentPolicy == RKReplaceAssignmentPolicy) {
@@ -710,7 +656,6 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     }
 
     [value enumerateObjectsUsingBlock:^(id nestedObject, NSUInteger collectionIndex, BOOL *stop) {
-
         id parentSourceObject = [self parentObjectForRelationshipMapping:relationshipMapping];
         id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject parentRepresentation:parentSourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
         if (mappableObject) {
@@ -722,13 +667,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         }
     }];
 
-    id valueForRelationship = relationshipCollection;
-    // Transform from NSSet <-> NSArray if necessary
-    Class type = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
-    if (type && NO == [[relationshipCollection class] isSubclassOfClass:type]) {
-        valueForRelationship = [self transformValue:relationshipCollection atKeyPath:relationshipMapping.sourceKeyPath toType:type];
-    }
-
+    id valueForRelationship = [self transformValue:relationshipCollection forPropertyMapping:relationshipMapping];
     // If the relationship has changed, set it
     if ([self shouldSetValue:&valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
         if (! [self mapCoreDataToManyRelationshipValue:valueForRelationship withMapping:relationshipMapping]) {

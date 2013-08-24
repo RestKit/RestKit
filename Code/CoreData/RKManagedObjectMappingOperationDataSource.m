@@ -86,7 +86,7 @@ static NSDictionary *RKEntityIdentificationAttributesForEntityMappingWithReprese
         Class attributeClass = [entityMapping classForProperty:[attribute name]];
         id sourceValue = RKValueForAttributeMappingInRepresentation(attributeMapping, representation);
         id attributeValue = nil;
-        [entityMapping.valueTransformer transformValue:sourceValue toValue:&attributeValue ofClass:attributeClass error:&error];
+        if (sourceValue) [entityMapping.valueTransformer transformValue:sourceValue toValue:&attributeValue ofClass:attributeClass error:&error];
         [entityIdentifierAttributes setObject:attributeValue ?: [NSNull null] forKey:[attribute name]];
     }];
     
