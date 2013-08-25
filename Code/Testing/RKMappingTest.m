@@ -368,12 +368,11 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:self.destinationObject mapping:self.mapping];
         id<RKMappingOperationDataSource> dataSource = [self dataSourceForMappingOperation:mappingOperation];
         mappingOperation.dataSource = dataSource;
-        NSError *error = nil;
         mappingOperation.delegate = self;
         [mappingOperation start];
         if (mappingOperation.error) {
             [NSException raise:NSInternalInconsistencyException format:@"%p: failed with error: %@\n%@ during mapping from %@ to %@ with mapping %@",
-             self, error, [self description], self.sourceObject, self.destinationObject, self.mapping];
+             self, mappingOperation.error, [self description], self.sourceObject, self.destinationObject, self.mapping];
         }
         
         // Let the connection operations execute to completion
