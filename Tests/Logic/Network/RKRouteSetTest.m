@@ -223,6 +223,16 @@
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodHEAD | RKRequestMethodGET)));
 }
 
+- (void)testRetrievingRouteForClassAndMethodFavorsExactMatchOverLessSpecificBitmaskMatch
+{
+    RKRouteSet *router = [RKRouteSet new];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID/whatever" method:RKRequestMethodAny]];
+    RKRoute *expectedRoute = [RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID" method:RKRequestMethodPOST];
+    [router addRoute:expectedRoute];
+    RKRoute *route = [router routeForClass:[RKTestUser class] method:RKRequestMethodPOST];
+    assertThat(route, is(equalTo(expectedRoute)));
+}
+
 - (void)testRouteForObjectAndMethodWithExactMatch
 {
     RKRouteSet *router = [RKRouteSet new];
@@ -272,6 +282,17 @@
     assertThat(route.pathPattern, is(equalTo(@"/subclasses/users/:userID")));
     assertThat(route.objectClass, is(equalTo([RKTestSubclassedObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodAny)));
+}
+
+- (void)testRetrievingRouteForObjectAndMethodFavorsExactMatchOverLessSpecificBitmaskMatch
+{
+    RKRouteSet *router = [RKRouteSet new];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID/whatever" method:RKRequestMethodAny]];
+    RKRoute *expectedRoute = [RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID" method:RKRequestMethodPOST];
+    [router addRoute:expectedRoute];
+    RKTestUser *user = [RKTestUser new];
+    RKRoute *route = [router routeForObject:user method:RKRequestMethodPOST];
+    assertThat(route, is(equalTo(expectedRoute)));
 }
 
 - (void)testRoutesForClassReturnsAllRoutesForClass

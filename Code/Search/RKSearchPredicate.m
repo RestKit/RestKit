@@ -7,7 +7,7 @@
 //
 
 #import "RKSearchPredicate.h"
-#import "RKSearchTokenizer.h"
+#import "RKStringTokenizer.h"
 
 @implementation RKSearchPredicate
 
@@ -18,7 +18,7 @@
 
 - (id)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type
 {
-    RKSearchTokenizer *tokenizer = [RKSearchTokenizer new];
+    RKStringTokenizer *tokenizer = [RKStringTokenizer new];
     NSSet *searchWords = [tokenizer tokenize:searchText];
 
     NSMutableArray *subpredicates = [NSMutableArray arrayWithCapacity:[searchWords count]];

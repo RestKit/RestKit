@@ -24,6 +24,11 @@
 #import "RKPathUtilities.h"
 #import "RKLog.h"
 #import "SOCKit.h"
+#import "RKRouteSet.h"
+
+#ifdef _COREDATADEFINES_H
+#import "RKManagedObjectRequestOperation.h"
+#endif
 
 @interface SOCPattern (RKTestHelpers)
 @property (nonatomic, strong, readonly) NSArray* parameters;
@@ -59,7 +64,9 @@
     [[RKObjectManager sharedManager].router.routeSet removeRoute:route];
     RKRoute *stubbedRoute = [RKRoute routeWithName:routeName pathPattern:pathPattern method:route.method];
     [[RKObjectManager sharedManager].router.routeSet addRoute:stubbedRoute];
+#ifdef _COREDATADEFINES_H
     [self copyFetchRequestBlocksMatchingPathPattern:route.pathPattern toBlocksMatchingRelativeString:pathPattern onObjectManager:objectManager];
+#endif
     return stubbedRoute;
 }
 
@@ -71,10 +78,13 @@
     [objectManager.router.routeSet removeRoute:route];
     RKRoute *stubbedRoute = [RKRoute routeWithRelationshipName:relationshipName objectClass:objectClass pathPattern:pathPattern method:method];
     [objectManager.router.routeSet addRoute:stubbedRoute];
+#ifdef _COREDATADEFINES_H
     [self copyFetchRequestBlocksMatchingPathPattern:route.pathPattern toBlocksMatchingRelativeString:pathPattern onObjectManager:objectManager];
+#endif
     return stubbedRoute;
 }
 
+#ifdef _COREDATADEFINES_H
 + (void)copyFetchRequestBlocksMatchingPathPattern:(NSString *)pathPattern
                    toBlocksMatchingRelativeString:(NSString *)relativeString
                                   onObjectManager:(RKObjectManager *)nilOrObjectManager
@@ -110,6 +120,7 @@
         }
     }
 }
+#endif
 
 + (void)disableCaching
 {

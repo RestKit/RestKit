@@ -33,7 +33,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 
 ## Getting Started
 
-- [Download RestKit](https://github.com/RestKit/RestKit/downloads) and play with the [examples](https://github.com/RestKit/RestKit/tree/development/Examples) for iPhone and Mac OS X
+- [Download RestKit](https://github.com/RestKit/RestKit/releases) and play with the [examples](https://github.com/RestKit/RestKit/tree/development/Examples) for iPhone and Mac OS X
 - First time with RestKit? Read the ["Overview"](#overview) section below and then check out the ["Getting Acquainted with RestKit"](https://github.com/RestKit/RKGist/blob/master/TUTORIAL.md) tutorial and [Object Mapping Reference](https://github.com/RestKit/RestKit/wiki/Object-mapping) documents in the wiki to jump right in.
 - Upgrading from RestKit 0.9.x or 0.10.x? Read the ["Upgrading to RestKit 0.20.x"](https://github.com/RestKit/RestKit/wiki/Upgrading-from-v0.10.x-to-v0.20.0) guide in the wiki
 - Adding RestKit to an existing [AFNetworking](http://afnetworking.org) application? Read the [AFNetworking Integration](https://github.com/RestKit/RestKit/wiki/AFNetworking-Integration) document to learn details about how the frameworks fit together.

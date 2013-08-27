@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
-#import "RKSearchTokenizer.h"
+#import "RKStringTokenizer.h"
 
-@implementation RKSearchTokenizer
+@implementation RKStringTokenizer
 
 - (NSSet *)tokenize:(NSString *)string
 {

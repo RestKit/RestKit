@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <CoreData/CoreData.h>
+#ifdef _COREDATADEFINES_H
 #import "RKObjectRequestOperation.h"
 #import "RKManagedObjectCaching.h"
 
@@ -202,3 +202,5 @@ typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL);
  @return An array of fetch requests from all blocks that match the given URL.
  */
 NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL);
+
+#endif

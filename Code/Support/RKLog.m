@@ -18,7 +18,6 @@
 //  limitations under the License.
 //
 
-#import <CoreData/CoreDataErrors.h>
 #import "RKLog.h"
 
 // Hook into Objective-C runtime to configure logging when we are loaded
@@ -110,8 +109,20 @@ int RKLogLevelForString(NSString *logLevel, NSString *envVarName)
     }
 }
 
+void RKLogIntegerAsBinary(NSUInteger bitMask)
+{
+    NSUInteger bit = ~(NSUIntegerMax >> 1);
+    NSMutableString *string = [NSMutableString string];
+    do {
+        [string appendString:(((NSUInteger)bitMask & bit) ? @"1" : @"0")];
+    } while (bit >>= 1);
+    
+    NSLog(@"Value of %ld in binary: %@", (long)bitMask, string);
+}
+
 void RKLogValidationError(NSError *error)
 {
+#ifdef _COREDATADEFINES_H    
     if ([[error domain] isEqualToString:@"NSCocoaErrorDomain"]) {
         NSDictionary *userInfo = [error userInfo];
         NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
@@ -140,22 +151,16 @@ void RKLogValidationError(NSError *error)
                        [userInfo valueForKey:NSValidationObjectErrorKey]);
         }
     }
+#else
+    RKLogError(@"Validation Error: %@ (userInfo: %@)", error, [error userInfo]);
+#endif
 }
 
-void RKLogIntegerAsBinary(NSUInteger bitMask)
-{
-    NSUInteger bit = ~(NSUIntegerMax >> 1);
-    NSMutableString *string = [NSMutableString string];
-    do {
-        [string appendString:(((NSUInteger)bitMask & bit) ? @"1" : @"0")];
-    } while (bit >>= 1);
-
-    NSLog(@"Value of %ld in binary: %@", (long)bitMask, string);
-}
-
+#ifdef _COREDATADEFINES_H
 void RKLogCoreDataError(NSError *error)
 {
     RKLogToComponentWithLevelWhileExecutingBlock(RKlcl_cRestKitCoreData, RKLogLevelError, ^{
         RKLogValidationError(error);
     });
 }
+#endif

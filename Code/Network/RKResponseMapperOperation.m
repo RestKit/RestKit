@@ -19,7 +19,6 @@
 //
 
 #import "RKObjectMappingOperationDataSource.h"
-#import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKLog.h"
 #import "RKResponseDescriptor.h"
 #import "RKPathMatcher.h"
@@ -28,6 +27,10 @@
 #import "RKMappingErrors.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKDictionaryUtilities.h"
+
+#ifdef _COREDATADEFINES_H
+#import "RKManagedObjectMappingOperationDataSource.h"
+#endif
 
 // Set Logging Component
 #undef RKLogComponent
@@ -387,6 +390,8 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 
 @end
 
+#ifdef _COREDATADEFINES_H
+
 static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
 {
     return [object isKindOfClass:[NSManagedObject class]] ? [object objectID] : nil;
@@ -486,3 +491,5 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
 }
 
 @end
+
+#endif

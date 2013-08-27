@@ -18,12 +18,10 @@
 //  limitations under the License.
 //
 
-#import "Network.h"
 #import "RKRouter.h"
 #import "RKPaginator.h"
 #import "RKMacros.h"
 #import "AFNetworking.h"
-#import "RKManagedObjectRequestOperation.h"
 
 @protocol RKSerialization;
 @class RKManagedObjectStore, RKObjectRequestOperation, RKManagedObjectRequestOperation,
@@ -479,11 +477,12 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see `RKManagedObjectRequestOperation`
  */
+#ifdef _COREDATADEFINES_H
 - (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
                                                          managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
-
+#endif
 
 /**
  Creates and returns an object request operation of the appropriate type for the given object, request method, path, and parameters.
@@ -815,8 +814,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /// @name Configuring Core Data Integration
 ///----------------------------------------
 
-// Moves to RKObjectManager+CoreData
-
+#ifdef _COREDATADEFINES_H
 /**
  A Core Data backed object store for persisting objects that have been fetched from the Web
  */
@@ -834,7 +832,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @param block A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
  */
-- (void)addFetchRequestBlock:(RKFetchRequestBlock)block;
+- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL))block;
+#endif
 
 ///------------------------------------
 /// @name Accessing Paginated Resources
