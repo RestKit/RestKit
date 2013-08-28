@@ -888,7 +888,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         }
 
         // Handle case where incoming content is an array (generally with 1 item) but we want to map to a single object
-        if (!mappingToCollection && RKObjectIsCollection(value)) {
+        if (relationshipClass && !mappingToCollection && RKObjectIsCollection(value)) {
             value = [[value objectEnumerator] nextObject];
             if (value == nil) {
                 RKLogDebug(@"Did not find object in collectoin at keyPath '%@'", relationshipMapping.sourceKeyPath);
