@@ -71,7 +71,6 @@ EOS
   
   s.subspec 'Testing' do |ts|
     ts.source_files = 'Code/Testing.h', 'Code/Testing'
-    ts.dependency     'SOCKit'
     ts.prefix_header_contents = <<-EOS
 #import <Availability.h>
 

@@ -30,19 +30,6 @@
 #import "RKManagedObjectRequestOperation.h"
 #endif
 
-@interface SOCPattern (RKTestHelpers)
-@property (nonatomic, strong, readonly) NSArray* parameters;
-@end
-
-@implementation SOCPattern (RKTestHelpers)
-
-- (NSArray *)parameters
-{
-    return _parameters;
-}
-
-@end
-
 @implementation RKTestHelpers
 
 + (RKRoute *)stubRouteForClass:(Class)objectClass method:(RKRequestMethod)method withPathPattern:(NSString *)pathPattern onObjectManager:(RKObjectManager *)nilOrObjectManager
@@ -93,7 +80,7 @@
     
     // Extract the dynamic portions of the path pattern to construct a set of parameters
     SOCPattern *pattern = [SOCPattern patternWithString:pathPattern];
-    NSArray *parameterNames = [pattern.parameters valueForKey:@"string"];
+    NSArray *parameterNames = [pattern valueForKey:@"parameters.string"];
     NSMutableDictionary *stubbedParameters = [NSMutableDictionary dictionaryWithCapacity:[parameterNames count]];
     for (NSString *parameter in parameterNames) {
         [stubbedParameters setValue:@"value" forKey:parameter];
