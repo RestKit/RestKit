@@ -141,9 +141,9 @@ return NO; \
  */
 @interface RKValueTransformer : NSObject <RKValueTransforming>
 
-///---------------------------------
-/// @name Create a Block Transformer
-///---------------------------------
+///-----------------------------------
+/// @name Creating a Block Transformer
+///-----------------------------------
 
 /**
  Creates and returns a new value transformer with the given validation and transformation blocks. The blocks are used to provide the implementation of the corresponding methods from the `RKValueTransforming` protocol.
@@ -153,11 +153,17 @@ return NO; \
 + (instancetype)valueTransformerWithValidationBlock:(BOOL (^)(Class inputValueClass, Class outputValueClass))validationBlock
                                 transformationBlock:(BOOL (^)(id inputValue, id *outputValue, Class outputClass, NSError **error))transformationBlock;
 
+/**
+ An optional name for the transformer.
+ */
+@property (nonatomic, copy) NSString *name;
+
 ///--------------------------------------
 /// @name Retrieving Default Transformers
 ///--------------------------------------
 
 /**
+ Returns a transformer that will return the input value if it is already of the desired output class.
  */
 + (instancetype)identityValueTransformer;
 
@@ -223,6 +229,7 @@ return NO; \
  */
 + (instancetype)mutableValueTransformer;
 
+// TODO: Probably just move this to `RKObjectMapping`...
 + (RKCompoundValueTransformer *)defaultValueTransformer;
 
 @end
@@ -240,7 +247,7 @@ return NO; \
 
 /**
  Creates and returns a new compound transformer from an array of individual value transformers.
-
+ 
  @param valueTransformers An array containining an arbitrary number of objects that conform to the `RKValueTransforming` protocol.
  @return A new compound transformer initialized with the given collection of underlying transformers.
  @raises NSInvalidArgumentException Raised if any objects in the given collection do not conform to the `RKValueTransforming` protocol.
@@ -253,9 +260,9 @@ return NO; \
 
 /**
  Adds the given value transformer to the end of the receiver's transformer collection.
-
+ 
  Adding a transformer appends it to the end of the collection meaning that it will be consulted after all other transformers.
-
+ 
  @param valueTransformer The transformer to add to the receiver.
  */
 - (void)addValueTransformer:(id<RKValueTransforming>)valueTransformer;
@@ -269,7 +276,7 @@ return NO; \
 
 /**
  Inserts the given value transformer into the receiver at a specific position. If the transformer already exists within the receiver then it is moved to the specified position.
-
+ 
  @param valueTransformer The value transformer to be added to (or moved within) the receiver.
  @param index The position at which the transformer should be consulted within the collection. An index of 0 would mean that the transformer is consulted before all other transformers.
  */
@@ -277,7 +284,7 @@ return NO; \
 
 /**
  Returns a count of the number of value transformers in the receiver.
-
+ 
  @return An integer specifying the number of transformers within the receiver.
  */
 - (NSUInteger)numberOfValueTransformers;
@@ -287,10 +294,10 @@ return NO; \
 ///------------------------------------------
 
 /**
- Returns a new array containing a subset of the value transformers contained within the receiver that are valid for a transformation between a representation with a given input class and a given output class.
-
+ Returns a new array containing a subset of the value transformers contained within the receiver that are valid for a transformation between a representation with a given input class and a given output class. 
+ 
  Whether or not a given transformer is returned is determined by the invocation of the optional `RKValueTransforming` method `validateTransformationFromClass:toClass:`. Any transformer that does not respond to `validateTransformationFromClass:toClass:` will be included within the returned array. The sequencing of the transformers within the returned array is determined by their position within the receiver.
-
+ 
  If you wish to obtain an array containing all of the transformers contained within the receiver then pass `Nil` for both the `inputValueClass` and `outputValueClass` arguments.
 
  @param inputValueClass The class of input values that you wish to retrieve the transformers for. Can only be `Nil` if `outputValueClass` is also `Nil`.

@@ -43,15 +43,23 @@
     else return YES;
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p, name: %@>", NSStringFromClass([self class]), self, self.name];
+}
+
 #pragma mark Default Transformers
 
 + (instancetype)singletonValueTransformer:(RKValueTransformer * __strong *)valueTransformer
+                                     name:(NSString *)name
                                 onceToken:(dispatch_once_t *)onceToken
                                        validationBlock:(BOOL (^)(Class sourceClass, Class destinationClass))validationBlock
                                    transformationBlock:(BOOL (^)(id inputValue, id *outputValue, Class outputValueClass, NSError **error))transformationBlock
 {
     dispatch_once(onceToken, ^{
-        *valueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:validationBlock transformationBlock:transformationBlock];
+        RKValueTransformer *transformer = [RKValueTransformer valueTransformerWithValidationBlock:validationBlock transformationBlock:transformationBlock];
+        transformer.name = name;
+        *valueTransformer = transformer;
     });
     return *valueTransformer;
 }
@@ -60,7 +68,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputValueClass, NSError *__autoreleasing *error) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestTransformation([inputValue isKindOfClass:outputValueClass], error, @"The given value is not already an instance of '%@'", outputValueClass);
         *outputValue = inputValue;
         return YES;
@@ -71,7 +79,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSURL class]]) ||
                 ([sourceClass isSubclassOfClass:[NSURL class]] && [destinationClass isSubclassOfClass:[NSString class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
@@ -92,7 +100,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSString class]]) ||
                 ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSNumber class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
@@ -130,7 +138,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSArray class]] && [destinationClass isSubclassOfClass:[NSOrderedSet class]]) ||
                 ([sourceClass isSubclassOfClass:[NSOrderedSet class]] && [destinationClass isSubclassOfClass:[NSArray class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
@@ -149,16 +157,18 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSArray class]] && [destinationClass isSubclassOfClass:[NSSet class]]) ||
                 ([sourceClass isSubclassOfClass:[NSSet class]] && [destinationClass isSubclassOfClass:[NSArray class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, (@[ [NSSet class], [NSArray class]]), error);
         RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, (@[ [NSSet class], [NSArray class]]), error);
         if ([inputValue isKindOfClass:[NSArray class]]) {
-            *outputValue = [NSSet setWithArray:inputValue];
+            if ([outputValueClass isSubclassOfClass:[NSMutableSet class]]) *outputValue = [NSMutableSet setWithArray:inputValue];
+            else *outputValue = [NSSet setWithArray:inputValue];
         } else if ([inputValue isKindOfClass:[NSSet class]]) {
-            *outputValue = [inputValue allObjects];
+            if ([outputValueClass isSubclassOfClass:[NSMutableArray class]]) *outputValue = [[inputValue allObjects] mutableCopy];
+            else *outputValue = [inputValue allObjects];
         }
         return YES;
     }];
@@ -168,7 +178,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSDecimalNumber class]] && [destinationClass isSubclassOfClass:[NSString class]]) ||
                 ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
@@ -189,7 +199,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass isSubclassOfClass:[NSDecimalNumber class]] && [destinationClass isSubclassOfClass:[NSNumber class]]) ||
                 ([sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
@@ -208,7 +218,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         RKValueTransformerTestInputValueIsKindOfClass(inputValue, [NSNull class], error);
         *outputValue = nil;
         return YES;
@@ -219,7 +229,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (([sourceClass conformsToProtocol:@protocol(NSCoding)] && [destinationClass isSubclassOfClass:[NSData class]]) ||
                 ([sourceClass isSubclassOfClass:[NSData class]] && [destinationClass conformsToProtocol:@protocol(NSCoding)]));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
@@ -255,7 +265,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return ((([sourceClass isSubclassOfClass:[NSString class]] || [sourceClass isSubclassOfClass:[NSNumber class]]) && [destinationClass isSubclassOfClass:[NSDate class]]) ||
                 ([sourceClass isSubclassOfClass:[NSDate class]] && ([destinationClass isSubclassOfClass:[NSNumber class]] || [destinationClass isSubclassOfClass:[NSString class]])));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputValueClass, NSError *__autoreleasing *error) {
@@ -294,7 +304,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return ([sourceClass instancesRespondToSelector:@selector(stringValue)] && [destinationClass isSubclassOfClass:[NSString class]]);
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         if (! [inputValue respondsToSelector:@selector(stringValue)]) {
@@ -312,7 +322,7 @@
 {
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return (!RKClassIsCollection(sourceClass) && RKClassIsCollection(destinationClass));
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         if (RKObjectIsCollection(inputValue)) {
@@ -337,7 +347,7 @@
     static dispatch_once_t onceToken;
     static RKValueTransformer *valueTransformer;
     NSArray *mutableClasses = @[ [NSMutableArray class], [NSMutableDictionary class], [NSMutableString class], [NSMutableSet class], [NSMutableOrderedSet class], [NSMutableData class], [NSMutableIndexSet class], [NSMutableString class], [NSMutableAttributedString class] ];
-    return [self singletonValueTransformer:&valueTransformer onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         /**
          NOTE: Because of class clusters in Foundation you cannot make any assumptions about mutability based on classes. For example, given `__NSArrayI` (immutable array) and a destination class of `NSMutableArray`, `isSubClassOfClass:` will not evaluate to `YES`. If you want a mutable result, you need to invoke `mutableCopy`.
          */
@@ -426,6 +436,11 @@
         self.valueTransformers = [NSMutableArray new];
     }
     return self;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p, valueTransformers=%@>", NSStringFromClass([self class]), self, self.valueTransformers];
 }
 
 - (void)addValueTransformer:(id<RKValueTransforming>)valueTransformer
