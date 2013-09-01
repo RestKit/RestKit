@@ -458,6 +458,7 @@
 - (void)insertValueTransformer:(id<RKValueTransforming>)valueTransformer atIndex:(NSUInteger)index
 {
     if (! valueTransformer) [NSException raise:NSInvalidArgumentException format:@"Cannot insert `nil` into a compound transformer."];
+    [self removeValueTransformer:valueTransformer];
     [self.valueTransformers insertObject:valueTransformer atIndex:index];
 }
 
