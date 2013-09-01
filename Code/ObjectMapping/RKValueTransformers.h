@@ -52,7 +52,6 @@
  @param outputValueClass The `Class` of an output value being inspected.
  @return `YES` if the receiver can perform a transformation between the given source and destination classes.
  */
-// TODO: should this be `validateTransformationFromValue:toClass:` instead?
 - (BOOL)validateTransformationFromClass:(Class)inputValueClass toClass:(Class)outputValueClass;
 
 @end
@@ -219,6 +218,9 @@ return NO; \
  */
 + (instancetype)objectToCollectionValueTransformer;
 
+/**
+ Returns a transformer capable of transforming any object conforming to the `NSMutableCopying` protocol into a mutable representation of itself.
+ */
 + (instancetype)mutableValueTransformer;
 
 + (RKCompoundValueTransformer *)defaultValueTransformer;
@@ -227,18 +229,75 @@ return NO; \
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ The `RKCompoundValueTransformer` class provides an implementation of the `RKValueTransforming` protocol in which a collection of underlying value transformers are assembled into a composite value transformer. Compound values transformers are ordered collections in which each underlying transformer is given the opportunity to transform a value in the order in which it appears within the receiver. Compound transformers are copyable, enumerable and support subscripted access to the underlying value transformers.
+ */
 @interface RKCompoundValueTransformer : NSObject <RKValueTransforming, NSCopying, NSFastEnumeration>
 
+///--------------------------------------
+/// @name Creating a Compound Transformer
+///--------------------------------------
+
+/**
+ Creates and returns a new compound transformer from an array of individual value transformers.
+
+ @param valueTransformers An array containining an arbitrary number of objects that conform to the `RKValueTransforming` protocol.
+ @return A new compound transformer initialized with the given collection of underlying transformers.
+ @raises NSInvalidArgumentException Raised if any objects in the given collection do not conform to the `RKValueTransforming` protocol.
+ */
 + (instancetype)compoundValueTransformerWithValueTransformers:(NSArray *)valueTransformers;
 
-- (void)addValueTransformer:(id<RKValueTransforming>)valueTransformer;
-- (void)removeValueTransformer:(id<RKValueTransforming>)valueTransformer;
-- (void)insertValueTransformer:(id<RKValueTransforming>)valueTransformer atIndex:(NSUInteger)index; // performs a move or insert
+///----------------------------------------------------
+/// @name Manipulating the Value Transformer Collection
+///----------------------------------------------------
 
+/**
+ Adds the given value transformer to the end of the receiver's transformer collection.
+
+ Adding a transformer appends it to the end of the collection meaning that it will be consulted after all other transformers.
+
+ @param valueTransformer The transformer to add to the receiver.
+ */
+- (void)addValueTransformer:(id<RKValueTransforming>)valueTransformer;
+
+/**
+ Removes the given value transformer from the receiver.
+
+ @param valueTransformer The transformer to remove from the receiver.
+ */
+- (void)removeValueTransformer:(id<RKValueTransforming>)valueTransformer;
+
+/**
+ Inserts the given value transformer into the receiver at a specific position. If the transformer already exists within the receiver then it is moved to the specified position.
+
+ @param valueTransformer The value transformer to be added to (or moved within) the receiver.
+ @param index The position at which the transformer should be consulted within the collection. An index of 0 would mean that the transformer is consulted before all other transformers.
+ */
+- (void)insertValueTransformer:(id<RKValueTransforming>)valueTransformer atIndex:(NSUInteger)index;
+
+/**
+ Returns a count of the number of value transformers in the receiver.
+
+ @return An integer specifying the number of transformers within the receiver.
+ */
 - (NSUInteger)numberOfValueTransformers;
 
-// Note: pass `Nil` `Nil` to get all of them
-- (NSArray *)valueTransformersForTransformingFromClass:(Class)sourceClass toClass:(Class)destinationClass;
+///------------------------------------------
+/// @name Retrieving Constituent Transformers
+///------------------------------------------
+
+/**
+ Returns a new array containing a subset of the value transformers contained within the receiver that are valid for a transformation between a representation with a given input class and a given output class.
+
+ Whether or not a given transformer is returned is determined by the invocation of the optional `RKValueTransforming` method `validateTransformationFromClass:toClass:`. Any transformer that does not respond to `validateTransformationFromClass:toClass:` will be included within the returned array. The sequencing of the transformers within the returned array is determined by their position within the receiver.
+
+ If you wish to obtain an array containing all of the transformers contained within the receiver then pass `Nil` for both the `inputValueClass` and `outputValueClass` arguments.
+
+ @param inputValueClass The class of input values that you wish to retrieve the transformers for. Can only be `Nil` if `outputValueClass` is also `Nil`.
+ @param outputValueClass The class of output values that you wish to retrieve the transformers for. Can only be `Nil` if `inputValueClass` is also `Nil`.
+ @raises NSInvalidArgumentException Raised if `Nil` is given exclusively for `inputValueClass` or `outputValueClass`.
+ */
+- (NSArray *)valueTransformersForTransformingFromClass:(Class)inputValueClass toClass:(Class)outputValueClass;
 
 @end
 
@@ -264,7 +323,6 @@ return NO; \
  @return An `NSDate` object parsed from the given string, or `nil` if the string was found to be unparsable by all default date formatters.
  @see [RKObjectMapping defaultDateFormatters]
  */
-// TODO: Access the `[RKValueTransformer defaultValueTransformer]` to find the first `NSString` -> `NSDate` transformer and invoke it.
 NSDate *RKDateFromString(NSString *dateString);
 
 /**
@@ -278,5 +336,4 @@ NSDate *RKDateFromString(NSString *dateString);
  @return An `NSString` object representation of the given date formatted by the preferred date formatter.
  @see [RKObjectMapping preferredDateFormatter]
  */
-// TODO: Access the `[RKValueTransformer defaultValueTransformer]` to find the first `NSDate` -> `NSString` transformer and invoke it.
 NSString *RKStringFromDate(NSDate *date);
