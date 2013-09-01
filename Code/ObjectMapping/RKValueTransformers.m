@@ -480,6 +480,11 @@
     return [matchingTransformers copy];
 }
 
+- (id)objectAtIndexedSubscript:(NSUInteger)index
+{
+    return [self.valueTransformers objectAtIndex:index];
+}
+
 #pragma mark RKValueTransforming
 
 - (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue ofClass:(__unsafe_unretained Class)outputValueClass error:(NSError *__autoreleasing *)error
