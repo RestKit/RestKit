@@ -96,15 +96,6 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     return nestedMappings;
 }
 
-static void RKSetValueForObject(id value, id destinationObject)
-{
-    if ([destinationObject isKindOfClass:[NSMutableDictionary class]] && [value isKindOfClass:[NSDictionary class]]) {
-        [destinationObject setDictionary:value];
-    } else {
-        [NSException raise:NSInvalidArgumentException format:@"Unable to set value for destination object of type '%@': no strategy available. %@ to %@", [destinationObject class], value, destinationObject];
-    }
-}
-
 // Returns YES if there is a value present for at least one key path in the given collection
 static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPaths)
 {
@@ -474,7 +465,11 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         if (attributeMapping.destinationKeyPath) {
             [self.destinationObject setValue:transformedValue forKeyPath:attributeMapping.destinationKeyPath];
         } else {
-            RKSetValueForObject(transformedValue, self.destinationObject);
+            if ([self.destinationObject isKindOfClass:[NSMutableDictionary class]] && [transformedValue isKindOfClass:[NSDictionary class]]) {
+                [self.destinationObject setDictionary:transformedValue];
+            } else {
+                [NSException raise:NSInvalidArgumentException format:@"Unable to set value for destination object of type '%@': Can only directly set destination object for `NSMutableDictionary` targets. (transformedValue=%@)", [self.destinationObject class], transformedValue];
+            }
         }
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate mappingOperation:self didSetValue:transformedValue forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
