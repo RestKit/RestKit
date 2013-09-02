@@ -254,9 +254,9 @@ return NO; \
 /**
  Creates and returns a new compound transformer from an array of individual value transformers.
  
- @param valueTransformers An array containining an arbitrary number of objects that conform to the `RKValueTransforming` protocol.
+ @param valueTransformers An array containining an arbitrary number of objects that conform to the `RKValueTransforming` protocol. Cannot be `nil`.
  @return A new compound transformer initialized with the given collection of underlying transformers.
- @raises NSInvalidArgumentException Raised if any objects in the given collection do not conform to the `RKValueTransforming` protocol.
+ @raises NSInvalidArgumentException Raised if `valueTransformers` is `nil` or any objects in the given collection do not conform to the `RKValueTransforming` protocol.
  */
 + (instancetype)compoundValueTransformerWithValueTransformers:(NSArray *)valueTransformers;
 

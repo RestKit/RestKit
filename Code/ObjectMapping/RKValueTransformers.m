@@ -454,6 +454,7 @@ static dispatch_once_t RKDefaultValueTransformerOnceToken;
 
 + (instancetype)compoundValueTransformerWithValueTransformers:(NSArray *)valueTransformers
 {
+    if (! valueTransformers) [NSException raise:NSInvalidArgumentException format:@"`valueTransformers` argument cannot be `nil`."];
     for (id<RKValueTransforming> valueTransformer in valueTransformers) {
         if (! [valueTransformer conformsToProtocol:@protocol(RKValueTransforming)]) {
             [NSException raise:NSInvalidArgumentException format:@"All objects in the given `valueTransformers` collection must conform to the `RKValueTransforming` protocol."];
