@@ -360,7 +360,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
  
  This category contains deprecated API interfaces for configuring date formatters. Starting in RestKit 0.20.4 date formatting is configured via the `RKValueTransformer` API's.
 
@@ -369,7 +369,7 @@
 @interface RKObjectMapping (LegacyDateAndTimeFormatting)
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
  
  This method accesses `[RKValueTransformer defaultTransformer]` and returns all `NSDate` <-> `NSString` value transformers.
 
@@ -385,7 +385,7 @@
 + (NSArray *)defaultDateFormatters DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
  
  This method accesses `[RKValueTransformer defaultTransformer]` and removes all `NSDate` <-> `NSString` value transformers that are instances of `NSFormatter` and then adds the given array of formatters to the default transformer.
 
@@ -397,7 +397,7 @@
 + (void)setDefaultDateFormatters:(NSArray *)dateFormatters DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
  
  This methods prepends the given date formatter to `[RKValueTransformer defaultValueTransformer]`.
 
@@ -409,7 +409,7 @@
 + (void)addDefaultDateFormatter:(NSFormatter *)dateFormatter DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
  
  This method instantiates a new `NSDateFormatter` object with the given format string and time zone and prepends it to `[RKValueTransformer defaultValueTransformer]`.
 
@@ -422,7 +422,7 @@
 + (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone  DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
  
  This method returns the first `NSString` -> `NSDate` value transformer that is an instance of `NSFormatter` in `[RKValueTransformer defaultValueTransformer]`.
 
@@ -437,7 +437,7 @@
 + (NSFormatter *)preferredDateFormatter DEPRECATED_ATTRIBUTE_MESSAGE("Access `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
  
  This method inserts the given date formatter at position zero in `[RKValueTransformer defaultValueTransformer]`, ensuring that it will be used for all transformations from `NSDate` -> `NSString`.
 
@@ -452,7 +452,7 @@
 ///----------------------------------
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
  
  An array of `NSFormatter` objects to use when mapping string values into `NSDate` attributes on the target `objectClass`. Each date formatter will be invoked with the string value being mapped until one of the date formatters does not return nil.
 
@@ -463,7 +463,7 @@
 @property (nonatomic, strong) NSArray *dateFormatters DEPRECATED_ATTRIBUTE_MESSAGE("Use `valueTransformer` instead");
 
 /**
- **Deprecated in v0.20.4**
+ **Deprecated in v0.21.0**
 
  The `NSFormatter` object for your application's preferred date and time configuration. This date formatter will be used when generating string representations of NSDate attributes (i.e. during serialization to URL form encoded or JSON format).
 
