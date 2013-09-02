@@ -141,6 +141,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
         self.forceCollectionMapping = NO;
         self.performKeyValueValidation = YES;
         self.sourceToDestinationKeyTransformationBlock = defaultSourceToDestinationKeyTransformationBlock;
+        self.valueTransformer = [[RKValueTransformer defaultValueTransformer] copy];
     }
 
     return self;
@@ -397,11 +398,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     }
 
     return propertyClass;
-}
-
-- (id<RKValueTransforming>)valueTransformer
-{
-    return _valueTransformer ?: [RKValueTransformer defaultValueTransformer];
 }
 
 - (BOOL)isEqualToMapping:(RKObjectMapping *)otherMapping
