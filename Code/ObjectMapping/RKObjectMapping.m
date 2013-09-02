@@ -488,8 +488,8 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
         for (id<RKValueTransforming> valueTransformer in dateToStringTransformers) {
             if ([valueTransformer isKindOfClass:[NSFormatter class]]) return (NSFormatter *)valueTransformer;
         }
-        return nil;
-    } else return nil;
+    }
+    return nil;
 }
 
 - (void)setPreferredDateFormatter:(NSFormatter *)preferredDateFormatter
