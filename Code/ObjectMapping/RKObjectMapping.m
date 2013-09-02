@@ -152,8 +152,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     self.setNilForMissingRelationships = mapping.setNilForMissingRelationships;
     self.forceCollectionMapping = mapping.forceCollectionMapping;
     self.performKeyValueValidation = mapping.performKeyValueValidation;
-    self.dateFormatters = mapping.dateFormatters;
-    self.preferredDateFormatter = mapping.preferredDateFormatter;
+    self.valueTransformer = mapping.valueTransformer;
     self.sourceToDestinationKeyTransformationBlock = self.sourceToDestinationKeyTransformationBlock;
 }
 
@@ -405,18 +404,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     return _valueTransformer ?: [RKValueTransformer defaultValueTransformer];
 }
 
-#pragma mark - Date and Time
-
-- (NSFormatter *)preferredDateFormatter
-{
-    return _preferredDateFormatter ?: [RKObjectMapping preferredDateFormatter];
-}
-
-- (NSArray *)dateFormatters
-{
-    return _dateFormatters ?: [RKObjectMapping defaultDateFormatters];
-}
-
 - (BOOL)isEqualToMapping:(RKObjectMapping *)otherMapping
 {
     if (! [otherMapping isKindOfClass:[RKObjectMapping class]]) return NO;
@@ -443,6 +430,9 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 @end
 
 /////////////////////////////////////////////////////////////////////////////
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 
 @implementation RKObjectMapping (LegacyDateAndTimeFormatting)
 
@@ -492,4 +482,41 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
 }
 
+#pragma mark - Date and Time
+
+- (NSFormatter *)preferredDateFormatter
+{
+    if ([self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) {
+        NSArray *dateToStringTransformers = [(RKCompoundValueTransformer *)self.valueTransformer valueTransformersForTransformingFromClass:[NSDate class] toClass:[NSString class]];
+        return [dateToStringTransformers firstObject];
+    } else return nil;
+}
+
+- (void)setPreferredDateFormatter:(NSFormatter *)preferredDateFormatter
+{
+    if ([self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) {
+        [(RKCompoundValueTransformer *)self.valueTransformer insertValueTransformer:(NSFormatter<RKValueTransforming> *)preferredDateFormatter atIndex:0];
+    }
+}
+
+- (NSArray *)dateFormatters
+{
+    if ([self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) {
+        return [(RKCompoundValueTransformer *)self.valueTransformer valueTransformersForTransformingFromClass:[NSDate class] toClass:[NSString class]];
+    } else return nil;
+}
+
+- (void)setDateFormatters:(NSArray *)dateFormatters
+{
+    if (! [self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) [NSException raise:NSInternalInconsistencyException format:@"Cannot set date formatters: the receiver's `valueTransformer` is not an instance of `RKCompoundValueTransformer`."];
+    for (id<RKValueTransforming> dateFormatter in [self dateFormatters]) {
+        [(RKCompoundValueTransformer *)self.valueTransformer removeValueTransformer:dateFormatter];
+    }
+    for (id<RKValueTransforming> dateFormatter in dateFormatters) {
+        [(RKCompoundValueTransformer *)self.valueTransformer addValueTransformer:dateFormatter];
+    }
+}
+
 @end
+
+#pragma clang diagnostic pop

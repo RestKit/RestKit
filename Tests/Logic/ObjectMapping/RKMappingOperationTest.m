@@ -385,6 +385,9 @@
     assertThat([object.date description], is(equalTo(@"2011-08-09 00:00:00 +0000")));
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (void)testShouldMapAStringIntoTheLocalTimeZone
 {
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
@@ -426,6 +429,8 @@
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(newObject.boolString, is(equalTo(@"11-27-1982")));
 }
+
+#pragma clang diagnostic pop
 
 - (void)testShouldMapAStringToAURL
 {
