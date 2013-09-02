@@ -137,26 +137,9 @@ return NO; \
 @class RKCompoundValueTransformer;
 
 /**
- The `RKValueTransformer` class provides a concrete implementation of the `RKValueTransforming` protocol using blocks to provide the implementation of the transformer. It additionally encapsulates accessors for the default value transformer implementations that are provided with RestKit.
+ The `RKValueTransformer` class is an abstract base class for implementing a value transformer that conforms to the `RKValueTransforming` protocol. The class is provided to enable third-party extensions of the value transformer to be implemented through subclassing. The default implementation contains no behavior and will raise an exception if an implementation of `transformValue:toValue:ofClass:error:` is not provided by the subclass. `RKValueTransformer` also exposes accessors for the default value transformer implementations that are provided with RestKit.
  */
 @interface RKValueTransformer : NSObject <RKValueTransforming>
-
-///-----------------------------------
-/// @name Creating a Block Transformer
-///-----------------------------------
-
-/**
- Creates and returns a new value transformer with the given validation and transformation blocks. The blocks are used to provide the implementation of the corresponding methods from the `RKValueTransforming` protocol.
- 
- @param validationBlock A block that evaluates whether the transformer can perform a transformation between a given pair of input and output classes.
- */
-+ (instancetype)valueTransformerWithValidationBlock:(BOOL (^)(Class inputValueClass, Class outputValueClass))validationBlock
-                                transformationBlock:(BOOL (^)(id inputValue, id *outputValue, Class outputClass, NSError **error))transformationBlock;
-
-/**
- An optional name for the transformer.
- */
-@property (nonatomic, copy) NSString *name;
 
 ///--------------------------------------
 /// @name Retrieving Default Transformers
@@ -234,9 +217,47 @@ return NO; \
  */
 + (instancetype)mutableValueTransformer;
 
-// TODO: Probably just move this to `RKObjectMapping`...
+/**
+ Returns the singleton instance of the default value transformer. The default transformer is a compound transformer that includes all the individual value transformers implemented on the `RKValueTransformer` base class as well as an instance of `RKISO8601DateForamtter` and `NSDateFormatter` instances for the following date format strings:
+ 
+    * MM/dd/yyyy
+    * yyyy-MM-dd'T'HH:mm:ss'Z'
+    * yyyy-MM-dd
+ 
+ All date formatters are configured to the use `en_US_POSIX` locale and the UTC time zone.
+ */
 + (RKCompoundValueTransformer *)defaultValueTransformer;
+
+/**
+ Sets the default value transformer to a new instance. Setting the default transformer to `nil` will result in a new singleton instance with the default configuration being rebuilt.
+
+ @param compoundValueTransformer The new default compound transformer. Passing `nil` will reset the transformer to the default configuration.
+ */
 + (void)setDefaultValueTransformer:(RKCompoundValueTransformer *)compoundValueTransformer;
+
+@end
+
+/**
+ The `RKBlockValueTransformer` class provides a concrete implementation of the `RKValueTransforming` protocol using blocks to provide the implementation of the transformer.
+ */
+@interface RKBlockValueTransformer : RKValueTransformer
+
+///-----------------------------------
+/// @name Creating a Block Transformer
+///-----------------------------------
+
+/**
+ Creates and returns a new value transformer with the given validation and transformation blocks. The blocks are used to provide the implementation of the corresponding methods from the `RKValueTransforming` protocol.
+ 
+ @param validationBlock A block that evaluates whether the transformer can perform a transformation between a given pair of input and output classes.
+ */
++ (instancetype)valueTransformerWithValidationBlock:(BOOL (^)(Class inputValueClass, Class outputValueClass))validationBlock
+                                transformationBlock:(BOOL (^)(id inputValue, id *outputValue, Class outputClass, NSError **error))transformationBlock;
+
+/**
+ An optional name for the transformer.
+ */
+@property (nonatomic, copy) NSString *name;
 
 @end
 

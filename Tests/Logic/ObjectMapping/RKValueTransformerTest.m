@@ -21,10 +21,30 @@
 #import "RKTestEnvironment.h"
 #import "RKValueTransformers.h"
 
+// Used to test subclass raising
+@interface RKIncompleteValueTransformer : RKValueTransformer
+@end
+
+@implementation RKIncompleteValueTransformer
+@end
+
 @interface RKValueTransformerTest : SenTestCase
 @end
 
 @implementation RKValueTransformerTest
+
+#pragma makr - Abstract Class Tests
+
+- (void)testThatDirectInstantiationOfRKValueTransformerRaises
+{
+    expect(^{ [RKValueTransformer new]; }).to.raiseWithReason(NSInternalInconsistencyException, @"`RKValueTransformer` is abstract and cannot be directly instantiated. Instantiate a subclass implementation instead.");
+}
+
+- (void)testThatIncompleteSubclassesRaiseOnTransformation
+{
+    RKIncompleteValueTransformer *incompleteTransformer = [RKIncompleteValueTransformer new];
+    expect(^{ [incompleteTransformer transformValue:nil toValue:nil ofClass:Nil error:nil]; }).to.raiseWithReason(NSInternalInconsistencyException, @"`RKValueTransformer` subclasses must provide a concrete implementation of `transformValue:toValue:ofClass:error:`.");
+}
 
 #pragma mark - Default Transformers
 
@@ -969,9 +989,9 @@
 
 @end
 
-static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutputValue)
+static RKBlockValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutputValue)
 {
-    return [RKValueTransformer valueTransformerWithValidationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
+    return [RKBlockValueTransformer valueTransformerWithValidationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
         *outputValue = staticOutputValue;
         return YES;
     }];
@@ -1019,25 +1039,25 @@ static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutput
 - (void)testRetrievingValueTransformersBySourceToDestinationClass
 {
     RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
-    RKValueTransformer *stringToValueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    RKValueTransformer *stringToValueTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSValue class]];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         return NO;
     }];
     [compoundValueTransformer addValueTransformer:stringToValueTransformer];
-    RKValueTransformer *stringToNumberTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    RKValueTransformer *stringToNumberTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSNumber class]];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         return NO;
     }];
     [compoundValueTransformer addValueTransformer:stringToNumberTransformer];
-    RKValueTransformer *stringToDecimalNumberTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    RKValueTransformer *stringToDecimalNumberTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         return NO;
     }];
     [compoundValueTransformer addValueTransformer:stringToDecimalNumberTransformer];
-    RKValueTransformer *numberToStringValueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    RKValueTransformer *numberToStringValueTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return [sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSString class]];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         return NO;
@@ -1056,25 +1076,25 @@ static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutput
 - (void)testValidatingValueTransformation
 {
     RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
-    RKValueTransformer *stringToValueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    RKValueTransformer *stringToValueTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSValue class]];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         return NO;
     }];
     [compoundValueTransformer addValueTransformer:stringToValueTransformer];
-    RKValueTransformer *stringToNumberTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    RKValueTransformer *stringToNumberTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSNumber class]];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         return NO;
     }];
     [compoundValueTransformer addValueTransformer:stringToNumberTransformer];
-    RKValueTransformer *stringToDecimalNumberTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    RKValueTransformer *stringToDecimalNumberTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return [sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSDecimalNumber class]];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         return NO;
     }];
     [compoundValueTransformer addValueTransformer:stringToDecimalNumberTransformer];
-    RKValueTransformer *numberToStringValueTransformer = [RKValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+    RKValueTransformer *numberToStringValueTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
         return [sourceClass isSubclassOfClass:[NSNumber class]] && [destinationClass isSubclassOfClass:[NSString class]];
     } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         return NO;
@@ -1116,7 +1136,7 @@ static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutput
 - (void)testTransformingValueFailsWithError
 {
     RKCompoundValueTransformer *compoundValueTransformer = [RKCompoundValueTransformer new];
-    [compoundValueTransformer addValueTransformer:[RKValueTransformer valueTransformerWithValidationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+    [compoundValueTransformer addValueTransformer:[RKBlockValueTransformer valueTransformerWithValidationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
         // Always fails
         RKValueTransformerTestTransformation(NO, error, @"This is an underlying error.");
         return YES;
