@@ -113,6 +113,7 @@
 #pragma mark -
 
 @interface RKObjectMappingNextGenTest : RKTestCase
+@property (nonatomic, copy) NSArray *originalDateValueTransformers;
 @end
 
 @implementation RKObjectMappingNextGenTest
@@ -125,30 +126,9 @@
 - (void)tearDown
 {
     [RKTestFactory tearDown];
-}
 
-- (void)resetDateFormatterTransformers
-{
-    NSArray *dateTransformers = [[RKValueTransformer defaultValueTransformer] valueTransformersForTransformingFromClass:[NSString class] toClass:[NSDate class]];
-    for (id<RKValueTransforming> valueTransformer in dateTransformers) {
-        if ([valueTransformer respondsToSelector:@selector(dateFromString:)]) [[RKValueTransformer defaultValueTransformer] removeValueTransformer:valueTransformer];
-    }
-
-    RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
-    iso8601DateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    iso8601DateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    iso8601DateFormatter.includeTime = YES;
-    iso8601DateFormatter.parsesStrictly = YES;
-    [[RKValueTransformer defaultValueTransformer] addValueTransformer:iso8601DateFormatter];
-
-    NSArray *defaultDateFormatStrings = @[ @"MM/dd/yyyy", @"yyyy-MM-dd'T'HH:mm:ss'Z'", @"yyyy-MM-dd" ];
-    for (NSString *dateFormatString in defaultDateFormatStrings) {
-        NSDateFormatter *dateFormatter = [NSDateFormatter new];
-        dateFormatter.dateFormat = dateFormatString;
-        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        [[RKValueTransformer defaultValueTransformer] addValueTransformer:dateFormatter];
-    }
+    // Reset the default transformer
+    [RKValueTransformer setDefaultValueTransformer:nil];
 }
 
 #pragma mark - RKObjectKeyPathMapping Tests
@@ -964,8 +944,6 @@
 
 - (void)testShouldMapAStringToADateAttribute
 {
-    [self resetDateFormatterTransformers];
-
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addPropertyMapping:birthDateMapping];
@@ -1448,8 +1426,6 @@
 
 - (void)testShouldMapNSDateDistantFutureDateStringToADate
 {
-    [self resetDateFormatterTransformers];
-
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addPropertyMapping:birthDateMapping];
@@ -2343,7 +2319,6 @@
 
 - (void)testShouldAutoConfigureDefaultDateFormatters
 {
-    [self resetDateFormatterTransformers];
     NSArray *dateFormatters = [RKObjectMapping defaultDateFormatters];
     expect(dateFormatters).to.haveCountOf(4);
     expect([dateFormatters[3] dateFormat]).to.equal(@"yyyy-MM-dd");
@@ -2366,7 +2341,6 @@
 
 - (void)testShouldLetYouAppendADateFormatterToTheList
 {
-    [self resetDateFormatterTransformers];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     [RKObjectMapping addDefaultDateFormatter:dateFormatter];
@@ -2404,7 +2378,6 @@
 
 - (void)testShouldLetYouConfigureANewDateFormatterFromAStringAndATimeZone
 {
-    [self resetDateFormatterTransformers];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:EDTTimeZone];
@@ -2434,7 +2407,6 @@
 
 - (void)testShouldConfigureANewDateFormatterInTheUTCTimeZoneIfPassedANilTimeZone
 {
-    [self resetDateFormatterTransformers];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:nil];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));

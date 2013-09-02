@@ -236,6 +236,7 @@ return NO; \
 
 // TODO: Probably just move this to `RKObjectMapping`...
 + (RKCompoundValueTransformer *)defaultValueTransformer;
++ (void)setDefaultValueTransformer:(RKCompoundValueTransformer *)compoundValueTransformer;
 
 @end
 

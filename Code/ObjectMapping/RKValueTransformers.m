@@ -387,51 +387,61 @@
     }];
 }
 
+static RKCompoundValueTransformer *defaultValueTransformer;
+static dispatch_once_t onceToken;
+
 + (RKCompoundValueTransformer *)defaultValueTransformer
 {
-    static RKCompoundValueTransformer *defaultValueTransformer;
-    static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        defaultValueTransformer = [RKCompoundValueTransformer compoundValueTransformerWithValueTransformers:@[
-                                   [self identityValueTransformer],
-                                   [self stringToURLValueTransformer],
-                                   
-                                   // `NSDecimalNumber` transformers must be consulted ahead of `NSNumber` transformers because `NSDecimalNumber` is a subclass thereof
-                                   [self decimalNumberToNumberValueTransformer],
-                                   [self decimalNumberToStringValueTransformer],
-                                   
-                                   [self numberToStringValueTransformer],
-                                   [self arrayToOrderedSetValueTransformer],
-                                   [self arrayToSetValueTransformer],
-                                   [self nullValueTransformer],
-                                   [self keyedArchivingValueTransformer],
-                                   [self timeIntervalSince1970ToDateValueTransformer],
-                                   [self stringValueTransformer],
-                                   [self objectToCollectionValueTransformer],
-                                   [self stringValueTransformer],
-                                   [self keyOfDictionaryValueTransformer],
-                                   [self mutableValueTransformer],
-                                   ]];
+        if (! defaultValueTransformer) {
+            defaultValueTransformer = [RKCompoundValueTransformer compoundValueTransformerWithValueTransformers:@[
+                                       [self identityValueTransformer],
+                                       [self stringToURLValueTransformer],
+                                       
+                                       // `NSDecimalNumber` transformers must be consulted ahead of `NSNumber` transformers because `NSDecimalNumber` is a subclass thereof
+                                       [self decimalNumberToNumberValueTransformer],
+                                       [self decimalNumberToStringValueTransformer],
+                                       
+                                       [self numberToStringValueTransformer],
+                                       [self arrayToOrderedSetValueTransformer],
+                                       [self arrayToSetValueTransformer],
+                                       [self nullValueTransformer],
+                                       [self keyedArchivingValueTransformer],
+                                       [self stringValueTransformer],
+                                       [self objectToCollectionValueTransformer],
+                                       [self stringValueTransformer],
+                                       [self keyOfDictionaryValueTransformer],
+                                       [self mutableValueTransformer],
+                                       ]];
 
-        // Default date formatters
-        RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
-        iso8601DateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        iso8601DateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        iso8601DateFormatter.includeTime = YES;
-        iso8601DateFormatter.parsesStrictly = YES;
-        [defaultValueTransformer addValueTransformer:iso8601DateFormatter];
-        
-        NSArray *defaultDateFormatStrings = @[ @"MM/dd/yyyy", @"yyyy-MM-dd'T'HH:mm:ss'Z'", @"yyyy-MM-dd" ];
-        for (NSString *dateFormatString in defaultDateFormatStrings) {
-            NSDateFormatter *dateFormatter = [NSDateFormatter new];
-            dateFormatter.dateFormat = dateFormatString;
-            dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-            dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-            [defaultValueTransformer addValueTransformer:dateFormatter];
+            // Default date formatters
+            RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
+            iso8601DateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+            iso8601DateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+            iso8601DateFormatter.includeTime = YES;
+            iso8601DateFormatter.parsesStrictly = YES;
+            [defaultValueTransformer addValueTransformer:iso8601DateFormatter];
+
+            // Ensures that parameterization favors ISO8601 by default
+            [defaultValueTransformer addValueTransformer:[self timeIntervalSince1970ToDateValueTransformer]];
+            
+            NSArray *defaultDateFormatStrings = @[ @"MM/dd/yyyy", @"yyyy-MM-dd'T'HH:mm:ss'Z'", @"yyyy-MM-dd" ];
+            for (NSString *dateFormatString in defaultDateFormatStrings) {
+                NSDateFormatter *dateFormatter = [NSDateFormatter new];
+                dateFormatter.dateFormat = dateFormatString;
+                dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+                dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+                [defaultValueTransformer addValueTransformer:dateFormatter];
+            }
         }
-
     });
     return defaultValueTransformer;
+}
+
++ (void)setDefaultValueTransformer:(RKCompoundValueTransformer *)compoundValueTransformer
+{
+    onceToken = 0; // resets the once_token so dispatch_once will run again
+    defaultValueTransformer = compoundValueTransformer;
 }
 
 @end
