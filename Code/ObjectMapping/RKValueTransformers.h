@@ -225,6 +225,11 @@ return NO; \
 + (instancetype)objectToCollectionValueTransformer;
 
 /**
+ Returns a transformer capable of transforming any object that conforms to the `NSCopying` protocol into a dictionary representation keyed by the transformed object.
+ */
++ (instancetype)keyOfDictionaryValueTransformer;
+
+/**
  Returns a transformer capable of transforming any object conforming to the `NSMutableCopying` protocol into a mutable representation of itself.
  */
 + (instancetype)mutableValueTransformer;

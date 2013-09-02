@@ -364,6 +364,29 @@
     }];
 }
 
++ (instancetype)keyOfDictionaryValueTransformer
+{
+    static dispatch_once_t onceToken;
+    static RKValueTransformer *valueTransformer;
+    return [self singletonValueTransformer:&valueTransformer name:NSStringFromSelector(_cmd) onceToken:&onceToken validationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+        return ([sourceClass conformsToProtocol:@protocol(NSCopying)] && [destinationClass isSubclassOfClass:[NSDictionary class]]);
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
+        if (! [inputValue conformsToProtocol:@protocol(NSCopying)]) {
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Expected an `inputValue` that conforms to `NSCopying`, but it does not." };
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
+            return NO;
+        }
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, [NSDictionary class], error);
+        if ([outputValueClass isSubclassOfClass:[NSMutableDictionary class]]) {
+            *outputValue = [NSMutableDictionary dictionaryWithObject:[NSMutableDictionary dictionary] forKey:inputValue];
+        } else {
+            *outputValue = @{ inputValue: @{} };
+        }
+
+        return YES;
+    }];
+}
+
 + (RKCompoundValueTransformer *)defaultValueTransformer
 {
     static RKCompoundValueTransformer *defaultValueTransformer;
@@ -386,7 +409,7 @@
                                    [self stringValueTransformer],
                                    [self objectToCollectionValueTransformer],
                                    [self stringValueTransformer],
-                                   [self keyedDictionaryValueTransformer],
+                                   [self keyOfDictionaryValueTransformer],
                                    [self mutableValueTransformer],
                                    ]];
 
@@ -397,7 +420,7 @@
         iso8601DateFormatter.includeTime = YES;
         iso8601DateFormatter.parsesStrictly = YES;
         [defaultValueTransformer addValueTransformer:iso8601DateFormatter];
-
+        
         NSArray *defaultDateFormatStrings = @[ @"MM/dd/yyyy", @"yyyy-MM-dd'T'HH:mm:ss'Z'", @"yyyy-MM-dd" ];
         for (NSString *dateFormatString in defaultDateFormatStrings) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];

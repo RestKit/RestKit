@@ -896,6 +896,77 @@
     expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
 }
 
+#pragma mark Copyable Object to NSDictionary
+
+- (void)testKeyOfDictionaryValueTransformerValidationSuccessFromCopyableToDictionary
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyOfDictionaryValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSString class] toClass:[NSDictionary class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testKeyOfDictionaryValueTransformerValidationSuccessFromCopyableToMutableDictionary
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyOfDictionaryValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSString class] toClass:[NSMutableDictionary class]];
+    expect(success).to.beTruthy();
+}
+
+- (void)testKeyOfDictionaryValueTransformerValidationFailure
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyOfDictionaryValueTransformer];
+    BOOL success = [valueTransformer validateTransformationFromClass:[NSObject class] toClass:[NSDictionary class]];
+    expect(success).to.beFalsy();
+}
+
+- (void)testKeyOfDictionaryValueTransformerTransformationSuccessFromStringToDictionary
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyOfDictionaryValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"key" toValue:&value ofClass:[NSDictionary class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSDictionary class]);
+    expect(value).to.equal(@{ @"key": @{}});
+}
+
+- (void)testKeyOfDictionaryValueTransformerTransformationSuccessFromStringToNSMutableDictionary
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyOfDictionaryValueTransformer];
+    NSString *value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"key" toValue:&value ofClass:[NSMutableDictionary class] error:&error];
+    expect(success).to.beTruthy();
+    expect(value).to.beKindOf([NSMutableDictionary class]);
+    expect(value).to.equal(([@{ @"key": [@{} mutableCopy] } mutableCopy]));
+}
+
+- (void)testKeyOfDictionaryValueTransformerFailureWithUntransformableInputValue
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyOfDictionaryValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:[NSObject new] toValue:&value ofClass:[NSDictionary class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUntransformableInputValue);
+}
+
+- (void)testKeyOfDictionaryValueTransformerFailureWithInvalidDestinationClass
+{
+    RKValueTransformer *valueTransformer = [RKValueTransformer keyOfDictionaryValueTransformer];
+    id value = nil;
+    NSError *error = nil;
+    BOOL success = [valueTransformer transformValue:@"key" toValue:&value ofClass:[NSNumber class] error:&error];
+    expect(success).to.beFalsy();
+    expect(value).to.beNil();
+    expect(error).notTo.beNil();
+    expect(error.domain).to.equal(RKErrorDomain);
+    expect(error.code).to.equal(RKValueTransformationErrorUnsupportedOutputClass);
+}
+
 @end
 
 static RKValueTransformer *RKTestValueTransformerWithOutputValue(id staticOutputValue)
