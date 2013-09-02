@@ -2316,6 +2316,9 @@
 
 #pragma mark - Date and Time Formatting
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (void)testShouldAutoConfigureDefaultDateFormatters
 {
     NSArray *dateFormatters = [RKObjectMapping defaultDateFormatters];
@@ -2440,6 +2443,8 @@
 
     expect(user.birthDate).to.equal(date);
 }
+
+#pragma clang diagnostic pop
 
 #pragma mark - Misc
 
