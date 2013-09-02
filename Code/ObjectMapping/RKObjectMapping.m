@@ -470,7 +470,8 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 + (NSFormatter *)preferredDateFormatter
 {
-    return [self defaultDateFormatters][0];
+    NSArray *defaultDateFormatters = [self defaultDateFormatters];
+    return [defaultDateFormatters count] ? defaultDateFormatters[0] : nil;
 }
 
 + (void)setPreferredDateFormatter:(NSDateFormatter *)dateFormatter
