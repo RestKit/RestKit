@@ -484,7 +484,10 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     if ([self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) {
         NSArray *dateToStringTransformers = [(RKCompoundValueTransformer *)self.valueTransformer valueTransformersForTransformingFromClass:[NSDate class] toClass:[NSString class]];
-        return [dateToStringTransformers firstObject];
+        for (id<RKValueTransforming> valueTransformer in dateToStringTransformers) {
+            if ([valueTransformer isKindOfClass:[NSFormatter class]]) return (NSFormatter *)valueTransformer;
+        }
+        return nil;
     } else return nil;
 }
 
