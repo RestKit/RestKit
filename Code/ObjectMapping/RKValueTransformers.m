@@ -386,10 +386,18 @@
                                    [self stringValueTransformer],
                                    [self objectToCollectionValueTransformer],
                                    [self stringValueTransformer],
+                                   [self keyedDictionaryValueTransformer],
                                    [self mutableValueTransformer],
                                    ]];
 
         // Default date formatters
+        RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
+        iso8601DateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        iso8601DateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        iso8601DateFormatter.includeTime = YES;
+        iso8601DateFormatter.parsesStrictly = YES;
+        [defaultValueTransformer addValueTransformer:iso8601DateFormatter];
+
         NSArray *defaultDateFormatStrings = @[ @"MM/dd/yyyy", @"yyyy-MM-dd'T'HH:mm:ss'Z'", @"yyyy-MM-dd" ];
         for (NSString *dateFormatString in defaultDateFormatStrings) {
             NSDateFormatter *dateFormatter = [NSDateFormatter new];
@@ -398,13 +406,7 @@
             dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
             [defaultValueTransformer addValueTransformer:dateFormatter];
         }
-        
-        RKISO8601DateFormatter *iso8601DateFormatter = [RKISO8601DateFormatter new];
-        iso8601DateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        iso8601DateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        iso8601DateFormatter.includeTime = YES;
-        iso8601DateFormatter.parsesStrictly = YES;
-        [defaultValueTransformer addValueTransformer:iso8601DateFormatter];
+
     });
     return defaultValueTransformer;
 }
