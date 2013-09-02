@@ -1463,7 +1463,6 @@
 
 - (void)testMappingArrayToMutableArray
 {
-    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [mapping addAttributeMappingsFromDictionary:@{ @"favoriteColors": @"mutableFavoriteColors" }];
     
