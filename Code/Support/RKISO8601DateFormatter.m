@@ -643,7 +643,7 @@ static NSMutableDictionary *timeZonesByOffset;
     if (! components) return nil;
 	if (outTimeZone)
 		*outTimeZone = timeZone;
-	self.parsingCalendar.timeZone = timeZone;
+	self.parsingCalendar.timeZone = timeZone ?: self.timeZone;
 	return [self.parsingCalendar dateFromComponents:components];
 }
 
