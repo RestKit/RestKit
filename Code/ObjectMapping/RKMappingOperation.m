@@ -431,15 +431,17 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     return [self applyNestingToMappings:self.objectMapping.relationshipMappings];
 }
 
-- (id)transformValue:(id)inputValue forPropertyMapping:(RKPropertyMapping *)propertyMapping
+- (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue withPropertyMapping:(RKPropertyMapping *)propertyMapping error:(NSError *__autoreleasing *)error
 {
     Class transformedValueClass = [self.objectMapping classForKeyPath:propertyMapping.destinationKeyPath];
-    if (! transformedValueClass) return inputValue;
+    if (! transformedValueClass) {
+        *outputValue = inputValue;
+        return YES;
+    }
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from class '%@' to '%@'", propertyMapping.sourceKeyPath, NSStringFromClass([inputValue class]), NSStringFromClass(transformedValueClass));
-    id transformedValue;
-    NSError *error;
-    BOOL success = [self.objectMapping.valueTransformer transformValue:inputValue toValue:&transformedValue ofClass:transformedValueClass error:&error];
-    return success ? transformedValue : inputValue;
+    BOOL success = [self.objectMapping.valueTransformer transformValue:inputValue toValue:outputValue ofClass:transformedValueClass error:error];
+    if (! success) RKLogError(@"Failed transformation of value at keyPath '%@' to representation of type '%@': %@", propertyMapping.sourceKeyPath, transformedValueClass, *error);
+    return success;
 }
 
 - (void)applyAttributeMapping:(RKAttributeMapping *)attributeMapping withValue:(id)value
@@ -449,13 +451,15 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     }
     RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
 
-    value = [self transformValue:value forPropertyMapping:attributeMapping];
+    id transformedValue = nil;
+    NSError *error = nil;
+    if (! [self transformValue:value toValue:&transformedValue withPropertyMapping:attributeMapping error:&error]) return;
     
     // If we have a nil value for a primitive property, we need to coerce it into a KVC usable value or bail out
-    if (value == nil && RKPropertyInspectorIsPropertyAtKeyPathOfObjectPrimitive(attributeMapping.destinationKeyPath, self.destinationObject)) {
+    if (transformedValue == nil && RKPropertyInspectorIsPropertyAtKeyPathOfObjectPrimitive(attributeMapping.destinationKeyPath, self.destinationObject)) {
         RKLogDebug(@"Detected `nil` value transformation for primitive property at keyPath '%@'", attributeMapping.destinationKeyPath);
-        value = RKPrimitiveValueForNilValueOfClass([self.objectMapping classForKeyPath:attributeMapping.destinationKeyPath]);
-        if (! value) {
+        transformedValue = RKPrimitiveValueForNilValueOfClass([self.objectMapping classForKeyPath:attributeMapping.destinationKeyPath]);
+        if (! transformedValue) {
             RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- Unable to transform `nil` into primitive value representation", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
             return;
         }
@@ -464,21 +468,21 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     RKSetIntermediateDictionaryValuesOnObjectForKeyPath(self.destinationObject, attributeMapping.destinationKeyPath);
     
     // Ensure that the value is different
-    if ([self shouldSetValue:&value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping]) {
-        RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+    if ([self shouldSetValue:&transformedValue forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping]) {
+        RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, transformedValue);
         
         if (attributeMapping.destinationKeyPath) {
-            [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
+            [self.destinationObject setValue:transformedValue forKeyPath:attributeMapping.destinationKeyPath];
         } else {
-            RKSetValueForObject(value, self.destinationObject);
+            RKSetValueForObject(transformedValue, self.destinationObject);
         }
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
-            [self.delegate mappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+            [self.delegate mappingOperation:self didSetValue:transformedValue forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
     } else {
-        RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+        RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, transformedValue);
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
-            [self.delegate mappingOperation:self didNotSetUnchangedValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+            [self.delegate mappingOperation:self didNotSetUnchangedValue:transformedValue forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
     }
     [self.mappingInfo addPropertyMapping:attributeMapping];
@@ -667,7 +671,10 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         }
     }];
 
-    id valueForRelationship = [self transformValue:relationshipCollection forPropertyMapping:relationshipMapping];
+    id valueForRelationship = nil;
+    NSError *error = nil;
+    if (! [self transformValue:relationshipCollection toValue:&valueForRelationship withPropertyMapping:relationshipMapping error:&error]) return NO;
+
     // If the relationship has changed, set it
     if ([self shouldSetValue:&valueForRelationship forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
         if (! [self mapCoreDataToManyRelationshipValue:valueForRelationship withMapping:relationshipMapping]) {
