@@ -33,7 +33,7 @@
 
 @implementation RKValueTransformerTest
 
-#pragma makr - Abstract Class Tests
+#pragma mark - Abstract Class Tests
 
 - (void)testThatDirectInstantiationOfRKValueTransformerRaises
 {

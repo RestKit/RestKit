@@ -548,4 +548,25 @@
     expect(blake.friend.luckyNumber).to.beNil();
 }
 
+- (void)testThatCustomTransformerOnPropertyMappingIsInvoked
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    RKPropertyMapping *propertyMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"url" toKeyPath:@"url"];
+    propertyMapping.valueTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        *outputValue = [inputValue URLByAppendingPathComponent:@"test"];
+        return YES;
+    }];
+    [mapping addPropertyMapping:propertyMapping];
+    TestMappable *object = [[TestMappable alloc] init];
+    object.url = [NSURL URLWithString:@"http://www.restkit.org"];
+    TestMappable *newObject = [TestMappable new];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:newObject mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(newObject.url, is(equalTo([NSURL URLWithString:@"http://www.restkit.org/test"])));
+}
+
 @end

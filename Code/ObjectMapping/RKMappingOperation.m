@@ -430,7 +430,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         return YES;
     }
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from class '%@' to '%@'", propertyMapping.sourceKeyPath, NSStringFromClass([inputValue class]), NSStringFromClass(transformedValueClass));
-    BOOL success = [self.objectMapping.valueTransformer transformValue:inputValue toValue:outputValue ofClass:transformedValueClass error:error];
+    BOOL success = [propertyMapping.valueTransformer transformValue:inputValue toValue:outputValue ofClass:transformedValueClass error:error];
     if (! success) RKLogError(@"Failed transformation of value at keyPath '%@' to representation of type '%@': %@", propertyMapping.sourceKeyPath, transformedValueClass, *error);
     return success;
 }
