@@ -19,6 +19,7 @@
 //
 
 #import "RKPropertyMapping.h"
+#import "RKObjectMapping.h"
 
 @interface RKPropertyMapping ()
 // Synthesize as read/write to allow assignment in `RKObjectMapping`
@@ -47,6 +48,11 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p %@ => %@>", self.class, self, self.sourceKeyPath, self.destinationKeyPath];
+}
+
+- (id<RKValueTransforming>)valueTransformer
+{
+    return _valueTransformer ?: [self.objectMapping valueTransformer];
 }
 
 @end
