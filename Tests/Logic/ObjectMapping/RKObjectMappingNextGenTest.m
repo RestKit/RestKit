@@ -42,10 +42,6 @@
 #import "RKCat.h"
 #import "RKHouse.h"
 
-@interface RKObjectMapping ()
-+ (void)resetDefaultDateFormatters;
-@end
-
 @interface RKExampleGroupWithUserArray : NSObject {
     NSString *_name;
     NSArray *_users;
@@ -117,6 +113,7 @@
 #pragma mark -
 
 @interface RKObjectMappingNextGenTest : RKTestCase
+@property (nonatomic, copy) NSArray *originalDateValueTransformers;
 @end
 
 @implementation RKObjectMappingNextGenTest
@@ -129,6 +126,9 @@
 - (void)tearDown
 {
     [RKTestFactory tearDown];
+
+    // Reset the default transformer
+    [RKValueTransformer setDefaultValueTransformer:nil];
 }
 
 #pragma mark - RKObjectKeyPathMapping Tests
@@ -944,8 +944,6 @@
 
 - (void)testShouldMapAStringToADateAttribute
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addPropertyMapping:birthDateMapping];
@@ -1176,7 +1174,7 @@
     [operation performMapping:&error];
 
     NSDecimalNumber *weight = user.weight;
-    assertThatBool([weight isKindOfClass:[NSDecimalNumber class]], is(equalToBool(YES)));
+    assertThat(weight, is(instanceOf([NSDecimalNumber class])));
     assertThatInteger([weight compare:[NSDecimalNumber decimalNumberWithString:@"187"]], is(equalToInt(NSOrderedSame)));
 }
 
@@ -1428,8 +1426,6 @@
 
 - (void)testShouldMapNSDateDistantFutureDateStringToADate
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addPropertyMapping:birthDateMapping];
@@ -2320,19 +2316,21 @@
 
 #pragma mark - Date and Time Formatting
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (void)testShouldAutoConfigureDefaultDateFormatters
 {
-    [RKObjectMapping resetDefaultDateFormatters];
     NSArray *dateFormatters = [RKObjectMapping defaultDateFormatters];
-    expect(dateFormatters).to.haveCountOf(5);
-    expect([dateFormatters[0] dateFormat]).to.equal(@"yyyy-MM-dd");
-    expect([dateFormatters[1] dateFormat]).to.equal(@"yyyy-MM-dd'T'HH:mm:ss'Z'");
-    expect([dateFormatters[2] dateFormat]).to.equal(@"MM/dd/yyyy");
+    expect(dateFormatters).to.haveCountOf(4);
+    expect([dateFormatters[3] dateFormat]).to.equal(@"yyyy-MM-dd");
+    expect([dateFormatters[2] dateFormat]).to.equal(@"yyyy-MM-dd'T'HH:mm:ss'Z'");
+    expect([dateFormatters[1] dateFormat]).to.equal(@"MM/dd/yyyy");
 
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    expect([[dateFormatters objectAtIndex:0] timeZone]).to.equal(UTCTimeZone);
     expect([[dateFormatters objectAtIndex:1] timeZone]).to.equal(UTCTimeZone);
     expect([[dateFormatters objectAtIndex:2] timeZone]).to.equal(UTCTimeZone);
+    expect([[dateFormatters objectAtIndex:3] timeZone]).to.equal(UTCTimeZone);
 }
 
 - (void)testShouldLetYouSetTheDefaultDateFormatters
@@ -2345,11 +2343,10 @@
 
 - (void)testShouldLetYouAppendADateFormatterToTheList
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     [RKObjectMapping addDefaultDateFormatter:dateFormatter];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
 }
 
 - (void)testShouldAllowNewlyAddedDateFormatterToRunFirst
@@ -2383,11 +2380,10 @@
 
 - (void)testShouldLetYouConfigureANewDateFormatterFromAStringAndATimeZone
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:EDTTimeZone];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     assertThat(dateFormatter.timeZone, is(equalTo(EDTTimeZone)));
 }
@@ -2413,10 +2409,9 @@
 
 - (void)testShouldConfigureANewDateFormatterInTheUTCTimeZoneIfPassedANilTimeZone
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:nil];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     assertThat(dateFormatter.timeZone, is(equalTo(UTCTimeZone)));
@@ -2448,6 +2443,8 @@
 
     expect(user.birthDate).to.equal(date);
 }
+
+#pragma clang diagnostic pop
 
 #pragma mark - Misc
 

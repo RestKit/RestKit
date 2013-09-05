@@ -1019,7 +1019,6 @@
     NSError *error = nil;
     BOOL success = [managedObjectStore.persistentStoreManagedObjectContext save:&error];
     assertThatBool(success, is(equalToBool(YES)));
-    NSLog(@"Failed to save MOC: %@", error);
     assertThat(error, is(nilValue()));
 
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Parent"];

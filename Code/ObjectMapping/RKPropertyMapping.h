@@ -21,6 +21,7 @@
 #import <Foundation/Foundation.h>
 
 @class RKObjectMapping;
+@protocol RKValueTransforming;
 
 /**
  `RKPropertyMapping` is an abstract class for describing the properties being mapped within an `RKObjectMapping` or `RKEntityMapping` object. It defines the common interface for its concrete subclasses `RKAttributeMapping` and `RKRelationshipMapping`. Each property mapping defines a single transformation from a source key path (often in the deserialized representation of a JSON or XML document) to a destination key path (typically on a target object).
@@ -49,6 +50,15 @@
  A key path on the destination object on which to set information that has been mapped from the source object.
  */
 @property (nonatomic, copy, readonly) NSString *destinationKeyPath;
+
+///-------------------------------------
+/// @name Specifying a Value Transformer
+///-------------------------------------
+
+/**
+ A value transformer with which to process input values being mapped with the receiver. If `nil`, then the `valueTransformer` of the parent `objectMapping` will be used instead.
+ */
+@property (nonatomic, strong) id<RKValueTransforming> valueTransformer;
 
 ///----------------------------------
 /// @name Comparing Property Mappings
