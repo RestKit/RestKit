@@ -26,14 +26,12 @@
 #import "RKISO8601DateFormatter.h"
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
+#import "RKValueTransformers.h"
 
-typedef NSString * (^RKSourceToDesinationKeyTransformationBlock)(RKObjectMapping *, NSString *sourceKey);
+typedef NSString * (^RKSourceToDesinationKeyTransformationBlock)(RKObjectMapping *, NSString *);
 
 // Constants
 NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
-
-// Private declaration
-NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters);
 
 static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyTransformationBlock = nil;
 
@@ -126,6 +124,9 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
                                                NSStringFromClass(self)]
                                      userInfo:nil];
     }
+
+    // TODO: Hook up value transformers from `RKObjectParameterization`
+
     return [self mappingForClass:[NSMutableDictionary class]];
 }
 
@@ -140,6 +141,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
         self.forceCollectionMapping = NO;
         self.performKeyValueValidation = YES;
         self.sourceToDestinationKeyTransformationBlock = defaultSourceToDestinationKeyTransformationBlock;
+        self.valueTransformer = [[RKValueTransformer defaultValueTransformer] copy];
     }
 
     return self;
@@ -151,8 +153,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     self.setNilForMissingRelationships = mapping.setNilForMissingRelationships;
     self.forceCollectionMapping = mapping.forceCollectionMapping;
     self.performKeyValueValidation = mapping.performKeyValueValidation;
-    self.dateFormatters = mapping.dateFormatters;
-    self.preferredDateFormatter = mapping.preferredDateFormatter;
+    self.valueTransformer = mapping.valueTransformer;
     self.sourceToDestinationKeyTransformationBlock = self.sourceToDestinationKeyTransformationBlock;
 }
 
@@ -399,18 +400,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     return propertyClass;
 }
 
-#pragma mark - Date and Time
-
-- (NSFormatter *)preferredDateFormatter
-{
-    return _preferredDateFormatter ?: [RKObjectMapping preferredDateFormatter];
-}
-
-- (NSArray *)dateFormatters
-{
-    return _dateFormatters ?: [RKObjectMapping defaultDateFormatters];
-}
-
 - (BOOL)isEqualToMapping:(RKObjectMapping *)otherMapping
 {
     if (! [otherMapping isKindOfClass:[RKObjectMapping class]]) return NO;
@@ -438,45 +427,36 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 /////////////////////////////////////////////////////////////////////////////
 
-static NSMutableArray *defaultDateFormatters = nil;
-static NSFormatter *preferredDateFormatter = nil;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 
-@implementation RKObjectMapping (DateAndTimeFormatting)
+@implementation RKObjectMapping (LegacyDateAndTimeFormatting)
 
 + (NSArray *)defaultDateFormatters
 {
-    if (!defaultDateFormatters) [self resetDefaultDateFormatters];
-
-    return defaultDateFormatters;
-}
-
-+ (void)resetDefaultDateFormatters
-{    
-    defaultDateFormatters = [[NSMutableArray alloc] init];
-    
-    //NSNumberFormatter which creates dates from Unix timestamps
-    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-    numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-    [self addDefaultDateFormatter:numberFormatter];
-    
-    RKISO8601DateFormatter *isoFormatter = [[RKISO8601DateFormatter alloc] init];
-    isoFormatter.parsesStrictly = YES;
-    [self addDefaultDateFormatter:isoFormatter];
-    
-    [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];
-    [self addDefaultDateFormatterForString:@"yyyy-MM-dd'T'HH:mm:ss'Z'" inTimeZone:nil];
-    [self addDefaultDateFormatterForString:@"yyyy-MM-dd" inTimeZone:nil];
+    NSArray *valueTransformers = [[RKValueTransformer defaultValueTransformer] valueTransformersForTransformingFromClass:[NSString class] toClass:[NSDate class]];
+    NSMutableArray *dateFormatters = [NSMutableArray arrayWithCapacity:[valueTransformers count]];
+    for (id<RKValueTransforming> valueTransformer in valueTransformers) {
+        if ([valueTransformer respondsToSelector:@selector(dateFromString:)]) [dateFormatters addObject:valueTransformer];
+    }
+    return dateFormatters;
 }
 
 + (void)setDefaultDateFormatters:(NSArray *)dateFormatters
 {
-    defaultDateFormatters = dateFormatters ? [[NSMutableArray alloc] initWithArray:dateFormatters] : [NSMutableArray array];
+    NSArray *defaultDateFormatters = [self defaultDateFormatters];
+    for (NSDateFormatter *dateFormatter in defaultDateFormatters) {
+        [[RKValueTransformer defaultValueTransformer] removeValueTransformer:dateFormatter];
+    }
+
+    for (NSDateFormatter *dateFormatter in dateFormatters) {
+        [[RKValueTransformer defaultValueTransformer] addValueTransformer:dateFormatter];
+    }
 }
 
 + (void)addDefaultDateFormatter:(id)dateFormatter
 {
-    [self defaultDateFormatters];
-    [defaultDateFormatters insertObject:dateFormatter atIndex:0];
+    [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
 }
 
 + (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone
@@ -484,72 +464,59 @@ static NSFormatter *preferredDateFormatter = nil;
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.dateFormat = dateFormatString;
     dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    if (nilOrTimeZone) {
-        dateFormatter.timeZone = nilOrTimeZone;
-    } else {
-        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    }
-
+    dateFormatter.timeZone = nilOrTimeZone ?: [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     [self addDefaultDateFormatter:dateFormatter];
 }
 
 + (NSFormatter *)preferredDateFormatter
 {
-    if (!preferredDateFormatter) {
-        RKISO8601DateFormatter *iso8601Formatter = [[RKISO8601DateFormatter alloc] init];
-        iso8601Formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-        iso8601Formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        iso8601Formatter.includeTime = YES;
-        preferredDateFormatter = iso8601Formatter;
-    }
-
-    return preferredDateFormatter;
+    NSArray *defaultDateFormatters = [self defaultDateFormatters];
+    return [defaultDateFormatters count] ? defaultDateFormatters[0] : nil;
 }
 
 + (void)setPreferredDateFormatter:(NSDateFormatter *)dateFormatter
 {
-    preferredDateFormatter = dateFormatter;
+    [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
+}
+
+#pragma mark - Date and Time
+
+- (NSFormatter *)preferredDateFormatter
+{
+    if ([self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) {
+        NSArray *dateToStringTransformers = [(RKCompoundValueTransformer *)self.valueTransformer valueTransformersForTransformingFromClass:[NSDate class] toClass:[NSString class]];
+        for (id<RKValueTransforming> valueTransformer in dateToStringTransformers) {
+            if ([valueTransformer isKindOfClass:[NSFormatter class]]) return (NSFormatter *)valueTransformer;
+        }
+    }
+    return nil;
+}
+
+- (void)setPreferredDateFormatter:(NSFormatter *)preferredDateFormatter
+{
+    if ([self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) {
+        [(RKCompoundValueTransformer *)self.valueTransformer insertValueTransformer:(NSFormatter<RKValueTransforming> *)preferredDateFormatter atIndex:0];
+    }
+}
+
+- (NSArray *)dateFormatters
+{
+    if ([self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) {
+        return [(RKCompoundValueTransformer *)self.valueTransformer valueTransformersForTransformingFromClass:[NSDate class] toClass:[NSString class]];
+    } else return nil;
+}
+
+- (void)setDateFormatters:(NSArray *)dateFormatters
+{
+    if (! [self.valueTransformer isKindOfClass:[RKCompoundValueTransformer class]]) [NSException raise:NSInternalInconsistencyException format:@"Cannot set date formatters: the receiver's `valueTransformer` is not an instance of `RKCompoundValueTransformer`."];
+    for (id<RKValueTransforming> dateFormatter in [self dateFormatters]) {
+        [(RKCompoundValueTransformer *)self.valueTransformer removeValueTransformer:dateFormatter];
+    }
+    for (id<RKValueTransforming> dateFormatter in dateFormatters) {
+        [(RKCompoundValueTransformer *)self.valueTransformer addValueTransformer:dateFormatter];
+    }
 }
 
 @end
 
-#pragma mark - Functions
-
-NSDate *RKDateFromStringWithFormatters(NSString *dateString, NSArray *formatters)
-{
-    NSDate *date = nil;
-    for (NSFormatter *dateFormatter in formatters) {
-        BOOL success;
-        @synchronized(dateFormatter) {
-            if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
-                RKLogTrace(@"Attempting to parse string '%@' with format string '%@' and time zone '%@'", dateString, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone]);
-            }
-            NSString *errorDescription = nil;
-            success = [dateFormatter getObjectValue:&date forString:dateString errorDescription:&errorDescription];
-        }
-
-        if (success && date) {
-            if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
-                RKLogTrace(@"Successfully parsed string '%@' with format string '%@' and time zone '%@' and turned into date '%@'",
-                           dateString, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone], date);
-            } else if ([dateFormatter isKindOfClass:[NSNumberFormatter class]]) {
-                NSNumber *formattedNumber = (NSNumber *)date;
-                date = [NSDate dateWithTimeIntervalSince1970:[formattedNumber doubleValue]];
-            }
-
-            break;
-        }
-    }
-
-    return date;
-}
-
-NSDate *RKDateFromString(NSString *dateString)
-{
-    return RKDateFromStringWithFormatters(dateString, [RKObjectMapping defaultDateFormatters]);
-}
-
-NSString *RKStringFromDate(NSDate *date)
-{
-    return [[RKObjectMapping preferredDateFormatter] stringForObjectValue:date];
-}
+#pragma clang diagnostic pop

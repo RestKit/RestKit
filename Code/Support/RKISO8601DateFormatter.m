@@ -165,8 +165,11 @@ static NSMutableDictionary *timeZonesByOffset;
 	return [self dateComponentsFromString:string timeZone:outTimeZone range:NULL];
 }
 
-- (NSDateComponents *) dateComponentsFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone range:(out NSRange *)outRange\
+- (NSDateComponents *) dateComponentsFromString:(NSString *)string timeZone:(out NSTimeZone **)outTimeZone range:(out NSRange *)outRange
 {
+    // We don't support ISO-8601 intervals so bail if the string contains a slash delimiter
+    if ([string rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]].location != NSNotFound) return nil;
+
 	NSDate *now = [NSDate date];
     
 	NSDateComponents *components = [[NSDateComponents alloc] init];
@@ -640,7 +643,7 @@ static NSMutableDictionary *timeZonesByOffset;
     if (! components) return nil;
 	if (outTimeZone)
 		*outTimeZone = timeZone;
-	self.parsingCalendar.timeZone = timeZone;
+	self.parsingCalendar.timeZone = timeZone ?: self.timeZone;
 	return [self.parsingCalendar dateFromComponents:components];
 }
 

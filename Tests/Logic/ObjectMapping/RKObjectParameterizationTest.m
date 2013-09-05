@@ -46,6 +46,9 @@
     
     [RKMIMETypeSerialization sharedSerialization].registrations = [NSMutableArray array];
     [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
+
+    // Reset the default transformer
+    [RKValueTransformer setDefaultValueTransformer:nil];
 }
 
 - (void)tearDown
@@ -84,6 +87,9 @@
     expect(parameters[@"date-form-name"]).to.equal(@"1970-01-01T00:00:00Z");
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (void)testShouldSerializeADateToAStringUsingThePreferredDateFormatter
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
@@ -104,6 +110,8 @@
     expect(error).to.beNil();
     expect(string).to.equal(@"date-form-name=01/01/1970&key1-form-name=value1");
 }
+
+#pragma clang diagnostic pop
 
 - (void)testShouldSerializeADateToJSON
 {

@@ -598,6 +598,8 @@
 		7F9CBC6174004E31AEC35813 /* libPods-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86EC453810D648768BF62304 /* libPods-osx.a */; };
 		BE05BDD11782109F00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
 		BE05BDD2178214AA00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
+		C05CFFFB176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */; };
+		C05CFFFC176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
 /* End PBXBuildFile section */
 
@@ -974,6 +976,7 @@
 		86EC453810D648768BF62304 /* libPods-osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-osx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.xcconfig"; path = "Pods/Pods-ios.xcconfig"; sourceTree = SOURCE_ROOT; };
 		BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouteTest.m; sourceTree = "<group>"; };
+		C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKValueTransformerTest.m; sourceTree = "<group>"; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
@@ -1516,6 +1519,7 @@
 				2519764215823BA1004FE9DD /* RKAttributeMappingTest.m */,
 				2519764715824455004FE9DD /* RKRelationshipMappingTest.m */,
 				2519764B158244F8004FE9DD /* RKObjectMappingTest.m */,
+				C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */,
 			);
 			name = ObjectMapping;
 			path = Logic/ObjectMapping;
@@ -2041,7 +2045,7 @@
 		25160D0D14564E810060A5C5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = RestKit;
 			};
 			buildConfigurationList = 25160D1014564E810060A5C5 /* Build configuration list for PBXProject "RestKit" */;
@@ -2322,6 +2326,7 @@
 				251610AA1456F2330060A5C5 /* RKHouse.m in Sources */,
 				251610AC1456F2330060A5C5 /* RKHuman.m in Sources */,
 				251610AE1456F2330060A5C5 /* RKMappableAssociation.m in Sources */,
+				C05CFFFB176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */,
 				251610B01456F2330060A5C5 /* RKMappableObject.m in Sources */,
 				251610B21456F2330060A5C5 /* RKObjectLoaderTestResultModel.m in Sources */,
 				251610B41456F2330060A5C5 /* RKObjectMapperTestModel.m in Sources */,
@@ -2481,6 +2486,7 @@
 				251610AB1456F2330060A5C5 /* RKHouse.m in Sources */,
 				251610AD1456F2330060A5C5 /* RKHuman.m in Sources */,
 				251610AF1456F2330060A5C5 /* RKMappableAssociation.m in Sources */,
+				C05CFFFC176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */,
 				251610B11456F2330060A5C5 /* RKMappableObject.m in Sources */,
 				251610B31456F2330060A5C5 /* RKObjectLoaderTestResultModel.m in Sources */,
 				251610B51456F2330060A5C5 /* RKObjectMapperTestModel.m in Sources */,
@@ -2558,10 +2564,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -2577,9 +2584,12 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
@@ -2589,10 +2599,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -2601,7 +2612,9 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
@@ -2699,7 +2712,6 @@
 		25160E88145651060060A5C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -2728,7 +2740,6 @@
 		25160E89145651060060A5C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2758,7 +2769,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2779,7 +2789,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
