@@ -41,7 +41,7 @@ typedef enum {
  The key RestKit generated errors will appear at within an NSNotification
  indicating an error
  */
-extern NSString * const RKErrorNotificationErrorKey;
+extern NSString *const RKErrorNotificationErrorKey;
 
 /**
  When RestKit constructs an NSError object from one or more RKErrorMessage
@@ -52,8 +52,8 @@ extern NSString * const RKErrorNotificationErrorKey;
 
  @see RKObjectMappingResult
  */
-extern NSString * const RKObjectMapperErrorObjectsKey;
+extern NSString *const RKObjectMapperErrorObjectsKey;
 
-extern NSString * const RKDetailedErrorsKey; // When multiple errors occur, they are stored in a composite error
+extern NSString *const RKDetailedErrorsKey; // When multiple errors occur, they are stored in a composite error
 
-extern NSString * const RKMIMETypeErrorKey;
+extern NSString *const RKMIMETypeErrorKey;

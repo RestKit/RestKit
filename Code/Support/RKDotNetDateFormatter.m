@@ -21,9 +21,20 @@
 #import "RKDotNetDateFormatter.h"
 #import "RKLog.h"
 
-static BOOL RKDotNetDateFormatterIsValidRange(NSRange rangeOfMatch);
-static NSTimeInterval RKDotNetDateFormatterSecondsFromMilliseconds(NSTimeInterval millisecs);
-static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterval seconds);
+static BOOL RKDotNetDateFormatterIsValidRange(NSRange rangeOfMatch)
+{
+    return (!NSEqualRanges(rangeOfMatch, NSMakeRange(NSNotFound, 0)));
+}
+
+static NSTimeInterval RKDotNetDateFormatterSecondsFromMilliseconds(NSTimeInterval millisecs)
+{
+    return millisecs / 1000.f;
+}
+
+static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterval seconds)
+{
+    return seconds *1000.f;
+}
 
 @interface RKDotNetDateFormatter ()
 @property (nonatomic, strong) NSRegularExpression *dotNetExpression;
@@ -90,9 +101,6 @@ static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterva
     return self;
 }
 
-
-
-
 - (NSString *)millisecondsFromString:(NSString *)string
 {
     if (!string) return nil;
@@ -103,22 +111,5 @@ static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterva
     NSString *milliseconds = [string substringWithRange:millisecRange];
     return milliseconds;
 }
+
 @end
-
-
-static BOOL RKDotNetDateFormatterIsValidRange(NSRange rangeOfMatch)
-{
-    return (!NSEqualRanges(rangeOfMatch, NSMakeRange(NSNotFound, 0)));
-}
-
-
-static NSTimeInterval RKDotNetDateFormatterSecondsFromMilliseconds(NSTimeInterval millisecs)
-{
-    return millisecs / 1000.f;
-}
-
-
-static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterval seconds)
-{
-    return seconds *1000.f;
-}

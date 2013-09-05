@@ -1305,7 +1305,6 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(managedObjectRequestOperation.error).to.beNil();
     RKMappableObject *result = [managedObjectRequestOperation.mappingResult.array lastObject];
     RKTestUser *user = (RKTestUser *)result.hasMany.anyObject;
-    NSLog(@"Examining result = %@, with result.hasMany = %@, user = %@ and user.bestFriend(%@) = %@", result, result.hasMany, user, [user.bestFriend class], user.bestFriend);
     expect(user.bestFriend).to.beInstanceOf([RKHuman class]);
     expect([user.bestFriend managedObjectContext]).to.equal(managedObjectStore.persistentStoreManagedObjectContext);
 }

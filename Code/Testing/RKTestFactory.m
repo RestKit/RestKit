@@ -28,6 +28,7 @@
 
 #ifdef _COREDATADEFINES_H
 #import "RKManagedObjectStore.h"
+#import "RKManagedObjectStore+RKSearchAdditions.h"
 #endif
 
 // Expose MIME Type singleton and initialization routine

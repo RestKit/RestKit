@@ -17,7 +17,7 @@ namespace :test do
   
   desc "Run the unit tests for iOS"
   task :ios => :prepare do
-    $ios_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitTests -sdk iphonesimulator test -test-sdk iphonesimulator")
+    $ios_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitTests -sdk iphonesimulator test -test-sdk iphonesimulator ONLY_ACTIVE_ARCH=NO")
   end
   
   desc "Run the unit tests for OS X"
