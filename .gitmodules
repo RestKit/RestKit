@@ -4,3 +4,6 @@
 [submodule "Vendor/TransitionKit"]
 	path = Vendor/TransitionKit
 	url = https://github.com/blakewatters/TransitionKit.git
+[submodule "Vendor/RKValueTransformers"]
+	path = Vendor/RKValueTransformers
+	url = https://github.com/RestKit/RKValueTransformers
