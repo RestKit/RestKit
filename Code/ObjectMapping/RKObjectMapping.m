@@ -159,8 +159,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    RKObjectMapping *copy = [[[self class] allocWithZone:zone] init];
-    copy.objectClass = self.objectClass;
+    RKObjectMapping *copy = [[[self class] allocWithZone:zone] initWithClass:self.objectClass];
     [copy copyPropertiesFromMapping:self];
     copy.mutablePropertyMappings = [NSMutableArray new];
 
