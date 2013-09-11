@@ -287,12 +287,22 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     NSArray *sourceKeyComponents = [mapping.sourceKeyPath componentsSeparatedByString:@"."];
     if (sourceKeyComponents.count > 1)
     {
-        for (NSString *key in [sourceKeyComponents subarrayWithRange:NSMakeRange(0, sourceKeyComponents.count - 1)])
-        {
-            parentSourceObject = [[RKMappingSourceObject alloc] initWithObject:[parentSourceObject valueForKey:key]
-                                                                  parentObject:parentSourceObject
-                                                                    rootObject:self.rootSourceObject
-                                                                      metadata:self.metadata];
+        @try {
+            for (NSString *key in [sourceKeyComponents subarrayWithRange:NSMakeRange(0, sourceKeyComponents.count - 1)])
+            {
+                parentSourceObject = [[RKMappingSourceObject alloc] initWithObject:[parentSourceObject valueForKey:key]
+                                                                      parentObject:parentSourceObject
+                                                                        rootObject:self.rootSourceObject
+                                                                          metadata:self.metadata];
+            }
+        }
+        @catch (NSException *exception) {
+            if ([exception.name isEqualToString:NSInvalidArgumentException]) {
+                RKLogDebug(@"Caught NSInvalidArgumentException while creating parent object chain. Assuming this is caused by a key containing dots and directly using source object.");
+                parentSourceObject = self.sourceObject;
+            } else {
+                [exception raise];
+            }
         }
     }
 

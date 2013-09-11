@@ -108,6 +108,46 @@
 
 @end
 
+@interface RKExampleGroupWithUser : NSObject {
+    RKTestUser *_user;
+}
+
+@property (nonatomic, retain) RKTestUser *user;
+
+@end
+
+@implementation RKExampleGroupWithUser
+
+@synthesize user = _user;
+
++ (RKExampleGroupWithUser *)group
+{
+    return [self new];
+}
+
+@end
+
+@interface RKExampleGroupWithGroup : NSObject {
+    RKExampleGroupWithUser *_userGroup;
+}
+
+@property (nonatomic, retain) RKExampleGroupWithUser *userGroup;
+
+@end
+
+@implementation RKExampleGroupWithGroup
+
+@synthesize userGroup = _userGroup;
+
++ (RKExampleGroupWithGroup *)group
+{
+    return [self new];
+}
+
+@end
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 #pragma mark -
@@ -938,6 +978,31 @@
     NSError *error = nil;
     [operation performMapping:&error];
     assertThat(error, isNot(nilValue()));
+}
+
+- (void)testShouldBeAbleToMapKeysWithDots
+{
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [userMapping addPropertyMapping:idMapping];
+    RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addPropertyMapping:nameMapping];
+    
+    RKObjectMapping *innerMapping = [RKObjectMapping mappingForClass:[RKExampleGroupWithUser class]];
+    [innerMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"users.current.details" toKeyPath:@"user" withMapping:userMapping]];
+     
+    RKObjectMapping *outerMapping = [RKObjectMapping mappingForClass:[RKExampleGroupWithGroup class]];
+    [outerMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"data" toKeyPath:@"userGroup" withMapping:innerMapping]];
+    
+    id groupInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"keys_with_dots.json"];
+    RKExampleGroupWithGroup *group = [RKExampleGroupWithGroup new];
+    
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:groupInfo destinationObject:group mapping:outerMapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    [operation start];
+    assertThat(group.userGroup.user.name, is(equalTo(@"Simon")));
+    assertThatInt([group.userGroup.user.userID intValue], is(equalToInt(12345)));
 }
 
 #pragma mark - Attribute Mapping

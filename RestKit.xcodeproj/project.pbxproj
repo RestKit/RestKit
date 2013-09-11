@@ -601,6 +601,8 @@
 		C05CFFFB176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */; };
 		C05CFFFC176A02EC006B1EBE /* RKValueTransformerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
+		F60B066D17A687FB007E26A8 /* keys_with_dots.json in Resources */ = {isa = PBXBuildFile; fileRef = F60B066C17A68531007E26A8 /* keys_with_dots.json */; };
+		F6D1196017A7C45F00C041E5 /* keys_with_dots.json in Resources */ = {isa = PBXBuildFile; fileRef = F60B066C17A68531007E26A8 /* keys_with_dots.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -979,6 +981,7 @@
 		C05CFFFA176A02EC006B1EBE /* RKValueTransformerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKValueTransformerTest.m; sourceTree = "<group>"; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
+		F60B066C17A68531007E26A8 /* keys_with_dots.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = keys_with_dots.json; sourceTree = "<group>"; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1395,6 +1398,7 @@
 				25160FE81456F2330060A5C5 /* users.json */,
 				25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */,
 				25119FB5154A34B400C6BC58 /* parents_and_children.json */,
+				F60B066C17A68531007E26A8 /* keys_with_dots.json */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -2109,6 +2113,7 @@
 				25CAAA9415254E7800CAE5D7 /* ArrayOfHumans.json in Resources */,
 				25119FB6154A34B400C6BC58 /* parents_and_children.json in Resources */,
 				259D983C154F6C90008C90F5 /* benchmark_parents_and_children.json in Resources */,
+				F60B066D17A687FB007E26A8 /* keys_with_dots.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2161,6 +2166,7 @@
 				25CAAA9515254E7800CAE5D7 /* ArrayOfHumans.json in Resources */,
 				25119FB7154A34B400C6BC58 /* parents_and_children.json in Resources */,
 				259D983D154F6C90008C90F5 /* benchmark_parents_and_children.json in Resources */,
+				F6D1196017A7C45F00C041E5 /* keys_with_dots.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
