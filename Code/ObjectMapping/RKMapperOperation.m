@@ -96,7 +96,6 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 {
     NSAssert(error, @"Cannot add a nil error");
     [self.mappingErrors addObject:error];
-    RKLogWarning(@"Adding mapping error: %@", [error localizedDescription]);
 }
 
 - (void)addErrorWithCode:(RKMappingErrorCode)errorCode message:(NSString *)errorMessage keyPath:(NSString *)keyPath userInfo:(NSDictionary *)otherInfo
