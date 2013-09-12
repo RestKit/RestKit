@@ -20,6 +20,7 @@
 
 #import "RKMacros.h"
 #import "RKMapping.h"
+#import "RKValueTransformers.h"
 
 @class RKPropertyMapping, RKAttributeMapping, RKRelationshipMapping;
 @protocol RKValueTransforming;
@@ -474,3 +475,29 @@
 @property (nonatomic, strong) NSFormatter *preferredDateFormatter  DEPRECATED_ATTRIBUTE_MESSAGE("Use `valueTransformer` instead");
 
 @end
+
+///----------------
+/// @name Functions
+///----------------
+
+/**
+ Returns an date representation of a given string value by attempting to parse the string with all default date formatters in turn.
+
+ @param dateString A string object encoding a date value.
+ @return An `NSDate` object parsed from the given string, or `nil` if the string was found to be unparsable by all default date formatters.
+ @see [RKObjectMapping defaultDateFormatters]
+ */
+NSDate *RKDateFromString(NSString *dateString);
+
+/**
+ Returns a string representation of a given date formatted with the preferred date formatter.
+
+ This is a convenience function that is equivalent to the following example code:
+
+ NSString *string = [[RKObjectMapping preferredDateFormatter] stringForObjectValue:date]
+
+ @param date The date object to be formatted.
+ @return An `NSString` object representation of the given date formatted by the preferred date formatter.
+ @see [RKObjectMapping preferredDateFormatter]
+ */
+NSString *RKStringFromDate(NSDate *date);

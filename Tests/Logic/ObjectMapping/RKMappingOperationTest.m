@@ -369,6 +369,7 @@
     assertThat([object.date description], is(equalTo(@"2011-08-09 00:00:00 +0000")));
 }
 
+// NOTE: The timestamp used here is missing seconds
 - (void)testShouldMapAISODateStringAppropriately
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];

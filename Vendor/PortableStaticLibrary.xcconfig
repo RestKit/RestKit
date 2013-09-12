@@ -1,6 +1,0 @@
-// See http://mrox.net/blog/2011/06/19/framework-like-static-libraries/
-// Derived from: https://gist.github.com/972630
-
-PUBLIC_HEADERS_FOLDER_PATH = include/$(PROJECT_NAME)
-INSTALL_PATH               = /../BuildProductsPath/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/
-OTHER_LDFLAGS              = -ObjC

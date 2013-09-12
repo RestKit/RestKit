@@ -23,10 +23,10 @@
 #import "RKRelationshipMapping.h"
 #import "RKPropertyInspector.h"
 #import "RKLog.h"
-#import "RKISO8601DateFormatter.h"
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
 #import "RKValueTransformers.h"
+#import "ISO8601DateFormatterValueTransformer.h"
 
 typedef NSString * (^RKSourceToDesinationKeyTransformationBlock)(RKObjectMapping *, NSString *);
 
@@ -128,6 +128,13 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     // TODO: Hook up value transformers from `RKObjectParameterization`
 
     return [self mappingForClass:[NSMutableDictionary class]];
+}
+
++ (void)initialize
+{
+    // Add an ISO8601DateFormatter to the transformation stack for backwards compatibility
+    RKISO8601DateFormatter *dateFormatter = [RKISO8601DateFormatter defaultISO8601DateFormatter];
+    [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
 }
 
 - (id)initWithClass:(Class)objectClass
@@ -519,3 +526,21 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 @end
 
 #pragma clang diagnostic pop
+
+#pragma mark - Functions
+
+NSDate *RKDateFromString(NSString *dateString)
+{
+    NSDate *outputDate = nil;
+    NSError *error = nil;
+    BOOL success = [[RKValueTransformer defaultValueTransformer] transformValue:dateString toValue:&outputDate ofClass:[NSDate class] error:&error];
+    return success ? outputDate : nil;
+}
+
+NSString *RKStringFromDate(NSDate *date)
+{
+    NSString *outputString = nil;
+    NSError *error = nil;
+    BOOL success = [[RKValueTransformer defaultValueTransformer] transformValue:date toValue:&outputString ofClass:[NSString class] error:&error];
+    return success ? outputString : nil;
+}
