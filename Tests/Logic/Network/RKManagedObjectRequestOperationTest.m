@@ -1552,4 +1552,21 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(blockMappingContext).notTo.beNil();
 }
 
+- (void)testLoadingManagedObjectsWithAttributeKeyPath
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.identificationAttributes = @[ @"railsID" ];
+    [entityMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"railsID"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"user_ids" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/user_ids" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect([managedObjectRequestOperation.mappingResult array]).will.haveCountOf(3);
+}
+
 @end
