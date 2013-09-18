@@ -78,7 +78,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
 {
     if (!attributeName) return propertyMappings;
 
-    NSString *searchString = [NSString stringWithFormat:@"(%@)", attributeName];
+    NSString *searchString = [NSString stringWithFormat:@"{%@}", attributeName];
     NSString *replacementString = [NSString stringWithFormat:@"%@", value];
     NSMutableArray *nestedMappings = [NSMutableArray arrayWithCapacity:[propertyMappings count]];
     for (RKPropertyMapping *propertyMapping in propertyMappings) {

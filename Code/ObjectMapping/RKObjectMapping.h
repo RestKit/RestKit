@@ -243,7 +243,7 @@
      RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[User class]];
      mapping.forceCollectionMapping = YES; // RestKit cannot infer this is a collection, so we force it
      [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"firstName"];
-     [mapping addAttributeMappingsFromDictionary:@{ @"(firstName).id": @"userID", @"(firstName).email": @"email" }];
+     [mapping addAttributeMappingsFromDictionary:@{ @"{firstName}.id": @"userID", @"{firstName}.email": @"email" }];
  */
 - (void)addAttributeMappingFromKeyOfRepresentationToAttribute:(NSString *)attributeName;
 
@@ -265,7 +265,7 @@
  
      RKObjectMapping *mapping = [RKObjectMapping requestMapping];
      [mapping addAttributeMappingToKeyOfRepresentationFromAttribute:@"firstName"];
-     [mapping addAttributeMappingsFromDictionary:@{ @"(firstName).userID": @"id", @"(firstName).email": @"email" }];
+     [mapping addAttributeMappingsFromDictionary:@{ @"userID": @"{firstName}.id", @"email": @"{firstName}.email" }];
  */
 - (void)addAttributeMappingToKeyOfRepresentationFromAttribute:(NSString *)attributeName;
 
