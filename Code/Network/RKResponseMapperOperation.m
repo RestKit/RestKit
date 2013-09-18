@@ -326,7 +326,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
         parsedBody = self.willMapDeserializedResponseBlock(parsedBody);
         if (! parsedBody) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Mapping was declined due to a `willMapDeserializedResponseBlock` returning nil." };
-            self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorFromMappingResult userInfo:userInfo];
+            self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorMappingDeclined userInfo:userInfo];
             RKLogError(@"Failed to parse response data: %@", [error localizedDescription]);
             [self willFinish];
             return;
