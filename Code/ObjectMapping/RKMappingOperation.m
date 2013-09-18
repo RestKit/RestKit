@@ -718,27 +718,13 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 
         if (value == nil) {
             RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
-
-            // Optionally nil out the property
-            id nilReference = nil;
-            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
-                RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
-                [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
-            }
-
+            [self setNilForRelationship:relationshipMapping];
             continue;
         }
         
         if (value == [NSNull null]) {
             RKLogDebug(@"Found null value at keyPath '%@'", relationshipMapping.sourceKeyPath);
-            
-            // Optionally nil out the property
-            id nilReference = nil;
-            if ([self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
-                RKLogTrace(@"Setting nil for null relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
-                [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
-            }
-            
+            [self setNilForRelationship:relationshipMapping];
             continue;
         }
 
@@ -772,6 +758,16 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
                 value = [relationshipClass orderedSetWithObject:value];
             } else {
                 RKLogWarning(@"Failed to transform single object");
+            }
+        }
+
+        // Handle case where incoming content is an array (generally with 1 item) but we want to map to a single object
+        if (relationshipClass && !mappingToCollection && RKObjectIsCollection(value)) {
+            value = [[value objectEnumerator] nextObject];
+            if (value == nil) {
+                RKLogDebug(@"Did not find object in collectoin at keyPath '%@'", relationshipMapping.sourceKeyPath);
+                [self setNilForRelationship:relationshipMapping];
+                continue;
             }
         }
 
@@ -823,6 +819,15 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         } else {
             RKLogWarning(@"Unable to find nesting value for attribute '%@'", attributeMapping.destinationKeyPath);
         }
+    }
+}
+
+- (void)setNilForRelationship:(RKRelationshipMapping*)relationshipMapping
+{
+    id nilReference = nil;
+    if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
+        RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
+        [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
     }
 }
 
