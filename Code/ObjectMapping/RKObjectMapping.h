@@ -280,13 +280,17 @@
 
 /**
  When `YES`, any attributes that have mappings defined but are not present within the source object will be set to nil, clearing any existing value.
+
+ **Default**: `NO`
  */
-@property (nonatomic, assign, getter = shouldSetDefaultValueForMissingAttributes) BOOL setDefaultValueForMissingAttributes;
+@property (nonatomic, assign) BOOL assignsDefaultValueForMissingAttributes;
 
 /**
  When `YES`, any relationships that have mappings defined but are not present within the source object will be set to `nil`, clearing any existing value.
+
+ **Default**: `NO`
  */
-@property (nonatomic, assign) BOOL setNilForMissingRelationships;
+@property (nonatomic, assign) BOOL assignsNilForMissingRelationships;
 
 /**
  When `YES`, key-value validation will be invoked at object mapping time.
@@ -294,7 +298,7 @@
  **Default**: `YES`
  @see `validateValue:forKey:error:`
  */
-@property (nonatomic, assign) BOOL performKeyValueValidation;
+@property (nonatomic, assign) BOOL performsKeyValueValidation;
 
 /**
  A value transformer with which to process input values being mapped with the receiver. Defaults to a copy of `[RKValueTransformer defaultTransformer]`.
@@ -474,6 +478,13 @@
  */
 @property (nonatomic, strong) NSFormatter *preferredDateFormatter  DEPRECATED_ATTRIBUTE_MESSAGE("Use `valueTransformer` instead");
 
+@end
+
+@interface RKObjectMapping (Deprecations)
+// These methods were named to be more idiomation. Properties beginning with `set` generate method names like `setSetDefaultValueForMissingAttributes` and `performKeyValueValidation` reads more as a command to perform something than a configuration switch.
+@property (nonatomic, assign, getter = shouldSetDefaultValueForMissingAttributes) BOOL setDefaultValueForMissingAttributes DEPRECATED_ATTRIBUTE_MESSAGE("Renamed to `assignsDefaultValueForMissingAttributes`");
+@property (nonatomic, assign) BOOL setNilForMissingRelationships DEPRECATED_ATTRIBUTE_MESSAGE("Renamed to `assignsNilForMissingRelationships`");
+@property (nonatomic, assign) BOOL performKeyValueValidation DEPRECATED_ATTRIBUTE_MESSAGE("Renamed to `performsKeyValueValidation`");
 @end
 
 ///----------------

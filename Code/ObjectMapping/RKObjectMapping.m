@@ -143,10 +143,10 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     if (self) {
         self.objectClass = objectClass;
         self.mutablePropertyMappings = [NSMutableArray new];
-        self.setDefaultValueForMissingAttributes = NO;
-        self.setNilForMissingRelationships = NO;
+        self.assignsDefaultValueForMissingAttributes = NO;
+        self.assignsNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
-        self.performKeyValueValidation = YES;
+        self.performsKeyValueValidation = YES;
         self.sourceToDestinationKeyTransformationBlock = defaultSourceToDestinationKeyTransformationBlock;
         self.valueTransformer = [[RKValueTransformer defaultValueTransformer] copy];
     }
@@ -156,10 +156,10 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (void)copyPropertiesFromMapping:(RKObjectMapping *)mapping
 {
-    self.setDefaultValueForMissingAttributes = mapping.setDefaultValueForMissingAttributes;
-    self.setNilForMissingRelationships = mapping.setNilForMissingRelationships;
+    self.assignsDefaultValueForMissingAttributes = mapping.assignsDefaultValueForMissingAttributes;
+    self.assignsNilForMissingRelationships = mapping.assignsNilForMissingRelationships;
     self.forceCollectionMapping = mapping.forceCollectionMapping;
-    self.performKeyValueValidation = mapping.performKeyValueValidation;
+    self.performsKeyValueValidation = mapping.performsKeyValueValidation;
     self.valueTransformer = mapping.valueTransformer;
     self.sourceToDestinationKeyTransformationBlock = self.sourceToDestinationKeyTransformationBlock;
 }
@@ -521,6 +521,40 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     for (id<RKValueTransforming> dateFormatter in dateFormatters) {
         [(RKCompoundValueTransformer *)self.valueTransformer addValueTransformer:dateFormatter];
     }
+}
+
+@end
+
+@implementation RKObjectMapping (Deprecations)
+
+- (BOOL)shouldSetDefaultValueForMissingAttributes
+{
+    return self.assignsDefaultValueForMissingAttributes;
+}
+
+- (void)setSetDefaultValueForMissingAttributes:(BOOL)setDefaultValueForMissingAttributes
+{
+    self.assignsDefaultValueForMissingAttributes = setDefaultValueForMissingAttributes;
+}
+
+- (BOOL)setNilForMissingRelationships
+{
+    return self.assignsNilForMissingRelationships;
+}
+
+- (void)setSetNilForMissingRelationships:(BOOL)setNilForMissingRelationships
+{
+    self.assignsNilForMissingRelationships = setNilForMissingRelationships;
+}
+
+- (BOOL)performKeyValueValidation
+{
+    return self.performsKeyValueValidation;
+}
+
+- (void)setPerformKeyValueValidation:(BOOL)performKeyValueValidation
+{
+    self.performsKeyValueValidation = performKeyValueValidation;
 }
 
 @end

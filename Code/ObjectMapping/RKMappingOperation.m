@@ -322,7 +322,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 {
     BOOL success = YES;
 
-    if (self.objectMapping.performKeyValueValidation && [self.destinationObject respondsToSelector:@selector(validateValue:forKeyPath:error:)]) {
+    if (self.objectMapping.performsKeyValueValidation && [self.destinationObject respondsToSelector:@selector(validateValue:forKeyPath:error:)]) {
         NSError *validationError;
         success = [self.destinationObject validateValue:value forKeyPath:keyPath error:&validationError];
         if (!success) {
@@ -486,7 +486,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     // If we have a nesting substitution value, we have already succeeded
     BOOL appliedMappings = (self.nestedAttributeSubstitution != nil);
 
-    if (!self.objectMapping.performKeyValueValidation) {
+    if (!self.objectMapping.performsKeyValueValidation) {
         RKLogDebug(@"Key-value validation is disabled for mapping, skipping...");
     }
 
@@ -509,7 +509,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
             RKLogTrace(@"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
 
             // Optionally set the default value for missing values
-            if ([self.objectMapping shouldSetDefaultValueForMissingAttributes]) {
+            if (self.objectMapping.assignsDefaultValueForMissingAttributes) {
                 [self.destinationObject setValue:[self.objectMapping defaultValueForAttribute:attributeMapping.destinationKeyPath]
                                       forKeyPath:attributeMapping.destinationKeyPath];
                 RKLogTrace(@"Setting nil for missing attribute value at keyPath '%@'", attributeMapping.sourceKeyPath);
@@ -721,7 +721,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 
             // Optionally nil out the property
             id nilReference = nil;
-            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
+            if (self.objectMapping.assignsNilForMissingRelationships && [self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
                 RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
                 [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
             }
