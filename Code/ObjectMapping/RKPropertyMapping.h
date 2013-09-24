@@ -56,6 +56,13 @@
 ///-------------------------------------
 
 /**
+ Specifies the class used to represent the value of the mapped property. A value of `Nil` (which is the default value) indicates the property class is to be determined by runtime introspection.
+ 
+ In cases where run-time type introspection cannot be performed (such as during object parameterization) you can specify the class used to represent the value of the property being mapped.
+ */
+@property (nonatomic, strong) Class propertyValueClass;
+
+/**
  A value transformer with which to process input values being mapped with the receiver. If `nil`, then the `valueTransformer` of the parent `objectMapping` will be used instead.
  */
 @property (nonatomic, strong) id<RKValueTransforming> valueTransformer;

@@ -27,6 +27,7 @@
 #import "RKHuman.h"
 #import "RKTestUser.h"
 #import "RKCat.h"
+#import "RKCLLocationValueTransformer.h"
 
 @interface RKMIMETypeSerialization ()
 @property (nonatomic, strong) NSMutableArray *registrations;
@@ -502,6 +503,29 @@
     
     expect(error).to.beNil();
     expect(string).to.equal(@"{\"nestedPath\":{\"birthday\":\"1970-01-01T00:00:00Z\"}}");
+}
+
+- (void)testParameterizationFromLocationToNestedDictionaryUsingValueTransformer
+{
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.location = [[CLLocation alloc] initWithLatitude:125.55 longitude:200.5];
+    RKObjectMapping *userMapping = [RKObjectMapping requestMapping];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"location" toKeyPath:@"location"];
+    attributeMapping.propertyValueClass = [NSDictionary class];
+    attributeMapping.valueTransformer = [RKCLLocationValueTransformer locationValueTransformerWithLatitudeKey:@"latitude" longitudeKey:@"longitude"];
+    [userMapping addPropertyMapping:attributeMapping];
+
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:userMapping objectClass:[RKTestUser class] rootKeyPath:nil method:RKRequestMethodAny];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:user requestDescriptor:requestDescriptor error:&error];
+
+    expect(parameters).notTo.beNil();
+    expect(error).to.beNil();
+    expect(parameters[@"location"]).notTo.beNil();
+    expect(parameters[@"location"][@"latitude"]).to.equal(125.55);
+    expect(parameters[@"location"][@"longitude"]).to.equal(200.5);
 }
 
 @end

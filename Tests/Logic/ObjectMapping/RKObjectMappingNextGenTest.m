@@ -37,6 +37,7 @@
 #import "RKDynamicMapping.h"
 #import "RKMIMETypeSerialization.h"
 #import "ISO8601DateFormatterValueTransformer.h"
+#import "RKCLLocationValueTransformer.h"
 
 // Managed Object Serialization Testific
 #import "RKHuman.h"
@@ -2517,6 +2518,25 @@
     expect(user.coordinate).notTo.beNil();
     expect(user.coordinate.latitude).to.equal(125.55);
     expect(user.coordinate.longitude).to.equal(200.5);
+}
+
+- (void)testMappingDictionaryToCLLocationUsingValueTransformer
+{
+    NSDictionary *objectRepresentation = @{ @"name": @"Blake", @"latitude": @(125.55), @"longitude": @(200.5) };
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"location"];
+    attributeMapping.valueTransformer = [RKCLLocationValueTransformer locationValueTransformerWithLatitudeKey:@"latitude" longitudeKey:@"longitude"];
+    [userMapping addPropertyMapping:attributeMapping];
+    RKTestUser *user = [RKTestUser new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    mappingOperation.dataSource = dataSource;
+    [mappingOperation start];
+    expect(mappingOperation.error).to.beNil();
+    expect(user.location).notTo.beNil();
+    expect(user.location.coordinate.latitude).to.equal(125.55);
+    expect(user.location.coordinate.longitude).to.equal(200.5);
 }
 
 - (void)testThatAggregatedRelationshipMappingsAreOnlyAppliedIfThereIsAtLeastOneValueInTheRepresentation

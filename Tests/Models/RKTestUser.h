@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreLocation/CoreLocation.h>
 #import "RKTestAddress.h"
 #import "RKHuman.h"
 
@@ -38,6 +39,7 @@
 @property (nonatomic, strong) NSOrderedSet *friendsOrderedSet;
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, strong) RKTestCoordinate *coordinate;
+@property (nonatomic, copy) CLLocation *location;
 @property (nonatomic, assign) NSInteger age;
 @property (nonatomic, strong) NSDate *createdAt;
 @property (nonatomic, assign) NSInteger position;

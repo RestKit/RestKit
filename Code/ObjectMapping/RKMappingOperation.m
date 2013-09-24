@@ -421,7 +421,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 
 - (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue withPropertyMapping:(RKPropertyMapping *)propertyMapping error:(NSError *__autoreleasing *)error
 {
-    Class transformedValueClass = [self.objectMapping classForKeyPath:propertyMapping.destinationKeyPath];
+    Class transformedValueClass = propertyMapping.propertyValueClass ?: [self.objectMapping classForKeyPath:propertyMapping.destinationKeyPath];
     if (! transformedValueClass) {
         *outputValue = inputValue;
         return YES;
