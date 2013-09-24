@@ -1381,7 +1381,7 @@
     operation.dataSource = dataSource;
     id mockMapping = [OCMockObject partialMockForObject:mapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetDefaultValueForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] assignsDefaultValueForMissingAttributes];
     NSError *error = nil;
     [operation performMapping:&error];
     [mockUser verify];
@@ -1830,7 +1830,7 @@
     [dictionary removeObjectForKey:@"address"];
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] assignsNilForMissingRelationships];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mockMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
