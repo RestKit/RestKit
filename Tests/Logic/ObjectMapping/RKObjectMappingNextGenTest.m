@@ -2042,6 +2042,45 @@
     expect([existingCat isDeleted]).to.equal(YES);
 }
 
+- (void)testReplacmentPolicyForToManyCoreDataRelationshipDoesNotDeleteNewValuesOnSecondMapping
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [entityMapping addPropertyMapping:relationshipMapping];
+    
+    NSError *error = nil;
+    NSDictionary *dictionary = @{ @"name": @"Blake", @"cats": @[ @{ @"name": @"Roy" } ] };
+    
+    RKMappingOperation *firstOperation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *firstDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    firstOperation.dataSource = firstDataSource;
+    
+    [firstOperation performMapping:&error];
+    [human.managedObjectContext save:&error];
+    
+    expect([human.cats count]).to.equal(1);
+    NSArray *firstCatNames = [human.cats valueForKey:@"name"];
+    assertThat(firstCatNames, hasItems(@"Roy", nil));
+    
+    RKMappingOperation *secondOperation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *secondDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    secondOperation.dataSource = secondDataSource;
+    
+    [secondOperation performMapping:&error];
+    [human.managedObjectContext save:&error];
+    
+    expect([human.cats count]).to.equal(1);
+    NSArray *secondCatNames = [human.cats valueForKey:@"name"];
+    assertThat(secondCatNames, hasItems(@"Roy", nil));
+}
+
 - (void)testReplacmentPolicyForToOneCoreDataRelationshipDeletesExistingValues
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
