@@ -409,7 +409,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 - (BOOL)mappingOperation:(RKMappingOperation *)mappingOperation deleteExistingValueOfRelationshipWithMapping:(RKRelationshipMapping *)relationshipMapping error:(NSError **)error
 {
     // Validate the assignment policy
-    if (! relationshipMapping.assignmentPolicy == RKReplaceAssignmentPolicy) {
+    if (relationshipMapping.assignmentPolicy != RKReplaceAssignmentPolicy) {
         NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Unable to satisfy deletion request: Relationship mapping was expected to have an assignment policy of `RKReplaceAssignmentPolicy`, but did not." };
         NSError *localError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorInvalidAssignmentPolicy userInfo:userInfo];
         if (error) *error = localError;
