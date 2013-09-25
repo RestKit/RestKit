@@ -181,7 +181,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     // Store a cache entry indicating that the response has been previously mapped
     NSData *responseData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *headers = @{ @"Etag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
+    NSDictionary *headers = @{ @"ETag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:headers];
     NSAssert(response, @"Failed to build cached response");
     NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData userInfo:@{RKResponseHasBeenMappedCacheUserInfoKey: @YES} storagePolicy:NSURLCacheStorageAllowed];
@@ -213,7 +213,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     // Store a cache entry indicating that the response has been previously mapped
     NSData *responseData = [@"{ \"name\": \"Blake\"}" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *headers = @{ @"Etag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
+    NSDictionary *headers = @{ @"ETag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:headers];
     NSAssert(response, @"Failed to build cached response");
     NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData userInfo:@{RKResponseHasBeenMappedCacheUserInfoKey: @YES} storagePolicy:NSURLCacheStorageAllowed];
@@ -240,7 +240,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
     // Store a cache entry indicating that the response has been previously mapped
     NSData *responseData = [@"{\"human\": { \"name\": \"Blake\"}, \"user\": { \"name\": \"Blake\" }}" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *headers = @{ @"Etag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
+    NSDictionary *headers = @{ @"ETag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:headers];
     NSAssert(response, @"Failed to build cached response");
     NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData userInfo:@{RKResponseHasBeenMappedCacheUserInfoKey: @YES} storagePolicy:NSURLCacheStorageAllowed];
