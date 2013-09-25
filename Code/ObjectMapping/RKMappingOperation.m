@@ -718,27 +718,36 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 
         if (value == nil) {
             RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
-
-            // Optionally nil out the property
-            id nilReference = nil;
-            if (self.objectMapping.assignsNilForMissingRelationships && [self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
-                RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
-                [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
-            }
-
-            continue;
+            if (! self.objectMapping.assignsNilForMissingRelationships) continue;
         }
         
         if (value == [NSNull null]) {
             RKLogDebug(@"Found null value at keyPath '%@'", relationshipMapping.sourceKeyPath);
-            
-            // Optionally nil out the property
-            id nilReference = nil;
-            if ([self shouldSetValue:&nilReference forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
-                RKLogTrace(@"Setting nil for null relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
-                [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
+            value = nil;
+        }
+
+        // nil out the property if necessary
+        if (value == nil) {
+            Class relationshipClass = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
+            BOOL mappingToCollection = RKClassIsCollection(relationshipClass);
+            if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy && mappingToCollection) {
+                // Unioning `nil` with the existing value is functionally equivalent to doing nothing, so just continue
+                continue;
+            } else if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
+                NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Invalid assignment policy: cannot union a one-to-one relationship." };
+                self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorInvalidAssignmentPolicy userInfo:userInfo];
+                continue;
+            } else if (relationshipMapping.assignmentPolicy == RKReplaceAssignmentPolicy) {
+                if (! [self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
+                    continue;
+                }
             }
-            
+
+            if ([self shouldSetValue:&value forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
+                RKLogTrace(@"Setting nil for relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
+                [self.destinationObject setValue:value forKeyPath:relationshipMapping.destinationKeyPath];
+            }
+
             continue;
         }
 

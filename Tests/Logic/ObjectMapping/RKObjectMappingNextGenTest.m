@@ -2070,6 +2070,68 @@
     expect([existingCat isDeleted]).to.equal(YES);
 }
 
+- (void)testReplacmentPolicyForToOneCoreDataRelationshipDeletesExistingValuesAndRespectsAssignsNilForMissingRelationships
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKCat *existingCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    existingCat.name = @"Lola";
+    human.favoriteCat = existingCat;
+
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.assignsNilForMissingRelationships = YES;
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"favoriteCat" toKeyPath:@"favoriteCat" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [entityMapping addPropertyMapping:relationshipMapping];
+
+    NSDictionary *dictionary = @{ @"name": @"Blake" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect(human.favoriteCat).to.beNil();
+    expect([existingCat isDeleted]).to.equal(YES);
+}
+
+// NOTE: Using `assignsNilForMissingRelationships` with `RKAssignmentPolicyUnion` is functionally a no-op and leaves the existing values alone
+- (void)testUnionAssignmentPolicyForToManyCoreDataRelationshipDeletesExistingValuesWithAssignsNilForMissingRelationships
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKCat *existingCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    existingCat.name = @"Lola";
+    human.cats = [NSSet setWithObject:existingCat];
+
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.assignsNilForMissingRelationships = YES;
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKAssignmentPolicyUnion;
+    [entityMapping addPropertyMapping:relationshipMapping];
+
+    // No cats in the dictionary
+    NSDictionary *dictionary = @{ @"name": @"Blake" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([human.cats count]).to.equal(1);
+    NSArray *names = [human.cats valueForKey:@"name"];
+    assertThat(names, hasItems(@"Lola", nil));
+    expect([existingCat isDeleted]).to.equal(NO);
+}
+
 #pragma mark - RKDynamicMapping
 
 - (void)testShouldMapASingleObjectDynamically
