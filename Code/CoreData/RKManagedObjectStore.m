@@ -245,8 +245,24 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 
             return NO;
         }
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[seedPath stringByAppendingString:@"-shm"]]) {
+            if (![[NSFileManager defaultManager] copyItemAtPath:[seedPath stringByAppendingString:@"-shm"] toPath:[storePath stringByAppendingString:@"-shm"] error:&localError]) {
+                RKLogError(@"Failed to copy seed database (SHM) from path '%@' to path '%@': %@", seedPath, storePath, [localError localizedDescription]);
+                if (error) *error = localError;
+                
+                return NO;
+            }
+        }
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[seedPath stringByAppendingString:@"-wal"]]) {
+            if (![[NSFileManager defaultManager] copyItemAtPath:[seedPath stringByAppendingString:@"-wal"] toPath:[storePath stringByAppendingString:@"-wal"] error:&localError]) {
+                RKLogError(@"Failed to copy seed database (WAL) from path '%@' to path '%@': %@", seedPath, storePath, [localError localizedDescription]);
+                if (error) *error = localError;
+                
+                return NO;
+            }
+        }
     }
-
+    
     return YES;
 }
 
