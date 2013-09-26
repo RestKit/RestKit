@@ -36,6 +36,8 @@ EOS
   s.subspec 'ObjectMapping' do |os|
     os.source_files   = 'Code/ObjectMapping.h', 'Code/ObjectMapping'
     os.dependency       'RestKit/Support'
+    os.dependency       'RKValueTransformers', '~> 1.0.0'
+    os.dependency       'ISO8601DateFormatterValueTransformer', '~> 0.5.0'
   end
   
   s.subspec 'Network' do |ns|
@@ -71,7 +73,6 @@ EOS
   
   s.subspec 'Testing' do |ts|
     ts.source_files = 'Code/Testing.h', 'Code/Testing'
-    ts.dependency     'SOCKit'
     ts.prefix_header_contents = <<-EOS
 #import <Availability.h>
 

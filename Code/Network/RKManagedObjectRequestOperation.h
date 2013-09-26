@@ -140,7 +140,7 @@
 
  @warning A `nil` value for the `managedObjectCache` property is valid, but may result in the creation of duplicate objects.
  */
-@property (nonatomic, weak) id<RKManagedObjectCaching> managedObjectCache;
+@property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;
 
 /**
  An array of `RKFetchRequestBlock` block objects used to map `NSURL` objects into corresponding `NSFetchRequest` objects.

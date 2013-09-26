@@ -337,6 +337,11 @@ class RestKitTestServer < Sinatra::Base
     render_fixture('/JSON/user.json', :status => 200)
   end
 
+  get '/user_ids' do
+    content_type 'application/json'
+    { :user_ids => [1, 2, 3] }.to_json
+  end
+
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

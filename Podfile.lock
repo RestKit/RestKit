@@ -1,19 +1,65 @@
 PODS:
+  - AFNetworking (1.3.2)
   - Expecta (0.2.1)
+  - ISO8601DateFormatterValueTransformer (0.5.0):
+    - RKValueTransformers (~> 1.0.0)
   - OCHamcrest (2.1.0)
   - OCMock (2.1.1)
+  - RestKit (0.20.4-dev):
+    - RestKit/Core
+  - RestKit/Core (0.20.4-dev):
+    - RestKit/CoreData
+    - RestKit/Network
+    - RestKit/ObjectMapping
+  - RestKit/CoreData (0.20.4-dev)
+  - RestKit/Network (0.20.4-dev):
+    - AFNetworking (~> 1.3.0)
+    - RestKit/ObjectMapping
+    - RestKit/Support
+    - SOCKit
+  - RestKit/ObjectMapping (0.20.4-dev):
+    - ISO8601DateFormatterValueTransformer (~> 0.5.0)
+    - RestKit/Support
+    - RKValueTransformers (~> 1.0.0)
+  - RestKit/Search (0.20.4-dev):
+    - RestKit/CoreData
+  - RestKit/Support (0.20.4-dev):
+    - TransitionKit (= 1.1.1)
+  - RestKit/Testing (0.20.4-dev)
+  - RKCLLocationValueTransformer (1.0.0):
+    - RKValueTransformers (~> 1.0.0)
+  - RKValueTransformers (1.0.0)
+  - SOCKit (1.1)
   - Specta (0.1.9)
+  - TransitionKit (1.1.1)
 
 DEPENDENCIES:
   - Expecta (= 0.2.1)
   - OCHamcrest (= 2.1.0)
   - OCMock (= 2.1.1)
+  - RestKit (from `.`)
+  - RestKit/Search (from `.`)
+  - RestKit/Testing (from `.`)
+  - RKCLLocationValueTransformer (from `https://github.com/RestKit/RKCLLocationValueTransformer`)
   - Specta (= 0.1.9)
 
+EXTERNAL SOURCES:
+  RestKit:
+    :path: .
+  RKCLLocationValueTransformer:
+    :git: https://github.com/RestKit/RKCLLocationValueTransformer
+
 SPEC CHECKSUMS:
+  AFNetworking: 7f9bcd7c287a75476cd5c61e82fd3380e93e4c54
   Expecta: d46fb1bd78c90a83da0158b9b1e108de106e369f
+  ISO8601DateFormatterValueTransformer: d0af1f50a9df42db72d7418db31938b8473e0af8
   OCHamcrest: 96f5cb58fa0fd4b3609d37fe21e5246b259bba2a
   OCMock: 79212e5e328378af5cfd6edb5feacfd6c49cd8a3
+  RestKit: 7b563c5e4019e9b5c1e4c0f88f976dff4b442c9b
+  RKCLLocationValueTransformer: 9ea1356cb00f313f238698bab5339018fafedcce
+  RKValueTransformers: 01dc043fd853f6e40459b2e732dff545298a0f91
+  SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581
   Specta: 6ac5862bbff1a42269c2d582e4696f8b132d46cc
+  TransitionKit: d0e3344aac92991395d4c2e72d9c5a8ceeb12910
 
-COCOAPODS: 0.23.0
+COCOAPODS: 0.25.0

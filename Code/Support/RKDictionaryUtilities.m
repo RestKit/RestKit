@@ -8,7 +8,7 @@
 
 #import "RKDictionaryUtilities.h"
 
-NSDictionary * RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2)
+NSDictionary *RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2)
 {
     if (! dict1) return dict2;
     if (! dict2) return dict1;
@@ -28,7 +28,7 @@ NSDictionary * RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1
     return [mergedDictionary copy];
 }
 
-NSDictionary * RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(NSDictionary *dictionary)
+NSDictionary *RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(NSDictionary *dictionary)
 {
     NSMutableDictionary *results = [NSMutableDictionary dictionaryWithCapacity:[dictionary count]];
     [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
