@@ -72,8 +72,7 @@
     [self.mappingTest addExpectation:[RKPropertyMappingTestExpectation expectationWithSourceKeyPath:nil
                                                                                  destinationKeyPath:@"coordinate"
                                                                                               value:coordinate]];
-    expect([self.mappingTest evaluate]).to.equal(NO);
-
+    expect([self.mappingTest evaluate]).to.equal(YES);
 }
 
 - (void)testMappingTestForRelationshipWithBlock
