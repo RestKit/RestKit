@@ -18,11 +18,13 @@
 //  limitations under the License.
 //
 
+#ifdef _COREDATADEFINES_H
+
 #import "RKManagedObjectRequestOperation.h"
 #import "RKLog.h"
 #import "RKHTTPUtilities.h"
 #import "RKResponseMapperOperation.h"
-#import "RKRequestOperationSubclass.h"
+#import "RKObjectRequestOperationSubclass.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 #import "NSManagedObject+RKAdditions.h"
 #import "RKObjectUtilities.h"
@@ -540,8 +542,8 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         if (! RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(matchingResponseDescriptors)) return NO;
 
         // Check for a change in the Etag
-        NSString *cachedEtag = [[(NSHTTPURLResponse *)[self.cachedResponse response] allHeaderFields] objectForKey:@"Etag"];
-        NSString *responseEtag = [[response allHeaderFields] objectForKey:@"Etag"];
+        NSString *cachedEtag = [[(NSHTTPURLResponse *)[self.cachedResponse response] allHeaderFields] objectForKey:@"ETag"];
+        NSString *responseEtag = [[response allHeaderFields] objectForKey:@"ETag"];
         if (! [cachedEtag isEqualToString:responseEtag]) return NO;
         
         // Response data has changed
@@ -603,9 +605,13 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         NSError *error = nil;
         
         // Handle any cleanup
-        success = [weakSelf deleteTargetObjectIfAppropriate:&error];
-        if (! success || [weakSelf isCancelled]) {
-            return completionBlock(nil, error);
+        if (weakSelf.targetObjectID
+            && NSLocationInRange(weakSelf.HTTPRequestOperation.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))
+            && [[[weakSelf.HTTPRequestOperation.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]) {
+            success = [weakSelf deleteTargetObject:&error];
+            if (! success || [weakSelf isCancelled]) {
+                return completionBlock(nil, error);
+            }
         }
         
         success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
@@ -618,11 +624,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         if (! success || [weakSelf isCancelled]) {
             return completionBlock(nil, error);
         }
-        if (weakSelf.willSaveMappingContextBlock) {
-            [weakSelf.privateContext performBlockAndWait:^{
-                weakSelf.willSaveMappingContextBlock(weakSelf.privateContext);
-            }];
-        }
+        
         success = [weakSelf saveContext:&error];
         if (! success || [weakSelf isCancelled]) {
             return completionBlock(nil, error);
@@ -640,15 +642,12 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
 }
 
-- (BOOL)deleteTargetObjectIfAppropriate:(NSError **)error
+- (BOOL)deleteTargetObject:(NSError **)error
 {
     __block BOOL _blockSuccess = YES;
 
-    if (self.targetObjectID
-        && NSLocationInRange(self.HTTPRequestOperation.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))
-        && [[[self.HTTPRequestOperation.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]) {
-
-        // 2xx DELETE request, proceed with deletion from the MOC
+    if (self.targetObjectID) {
+        // 2xx/404/410 DELETE request, proceed with deletion from the MOC
         __block NSError *_blockError = nil;
         [self.privateContext performBlockAndWait:^{
             NSManagedObject *backgroundThreadObject = [self.privateContext existingObjectWithID:self.targetObjectID error:&_blockError];
@@ -824,6 +823,12 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 
 - (BOOL)saveContext:(NSError **)error
 {
+    if (self.willSaveMappingContextBlock) {
+        [self.privateContext performBlockAndWait:^{
+            self.willSaveMappingContextBlock(self.privateContext);
+        }];
+    }
+    
     if ([self.privateContext hasChanges]) {
         return [self saveContext:self.privateContext error:error];
     } else if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
@@ -858,6 +863,29 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     self.mappingInfo = mapper.mappingInfo;
 }
 
+- (void)willFinish
+{
+    NSMutableIndexSet *deleteableStatusCodes = [NSMutableIndexSet indexSet];
+    [deleteableStatusCodes addIndex:404]; // Not Found
+    [deleteableStatusCodes addIndex:410]; // Gone
+    if (self.error && self.targetObjectID
+        && [[[self.HTTPRequestOperation.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]
+        && [deleteableStatusCodes containsIndex:self.HTTPRequestOperation.response.statusCode]) {
+        NSError *error = nil;
+        if (! [self deleteTargetObject:&error]) {
+            RKLogWarning(@"Secondary error encountered while attempting to delete target object in response to 404 (Not Found) or 410 (Gone) status code: %@", error);
+            self.error = error;
+        } else {
+            if (! [self saveContext:&error]) {
+                
+            } else {
+                // All good, clear any errors
+                self.error = nil;
+            }
+        }
+    }
+}
+
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -872,3 +900,5 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 }
 
 @end
+
+#endif

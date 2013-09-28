@@ -20,8 +20,10 @@
 
 #import "RKMacros.h"
 #import "RKMapping.h"
+#import "RKValueTransformers.h"
 
 @class RKPropertyMapping, RKAttributeMapping, RKRelationshipMapping;
+@protocol RKValueTransforming;
 
 /**
  An `RKObjectMapping` object describes a transformation between object represenations using key-value coding and run-time type introspection. The mapping is defined in terms of a source object class and a collection of `RKPropertyMapping` objects describing how key paths in the source representation should be transformed into attributes and relationships on the target object. Object mappings are provided to instances of `RKMapperOperation` and `RKMappingOperation` to perform the transformations they describe.
@@ -31,7 +33,7 @@
  1. `RKAttributeMapping`: An attribute mapping describes a transformation between a single value from a source key path to a destination key path. The value to be mapped is read from the source object representation using `valueForKeyPath:` and then set to the destination key path using `setValueForKeyPath:`. Before the value is set, the `RKObjecMappingOperation` performing the mapping performs runtime introspection on the destination property to determine what, if any, type transformation is to be performed. Typical type transformations include reading an `NSString` value representation and mapping it to an `NSDecimalNumber` destination key path or reading an `NSString` and transforming it into an `NSDate` value before assigning to the destination.
  1. `RKRelationshipMapping`: A relationship mapping describes a transformation between a nested child object or objects from a source key path to a destination key path using another `RKObjectMapping`. The child objects to be mapped are read from the source object representation using `valueForKeyPath:`, then mapped recursively using the object mapping associated with the relationship mapping, and then finally assigned to the destination key path. Before assignment to the destination key path runtime type introspection is performed to determine if any type transformation is necessary. For relationship mappings, common type transformations include transforming a single object value in an `NSArray` or transforming an `NSArray` of object values into an `NSSet`.
 
- All type transformations available are discussed in detail in the documentation for `RKMappingOperation`.
+ All type transformations available are discussed in detail in the documentation for `RKValueTransformer`.
  
  ## Transforming Representation to Property Keys
  
@@ -241,7 +243,7 @@
      RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[User class]];
      mapping.forceCollectionMapping = YES; // RestKit cannot infer this is a collection, so we force it
      [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"firstName"];
-     [mapping addAttributeMappingsFromDictionary:@{ @"(firstName).id": @"userID", @"(firstName).email": @"email" }];
+     [mapping addAttributeMappingsFromDictionary:@{ @"{firstName}.id": @"userID", @"{firstName}.email": @"email" }];
  */
 - (void)addAttributeMappingFromKeyOfRepresentationToAttribute:(NSString *)attributeName;
 
@@ -263,7 +265,7 @@
  
      RKObjectMapping *mapping = [RKObjectMapping requestMapping];
      [mapping addAttributeMappingToKeyOfRepresentationFromAttribute:@"firstName"];
-     [mapping addAttributeMappingsFromDictionary:@{ @"(firstName).userID": @"id", @"(firstName).email": @"email" }];
+     [mapping addAttributeMappingsFromDictionary:@{ @"userID": @"{firstName}.id", @"email": @"{firstName}.email" }];
  */
 - (void)addAttributeMappingToKeyOfRepresentationFromAttribute:(NSString *)attributeName;
 
@@ -278,13 +280,17 @@
 
 /**
  When `YES`, any attributes that have mappings defined but are not present within the source object will be set to nil, clearing any existing value.
+
+ **Default**: `NO`
  */
-@property (nonatomic, assign, getter = shouldSetDefaultValueForMissingAttributes) BOOL setDefaultValueForMissingAttributes;
+@property (nonatomic, assign) BOOL assignsDefaultValueForMissingAttributes;
 
 /**
  When `YES`, any relationships that have mappings defined but are not present within the source object will be set to `nil`, clearing any existing value.
+
+ **Default**: `NO`
  */
-@property (nonatomic, assign) BOOL setNilForMissingRelationships;
+@property (nonatomic, assign) BOOL assignsNilForMissingRelationships;
 
 /**
  When `YES`, key-value validation will be invoked at object mapping time.
@@ -292,7 +298,12 @@
  **Default**: `YES`
  @see `validateValue:forKey:error:`
  */
-@property (nonatomic, assign) BOOL performKeyValueValidation;
+@property (nonatomic, assign) BOOL performsKeyValueValidation;
+
+/**
+ A value transformer with which to process input values being mapped with the receiver. Defaults to a copy of `[RKValueTransformer defaultTransformer]`.
+ */
+@property (nonatomic, strong) id<RKValueTransforming> valueTransformer;
 
 /**
  Returns the default value to be assigned to the specified attribute when it is missing from a mappable payload.
@@ -302,28 +313,6 @@
  @see `[RKEntityMapping defaultValueForAttribute:]`
  */
 - (id)defaultValueForAttribute:(NSString *)attributeName;
-
-///----------------------------------
-/// @name Configuring Date Formatters
-///----------------------------------
-
-/**
- An array of `NSFormatter` objects to use when mapping string values into `NSDate` attributes on the target `objectClass`. Each date formatter will be invoked with the string value being mapped until one of the date formatters does not return nil.
-
- Defaults to the application-wide collection of date formatters configured via `[RKObjectMapping setDefaultDateFormatters:]`
-
- @see `[RKObjectMapping defaultDateFormatters]`
- */
-@property (nonatomic, strong) NSArray *dateFormatters;
-
-/**
- The `NSFormatter` object for your application's preferred date and time configuration. This date formatter will be used when generating string representations of NSDate attributes (i.e. during serialization to URL form encoded or JSON format).
-
- Defaults to the application-wide preferred date formatter configured via: `[RKObjectMapping setPreferredDateFormatter:]`
-
- @see `[RKObjectMapping preferredDateFormatter]`
- */
-@property (nonatomic, strong) NSFormatter *preferredDateFormatter;
 
 ///----------------------------------
 /// @name Generating Inverse Mappings
@@ -376,11 +365,19 @@
 /////////////////////////////////////////////////////////////////////////////
 
 /**
+ **Deprecated in v0.21.0**
+ 
+ This category contains deprecated API interfaces for configuring date formatters. Starting in RestKit 0.20.4 date formatting is configured via the `RKValueTransformer` API's.
+
  Defines the interface for configuring time and date formatting handling within RestKit object mappings. For performance reasons, RestKit reuses a pool of date formatters rather than constructing them at mapping time. This collection of date formatters can be configured on a per-object mapping or application-wide basis using the static methods exposed in this category.
  */
-@interface RKObjectMapping (DateAndTimeFormatting)
+@interface RKObjectMapping (LegacyDateAndTimeFormatting)
 
 /**
+ **Deprecated in v0.21.0**
+ 
+ This method accesses `[RKValueTransformer defaultTransformer]` and returns all `NSDate` <-> `NSString` value transformers.
+
  Returns the collection of default date formatters that will be used for all object mappings that have not been configured specifically.
 
  Out of the box, RestKit initializes default date formatters for you in the UTC time zone with the following format strings:
@@ -390,34 +387,50 @@
 
  @return An array of `NSFormatter` objects used when mapping strings into NSDate attributes
  */
-+ (NSArray *)defaultDateFormatters;
++ (NSArray *)defaultDateFormatters DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
+ **Deprecated in v0.21.0**
+ 
+ This method accesses `[RKValueTransformer defaultTransformer]` and removes all `NSDate` <-> `NSString` value transformers that are instances of `NSFormatter` and then adds the given array of formatters to the default transformer.
+
  Sets the collection of default date formatters to the specified array. The array should contain configured instances of NSDateFormatter in the order in which you want them applied during object mapping operations.
 
  @param dateFormatters An array of date formatters to replace the existing defaults.
  @see `defaultDateFormatters`
  */
-+ (void)setDefaultDateFormatters:(NSArray *)dateFormatters;
++ (void)setDefaultDateFormatters:(NSArray *)dateFormatters DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
+ **Deprecated in v0.21.0**
+ 
+ This methods prepends the given date formatter to `[RKValueTransformer defaultValueTransformer]`.
+
  Adds a date formatter instance to the default collection
 
  @param dateFormatter An `NSFormatter` object to prepend to the default formatters collection
  @see `defaultDateFormatters`
  */
-+ (void)addDefaultDateFormatter:(NSFormatter *)dateFormatter;
++ (void)addDefaultDateFormatter:(NSFormatter *)dateFormatter DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
+ **Deprecated in v0.21.0**
+ 
+ This method instantiates a new `NSDateFormatter` object with the given format string and time zone and prepends it to `[RKValueTransformer defaultValueTransformer]`.
+
  Convenience method for quickly constructing a date formatter and adding it to the collection of default date formatters. The locale is auto-configured to `en_US_POSIX`.
 
  @param dateFormatString The dateFormat string to assign to the newly constructed `NSDateFormatter` instance
  @param nilOrTimeZone The NSTimeZone object to configure on the `NSDateFormatter` instance. Defaults to UTC time.
  @see `NSDateFormatter`
  */
-+ (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone;
++ (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone  DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
+ **Deprecated in v0.21.0**
+ 
+ This method returns the first `NSString` -> `NSDate` value transformer that is an instance of `NSFormatter` in `[RKValueTransformer defaultValueTransformer]`.
+
  Returns the preferred date formatter to use when generating NSString representations from NSDate attributes. This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations that do not have a native time construct.
 
  Defaults to an instance of the `RKISO8601DateFormatter` configured with the UTC time-zone. The format string is equal to "yyyy-MM-DDThh:mm:ssTZD"
@@ -426,15 +439,52 @@
 
  @return The preferred NSFormatter object to use when serializing dates into strings
  */
-+ (NSFormatter *)preferredDateFormatter;
++ (NSFormatter *)preferredDateFormatter DEPRECATED_ATTRIBUTE_MESSAGE("Access `[RKValueTransformer defaultValueTransformer]` instead");
 
 /**
+ **Deprecated in v0.21.0**
+ 
+ This method inserts the given date formatter at position zero in `[RKValueTransformer defaultValueTransformer]`, ensuring that it will be used for all transformations from `NSDate` -> `NSString`.
+
  Sets the preferred date formatter to use when generating NSString representations from NSDate attributes. This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations that do not have a native time construct.
 
  @param dateFormatter The NSFormatter object to designate as the new preferred instance
  */
-+ (void)setPreferredDateFormatter:(NSFormatter *)dateFormatter;
++ (void)setPreferredDateFormatter:(NSFormatter *)dateFormatter DEPRECATED_ATTRIBUTE_MESSAGE("Configure `[RKValueTransformer defaultValueTransformer]` instead");
 
+///----------------------------------
+/// @name Configuring Date Formatters
+///----------------------------------
+
+/**
+ **Deprecated in v0.21.0**
+ 
+ An array of `NSFormatter` objects to use when mapping string values into `NSDate` attributes on the target `objectClass`. Each date formatter will be invoked with the string value being mapped until one of the date formatters does not return nil.
+
+ Defaults to the application-wide collection of date formatters configured via `[RKObjectMapping setDefaultDateFormatters:]`
+
+ @see `[RKObjectMapping defaultDateFormatters]`
+ */
+@property (nonatomic, strong) NSArray *dateFormatters DEPRECATED_ATTRIBUTE_MESSAGE("Use `valueTransformer` instead");
+
+/**
+ **Deprecated in v0.21.0**
+
+ The `NSFormatter` object for your application's preferred date and time configuration. This date formatter will be used when generating string representations of NSDate attributes (i.e. during serialization to URL form encoded or JSON format).
+
+ Defaults to the application-wide preferred date formatter configured via: `[RKObjectMapping setPreferredDateFormatter:]`
+
+ @see `[RKObjectMapping preferredDateFormatter]`
+ */
+@property (nonatomic, strong) NSFormatter *preferredDateFormatter  DEPRECATED_ATTRIBUTE_MESSAGE("Use `valueTransformer` instead");
+
+@end
+
+@interface RKObjectMapping (Deprecations)
+// These methods were named to be more idiomation. Properties beginning with `set` generate method names like `setSetDefaultValueForMissingAttributes` and `performKeyValueValidation` reads more as a command to perform something than a configuration switch.
+@property (nonatomic, assign, getter = shouldSetDefaultValueForMissingAttributes) BOOL setDefaultValueForMissingAttributes DEPRECATED_ATTRIBUTE_MESSAGE("Renamed to `assignsDefaultValueForMissingAttributes`");
+@property (nonatomic, assign) BOOL setNilForMissingRelationships DEPRECATED_ATTRIBUTE_MESSAGE("Renamed to `assignsNilForMissingRelationships`");
+@property (nonatomic, assign) BOOL performKeyValueValidation DEPRECATED_ATTRIBUTE_MESSAGE("Renamed to `performsKeyValueValidation`");
 @end
 
 ///----------------
@@ -455,7 +505,7 @@ NSDate *RKDateFromString(NSString *dateString);
 
  This is a convenience function that is equivalent to the following example code:
 
-    NSString *string = [[RKObjectMapping preferredDateFormatter] stringForObjectValue:date]
+ NSString *string = [[RKObjectMapping preferredDateFormatter] stringForObjectValue:date]
 
  @param date The date object to be formatted.
  @return An `NSString` object representation of the given date formatted by the preferred date formatter.

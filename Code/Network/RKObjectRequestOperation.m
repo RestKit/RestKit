@@ -59,34 +59,6 @@ static NSString *RKLogTruncateString(NSString *string)
        (long) maxMessageLength];
 }
 
-static NSString *RKStringFromStreamStatus(NSStreamStatus streamStatus)
-{
-    switch (streamStatus) {
-        case NSStreamStatusNotOpen:     return @"Not Open";
-        case NSStreamStatusOpening:     return @"Opening";
-        case NSStreamStatusOpen:        return @"Open";
-        case NSStreamStatusReading:     return @"Reading";
-        case NSStreamStatusWriting:     return @"Writing";
-        case NSStreamStatusAtEnd:       return @"At End";
-        case NSStreamStatusClosed:      return @"Closed";
-        case NSStreamStatusError:       return @"Error";
-        default:                        break;
-    }
-    return nil;
-}
-
-static NSString *RKStringDescribingStream(NSStream *stream)
-{
-    NSString *errorDescription = ([stream streamStatus] == NSStreamStatusError) ? [NSString stringWithFormat:@", error=%@", [stream streamError]] : @"";
-    if ([stream isKindOfClass:[NSInputStream class]]) {
-        return [NSString stringWithFormat:@"<%@: %p hasBytesAvailable=%@, status='%@'%@>", [stream class], stream, [(NSInputStream *)stream hasBytesAvailable] ? @"YES" : @"NO", RKStringFromStreamStatus([stream streamStatus]), errorDescription];
-    } else if ([stream isKindOfClass:[NSOutputStream class]]) {
-        return [NSString stringWithFormat:@"<%@: %p hasSpaceAvailable=%@, status='%@'%@>", [stream class], stream, [(NSOutputStream *)stream hasSpaceAvailable] ? @"YES" : @"NO", RKStringFromStreamStatus([stream streamStatus]), errorDescription];
-    } else {
-        return [stream description];
-    }
-}
-
 @interface NSCachedURLResponse (RKLeakFix)
 
 - (NSData *)rkData;
@@ -171,9 +143,7 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
         NSString *body = nil;
         if ([operation.request HTTPBody]) {
             body = RKLogTruncateString([[NSString alloc] initWithData:[operation.request HTTPBody] encoding:NSUTF8StringEncoding]);
-        } /*else if ([operation.request HTTPBodyStream]) {
-            body = RKStringDescribingStream([operation.request HTTPBodyStream]);
-        }*/
+        }
         
         RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
     } else {
@@ -398,6 +368,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
             }
         }];
         [self.stateMachine setFinalizationBlock:^{
+            [weakSelf willFinish];
             RKDecrementNetworkAcitivityIndicator();
             [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: weakSelf.mappingDidStartDate ?: [NSNull null], RKObjectRequestOperationMappingDidFinishUserInfoKey: weakSelf.mappingDidFinishDate ?: [NSNull null] }];
         }];
@@ -586,6 +557,11 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     return [NSString stringWithFormat:@"<%@: %p, state: %@, isCancelled=%@, request: %@, response: %@>",
             NSStringFromClass([self class]), self, RKStringForStateOfObjectRequestOperation(self), [self isCancelled] ? @"YES" : @"NO",
             self.HTTPRequestOperation.request, RKStringDescribingURLResponseWithData(self.HTTPRequestOperation.response, self.HTTPRequestOperation.responseData)];
+}
+
+- (void)willFinish
+{
+    // Default implementation does nothing
 }
 
 #pragma mark - NSCopying

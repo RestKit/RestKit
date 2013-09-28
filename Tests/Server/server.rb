@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
+require 'sinatra/multi_route'
 require 'json'
 require 'debugger'
 
@@ -13,6 +14,8 @@ class Person < Struct.new(:name, :age)
 end
 
 class RestKitTestServer < Sinatra::Base
+  register Sinatra::MultiRoute
+  
   self.app_file = __FILE__
 
   configure do
@@ -112,8 +115,14 @@ class RestKitTestServer < Sinatra::Base
 
   get '/404' do
     status 404
-    content_type 'text/html'
-    "File Not Found"
+    content_type 'application/json'
+    { :error => "Resource not found." }.to_json
+  end
+  
+  get '/410' do
+    status 410
+    content_type 'application/json'
+    { :error => "Resource is gone." }.to_json
   end
 
   get '/503' do
@@ -281,6 +290,12 @@ class RestKitTestServer < Sinatra::Base
     status 304
   end
 
+  route :get, :head, '/no_content_type/:code' do
+    response.header['Content-Type'] = ''
+    status params[:code]
+    ''
+  end
+
   delete '/humans/1234/whitespace' do
     content_type 'application/json'
     status 200
@@ -320,6 +335,11 @@ class RestKitTestServer < Sinatra::Base
   get '/user' do
     content_type 'application/json'
     render_fixture('/JSON/user.json', :status => 200)
+  end
+
+  get '/user_ids' do
+    content_type 'application/json'
+    { :user_ids => [1, 2, 3] }.to_json
   end
 
   # start the server if ruby file executed directly

@@ -19,9 +19,13 @@
 //
 
 #import "RKHTTPRequestOperation.h"
-#import "RKManagedObjectCaching.h"
+#import "RKObjectRequestOperation.h"
 #import "RKObjectMapping.h"
 #import "RKMappingResult.h"
+
+#ifdef _COREDATADEFINES_H
+#import "RKManagedObjectCaching.h"
+#endif
 
 /**
  Instances of `RKPaginator` retrieve paginated collections of mappable data from remote systems via HTTP. Paginators perform GET requests and use a patterned URL to construct a full URL reflecting the state of the paginator. Paginators rely on an instance of RKObjectMappingProvider to determine how to perform object mapping on the retrieved data. Paginators can load Core Data backed models provided that an instance of RKManagedObjectStore is assigned to the paginator.
@@ -98,6 +102,11 @@
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 /**
+ Returns the last object request operation used by the paginator to load a page of objects.
+ */
+@property (nonatomic, strong, readonly) RKObjectRequestOperation *objectRequestOperation;
+
+/**
  Sets the `RKHTTPRequestOperation` subclass to be used when constructing HTTP request operations for requests dispatched by the paginator.
  
  **Default**: `[RKHTTPRequestOperation class]`
@@ -149,6 +158,7 @@
 /// @name Core Data Configuration
 ///------------------------------
 
+#ifdef _COREDATADEFINES_H
 /**
  The managed object context in which paginated managed objects are to be persisted.
  */
@@ -163,6 +173,7 @@
  An array of fetch request blocks.
  */
 @property (nonatomic, copy) NSArray *fetchRequestBlocks;
+#endif
 
 ///------------------------------------
 /// @name Accessing Pagination Metadata

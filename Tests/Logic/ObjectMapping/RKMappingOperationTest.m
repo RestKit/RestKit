@@ -369,6 +369,7 @@
     assertThat([object.date description], is(equalTo(@"2011-08-09 00:00:00 +0000")));
 }
 
+// NOTE: The timestamp used here is missing seconds
 - (void)testShouldMapAISODateStringAppropriately
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
@@ -384,6 +385,9 @@
     assertThat(object.date, isNot(nilValue()));
     assertThat([object.date description], is(equalTo(@"2011-08-09 00:00:00 +0000")));
 }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 - (void)testShouldMapAStringIntoTheLocalTimeZone
 {
@@ -425,6 +429,25 @@
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(newObject.boolString, is(equalTo(@"11-27-1982")));
+}
+
+#pragma clang diagnostic pop
+
+- (void)testShouldMapAStringToAURL
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"url" toKeyPath:@"url"]];
+    TestMappable *object = [[TestMappable alloc] init];
+    object.url = [NSURL URLWithString:@"http://www.restkit.org"];
+    TestMappable *newObject = [TestMappable new];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:newObject mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(newObject.url, is(equalTo([NSURL URLWithString:@"http://www.restkit.org"])));
+
 }
 
 - (void)testShouldLogADebugMessageIfTheRelationshipMappingTargetsAnArrayOfArrays
@@ -524,6 +547,27 @@
     expect(blake.luckyNumber).to.equal(@25);
     expect(blake.friend).notTo.beNil();
     expect(blake.friend.luckyNumber).to.beNil();
+}
+
+- (void)testThatCustomTransformerOnPropertyMappingIsInvoked
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    RKPropertyMapping *propertyMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"url" toKeyPath:@"url"];
+    propertyMapping.valueTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:nil transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, __unsafe_unretained Class outputClass, NSError *__autoreleasing *error) {
+        *outputValue = [inputValue URLByAppendingPathComponent:@"test"];
+        return YES;
+    }];
+    [mapping addPropertyMapping:propertyMapping];
+    TestMappable *object = [[TestMappable alloc] init];
+    object.url = [NSURL URLWithString:@"http://www.restkit.org"];
+    TestMappable *newObject = [TestMappable new];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:newObject mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(newObject.url, is(equalTo([NSURL URLWithString:@"http://www.restkit.org/test"])));
 }
 
 @end

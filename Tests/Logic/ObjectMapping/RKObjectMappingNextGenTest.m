@@ -36,15 +36,13 @@
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKDynamicMapping.h"
 #import "RKMIMETypeSerialization.h"
+#import "ISO8601DateFormatterValueTransformer.h"
+#import "RKCLLocationValueTransformer.h"
 
 // Managed Object Serialization Testific
 #import "RKHuman.h"
 #import "RKCat.h"
 #import "RKHouse.h"
-
-@interface RKObjectMapping ()
-+ (void)resetDefaultDateFormatters;
-@end
 
 @interface RKExampleGroupWithUserArray : NSObject {
     NSString *_name;
@@ -117,6 +115,7 @@
 #pragma mark -
 
 @interface RKObjectMappingNextGenTest : RKTestCase
+@property (nonatomic, copy) NSArray *originalDateValueTransformers;
 @end
 
 @implementation RKObjectMappingNextGenTest
@@ -129,6 +128,11 @@
 - (void)tearDown
 {
     [RKTestFactory tearDown];
+
+    // Reset the default transformer
+    [RKValueTransformer setDefaultValueTransformer:nil];
+    RKISO8601DateFormatter *dateFormatter = [RKISO8601DateFormatter defaultISO8601DateFormatter];
+    [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
 }
 
 #pragma mark - RKObjectKeyPathMapping Tests
@@ -944,8 +948,6 @@
 
 - (void)testShouldMapAStringToADateAttribute
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addPropertyMapping:birthDateMapping];
@@ -1176,7 +1178,7 @@
     [operation performMapping:&error];
 
     NSDecimalNumber *weight = user.weight;
-    assertThatBool([weight isKindOfClass:[NSDecimalNumber class]], is(equalToBool(YES)));
+    assertThat(weight, is(instanceOf([NSDecimalNumber class])));
     assertThatInteger([weight compare:[NSDecimalNumber decimalNumberWithString:@"187"]], is(equalToInt(NSOrderedSame)));
 }
 
@@ -1379,7 +1381,7 @@
     operation.dataSource = dataSource;
     id mockMapping = [OCMockObject partialMockForObject:mapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetDefaultValueForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] assignsDefaultValueForMissingAttributes];
     NSError *error = nil;
     [operation performMapping:&error];
     [mockUser verify];
@@ -1428,8 +1430,6 @@
 
 - (void)testShouldMapNSDateDistantFutureDateStringToADate
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *birthDateMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addPropertyMapping:birthDateMapping];
@@ -1830,7 +1830,7 @@
     [dictionary removeObjectForKey:@"address"];
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] assignsNilForMissingRelationships];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mockMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -2042,6 +2042,45 @@
     expect([existingCat isDeleted]).to.equal(YES);
 }
 
+- (void)testReplacmentPolicyForToManyCoreDataRelationshipDoesNotDeleteNewValuesOnSecondMapping
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [entityMapping addPropertyMapping:relationshipMapping];
+    
+    NSError *error = nil;
+    NSDictionary *dictionary = @{ @"name": @"Blake", @"cats": @[ @{ @"name": @"Roy" } ] };
+    
+    RKMappingOperation *firstOperation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *firstDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    firstOperation.dataSource = firstDataSource;
+    
+    [firstOperation performMapping:&error];
+    [human.managedObjectContext save:&error];
+    
+    expect([human.cats count]).to.equal(1);
+    NSArray *firstCatNames = [human.cats valueForKey:@"name"];
+    assertThat(firstCatNames, hasItems(@"Roy", nil));
+    
+    RKMappingOperation *secondOperation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *secondDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    secondOperation.dataSource = secondDataSource;
+    
+    [secondOperation performMapping:&error];
+    [human.managedObjectContext save:&error];
+    
+    expect([human.cats count]).to.equal(1);
+    NSArray *secondCatNames = [human.cats valueForKey:@"name"];
+    assertThat(secondCatNames, hasItems(@"Roy", nil));
+}
+
 - (void)testReplacmentPolicyForToOneCoreDataRelationshipDeletesExistingValues
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
@@ -2068,6 +2107,68 @@
     [operation performMapping:&error];
     expect(human.favoriteCat.name).to.equal(@"Roy");
     expect([existingCat isDeleted]).to.equal(YES);
+}
+
+- (void)testReplacmentPolicyForToOneCoreDataRelationshipDeletesExistingValuesAndRespectsAssignsNilForMissingRelationships
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKCat *existingCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    existingCat.name = @"Lola";
+    human.favoriteCat = existingCat;
+
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.assignsNilForMissingRelationships = YES;
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"favoriteCat" toKeyPath:@"favoriteCat" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+    [entityMapping addPropertyMapping:relationshipMapping];
+
+    NSDictionary *dictionary = @{ @"name": @"Blake" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect(human.favoriteCat).to.beNil();
+    expect([existingCat isDeleted]).to.equal(YES);
+}
+
+// NOTE: Using `assignsNilForMissingRelationships` with `RKAssignmentPolicyUnion` is functionally a no-op and leaves the existing values alone
+- (void)testUnionAssignmentPolicyForToManyCoreDataRelationshipDeletesExistingValuesWithAssignsNilForMissingRelationships
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKCat *existingCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    existingCat.name = @"Lola";
+    human.cats = [NSSet setWithObject:existingCat];
+
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.assignsNilForMissingRelationships = YES;
+    [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping];
+    relationshipMapping.assignmentPolicy = RKAssignmentPolicyUnion;
+    [entityMapping addPropertyMapping:relationshipMapping];
+
+    // No cats in the dictionary
+    NSDictionary *dictionary = @{ @"name": @"Blake" };
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+
+    NSError *error = nil;
+    [operation performMapping:&error];
+    expect([human.cats count]).to.equal(1);
+    NSArray *names = [human.cats valueForKey:@"name"];
+    assertThat(names, hasItems(@"Lola", nil));
+    expect([existingCat isDeleted]).to.equal(NO);
 }
 
 #pragma mark - RKDynamicMapping
@@ -2320,17 +2421,17 @@
 
 #pragma mark - Date and Time Formatting
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (void)testShouldAutoConfigureDefaultDateFormatters
 {
-    [RKObjectMapping resetDefaultDateFormatters];
     NSArray *dateFormatters = [RKObjectMapping defaultDateFormatters];
-    expect(dateFormatters).to.haveCountOf(5);
-    expect([dateFormatters[0] dateFormat]).to.equal(@"yyyy-MM-dd");
-    expect([dateFormatters[1] dateFormat]).to.equal(@"yyyy-MM-dd'T'HH:mm:ss'Z'");
-    expect([dateFormatters[2] dateFormat]).to.equal(@"MM/dd/yyyy");
+    expect(dateFormatters).to.haveCountOf(3);
+    expect([dateFormatters[2] dateFormat]).to.equal(@"yyyy-MM-dd");
+    expect([dateFormatters[1] dateFormat]).to.equal(@"MM/dd/yyyy");
 
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    expect([[dateFormatters objectAtIndex:0] timeZone]).to.equal(UTCTimeZone);
     expect([[dateFormatters objectAtIndex:1] timeZone]).to.equal(UTCTimeZone);
     expect([[dateFormatters objectAtIndex:2] timeZone]).to.equal(UTCTimeZone);
 }
@@ -2345,11 +2446,10 @@
 
 - (void)testShouldLetYouAppendADateFormatterToTheList
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     [RKObjectMapping addDefaultDateFormatter:dateFormatter];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
 }
 
 - (void)testShouldAllowNewlyAddedDateFormatterToRunFirst
@@ -2383,11 +2483,10 @@
 
 - (void)testShouldLetYouConfigureANewDateFormatterFromAStringAndATimeZone
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:EDTTimeZone];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     assertThat(dateFormatter.timeZone, is(equalTo(EDTTimeZone)));
 }
@@ -2413,10 +2512,9 @@
 
 - (void)testShouldConfigureANewDateFormatterInTheUTCTimeZoneIfPassedANilTimeZone
 {
-    [RKObjectMapping resetDefaultDateFormatters];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(5));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:nil];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     assertThat(dateFormatter.timeZone, is(equalTo(UTCTimeZone)));
@@ -2448,6 +2546,8 @@
 
     expect(user.birthDate).to.equal(date);
 }
+
+#pragma clang diagnostic pop
 
 #pragma mark - Misc
 
@@ -2519,6 +2619,25 @@
     expect(user.coordinate).notTo.beNil();
     expect(user.coordinate.latitude).to.equal(125.55);
     expect(user.coordinate.longitude).to.equal(200.5);
+}
+
+- (void)testMappingDictionaryToCLLocationUsingValueTransformer
+{
+    NSDictionary *objectRepresentation = @{ @"name": @"Blake", @"latitude": @(125.55), @"longitude": @(200.5) };
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"location"];
+    attributeMapping.valueTransformer = [RKCLLocationValueTransformer locationValueTransformerWithLatitudeKey:@"latitude" longitudeKey:@"longitude"];
+    [userMapping addPropertyMapping:attributeMapping];
+    RKTestUser *user = [RKTestUser new];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    mappingOperation.dataSource = dataSource;
+    [mappingOperation start];
+    expect(mappingOperation.error).to.beNil();
+    expect(user.location).notTo.beNil();
+    expect(user.location.coordinate.latitude).to.equal(125.55);
+    expect(user.location.coordinate.longitude).to.equal(200.5);
 }
 
 - (void)testThatAggregatedRelationshipMappingsAreOnlyAppliedIfThereIsAtLeastOneValueInTheRepresentation
@@ -2632,6 +2751,28 @@
     expect(user.name).to.equal(@"Blake Watters");
     expect(user.position).to.equal(0);
     expect(user.country).to.equal(@"United States of America");
+}
+
+- (void)testMappingCustomMetadataAsRelationship
+{
+    NSArray *representations = @[ @{ @"name": @"Blake Watters" } ];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKObjectMapping *friendsMapping = [userMapping copy];
+    
+    RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"@metadata.custom" toKeyPath:@"friends" withMapping:friendsMapping];
+    [userMapping addPropertyMapping:relationshipMapping];    
+    RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representations mappingsDictionary:@{ [NSNull null]: userMapping }];
+    mapperOperation.metadata = @{ @"custom": @{ @"name": @"Valerio Mazzeo" } };
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    mapperOperation.mappingOperationDataSource = dataSource;
+    NSError *error = nil;
+    [mapperOperation execute:&error];
+    RKTestUser *user = [mapperOperation.mappingResult firstObject];
+    expect(error).to.beNil();
+    expect(user.name).to.equal(@"Blake Watters");
+    expect(user.friends).to.haveCountOf(1);
+    expect([user.friends[0] name]).to.equal(@"Valerio Mazzeo");
 }
 
 #pragma mark - Persistent Stores

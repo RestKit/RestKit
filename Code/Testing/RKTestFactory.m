@@ -24,7 +24,12 @@
 #import "RKObjectManager.h"
 #import "RKPathUtilities.h"
 #import "RKMIMETypeSerialization.h"
+#import "RKObjectRequestOperation.h"
+
+#ifdef _COREDATADEFINES_H
 #import "RKManagedObjectStore.h"
+#import "RKManagedObjectStore+RKSearchAdditions.h"
+#endif
 
 // Expose MIME Type singleton and initialization routine
 @interface RKMIMETypeSerialization ()
@@ -123,6 +128,7 @@
         return objectManager;
     }];
 
+#ifdef _COREDATADEFINES_H
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
         NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
         RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
@@ -137,6 +143,7 @@
 
         return managedObjectStore;
     }];
+#endif
 }
 
 #pragma mark - Public Static Interface
@@ -171,6 +178,7 @@
     return [[RKTestFactory sharedFactory] sharedObjectFromFactory:factoryName];
 }
 
+#ifdef _COREDATADEFINES_H
 + (id)insertManagedObjectForEntityForName:(NSString *)entityName
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
                            withProperties:(NSDictionary *)properties
@@ -190,6 +198,7 @@
     }];
     return managedObject;
 }
+#endif
 
 + (NSSet *)factoryNames
 {
@@ -206,10 +215,12 @@
     return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesObjectManager];
 }
 
+#ifdef _COREDATADEFINES_H
 + (id)managedObjectStore
 {
     return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
 }
+#endif
 
 + (void)setSetupBlock:(void (^)())block
 {
@@ -231,7 +242,9 @@
 
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
+#ifdef _COREDATADEFINES_H
     [RKManagedObjectStore setDefaultStore:nil];
+#endif
     
     // Restore the default MIME Type Serializations in case a test has manipulated the registry
     [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
@@ -259,6 +272,7 @@
     // Cancel any object mapping in the response mapping queue
     [[RKObjectRequestOperation responseMappingQueue] cancelAllOperations];
 
+#ifdef _COREDATADEFINES_H
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
     if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
@@ -270,10 +284,13 @@
             [searchIndexer performSelector:@selector(cancelAllIndexingOperations)];
         }
     }
+#endif
     
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
-    [RKManagedObjectStore setDefaultStore:nil];    
+#ifdef _COREDATADEFINES_H
+    [RKManagedObjectStore setDefaultStore:nil];
+#endif
 }
 
 @end

@@ -181,7 +181,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     // Store a cache entry indicating that the response has been previously mapped
     NSData *responseData = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *headers = @{ @"Etag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
+    NSDictionary *headers = @{ @"ETag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:headers];
     NSAssert(response, @"Failed to build cached response");
     NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData userInfo:@{RKResponseHasBeenMappedCacheUserInfoKey: @YES} storagePolicy:NSURLCacheStorageAllowed];
@@ -213,7 +213,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     // Store a cache entry indicating that the response has been previously mapped
     NSData *responseData = [@"{ \"name\": \"Blake\"}" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *headers = @{ @"Etag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
+    NSDictionary *headers = @{ @"ETag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:headers];
     NSAssert(response, @"Failed to build cached response");
     NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData userInfo:@{RKResponseHasBeenMappedCacheUserInfoKey: @YES} storagePolicy:NSURLCacheStorageAllowed];
@@ -240,7 +240,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
     // Store a cache entry indicating that the response has been previously mapped
     NSData *responseData = [@"{\"human\": { \"name\": \"Blake\"}, \"user\": { \"name\": \"Blake\" }}" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *headers = @{ @"Etag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
+    NSDictionary *headers = @{ @"ETag": @"\"2cdd0a2b329541d81e82ab20aff6281b\"", @"Content-Type": @"application/json" };
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:headers];
     NSAssert(response, @"Failed to build cached response");
     NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData userInfo:@{RKResponseHasBeenMappedCacheUserInfoKey: @YES} storagePolicy:NSURLCacheStorageAllowed];
@@ -459,6 +459,40 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(managedObjectRequestOperation.error).to.beNil();
     expect([human hasBeenDeleted]).to.equal(YES);
 }
+
+// 404 application/json
+- (void)testDeletionOfObjectWith404ResponseTriggersObjectDeletion
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext withProperties:nil];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/humans/404" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"DELETE";
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.targetObject = human;
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    expect([human hasBeenDeleted]).to.equal(YES);
+}
+
+// 410 application/json
+- (void)testDeletionOfObjectWith410ResponseTriggersObjectDeletion
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext withProperties:nil];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/humans/410" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"DELETE";
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.targetObject = human;
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect(managedObjectRequestOperation.error).to.beNil();
+    expect([human hasBeenDeleted]).to.equal(YES);
+}
+
+#pragma mark -
 
 - (void)testThatManagedObjectMappedAsTheRelationshipOfNonManagedObjectsAreRefetchedFromTheParentContext
 {
@@ -1192,7 +1226,14 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     [managedObjectRequestOperation waitUntilFinished];
     expect(managedObjectRequestOperation.error).to.beNil();
-    expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
+    NSArray *array = [managedObjectRequestOperation.mappingResult array];
+    if ([array count] == 2) {
+        // Object shows up in results, but MOC is nil -- indicating it has been deleted.
+        expect([array[1] managedObjectContext]).to.beNil();
+    } else {
+        // iOS 6
+        expect(array).to.haveCountOf(1);
+    }
 }
 
 - (void)testManagedObjectRequestOperationFailsWithValidationErrorWhenDiscardsInvalidObjectsOnInsertIsNO
@@ -1271,7 +1312,6 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(managedObjectRequestOperation.error).to.beNil();
     RKMappableObject *result = [managedObjectRequestOperation.mappingResult.array lastObject];
     RKTestUser *user = (RKTestUser *)result.hasMany.anyObject;
-    NSLog(@"Examining result = %@, with result.hasMany = %@, user = %@ and user.bestFriend(%@) = %@", result, result.hasMany, user, [user.bestFriend class], user.bestFriend);
     expect(user.bestFriend).to.beInstanceOf([RKHuman class]);
     expect([user.bestFriend managedObjectContext]).to.equal(managedObjectStore.persistentStoreManagedObjectContext);
 }
@@ -1517,6 +1557,23 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     [managedObjectRequestOperation waitUntilFinished];
     expect(blockMappingContext).notTo.beNil();
+}
+
+- (void)testLoadingManagedObjectsWithAttributeKeyPath
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.identificationAttributes = @[ @"railsID" ];
+    [entityMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"railsID"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"user_ids" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/user_ids" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    managedObjectRequestOperation.managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect([managedObjectRequestOperation.mappingResult array]).will.haveCountOf(3);
 }
 
 @end

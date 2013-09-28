@@ -46,6 +46,7 @@
     }
     
     // Configure logging from the environment variable. See RKLog.h for details
+    RKLogConfigureByName("*", RKLogLevelOff);
     RKLogConfigureFromEnvironment();
     
     // Configure the Test Factory to use a specific model file

@@ -19,6 +19,16 @@
 //
 
 #import "RKPropertyMapping.h"
+#import "RKObjectMapping.h"
+
+/**
+ For consistency with URI Templates (and most web templating languages in general) we are transitioning
+ to using braces "{}" instead of parentheses "()" for denoting the variables in the key paths.
+ */
+static NSString *RKStringByReplacingUnderscoresWithBraces(NSString *string)
+{
+    return [[string stringByReplacingOccurrencesOfString:@"(" withString:@"{"] stringByReplacingOccurrencesOfString:@")" withString:@"}"];
+}
 
 @interface RKPropertyMapping ()
 // Synthesize as read/write to allow assignment in `RKObjectMapping`
@@ -44,9 +54,24 @@
             [self.destinationKeyPath isEqual:otherMapping.destinationKeyPath];
 }
 
+- (void)setSourceKeyPath:(NSString *)sourceKeyPath
+{
+    _sourceKeyPath = RKStringByReplacingUnderscoresWithBraces(sourceKeyPath);
+}
+
+- (void)setDestinationKeyPath:(NSString *)destinationKeyPath
+{
+    _destinationKeyPath = RKStringByReplacingUnderscoresWithBraces(destinationKeyPath);
+}
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p %@ => %@>", self.class, self, self.sourceKeyPath, self.destinationKeyPath];
+}
+
+- (id<RKValueTransforming>)valueTransformer
+{
+    return _valueTransformer ?: [self.objectMapping valueTransformer];
 }
 
 @end

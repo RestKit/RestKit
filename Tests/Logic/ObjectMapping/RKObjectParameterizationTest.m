@@ -27,6 +27,7 @@
 #import "RKHuman.h"
 #import "RKTestUser.h"
 #import "RKCat.h"
+#import "RKCLLocationValueTransformer.h"
 
 @interface RKMIMETypeSerialization ()
 @property (nonatomic, strong) NSMutableArray *registrations;
@@ -46,6 +47,9 @@
     
     [RKMIMETypeSerialization sharedSerialization].registrations = [NSMutableArray array];
     [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
+
+    // Reset the default transformer
+    [RKValueTransformer setDefaultValueTransformer:nil];
 }
 
 - (void)tearDown
@@ -84,6 +88,9 @@
     expect(parameters[@"date-form-name"]).to.equal(@"1970-01-01T00:00:00Z");
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 - (void)testShouldSerializeADateToAStringUsingThePreferredDateFormatter
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
@@ -104,6 +111,8 @@
     expect(error).to.beNil();
     expect(string).to.equal(@"date-form-name=01/01/1970&key1-form-name=value1");
 }
+
+#pragma clang diagnostic pop
 
 - (void)testShouldSerializeADateToJSON
 {
@@ -448,7 +457,22 @@
     expect(string).to.equal(@"{\"name\":\"Blake Watters\",\"happy\":false}");
 }
 
-- (void)testSerializingWithDynamicNestingAttribute
+- (void)testSerializingWithDynamicNestingAttributeWithBraces
+{
+    NSDictionary *object = @{ @"name" : @"blake", @"occupation" : @"Hacker" };
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingToKeyOfRepresentationFromAttribute:@"name"];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"{name}.name"]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"occupation" toKeyPath:@"{name}.job"]];
+
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil method:RKRequestMethodAny];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+    NSDictionary *expected = @{@"blake": @{@"name": @"blake", @"job": @"Hacker"}};
+    expect(parameters).to.equal(expected);
+}
+
+- (void)testSerializingWithDynamicNestingAttributeWithParentheses
 {
     NSDictionary *object = @{ @"name" : @"blake", @"occupation" : @"Hacker" };
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
@@ -479,6 +503,29 @@
     
     expect(error).to.beNil();
     expect(string).to.equal(@"{\"nestedPath\":{\"birthday\":\"1970-01-01T00:00:00Z\"}}");
+}
+
+- (void)testParameterizationFromLocationToNestedDictionaryUsingValueTransformer
+{
+    RKTestUser *user = [RKTestUser new];
+    user.name = @"Blake";
+    user.location = [[CLLocation alloc] initWithLatitude:125.55 longitude:200.5];
+    RKObjectMapping *userMapping = [RKObjectMapping requestMapping];
+    [userMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"location" toKeyPath:@"location"];
+    attributeMapping.propertyValueClass = [NSDictionary class];
+    attributeMapping.valueTransformer = [RKCLLocationValueTransformer locationValueTransformerWithLatitudeKey:@"latitude" longitudeKey:@"longitude"];
+    [userMapping addPropertyMapping:attributeMapping];
+
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:userMapping objectClass:[RKTestUser class] rootKeyPath:nil method:RKRequestMethodAny];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:user requestDescriptor:requestDescriptor error:&error];
+
+    expect(parameters).notTo.beNil();
+    expect(error).to.beNil();
+    expect(parameters[@"location"]).notTo.beNil();
+    expect(parameters[@"location"][@"latitude"]).to.equal(125.55);
+    expect(parameters[@"location"][@"longitude"]).to.equal(200.5);
 }
 
 @end

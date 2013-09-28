@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FB7FF76935F2488B8FD05CEF"
-               BuildableName = "libPods-osx.a"
-               BlueprintName = "Pods-osx"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
+               BlueprintIdentifier = "25AABCF417B69CC50061DC5B"
+               BuildableName = "RKTwitter copy.app"
+               BlueprintName = "RKTwitterCocoaPods"
+               ReferencedContainer = "container:RKTwitter.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,17 +28,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "25160E77145651060060A5C5"
-               BuildableName = "RestKitFrameworkTests.octest"
-               BlueprintName = "RestKitFrameworkTests"
-               ReferencedContainer = "container:RestKit.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "25AABCF417B69CC50061DC5B"
+            BuildableName = "RKTwitter copy.app"
+            BlueprintName = "RKTwitterCocoaPods"
+            ReferencedContainer = "container:RKTwitter.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
@@ -49,6 +48,15 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "25AABCF417B69CC50061DC5B"
+            BuildableName = "RKTwitter copy.app"
+            BlueprintName = "RKTwitterCocoaPods"
+            ReferencedContainer = "container:RKTwitter.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -58,6 +66,15 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "25AABCF417B69CC50061DC5B"
+            BuildableName = "RKTwitter copy.app"
+            BlueprintName = "RKTwitterCocoaPods"
+            ReferencedContainer = "container:RKTwitter.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

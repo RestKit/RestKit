@@ -20,8 +20,11 @@
 
 #import "RKMappingOperationDataSource.h"
 #import "RKMapperOperation.h"
-#import "RKManagedObjectCaching.h"
 #import "RKMappingResult.h"
+
+#ifdef _COREDATADEFINES_H
+#import "RKManagedObjectCaching.h"
+#endif
 
 /**
  `RKResponseMapperOperation` is an `NSOperation` that provides support for performing object mapping on an `NSHTTPURLResponse` and its associated response data.
@@ -175,7 +178,7 @@
 - (void)setWillMapDeserializedResponseBlock:(id (^)(id deserializedResponseBody))block;
 
 /**
- Sets a block to be executed when the response mapper operation has completed its mapping activities. This method is distinct from the `completionBlock` because it is invoked while the operation is still executing.
+ Sets a block to be executed when the response mapper operation has completed its mapping activities. This method is distinct from the `completionBlock` because it is invoked while the operation is still executing. This block is guaranteed to be called even if the receiver is cancelled before it has been started.
  
  @param block A block object to be executed when the response mapping is finished. The block has no return value and accepts two arguments: an `RKNappingResult` object that was mapped from the response or an `NSError` error indicating that the mapping has failed.
  */
@@ -202,6 +205,7 @@
 @interface RKObjectResponseMapperOperation : RKResponseMapperOperation
 @end
 
+#ifdef _COREDATADEFINES_H
 /**
  `RKManagedObjectResponseMapperOperation` is an `RKResponseMapperOperation` subclass that provides support for performing object mapping using `RKEntityMapping` objects that target `NSManagedObject` derived classes. It requires an `NSManagedObjectContext` and a configured `RKManagedObjectMappingOperationDataSource` data source to execute successfully.
  
@@ -241,6 +245,8 @@
 @property (nonatomic, copy) NSManagedObjectID *targetObjectID;
 
 @end
+
+#endif
 
 ///----------------
 /// @name Functions
