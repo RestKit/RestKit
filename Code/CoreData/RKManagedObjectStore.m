@@ -358,6 +358,19 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                         RKLogWarning(@"Found external support item for store at path that is not a directory: %@", [supportDirectoryFileURL path]);
                     }
                 }
+
+                // Check for and remove -shm and -wal files
+                for (NSString *suffix in @[ @"-shm", @"-wal" ]) {
+                    NSString *supportFileName = [[URL lastPathComponent] stringByAppendingString:suffix];
+                    NSURL *supportFileURL = [NSURL URLWithString:supportFileName relativeToURL:[URL URLByDeletingLastPathComponent]];
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:[supportFileURL path]]) {
+                        if (! [[NSFileManager defaultManager] removeItemAtURL:supportFileURL error:&localError]) {
+                            RKLogError(@"Failed to remove support file at URL %@: %@", supportFileURL, localError);
+                            if (error) *error = localError;
+                            return NO;
+                        }
+                    }
+                }
             } else {
                 RKLogDebug(@"Skipped removal of persistent store file: URL for persistent store is not a file URL. (%@)", URL);
             }
