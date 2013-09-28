@@ -1117,7 +1117,7 @@
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
-    expect([human isDeleted]).to.equal(YES);
+    expect([human isDeleted]).will.equal(YES);
 }
 
 - (void)testDeletionOfTombstoneRecordsInMapperOperation
@@ -1139,7 +1139,7 @@
     mapperOperation.mappingOperationDataSource = dataSource;
     BOOL success = [mapperOperation execute:&error];
     assertThatBool(success, is(equalToBool(YES)));
-    expect([human isDeleted]).to.equal(YES);
+    expect([human isDeleted]).will.equal(YES);
 }
 
 - (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache
@@ -1316,6 +1316,40 @@
     expect(blake.managedObjectContext).notTo.beNil();
     expect([blake isDeleted]).to.beFalsy();
     expect([blake valueForKey:@"requiredCat"]).to.equal(cat);
+}
+
+- (void)testManagedObjectsMappedWithRequiredRelationshipsThatAreSetByConnectionsAreNotPrematurelyDeletedByPredicateDeletion
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [NSOperationQueue new];
+    mappingOperationDataSource.operationQueue.maxConcurrentOperationCount = 1;
+
+    NSManagedObject *cat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [cat setValue:@(12345) forKey:@"railsID"];
+
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"favoriteCatID": @(12345) };
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    catMapping.identificationAttributes = @[ @"railsID" ];
+
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    humanMapping.deletionPredicate = [NSPredicate predicateWithFormat:@"favoriteCat == nil"];
+    [humanMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"favoriteCatID" toKeyPath:@"favoriteCatID"]];
+    [humanMapping addConnectionForRelationship:@"favoriteCat" connectedBy:@{ @"favoriteCatID": @"railsID" }];
+
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: humanMapping }];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+    [mapper start];
+    [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
+
+    RKHuman *blake = [mapper.mappingResult firstObject];
+    expect(blake.name).to.equal(@"Blake Watters");
+    expect(blake.managedObjectContext).notTo.beNil();
+    expect([blake isDeleted]).to.beFalsy();
+    expect([blake valueForKey:@"favoriteCat"]).to.equal(cat);
 }
 
 - (void)testManagedObjectsMappedWithRelationshipsThatAreSetByConnectionsWithInMemoryCache
