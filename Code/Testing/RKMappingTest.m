@@ -187,6 +187,8 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
             RKPropertyMappingTestExpectation *propertyExpectation = (RKPropertyMappingTestExpectation *) expectation;
             if ([event.sourceKeyPath isEqualToString:propertyExpectation.sourceKeyPath] && [event.destinationKeyPath isEqualToString:propertyExpectation.destinationKeyPath]) {
                 return event;
+            } else if ((event.sourceKeyPath == nil && propertyExpectation.sourceKeyPath == nil) && ([event.destinationKeyPath isEqualToString:propertyExpectation.destinationKeyPath])) {
+                return event;
             }
         }
 #ifdef _COREDATADEFINES_H
