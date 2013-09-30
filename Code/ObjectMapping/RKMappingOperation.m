@@ -766,7 +766,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         }
         
         // Handle case where incoming content is a collection, but we want a single object
-        if (!mappingToCollection && RKObjectIsCollection(value)) {
+        if (relationshipClass && !mappingToCollection && RKObjectIsCollection(value)) {
             RKLogDebug(@"Asked to map a collection into a has-one relationship. Transforming to an instance of: %@", NSStringFromClass(relationshipClass));
             value = [value lastObject];
             if (value == nil) {
