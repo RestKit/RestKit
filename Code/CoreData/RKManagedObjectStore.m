@@ -342,6 +342,22 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                     if (error) *error = localError;
                     return NO;
                 }
+                NSString *shmPath = [[URL path] stringByAppendingString:@"-shm"];
+                if ([[NSFileManager defaultManager] fileExistsAtPath:shmPath]) {
+                    if (! [[NSFileManager defaultManager] removeItemAtPath:shmPath error:&localError]) {
+                        RKLogError(@"Failed to remove persistent store (SHM) at path %@: %@", shmPath, localError);
+                        if (error) *error = localError;
+                        return NO;
+                    }
+                }
+                NSString *walPath = [[URL path] stringByAppendingString:@"-wal"];
+                if ([[NSFileManager defaultManager] fileExistsAtPath:walPath]) {
+                    if (! [[NSFileManager defaultManager] removeItemAtPath:walPath error:&localError]) {
+                        RKLogError(@"Failed to remove persistent store (WAL) at path %@: %@", walPath, localError);
+                        if (error) *error = localError;
+                        return NO;
+                    }
+                }
                 
                 // Check for and remove an external storage directory
                 NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[URL lastPathComponent] stringByDeletingPathExtension]];
