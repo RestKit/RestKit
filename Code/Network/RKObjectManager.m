@@ -63,6 +63,7 @@ static RKObjectManager  *sharedManager = nil;
  @param method The method for which to select matching response descriptors.
  @return An `NSArray` object whose elements are `RKResponseDescriptor` objects matching the given path and method.
  */
+#ifdef _COREDATADEFINES_H
 static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(NSArray *responseDescriptors, NSString *path, RKRequestMethod method)
 {
     NSIndexSet *indexSet = [responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
@@ -70,6 +71,7 @@ static NSArray *RKFilteredArrayOfResponseDescriptorsMatchingPathAndMethod(NSArra
     }];
     return [responseDescriptors objectsAtIndexes:indexSet];
 }
+#endif
 
 /**
  Returns the first `RKRequestDescriptor` object from the given array that matches the given object.
@@ -208,9 +210,9 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
  @param responseDescriptors An array of `RKResponseDescriptor` objects.
  @return `YES` if the `mapping` property of any of the response descriptor objects in the given array is an instance of `RKEntityMapping`, else `NO`.
  */
+#ifdef _COREDATADEFINES_H
 static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *responseDescriptors)
 {
-#ifdef _COREDATADEFINES_H
     // Visit all mappings accessible from the object graphs of all response descriptors
     NSMutableSet *accessibleMappings = [NSMutableSet set];
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
@@ -234,10 +236,10 @@ static BOOL RKDoesArrayOfResponseDescriptorsContainEntityMapping(NSArray *respon
             }
         }
     }
-#endif
     
     return NO;
 }
+#endif
 
 BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors);
 BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors)
