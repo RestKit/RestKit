@@ -560,17 +560,34 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                                                         success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                         failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
+    return [self objectRequestOperationWithRequest:request responseDescriptors:self.responseDescriptors success:success failure:failure];
+}
+
+- (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
+                                            responseDescriptors:(NSArray *)responseDescriptors
+                                                        success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                        failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+{
     Class HTTPRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses] ?: [RKHTTPRequestOperation class];
     RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request];
     [self copyStateFromHTTPClientToHTTPRequestOperation:HTTPRequestOperation];
     Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredObjectRequestOperationClasses] ?: [RKObjectRequestOperation class];
-    RKObjectRequestOperation *operation = [[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];
+    RKObjectRequestOperation *operation = [[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     return operation;
 }
 
 #ifdef _COREDATADEFINES_H
 - (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
+                                                          managedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                                                                      success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                                      failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+{
+    return [self managedObjectRequestOperationWithRequest:request responseDescriptors:self.responseDescriptors managedObjectContext:managedObjectContext success:success failure:failure];
+}
+
+- (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
+                                                          responseDescriptors:(NSArray *)responseDescriptors
                                                          managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
@@ -579,7 +596,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     RKHTTPRequestOperation *HTTPRequestOperation = [[HTTPRequestOperationClass alloc] initWithRequest:request];
     [self copyStateFromHTTPClientToHTTPRequestOperation:HTTPRequestOperation];
     Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredManagedObjectRequestOperationClasses] ?: [RKManagedObjectRequestOperation class];
-    RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:self.responseDescriptors];        
+    RKManagedObjectRequestOperation *operation = (RKManagedObjectRequestOperation *)[[objectRequestOperationClass alloc] initWithHTTPRequestOperation:HTTPRequestOperation responseDescriptors:responseDescriptors];
     [operation setCompletionBlockWithSuccess:success failure:failure];
     operation.managedObjectContext = managedObjectContext ?: self.managedObjectStore.mainQueueManagedObjectContext;
     operation.managedObjectCache = self.managedObjectStore.managedObjectCache;
@@ -617,7 +634,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     if (isManagedObjectRequestOperation && self.managedObjectStore) {
         // Construct a Core Data operation
         NSManagedObjectContext *managedObjectContext = [object respondsToSelector:@selector(managedObjectContext)] ? [object managedObjectContext] : self.managedObjectStore.mainQueueManagedObjectContext;
-        operation = [self managedObjectRequestOperationWithRequest:request managedObjectContext:managedObjectContext success:nil failure:nil];
+        operation = [self managedObjectRequestOperationWithRequest:request responseDescriptors:matchingDescriptors managedObjectContext:managedObjectContext success:nil failure:nil];
 
         if ([object isKindOfClass:[NSManagedObject class]]) {
             static NSPredicate *temporaryObjectsPredicate = nil;
@@ -636,7 +653,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         }
     } else {
         // Non-Core Data operation
-        operation = [self objectRequestOperationWithRequest:request success:nil failure:nil];
+        operation = [self objectRequestOperationWithRequest:request responseDescriptors:matchingDescriptors success:nil failure:nil];
     }
 #else
     // Non-Core Data operation
