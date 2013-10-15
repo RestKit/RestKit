@@ -1226,7 +1226,14 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectRequestOperation start];
     [managedObjectRequestOperation waitUntilFinished];
     expect(managedObjectRequestOperation.error).to.beNil();
-    expect([managedObjectRequestOperation.mappingResult array]).to.haveCountOf(1);
+    NSArray *array = [managedObjectRequestOperation.mappingResult array];
+    if ([array count] == 2) {
+        // Object shows up in results, but MOC is nil -- indicating it has been deleted.
+        expect([array[1] managedObjectContext]).to.beNil();
+    } else {
+        // iOS 6
+        expect(array).to.haveCountOf(1);
+    }
 }
 
 - (void)testManagedObjectRequestOperationFailsWithValidationErrorWhenDiscardsInvalidObjectsOnInsertIsNO

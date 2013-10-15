@@ -50,8 +50,9 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     // Delete any sqlite files in the app data directory
     NSError *error;
     NSArray *paths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:RKApplicationDataDirectory() error:&error];
+    NSArray *pathExtensions = @[ @"sqlite", @"sqlite-shm", @"sqlite-wal" ];
     for (NSString *path in paths) {
-        if ([[path pathExtension] isEqualToString:@"sqlite"]) {
+        if ([pathExtensions containsObject:[path pathExtension]]) {
             NSString *fullPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:path];
             BOOL success = [[NSFileManager defaultManager] removeItemAtPath:fullPath error:&error];
             NSAssert(success, @"Failed to remove SQLite file at path: %@", fullPath);
@@ -318,25 +319,40 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
     assertThat(persistentStore, is(notNilValue()));
     [managedObjectStore createManagedObjectContexts];
-    
-    // Check that there is a support directory
-    NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[persistentStore.URL lastPathComponent] stringByDeletingPathExtension]];
-    NSURL *supportDirectoryFileURL = [NSURL URLWithString:supportDirectoryName relativeToURL:[persistentStore.URL URLByDeletingLastPathComponent]];
-    
-    BOOL isDirectory = NO;
-    BOOL supportDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:[supportDirectoryFileURL path] isDirectory:&isDirectory];
-    expect(supportDirectoryExists).to.equal(YES);
-    expect(isDirectory).to.equal(YES);
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
-    NSDate *creationDate = attributes[NSFileCreationDate];
-    
-    BOOL success = [managedObjectStore resetPersistentStores:&error];
-    expect(success).to.equal(YES);
-    
-    attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
-    NSDate *newCreationDate = attributes[NSFileCreationDate];
-    
-    expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
+
+    // Check for a SQLite write-ahead log
+    NSString *writeAheadLogFile = [storePath stringByAppendingString:@"-wal"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:writeAheadLogFile]) {
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:writeAheadLogFile error:&error];
+        NSDate *creationDate = attributes[NSFileCreationDate];
+
+        BOOL success = [managedObjectStore resetPersistentStores:&error];
+        expect(success).to.equal(YES);
+
+        attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:writeAheadLogFile error:&error];
+        NSDate *newCreationDate = attributes[NSFileCreationDate];
+
+        expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
+    } else {
+        // Fall back to support directory
+        NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[persistentStore.URL lastPathComponent] stringByDeletingPathExtension]];
+        NSURL *supportDirectoryFileURL = [NSURL URLWithString:supportDirectoryName relativeToURL:[persistentStore.URL URLByDeletingLastPathComponent]];
+
+        BOOL isDirectory = NO;
+        BOOL supportDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:[supportDirectoryFileURL path] isDirectory:&isDirectory];
+        expect(supportDirectoryExists).to.equal(YES);
+        expect(isDirectory).to.equal(YES);
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
+        NSDate *creationDate = attributes[NSFileCreationDate];
+        
+        BOOL success = [managedObjectStore resetPersistentStores:&error];
+        expect(success).to.equal(YES);
+        
+        attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
+        NSDate *newCreationDate = attributes[NSFileCreationDate];
+        
+        expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
+    }
 }
 
 - (void)testThatPersistentStoreWithLongNameHasExternalStorageResetCorrectly
@@ -358,24 +374,39 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     assertThat(persistentStore, is(notNilValue()));
     [managedObjectStore createManagedObjectContexts];
 
-    // Check that there is a support directory
-    NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[persistentStore.URL lastPathComponent] stringByDeletingPathExtension]];
-    NSString *supportDirectoryPath = [[[[persistentStore URL] path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:supportDirectoryName];
-    
-    BOOL isDirectory = NO;
-    BOOL supportDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:supportDirectoryPath isDirectory:&isDirectory];
-    expect(supportDirectoryExists).to.equal(YES);
-    expect(isDirectory).to.equal(YES);
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:supportDirectoryPath error:&error];
-    NSDate *creationDate = attributes[NSFileCreationDate];
-    
-    BOOL success = [managedObjectStore resetPersistentStores:&error];
-    expect(success).to.equal(YES);
-    
-    attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:supportDirectoryPath error:&error];
-    NSDate *newCreationDate = attributes[NSFileCreationDate];
-    
-    expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
+    // Check for a SQLite write-ahead log
+    NSString *writeAheadLogFile = [storePath stringByAppendingString:@"-wal"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:writeAheadLogFile]) {
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:writeAheadLogFile error:&error];
+        NSDate *creationDate = attributes[NSFileCreationDate];
+
+        BOOL success = [managedObjectStore resetPersistentStores:&error];
+        expect(success).to.equal(YES);
+
+        attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:writeAheadLogFile error:&error];
+        NSDate *newCreationDate = attributes[NSFileCreationDate];
+
+        expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
+    } else {
+        // Check that there is a support directory
+        NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[persistentStore.URL lastPathComponent] stringByDeletingPathExtension]];
+        NSString *supportDirectoryPath = [[[[persistentStore URL] path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:supportDirectoryName];
+        
+        BOOL isDirectory = NO;
+        BOOL supportDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:supportDirectoryPath isDirectory:&isDirectory];
+        expect(supportDirectoryExists).to.equal(YES);
+        expect(isDirectory).to.equal(YES);
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:supportDirectoryPath error:&error];
+        NSDate *creationDate = attributes[NSFileCreationDate];
+        
+        BOOL success = [managedObjectStore resetPersistentStores:&error];
+        expect(success).to.equal(YES);
+        
+        attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:supportDirectoryPath error:&error];
+        NSDate *newCreationDate = attributes[NSFileCreationDate];
+        
+        expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
+    }
 }
 
 #pragma mark - Versioning Tests
@@ -388,12 +419,9 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
     BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:nil];
     expect(success).to.equal(NO);
-#if (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000) || \
-(defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 1090)
-    expect(error.code).to.equal(NSFileReadNoSuchFileError);
-#else
-    expect(error.code).to.equal(0);
-#endif
+
+    // Under iOS 7+ we get a NSFileReadNoSuchFileError
+    expect(error.code == 0 || error.code == NSFileReadNoSuchFileError).to.beTruthy();
 }
 
 - (void)testThatAttemptingToMigrateToANonVersionedModelReturnsError

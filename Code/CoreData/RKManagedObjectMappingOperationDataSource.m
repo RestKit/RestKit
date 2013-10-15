@@ -327,9 +327,10 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         // Add a dependency on the parent operation. If we are being mapped as part of a relationship, then the assignment of the mapped object to a parent may well fulfill the validation requirements. This ensures that the relationship mapping has completed before we evaluate the object for deletion.
         if (self.parentOperation) [deletionOperation addDependency:self.parentOperation];
 
+        RKRelationshipConnectionOperation *connectionOperation = nil;
         if ([connections count]) {
-            RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connections:connections managedObjectCache:self.managedObjectCache];
-            [operation setConnectionBlock:^(RKRelationshipConnectionOperation *operation, RKConnectionDescription *connection, id connectedValue) {
+            connectionOperation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connections:connections managedObjectCache:self.managedObjectCache];
+            [connectionOperation setConnectionBlock:^(RKRelationshipConnectionOperation *operation, RKConnectionDescription *connection, id connectedValue) {
                 if (connectedValue) {
                     if ([mappingOperation.delegate respondsToSelector:@selector(mappingOperation:didConnectRelationship:toValue:usingConnection:)]) {
                         [mappingOperation.delegate mappingOperation:mappingOperation didConnectRelationship:connection.relationship toValue:connectedValue usingConnection:connection];
@@ -341,10 +342,10 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
                 }
             }];
             
-            if (self.parentOperation) [operation addDependency:self.parentOperation];
-            [deletionOperation addDependency:operation];
-            [operationQueue addOperation:operation];
-            RKLogTrace(@"Enqueued %@ dependent upon parent operation %@ to operation queue %@", operation, self.parentOperation, operationQueue);
+            if (self.parentOperation) [connectionOperation addDependency:self.parentOperation];
+            [deletionOperation addDependency:connectionOperation];
+            [operationQueue addOperation:connectionOperation];
+            RKLogTrace(@"Enqueued %@ dependent upon parent operation %@ to operation queue %@", connectionOperation, self.parentOperation, operationQueue);
         }
         
         // Enqueue our deletion operation for execution after all the connections
@@ -352,23 +353,24 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
         // Handle tombstone deletion by predicate
         if ([(RKEntityMapping *)mappingOperation.objectMapping deletionPredicate]) {
-            RKManagedObjectDeletionOperation *deletionOperation = nil;
-            if (self.parentOperation) {
+            RKManagedObjectDeletionOperation *predicateDeletionOperation = nil;
+            // Attach a deletion operation for execution after the parent operation completes
+            predicateDeletionOperation = (RKManagedObjectDeletionOperation *)objc_getAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey);
+            if (! predicateDeletionOperation) {
+                predicateDeletionOperation = [[RKManagedObjectDeletionOperation alloc] initWithManagedObjectContext:self.managedObjectContext];
+
                 // Attach a deletion operation for execution after the parent operation completes
-                deletionOperation = (RKManagedObjectDeletionOperation *)objc_getAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey);
-                if (! deletionOperation) {
-                    deletionOperation = [[RKManagedObjectDeletionOperation alloc] initWithManagedObjectContext:self.managedObjectContext];
-                    objc_setAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey, deletionOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-                    [deletionOperation addDependency:self.parentOperation];
-                    NSOperationQueue *operationQueue = self.operationQueue ?: [NSOperationQueue currentQueue];
-                    [operationQueue addOperation:deletionOperation];
+                if (self.parentOperation) {
+                    objc_setAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey, predicateDeletionOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    [predicateDeletionOperation addDependency:self.parentOperation];
                 }
-                [deletionOperation addEntityMapping:(RKEntityMapping *)mappingOperation.objectMapping];
-            } else {
-                deletionOperation = [[RKManagedObjectDeletionOperation alloc] initWithManagedObjectContext:self.managedObjectContext];
-                [deletionOperation addEntityMapping:(RKEntityMapping *)mappingOperation.objectMapping];
-                [deletionOperation start];
+
+                // Ensure predicate deletion executes after any connections have been established
+                if (connectionOperation) [predicateDeletionOperation addDependency:connectionOperation];
+
+                [operationQueue addOperation:predicateDeletionOperation];
             }
+            [predicateDeletionOperation addEntityMapping:(RKEntityMapping *)mappingOperation.objectMapping];
         }
     }
     
@@ -453,6 +455,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     
     RKPropertyMapping *propertyMappingForModificationKey = [[(RKEntityMapping *)mappingOperation.mapping propertyMappingsByDestinationKeyPath] objectForKey:modificationKey];
     id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];
+    if (! rawValue) return NO;
     Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
 
     id transformedValue = nil;
