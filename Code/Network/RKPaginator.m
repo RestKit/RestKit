@@ -113,10 +113,6 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     self.failureBlock = failure;
 }
 
-- (void)setPageFinishedBlock:(void (^)(RKPaginator *paginator))finishedBlock {
-    self.pageFinishedBlock = finishedBlock;
-}
-
 // Private. Public consumers can rely on isLoaded
 - (BOOL)hasCurrentPage
 {
