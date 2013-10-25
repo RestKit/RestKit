@@ -77,11 +77,11 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
     <td>Specifies a flexible mapping in which the decision about which <tt>RKObjectMapping</tt> is to be used to process a given document is deferred to run time.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/latest/Classes/RKObjectMapper.html">RKObjectMapper</a></td>
-    <td>Provides an interface for mapping a parsed document into a set of local domain objects.</td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKMapperOperation.html">RKMapperOperation</a></td>
+    <td>Provides an interface for mapping a deserialized document into a set of local domain objects.</td>
   </tr>
   <tr>
-    <td><a href="http://restkit.org/api/latest/Classes/RKObjectMappingOperation.html">RKObjectMappingOperation</a></td>
+    <td><a href="http://restkit.org/api/latest/Classes/RKMappingOperation.html">RKMappingOperation</a></td>
     <td>An <tt>NSOperation</tt> that performs a mapping between object representations using an <tt>RKObjectMapping</tt>.</td>
   </tr>  
   <tr><th colspan="2" style="text-align:center;"><a href="Code/Network/README.md">Networking</a></th></tr>
