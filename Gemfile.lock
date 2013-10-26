@@ -60,9 +60,9 @@ GEM
       rack-test
       sinatra (~> 1.4.0)
       tilt (~> 1.3)
-    thin (1.5.1)
+    thin (1.6.1)
       daemons (>= 1.0.9)
-      eventmachine (>= 0.12.6)
+      eventmachine (>= 1.0.0)
       rack (>= 1.0.0)
     tilt (1.4.1)
     xcodeproj (0.14.1)
@@ -80,4 +80,4 @@ DEPENDENCIES
   rakeup (~> 1.1.0)
   sinatra (~> 1.4.0)
   sinatra-contrib (~> 1.4.0)
-  thin (~> 1.5.0)
+  thin (~> 1.6.0)
