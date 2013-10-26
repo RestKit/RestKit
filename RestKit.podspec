@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         =  'RestKit'
-  s.version      =  '0.22.0'
+  s.version      =  '1.0.0-development'
   s.summary      =  'RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X.'
   s.homepage     =  'http://www.restkit.org'
   s.author       =  { 'Blake Watters' => 'blakewatters@gmail.com' }
@@ -9,8 +9,8 @@ Pod::Spec.new do |s|
   
   # Platform setup
   s.requires_arc = true
-  s.ios.deployment_target = '5.0'
-  s.osx.deployment_target = '10.7'
+  s.ios.deployment_target = '6.0'
+  s.osx.deployment_target = '10.8'
   
   # Exclude optional Search and Testing modules
   s.default_subspec = 'Core'
@@ -45,7 +45,7 @@ EOS
     ns.ios.frameworks = 'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration'
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
     ns.dependency       'SOCKit'
-    ns.dependency       'AFNetworking', '~> 1.3.0'
+    ns.dependency       'AFNetworking', '~> 2.0.0'
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
     
