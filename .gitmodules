@@ -6,7 +6,7 @@
 	url = https://github.com/blakewatters/TransitionKit.git
 [submodule "Vendor/RKValueTransformers"]
 	path = Vendor/RKValueTransformers
-	url = https://github.com/RestKit/RKValueTransformers.git
+url=https://github.com/yeswolf/RKValueTransformers
 [submodule "Vendor/ISO8601DateFormatterValueTransformer"]
 	path = Vendor/ISO8601DateFormatterValueTransformer
 	url = https://github.com/blakewatters/ISO8601DateFormatterValueTransformer.git
