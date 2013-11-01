@@ -1,9 +1,9 @@
 inhibit_all_warnings!
 
 def import_pods
-  pod 'RestKit', :path => '.'
-  pod 'RestKit/Testing', :path => '.'
-  pod 'RestKit/Search', :path => '.'
+  pod 'RestKit', :podspec => 'RestKit.podspec'
+  pod 'RestKit/Testing', :podspec => '.'
+  pod 'RestKit/Search', :podspec => '.'
   
   pod 'Specta', '0.1.9'
   pod 'OCMock', '2.1.1'
