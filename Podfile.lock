@@ -1,47 +1,47 @@
 PODS:
-  - AFNetworking (1.3.2)
-  - Expecta (0.2.1)
+  - AFNetworking (1.3.3)
+  - Expecta (0.2.3)
   - ISO8601DateFormatterValueTransformer (0.5.0):
     - RKValueTransformers (~> 1.0.0)
-  - OCHamcrest (2.1.0)
-  - OCMock (2.1.1)
-  - RestKit (0.20.4-dev):
+  - OCHamcrest (3.0.1)
+  - OCMock (2.2.1)
+  - RestKit (0.21.0):
     - RestKit/Core
-  - RestKit/Core (0.20.4-dev):
+  - RestKit/Core (0.21.0):
     - RestKit/CoreData
     - RestKit/Network
     - RestKit/ObjectMapping
-  - RestKit/CoreData (0.20.4-dev)
-  - RestKit/Network (0.20.4-dev):
+  - RestKit/CoreData (0.21.0)
+  - RestKit/Network (0.21.0):
     - AFNetworking (~> 1.3.0)
     - RestKit/ObjectMapping
     - RestKit/Support
     - SOCKit
-  - RestKit/ObjectMapping (0.20.4-dev):
+  - RestKit/ObjectMapping (0.21.0):
     - ISO8601DateFormatterValueTransformer (~> 0.5.0)
     - RestKit/Support
     - RKValueTransformers (~> 1.0.0)
-  - RestKit/Search (0.20.4-dev):
+  - RestKit/Search (0.21.0):
     - RestKit/CoreData
-  - RestKit/Support (0.20.4-dev):
+  - RestKit/Support (0.21.0):
     - TransitionKit (= 1.1.1)
-  - RestKit/Testing (0.20.4-dev)
+  - RestKit/Testing (0.21.0)
   - RKCLLocationValueTransformer (1.0.0):
     - RKValueTransformers (~> 1.0.0)
   - RKValueTransformers (1.0.0)
   - SOCKit (1.1)
-  - Specta (0.1.9)
+  - Specta (0.1.11)
   - TransitionKit (1.1.1)
 
 DEPENDENCIES:
-  - Expecta (= 0.2.1)
-  - OCHamcrest (= 2.1.0)
-  - OCMock (= 2.1.1)
+  - Expecta (= 0.2.3)
+  - OCHamcrest (= 3.0.1)
+  - OCMock (= 2.2.1)
   - RestKit (from `.`)
   - RestKit/Search (from `.`)
   - RestKit/Testing (from `.`)
   - RKCLLocationValueTransformer (from `https://github.com/RestKit/RKCLLocationValueTransformer`)
-  - Specta (= 0.1.9)
+  - Specta (= 0.1.11)
 
 EXTERNAL SOURCES:
   RestKit:
@@ -50,16 +50,16 @@ EXTERNAL SOURCES:
     :git: https://github.com/RestKit/RKCLLocationValueTransformer
 
 SPEC CHECKSUMS:
-  AFNetworking: 7f9bcd7c287a75476cd5c61e82fd3380e93e4c54
-  Expecta: d46fb1bd78c90a83da0158b9b1e108de106e369f
+  AFNetworking: 0700ec7a58c36ad217173e167f6e4df7270df66b
+  Expecta: dbc4a27fabb853bdd2e907e33f11ee43a9a47d0c
   ISO8601DateFormatterValueTransformer: d0af1f50a9df42db72d7418db31938b8473e0af8
-  OCHamcrest: 96f5cb58fa0fd4b3609d37fe21e5246b259bba2a
-  OCMock: 79212e5e328378af5cfd6edb5feacfd6c49cd8a3
-  RestKit: 7b563c5e4019e9b5c1e4c0f88f976dff4b442c9b
-  RKCLLocationValueTransformer: 9ea1356cb00f313f238698bab5339018fafedcce
+  OCHamcrest: 782c52ae8c673e5d6060a65005cfd26d20d519ba
+  OCMock: 80e4cfbc71a0e1bd28caf10a9fda27da7c4c8402
+  RestKit: c11a30e7bc73513d9d2c2695672aba7697d24181
+  RKCLLocationValueTransformer: e4a127582a78df98035f75b611e48c0545b8884d
   RKValueTransformers: 01dc043fd853f6e40459b2e732dff545298a0f91
   SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581
-  Specta: 6ac5862bbff1a42269c2d582e4696f8b132d46cc
+  Specta: 82746c6fd70b104c5d37cfbadb7bf15a2cbc4da0
   TransitionKit: d0e3344aac92991395d4c2e72d9c5a8ceeb12910
 
-COCOAPODS: 0.25.0
+COCOAPODS: 0.27.1
