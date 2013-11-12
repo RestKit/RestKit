@@ -84,13 +84,17 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
     for (RKPropertyMapping *propertyMapping in propertyMappings) {
         NSString *sourceKeyPath = [propertyMapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
         NSString *destinationKeyPath = [propertyMapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+        RKPropertyMapping *nestedPropertyMapping = nil;
         if ([propertyMapping isKindOfClass:[RKAttributeMapping class]]) {
-            [nestedMappings addObject:[RKAttributeMapping attributeMappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath]];
+            nestedPropertyMapping = [RKAttributeMapping attributeMappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
         } else if ([propertyMapping isKindOfClass:[RKRelationshipMapping class]]) {
-            [nestedMappings addObject:[RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath
-                                                                        toKeyPath:destinationKeyPath
-                                                                      withMapping:[(RKRelationshipMapping *)propertyMapping mapping]]];
+            nestedPropertyMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath
+                                                                                toKeyPath:destinationKeyPath
+                                                                              withMapping:[(RKRelationshipMapping *)propertyMapping mapping]];
         }
+        nestedPropertyMapping.propertyValueClass = propertyMapping.propertyValueClass;
+        nestedPropertyMapping.valueTransformer = propertyMapping.valueTransformer;
+        [nestedMappings addObject:nestedPropertyMapping];
     }
     
     return nestedMappings;
