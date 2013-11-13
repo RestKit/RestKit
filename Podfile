@@ -5,10 +5,10 @@ def import_pods
   pod 'RestKit/Testing', :path => '.'
   pod 'RestKit/Search', :path => '.'
   
-  pod 'Specta', '0.1.9'
-  pod 'OCMock', '2.1.1'
-  pod 'OCHamcrest', '2.1.0'
-  pod 'Expecta', '0.2.1'
+  pod 'Specta', '0.1.11'
+  pod 'OCMock', '2.2.1'
+  pod 'OCHamcrest', '3.0.1'
+  pod 'Expecta', '0.2.3'
   
   # Used for testing Value Transformer integration
   pod 'RKCLLocationValueTransformer', :git => 'https://github.com/RestKit/RKCLLocationValueTransformer'

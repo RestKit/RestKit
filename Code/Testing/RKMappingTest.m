@@ -181,7 +181,9 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
 
 - (RKMappingTestEvent *)eventMatchingExpectation:(id)expectation
 {
+#ifdef _COREDATADEFINES_H
     Class connectionTestExpectation = NSClassFromString(@"RKConnectionTestExpectation");
+#endif
     for (RKMappingTestEvent *event in [self.events copy]) {
         if ([expectation isKindOfClass:[RKPropertyMappingTestExpectation class]]) {
             RKPropertyMappingTestExpectation *propertyExpectation = (RKPropertyMappingTestExpectation *) expectation;
