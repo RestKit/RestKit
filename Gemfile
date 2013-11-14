@@ -6,4 +6,4 @@ gem "sinatra", '~> 1.4.0'
 gem "sinatra-contrib", '~> 1.4.0'
 gem "thin", "~> 1.5.0"
 gem 'debugger', '~> 1.6.0'
-gem 'cocoapods', '~> 0.27.1'
+gem 'cocoapods', '~> 0.28.0'
