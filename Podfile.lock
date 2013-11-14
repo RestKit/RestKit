@@ -30,7 +30,7 @@ PODS:
     - RKValueTransformers (~> 1.0.0)
   - RKValueTransformers (1.0.1)
   - SOCKit (1.1)
-  - Specta (0.1.11)
+  - Specta (0.2.1)
   - TransitionKit (2.0.0)
 
 DEPENDENCIES:
@@ -41,7 +41,7 @@ DEPENDENCIES:
   - RestKit/Search (from `.`)
   - RestKit/Testing (from `.`)
   - RKCLLocationValueTransformer (from `https://github.com/RestKit/RKCLLocationValueTransformer`)
-  - Specta (= 0.1.11)
+  - Specta (= 0.2.1)
 
 EXTERNAL SOURCES:
   RestKit:
@@ -59,7 +59,7 @@ SPEC CHECKSUMS:
   RKCLLocationValueTransformer: e4a127582a78df98035f75b611e48c0545b8884d
   RKValueTransformers: 1562d458b9c9d59ce777bfc5982f2e1aef2e9182
   SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581
-  Specta: 82746c6fd70b104c5d37cfbadb7bf15a2cbc4da0
+  Specta: 2d06220591110c6d9757d8be8ecf8e63aa40dc2a
   TransitionKit: 433284465abacdc07852d7db6dd0cc075010059a
 
-COCOAPODS: 0.27.1
+COCOAPODS: 0.28.0
