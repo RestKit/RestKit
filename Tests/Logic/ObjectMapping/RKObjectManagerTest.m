@@ -498,7 +498,7 @@
     expect(request.HTTPMethod).to.equal(@"PATCH");
     expect(request.HTTPBody).notTo.beNil();
     NSString *string = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
-    expect(string).to.equal(@"key=value");
+    expect(string).to.equal(@"human[name]&key=value");
 }
 
 - (void)testAFHTTPClientCanModifyRequestsBuiltByObjectManager
@@ -1550,6 +1550,54 @@
     expect(human.name).will.beNil();
     expect(human.weight).will.equal(@131.3);
 }
+
+@end
+
+@interface RKObjectManagerNonCoreDataTest: RKTestCase
+@property (nonatomic, strong) RKObjectManager *objectManager;
+
+@property (nonatomic, strong) RKResponseDescriptor *addressResponseDescriptor;
+@property (nonatomic, strong) RKResponseDescriptor *coordinateResponseDescriptor;
+
+@end
+
+@implementation RKObjectManagerNonCoreDataTest
+
+-(void)setUp{
+    [RKTestFactory setUp];
+    self.objectManager = [RKTestFactory objectManager];
+    [RKObjectManager setSharedManager:self.objectManager];
+    
+    RKObjectMapping *addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    [addressMapping addAttributeMappingsFromArray:@[@"addressID", @"city", @"state", @"country"]];
+    
+    RKObjectMapping *coordinateMapping = [RKObjectMapping mappingForClass:[RKTestCoordinate class]];
+    [coordinateMapping addAttributeMappingsFromArray:@[@""]];
+    
+    self.addressResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:addressMapping method:RKRequestMethodGET pathPattern:@"address" keyPath:@"address" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    self.coordinateResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:coordinateMapping method:RKRequestMethodPOST pathPattern:@"coordinate" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+ 
+    [self.objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestCoordinate class] pathPattern:@"coordinate" method:RKRequestMethodPOST]];
+    [self.objectManager addResponseDescriptorsFromArray:@[self.addressResponseDescriptor, self.coordinateResponseDescriptor]];
+}
+
+-(void)tearDown{
+    [RKTestFactory tearDown];
+}
+
+-(void)testThatAppropriateObjectRequestOperationOnlyContainsResponseDescriptorsThatMatchObjectAndMethod{
+    RKTestCoordinate *coordinate = [RKTestCoordinate new];
+    RKObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:coordinate method:RKRequestMethodPOST path:@"coordinate" parameters:nil];
+    expect(operation.responseDescriptors.count).to.equal(1);
+    expect(operation.responseDescriptors[0]).to.equal(self.coordinateResponseDescriptor);
+}
+
+-(void)testThatAppropriateObjectRequestOperationOnlyContainsResponseDescriptorsThatMatchPahtAndMethod{
+    RKObjectRequestOperation *operation = [self.objectManager appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:@"address" parameters:nil];
+    expect(operation.responseDescriptors.count).to.equal(1);
+    expect(operation.responseDescriptors[0]).to.equal(self.addressResponseDescriptor);
+}
+
 
 @end
 

@@ -430,14 +430,14 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 
 - (void)testOffsetNumberOfNextPage
 {
-    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationOffsetURL];
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     [paginator loadPage:1];
     [paginator waitUntilFinished];
     expect(paginator.offset).to.equal(0);
     [paginator loadNextPage];
     [paginator waitUntilFinished];
-    expect(paginator.offset).to.equal(3);
+    expect(paginator.offset).to.equal(25);
 }
 
 - (void)testLoadingAPageWhileOtherPageLoads
