@@ -663,7 +663,11 @@ typedef enum {
     NSError *error = nil;
     NSString *JSON = [[NSString alloc] initWithData:[RKMIMETypeSerialization dataFromObject:params MIMEType:RKMIMETypeJSON error:nil] encoding:NSUTF8StringEncoding];
     assertThat(error, is(nilValue()));
+#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"address\":{\"state\":\"North Carolina\",\"city\":null}}")));
+#else
     assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"address\":{\"city\":null,\"state\":\"North Carolina\"}}")));
+#endif
 }
 
 - (void)testShouldSerializeHasManyRelationshipsToJSON
@@ -687,7 +691,11 @@ typedef enum {
     NSError *error = nil;
     NSString *JSON = [[NSString alloc] initWithData:[RKMIMETypeSerialization dataFromObject:params MIMEType:RKMIMETypeJSON error:nil] encoding:NSUTF8StringEncoding];
     assertThat(error, is(nilValue()));
+#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"friends\":[{\"state\":null,\"city\":\"Carrboro\"},{\"state\":null,\"city\":\"New York City\"}]}")));
+#else
     assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"friends\":[{\"city\":\"Carrboro\",\"state\":null},{\"city\":\"New York City\",\"state\":null}]}")));
+#endif
 }
 
 - (void)testShouldSerializeManagedHasManyRelationshipsToJSON
