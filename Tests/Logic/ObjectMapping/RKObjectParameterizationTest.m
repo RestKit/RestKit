@@ -204,7 +204,7 @@
     RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil method:RKRequestMethodAny];
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
     expect(error).to.beNil();
-    expect(parameters).to.equal(@{});
+    expect(parameters).to.equal(@{ @"key1-form-name": [NSNull null] });
 }
 
 - (void)testEmptyParameterizationRespectsRootKeyPath
@@ -217,7 +217,7 @@
     RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:@"root" method:RKRequestMethodAny];
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
     expect(error).to.beNil();
-    expect(parameters).to.equal(@{@"root":@{}});
+    expect(parameters).to.equal(@{ @"root":@{ @"key1-form-name": [NSNull null] } });
 }
 
 - (void)testShouldSerializeNestedObjectsContainingDatesToJSON
@@ -528,6 +528,22 @@
     expect(parameters[@"location"][@"longitude"]).to.equal(200.5);
 }
 
+- (void)testSerializingToNull
+{
+    RKTestUser *blake = [RKTestUser new];
+    blake.name = @"Blake Watters";
+    blake.website = nil;
+
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingsFromArray:@[ @"name", @"website" ]];
+
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[RKTestUser class] rootKeyPath:nil method:RKRequestMethodAny];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:blake requestDescriptor:requestDescriptor error:&error];
+    expect(error).to.beNil();
+    expect(parameters).to.equal((@{ @"name": @"Blake Watters", @"website": [NSNull null] }));
+}
+
 @end
 
 #pragma mark - Dynamic Request Paramterization
@@ -647,7 +663,7 @@ typedef enum {
     NSError *error = nil;
     NSString *JSON = [[NSString alloc] initWithData:[RKMIMETypeSerialization dataFromObject:params MIMEType:RKMIMETypeJSON error:nil] encoding:NSUTF8StringEncoding];
     assertThat(error, is(nilValue()));
-    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"address\":{\"state\":\"North Carolina\"}}")));
+    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"address\":{\"city\":null,\"state\":\"North Carolina\"}}")));
 }
 
 - (void)testShouldSerializeHasManyRelationshipsToJSON
@@ -666,13 +682,12 @@ typedef enum {
     address2.city = @"New York City";
     user.friends = [NSArray arrayWithObjects:address1, address2, nil];
 
-
     RKObjectMapping *serializationMapping = [userMapping inverseMapping];
     NSDictionary *params = [RKObjectParameterization parametersWithObject:user requestDescriptor:[RKRequestDescriptor requestDescriptorWithMapping:serializationMapping objectClass:[RKTestUser class] rootKeyPath:nil method:RKRequestMethodAny] error:nil];
     NSError *error = nil;
     NSString *JSON = [[NSString alloc] initWithData:[RKMIMETypeSerialization dataFromObject:params MIMEType:RKMIMETypeJSON error:nil] encoding:NSUTF8StringEncoding];
     assertThat(error, is(nilValue()));
-    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"friends\":[{\"city\":\"Carrboro\"},{\"city\":\"New York City\"}]}")));
+    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"friends\":[{\"city\":\"Carrboro\",\"state\":null},{\"city\":\"New York City\",\"state\":null}]}")));
 }
 
 - (void)testShouldSerializeManagedHasManyRelationshipsToJSON
