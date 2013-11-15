@@ -2,7 +2,7 @@ language: objective-c
 before_install:
     - brew update
     - brew uninstall xctool
-    - brew install xctool --HEAD
+    - brew install xctool
 script:
     - rake server:start test test:building_without_core_data
     
