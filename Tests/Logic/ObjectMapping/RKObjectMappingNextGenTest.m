@@ -893,40 +893,40 @@
     user.name = @"name";
     user.userID = @12345;
     id mockUser = [OCMockObject partialMockForObject:user];
-    [[mockUser expect] setUserID:nil];
-    [(RKTestUser *)[mockUser expect] setName:nil];
+    [[mockUser reject] setUserID:nil];
+    [(RKTestUser *)[mockUser reject] setName:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
-    assertThatBool(success, is(equalToBool(YES)));
+    assertThatBool(success, is(equalToBool(NO)));
     [mockUser verify];
 }
 
-//- (void)testShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent
-//{
-//    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMappingOperationDelegate)];
-//    [[mockDelegate expect] mappingOperation:OCMOCK_ANY didFailWithError:OCMOCK_ANY];
-//
-//    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-//    RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
-//    [mapping addPropertyMapping:idMapping];
-//    RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
-//    [mapping addPropertyMapping:nameMapping];
-//
-//    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"blue", @"favorite_color", @"coffee", @"preferred_beverage", nil];
-//    RKTestUser *user = [RKTestUser user];
-//
-//    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
-//    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
-//    operation.dataSource = dataSource;
-//    operation.delegate = mockDelegate;
-//    BOOL success = [operation performMapping:nil];
-//    assertThatBool(success, is(equalToBool(NO)));
-//    [mockDelegate verify];
-//}
+- (void)testShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent
+{
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMappingOperationDelegate)];
+    [[mockDelegate expect] mappingOperation:OCMOCK_ANY didFailWithError:OCMOCK_ANY];
+
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addPropertyMapping:idMapping];
+    RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addPropertyMapping:nameMapping];
+
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"blue", @"favorite_color", @"coffee", @"preferred_beverage", nil];
+    RKTestUser *user = [RKTestUser user];
+
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    operation.delegate = mockDelegate;
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(NO)));
+    [mockDelegate verify];
+}
 
 - (void)testShouldSetTheErrorWhenMappingOperationFails
 {
