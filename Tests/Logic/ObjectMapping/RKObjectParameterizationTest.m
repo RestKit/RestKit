@@ -85,7 +85,7 @@
     RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil method:RKRequestMethodAny];
     NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
     expect(error).to.beNil();
-    expect(parameters[@"date-form-name"]).to.equal(@"1970-01-01T00:00:00Z");
+    expect(parameters[@"date-form-name"]).to.equal(@"1970-01-01T00:00:00.000Z");
 }
 
 #pragma clang diagnostic push
@@ -129,7 +129,7 @@
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     expect(error).to.beNil();
-    expect(string).to.equal(@"{\"key1-form-name\":\"value1\",\"date-form-name\":\"1970-01-01T00:00:00Z\"}");
+    expect(string).to.equal(@"{\"key1-form-name\":\"value1\",\"date-form-name\":\"1970-01-01T00:00:00.000Z\"}");
 }
 
 - (void)testShouldSerializeNSDecimalNumberAttributesToJSON
@@ -244,9 +244,9 @@
 
     // Encodes differently on iOS / OS X
     #if TARGET_OS_IPHONE
-    expect(string).to.equal(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01T00:00:00Z\"}}");
+    expect(string).to.equal(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01T00:00:00.000Z\"}}");
     #else
-    expect(string).to.equal(@"{\"hasOne\":{\"date\":\"1970-01-01T00:00:00Z\"},\"stringTest\":\"The string\"}");
+    expect(string).to.equal(@"{\"hasOne\":{\"date\":\"1970-01-01T00:00:00.000Z\"},\"stringTest\":\"The string\"}");
     #endif
 }
 
@@ -287,7 +287,7 @@
     
     NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeJSON error:&error];
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    expect(string).to.equal(@"{\"hasMany\":[{\"date\":\"1970-01-01T00:00:00Z\"}],\"stringTest\":\"The string\"}");
+    expect(string).to.equal(@"{\"hasMany\":[{\"date\":\"1970-01-01T00:00:00.000Z\"}],\"stringTest\":\"The string\"}");
 }
 
 - (void)testShouldSerializeAnNSNumberContainingABooleanToTrueFalseIfRequested
@@ -502,7 +502,7 @@
     NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     expect(error).to.beNil();
-    expect(string).to.equal(@"{\"nestedPath\":{\"birthday\":\"1970-01-01T00:00:00Z\"}}");
+    expect(string).to.equal(@"{\"nestedPath\":{\"birthday\":\"1970-01-01T00:00:00.000Z\"}}");
 }
 
 - (void)testParameterizationFromLocationToNestedDictionaryUsingValueTransformer
