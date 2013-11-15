@@ -894,7 +894,7 @@
     user.userID = @12345;
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser expect] setUserID:nil];
-    [[mockUser expect] setName:nil];
+    [(RKTestUser *)[mockUser expect] setName:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
