@@ -815,13 +815,13 @@
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
     catMapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
-
+    
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     humanMapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
-    [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"catsInOrderByAge" withMapping:catMapping]];
-
-    NSArray *catsData = @[ @{ @"name" : @"Asia" }, @{ @"name" : @"Europe" } ];
+    [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"catsInOrderByAge" withMapping:catMapping]];;
+    
+    NSArray *catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
     NSDictionary *mappableData = @{ @"name": @"Blake", @"favoriteCatID": @31337, @"cats": catsData };
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
@@ -831,12 +831,6 @@
     operation.dataSource = mappingOperationDataSource;
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
-    assertThatBool(success, is(equalToBool(YES)));
-    assertThat([human catsInOrderByAge], isNot(isEmpty()));
-    
-    operation = [[RKMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    operation.dataSource = mappingOperationDataSource;
-    [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat([human catsInOrderByAge], isNot(isEmpty()));
 }
