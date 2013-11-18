@@ -161,7 +161,18 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
         if (connection.destinationPredicate) managedObjects = [managedObjects filteredSetUsingPredicate:connection.destinationPredicate];
         if (!connection.includesSubentities) managedObjects = [managedObjects filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"entity == %@", [connection.relationship destinationEntity]]];
         if ([connection.relationship isToMany]) {
-            connectionResult = managedObjects;
+            if ([connection.relationship isOrdered]) {
+                connectionResult = [NSMutableOrderedSet orderedSetWithSet:managedObjects];
+                NSString *orderedAttributeName = [[attributeValues allKeys] firstObject];
+                NSArray *orderedAttributeValues = [attributeValues objectForKey:orderedAttributeName];
+                
+                [connectionResult sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                    return [[NSNumber numberWithInt:[orderedAttributeValues indexOfObject:[obj1 valueForKey:orderedAttributeName]]]
+                            compare:[NSNumber numberWithInt:[orderedAttributeValues indexOfObject:[obj2 valueForKey:orderedAttributeName]]]];
+                }];
+            } else {
+                connectionResult = managedObjects;
+            }
         } else {
             if ([managedObjects count] > 1) RKLogWarning(@"Retrieved %ld objects satisfying connection criteria for one-to-one relationship connection: only one object will be connected.", (long) [managedObjects count]);
             if ([managedObjects count]) connectionResult = [managedObjects anyObject];
