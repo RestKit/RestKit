@@ -143,3 +143,10 @@ BOOL RKURLIsRelativeToURL(NSURL *URL, NSURL *baseURL);
  @return A string containing the relative path and query parameters.
  */
 NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
+
+/**
+ *  Returns an index set of the status codes with optional response bodies
+ *
+ *  @return An index set of the status codes with optional response bodies
+ */
+NSIndexSet *RKStatusCodesOfResponsesWithOptionalBodies(void);
