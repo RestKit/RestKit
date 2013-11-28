@@ -434,7 +434,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     }
     
     RKLogInfo(@"Determined that store at URL %@ has incompatible metadata for managed object model: performing migration...", storeURL);
-        
+    
     NSURL *momdURL = isMomd ? destinationModelURL : [destinationModelURL URLByDeletingLastPathComponent];
     
     // We can only do migrations within a versioned momd
@@ -482,24 +482,46 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
         RKLogError(@"%@", *error);
         return NO;
     }
-
+    
     CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
     NSString *UUID = (__bridge_transfer NSString*)CFUUIDCreateString(kCFAllocatorDefault, uuid);
     CFRelease(uuid);
-
-    NSString *migrationPath = [NSTemporaryDirectory() stringByAppendingFormat:@"Migration-%@.sqlite", UUID];
-    NSURL *migrationURL = [NSURL fileURLWithPath:migrationPath];
+    
+    NSString *migrationPath = [NSTemporaryDirectory() stringByAppendingFormat:@"Migration-%@.", UUID];
     
     // Create a migration manager to perform the migration.
     NSMigrationManager *manager = [[NSMigrationManager alloc] initWithSourceModel:sourceModel destinationModel:destinationModel];
-    BOOL success = [manager migrateStoreFromURL:storeURL type:NSSQLiteStoreType
-                                        options:nil withMappingModel:mappingModel toDestinationURL:migrationURL
-                                destinationType:NSSQLiteStoreType destinationOptions:nil error:error];
+    BOOL success = [manager migrateStoreFromURL:storeURL
+                                           type:NSSQLiteStoreType
+                                        options:nil
+                               withMappingModel:mappingModel
+                               toDestinationURL:[NSURL fileURLWithPath:[migrationPath stringByAppendingString:@"sqlite"]]
+                                destinationType:NSSQLiteStoreType
+                             destinationOptions:nil
+                                          error:error];
     
     if (success) {
-        success = [[NSFileManager defaultManager] removeItemAtURL:storeURL error:error];
+        
+        NSString *storePath = [[storeURL path] stringByReplacingOccurrencesOfString:[storeURL pathExtension] withString:@""];
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSArray *sqliteExtensions = @[@"sqlite", @"sqlite-wal", @"sqlite-shm"];
+        
+        for (NSString *extension in sqliteExtensions) {
+            NSString *path = [storePath stringByAppendingString:extension];
+            if ([fileManager fileExistsAtPath:path]) {
+                success = [fileManager removeItemAtPath:path error:error];
+            }
+        }
+        
         if (success) {
-            success = [[NSFileManager defaultManager] moveItemAtURL:migrationURL toURL:storeURL error:error];
+            for (NSString *extension in sqliteExtensions) {
+                NSString *sourcePath = [migrationPath stringByAppendingString:extension];
+                if ([fileManager fileExistsAtPath:sourcePath]) {
+                    NSString *destinationPath = [storePath stringByAppendingString:extension];
+                    success = [fileManager moveItemAtPath:sourcePath toPath:destinationPath error:error];
+                }
+            }
             if (success) RKLogInfo(@"Successfully migrated existing store to managed object model at path '%@'...", [destinationModelURL path]);
         } else {
             RKLogError(@"Failed to remove existing store at path '%@': unable to complete migration...", [storeURL path]);
