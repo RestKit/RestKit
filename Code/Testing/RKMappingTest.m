@@ -232,7 +232,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
             if (! success) {
                 if (blockError) {
                     // If the block has given us an error, use the reason
-                    *error = blockError;
+                    if (error) *error = blockError;
                 } else {
                     NSString *description = [NSString stringWithFormat:@"evaluation block returned `NO` for %@ value '%@'", [event.value class], event.value];
                     NSString *reason = [NSString stringWithFormat:@"expected to %@ with value %@ '%@', but it did not",
