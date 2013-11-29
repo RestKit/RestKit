@@ -84,13 +84,18 @@ RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(
 RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(NSArray *requestDescriptors, id object, RKRequestMethod requestMethod)
 {
     Class searchClass = [object class];
+    NSString *searchClassName = NSStringFromClass(searchClass);
     do {
         for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([requestDescriptor.objectClass isEqual:searchClass] && (requestMethod == requestDescriptor.method)) return requestDescriptor;
-        }
-        
-        for (RKRequestDescriptor *requestDescriptor in requestDescriptors) {
-            if ([requestDescriptor.objectClass isEqual:searchClass] && (requestMethod & requestDescriptor.method)) return requestDescriptor;
+            BOOL matchesRequestMethod = requestMethod & requestDescriptor.method;
+            if (matchesRequestMethod) {
+                Class requestDescriptorClass = requestDescriptor.objectClass;
+                NSString *requestDescriptorClassName = NSStringFromClass(requestDescriptorClass);
+                BOOL matchesClass = [requestDescriptorClassName isEqualToString:searchClassName];
+                if (matchesClass) {
+                    return requestDescriptor;
+                }
+            }
         }
         searchClass = [searchClass superclass];
     } while (searchClass);
