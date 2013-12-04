@@ -3,6 +3,8 @@ before_install:
     - brew update
     - brew uninstall xctool
     - brew install xctool
+install:
+    - bundle install
+    - bundle exec pod install
 script:
-    - rake server:start test test:building_without_core_data
-    
+    - bundle exec rake server:start test test:building_without_core_data
