@@ -613,10 +613,12 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
                 return completionBlock(nil, error);
             }
         }
-        
-        success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
-        if (! success || [weakSelf isCancelled]) {
-            return completionBlock(nil, error);
+
+        if (!responseMappingError) {
+            success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
+            if (! success || [weakSelf isCancelled]) {
+                return completionBlock(nil, error);
+            }
         }
         
         // Persist our mapped objects
