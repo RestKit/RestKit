@@ -342,6 +342,12 @@ class RestKitTestServer < Sinatra::Base
     { :user_ids => [1, 2, 3] }.to_json
   end
 
+  get '/corrupted/json' do
+      content_type 'application/json'
+      status 200
+      'no json here'
+  end
+
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

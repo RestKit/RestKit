@@ -1510,6 +1510,59 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect([human hasBeenDeleted]).to.equal(YES);
 }
 
+- (void)testThatErrorStatusCodeDoesNotTriggerDeletionOfOrphanedObjects
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID", @"name": @"name" }];
+    entityMapping.identificationAttributes = @[ @"railsID" ];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:nil];
+    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    human.railsID = @1;
+    [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:nil];
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/500" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"GET";
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    managedObjectRequestOperation.managedObjectCache = managedObjectCache;
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+        return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    };
+    managedObjectRequestOperation.deletesOrphanedObjects = YES;
+    managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
+    [managedObjectRequestOperation start];
+    expect([managedObjectRequestOperation isFinished]).will.equal(YES);
+    expect([human hasBeenDeleted]).to.equal(NO);
+}
+
+- (void)testThatCorruptedBodyDoesNotTriggerDeletionOfOrphanedObjects
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"id": @"railsID", @"name": @"name" }];
+    entityMapping.identificationAttributes = @[ @"railsID" ];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:nil];
+    RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    human.railsID = @1;
+    [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:nil];
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/corrupted/json" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"GET";
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
+    managedObjectRequestOperation.managedObjectCache = managedObjectCache;
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+        return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    };
+    managedObjectRequestOperation.deletesOrphanedObjects = YES;
+    managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
+    [managedObjectRequestOperation start];
+    expect([managedObjectRequestOperation isFinished]).will.equal(YES);
+    expect([human hasBeenDeleted]).to.equal(NO);
+}
+
+
 - (void)testThatAResponseContainingOnlyNonManagedObjectsTriggersDeletionOfOrphanedObjects
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
