@@ -615,7 +615,6 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         }
 
         if (!responseMappingError) {
-
             success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
             if (! success || [weakSelf isCancelled]) {
                 return completionBlock(nil, error);
