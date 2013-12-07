@@ -79,6 +79,7 @@
  @param otherMapping The property mapping object with which to compare the receiver.
  @return `YES` if `otherMapping` specifies the same mapping as the receiver, otherwise `NO`.
  */
+// TODO: Replace with isEqual:
 - (BOOL)isEqualToMapping:(RKPropertyMapping *)otherMapping;
 
 @end

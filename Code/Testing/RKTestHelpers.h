@@ -42,7 +42,7 @@
  @return The new stubbed route object that was added to the route set of the target object manager.
  */
 + (RKRoute *)stubRouteForClass:(Class)objectClass
-                        method:(RKRequestMethod)method
+                        method:(RKHTTPMethodOptions)method
                withPathPattern:(NSString *)pathPattern
                onObjectManager:(RKObjectManager *)nilOrObjectManager;
 
@@ -69,7 +69,7 @@
  */
 + (RKRoute *)stubRouteForRelationship:(NSString *)relationshipName
                               ofClass:(Class)objectClass
-                               method:(RKRequestMethod)method
+                               method:(RKHTTPMethodOptions)method
                           pathPattern:(NSString *)pathPattern
                       onObjectManager:(RKObjectManager *)nilOrObjectManager;
 

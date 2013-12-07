@@ -46,36 +46,36 @@ NSIndexSet *RKCacheableStatusCodes(void)
     return cacheableStatusCodes;
 }
 
-BOOL RKIsSpecificRequestMethod(RKRequestMethod method)
+BOOL RKIsSpecificRequestMethod(RKHTTPMethodOptions method)
 {
     // check for a power of two
     return !(method & (method - 1));
 }
 
-NSString *RKStringFromRequestMethod(RKRequestMethod method)
+NSString *RKStringFromRequestMethod(RKHTTPMethodOptions method)
 {
     switch (method) {
-        case RKRequestMethodGET:     return @"GET";
-        case RKRequestMethodPOST:    return @"POST";
-        case RKRequestMethodPUT:     return @"PUT";
-        case RKRequestMethodPATCH:   return @"PATCH";
-        case RKRequestMethodDELETE:  return @"DELETE";
-        case RKRequestMethodHEAD:    return @"HEAD";
-        case RKRequestMethodOPTIONS: return @"OPTIONS";
+        case RKHTTPMethodGET:     return @"GET";
+        case RKHTTPMethodPOST:    return @"POST";
+        case RKHTTPMethodPUT:     return @"PUT";
+        case RKHTTPMethodPATCH:   return @"PATCH";
+        case RKHTTPMethodDELETE:  return @"DELETE";
+        case RKHTTPMethodHEAD:    return @"HEAD";
+        case RKHTTPMethodOPTIONS: return @"OPTIONS";
         default:                     break;
     }
     return nil;
 }
 
-RKRequestMethod RKRequestMethodFromString(NSString *methodName)
+RKHTTPMethodOptions RKHTTPMethodFromString(NSString *methodName)
 {
-    if      ([methodName isEqualToString:@"GET"])     return RKRequestMethodGET;
-    else if ([methodName isEqualToString:@"POST"])    return RKRequestMethodPOST;
-    else if ([methodName isEqualToString:@"PUT"])     return RKRequestMethodPUT;
-    else if ([methodName isEqualToString:@"DELETE"])  return RKRequestMethodDELETE;
-    else if ([methodName isEqualToString:@"HEAD"])    return RKRequestMethodHEAD;
-    else if ([methodName isEqualToString:@"PATCH"])   return RKRequestMethodPATCH;
-    else if ([methodName isEqualToString:@"OPTIONS"]) return RKRequestMethodOPTIONS;
+    if      ([methodName isEqualToString:@"GET"])     return RKHTTPMethodGET;
+    else if ([methodName isEqualToString:@"POST"])    return RKHTTPMethodPOST;
+    else if ([methodName isEqualToString:@"PUT"])     return RKHTTPMethodPUT;
+    else if ([methodName isEqualToString:@"DELETE"])  return RKHTTPMethodDELETE;
+    else if ([methodName isEqualToString:@"HEAD"])    return RKHTTPMethodHEAD;
+    else if ([methodName isEqualToString:@"PATCH"])   return RKHTTPMethodPATCH;
+    else if ([methodName isEqualToString:@"OPTIONS"]) return RKHTTPMethodOPTIONS;
     else                                              @throw [NSException exceptionWithName:NSInvalidArgumentException
                                                                                      reason:[NSString stringWithFormat:@"The given HTTP request method name `%@` does not correspond to any known request methods.", methodName]
                                                                                    userInfo:nil];

@@ -7,6 +7,6 @@
 [submodule "Vendor/RKValueTransformers"]
 	path = Vendor/RKValueTransformers
 	url = https://github.com/RestKit/RKValueTransformers.git
-[submodule "Vendor/ISO8601DateFormatterValueTransformer"]
-	path = Vendor/ISO8601DateFormatterValueTransformer
-	url = https://github.com/blakewatters/ISO8601DateFormatterValueTransformer.git
+[submodule "Vendor/CSURITemplate"]
+	path = Vendor/CSURITemplate
+	url = https://github.com/cogenta/CSURITemplate.git

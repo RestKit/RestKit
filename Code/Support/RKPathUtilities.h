@@ -44,7 +44,7 @@ BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error);
  @see `RKPathMatcher`
  @see `SOCPattern`
  */
-NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object);
+//NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object);
 
 /**
  Returns a MIME Type for a given path by using the Core Services framework.

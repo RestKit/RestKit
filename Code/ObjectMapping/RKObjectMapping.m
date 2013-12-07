@@ -26,7 +26,6 @@
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
 #import "RKValueTransformers.h"
-#import "ISO8601DateFormatterValueTransformer.h"
 
 typedef NSString * (^RKSourceToDesinationKeyTransformationBlock)(RKObjectMapping *, NSString *);
 
@@ -131,13 +130,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     RKObjectMapping *objectMapping = [self mappingForClass:[NSMutableDictionary class]];
     objectMapping.assignsDefaultValueForMissingAttributes = YES;
     return objectMapping;
-}
-
-+ (void)initialize
-{
-    // Add an ISO8601DateFormatter to the transformation stack for backwards compatibility
-    RKISO8601DateFormatter *dateFormatter = [RKISO8601DateFormatter defaultISO8601DateFormatter];
-    [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
 }
 
 - (id)initWithClass:(Class)objectClass

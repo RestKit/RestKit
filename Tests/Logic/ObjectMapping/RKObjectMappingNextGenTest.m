@@ -35,8 +35,6 @@
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKDynamicMapping.h"
-#import "RKMIMETypeSerialization.h"
-#import "ISO8601DateFormatterValueTransformer.h"
 #import "RKCLLocationValueTransformer.h"
 
 // Managed Object Serialization Testific
@@ -131,8 +129,6 @@
 
     // Reset the default transformer
     [RKValueTransformer setDefaultValueTransformer:nil];
-    RKISO8601DateFormatter *dateFormatter = [RKISO8601DateFormatter defaultISO8601DateFormatter];
-    [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
 }
 
 #pragma mark - RKObjectKeyPathMapping Tests

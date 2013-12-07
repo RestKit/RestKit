@@ -105,7 +105,7 @@
     TestMappable *object = [[TestMappable alloc] init];
 
     NSData *data = [@"{\"boolString\":true}" dataUsingEncoding:NSUTF8StringEncoding];
-    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+    id deserializedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -123,7 +123,7 @@
     TestMappable *object = [[TestMappable alloc] init];
 
     NSData *data = [@"{\"boolNumber\":true}" dataUsingEncoding:NSUTF8StringEncoding];
-    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+    id deserializedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -141,7 +141,7 @@
     TestMappable *object = [[TestMappable alloc] init];
 
     NSData *data = [@"{\"boolNumber\":false}" dataUsingEncoding:NSUTF8StringEncoding];
-    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+    id deserializedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -159,7 +159,7 @@
     TestMappable *object = [[TestMappable alloc] init];
 
     NSData *data = [@"{\"number\":123}" dataUsingEncoding:NSUTF8StringEncoding];
-    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+    id deserializedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -177,7 +177,7 @@
     TestMappable *object = [[TestMappable alloc] init];
 
     NSData *data = [@"{\"numberString\":\"69726278940360707\"}" dataUsingEncoding:NSUTF8StringEncoding];
-    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+    id deserializedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -196,7 +196,7 @@
     TestMappable *object = [[TestMappable alloc] init];
 
     NSData *data = [@"{\"numberString\":\"1234.5678\"}" dataUsingEncoding:NSUTF8StringEncoding];
-    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+    id deserializedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -224,7 +224,7 @@
     [userMapping addPropertyMapping:hasOneMapping];
 
     NSData *data = [@"{\"name\": \"Blake Watters\",\"address\": {\"city\": \"Carrboro\"},\"nested\": {\"city\": \"New York\"}}" dataUsingEncoding:NSUTF8StringEncoding];
-    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+    id deserializedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
     RKTestUser *user = [RKTestUser user];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:user mapping:userMapping];
@@ -244,7 +244,7 @@
     TestMappable *object = [[TestMappable alloc] init];
 
     NSData *data = [@"{\"numbers\":[1, 2, 3]}" dataUsingEncoding:NSUTF8StringEncoding];
-    id deserializedObject = [RKMIMETypeSerialization objectFromData:data MIMEType:RKMIMETypeJSON error:nil];
+    id deserializedObject = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:deserializedObject destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];

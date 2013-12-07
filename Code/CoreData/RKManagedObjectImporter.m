@@ -27,7 +27,6 @@
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKFetchRequestManagedObjectCache.h"
-#import "RKMIMETypeSerialization.h"
 #import "RKPathUtilities.h"
 #import "RKLog.h"
 
@@ -196,8 +195,8 @@
         return NSNotFound;
     }
 
-    NSString *MIMEType = RKMIMETypeFromPathExtension(path);
-    id parsedData = [RKMIMETypeSerialization objectFromData:payload MIMEType:MIMEType error:&localError];
+//    NSString *MIMEType = RKMIMETypeFromPathExtension(path);
+    id parsedData = nil;//[RKMIMETypeSerialization objectFromData:payload MIMEType:MIMEType error:&localError];
     if (!parsedData) {
         RKLogError(@"Failed to parse file at path '%@': %@", path, [localError localizedDescription]);
     }

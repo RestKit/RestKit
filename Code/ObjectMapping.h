@@ -18,7 +18,6 @@
 //  limitations under the License.
 //
 
-#import "RKObjectManager.h"
 #import "RKObjectMapping.h"
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"

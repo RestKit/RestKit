@@ -18,13 +18,12 @@
 //  limitations under the License.
 //
 
-#import "AFHTTPClient.h"
 #import "RKTestFactory.h"
 #import "RKLog.h"
-#import "RKObjectManager.h"
+//#import "RKObjectManager.h"
 #import "RKPathUtilities.h"
-#import "RKMIMETypeSerialization.h"
-#import "RKObjectRequestOperation.h"
+//#import "RKMIMETypeSerialization.h"
+//#import "RKObjectRequestOperation.h"
 
 #ifdef _COREDATADEFINES_H
 #import "RKManagedObjectStore.h"
@@ -32,10 +31,10 @@
 #endif
 
 // Expose MIME Type singleton and initialization routine
-@interface RKMIMETypeSerialization ()
-+ (RKMIMETypeSerialization *)sharedSerialization;
-- (void)addRegistrationsForKnownSerializations;
-@end
+//@interface RKMIMETypeSerialization ()
+//+ (RKMIMETypeSerialization *)sharedSerialization;
+//- (void)addRegistrationsForKnownSerializations;
+//@end
 
 @interface RKTestFactory ()
 
@@ -111,21 +110,23 @@
 - (void)defineDefaultFactories
 {
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
-        __block AFHTTPClient *client;
-        RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
-            client = [AFHTTPClient clientWithBaseURL:self.baseURL];
-        });
-
-        return client;
+//        __block AFHTTPClient *client;
+//        RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
+//            client = [AFHTTPClient clientWithBaseURL:self.baseURL];
+//        });
+//
+//        return client;
+        return nil;
     }];
 
     [self defineFactory:RKTestFactoryDefaultNamesObjectManager withBlock:^id {
-        __block RKObjectManager *objectManager;
-        RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
-            objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
-        });
-
-        return objectManager;
+//        __block RKObjectManager *objectManager;
+//        RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
+//            objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
+//        });
+//
+//        return objectManager;
+        return nil;
     }];
 
 #ifdef _COREDATADEFINES_H
@@ -241,13 +242,13 @@
     });
 
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
-    [RKObjectManager setSharedManager:nil];
+//    [RKObjectManager setSharedManager:nil];
 #ifdef _COREDATADEFINES_H
     [RKManagedObjectStore setDefaultStore:nil];
 #endif
     
     // Restore the default MIME Type Serializations in case a test has manipulated the registry
-    [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
+//    [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
 
     // Delete the store if it exists
     NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
@@ -266,11 +267,11 @@
     if ([RKTestFactory sharedFactory].tearDownBlock) [RKTestFactory sharedFactory].tearDownBlock();
     
     // Cancel any network operations and clear the cache
-    [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
+//    [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
     // Cancel any object mapping in the response mapping queue
-    [[RKObjectRequestOperation responseMappingQueue] cancelAllOperations];
+//    [[RKObjectRequestOperation responseMappingQueue] cancelAllOperations];
 
 #ifdef _COREDATADEFINES_H
     // Ensure the existing defaultStore is shut down
@@ -287,7 +288,7 @@
 #endif
     
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
-    [RKObjectManager setSharedManager:nil];
+//    [RKObjectManager setSharedManager:nil];
 #ifdef _COREDATADEFINES_H
     [RKManagedObjectStore setDefaultStore:nil];
 #endif

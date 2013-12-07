@@ -51,7 +51,7 @@
     objectLoader.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContextContext;
     objectLoader.mainQueueManagedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     objectLoader.delegate = responseLoader;
-    objectLoader.method = RKRequestMethodDELETE;
+    objectLoader.method = RKHTTPMethodDELETE;
     objectLoader.objectMapping = mapping;
     objectLoader.targetObject = human;
     [objectLoader send];
@@ -274,7 +274,7 @@
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     assertThatBool([human.objectID isTemporaryID], is(equalToBool(YES)));
     objectLoader.sourceObject = human;
-    objectLoader.method = RKRequestMethodGET;
+    objectLoader.method = RKHTTPMethodGET;
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     objectLoader.delegate = responseLoader;
     [objectLoader send];

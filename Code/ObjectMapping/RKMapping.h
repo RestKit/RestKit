@@ -55,6 +55,7 @@
 
  **NOTE**: Must be implemented in subclass.
  */
+// TODO: Replace with vanilla isEqual:
 - (BOOL)isEqualToMapping:(RKMapping *)otherMapping;
 
 @end

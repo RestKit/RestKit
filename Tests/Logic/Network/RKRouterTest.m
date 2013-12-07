@@ -27,17 +27,17 @@
 - (void)testResourcePathForObject
 {
     RKRouter *router = [[RKRouter alloc] initWithBaseURL:[NSURL URLWithString:@"http://restkit.org/"]];
-    [router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID" method:RKRequestMethodAny]];
+    [router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodAny]];
     RKTestUser *user = [RKTestUser new];
     user.userID = [NSNumber numberWithInteger:12345];
-    NSURL *URL = [router URLForObject:user method:RKRequestMethodGET];
+    NSURL *URL = [router URLForObject:user method:RKHTTPMethodGET];
     assertThat(URL.path, is(equalTo(@"/users/12345")));
 }
 
 - (void)testResourcePathForRouteNamed
 {
     RKRouter *router = [[RKRouter alloc] initWithBaseURL:[NSURL URLWithString:@"http://restkit.org/"]];
-    [router.routeSet addRoute:[RKRoute routeWithName:@"airlines_list" pathPattern:@"/airlines.json" method:RKRequestMethodGET]];
+    [router.routeSet addRoute:[RKRoute routeWithName:@"airlines_list" URITemplateString:@"/airlines.json" method:RKHTTPMethodGET]];
     NSURL *URL = [router URLForRouteNamed:@"airlines_list" method:nil object:nil];
     assertThat(URL.path, is(equalTo(@"/airlines.json")));
 }
@@ -45,7 +45,7 @@
 - (void)testResourcePathForRouteNamedInterpolatedWithObject
 {
     RKRouter *router = [[RKRouter alloc] initWithBaseURL:[NSURL URLWithString:@"http://restkit.org/"]];
-    [router.routeSet addRoute:[RKRoute routeWithName:@"user_bookmarks" pathPattern:@"/users/:userID/bookmarks" method:RKRequestMethodGET]];
+    [router.routeSet addRoute:[RKRoute routeWithName:@"user_bookmarks" URITemplateString:@"/users/:userID/bookmarks" method:RKHTTPMethodGET]];
     RKTestUser *user = [RKTestUser new];
     user.userID = [NSNumber numberWithInteger:12345];
     NSURL *URL = [router URLForRouteNamed:@"user_bookmarks" method:nil object:user];

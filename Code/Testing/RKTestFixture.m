@@ -21,7 +21,6 @@
 #import "RKTestFixture.h"
 #import "RKLog.h"
 #import "RKPathUtilities.h"
-#import "RKMIMETypeSerialization.h"
 
 static NSBundle *fixtureBundle = nil;
 
@@ -84,15 +83,16 @@ static NSBundle *fixtureBundle = nil;
 
 + (id)parsedObjectWithContentsOfFixture:(NSString *)fixtureName
 {
-    NSError *error = nil;
-    NSData *resourceContents = [self dataWithContentsOfFixture:fixtureName];
-    NSAssert(resourceContents, @"Failed to read fixture named '%@'", fixtureName);
-    NSString *MIMEType = [self MIMETypeForFixture:fixtureName];
-    NSAssert(MIMEType, @"Failed to determine MIME type of fixture named '%@'", fixtureName);
-    
-    id object = [RKMIMETypeSerialization objectFromData:resourceContents MIMEType:MIMEType error:&error];
-    NSAssert(object, @"Failed to parse fixture name '%@' in bundle %@. Error: %@", fixtureName, [self fixtureBundle], [error localizedDescription]);
-    return object;
+//    NSError *error = nil;
+//    NSData *resourceContents = [self dataWithContentsOfFixture:fixtureName];
+//    NSAssert(resourceContents, @"Failed to read fixture named '%@'", fixtureName);
+//    NSString *MIMEType = [self MIMETypeForFixture:fixtureName];
+//    NSAssert(MIMEType, @"Failed to determine MIME type of fixture named '%@'", fixtureName);
+//    
+//    id object = [RKMIMETypeSerialization objectFromData:resourceContents MIMEType:MIMEType error:&error];
+//    NSAssert(object, @"Failed to parse fixture name '%@' in bundle %@. Error: %@", fixtureName, [self fixtureBundle], [error localizedDescription]);
+//    return object;
+    return nil;
 }
 
 @end

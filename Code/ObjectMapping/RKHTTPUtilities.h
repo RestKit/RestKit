@@ -23,43 +23,43 @@
 /**
  HTTP methods for requests
  */
-typedef NS_OPTIONS(NSInteger, RKRequestMethod) {
-    RKRequestMethodGET          = 1 << 0,
-    RKRequestMethodPOST         = 1 << 1,
-    RKRequestMethodPUT          = 1 << 2,
-    RKRequestMethodDELETE       = 1 << 3,
-    RKRequestMethodHEAD         = 1 << 4,
-    RKRequestMethodPATCH        = 1 << 5,
-    RKRequestMethodOPTIONS      = 1 << 6,
-    RKRequestMethodAny          = (RKRequestMethodGET |
-                                   RKRequestMethodPOST |
-                                   RKRequestMethodPUT |
-                                   RKRequestMethodDELETE |
-                                   RKRequestMethodHEAD |
-                                   RKRequestMethodPATCH |
-                                   RKRequestMethodOPTIONS)
+typedef NS_OPTIONS(NSInteger, RKHTTPMethodOptions) {
+    RKHTTPMethodGET          = 1 << 0,
+    RKHTTPMethodPOST         = 1 << 1,
+    RKHTTPMethodPUT          = 1 << 2,
+    RKHTTPMethodDELETE       = 1 << 3,
+    RKHTTPMethodHEAD         = 1 << 4,
+    RKHTTPMethodPATCH        = 1 << 5,
+    RKHTTPMethodOPTIONS      = 1 << 6,
+    RKHTTPMethodAny          = (RKHTTPMethodGET |
+                                RKHTTPMethodPOST |
+                                RKHTTPMethodPUT |
+                                RKHTTPMethodDELETE |
+                                RKHTTPMethodHEAD |
+                                RKHTTPMethodPATCH |
+                                RKHTTPMethodOPTIONS)
 };
 
 /**
- Returns YES if the given HTTP request method is an exact match of the RKRequestMethod enum, and NO if it's a bit mask combination.
+ Returns YES if the given HTTP request method is an exact match of the RKHTTPMethod enum, and NO if it's a bit mask combination.
  */
-BOOL RKIsSpecificRequestMethod(RKRequestMethod method);
+BOOL RKIsSpecificRequestMethod(RKHTTPMethodOptions method);
 
 /**
  Returns the corresponding string for value for a given HTTP request method.
  
- For example, given `RKRequestMethodGET` would return `@"GET"`.
+ For example, given `RKHTTPMethodGET` would return `@"GET"`.
  
  @param method The request method to return the corresponding string value for. The given request method must be specific.
  */
-NSString *RKStringFromRequestMethod(RKRequestMethod method);
+NSString *RKStringFromRequestMethod(RKHTTPMethodOptions method);
 
 /**
  Returns the corresponding request method value for a given string.
  
- For example, given `@"PUT"` would return `@"RKRequestMethodPUT"`
+ For example, given `@"PUT"` would return `@"RKHTTPMethodPUT"`
  */
-RKRequestMethod RKRequestMethodFromString(NSString *);
+RKHTTPMethodOptions RKHTTPMethodFromString(NSString *);
 
 /**
  The HTTP status code classes

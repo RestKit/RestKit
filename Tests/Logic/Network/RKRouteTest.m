@@ -17,27 +17,27 @@
 
 - (void)testCanCreateRouteWithAnExactRequestMethod
 {
-    STAssertNoThrowSpecificNamed([RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
+    STAssertNoThrowSpecificNamed([RKRoute routeWithName:@"test_router" URITemplateString:@"/routes" method:RKHTTPMethodGET], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
 }
 
 - (void)testCannotCreateNamedRouteWithRequestMethodAny
 {
-    STAssertThrowsSpecificNamed([RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodAny], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
+    STAssertThrowsSpecificNamed([RKRoute routeWithName:@"test_router" URITemplateString:@"/routes" method:RKHTTPMethodAny], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
 }
 
 - (void)testCannotCreateRouteWithNameAndBitmaskRequestMethod
 {
-    STAssertThrowsSpecificNamed([RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:(RKRequestMethodPOST | RKRequestMethodDELETE)], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
+    STAssertThrowsSpecificNamed([RKRoute routeWithName:@"test_router" URITemplateString:@"/routes" method:(RKHTTPMethodPOST | RKHTTPMethodDELETE)], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
 }
 
 - (void)testCanCreateRouteForAnObjectExistingClassAndBitmaskRequestMethod
 {
-    STAssertNoThrowSpecificNamed([RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/routes" method:(RKRequestMethodPOST | RKRequestMethodDELETE)], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
+    STAssertNoThrowSpecificNamed([RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/routes" method:(RKHTTPMethodPOST | RKHTTPMethodDELETE)], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
 }
 
 - (void)testCanCreateRouteForAnExistingRelationshipNamendABitmaskRequestMethod
 {
-    STAssertNoThrowSpecificNamed([RKRoute routeWithRelationshipName:@"friends" objectClass:[RKTestUser class] pathPattern:@"/friends" method:(RKRequestMethodPOST | RKRequestMethodDELETE)], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
+    STAssertNoThrowSpecificNamed([RKRoute routeWithRelationshipName:@"friends" objectClass:[RKTestUser class] URITemplateString:@"/friends" method:(RKHTTPMethodPOST | RKHTTPMethodDELETE)], NSException, NSInvalidArgumentException, @"Cannot create a route with a bitmask request method value.");
 }
 
 @end

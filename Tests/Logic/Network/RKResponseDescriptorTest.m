@@ -24,7 +24,7 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is nil", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                 responseDescriptor.baseURL = baseURL;
             });
             
@@ -37,7 +37,7 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is '/monkeys/:monkeyID\\.json'", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                 responseDescriptor.baseURL = baseURL;
             });
             
@@ -65,7 +65,7 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is nil", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                 responseDescriptor.baseURL = baseURL;
             });
             
@@ -87,7 +87,7 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is '/monkeys/:monkeyID\\.json'", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                 responseDescriptor.baseURL = baseURL;
             });
             
@@ -132,7 +132,7 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is '/api/v1/organizations/'", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                 responseDescriptor.baseURL = baseURL;
             });
             
@@ -153,7 +153,7 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is nil", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                 responseDescriptor.baseURL = baseURL;
             });
             
@@ -176,7 +176,7 @@ describe(@"matchesURL:", ^{
             context(@"and given a URL with a different baseURL", ^{
                 it(@"returns NO", ^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/whatever" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/whatever" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                     responseDescriptor.baseURL = baseURL;
                     
                     NSURL *otherBaseURL = [NSURL URLWithString:@"http://google.com"];
@@ -189,7 +189,7 @@ describe(@"matchesURL:", ^{
                 context(@"and the path pattern is '/monkeys/:monkeyID\\.json'", ^{
                     beforeEach(^{
                         RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                        responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+                        responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
                         responseDescriptor.baseURL = baseURL;
                     });
                     
@@ -238,7 +238,7 @@ describe(@"matchesResponse:", ^{
             context(@"and given the URL 'http://0.0.0.0:5000/api/v1/organizations/?client_search=t'", ^{
                 beforeEach(^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
                     responseDescriptor.baseURL = [NSURL URLWithString:@"http://0.0.0.0:5000"];
                 });
                 
@@ -256,7 +256,7 @@ describe(@"matchesResponse:", ^{
             context(@"then given the URL 'http://domain.com/domain/api/v1/recommendation'", ^{
                 beforeEach(^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/recommendation/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/recommendation/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
                     responseDescriptor.baseURL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/"];
                 });
                 
@@ -270,7 +270,7 @@ describe(@"matchesResponse:", ^{
             context(@"then given the URL 'http://domain.com/domain/api/v1/recommendation?action=search&type=whatever'", ^{
                 beforeEach(^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/recommendation/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/recommendation/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
                     responseDescriptor.baseURL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/"];
                 });
                 
@@ -299,7 +299,7 @@ describe(@"isEqualToResponseDescriptor:", ^{
         defaultPathPattern = @"/issues";
         defaultStatusCodes = [NSIndexSet indexSetWithIndex:200];
         firstDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                       method:RKRequestMethodAny
+                                                                       method:RKHTTPMethodAny
                                                                   pathPattern:defaultPathPattern
                                                                       keyPath:defaultKeyPath
                                                                   statusCodes:defaultStatusCodes];
@@ -308,7 +308,7 @@ describe(@"isEqualToResponseDescriptor:", ^{
     context(@"descriptors are equal", ^{
         it(@"with the same attributes", ^{
             secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                            method:RKRequestMethodAny
+                                                                            method:RKHTTPMethodAny
                                                                        pathPattern:defaultPathPattern
                                                                            keyPath:defaultKeyPath
                                                                        statusCodes:defaultStatusCodes];
@@ -320,7 +320,7 @@ describe(@"isEqualToResponseDescriptor:", ^{
         it(@"with different mappings", ^{
             RKMapping *mapping = [RKObjectMapping mappingForClass:[NSObject class]];
             secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping
-                                                                            method:RKRequestMethodAny
+                                                                            method:RKHTTPMethodAny
                                                                        pathPattern:defaultPathPattern
                                                                            keyPath:defaultKeyPath
                                                                        statusCodes:defaultStatusCodes];
@@ -328,7 +328,7 @@ describe(@"isEqualToResponseDescriptor:", ^{
         });
         it(@"with different path patterns", ^{
             secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                            method:RKRequestMethodAny
+                                                                            method:RKHTTPMethodAny
                                                                        pathPattern:@"/pull_requests"
                                                                            keyPath:defaultKeyPath
                                                                        statusCodes:defaultStatusCodes];
@@ -336,7 +336,7 @@ describe(@"isEqualToResponseDescriptor:", ^{
         });
         it(@"with different key paths", ^{
             secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                            method:RKRequestMethodAny
+                                                                            method:RKHTTPMethodAny
                                                                        pathPattern:defaultPathPattern
                                                                            keyPath:@"/pull_request"
                                                                        statusCodes:defaultStatusCodes];
@@ -344,7 +344,7 @@ describe(@"isEqualToResponseDescriptor:", ^{
         });
         it(@"with different status codes", ^{
             secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                            method:RKRequestMethodAny
+                                                                            method:RKHTTPMethodAny
                                                                        pathPattern:defaultPathPattern
                                                                            keyPath:defaultKeyPath
                                                                        statusCodes:[NSIndexSet indexSetWithIndex:404]];
