@@ -544,7 +544,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         // Check for a change in the Etag
         NSString *cachedEtag = [[(NSHTTPURLResponse *)[self.cachedResponse response] allHeaderFields] objectForKey:@"ETag"];
         NSString *responseEtag = [[response allHeaderFields] objectForKey:@"ETag"];
-        if (! [cachedEtag isEqualToString:responseEtag]) return NO;
+        if (!(cachedEtag && responseEtag && [cachedEtag isEqualToString:responseEtag])) return NO;
         
         // Response data has changed
         NSData *responseData = self.HTTPRequestOperation.responseData;
