@@ -80,7 +80,7 @@
     
     // Extract the dynamic portions of the path pattern to construct a set of parameters
     SOCPattern *pattern = [SOCPattern patternWithString:pathPattern];
-    NSArray *parameterNames = [pattern valueForKey:@"parameters.string"];
+    NSArray *parameterNames = [pattern valueForKeyPath:@"parameters.string"];
     NSMutableDictionary *stubbedParameters = [NSMutableDictionary dictionaryWithCapacity:[parameterNames count]];
     for (NSString *parameter in parameterNames) {
         [stubbedParameters setValue:@"value" forKey:parameter];
