@@ -78,4 +78,16 @@
     expect(requestOperation.error).to.beNil();
 }
 
+- (void)testThatLoadingA202StatusDoesNotReturnExpectedContentTypeErrorWithMissingContentType
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/202" relativeToURL:[RKTestFactory baseURL]]];
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:202];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).to.beNil();
+}
+
 @end
