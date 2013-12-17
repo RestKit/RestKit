@@ -28,4 +28,10 @@
  */
 @interface RKFetchRequestManagedObjectCache : NSObject <RKManagedObjectCaching>
 
+/**
+ By default, sub-entities will be included in the fetch request. Set to YES
+ to exclude sub-entities from the results.
+ */
+@property (nonatomic, getter = isExcludeSubentities) BOOL excludeSubentities;
+
 @end
