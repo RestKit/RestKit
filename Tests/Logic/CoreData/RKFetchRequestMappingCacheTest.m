@@ -47,6 +47,44 @@
     expect(managedObjects).to.equal(cats);
 }
 
+- (void)testFetchRequestMappingCacheReturnsObjectsWithNumericPrimaryKeyAndNoSubclasses
+{
+    // RKCat entity. Integer prinmary key.
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
+	
+    RKCat *reginald = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    reginald.name = @"Reginald";
+    reginald.railsID = [NSNumber numberWithInt:123456];
+
+	NSManagedObject *catHoarder = [NSEntityDescription insertNewObjectForEntityForName:@"CatHoarder" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+	RKCat *reginaldHoarded = [NSEntityDescription insertNewObjectForEntityForName:@"HoardedCat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+	// HoardedCat is not actually a RKCat class... but we'll treat it as such here as we know it extends the Cat entity
+    reginaldHoarded.name = @"Reginald";
+    reginaldHoarded.railsID = [NSNumber numberWithInt:123456];
+	[reginaldHoarded setValue:catHoarder forKeyPath:@"catHoarder"];
+	
+	[managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    
+    NSSet *managedObjects = [cache managedObjectsWithEntity:entity
+											attributeValues:@{ @"railsID": @123456 }
+									 inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSSet *cats = [NSSet setWithObjects:reginald, reginaldHoarded, nil];
+    expect(managedObjects).to.equal(cats);
+	
+	
+	// now exclude subentities
+	cache.excludeSubentities = YES;
+    managedObjects = [cache managedObjectsWithEntity:entity
+									 attributeValues:@{ @"railsID": @123456 }
+							  inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    cats = [NSSet setWithObject:reginald];
+    expect(managedObjects).to.equal(cats);
+}
+
 - (void)testFetchRequestMappingCacheReturnsObjectsWithStringPrimaryKey
 {
     // RKEvent entity. String primary key
