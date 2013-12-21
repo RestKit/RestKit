@@ -10,3 +10,6 @@
 [submodule "Vendor/CSURITemplate"]
 	path = Vendor/CSURITemplate
 	url = https://github.com/cogenta/CSURITemplate.git
+[submodule "Vendor/RKSupport"]
+	path = Vendor/RKSupport
+	url = https://github.com/RestKit/RKSupport

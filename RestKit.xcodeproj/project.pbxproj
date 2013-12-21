@@ -560,6 +560,8 @@
 		7F9CBC6174004E31AEC35813 /* libPods-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86EC453810D648768BF62304 /* libPods-osx.a */; };
 		BE05BDD11782109F00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
 		BE05BDD2178214AA00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
+		C0037271186488970011524A /* RKPathTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = C003726F186488970011524A /* RKPathTemplate.h */; };
+		C0037272186488970011524A /* RKPathTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = C0037270186488970011524A /* RKPathTemplate.m */; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
 /* End PBXBuildFile section */
 
@@ -918,6 +920,8 @@
 		86EC453810D648768BF62304 /* libPods-osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-osx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.xcconfig"; path = "Pods/Pods-ios.xcconfig"; sourceTree = SOURCE_ROOT; };
 		BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouteTest.m; sourceTree = "<group>"; };
+		C003726F186488970011524A /* RKPathTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPathTemplate.h; sourceTree = "<group>"; };
+		C0037270186488970011524A /* RKPathTemplate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathTemplate.m; sourceTree = "<group>"; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
@@ -1183,6 +1187,7 @@
 		25160E8D145652E40060A5C5 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				C003726D186488970011524A /* RKSupport */,
 				25FAF63A183829D40036ABBA /* CSURITemplate */,
 				252CCE5D17E08E2D00B7F0BF /* RKValueTransformers */,
 				25C6C0A21716F6F800C98A73 /* TransitionKit */,
@@ -1641,6 +1646,24 @@
 			path = CSURITemplate;
 			sourceTree = "<group>";
 		};
+		C003726D186488970011524A /* RKSupport */ = {
+			isa = PBXGroup;
+			children = (
+				C003726E186488970011524A /* RKPathTemplate */,
+			);
+			name = RKSupport;
+			path = RKSupport/Code;
+			sourceTree = "<group>";
+		};
+		C003726E186488970011524A /* RKPathTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				C003726F186488970011524A /* RKPathTemplate.h */,
+				C0037270186488970011524A /* RKPathTemplate.m */,
+			);
+			path = RKPathTemplate;
+			sourceTree = "<group>";
+		};
 		E4081DFC15FB89DF00364948 /* ManagedObjectCaching */ = {
 			isa = PBXGroup;
 			children = (
@@ -1746,6 +1769,7 @@
 				25EC1A3914F72B0900C3CF3F /* RKFetchRequestManagedObjectCache.h in Headers */,
 				25EC1A3D14F72B2800C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
 				25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
+				C0037271186488970011524A /* RKPathTemplate.h in Headers */,
 				257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */,
 				257ABAB61511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
 				259D98541550C69A008C90F5 /* RKEntityByAttributeCache.h in Headers */,
@@ -2234,6 +2258,7 @@
 				253477F315FFBC61002C0E4E /* RKDictionaryUtilities.m in Sources */,
 				259B96DB1604CCCC0000C250 /* AFHTTPRequestOperation.m in Sources */,
 				259B96ED1604CCCC0000C250 /* AFURLConnectionOperation.m in Sources */,
+				C0037272186488970011524A /* RKPathTemplate.m in Sources */,
 				25A226D81618A57500952D72 /* RKObjectUtilities.m in Sources */,
 				2507C329161BD5C700EA71FF /* RKTestHelpers.m in Sources */,
 				25E88C8A165C5CC30042ABD0 /* RKConnectionDescription.m in Sources */,

@@ -85,7 +85,7 @@ static NSString *RKMatchFailureDescriptionForResponseDescriptorWithResponse(RKRe
     }
     
     // Must be a path pattern mismatch
-    return [NSString stringWithFormat:@"response path '%@' did not match the path pattern '%@'.", pathAndQueryString, responseDescriptor.pathPattern];
+    return [NSString stringWithFormat:@"response path '%@' did not match the path template '%@'.", pathAndQueryString, responseDescriptor.pathTemplate];
 }
 
 static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithResponse(NSArray *responseDescriptors, NSHTTPURLResponse *response)
@@ -95,8 +95,8 @@ static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithRes
      (long) response.statusCode, response.URL, (long) [responseDescriptors count]];
     
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
-        [failureReason appendFormat:@"\n  <RKResponseDescriptor: %p baseURL=%@ pathPattern=%@ statusCodes=%@> failed to match: %@",
-         responseDescriptor, responseDescriptor.baseURL, responseDescriptor.pathPattern,
+        [failureReason appendFormat:@"\n  <RKResponseDescriptor: %p baseURL=%@ pathTemplate=%@ statusCodes=%@> failed to match: %@",
+         responseDescriptor, responseDescriptor.baseURL, responseDescriptor.pathTemplate,
          responseDescriptor.statusCodes ? RKStringFromIndexSet(responseDescriptor.statusCodes) : responseDescriptor.statusCodes,
          RKMatchFailureDescriptionForResponseDescriptorWithResponse(responseDescriptor, response)];
     }
@@ -198,7 +198,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     dispatch_sync(RKResponseMapperSerializationQueue(), ^{
         // TODO: Decide if I want to retain the MIME type registration...
 //        object = [RKMIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
-        object = [self.contentSerializer responseObjectForResponse:self.response data:self.data request:self.request error:&underlyingError];
+        object = [self.contentSerializer responseObjectForResponse:self.response data:self.data /*request:self.request*/ error:&underlyingError];
     });
     if (! object) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];

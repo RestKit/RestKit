@@ -10,7 +10,7 @@
 #import "RKTestUser.h"
 #import "Specta.h"
 
-SpecBegin(RKResponseDescriptorSpec)
+SpecBegin(RKResponseDescriptor)
 
 describe(@"matchesURL:", ^{
     __block NSURL *baseURL;

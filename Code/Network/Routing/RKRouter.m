@@ -72,6 +72,13 @@
     NSParameterAssert(route);
     NSError *error = nil;
     // TODO: Need a way to expand the properties of the object from the route
+//    CSURITemplate *URITemplate = route.URITemplate;
+//    NSArray *terms = [URITemplate valueForKey:@"terms"];
+//    NSArray *keys = [terms valueForKey:@"keys"];
+//    NSMutableDictionary *variables = [NSMutableDictionary dictionary];
+//    for (NSString *key in keys) {
+//        variables[key] = [object valueForKeyPath:key];
+//    }
     return [route.URITemplate URLWithVariables:nil relativeToBaseURL:self.baseURL error:&error];
 }
 

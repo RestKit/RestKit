@@ -92,11 +92,13 @@
     : nil;
 }
 
-//- (BOOL)validateResponse:(NSHTTPURLResponse *)response
-//                    data:(NSData *)data
-//                   error:(NSError *__autoreleasing *)error
-//{
-//}
+- (BOOL)validateResponse:(NSHTTPURLResponse *)response
+                    data:(NSData *)data
+                 request:(NSURLRequest *)request
+                   error:(NSError *__autoreleasing *)error
+{
+    return YES;
+}
 
 - (id)responseObjectForResponse:(NSURLResponse *)response
                            data:(NSData *)data

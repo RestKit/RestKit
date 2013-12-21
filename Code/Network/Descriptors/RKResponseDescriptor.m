@@ -21,6 +21,7 @@
 #import "RKResponseDescriptor.h"
 #import "RKHTTPUtilities.h"
 #import "RKMapping.h"
+#import "RKPathTemplate.h"
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 NSString *RKStringFromIndexSet(NSIndexSet *indexSet);
@@ -61,7 +62,7 @@ extern NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
 @interface RKResponseDescriptor ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, assign, readwrite) RKHTTPMethodOptions method;
-@property (nonatomic, copy, readwrite) NSString *pathPattern;
+@property (nonatomic, copy, readwrite) RKPathTemplate *pathTemplate;
 @property (nonatomic, copy, readwrite) NSString *keyPath;
 @property (nonatomic, copy, readwrite) NSIndexSet *statusCodes;
 @end
@@ -89,7 +90,7 @@ extern NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
     RKResponseDescriptor *mappingDescriptor = [self new];
     mappingDescriptor.mapping = mapping;
     mappingDescriptor.method = method;
-    mappingDescriptor.pathPattern = pathPattern;
+    mappingDescriptor.pathTemplate = [RKPathTemplate pathTemplateWithString:pathPattern];
     mappingDescriptor.keyPath = keyPath;
     mappingDescriptor.statusCodes = statusCodes;
 
@@ -98,15 +99,14 @@ extern NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p method=%@ pathPattern=%@ keyPath=%@ statusCodes=%@ : %@>",
-            NSStringFromClass([self class]), self, RKStringDescribingRequestMethod(self.method), self.pathPattern, self.keyPath, self.statusCodes ? RKStringFromIndexSet(self.statusCodes) : self.statusCodes, self.mapping];
+    return [NSString stringWithFormat:@"<%@: %p method=%@ pathTemplate=%@ keyPath=%@ statusCodes=%@ : %@>",
+            NSStringFromClass([self class]), self, RKStringDescribingRequestMethod(self.method), self.pathTemplate, self.keyPath, self.statusCodes ? RKStringFromIndexSet(self.statusCodes) : self.statusCodes, self.mapping];
 }
 
 - (BOOL)matchesPath:(NSString *)path
 {
-//    if (!self.pathPattern || !path) return YES;
-//    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:self.pathPattern];
-//    return [pathMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
+    if (!self.pathTemplate || !path) return YES;
+    return [self.pathTemplate matchesPath:path variables:nil];
     return YES;
 }
 
@@ -155,7 +155,7 @@ extern NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
 
 - (NSUInteger)hash
 {
-    return NSUINTROTATE(NSUINTROTATE(NSUINTROTATE([self.mapping hash], NSUINT_BIT / 4) ^ [self.pathPattern hash], NSUINT_BIT / 4) ^ [self.keyPath hash], NSUINT_BIT / 4) ^ [self.statusCodes hash];
+    return NSUINTROTATE(NSUINTROTATE(NSUINTROTATE([self.mapping hash], NSUINT_BIT / 4) ^ [self.pathTemplate hash], NSUINT_BIT / 4) ^ [self.keyPath hash], NSUINT_BIT / 4) ^ [self.statusCodes hash];
 }
 
 - (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *)otherDescriptor
@@ -167,7 +167,7 @@ extern NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.method == otherDescriptor.method &&
-    [self.pathPattern isEqualToString:otherDescriptor.pathPattern] &&
+    [self.pathTemplate isEqual:otherDescriptor.pathTemplate] &&
     [self.keyPath isEqualToString:otherDescriptor.keyPath] &&
     [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes];
 }

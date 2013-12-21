@@ -20,7 +20,7 @@
 
 #import "RKHTTPUtilities.h"
 
-@class RKMapping;
+@class RKMapping, RKPathTemplate;
 
 /**
  An `RKResponseDescriptor` object describes an object mapping configuration that is applicable to an HTTP response. Response descriptors are defined by specifying the `RKMapping` object that is to be used when performing object mapping on the deserialized response body and the URL path pattern, key path, and status codes for which the mapping is appropriate. The path pattern is a SOCKit `SOCPattern` string that will be matched against the URL of the request that loaded the response being mapped. If the path pattern is nil, the response descriptor is considered to be appropriate for a response loaded from any URL. The key path specifies the location of data within the deserialized response body for which the mapping is appropriate. If nil, the mapping is considered to apply to the entire response body.  The status codes specify a set of HTTP response status codes for which the mapping is appropriate. It is common to constrain a response descriptor to the HTTP Successful status code class (status codes in the 200-299 range). Object mapping for error responses can be configured by configuring a response descriptor to handle the Client Error status code class (status codes in the 400-499 range). Instances of `RKResponseDescriptor` are immutable.
@@ -35,11 +35,11 @@
 /// @name Creating a Response Descriptor
 ///-------------------------------------
 
-+ (instancetype)responseDescriptorWithMethods:(RKHTTPMethodOptions)method
-                                 pathTemplate:(NSString *)pathTemplate
-                         parameterConstraints:(RKParameterConstraints *)parameterConstraints
-                                  statusCodes:(NSIndexSet *)statusCodes
-                                      mapping:(RKMapping *)mapping;
+//+ (instancetype)responseDescriptorWithMethods:(RKHTTPMethodOptions)method
+//                                 pathTemplate:(NSString *)pathTemplate
+//                         parameterConstraints:(RKParameterConstraints *)parameterConstraints
+//                                  statusCodes:(NSIndexSet *)statusCodes
+//                                      mapping:(RKMapping *)mapping;
 
 /**
  Creates and returns a new `RKResponseDescriptor` object.
@@ -96,7 +96,7 @@
 
  @see `RKPathMatcher`
  */
-@property (nonatomic, copy, readonly) NSString *pathPattern;
+@property (nonatomic, copy, readonly) RKPathTemplate *pathTemplate;
 
 /**
  The key path to match against the deserialized response body. If nil, the response descriptor matches the entire response body.

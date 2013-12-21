@@ -33,6 +33,7 @@ PODS:
     - CSURITemplate (~> 0.3)
     - RestKit/ObjectMapping
     - RestKit/Support
+    - RKSupport/RKPathTemplate
   - RestKit/ObjectMapping (1.0.0-development):
     - RestKit/Support
     - RKValueTransformers (~> 1.0.1)
@@ -43,6 +44,11 @@ PODS:
   - RestKit/Testing (1.0.0-development)
   - RKCLLocationValueTransformer (1.0.0):
     - RKValueTransformers (~> 1.0.0)
+  - RKSupport (1.0.0):
+    - RKSupport/All
+  - RKSupport/All (1.0.0):
+    - RKSupport/RKPathTemplate
+  - RKSupport/RKPathTemplate (1.0.0)
   - RKValueTransformers (1.0.1)
   - Specta (0.2.1)
   - TransitionKit (2.0.0)
@@ -56,6 +62,7 @@ DEPENDENCIES:
   - RestKit/Search (from `.`)
   - RestKit/Testing (from `.`)
   - RKCLLocationValueTransformer (from `https://github.com/RestKit/RKCLLocationValueTransformer`)
+  - RKSupport (from `https://github.com/RestKit/RKSupport`)
   - Specta (= 0.2.1)
 
 EXTERNAL SOURCES:
@@ -65,6 +72,8 @@ EXTERNAL SOURCES:
     :path: .
   RKCLLocationValueTransformer:
     :git: https://github.com/RestKit/RKCLLocationValueTransformer
+  RKSupport:
+    :git: https://github.com/RestKit/RKSupport
 
 SPEC CHECKSUMS:
   AFNetworking: e499052cbf3d743e9bb727bb37adb9dc2547ba15
@@ -72,8 +81,9 @@ SPEC CHECKSUMS:
   Expecta: dbc4a27fabb853bdd2e907e33f11ee43a9a47d0c
   OCHamcrest: 782c52ae8c673e5d6060a65005cfd26d20d519ba
   OCMock: 80e4cfbc71a0e1bd28caf10a9fda27da7c4c8402
-  RestKit: eed4146263fd642a46491f171406bd94a7dbd47f
+  RestKit: a37dbd8a1c4fcdb75f204ffecab075506056341a
   RKCLLocationValueTransformer: e4a127582a78df98035f75b611e48c0545b8884d
+  RKSupport: ca46464b795946b2cc0214cf0e64f69cbdca3de1
   RKValueTransformers: 1562d458b9c9d59ce777bfc5982f2e1aef2e9182
   Specta: 2d06220591110c6d9757d8be8ecf8e63aa40dc2a
   TransitionKit: 433284465abacdc07852d7db6dd0cc075010059a
