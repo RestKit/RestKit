@@ -10,9 +10,64 @@
 #import "AFURLResponseSerialization.h"
 #import "RKResponseDescriptor.h"
 
+@class RKObjectResponseSerializer;
+
+// TODO: I need a new name for this class...
+// registry? coordinator? broker?
+// RKResponseSerializationCoordinator
+// RKResponseSerializerCoordinator
+// NSPersistentStoreCoordinator
+// RKResponseCoordinator
+@interface RKResponseCoordinator : NSObject
+
+///------------------------------------------------
+/// @name Managing Response Descriptors
+///------------------------------------------------
+
+/**
+ Returns an array containing the `RKResponseDescriptor` objects added to the manager.
+
+ @return An array containing the request descriptors of the receiver. The elements of the array are instances of `RKRequestDescriptor`.
+
+ @see RKResponseDescriptor
+ */
+@property (nonatomic, readonly) NSArray *responseDescriptors;
+
+/**
+ Adds a response descriptor to the manager.
+
+ Adding a response descriptor to the manager sets the `baseURL` of the descriptor to the `baseURL` of the manager, causing it to evaluate URL objects relatively.
+
+ @param responseDescriptor The response descriptor object to the be added to the manager.
+ */
+- (void)addResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
+
+/**
+ Adds the `RKResponseDescriptor` objects contained in a given array to the manager.
+
+ @param responseDescriptors An array of `RKResponseDescriptor` objects to be added to the manager.
+ @exception NSInvalidArgumentException Raised if any element of the given array is not an `RKResponseDescriptor` object.
+ */
+- (void)addResponseDescriptors:(NSArray *)responseDescriptors;
+
+/**
+ Removes a given response descriptor from the manager.
+
+ @param responseDescriptor An `RKResponseDescriptor` object to be removed from the manager.
+ */
+- (void)removeResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
+
+// Creates and returns a response serializer to be used to process the given request and object
+- (RKObjectResponseSerializer *)serializerWithRequest:(NSURLRequest *)request object:(id)object;
+
+@end
+
 @interface RKObjectResponseSerializer : AFHTTPResponseSerializer
 
++ (instancetype)objectResponseSerializerWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors;
+
 @property (nonatomic, strong) NSURL *baseURL;
+@property (nonatomic, strong, readonly) NSURLRequest *request;
 
 // Used to deserialize the response content
 // TODO: Should this just be against the RKMIMETypeSerialization???
@@ -30,37 +85,11 @@
  */
 @property (nonatomic, copy) NSDictionary *mappingMetadata;
 
-/**
- Returns an array containing the `RKResponseDescriptor` objects added to the serializer.
+@end
 
- @return An array containing the request descriptors of the receiver. The elements of the array are instances of `RKRequestDescriptor`.
+// TODO: Conditional compilation based on Core Data???
+@interface RKManagedObjectResponseSerializer : RKObjectResponseSerializer
 
- @see RKResponseDescriptor
- */
-@property (nonatomic, readonly) NSArray *responseDescriptors;
-
-/**
- Adds a response descriptor to the serializer.
-
- Adding a response descriptor to the manager sets the `baseURL` of the descriptor to the `baseURL` of the manager, causing it to evaluate URL objects relatively.
-
- @param responseDescriptor The response descriptor object to the be added to the serializer.
- */
-- (void)addResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
-
-/**
- Adds the `RKResponseDescriptor` objects contained in a given array to the manager.
-
- @param responseDescriptors An array of `RKResponseDescriptor` objects to be added to the manager.
- @exception NSInvalidArgumentException Raised if any element of the given array is not an `RKResponseDescriptor` object.
- */
-- (void)addResponseDescriptorsFromArray:(NSArray *)responseDescriptors;
-
-/**
- Removes a given response descriptor from the manager.
-
- @param responseDescriptor An `RKResponseDescriptor` object to be removed from the serializer.
- */
-- (void)removeResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
+// TODO: managed object context, etc.
 
 @end

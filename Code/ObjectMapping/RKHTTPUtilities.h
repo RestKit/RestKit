@@ -40,6 +40,9 @@ typedef NS_OPTIONS(NSInteger, RKHTTPMethodOptions) {
                                 RKHTTPMethodOPTIONS)
 };
 
+// Typedef for referring to a value that is expected to specify a single specific HTTP method
+typedef RKHTTPMethodOptions RKHTTPMethod;
+
 /**
  Returns YES if the given HTTP request method is an exact match of the RKHTTPMethod enum, and NO if it's a bit mask combination.
  */
@@ -52,14 +55,14 @@ BOOL RKIsSpecificRequestMethod(RKHTTPMethodOptions method);
  
  @param method The request method to return the corresponding string value for. The given request method must be specific.
  */
-NSString *RKStringFromRequestMethod(RKHTTPMethodOptions method);
+NSString *RKStringFromRequestMethod(RKHTTPMethod method);
 
 /**
  Returns the corresponding request method value for a given string.
  
  For example, given `@"PUT"` would return `@"RKHTTPMethodPUT"`
  */
-RKHTTPMethodOptions RKHTTPMethodFromString(NSString *);
+RKHTTPMethod RKHTTPMethodFromString(NSString *);
 
 /**
  The HTTP status code classes

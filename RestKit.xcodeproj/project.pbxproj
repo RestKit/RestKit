@@ -497,8 +497,8 @@
 		25DBDB20183E5C7E0027A72F /* RKObjectParameterization.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DBDAE5183E5C7E0027A72F /* RKObjectParameterization.h */; };
 		25DBDB21183E5C7E0027A72F /* RKObjectParameterization.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DBDAE6183E5C7E0027A72F /* RKObjectParameterization.m */; };
 		25DBDB22183E5C7E0027A72F /* RKObjectParameterization.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DBDAE6183E5C7E0027A72F /* RKObjectParameterization.m */; };
-		25DBDB23183E5C7E0027A72F /* RKObjectRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DBDAE7183E5C7E0027A72F /* RKObjectRequestSerializer.h */; };
-		25DBDB24183E5C7E0027A72F /* RKObjectRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DBDAE7183E5C7E0027A72F /* RKObjectRequestSerializer.h */; };
+		25DBDB23183E5C7E0027A72F /* RKObjectRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DBDAE7183E5C7E0027A72F /* RKObjectRequestSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25DBDB24183E5C7E0027A72F /* RKObjectRequestSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DBDAE7183E5C7E0027A72F /* RKObjectRequestSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25DBDB25183E5C7E0027A72F /* RKObjectRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DBDAE8183E5C7E0027A72F /* RKObjectRequestSerializer.m */; };
 		25DBDB26183E5C7E0027A72F /* RKObjectRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DBDAE8183E5C7E0027A72F /* RKObjectRequestSerializer.m */; };
 		25DBDB27183E5C7E0027A72F /* RKObjectResponseSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DBDAE9183E5C7E0027A72F /* RKObjectResponseSerializer.h */; };

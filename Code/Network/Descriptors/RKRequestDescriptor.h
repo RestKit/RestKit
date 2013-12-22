@@ -36,56 +36,15 @@
 /// @name Creating a Request Descriptor
 ///------------------------------------
 
+// new initializer
 + (instancetype)requestDescriptorWithObjectClass:(Class)objectClass
                                           method:(RKHTTPMethodOptions)method
                                      rootKeyPath:(NSString *)rootKeyPath
                                          mapping:(RKMapping *)mapping;
 
-/**
- Creates and returns a new `RKRequestDescriptor` object.
- 
- This method is deprecated. Use `+ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
- objectClass:(Class)objectClass
- rootKeyPath:(NSString *)rootKeyPath
- method:(RKHTTPMethod)method` instead.
-
- @param mapping The mapping to be used when parameterizing an object using the request descriptor. Cannot be nil and must have an objectClass equal to `[NSMutableDictionary class]`.
- @param objectClass The class of objects for which the request descriptor should be used. Cannot be nil.
- @param rootKeyPath The root key path under which paramters constructed using the response descriptor will be nested. If nil, the parameters will not be nested and returned as a flat dictionary object.
- @return A new `RKRequestDescriptor` object.
-
- @see [RKObjectMapping requestMapping]
- @warning An exception will be raised if the objectClass of the given mapping is not `[NSMutableDictionary class]`.
- */
-+ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
-                                 objectClass:(Class)objectClass
-                                 rootKeyPath:(NSString *)rootKeyPath DEPRECATED_ATTRIBUTE;
-
-/**
-Creates and returns a new `RKRequestDescriptor` object.
-
-@param mapping The mapping to be used when parameterizing an object using the request descriptor. Cannot be nil and must have an objectClass equal to `[NSMutableDictionary class]`.
-@param objectClass The class of objects for which the request descriptor should be used. Cannot be nil.
-@param rootKeyPath The root key path under which paramters constructed using the response descriptor will be nested. If nil, the parameters will not be nested and returned as a flat dictionary object.
-@param method The HTTP method(s) for which the mapping is to be used.
-@return A new `RKRequestDescriptor` object.
-
-@see [RKObjectMapping requestMapping]
-@warning An exception will be raised if the objectClass of the given mapping is not `[NSMutableDictionary class]`.
-*/
-+ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
-                                 objectClass:(Class)objectClass
-                                 rootKeyPath:(NSString *)rootKeyPath
-                                      method:(RKHTTPMethodOptions)method;
-
 ///-----------------------------------------------------
 /// @name Getting Information About a Request Descriptor
 ///-----------------------------------------------------
-
-/**
- The mapping specifying how the object being parameterized is to be mapped into an `NSDictionary` representation. The mapping must have an objectClass equal to `[NSMutableDictionary class]`.
- */
-@property (nonatomic, strong, readonly) RKMapping *mapping;
 
 /**
  The class of objects that the request descriptor is appropriate for use in parameterizing.
@@ -93,14 +52,19 @@ Creates and returns a new `RKRequestDescriptor` object.
 @property (nonatomic, strong, readonly) Class objectClass;
 
 /**
+ The HTTP method(s) for which the mapping is to be used.
+ */
+@property (nonatomic, assign, readonly) RKHTTPMethodOptions methods;
+
+/**
  The root key path that the paramters for the object are to be nested under. May be nil.
  */
 @property (nonatomic, copy, readonly) NSString *rootKeyPath;
 
 /**
- The HTTP method(s) for which the mapping is to be used.
+ The mapping specifying how the object being parameterized is to be mapped into an `NSDictionary` representation. The mapping must have an objectClass equal to `[NSMutableDictionary class]`.
  */
-@property (nonatomic, assign, readonly) RKHTTPMethodOptions method;
+@property (nonatomic, strong, readonly) RKMapping *mapping;
 
 ///-------------------------
 /// @name Comparing Request Descriptors
