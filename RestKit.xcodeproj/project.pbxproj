@@ -529,10 +529,6 @@
 		25EC1A4014F72B3300C3CF3F /* RKInMemoryManagedObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 7394DF3D14CF19F200CE7BCE /* RKInMemoryManagedObjectCache.m */; };
 		25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1A6514F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25EFFF591844313500CE04CF /* RKParameterConstraint.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EFFF571844313500CE04CF /* RKParameterConstraint.h */; };
-		25EFFF5A1844313500CE04CF /* RKParameterConstraint.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EFFF571844313500CE04CF /* RKParameterConstraint.h */; };
-		25EFFF5B1844313500CE04CF /* RKParameterConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EFFF581844313500CE04CF /* RKParameterConstraint.m */; };
-		25EFFF5C1844313500CE04CF /* RKParameterConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EFFF581844313500CE04CF /* RKParameterConstraint.m */; };
 		25EFFF5E184443DB00CE04CF /* RKParameterConstraintTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EFFF5D184443DB00CE04CF /* RKParameterConstraintTests.m */; };
 		25EFFF5F184443DB00CE04CF /* RKParameterConstraintTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EFFF5D184443DB00CE04CF /* RKParameterConstraintTests.m */; };
 		25F53AE215E7B612008B54E6 /* RKHTTPUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -896,8 +892,6 @@
 		25EC1B0014F8078100C3CF3F /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		25EC1B1E14F821B500C3CF3F /* RestKitResources-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RestKitResources-Prefix.pch"; sourceTree = "<group>"; };
 		25EC1B1F14F8220800C3CF3F /* RestKitResources-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RestKitResources-Info.plist"; sourceTree = "<group>"; };
-		25EFFF571844313500CE04CF /* RKParameterConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKParameterConstraint.h; sourceTree = "<group>"; };
-		25EFFF581844313500CE04CF /* RKParameterConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKParameterConstraint.m; sourceTree = "<group>"; };
 		25EFFF5D184443DB00CE04CF /* RKParameterConstraintTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKParameterConstraintTests.m; sourceTree = "<group>"; };
 		25F53AE015E7B611008B54E6 /* RKHTTPUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKHTTPUtilities.h; path = ../ObjectMapping/RKHTTPUtilities.h; sourceTree = "<group>"; };
 		25F53AE115E7B612008B54E6 /* RKHTTPUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKHTTPUtilities.m; path = ../ObjectMapping/RKHTTPUtilities.m; sourceTree = "<group>"; };
@@ -1555,8 +1549,6 @@
 		25DBDAC6183E5C7E0027A72F /* Descriptors */ = {
 			isa = PBXGroup;
 			children = (
-				25EFFF571844313500CE04CF /* RKParameterConstraint.h */,
-				25EFFF581844313500CE04CF /* RKParameterConstraint.m */,
 				25DBDAC7183E5C7E0027A72F /* RKRequestDescriptor.h */,
 				25DBDAC8183E5C7E0027A72F /* RKRequestDescriptor.m */,
 				25DBDAC9183E5C7E0027A72F /* RKResponseDescriptor.h */,
@@ -1779,7 +1771,6 @@
 				25DBDB2B183E5C7E0027A72F /* RKResponseMapperOperation.h in Headers */,
 				259B96F91604CCCC0000C250 /* AFNetworking.h in Headers */,
 				25A226D61618A57500952D72 /* RKObjectUtilities.h in Headers */,
-				25EFFF591844313500CE04CF /* RKParameterConstraint.h in Headers */,
 				252CCE6617E08E2D00B7F0BF /* RKValueTransformers.h in Headers */,
 				2507C327161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 				25E88C88165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */,
@@ -1882,7 +1873,6 @@
 				25DBDB2C183E5C7E0027A72F /* RKResponseMapperOperation.h in Headers */,
 				2507C328161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 				25E88C89165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */,
-				25EFFF5A1844313500CE04CF /* RKParameterConstraint.h in Headers */,
 				252CCE6717E08E2D00B7F0BF /* RKValueTransformers.h in Headers */,
 				255893E4166BA7400010C70B /* RestKit-Prefix.pch in Headers */,
 				255893E5166BA7700010C70B /* RKTestFixture.h in Headers */,
@@ -2192,7 +2182,6 @@
 				25DBDB2D183E5C7E0027A72F /* RKResponseMapperOperation.m in Sources */,
 				25160E48145650490060A5C5 /* RKDotNetDateFormatter.m in Sources */,
 				25DBDABC183C0E860027A72F /* AFURLSessionManager.m in Sources */,
-				25EFFF5B1844313500CE04CF /* RKParameterConstraint.m in Sources */,
 				25160E4B145650490060A5C5 /* RKLog.m in Sources */,
 				25DBDB25183E5C7E0027A72F /* RKObjectRequestSerializer.m in Sources */,
 				25160EE41456532C0060A5C5 /* lcl_RK.m in Sources */,
@@ -2339,7 +2328,6 @@
 				25160F911456576C0060A5C5 /* RKDotNetDateFormatter.m in Sources */,
 				25160F941456576C0060A5C5 /* RKLog.m in Sources */,
 				25DBDB1E183E5C7E0027A72F /* RKRouteSet.m in Sources */,
-				25EFFF5C1844313500CE04CF /* RKParameterConstraint.m in Sources */,
 				25B408291491CDDC00F21111 /* RKPathUtilities.m in Sources */,
 				25B6E95914CF7A1C00B1E881 /* RKErrors.m in Sources */,
 				25FABED014E3796400E609E7 /* RKTestNotificationObserver.m in Sources */,
