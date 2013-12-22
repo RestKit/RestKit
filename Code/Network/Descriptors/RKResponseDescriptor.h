@@ -37,7 +37,7 @@
 
 + (instancetype)responseDescriptorWithMethods:(RKHTTPMethodOptions)method
                                  pathTemplate:(NSString *)pathTemplate
-                         parameterConstraints:(RKParameterConstraints *)parameterConstraints
+                         parameterConstraints:(NSArray *)parameterConstraints
                                   statusCodes:(NSIndexSet *)statusCodes
                                       mapping:(RKMapping *)mapping;
 
