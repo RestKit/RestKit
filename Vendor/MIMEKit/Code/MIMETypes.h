@@ -1,9 +1,9 @@
 //
-//  RKMIMETypes.h
-//  RestKit
+//  MIMEMIMETypes.h
+//  MIMEKit
 //
 //  Created by Blake Watters on 5/18/11.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Copyright (c) 2013 BlakeWatters. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -23,16 +23,16 @@
  */
 
 /// MIME Type application/json
-extern NSString * const RKMIMETypeJSON;
+extern NSString *const MIMETypeJSON;
 
 /// MIME Type application/x-www-form-urlencoded
-extern NSString * const RKMIMETypeFormURLEncoded;
+extern NSString *const MIMETypeFormURLEncoded;
 
 /// MIME Type application/xml
-extern NSString * const RKMIMETypeXML;
+extern NSString *const MIMETypeXML;
 
 /// MIME Type text/xml
-extern NSString * const RKMIMETypeTextXML;
+extern NSString *const MIMETypeTextXML;
 
 /**
  Returns `YES` if the given MIME Type matches any MIME Type identifiers in the given set.
@@ -41,4 +41,4 @@ extern NSString * const RKMIMETypeTextXML;
  @param MIMETypes An `NSSet` object who entries are `NSString` or `NSRegularExpression` objects specifying MIME Types.
  @return `YES` if the given MIME Type matches any identifier in the set, else `NO`.
  */
-BOOL RKMIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes);
+BOOL MIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes);

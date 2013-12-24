@@ -1,9 +1,9 @@
 //
-//  RKURLEncodedSerialization.h
-//  RestKit
+//  MIMEURLEncodedSerialization.h
+//  MIMEKit
 //
 //  Created by Blake Watters on 9/4/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2012 MIMEKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,15 +18,15 @@
 //  limitations under the License.
 //
 
-#import "RKSerialization.h"
+#import "MIMESerializing.h"
 
 /**
- The `RKURLEncodedSerialization` class conforms to the `RKSerialization` protocol and provides support for the serialization and deserialization of URL encoded data. URL encoding is used to replace certain characters in a string with equivalent percent escape sequences. The list of characters replaced by the implementation are designed as illegal URL characters by RFC 3986. URL encoded data is used for the submission of HTML forms with the MIME Type `application/x-www-form-urlencoded`.
+ The `MIMEURLEncodedSerialization` class conforms to the `MIMESerializing` protocol and provides support for the serialization and deserialization of URL encoded data. URL encoding is used to replace certain characters in a string with equivalent percent escape sequences. The list of characters replaced by the implementation are designed as illegal URL characters by RFC 3986. URL encoded data is used for the submission of HTML forms with the MIME Type `application/x-www-form-urlencoded`.
  
  @see http://www.w3.org/TR/html401/interact/forms.html
  @see http://www.ietf.org/rfc/rfc3986.txt
  */
-@interface RKURLEncodedSerialization : NSObject <RKSerialization>
+@interface MIMEURLEncodedSerialization : NSObject <MIMESerializing>
 
 @end
 
@@ -39,7 +39,7 @@
  @param encoding The encoding to use when URL-decoding the components of the given string. If you are uncertain of the correct encoding, you should use UTF-8 (NSUTF8StringEncoding), which is the encoding designated by RFC 3986 as the correct encoding for use in URLs.
  @return An `NSDictionary` object containing the keys and values deserialized from the URL-encoded string.
  */
-NSDictionary *RKDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncodedString, NSStringEncoding encoding);
+NSDictionary *MIMEDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncodedString, NSStringEncoding encoding);
 
 /**
  Returns a URL-encoded `NSString` object containing the entries in the given `NSDictionary` object.
@@ -51,7 +51,7 @@ NSDictionary *RKDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncodedS
  @return A new `NSString` object in the given encoding containing a URL-encoded serialization of the entries in the given dictionary.
  @see `AFQueryStringFromParametersWithEncoding`
  */
-NSString *RKURLEncodedStringFromDictionaryWithEncoding(NSDictionary *dictionary, NSStringEncoding encoding);
+NSString *MIMEURLEncodedStringFromDictionaryWithEncoding(NSDictionary *dictionary, NSStringEncoding encoding);
 
 /**
  Returns a copy of the given string with the characters that are unsafe for use in a URL query string replaced with the equivalent percent escape sequences.
@@ -60,15 +60,15 @@ NSString *RKURLEncodedStringFromDictionaryWithEncoding(NSDictionary *dictionary,
  @param encoding The encoding to use in constructing the URL-encoded string. If you are uncertain of the correct encoding, you should use UTF-8 (NSUTF8StringEncoding), which is the encoding designated by RFC 3986 as the correct encoding for use in URLs.
  @return A new `NSString` object in the given encoding with the query string unsafe characters replaced with percent escape sequences.
  */
-NSString *RKPercentEscapedQueryStringFromStringWithEncoding(NSString *string, NSStringEncoding encoding);
+NSString *MIMEPercentEscapedQueryStringFromStringWithEncoding(NSString *string, NSStringEncoding encoding);
 
 /**
  Creates and returns a new `NSDictionary` object containing the keys and values in the query string of the given string.
  
- The given string is searched for a `?` character denoting the beginning of the query parameters. If none is found, the entire string is treated as a URL encoded query string. The parameters are extracted from the query string by invoking `RKDictionaryFromURLEncodedStringWithEncoding()` with the query string.
+ The given string is searched for a `?` character denoting the beginning of the query parameters. If none is found, the entire string is treated as a URL encoded query string. The parameters are extracted from the query string by invoking `MIMEDictionaryFromURLEncodedStringWithEncoding()` with the query string.
  
  @param string A string containing a query string that is to be tokenized into a dictionary of parameters.
  @param encoding The encoding to use in constructing the URL-encoded string. If you are uncertain of the correct encoding, you should use UTF-8 (NSUTF8StringEncoding), which is the encoding designated by RFC 3986 as the correct encoding for use in URLs.
  @return An `NSDictionary` object containing the keys and values contained in the query string of the given string.
  */
-NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding encoding);
+NSDictionary *MIMEQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding encoding);

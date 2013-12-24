@@ -1,9 +1,9 @@
 //
-//  RKNSJSONSerialization.m
-//  RestKit
+//  MIMEJSONSerialization.m
+//  MIMEKit
 //
 //  Created by Blake Watters on 8/31/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2012 MIMEKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "RKNSJSONSerialization.h"
+#import "MIMEJSONSerialization.h"
 
-@implementation RKNSJSONSerialization
+@implementation MIMEJSONSerialization
 
 + (id)objectFromData:(NSData *)data error:(NSError **)error
 {

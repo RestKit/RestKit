@@ -1,9 +1,9 @@
 //
-//  RKNSJSONSerialization.h
-//  RestKit
+//  MIMEJSONSerialization.h
+//  MIMEKit
 //
 //  Created by Blake Watters on 8/31/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2012 MIMEKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@
 //  limitations under the License.
 //
 
-#import "RKSerialization.h"
+#import "MIMESerialization.h"
 
 /**
- The `RKNSJSONSerialization` class conforms to the `RKSerialization` protocol and provides support for the serialization and deserialization of data in the JSON format using the Apple provided `NSJSONSerialization` class. This is the default JSON implementation for RestKit.
+ The `MIMEJSONSerialization` class conforms to the `MIMESerializing` protocol and provides support for the serialization and deserialization of data in the JSON format using the Apple provided `NSJSONSerialization` class.
  
  @see http://www.json.org/
  */
-@interface RKNSJSONSerialization : NSObject <RKSerialization>
+@interface MIMEJSONSerialization : NSObject <MIMESerialization>
 @end

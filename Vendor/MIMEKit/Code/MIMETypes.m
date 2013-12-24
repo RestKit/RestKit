@@ -1,9 +1,9 @@
 //
-//  RKMIMETypes.m
-//  RestKit
+//  MIMEMIMETypes.m
+//  MIMEKit
 //
 //  Created by Blake Watters on 5/18/11.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2013 Blake Watters. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@
 //  limitations under the License.
 //
 
-#import "RKMIMETypes.h"
+#import "MIMEMIMETypes.h"
 
-NSString * const RKMIMETypeJSON = @"application/json";
-NSString * const RKMIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";
-NSString * const RKMIMETypeXML = @"application/xml";
-NSString * const RKMIMETypeTextXML = @"text/xml";
+NSString *const MIMETypeJSON = @"application/json";
+NSString *const MIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";
+NSString *const MIMETypeXML = @"application/xml";
+NSString *const MIMETypeTextXML = @"text/xml";
 
-BOOL RKMIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes)
+BOOL MIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes)
 {
     for (id MIMETypeStringOrRegularExpression in MIMETypes) {
         if ([MIMETypeStringOrRegularExpression isKindOfClass:[NSString class]]) {

@@ -1,9 +1,9 @@
 //
-//  RKMIMETypeSerialization.m
-//  RestKit
+//  MIMEMIMETypeSerialization.m
+//  MIMEKit
 //
 //  Created by Blake Watters on 5/18/11.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2013 Blake Watters. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,29 +18,24 @@
 //  limitations under the License.
 //
 
-#import "RKMIMETypeSerialization.h"
-#import "RKErrors.h"
-#import "RKSerialization.h"
-#import "RKLog.h"
-#import "RKURLEncodedSerialization.h"
-#import "RKNSJSONSerialization.h"
+#import "MIMEMIMETypeSerialization.h"
+#import "MIMEErrors.h"
+#import "MIMESerialization.h"
+#import "MIMEURLEncodedSerialization.h"
+#import "MIMENSJSONSerialization.h"
 
-// Define logging component
-#undef RKLogComponent
-#define RKLogComponent RKlcl_cRestKitSupport
-
-@interface RKMIMETypeSerializationRegistration : NSObject
+@interface MIMEMIMETypeSerializationRegistration : NSObject
 
 @property (nonatomic, strong) id MIMETypeStringOrRegularExpression;
-@property (nonatomic, assign) Class<RKSerialization> serializationClass;
+@property (nonatomic, assign) Class<MIMESerialization> serializationClass;
 
-- (id)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<RKSerialization>)serializationClass;
+- (id)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<MIMESerialization>)serializationClass;
 - (BOOL)matchesMIMEType:(NSString *)MIMEType;
 @end
 
-@implementation RKMIMETypeSerializationRegistration
+@implementation MIMEMIMETypeSerializationRegistration
 
-- (id)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<RKSerialization>)serializationClass
+- (id)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<MIMESerialization>)serializationClass
 {
     NSParameterAssert(MIMETypeStringOrRegularExpression);
     NSParameterAssert(serializationClass);
@@ -59,7 +54,7 @@
 
 - (BOOL)matchesMIMEType:(NSString *)MIMEType
 {
-    return RKMIMETypeInSet(MIMEType, [NSSet setWithObject:self.MIMETypeStringOrRegularExpression]);
+    return MIMEMIMETypeInSet(MIMEType, [NSSet setWithObject:self.MIMETypeStringOrRegularExpression]);
 }
 
 - (NSString *)description
@@ -73,18 +68,18 @@
 
 @end
 
-@interface RKMIMETypeSerialization ()
+@interface MIMEMIMETypeSerialization ()
 @property (nonatomic, strong) NSMutableArray *registrations;
 @end
 
-@implementation RKMIMETypeSerialization
+@implementation MIMEMIMETypeSerialization
 
-+ (RKMIMETypeSerialization *)sharedSerialization
++ (MIMEMIMETypeSerialization *)sharedSerialization
 {
-    static RKMIMETypeSerialization *sharedInstance = nil;
+    static MIMEMIMETypeSerialization *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [[RKMIMETypeSerialization alloc] init];
+        sharedInstance = [[MIMEMIMETypeSerialization alloc] init];
         [sharedInstance addRegistrationsForKnownSerializations];
     });
     return sharedInstance;
@@ -104,18 +99,18 @@
 - (void)addRegistrationsForKnownSerializations
 {    
     // URL Encoded
-    [self.registrations addObject:[[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:RKMIMETypeFormURLEncoded
-                                                                             serializationClass:[RKURLEncodedSerialization class]]];
+    [self.registrations addObject:[[MIMEMIMETypeSerializationRegistration alloc] initWithMIMEType:MIMEMIMETypeFormURLEncoded
+                                                                             serializationClass:[MIMEURLEncodedSerialization class]]];
     // JSON
-    [self.registrations addObject:[[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:RKMIMETypeJSON
-                                                                             serializationClass:[RKNSJSONSerialization class]]];
+    [self.registrations addObject:[[MIMEMIMETypeSerializationRegistration alloc] initWithMIMEType:MIMEMIMETypeJSON
+                                                                             serializationClass:[MIMENSJSONSerialization class]]];
 }
 
 #pragma mark - Public
 
-+ (Class<RKSerialization>)serializationClassForMIMEType:(NSString *)MIMEType
++ (Class<MIMESerialization>)serializationClassForMIMEType:(NSString *)MIMEType
 {
-    for (RKMIMETypeSerializationRegistration *registration in [[self sharedSerialization].registrations reverseObjectEnumerator]) {
+    for (MIMEMIMETypeSerializationRegistration *registration in [[self sharedSerialization].registrations reverseObjectEnumerator]) {
         if ([registration matchesMIMEType:MIMEType]) {
             return registration.serializationClass;
         }
@@ -123,16 +118,16 @@
     return nil;
 }
 
-+ (void)registerClass:(Class<RKSerialization>)serializationClass forMIMEType:(id)MIMETypeStringOrRegularExpression
++ (void)registerClass:(Class<MIMESerialization>)serializationClass forMIMEType:(id)MIMETypeStringOrRegularExpression
 {
-    RKMIMETypeSerializationRegistration *registration = [[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:MIMETypeStringOrRegularExpression serializationClass:serializationClass];
+    MIMEMIMETypeSerializationRegistration *registration = [[MIMEMIMETypeSerializationRegistration alloc] initWithMIMEType:MIMETypeStringOrRegularExpression serializationClass:serializationClass];
     [[self sharedSerialization].registrations addObject:registration];
 }
 
-+ (void)unregisterClass:(Class<RKSerialization>)serializationClass
++ (void)unregisterClass:(Class<MIMESerialization>)serializationClass
 {
     NSArray *registrationsCopy = [[self sharedSerialization].registrations copy];
-    for (RKMIMETypeSerializationRegistration *registration in registrationsCopy) {
+    for (MIMEMIMETypeSerializationRegistration *registration in registrationsCopy) {
         if (registration.serializationClass == serializationClass) {
             [[self sharedSerialization].registrations removeObject:registration];
         }
@@ -149,12 +144,12 @@
     NSParameterAssert(data);
     NSParameterAssert(MIMEType);
 
-    Class<RKSerialization> serializationClass = [self serializationClassForMIMEType:MIMEType];
+    Class<MIMESerialization> serializationClass = [self serializationClassForMIMEType:MIMEType];
     if (!serializationClass) {
         if (error) {
             NSString* errorMessage = [NSString stringWithFormat:@"Cannot deserialize data: No serialization registered for MIME Type '%@'", MIMEType];
-            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorMessage, RKMIMETypeErrorKey : MIMEType };
-            *error = [NSError errorWithDomain:RKErrorDomain code:RKUnsupportedMIMETypeError userInfo:userInfo];
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorMessage, MIMEMIMETypeErrorKey : MIMEType };
+            *error = [NSError errorWithDomain:MIMEErrorDomain code:MIMEUnsupportedMIMETypeError userInfo:userInfo];
         }
         return nil;
     }
@@ -166,12 +161,12 @@
 {
     NSParameterAssert(object);
     NSParameterAssert(MIMEType);
-    Class<RKSerialization> serializationClass = [self serializationClassForMIMEType:MIMEType];
+    Class<MIMESerialization> serializationClass = [self serializationClassForMIMEType:MIMEType];
     if (!serializationClass) {
         if (error) {
             NSString* errorMessage = [NSString stringWithFormat:@"Cannot deserialize data: No serialization registered for MIME Type '%@'", MIMEType];
-            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorMessage, RKMIMETypeErrorKey : MIMEType };
-            *error = [NSError errorWithDomain:RKErrorDomain code:RKUnsupportedMIMETypeError userInfo:userInfo];
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : errorMessage, MIMEMIMETypeErrorKey : MIMEType };
+            *error = [NSError errorWithDomain:MIMEErrorDomain code:MIMEUnsupportedMIMETypeError userInfo:userInfo];
         }
         return nil;
     }

@@ -1,9 +1,9 @@
 //
-//  RKSerialization.h
-//  RestKit
+//  MIMESerializing.h
+//  MIMEKit
 //
 //  Created by Blake Watters on 10/1/10.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2013 Blake Watters. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@
 //
 
 /**
- The `RKSerialization` protocol declares two methods that a class must implement so that it can provide support for serializing objects to and deserializing objects from UTF-8 encoded data representations of a serialization format such as JSON or XML. Serialization implementations typically handle data in a given MIME Type (i.e. `application/json`) and may be registered with the `RKMIMETypeSerialization` class.
+ The `MIMESerializing` protocol declares two methods that a class must implement so that it can provide support for serializing objects to and deserializing objects from UTF-8 encoded data representations of a serialization format such as JSON or XML. Serialization implementations typically handle data in a given MIME Type (i.e. `application/json`) and may be registered with the `MIMEMIMETypeSerialization` class.
  
- @see `RKMIMETypeSerialization`
+ @see `MIMEMIMETypeSerialization`
  */
-@protocol RKSerialization <NSObject>
+@protocol MIMESerializing <NSObject>
 
 ///------------------------------
 /// @name Deserializing an Object
