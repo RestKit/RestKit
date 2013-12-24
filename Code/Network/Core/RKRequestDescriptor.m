@@ -42,7 +42,7 @@ static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
     }
 }
 
-extern NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
+extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
 
 @interface RKRequestDescriptor ()
 
@@ -56,51 +56,41 @@ extern NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
 @implementation RKRequestDescriptor
 
 + (instancetype)requestDescriptorWithObjectClass:(Class)objectClass
-                                          method:(RKHTTPMethodOptions)method
+                                         methods:(RKHTTPMethodOptions)methods
                                      rootKeyPath:(NSString *)rootKeyPath
                                          mapping:(RKMapping *)mapping
 {
-    // TODO: Implement me...
-    return nil;
+    return [[self alloc] initWithObjectClass:objectClass method:methods rootKeyPath:rootKeyPath mapping:mapping];
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-implementations"
-+ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath
+- (id)initWithObjectClass:(Class)objectClass
+                   method:(RKHTTPMethodOptions)method
+              rootKeyPath:(NSString *)rootKeyPath
+                  mapping:(RKMapping *)mapping
 {
-    return [self requestDescriptorWithMapping:mapping objectClass:objectClass rootKeyPath:rootKeyPath method:RKHTTPMethodAny];
+    self = [super init];
+    if (self) {
+        self.objectClass = objectClass;
+        self.method = method;
+        self.rootKeyPath = rootKeyPath;
+        self.mapping = mapping;
+    }
+    return self;
 }
-#pragma clang diagnostic pop
 
-+ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping objectClass:(Class)objectClass rootKeyPath:(NSString *)rootKeyPath method:(RKHTTPMethodOptions)method
+- (id)init
 {
-    NSParameterAssert(mapping);
-    NSParameterAssert(objectClass);
-    RKAssertValidMappingForRequestDescriptor(mapping);
-
-    RKRequestDescriptor *requestDescriptor = [self new];
-    requestDescriptor.mapping = mapping;
-    requestDescriptor.objectClass = objectClass;
-    requestDescriptor.rootKeyPath = rootKeyPath;
-    requestDescriptor.method = method;
-    return requestDescriptor;
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"%@ Failed to call designated initializer. "
+                                           "Invoke `+ requestDescriptorWithObjectClass:methods:rootKeyPath:mapping:` instead.",
+                                           NSStringFromClass([self class])]
+                                 userInfo:nil];
 }
 
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p method=%@ objectClass=%@ rootKeyPath=%@ : %@>",
-            NSStringFromClass([self class]), self, RKStringDescribingRequestMethod(self.method), NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
-}
-
-- (BOOL)isEqual:(id)object
-{
-    if (self == object) {
-        return YES;
-    }
-    if ([self class] != [object class]) {
-        return NO;
-    }
-    return [self isEqualToRequestDescriptor:object];
+            NSStringFromClass([self class]), self, RKStringDescribingHTTPMethods(self.method), NSStringFromClass(self.objectClass), self.rootKeyPath, self.mapping];
 }
 
 #define NSUINT_BIT (CHAR_BIT * sizeof(NSUInteger))
@@ -111,17 +101,17 @@ extern NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
     return NSUINTROTATE(NSUINTROTATE([self.mapping hash], NSUINT_BIT / 3) ^ [self.objectClass hash], NSUINT_BIT / 3) ^ [self.rootKeyPath hash];
 }
 
-- (BOOL)isEqualToRequestDescriptor:(RKRequestDescriptor *)otherDescriptor
+- (BOOL)isEqual:(id)object
 {
-    if (![otherDescriptor isKindOfClass:[RKRequestDescriptor class]]) {
-        return NO;
-    }
+    if (self == object) return YES;
+    if (object == nil) return NO;
+    if (![object isKindOfClass:[RKRequestDescriptor class]]) return NO;
 
-    return
-    [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
-    self.objectClass == otherDescriptor.objectClass &&
-    self.method == otherDescriptor.method &&
-    [self.rootKeyPath isEqualToString:otherDescriptor.rootKeyPath];
+    RKRequestDescriptor *otherDescriptor = (RKRequestDescriptor *)object;
+    return ([self.mapping isEqual:otherDescriptor.mapping] &&
+            self.objectClass == otherDescriptor.objectClass &&
+            self.method == otherDescriptor.method &&
+            [self.rootKeyPath isEqualToString:otherDescriptor.rootKeyPath]);
 }
 
 @end

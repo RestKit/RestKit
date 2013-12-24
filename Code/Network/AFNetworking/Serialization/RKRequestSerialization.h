@@ -1,5 +1,5 @@
 //
-//  RKObjectRequestSerializer.h
+//  RKRequestSerialization.h
 //  RestKit
 //
 //  Created by Blake Watters on 11/16/13.
@@ -11,7 +11,8 @@
 #import "RKHTTPUtilities.h"
 #import "RKRequestDescriptor.h"
 
-@interface RKObjectRequestSerializer : AFHTTPRequestSerializer
+// TODO: How to handle encoding to target format??
+@interface RKRequestSerializer : AFHTTPRequestSerializer
 
 ///-----------------------------------
 /// @name Managing Request Descriptors

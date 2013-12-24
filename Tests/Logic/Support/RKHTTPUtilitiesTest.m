@@ -19,17 +19,17 @@
 
 - (void)testThatYesIsReturnedWhenTheGivenRequestMethodIsAnExactMatch
 {
-    expect(RKIsSpecificRequestMethod(RKHTTPMethodPOST)).to.beTruthy();
+    expect(RKIsSpecificHTTPMethod(RKHTTPMethodPOST)).to.beTruthy();
 }
 
 - (void)testThatNoIsReturnedWhenTheGivenRequestMethodIsAny
 {
-    expect(RKIsSpecificRequestMethod(RKHTTPMethodAny)).to.beFalsy();
+    expect(RKIsSpecificHTTPMethod(RKHTTPMethodAny)).to.beFalsy();
 }
 
 - (void)testThatNoIsReturnedWhenTheGivenRequestMethodIsNotAnExactMatch
 {
-    expect(RKIsSpecificRequestMethod(RKHTTPMethodGET | RKHTTPMethodPOST)).to.beFalsy();
+    expect(RKIsSpecificHTTPMethod(RKHTTPMethodGET | RKHTTPMethodPOST)).to.beFalsy();
 }
 
 - (void)testThatNilIsReturnedWhenTheGivenURLIsNotRelativeToTheBaseURL
@@ -129,12 +129,12 @@
 
 - (void)testRequestMethodStringForSimpleValue
 {
-    expect(RKStringFromRequestMethod(RKHTTPMethodGET)).to.equal(@"GET");
+    expect(RKStringFromHTTPMethod(RKHTTPMethodGET)).to.equal(@"GET");
 }
 
 - (void)testRequestMethodStringForCompoundValueReturnsNil
 {
-    expect(RKStringFromRequestMethod(RKHTTPMethodGET|RKHTTPMethodDELETE)).to.beNil();
+    expect(RKStringFromHTTPMethod(RKHTTPMethodGET|RKHTTPMethodDELETE)).to.beNil();
 }
 
 @end

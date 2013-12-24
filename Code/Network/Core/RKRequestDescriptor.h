@@ -24,9 +24,9 @@
 @class RKMapping;
 
 /**
- An `RKRequestDescriptor` object describes an object mapping configuration that is used to construct the parameters of an HTTP request for an object. Request descriptors are defined by specifying the `RKMapping` object (whose `objectClass` must be `NSMutableDictionary`) that is to be used when object mapping an object into an `NSDictionary` of parameters, the class of the type of object for which the mapping is to be applied, and an optional root key path under which the paramters are to be nested. Response descriptors are only utilized when construct parameters for an `NSURLRequest` with an HTTP method of `POST`, `PUT`, or `PATCH`.
+ An `RKRequestDescriptor` object describes an object mapping configuration that is used to construct the parameters of an HTTP request for an object. Request descriptors are defined by specifying the `RKMapping` object (whose `objectClass` must be `NSMutableDictionary`) that is to be used when object mapping an object into an `NSDictionary` of parameters, the class of the type of object for which the mapping is to be applied, and an optional root key path under which the paramters are to be nested. Response descriptors are only utilized when constructing parameters for an `NSURLRequest` with an HTTP method of `POST`, `PUT`, or `PATCH`.
 
- @see RKObjectParameterization
+ @see RKRequestSerializer
  @see [RKObjectMapping requestMapping]
  @see [RKObjectManager requestWithObject:method:path:parameters:]
  */
@@ -38,7 +38,7 @@
 
 // new initializer
 + (instancetype)requestDescriptorWithObjectClass:(Class)objectClass
-                                          method:(RKHTTPMethodOptions)method
+                                         methods:(RKHTTPMethodOptions)methods
                                      rootKeyPath:(NSString *)rootKeyPath
                                          mapping:(RKMapping *)mapping;
 
@@ -65,16 +65,5 @@
  The mapping specifying how the object being parameterized is to be mapped into an `NSDictionary` representation. The mapping must have an objectClass equal to `[NSMutableDictionary class]`.
  */
 @property (nonatomic, strong, readonly) RKMapping *mapping;
-
-///-------------------------
-/// @name Comparing Request Descriptors
-///-------------------------
-
-/**
- Returns `YES` if the receiver and the specified request descriptor are considered equivalent.
-
- */
-// TODO: Replace with `isEqual:`
-- (BOOL)isEqualToRequestDescriptor:(RKRequestDescriptor *)otherDescriptor;
 
 @end

@@ -20,8 +20,8 @@
 
 #import "RKRoute.h"
 
-NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method);
-NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method)
+NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
+NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method)
 {
     if (method == RKHTTPMethodAny) return @"*";
     NSMutableArray *methods = [NSMutableArray array];
@@ -57,7 +57,7 @@ NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method)
 {
     NSParameterAssert(name);
     NSParameterAssert(URITemplateString);
-    if (!RKIsSpecificRequestMethod(method)) [NSException raise:NSInvalidArgumentException format:@"The `method` parameter must specify a single, non-ambiguous HTTP method. Bitmask values and `RKHTTPMethodAny` are invalid arguments."];
+    if (!RKIsSpecificHTTPMethod(method)) [NSException raise:NSInvalidArgumentException format:@"The `method` parameter must specify a single, non-ambiguous HTTP method. Bitmask values and `RKHTTPMethodAny` are invalid arguments."];
     NSError *error = nil;
     CSURITemplate *URITemplate = [CSURITemplate URITemplateWithString:URITemplateString error:&error];
     if (!URITemplate && error) [NSException raise:NSInvalidArgumentException format:@"Invalid URI Template: %@", [error localizedDescription]];
@@ -140,7 +140,7 @@ NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method)
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p name=%@ method=%@ pathPattern=%@>",
-            NSStringFromClass([self class]), self, self.name, RKStringDescribingRequestMethod(self.method), self.URITemplate];
+            NSStringFromClass([self class]), self, self.name, RKStringDescribingHTTPMethods(self.method), self.URITemplate];
 }
 
 @end
@@ -156,7 +156,7 @@ NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method)
 {
     return [NSString stringWithFormat:@"<%@: %p objectClass=%@ method=%@ pathPattern=%@>",
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass),
-            RKStringDescribingRequestMethod(self.method), self.URITemplate];
+            RKStringDescribingHTTPMethods(self.method), self.URITemplate];
 }
 
 @end
@@ -172,7 +172,7 @@ NSString *RKStringDescribingRequestMethod(RKHTTPMethodOptions method)
 {
     return [NSString stringWithFormat:@"<%@: %p relationshipName=%@ objectClass=%@ method=%@ pathPattern=%@>",
             NSStringFromClass([self class]), self, self.name, NSStringFromClass(self.objectClass),
-            RKStringDescribingRequestMethod(self.method), self.URITemplate];
+            RKStringDescribingHTTPMethods(self.method), self.URITemplate];
 }
 
 @end

@@ -83,7 +83,11 @@
     [self.mutableResponseDescriptors removeObject:responseDescriptor];
 }
 
-#pragma mark -
+@end
+
+@implementation RKObjectResponseSerializer
+
+#pragma mark - 
 
 - (NSSet *)acceptableContentTypes
 {
@@ -100,7 +104,6 @@
 
 - (id)responseObjectForResponse:(NSURLResponse *)response
                            data:(NSData *)data
-                        request:(NSURLRequest *)request
                           error:(NSError *__autoreleasing *)error
 {
     if (![self validateResponse:(NSHTTPURLResponse *)response data:data request:request error:error]) {
@@ -120,4 +123,7 @@
     return mapperOperation.mappingResult;
 }
 
+@end
+
+@implementation RKManagedObjectResponseSerializer
 @end

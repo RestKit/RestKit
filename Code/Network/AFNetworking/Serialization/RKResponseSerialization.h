@@ -1,5 +1,5 @@
 //
-//  RKObjectResponseSerializer.h
+//  RKResponseSerialization.h
 //  RestKit
 //
 //  Created by Blake Watters on 11/16/13.
@@ -12,13 +12,10 @@
 
 @class RKObjectResponseSerializer;
 
-// TODO: I need a new name for this class...
-// registry? coordinator? broker?
-// RKResponseSerializationCoordinator
-// RKResponseSerializerCoordinator
-// NSPersistentStoreCoordinator
-// RKResponseCoordinator
-@interface RKResponseCoordinator : NSObject
+/**
+ The `RKResponseSerializationManager` class is responsible for constructing AFNetworking response serializer instances that perform object mapping on object representations loaded via HTTP.
+ */
+@interface RKResponseSerializationManager : NSObject
 
 ///------------------------------------------------
 /// @name Managing Response Descriptors
@@ -62,6 +59,9 @@
 
 @end
 
+/**
+ The `RKObjectResponseSerializer` is a subclass of `AFHTTPResponseSerializer` that performs object mapping on object representations loaded over HTTP by AFNetworking.
+ */
 @interface RKObjectResponseSerializer : AFHTTPResponseSerializer
 
 + (instancetype)objectResponseSerializerWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors;

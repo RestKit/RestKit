@@ -46,13 +46,13 @@ NSIndexSet *RKCacheableStatusCodes(void)
     return cacheableStatusCodes;
 }
 
-BOOL RKIsSpecificRequestMethod(RKHTTPMethodOptions method)
+BOOL RKIsSpecificHTTPMethod(RKHTTPMethodOptions method)
 {
     // check for a power of two
     return !(method & (method - 1));
 }
 
-NSString *RKStringFromRequestMethod(RKHTTPMethodOptions method)
+NSString *RKStringFromHTTPMethod(RKHTTPMethodOptions method)
 {
     switch (method) {
         case RKHTTPMethodGET:     return @"GET";

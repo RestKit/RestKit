@@ -11,8 +11,8 @@
 #import "RKResponseDescriptor.h"
 #import "RKRequestDescriptor.h"
 #import "RKMappingResult.h"
-#import "RKObjectResponseSerializer.h"
-#import "RKObjectRequestSerializer.h"
+#import "RKResponseSerialization.h"
+#import "RKRequestSerialization.h"
 
 @interface RKObjectRequestOperationManager : NSObject
 
@@ -22,15 +22,15 @@
 @property (nonatomic, strong) AFHTTPRequestOperationManager *HTTPRequestOperationManager;
 @property (nonatomic, readonly) NSURL *baseURL;
 
-@property (nonatomic, strong) RKObjectRequestSerializer *requestSerializer;
-@property (nonatomic, strong) RKObjectResponseSerializer *responseSerializer;
+@property (nonatomic, strong) RKRequestSerializer *requestSerializer;
+@property (nonatomic, strong) RKResponseSerializationManager *responseSerializationCoordinator;
 
 ///---------------------------------------
 /// @name Managing HTTP Request Operations
 ///---------------------------------------
 
 /**
- Creates an `AFHTTPRequestOperation`, and sets the response serializers to that of the HTTP client.
+ Creates an `AFHTTPRequestOperation` and sets the response serializer to an object response mapping serializer constructed by the response serialization manager.
 
  @param request The request object to be loaded asynchronously during execution of the operation.
  @param success A block object to be executed when the request operation finishes successfully. This block has no return value and takes two arguments: the created request operation and the object created from the response data of request.

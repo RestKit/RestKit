@@ -293,11 +293,11 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
 
     NSMutableURLRequest *getRequest = [NSMutableURLRequest requestWithURL:responseURL];
-    getRequest.HTTPMethod = RKStringFromRequestMethod(RKHTTPMethodGET);
+    getRequest.HTTPMethod = RKStringFromHTTPMethod(RKHTTPMethodGET);
     NSData *getData = [@"{ \"getKey\" : 42 }" dataUsingEncoding:NSUTF8StringEncoding];
 
     NSMutableURLRequest *postRequest = [NSMutableURLRequest requestWithURL:responseURL];
-    postRequest.HTTPMethod = RKStringFromRequestMethod(RKHTTPMethodPOST);
+    postRequest.HTTPMethod = RKStringFromHTTPMethod(RKHTTPMethodPOST);
     NSData *postData = [@"{ \"postKey\" : 41 }" dataUsingEncoding:NSUTF8StringEncoding];
 
     RKObjectMapping *getResponseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];

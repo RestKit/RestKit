@@ -20,7 +20,7 @@
 
 #import "RKHTTPUtilities.h"
 
-@class RKMapping;
+@class RKMapping, RKPathTemplate;
 
 /**
  An `RKResponseDescriptor` object describes an object mapping configuration that is applicable to an HTTP response. Response descriptors are defined by specifying the `RKMapping` object that is to be used when performing object mapping on the deserialized response body and the URL path pattern, key path, and status codes for which the mapping is appropriate. The path pattern is a SOCKit `SOCPattern` string that will be matched against the URL of the request that loaded the response being mapped. If the path pattern is nil, the response descriptor is considered to be appropriate for a response loaded from any URL. The key path specifies the location of data within the deserialized response body for which the mapping is appropriate. If nil, the mapping is considered to apply to the entire response body.  The status codes specify a set of HTTP response status codes for which the mapping is appropriate. It is common to constrain a response descriptor to the HTTP Successful status code class (status codes in the 200-299 range). Object mapping for error responses can be configured by configuring a response descriptor to handle the Client Error status code class (status codes in the 400-499 range). Instances of `RKResponseDescriptor` are immutable.
@@ -35,96 +35,62 @@
 /// @name Creating a Response Descriptor
 ///-------------------------------------
 
-+ (instancetype)responseDescriptorWithMethods:(RKHTTPMethodOptions)method
-                                 pathTemplate:(NSString *)pathTemplate
+/**
+ Creates and returns a new `RKResponseDescriptor` object.
+
+ @param methods The HTTP method(s) for which the mapping is to be used.
+ @param mapping The mapping for the response descriptor.
+ @param pathTemplateString A string which to instantiate a path template object that matches the path of URLs for which the descriptor should be used.
+ @param keyPath A key path specifying the subset of the parsed response for which the mapping is to be used.
+ @param statusCodes A set of HTTP status codes for which the mapping is to be used.
+ @return A new `RKResponseDescriptor` object.
+*/
++ (instancetype)responseDescriptorWithMethods:(RKHTTPMethodOptions)methods
+                           pathTemplateString:(NSString *)pathTemplateString
                          parameterConstraints:(NSArray *)parameterConstraints
+                                      keyPath:(NSString *)keyPath
                                   statusCodes:(NSIndexSet *)statusCodes
                                       mapping:(RKMapping *)mapping;
-
-/**
- Creates and returns a new `RKResponseDescriptor` object.
- 
- This method is deprecated. Use `+ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
- method:(RKHTTPMethod)method
- pathPattern:(NSString *)pathPattern
- keyPath:(NSString *)keyPath
- statusCodes:(NSIndexSet *)statusCodes` instead.
-
- @param mapping The mapping for the response descriptor.
- @param pathPattern A path pattern that matches against URLs for which the mapping should be used.
- @param keyPath A key path specifying the subset of the parsed response for which the mapping is to be used.
- @param statusCodes A set of HTTP status codes for which the mapping is to be used.
- @return A new `RKResponseDescriptor` object.
- */
-+ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
-                                  pathPattern:(NSString *)pathPattern
-                                      keyPath:(NSString *)keyPath
-                                  statusCodes:(NSIndexSet *)statusCodes DEPRECATED_ATTRIBUTE;
-
-/**
- Creates and returns a new `RKResponseDescriptor` object.
- 
- @param mapping The mapping for the response descriptor.
- @param method The HTTP method(s) for which the mapping is to be used.
- @param pathPattern A path pattern that matches against URLs for which the mapping should be used.
- @param keyPath A key path specifying the subset of the parsed response for which the mapping is to be used.
- @param statusCodes A set of HTTP status codes for which the mapping is to be used.
- @return A new `RKResponseDescriptor` object.
- */
-+ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
-                                       method:(RKHTTPMethodOptions)method
-                                  pathPattern:(NSString *)pathPattern
-                                      keyPath:(NSString *)keyPath
-                                  statusCodes:(NSIndexSet *)statusCodes;
 
 ///------------------------------------------------------
 /// @name Getting Information About a Response Descriptor
 ///------------------------------------------------------
 
 /**
- The mapping to be used when object mapping the deserialized HTTP response body. Cannot be nil.
- */
-@property (nonatomic, strong, readonly) RKMapping *mapping;
-
-/**
  The HTTP method(s) for which the mapping is to be used.
  */
-@property (nonatomic, assign, readonly) RKHTTPMethodOptions method;
+@property (nonatomic, assign, readonly) RKHTTPMethodOptions methods;
 
 /**
- The path pattern to match against the request URL. If nil, the response descriptor matches any URL.
-
- @see `RKPathMatcher`
+ A path template that matches response URLs for which receiver is to be used. If `nil`, the response descriptor matches any URL.
  */
-@property (nonatomic, copy, readonly) NSString *pathPattern;
+@property (nonatomic, copy, readonly) RKPathTemplate *pathTemplate;
 
 /**
- The key path to match against the deserialized response body. If nil, the response descriptor matches the entire response body.
+ An array of parameter constraint objects that must match the query and path parameters of the response URL for the receiver to match. If `nil`, the response descriptor matches any URL.
+ 
+ @see RKParameterConstraint
+ */
+@property (nonatomic, copy, readonly) NSArray *parameterConstraints;
+
+/**
+ The key path to match against the deserialized response body. If `nil`, the response descriptor matches the entire response body.
 
  When evaluating a key path match, the Foundation object parsed from the response body is sent `valueForKeyPath:` with the keyPath of the receiver. If the value returned is non-nil, object mapping is performed using the response descriptor's mapping.
  */
 @property (nonatomic, copy, readonly) NSString *keyPath;
 
 /**
- The set of status codes for which response descriptor matches. If nil, the the response descriptor matches any status code.
+ The set of status codes for which response descriptor matches. If `nil`, the the response descriptor matches any status code.
 
  @see RKStatusCodeClass
  */
 @property (nonatomic, copy, readonly) NSIndexSet *statusCodes;
 
-///---------------------------
-/// @name Setting the Base URL
-///---------------------------
-
 /**
- The base URL that the `pathPattern` is to be evaluated relative to.
-
- The base URL is set to the base URL of the object manager when a response descriptor is added to an object manager.
-
- @see `matchesURL:`
+ The mapping to be used when object mapping the deserialized HTTP response body. Cannot be `nil`.
  */
-@property (nonatomic, copy) NSURL *baseURL;
-// TODO: Eliminate...
+@property (nonatomic, strong, readonly) RKMapping *mapping;
 
 ///---------------------------------
 /// @name Using Response Descriptors
@@ -136,10 +102,11 @@
  Path matching is performed using an `RKPathMatcher` object. If the receiver has a `nil` path pattern or the given path is `nil`, `YES` is returned.
 
  @param path The path to compare with the path pattern of the receiver.
+ @param parameters A pointer to a dictionary object that on output will be set to a dictionary containing the parameters matched from the given path using the path template. If the path template does not match the given path then the input dictionary will be set to `nil`.
  @return `YES` if the path matches the receiver's pattern, else `NO`.
  @see `RKPathMatcher`
  */
-- (BOOL)matchesPath:(NSString *)path;
+- (BOOL)matchesPath:(NSString *)path parameters:(NSDictionary **)parameters;
 
 /**
  Returns a Boolean value that indicates if the given URL object matches the base URL and path pattern of the receiver.
@@ -153,8 +120,7 @@
  @param URL The URL to compare with the base URL and path pattern of the receiver.
  @return `YES` if the URL matches the base URL and path pattern of the receiver, else `NO`.
  */
-- (BOOL)matchesURL:(NSURL *)URL;
-// - (BOOL)matchesURL:(NSURL *)URL baseURL:(NSURL *)URL
+- (BOOL)matchesURL:(NSURL *)URL relativeToBaseURL:(NSURL *)baseURL parameters:(NSDictionary **)parameters;
 
 /**
  Returns a Boolean value that indicates if the given URL response object matches the receiver.
@@ -165,10 +131,7 @@
  @return `YES` if the response matches the base URL, path pattern, and status codes set of the receiver, else `NO`.
  @see `matchesURL:`
  */
-- (BOOL)matchesResponse:(NSHTTPURLResponse *)response;
-
-// TODO: matchesResponse:(NSHTTPURLResponse *)response baseURL:(NSURL *)baseURL;
-//
+- (BOOL)matchesResponse:(NSHTTPURLResponse *)response request:(NSURLRequest *)request relativeToBaseURL:(NSURL *)baseURL parameters:(NSDictionary **)parameters;
 
 ///-------------------------
 /// @name Comparing Response Descriptors
