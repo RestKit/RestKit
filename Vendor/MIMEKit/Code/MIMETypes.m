@@ -1,5 +1,5 @@
 //
-//  MIMEMIMETypes.m
+//  MIMETypes.m
 //  MIMEKit
 //
 //  Created by Blake Watters on 5/18/11.
@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "MIMEMIMETypes.h"
+#import "MIMETypes.h"
 
 NSString *const MIMETypeJSON = @"application/json";
 NSString *const MIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";

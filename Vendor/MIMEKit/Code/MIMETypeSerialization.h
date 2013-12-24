@@ -1,5 +1,5 @@
 //
-//  MIMEMIMETypeSerialization.h
+//  MIMETypeSerialization.h
 //  MIMEKit
 //
 //  Created by Blake Watters on 5/18/11.
@@ -18,13 +18,13 @@
 //  limitations under the License.
 //
 
-#import "MIMEMIMETypes.h"
+#import "MIMETypes.h"
 #import "MIMESerialization.h"
 
 /**
- The `MIMEMIMETypeSerialization` class provides support for the registration of classes conforming to the `MIMESerializing` protocol by MIME Type and the serialization and deserialization of content by MIME Type. Serialization implementations may be registered by an exact string match (i.e. 'application/json' for a JSON serialization implementation) or by regular expression to match MIME Type by pattern.
+ The `MIMETypeSerialization` class provides support for the registration of classes conforming to the `MIMESerializing` protocol by MIME Type and the serialization and deserialization of content by MIME Type. Serialization implementations may be registered by an exact string match (i.e. 'application/json' for a JSON serialization implementation) or by regular expression to match MIME Type by pattern.
  */
-@interface MIMEMIMETypeSerialization : NSObject
+@interface MIMETypeSerialization : NSObject
 
 ///---------------------------------------
 /// @name Managing MIME Type Registrations

@@ -18,7 +18,6 @@
 //  limitations under the License.
 //
 
-//#import "RKSerialization.h"
 #import "RKObjectParameterization.h"
 #import "RKLog.h"
 #import "RKObjectMappingOperationDataSource.h"

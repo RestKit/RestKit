@@ -1,5 +1,5 @@
 //
-//  MIMEMIMETypes.h
+//  MIMETypes.h
 //  MIMEKit
 //
 //  Created by Blake Watters on 5/18/11.

@@ -25,6 +25,7 @@
 #import "RKResponseMapperOperation.h"
 #import "RKMappingErrors.h"
 #import "RKDictionaryUtilities.h"
+#import "MIMETypeSerialization.h"
 
 #ifdef _COREDATADEFINES_H
 #import "RKManagedObjectMappingOperationDataSource.h"
@@ -196,9 +197,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     __block NSError *underlyingError = nil;
     __block id object;
     dispatch_sync(RKResponseMapperSerializationQueue(), ^{
-        // TODO: Decide if I want to retain the MIME type registration...
-//        object = [RKMIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
-        object = [self.contentSerializer responseObjectForResponse:self.response data:self.data request:self.request error:&underlyingError];
+        object = [MIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
     });
     if (! object) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];

@@ -26,9 +26,6 @@
 #import "RKManagedObjectCaching.h"
 #endif
 
-// TODO: Decide about this
-#import "AFURLResponseSerialization.h"
-
 /**
  `RKResponseMapperOperation` is an `NSOperation` that provides support for performing object mapping on an `NSHTTPURLResponse` and its associated response data.
  
@@ -58,9 +55,6 @@
  @see `RKMapperOperation`
  */
 @interface RKResponseMapperOperation : NSOperation
-
-// TODO:
-@property (nonatomic, strong) AFHTTPResponseSerializer *contentSerializer;
 
 ///------------------------------------------------
 /// @name Initializing a Response Mapping Operation
