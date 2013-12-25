@@ -24,34 +24,32 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is nil", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-                responseDescriptor.baseURL = baseURL;
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:nil parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
             });
             
             it(@"returns YES", ^{
                 NSURL *URL = [NSURL URLWithString:@"http://restkit.org/monkeys/1234.json"];
-                expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
             });
         });
         
         context(@"and the path pattern is '/monkeys/:monkeyID\\.json'", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-                responseDescriptor.baseURL = baseURL;
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/monkeys/:monkeyID\\.json" parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
             });
             
             context(@"and given a URL in which the path and query string match the path pattern", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/monkeys/1234.json"];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
                 });
             });
             
             context(@"and given a URL in which the path and query string do match the path pattern", ^{
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/mismatch"];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
                 });
             });
         });
@@ -65,21 +63,20 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is nil", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-                responseDescriptor.baseURL = baseURL;
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:nil parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
             });
             
             context(@"and given the URL 'http://google.com/monkeys/1234.json'", ^{
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://google.com/monkeys/1234.json"];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
                 });
             });
             
             context(@"and given the URL 'http://restkit.org/whatever", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/whatever"];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
                 });
             });
         });
@@ -87,15 +84,14 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is '/monkeys/:monkeyID\\.json'", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-                responseDescriptor.baseURL = baseURL;
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/monkeys/:monkeyID\\.json" parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
             });
             
             context(@"and given a URL with a different baseURL", ^{
                 it(@"returns NO", ^{
                     NSURL *otherBaseURL = [NSURL URLWithString:@"http://google.com"];
                     NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json" relativeToURL:otherBaseURL];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
                 });
             });
             
@@ -103,21 +99,21 @@ describe(@"matchesURL:", ^{
                 context(@"in which the path and query string match the path pattern", ^{
                     it(@"returns YES", ^{
                         NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json" relativeToURL:baseURL];
-                        expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                        expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
                     });
                 });
                 
                 context(@"in which the path and query string do match the path pattern", ^{
                     it(@"returns NO", ^{
                         NSURL *URL = [NSURL URLWithString:@"/mismatch" relativeToURL:baseURL];
-                        expect([responseDescriptor matchesURL:URL]).to.equal(NO);
+                        expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
                     });
                 });
                 
                 context(@"and the URL includes a query string", ^{
                     it(@"returns NO", ^{
                         NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json?param1=val1&param2=val2" relativeToURL:baseURL];
-                        expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                        expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
                     });
                 });
             });
@@ -132,14 +128,13 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is '/api/v1/organizations/'", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-                responseDescriptor.baseURL = baseURL;
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/api/v1/organizations/" parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
             });
             
             context(@"and given the URL 'http://0.0.0.0:5000/api/v1/organizations/?client_search=t'", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://0.0.0.0:5000/api/v1/organizations/?client_search=t"];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
                 });
             });
         });
@@ -153,21 +148,20 @@ describe(@"matchesURL:", ^{
         context(@"and the path pattern is nil", ^{
             beforeEach(^{
                 RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-                responseDescriptor.baseURL = baseURL;
+                responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:nil parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
             });
             
             context(@"and given the URL 'http://google.com/monkeys/api/v1/1234.json'", ^{
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/monkeys/1234.json"];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
                 });
             });
             
             context(@"and given the URL 'http://restkit.org/api/v1/whatever", ^{
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/api/v1/whatever"];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
                 });
             });
         });
@@ -176,12 +170,11 @@ describe(@"matchesURL:", ^{
             context(@"and given a URL with a different baseURL", ^{
                 it(@"returns NO", ^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/whatever" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-                    responseDescriptor.baseURL = baseURL;
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/whatever" parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
                     
                     NSURL *otherBaseURL = [NSURL URLWithString:@"http://google.com"];
                     NSURL *URL = [NSURL URLWithString:@"monkeys/1234.json" relativeToURL:otherBaseURL];
-                    expect([responseDescriptor matchesURL:URL]).to.equal(NO);
+                    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
                 });
             });
             
@@ -189,22 +182,21 @@ describe(@"matchesURL:", ^{
                 context(@"and the path pattern is '/monkeys/:monkeyID\\.json'", ^{
                     beforeEach(^{
                         RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                        responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"monkeys/:monkeyID\\.json" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-                        responseDescriptor.baseURL = baseURL;
+                        responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"monkeys/:monkeyID\\.json" parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
                     });
                     
                     context(@"and given a relative URL object", ^{
                         context(@"in which the path and query string match the path pattern", ^{
                             it(@"returns YES", ^{
                                 NSURL *URL = [NSURL URLWithString:@"monkeys/1234.json" relativeToURL:baseURL];
-                                expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                                expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
                             });
                         });
                         
                         context(@"in which the path and query string do match the path pattern", ^{
                             it(@"returns NO", ^{
                                 NSURL *URL = [NSURL URLWithString:@"mismatch" relativeToURL:baseURL];
-                                expect([responseDescriptor matchesURL:URL]).to.equal(NO);
+                                expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
                             });
                         });
                     });
@@ -213,14 +205,14 @@ describe(@"matchesURL:", ^{
                         context(@"in which the path and query string match the path pattern", ^{
                             it(@"returns YES", ^{
                                 NSURL *URL = [NSURL URLWithString:@"http://restkit.org/api/v1/monkeys/1234.json"];
-                                expect([responseDescriptor matchesURL:URL]).to.equal(YES);
+                                expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
                             });
                         });
                         
                         context(@"in which the path and query string do match the path pattern", ^{
                             it(@"returns NO", ^{
                                 NSURL *URL = [NSURL URLWithString:@"http://restkit.org/api/v1/mismatch"];
-                                expect([responseDescriptor matchesURL:URL]).to.equal(NO);
+                                expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
                             });
                         });
                     });
@@ -238,14 +230,13 @@ describe(@"matchesResponse:", ^{
             context(@"and given the URL 'http://0.0.0.0:5000/api/v1/organizations/?client_search=t'", ^{
                 beforeEach(^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/api/v1/organizations/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
-                    responseDescriptor.baseURL = [NSURL URLWithString:@"http://0.0.0.0:5000"];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/api/v1/organizations/" parameterConstraints:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200] mapping:mapping];
                 });
                 
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://0.0.0.0:5000/api/v1/organizations/?client_search=t"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    expect([responseDescriptor matchesResponse:response]).to.equal(YES);
+                    expect([responseDescriptor matchesResponse:response request:nil relativeToBaseURL:[NSURL URLWithString:@"http://0.0.0.0:5000"] parameters:nil]).to.equal(YES);
                 });
             });
         });
@@ -256,35 +247,33 @@ describe(@"matchesResponse:", ^{
             context(@"then given the URL 'http://domain.com/domain/api/v1/recommendation'", ^{
                 beforeEach(^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/recommendation/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
-                    responseDescriptor.baseURL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/"];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/recommendation/" parameterConstraints:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200] mapping:mapping];
                 });
                 
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation/"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    expect([responseDescriptor matchesResponse:response]).to.equal(NO);
+                    expect([responseDescriptor matchesResponse:response request:nil relativeToBaseURL:[NSURL URLWithString:@"http://domain.com/domain/api/v1/"] parameters:nil]).to.equal(NO);
                 });
             });
             
             context(@"then given the URL 'http://domain.com/domain/api/v1/recommendation?action=search&type=whatever'", ^{
                 beforeEach(^{
                     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
-                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKHTTPMethodAny pathPattern:@"/recommendation/" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
-                    responseDescriptor.baseURL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/"];
+                    responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/recommendation/" parameterConstraints:nil keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200] mapping:mapping];
                 });
                 
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation?action=search&type=whatever"];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    expect([responseDescriptor matchesResponse:response]).to.equal(NO);
+                    expect([responseDescriptor matchesResponse:response request:nil relativeToBaseURL:[NSURL URLWithString:@"http://domain.com/domain/api/v1/"] parameters:nil]).to.equal(NO);
                 });
             });
         });
     });
 });
 
-describe(@"isEqualToResponseDescriptor:", ^{
+describe(@"isEqual:", ^{
     __block RKResponseDescriptor *firstDescriptor;
     __block RKResponseDescriptor *secondDescriptor;
     
@@ -298,20 +287,22 @@ describe(@"isEqualToResponseDescriptor:", ^{
         defaultKeyPath = @"";
         defaultPathPattern = @"/issues";
         defaultStatusCodes = [NSIndexSet indexSetWithIndex:200];
-        firstDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                       method:RKHTTPMethodAny
-                                                                  pathPattern:defaultPathPattern
+        firstDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny
+                                                           pathTemplateString:defaultPathPattern
+                                                         parameterConstraints:nil
                                                                       keyPath:defaultKeyPath
-                                                                  statusCodes:defaultStatusCodes];
+                                                                  statusCodes:defaultStatusCodes
+                                                                      mapping:defaultMapping];
     });
     
     context(@"descriptors are equal", ^{
         it(@"with the same attributes", ^{
-            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                            method:RKHTTPMethodAny
-                                                                       pathPattern:defaultPathPattern
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny
+                                                                pathTemplateString:defaultPathPattern
+                                                              parameterConstraints:nil
                                                                            keyPath:defaultKeyPath
-                                                                       statusCodes:defaultStatusCodes];
+                                                                       statusCodes:defaultStatusCodes
+                                                                           mapping:defaultMapping];
             expect(firstDescriptor).to.equal(secondDescriptor);
         });
     });
@@ -319,35 +310,39 @@ describe(@"isEqualToResponseDescriptor:", ^{
     context(@"descriptors are not equal", ^{
         it(@"with different mappings", ^{
             RKMapping *mapping = [RKObjectMapping mappingForClass:[NSObject class]];
-            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping
-                                                                            method:RKHTTPMethodAny
-                                                                       pathPattern:defaultPathPattern
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny
+                                                                pathTemplateString:defaultPathPattern
+                                                              parameterConstraints:nil
                                                                            keyPath:defaultKeyPath
-                                                                       statusCodes:defaultStatusCodes];
+                                                                       statusCodes:defaultStatusCodes
+                                                                           mapping:mapping];
             expect(firstDescriptor).toNot.equal(secondDescriptor);
         });
         it(@"with different path patterns", ^{
-            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                            method:RKHTTPMethodAny
-                                                                       pathPattern:@"/pull_requests"
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny
+                                                                pathTemplateString:@"/pull_requests"
+                                                              parameterConstraints:nil
                                                                            keyPath:defaultKeyPath
-                                                                       statusCodes:defaultStatusCodes];
+                                                                       statusCodes:defaultStatusCodes
+                                                                           mapping:defaultMapping];
             expect(firstDescriptor).toNot.equal(secondDescriptor);
         });
         it(@"with different key paths", ^{
-            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                            method:RKHTTPMethodAny
-                                                                       pathPattern:defaultPathPattern
-                                                                           keyPath:@"/pull_request"
-                                                                       statusCodes:defaultStatusCodes];
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny
+                                                                pathTemplateString:defaultPathPattern
+                                                              parameterConstraints:nil
+                                                                           keyPath:@"pull_request"
+                                                                       statusCodes:defaultStatusCodes
+                                                                           mapping:defaultMapping];
             expect(firstDescriptor).toNot.equal(secondDescriptor);
         });
         it(@"with different status codes", ^{
-            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:defaultMapping
-                                                                            method:RKHTTPMethodAny
-                                                                       pathPattern:defaultPathPattern
+            secondDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny
+                                                                pathTemplateString:defaultPathPattern
+                                                              parameterConstraints:nil
                                                                            keyPath:defaultKeyPath
-                                                                       statusCodes:[NSIndexSet indexSetWithIndex:404]];
+                                                                       statusCodes:[NSIndexSet indexSetWithIndex:404]
+                                                                           mapping:defaultMapping];
             expect(firstDescriptor).toNot.equal(secondDescriptor);
         });
     });

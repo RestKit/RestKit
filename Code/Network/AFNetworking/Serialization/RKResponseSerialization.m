@@ -6,21 +6,20 @@
 //  Copyright (c) 2013 RestKit. All rights reserved.
 //
 
-#import "RKObjectResponseSerializer.h"
+#import "RKResponseSerialization.h"
 #import "RKResponseMapperOperation.h"
 
-@interface RKObjectResponseSerializer ()
+@interface RKResponseSerializationManager ()
 @property (nonatomic, strong) NSMutableArray *mutableResponseDescriptors;
 @end
 
-@implementation RKObjectResponseSerializer
+@implementation RKResponseSerializationManager
 
 - (id)init
 {
     self = [super init];
     if (self) {
         self.mutableResponseDescriptors = [NSMutableArray new];
-        self.contentResponseSerializer = [AFJSONResponseSerializer serializer];
     }
     return self;
 }
@@ -50,9 +49,8 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    RKObjectResponseSerializer *serializer = (RKObjectResponseSerializer *)[super copyWithZone:zone];
-    serializer.contentResponseSerializer = self.contentResponseSerializer;
-    [serializer addResponseDescriptorsFromArray:self.responseDescriptors];
+    RKResponseSerializationManager *serializer = (RKResponseSerializationManager *)[[self class] new];
+    [serializer addResponseDescriptors:self.responseDescriptors];
     return serializer;
 }
 
@@ -89,12 +87,12 @@
 
 #pragma mark - 
 
-- (NSSet *)acceptableContentTypes
-{
-    return [self.contentResponseSerializer isKindOfClass:[AFHTTPResponseSerializer class]]
-    ? [(AFHTTPResponseSerializer *)self.contentResponseSerializer acceptableContentTypes]
-    : nil;
-}
+//- (NSSet *)acceptableContentTypes
+//{
+//    return [self.contentResponseSerializer isKindOfClass:[AFHTTPResponseSerializer class]]
+//    ? [(AFHTTPResponseSerializer *)self.contentResponseSerializer acceptableContentTypes]
+//    : nil;
+//}
 
 //- (BOOL)validateResponse:(NSHTTPURLResponse *)response
 //                    data:(NSData *)data
@@ -106,15 +104,15 @@
                            data:(NSData *)data
                           error:(NSError *__autoreleasing *)error
 {
-    if (![self validateResponse:(NSHTTPURLResponse *)response data:data request:request error:error]) {
+    if (![self validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
         if ([(NSError *)(*error) code] == NSURLErrorCannotDecodeContentData) {
             return nil;
         }
     }
 
-    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithRequest:request response:(NSHTTPURLResponse *)response data:data responseDescriptors:self.responseDescriptors];
+    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithRequest:self.request response:(NSHTTPURLResponse *)response data:data responseDescriptors:self.responseDescriptors];
     mapperOperation.targetObject = self.targetObject;
-    mapperOperation.contentSerializer = self.contentResponseSerializer;
+//    mapperOperation.contentSerializer = self.contentResponseSerializer;
     [mapperOperation start];
     if (mapperOperation.error) {
         *error = mapperOperation.error;

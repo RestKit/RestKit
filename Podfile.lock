@@ -19,6 +19,7 @@ PODS:
     - AFNetworking/NSURLConnection
   - CSURITemplate (0.3)
   - Expecta (0.2.3)
+  - MIMEKit (1.0.0)
   - OCHamcrest (3.0.1)
   - OCMock (2.2.1)
   - RestKit (1.0.0-development):
@@ -33,16 +34,22 @@ PODS:
     - CSURITemplate (~> 0.3)
     - RestKit/ObjectMapping
     - RestKit/Support
+    - RKSupport (~> 1.0.0)
   - RestKit/ObjectMapping (1.0.0-development):
     - RestKit/Support
     - RKValueTransformers (~> 1.0.1)
-  - RestKit/Search (1.0.0-development):
-    - RestKit/CoreData
   - RestKit/Support (1.0.0-development):
     - TransitionKit (= 2.0.0)
   - RestKit/Testing (1.0.0-development)
   - RKCLLocationValueTransformer (1.0.0):
     - RKValueTransformers (~> 1.0.0)
+  - RKSupport (1.0.0):
+    - RKSupport/All
+  - RKSupport/All (1.0.0):
+    - RKSupport/RKParameterConstraint
+    - RKSupport/RKPathTemplate
+  - RKSupport/RKParameterConstraint (1.0.0)
+  - RKSupport/RKPathTemplate (1.0.0)
   - RKValueTransformers (1.0.1)
   - Specta (0.2.1)
   - TransitionKit (2.0.0)
@@ -50,30 +57,37 @@ PODS:
 DEPENDENCIES:
   - AFNetworking (from `Vendor/AFNetworking`)
   - Expecta (= 0.2.3)
+  - MIMEKit (from `Vendor/MIMEKit`)
   - OCHamcrest (= 3.0.1)
   - OCMock (= 2.2.1)
   - RestKit (from `.`)
-  - RestKit/Search (from `.`)
   - RestKit/Testing (from `.`)
   - RKCLLocationValueTransformer (from `https://github.com/RestKit/RKCLLocationValueTransformer`)
+  - RKSupport (from `Vendor/RKSupport`)
   - Specta (= 0.2.1)
 
 EXTERNAL SOURCES:
   AFNetworking:
     :path: Vendor/AFNetworking
+  MIMEKit:
+    :path: Vendor/MIMEKit
   RestKit:
     :path: .
   RKCLLocationValueTransformer:
     :git: https://github.com/RestKit/RKCLLocationValueTransformer
+  RKSupport:
+    :path: Vendor/RKSupport
 
 SPEC CHECKSUMS:
   AFNetworking: e499052cbf3d743e9bb727bb37adb9dc2547ba15
   CSURITemplate: a2ab0f383c600646468de33b65f58f901388d8d4
   Expecta: dbc4a27fabb853bdd2e907e33f11ee43a9a47d0c
+  MIMEKit: 76498f4cecd470c772e14b00fbe85c8dfa48a10d
   OCHamcrest: 782c52ae8c673e5d6060a65005cfd26d20d519ba
   OCMock: 80e4cfbc71a0e1bd28caf10a9fda27da7c4c8402
-  RestKit: eed4146263fd642a46491f171406bd94a7dbd47f
+  RestKit: d7e490abfbe8cd90fe05b872423025f2112242ba
   RKCLLocationValueTransformer: e4a127582a78df98035f75b611e48c0545b8884d
+  RKSupport: 162da690b0abf08d8f9e2b701f7a9fafd76a6e80
   RKValueTransformers: 1562d458b9c9d59ce777bfc5982f2e1aef2e9182
   Specta: 2d06220591110c6d9757d8be8ecf8e63aa40dc2a
   TransitionKit: 433284465abacdc07852d7db6dd0cc075010059a

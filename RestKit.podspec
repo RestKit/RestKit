@@ -45,6 +45,7 @@ EOS
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
     ns.dependency       'CSURITemplate', '~> 0.3'
     ns.dependency       'AFNetworking', '~> 2.0.0'
+    ns.dependency       'RKSupport', '~> 1.0.0'
     ns.dependency       'RestKit/ObjectMapping'
     ns.dependency       'RestKit/Support'
     
@@ -89,10 +90,10 @@ EOS
 EOS
   end
   
-  s.subspec 'Search' do |ss|
-    ss.source_files   = 'Code/Search.h', 'Code/Search'
-    ss.dependency 'RestKit/CoreData'
-  end
+  # s.subspec 'Search' do |ss|
+  #   ss.source_files   = 'Code/Search.h', 'Code/Search'
+  #   ss.dependency 'RestKit/CoreData'
+  # end
   
   s.subspec 'Support' do |ss|
     ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'

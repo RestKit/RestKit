@@ -21,6 +21,8 @@
 #import "RKResponseDescriptor.h"
 #import "RKHTTPUtilities.h"
 #import "RKMapping.h"
+#import "RKPathTemplate.h"
+#import "RKParameterConstraint.h"
 
 // Cloned from AFStringFromIndexSet -- method should be non-static for reuse
 NSString *RKStringFromIndexSet(NSIndexSet *indexSet);
@@ -161,7 +163,7 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
             self.methods == otherDescriptor.methods &&
             [self.pathTemplate isEqual:otherDescriptor.pathTemplate] &&
             [self.keyPath isEqualToString:otherDescriptor.keyPath] &&
-            [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes];
+            [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes]);
 }
 
 @end

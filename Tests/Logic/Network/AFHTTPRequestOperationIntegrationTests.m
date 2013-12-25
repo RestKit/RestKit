@@ -8,7 +8,7 @@
 
 #import "RKTestEnvironment.h"
 #import "AFHTTPRequestOperation.h"
-#import "RKObjectResponseSerializer.h"
+#import "RKResponseSerialization.h"
 #import "RKObjectLoaderTestResultModel.h"
 
 @interface RKTestComplexUser : NSObject
@@ -46,7 +46,7 @@
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     [userMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
 
-    return [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKHTTPMethodAny pathPattern:nil keyPath:@"data.STUser" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    return [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:nil parameterConstraints:nil keyPath:@"data.STUser" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:userMapping];
 }
 
 - (RKResponseDescriptor *)errorResponseDescriptor
@@ -57,7 +57,7 @@
     NSMutableIndexSet *errorCodes = [NSMutableIndexSet indexSet];
     [errorCodes addIndexes:RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError)];
     [errorCodes addIndexes:RKStatusCodeIndexSetForClass(RKStatusCodeClassServerError)];
-    return [RKResponseDescriptor responseDescriptorWithMapping:errorMapping method:RKHTTPMethodAny pathPattern:nil keyPath:@"errors" statusCodes:errorCodes];
+    return [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:nil parameterConstraints:nil keyPath:@"errors" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:errorMapping];
 }
 
 - (void)testBasicMapping
@@ -73,14 +73,14 @@
     NSString *authString = [NSString stringWithFormat:@"TRUEREST username=%@&password=%@&apikey=123456&class=iphone", @"username", @"password"];
     [request addValue:authString forHTTPHeaderField:@"Authorization"];
     AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    RKObjectResponseSerializer *serializer = [RKObjectResponseSerializer serializer];
-    [serializer addResponseDescriptor:[self responseDescriptorForComplexUser]];
-    serializer.targetObject = user;
+    RKResponseSerializationManager *serializationManager = [RKResponseSerializationManager new];
+    [serializationManager addResponseDescriptor:[self responseDescriptorForComplexUser]];
+    RKObjectResponseSerializer *serializer = [serializationManager serializerWithRequest:request object:user];
     requestOperation.responseSerializer = serializer;
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
 
-    requestOperation.responseObject;
+    expect(requestOperation.responseObject).notTo.beNil();
 
     expect(user.firstname).to.equal(@"Diego");
 }

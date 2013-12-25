@@ -21,7 +21,6 @@
 #import "RKTestEnvironment.h"
 #import "RKHuman.h"
 #import "RKPathUtilities.h"
-#import "RKSearchIndexer.h"
 
 // TODO: Does this become `RKManagedObjectStore managedObjectModelWithName:version:inBundle:` ??? URLForManagedObjectModel
 static NSURL *RKURLForManagedObjectModelWithNameAtVersion(NSString *modelName, NSUInteger version)
@@ -529,79 +528,80 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     expect(error).to.beNil();
 }
 
-- (void)testUpgradingFromVersionedModelWithSearchAttributesAt2_0to_3_0
-{
-    // Create a v2 Store
-    NSManagedObjectModel *model_v2 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 2);
-    
-    // Add search indexing on the title attribute
-    NSEntityDescription *articleEntity = [[model_v2 entitiesByName] objectForKey:@"Article"];
-    [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
-     
-    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v2];
-    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestStore.sqlite"];
-    NSError *error = nil;
-    NSDictionary *options = @{ NSMigratePersistentStoresAutomaticallyOption: @(NO), NSInferMappingModelAutomaticallyOption: @(NO) };
-    [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
-    [managedObjectStore createManagedObjectContexts];
-    managedObjectStore = nil;
-    
-    // Now upgrade it to v3
-    NSURL *storeURL = [NSURL fileURLWithPath:storePath];
-    NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 4);
-    BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:^(NSManagedObjectModel *model, NSURL *sourceURL) {
-        if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"2.0"]]) {
-            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
-            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
-        }
-    }];
-    expect(success).to.equal(YES);
-    expect(error).to.beNil();
-}
-
-- (void)testUpgradingFromVersionedModelWithSearchAttributesAt_1_0toLatest
-{
-    // Create a v1 Store
-    NSManagedObjectModel *model_v1 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
-    
-    // Add search indexing on the title attribute
-    NSEntityDescription *articleEntity = [[model_v1 entitiesByName] objectForKey:@"Article"];
-    NSEntityDescription *tagEntity = [[model_v1 entitiesByName] objectForKey:@"Tag"];
-    [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
-    [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
-    
-    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v1];
-    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestStore.sqlite"];
-    NSError *error = nil;
-    NSDictionary *options = @{ NSMigratePersistentStoresAutomaticallyOption: @(NO), NSInferMappingModelAutomaticallyOption: @(NO) };
-    [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
-    [managedObjectStore createManagedObjectContexts];
-    managedObjectStore = nil;
-    
-    // Now upgrade it to the latest version
-    NSURL *storeURL = [NSURL fileURLWithPath:storePath];
-    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"VersionedModel" withExtension:@"momd"];
-    BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:^(NSManagedObjectModel *model, NSURL *sourceURL) {
-        if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"1.0"]]) {
-            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
-            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
-            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
-            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
-        } else if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"2.0"]]) {
-            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
-            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
-            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title", @"body" ]];
-            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
-        } else if ([[model versionIdentifiers] containsObject:@"3.0"] || [[model versionIdentifiers] containsObject:@"4.0"]) {
-            // We index the same attributes on v3 and v4
-            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
-            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
-            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title", @"body", @"authorName" ]];
-            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
-        }
-    }];
-    expect(success).to.equal(YES);
-    expect(error).to.beNil();
-}
+// TODO: Move into RKSearch project
+//- (void)testUpgradingFromVersionedModelWithSearchAttributesAt2_0to_3_0
+//{
+//    // Create a v2 Store
+//    NSManagedObjectModel *model_v2 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 2);
+//    
+//    // Add search indexing on the title attribute
+//    NSEntityDescription *articleEntity = [[model_v2 entitiesByName] objectForKey:@"Article"];
+//    [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
+//     
+//    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v2];
+//    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestStore.sqlite"];
+//    NSError *error = nil;
+//    NSDictionary *options = @{ NSMigratePersistentStoresAutomaticallyOption: @(NO), NSInferMappingModelAutomaticallyOption: @(NO) };
+//    [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
+//    [managedObjectStore createManagedObjectContexts];
+//    managedObjectStore = nil;
+//    
+//    // Now upgrade it to v3
+//    NSURL *storeURL = [NSURL fileURLWithPath:storePath];
+//    NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 4);
+//    BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:^(NSManagedObjectModel *model, NSURL *sourceURL) {
+//        if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"2.0"]]) {
+//            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
+//            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
+//        }
+//    }];
+//    expect(success).to.equal(YES);
+//    expect(error).to.beNil();
+//}
+//
+//- (void)testUpgradingFromVersionedModelWithSearchAttributesAt_1_0toLatest
+//{
+//    // Create a v1 Store
+//    NSManagedObjectModel *model_v1 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
+//    
+//    // Add search indexing on the title attribute
+//    NSEntityDescription *articleEntity = [[model_v1 entitiesByName] objectForKey:@"Article"];
+//    NSEntityDescription *tagEntity = [[model_v1 entitiesByName] objectForKey:@"Tag"];
+//    [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
+//    [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
+//    
+//    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v1];
+//    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestStore.sqlite"];
+//    NSError *error = nil;
+//    NSDictionary *options = @{ NSMigratePersistentStoresAutomaticallyOption: @(NO), NSInferMappingModelAutomaticallyOption: @(NO) };
+//    [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
+//    [managedObjectStore createManagedObjectContexts];
+//    managedObjectStore = nil;
+//    
+//    // Now upgrade it to the latest version
+//    NSURL *storeURL = [NSURL fileURLWithPath:storePath];
+//    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"VersionedModel" withExtension:@"momd"];
+//    BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:^(NSManagedObjectModel *model, NSURL *sourceURL) {
+//        if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"1.0"]]) {
+//            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
+//            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+//            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
+//            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
+//        } else if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"2.0"]]) {
+//            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
+//            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+//            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title", @"body" ]];
+//            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
+//        } else if ([[model versionIdentifiers] containsObject:@"3.0"] || [[model versionIdentifiers] containsObject:@"4.0"]) {
+//            // We index the same attributes on v3 and v4
+//            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
+//            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+//            [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title", @"body", @"authorName" ]];
+//            [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
+//        }
+//    }];
+//    expect(success).to.equal(YES);
+//    expect(error).to.beNil();
+//}
 
 @end

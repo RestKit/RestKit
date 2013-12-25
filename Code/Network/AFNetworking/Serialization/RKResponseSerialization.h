@@ -15,7 +15,7 @@
 /**
  The `RKResponseSerializationManager` class is responsible for constructing AFNetworking response serializer instances that perform object mapping on object representations loaded via HTTP.
  */
-@interface RKResponseSerializationManager : NSObject
+@interface RKResponseSerializationManager : NSObject <NSCopying>
 
 ///------------------------------------------------
 /// @name Managing Response Descriptors
@@ -68,10 +68,7 @@
 
 @property (nonatomic, strong) NSURL *baseURL;
 @property (nonatomic, strong, readonly) NSURLRequest *request;
-
-// Used to deserialize the response content
-// TODO: Should this just be against the RKMIMETypeSerialization???
-@property (nonatomic, strong) id<AFURLResponseSerialization> contentResponseSerializer;
+@property (nonatomic, strong, readonly) NSArray *responseDescriptors;
 
 /**
  The target object for the object mapping operation.

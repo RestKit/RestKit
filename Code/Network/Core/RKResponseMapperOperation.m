@@ -75,18 +75,19 @@ static NSError *RKUnprocessableErrorFromResponse(NSHTTPURLResponse *response)
 NSString *RKStringFromIndexSet(NSIndexSet *indexSet); // Defined in RKResponseDescriptor.m
 static NSString *RKMatchFailureDescriptionForResponseDescriptorWithResponse(RKResponseDescriptor *responseDescriptor, NSHTTPURLResponse *response)
 {
-    if (responseDescriptor.statusCodes && ![responseDescriptor.statusCodes containsIndex:response.statusCode]) {
-        return [NSString stringWithFormat:@"response status code %ld is not within the range %@", (long) response.statusCode, RKStringFromIndexSet(responseDescriptor.statusCodes)];
-    }
-    
-    NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(response.URL, responseDescriptor.baseURL);
-    if (responseDescriptor.baseURL && !RKURLIsRelativeToURL(response.URL, responseDescriptor.baseURL)) {
-        // Not relative to the baseURL
-        return [NSString stringWithFormat:@"response URL '%@' is not relative to the baseURL '%@'.", response.URL, responseDescriptor.baseURL];
-    }
-    
-    // Must be a path pattern mismatch
-    return [NSString stringWithFormat:@"response path '%@' did not match the path pattern '%@'.", pathAndQueryString, responseDescriptor.pathPattern];
+//    if (responseDescriptor.statusCodes && ![responseDescriptor.statusCodes containsIndex:response.statusCode]) {
+//        return [NSString stringWithFormat:@"response status code %ld is not within the range %@", (long) response.statusCode, RKStringFromIndexSet(responseDescriptor.statusCodes)];
+//    }
+//    
+//    NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(response.URL, responseDescriptor.baseURL);
+//    if (responseDescriptor.baseURL && !RKURLIsRelativeToURL(response.URL, responseDescriptor.baseURL)) {
+//        // Not relative to the baseURL
+//        return [NSString stringWithFormat:@"response URL '%@' is not relative to the baseURL '%@'.", response.URL, responseDescriptor.baseURL];
+//    }
+//    
+//    // Must be a path pattern mismatch
+//    return [NSString stringWithFormat:@"response path '%@' did not match the path pattern '%@'.", pathAndQueryString, responseDescriptor.pathPattern];
+    return nil;
 }
 
 static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithResponse(NSArray *responseDescriptors, NSHTTPURLResponse *response)
@@ -97,7 +98,7 @@ static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithRes
     
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
         [failureReason appendFormat:@"\n  <RKResponseDescriptor: %p baseURL=%@ pathPattern=%@ statusCodes=%@> failed to match: %@",
-         responseDescriptor, responseDescriptor.baseURL, responseDescriptor.pathPattern,
+//         responseDescriptor, responseDescriptor.baseURL, responseDescriptor.pathPattern,
          responseDescriptor.statusCodes ? RKStringFromIndexSet(responseDescriptor.statusCodes) : responseDescriptor.statusCodes,
          RKMatchFailureDescriptionForResponseDescriptorWithResponse(responseDescriptor, response)];
     }
@@ -217,7 +218,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 - (NSArray *)buildMatchingResponseDescriptors
 {
     NSIndexSet *indexSet = [self.responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
-        return [responseDescriptor matchesResponse:self.response] && (RKHTTPMethodFromString(self.request.HTTPMethod) & responseDescriptor.method);
+        return [responseDescriptor matchesResponse:self.response request:self.request relativeToBaseURL:nil parameters:nil] && (responseDescriptor.methods & RKHTTPMethodFromString(self.request.HTTPMethod));
     }];
     return [self.responseDescriptors objectsAtIndexes:indexSet];
 }

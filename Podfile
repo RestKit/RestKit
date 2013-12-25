@@ -1,11 +1,14 @@
 inhibit_all_warnings!
 
 def import_pods
+  pod 'RKSupport', path: 'Vendor/RKSupport'
+  pod 'MIMEKit', path: 'Vendor/MIMEKit'
+  
   pod 'RestKit', path: '.'
   pod 'RestKit/Testing', path: '.'
-  pod 'RestKit/Search', path: '.'
+  # pod 'RestKit/Search', path: '.'
   
-  pod 'AFNetworking', path: 'Vendor/AFNetworking'
+  pod 'AFNetworking', path: 'Vendor/AFNetworking'  
   
   pod 'Specta', '0.2.1'
   pod 'OCMock', '2.2.1'
