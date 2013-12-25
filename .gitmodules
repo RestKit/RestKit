@@ -12,4 +12,4 @@
 	url = https://github.com/cogenta/CSURITemplate.git
 [submodule "Vendor/RKSupport"]
 	path = Vendor/RKSupport
-	url = git@github.com:RestKit/RKSupport.git
+	url = https://github.com/RestKit/RKSupport.git
