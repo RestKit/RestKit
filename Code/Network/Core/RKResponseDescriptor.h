@@ -133,15 +133,4 @@
  */
 - (BOOL)matchesResponse:(NSHTTPURLResponse *)response request:(NSURLRequest *)request relativeToBaseURL:(NSURL *)baseURL parameters:(NSDictionary **)parameters;
 
-///-------------------------
-/// @name Comparing Response Descriptors
-///-------------------------
-
-/**
- Returns `YES` if the receiver and the specified response descriptor are considered equivalent.
-
- */
-// TODO: Just go with isEqual:
-- (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *)otherDescriptor;
-
 @end

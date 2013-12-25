@@ -262,6 +262,7 @@
     if ([RKTestFactory sharedFactory].setUpBlock) [RKTestFactory sharedFactory].setUpBlock();
 }
 
+// TODO: We are probably going to need a notification to allow hooking into the setup/teardown
 + (void)tearDown
 {
     if ([RKTestFactory sharedFactory].tearDownBlock) [RKTestFactory sharedFactory].tearDownBlock();
@@ -276,15 +277,15 @@
 #ifdef _COREDATADEFINES_H
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
-    if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
-        // Search component is optional
-        [[RKManagedObjectStore defaultStore] performSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)];
-        
-        if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(searchIndexer)]) {
-            id searchIndexer = [[RKManagedObjectStore defaultStore] valueForKey:@"searchIndexer"];
-            [searchIndexer performSelector:@selector(cancelAllIndexingOperations)];
-        }
-    }
+//    if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
+//        // Search component is optional
+//        [[RKManagedObjectStore defaultStore] performSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)];
+//        
+//        if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(searchIndexer)]) {
+//            id searchIndexer = [[RKManagedObjectStore defaultStore] valueForKey:@"searchIndexer"];
+//            [searchIndexer performSelector:@selector(cancelAllIndexingOperations)];
+//        }
+//    }
 #endif
     
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];

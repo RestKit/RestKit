@@ -25,22 +25,23 @@
 #import "RKObjectMapping.h"
 #import "RKDynamicMapping.h"
 
-static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
-{
-    if ([mapping isKindOfClass:[RKObjectMapping class]]) {
-        if (! [[(RKObjectMapping *)mapping objectClass] isEqual:[NSMutableDictionary class]]) {
-            [NSException raise:NSInvalidArgumentException format:@"`RKRequestDescriptor` objects must be initialized with a mapping whose target class is `NSMutableDictionary`, got '%@' (see `[RKObjectMapping requestMapping]`)", [(RKObjectMapping *)mapping objectClass]];
-        }
-    } else if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-        [[(RKDynamicMapping *)mapping objectMappings] enumerateObjectsUsingBlock:^(RKObjectMapping *objectMapping, NSUInteger idx, BOOL *stop) {
-            if (! [objectMapping.objectClass isEqual:[NSMutableDictionary class]]) {
-                [NSException raise:NSInvalidArgumentException format:@"`RKRequestDescriptor` objects may only be initialized with `RKDynamicMapping` objects containing `RKObjectMapping` objects whose target class is `NSMutableDictionary`, got '%@' (see `[RKObjectMapping requestMapping]`)", objectMapping.objectClass];
-            }
-        }];
-    } else {
-        [NSException raise:NSInvalidArgumentException format:@"Expected an instance of `RKObjectMapping` or `RKDynamicMapping`, instead got '%@'", [mapping class]];
-    }
-}
+// TODO: Audit...
+//static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
+//{
+//    if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+//        if (! [[(RKObjectMapping *)mapping objectClass] isEqual:[NSMutableDictionary class]]) {
+//            [NSException raise:NSInvalidArgumentException format:@"`RKRequestDescriptor` objects must be initialized with a mapping whose target class is `NSMutableDictionary`, got '%@' (see `[RKObjectMapping requestMapping]`)", [(RKObjectMapping *)mapping objectClass]];
+//        }
+//    } else if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+//        [[(RKDynamicMapping *)mapping objectMappings] enumerateObjectsUsingBlock:^(RKObjectMapping *objectMapping, NSUInteger idx, BOOL *stop) {
+//            if (! [objectMapping.objectClass isEqual:[NSMutableDictionary class]]) {
+//                [NSException raise:NSInvalidArgumentException format:@"`RKRequestDescriptor` objects may only be initialized with `RKDynamicMapping` objects containing `RKObjectMapping` objects whose target class is `NSMutableDictionary`, got '%@' (see `[RKObjectMapping requestMapping]`)", objectMapping.objectClass];
+//            }
+//        }];
+//    } else {
+//        [NSException raise:NSInvalidArgumentException format:@"Expected an instance of `RKObjectMapping` or `RKDynamicMapping`, instead got '%@'", [mapping class]];
+//    }
+//}
 
 extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
 

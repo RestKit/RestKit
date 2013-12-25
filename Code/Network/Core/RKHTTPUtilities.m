@@ -535,3 +535,17 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL)
         return (query && [query length]) ? [NSString stringWithFormat:@"%@?%@", pathWithPrevervedTrailingSlash, query] : pathWithPrevervedTrailingSlash;
     }
 }
+
+NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method)
+{
+    if (method == RKHTTPMethodAny) return @"*";
+    NSMutableArray *methods = [NSMutableArray array];
+    if (method & RKHTTPMethodGET) [methods addObject:@"GET"];
+    if (method & RKHTTPMethodPOST) [methods addObject:@"POST"];
+    if (method & RKHTTPMethodPUT) [methods addObject:@"PUT"];
+    if (method & RKHTTPMethodDELETE) [methods addObject:@"DELETE"];
+    if (method & RKHTTPMethodHEAD) [methods addObject:@"HEAD"];
+    if (method & RKHTTPMethodPATCH) [methods addObject:@"PATCH"];
+    if (method & RKHTTPMethodOPTIONS) [methods addObject:@"OPTIONS"];
+    return [NSString stringWithFormat:@"(%@)", [methods componentsJoinedByString:@"|"]];
+}

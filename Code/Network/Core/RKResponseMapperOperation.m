@@ -97,8 +97,8 @@ static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithRes
      (long) response.statusCode, response.URL, (long) [responseDescriptors count]];
     
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
-        [failureReason appendFormat:@"\n  <RKResponseDescriptor: %p baseURL=%@ pathPattern=%@ statusCodes=%@> failed to match: %@",
-//         responseDescriptor, responseDescriptor.baseURL, responseDescriptor.pathPattern,
+        [failureReason appendFormat:@"\n  <RKResponseDescriptor: %p pathTemplate=%@ statusCodes=%@> failed to match: %@",
+         responseDescriptor, responseDescriptor.pathTemplate,
          responseDescriptor.statusCodes ? RKStringFromIndexSet(responseDescriptor.statusCodes) : responseDescriptor.statusCodes,
          RKMatchFailureDescriptionForResponseDescriptorWithResponse(responseDescriptor, response)];
     }

@@ -10,6 +10,7 @@
 #import "AFURLRequestSerialization.h"
 #import "RKHTTPUtilities.h"
 #import "RKRequestDescriptor.h"
+#import "RKRouter.h"
 
 // TODO: How to handle encoding to target format??
 @interface RKRequestSerializer : AFHTTPRequestSerializer
@@ -48,6 +49,12 @@ Returns an array containing the `RKRequestDescriptor` objects added to the manag
  @param requestDescriptor An `RKRequestDescriptor` object to be removed from the manager.
  */
 - (void)removeRequestDescriptor:(RKRequestDescriptor *)requestDescriptor;
+
+///--------------
+/// @name Routing
+///--------------
+
+@property (nonatomic, strong, readonly) RKRouter *router;
 
 ///-------------------------------
 /// @name Creating Request Objects

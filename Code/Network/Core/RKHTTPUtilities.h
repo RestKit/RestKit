@@ -146,3 +146,6 @@ BOOL RKURLIsRelativeToURL(NSURL *URL, NSURL *baseURL);
  @return A string containing the relative path and query parameters.
  */
 NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
+
+// TODO: Document...
+NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);

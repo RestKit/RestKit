@@ -26,24 +26,22 @@
 
 #pragma mark - NSCoding
 
-//- (id)initWithCoder:(NSCoder *)decoder
-//{
-//    self = [self init];
-//    if (!self) {
-//        return nil;
-//    }
-//
-//    self.acceptableStatusCodes = [decoder decodeObjectForKey:NSStringFromSelector(@selector(acceptableStatusCodes))];
-//    self.acceptableContentTypes = [decoder decodeObjectForKey:NSStringFromSelector(@selector(acceptableContentTypes))];
-//
-//    return self;
-//}
-//
-//- (void)encodeWithCoder:(NSCoder *)coder
-//{
-//    [coder encodeObject:self.acceptableStatusCodes forKey:NSStringFromSelector(@selector(acceptableStatusCodes))];
-//    [coder encodeObject:self.acceptableContentTypes forKey:NSStringFromSelector(@selector(acceptableContentTypes))];
-//}
+- (id)initWithCoder:(NSCoder *)decoder
+{
+    self = [self init];
+    if (!self) {
+        return nil;
+    }
+
+    [self addResponseDescriptors:[decoder decodeObjectForKey:NSStringFromSelector(@selector(responseDescriptors))]];
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [coder encodeObject:self.responseDescriptors forKey:NSStringFromSelector(@selector(responseDescriptors))];
+}
 
 #pragma mark - NSCopying
 
@@ -63,11 +61,10 @@
 {
     NSParameterAssert(responseDescriptor);
     NSAssert([responseDescriptor isKindOfClass:[RKResponseDescriptor class]], @"Expected an object of type RKResponseDescriptor, got '%@'", [responseDescriptor class]);
-//    responseDescriptor.baseURL = self.baseURL;
     [self.mutableResponseDescriptors addObject:responseDescriptor];
 }
 
-- (void)addResponseDescriptorsFromArray:(NSArray *)responseDescriptors
+- (void)addResponseDescriptors:(NSArray *)responseDescriptors
 {
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
         [self addResponseDescriptor:responseDescriptor];
@@ -81,9 +78,30 @@
     [self.mutableResponseDescriptors removeObject:responseDescriptor];
 }
 
+// TODO: Migrate functionality of `appropriateObjectRequestOperation...`
+- (RKObjectResponseSerializer *)serializerWithRequest:(NSURLRequest *)request object:(id)object
+{
+    RKObjectResponseSerializer *responseSerializer = [RKObjectResponseSerializer objectResponseSerializerWithRequest:request responseDescriptors:self.responseDescriptors];
+    responseSerializer.targetObject = object;
+    return responseSerializer;
+}
+
+@end
+
+@interface RKObjectResponseSerializer ()
+@property (nonatomic, strong, readwrite) NSURLRequest *request;
+@property (nonatomic, copy, readwrite) NSArray *responseDescriptors;
 @end
 
 @implementation RKObjectResponseSerializer
+
++ (instancetype)objectResponseSerializerWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
+{
+    RKObjectResponseSerializer *serializer = [self new];
+    serializer.request = request;
+    serializer.responseDescriptors = responseDescriptors;
+    return serializer;
+}
 
 #pragma mark - 
 

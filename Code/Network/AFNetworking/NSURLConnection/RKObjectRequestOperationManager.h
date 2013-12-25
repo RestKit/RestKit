@@ -23,7 +23,7 @@
 @property (nonatomic, readonly) NSURL *baseURL;
 
 @property (nonatomic, strong) RKRequestSerializer *requestSerializer;
-@property (nonatomic, strong) RKResponseSerializationManager *responseSerializationCoordinator;
+@property (nonatomic, strong) RKResponseSerializationManager *responseSerializationManager;
 
 ///---------------------------------------
 /// @name Managing HTTP Request Operations
