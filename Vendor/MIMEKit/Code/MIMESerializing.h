@@ -18,6 +18,13 @@
 //  limitations under the License.
 //
 
+extern NSString *const MIMEErrorDomain;
+extern NSString *const MIMETypeErrorKey;
+
+typedef NS_ENUM(NSUInteger, MIMEErrorCode) {
+    MIMEUnsupportedMIMETypeError
+};
+
 /**
  The `MIMESerializing` protocol declares two methods that a class must implement so that it can provide support for serializing objects to and deserializing objects from UTF-8 encoded data representations of a serialization format such as JSON or XML. Serialization implementations typically handle data in a given MIME Type (i.e. `application/json`) and may be registered with the `MIMETypeSerialization` class.
  
@@ -52,3 +59,28 @@
 + (NSData *)dataFromObject:(id)object error:(NSError **)error;
 
 @end
+
+/**
+ MIME Type Constants
+ */
+
+/// MIME Type application/json
+extern NSString *const MIMETypeJSON;
+
+/// MIME Type application/x-www-form-urlencoded
+extern NSString *const MIMETypeFormURLEncoded;
+
+/// MIME Type application/xml
+extern NSString *const MIMETypeXML;
+
+/// MIME Type text/xml
+extern NSString *const MIMETypeTextXML;
+
+/**
+ Returns `YES` if the given MIME Type matches any MIME Type identifiers in the given set.
+
+ @param MIMEType The MIME Type to evaluate the match for.
+ @param MIMETypes An `NSSet` object who entries are `NSString` or `NSRegularExpression` objects specifying MIME Types.
+ @return `YES` if the given MIME Type matches any identifier in the set, else `NO`.
+ */
+BOOL MIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes);

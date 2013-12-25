@@ -1,5 +1,5 @@
 //
-//  MIMETypes.m
+//  MIMESerializing.m
 //  MIMEKit
 //
 //  Created by Blake Watters on 5/18/11.
@@ -18,12 +18,15 @@
 //  limitations under the License.
 //
 
-#import "MIMETypes.h"
+#import "MIMESerializing.h"
 
 NSString *const MIMETypeJSON = @"application/json";
 NSString *const MIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";
 NSString *const MIMETypeXML = @"application/xml";
 NSString *const MIMETypeTextXML = @"text/xml";
+
+NSString *const MIMEErrorDomain = @"com.blakewatters.MIMEKit";
+NSString *const MIMETypeErrorKey = @"MIMEType";
 
 BOOL MIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes)
 {

@@ -18,8 +18,7 @@
 //  limitations under the License.
 //
 
-#import "MIMETypes.h"
-#import "MIMESerialization.h"
+#import "MIMESerializing.h"
 
 /**
  The `MIMETypeSerialization` class provides support for the registration of classes conforming to the `MIMESerializing` protocol by MIME Type and the serialization and deserialization of content by MIME Type. Serialization implementations may be registered by an exact string match (i.e. 'application/json' for a JSON serialization implementation) or by regular expression to match MIME Type by pattern.
@@ -38,7 +37,7 @@
  @param serializationClass The class conforming to the MIMESerialization protocol to be registered as handling the given MIME Type.
  @param MIMETypeStringOrRegularExpression A string or regular expression specifying the MIME Type(s) that given serialization implementation is to be registered as handling.
  */
-+ (void)registerClass:(Class<MIMESerialization>)serializationClass forMIMEType:(id)MIMETypeStringOrRegularExpression;
++ (void)registerClass:(Class<MIMESerializing>)serializationClass forMIMEType:(id)MIMETypeStringOrRegularExpression;
 
 /**
  Unregisters the given serialization class from handling any MIME Types.
@@ -47,7 +46,7 @@
  
  @param serializationClass The class conforming to the `MIMESerializing` protocol to be unregistered.
  */
-+ (void)unregisterClass:(Class<MIMESerialization>)serializationClass;
++ (void)unregisterClass:(Class<MIMESerializing>)serializationClass;
 
 /**
  Returns the serialization class registered to handle the given MIME Type.
@@ -57,7 +56,7 @@
  @param MIMEType The MIME Type for which to return the registered `MIMESerializing` conformant class.
  @return A class conforming to the MIMESerialization protocol registered for the given MIME Type or nil if none was found.
  */
-+ (Class<MIMESerialization>)serializationClassForMIMEType:(NSString *)MIMEType;
++ (Class<MIMESerializing>)serializationClassForMIMEType:(NSString *)MIMEType;
 
 /**
  Returns a set containing the string values for all MIME Types for which a serialization implementation has been registered.

@@ -62,10 +62,11 @@ NSDictionary *MIMEDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncode
     return queryComponents;
 }
 
-extern NSString *AFQueryStringFromParametersWithEncoding(NSDictionary *parameters, NSStringEncoding stringEncoding);
+//extern NSString *AFQueryStringFromParametersWithEncoding(NSDictionary *parameters, NSStringEncoding stringEncoding);
 NSString *MIMEURLEncodedStringFromDictionaryWithEncoding(NSDictionary *dictionary, NSStringEncoding encoding)
 {
-    return AFQueryStringFromParametersWithEncoding(dictionary, encoding);
+//    return AFQueryStringFromParametersWithEncoding(dictionary, encoding);
+    return nil;
 }
 
 // This replicates `AFPercentEscapedQueryStringPairMemberFromStringWithEncoding`. Should send PR exposing non-static version

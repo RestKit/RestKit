@@ -19,23 +19,22 @@
 //
 
 #import "MIMETypeSerialization.h"
-#import "MIMEErrors.h"
-#import "MIMESerialization.h"
+#import "MIMESerializing.h"
 #import "MIMEURLEncodedSerialization.h"
-#import "MIMENSJSONSerialization.h"
+#import "MIMEJSONSerialization.h"
 
 @interface MIMETypeSerializationRegistration : NSObject
 
 @property (nonatomic, strong) id MIMETypeStringOrRegularExpression;
-@property (nonatomic, assign) Class<MIMESerialization> serializationClass;
+@property (nonatomic, assign) Class<MIMESerializing> serializationClass;
 
-- (id)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<MIMESerialization>)serializationClass;
+- (id)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<MIMESerializing>)serializationClass;
 - (BOOL)matchesMIMEType:(NSString *)MIMEType;
 @end
 
 @implementation MIMETypeSerializationRegistration
 
-- (id)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<MIMESerialization>)serializationClass
+- (id)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<MIMESerializing>)serializationClass
 {
     NSParameterAssert(MIMETypeStringOrRegularExpression);
     NSParameterAssert(serializationClass);
@@ -103,12 +102,12 @@
                                                                              serializationClass:[MIMEURLEncodedSerialization class]]];
     // JSON
     [self.registrations addObject:[[MIMETypeSerializationRegistration alloc] initWithMIMEType:MIMETypeJSON
-                                                                             serializationClass:[MIMENSJSONSerialization class]]];
+                                                                             serializationClass:[MIMEJSONSerialization class]]];
 }
 
 #pragma mark - Public
 
-+ (Class<MIMESerialization>)serializationClassForMIMEType:(NSString *)MIMEType
++ (Class<MIMESerializing>)serializationClassForMIMEType:(NSString *)MIMEType
 {
     for (MIMETypeSerializationRegistration *registration in [[self sharedSerialization].registrations reverseObjectEnumerator]) {
         if ([registration matchesMIMEType:MIMEType]) {
@@ -118,13 +117,13 @@
     return nil;
 }
 
-+ (void)registerClass:(Class<MIMESerialization>)serializationClass forMIMEType:(id)MIMETypeStringOrRegularExpression
++ (void)registerClass:(Class<MIMESerializing>)serializationClass forMIMEType:(id)MIMETypeStringOrRegularExpression
 {
     MIMETypeSerializationRegistration *registration = [[MIMETypeSerializationRegistration alloc] initWithMIMEType:MIMETypeStringOrRegularExpression serializationClass:serializationClass];
     [[self sharedSerialization].registrations addObject:registration];
 }
 
-+ (void)unregisterClass:(Class<MIMESerialization>)serializationClass
++ (void)unregisterClass:(Class<MIMESerializing>)serializationClass
 {
     NSArray *registrationsCopy = [[self sharedSerialization].registrations copy];
     for (MIMETypeSerializationRegistration *registration in registrationsCopy) {
@@ -144,7 +143,7 @@
     NSParameterAssert(data);
     NSParameterAssert(MIMEType);
 
-    Class<MIMESerialization> serializationClass = [self serializationClassForMIMEType:MIMEType];
+    Class<MIMESerializing> serializationClass = [self serializationClassForMIMEType:MIMEType];
     if (!serializationClass) {
         if (error) {
             NSString* errorMessage = [NSString stringWithFormat:@"Cannot deserialize data: No serialization registered for MIME Type '%@'", MIMEType];
@@ -161,7 +160,7 @@
 {
     NSParameterAssert(object);
     NSParameterAssert(MIMEType);
-    Class<MIMESerialization> serializationClass = [self serializationClassForMIMEType:MIMEType];
+    Class<MIMESerializing> serializationClass = [self serializationClassForMIMEType:MIMEType];
     if (!serializationClass) {
         if (error) {
             NSString* errorMessage = [NSString stringWithFormat:@"Cannot deserialize data: No serialization registered for MIME Type '%@'", MIMEType];

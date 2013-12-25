@@ -18,12 +18,12 @@
 //  limitations under the License.
 //
 
-#import "MIMESerialization.h"
+#import "MIMESerializing.h"
 
 /**
  The `MIMEJSONSerialization` class conforms to the `MIMESerializing` protocol and provides support for the serialization and deserialization of data in the JSON format using the Apple provided `NSJSONSerialization` class.
  
  @see http://www.json.org/
  */
-@interface MIMEJSONSerialization : NSObject <MIMESerialization>
+@interface MIMEJSONSerialization : NSObject <MIMESerializing>
 @end
