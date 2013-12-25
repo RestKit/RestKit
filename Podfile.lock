@@ -50,7 +50,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/RestKit/RKCLLocationValueTransformer
 
 SPEC CHECKSUMS:
-  AFNetworking: 0700ec7a58c36ad217173e167f6e4df7270df66b
+  AFNetworking: 61fdd49e2ffe6380378df37b3b6e70630bb9dd66
   Expecta: dbc4a27fabb853bdd2e907e33f11ee43a9a47d0c
   ISO8601DateFormatterValueTransformer: d0af1f50a9df42db72d7418db31938b8473e0af8
   OCHamcrest: 782c52ae8c673e5d6060a65005cfd26d20d519ba
