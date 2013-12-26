@@ -687,6 +687,15 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                                 success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                 failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
+    [self getObjectsAtPathForRelationship:relationshipName ofObject:object parameters:parameters success:success failure:failure upload:nil download:nil];
+}
+
+- (void)getObjectsAtPathForRelationship:(NSString *)relationshipName ofObject:(id)object parameters:(NSDictionary *)parameters
+                                success:(void (^)(RKObjectRequestOperation *, RKMappingResult *))success
+                                failure:(void (^)(RKObjectRequestOperation *, NSError *))failure
+                                 upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+                               download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download
+{
     RKRoute *route = [self.router.routeSet routeForRelationship:relationshipName ofClass:[object class] method:RKRequestMethodGET];
     NSDictionary *interpolatedParameters = nil;
     NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
@@ -694,6 +703,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
     operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    if (upload != nil) [operation.HTTPRequestOperation setUploadProgressBlock:upload];
+    if (download != nil) [operation.HTTPRequestOperation setDownloadProgressBlock:download];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -703,7 +714,19 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                               success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-    NSParameterAssert(routeName);    
+    [self getObjectsAtPathForRouteNamed:routeName object:object parameters:parameters success:success failure:failure upload:nil download:nil];
+
+}
+
+- (void)getObjectsAtPathForRouteNamed:(NSString *)routeName
+                               object:(id)object
+                           parameters:(NSDictionary *)parameters
+                              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+                               upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+                             download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download
+{
+    NSParameterAssert(routeName);
     RKRoute *route = [self.router.routeSet routeForName:routeName];
     NSDictionary *interpolatedParameters = nil;
     NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
@@ -713,8 +736,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
     operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    if (upload != nil) [operation.HTTPRequestOperation setUploadProgressBlock:upload];
+    if (download != nil) [operation.HTTPRequestOperation setDownloadProgressBlock:download];
     [self enqueueObjectRequestOperation:operation];
-
+    
 }
 
 - (void)getObjectsAtPath:(NSString *)path
@@ -722,9 +747,21 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                  success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                  failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
+    [self getObjectsAtPath:path parameters:parameters success:success failure:failure upload:nil download:nil];
+}
+
+- (void)getObjectsAtPath:(NSString *)path
+              parameters:(NSDictionary *)parameters
+                 success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                 failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+                  upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+                download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download
+{
     NSParameterAssert(path);
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    if (upload != nil) [operation.HTTPRequestOperation setUploadProgressBlock:upload];
+    if (download != nil) [operation.HTTPRequestOperation setDownloadProgressBlock:download];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -734,9 +771,22 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
+    [self getObject:object path:path parameters:parameters success:success failure:failure upload:nil download:nil];
+}
+
+- (void)getObject:(id)object
+             path:(NSString *)path
+       parameters:(NSDictionary *)parameters
+          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+           upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+         download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download
+{
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodGET path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    if (upload != nil) [operation.HTTPRequestOperation setUploadProgressBlock:upload];
+    if (download != nil) [operation.HTTPRequestOperation setDownloadProgressBlock:download];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -746,9 +796,22 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
            success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
+    [self postObject:object path:path parameters:parameters success:success failure:failure upload:nil download:nil];
+}
+
+- (void)postObject:(id)object
+              path:(NSString *)path
+        parameters:(NSDictionary *)parameters
+           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+            upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+          download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download
+{
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPOST path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    if (upload != nil) [operation.HTTPRequestOperation setUploadProgressBlock:upload];
+    if (download != nil) [operation.HTTPRequestOperation setDownloadProgressBlock:download];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -758,9 +821,22 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
+    [self putObject:object path:path parameters:parameters success:success failure:failure upload:nil download:nil];
+}
+
+- (void)putObject:(id)object
+             path:(NSString *)path
+       parameters:(NSDictionary *)parameters
+          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+           upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+         download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download
+{
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPUT path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    if (upload != nil) [operation.HTTPRequestOperation setUploadProgressBlock:upload];
+    if (download != nil) [operation.HTTPRequestOperation setDownloadProgressBlock:download];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -770,9 +846,22 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
             success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
+    [self patchObject:object path:path parameters:parameters success:success failure:failure upload:nil download:nil];
+}
+
+- (void)patchObject:(id)object
+               path:(NSString *)path
+         parameters:(NSDictionary *)parameters
+            success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+             upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+           download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download
+{
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPATCH path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    if (upload != nil) [operation.HTTPRequestOperation setUploadProgressBlock:upload];
+    if (download != nil) [operation.HTTPRequestOperation setDownloadProgressBlock:download];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -782,9 +871,22 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
+    [self deleteObject:object path:path parameters:parameters success:success failure:failure upload:nil download:nil];
+}
+
+- (void)deleteObject:(id)object
+                path:(NSString *)path
+          parameters:(NSDictionary *)parameters
+             success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+              upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+            download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download
+{
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodDELETE path:path parameters:parameters];
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    if (upload != nil) [operation.HTTPRequestOperation setUploadProgressBlock:upload];
+    if (download != nil) [operation.HTTPRequestOperation setDownloadProgressBlock:download];
     [self enqueueObjectRequestOperation:operation];
 }
 
