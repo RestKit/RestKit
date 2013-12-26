@@ -603,6 +603,27 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
                  failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 /**
+ Creates an `RKObjectRequestOperation` with a `GET` request with a URL for the given path, and enqueues it to the manager's operation queue.
+ 
+ The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
+ 
+ @param path The path to be appended to the HTTP client's base URL and used as the request URL.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @param upload A block object that allows to keep track of the upload progress.
+ @param download A block object that allows to keep track of the download progress.
+ 
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)getObjectsAtPath:(NSString *)path
+              parameters:(NSDictionary *)parameters
+                 success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                 failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+                  upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+                download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download;
+
+/**
  Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
  
  The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
@@ -624,6 +645,31 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
                                 failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 /**
+ Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
+ 
+ The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
+ 
+ @param relationshipName The name of the relationship being loaded. Used to retrieve the `RKRoute` object from the router for the given object's class and the relationship name. Cannot be nil.
+ @param object The object for which related objects are being loaded. Evaluated against the `RKRoute` for the relationship for the object's class with the given name to compute the path. Cannot be nil.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @param upload A block object that allows to keep track of the upload progress.
+ @param download A block object that allows to keep track of the download progress.
+ 
+ @raises NSInvalidArgumentException Raised if no route is configured for a relationship of the given object's class with the given name.
+ @see [RKRouter URLForRelationship:ofObject:method:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)getObjectsAtPathForRelationship:(NSString *)relationshipName
+                               ofObject:(id)object
+                             parameters:(NSDictionary *)parameters
+                                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+                                 upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+                               download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download;
+
+/**
  Creates an `RKObjectRequestOperation` with a `GET` request for the URL returned by the router for the given route name, and enqueues it to the manager's operation queue.
  
  The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
@@ -643,6 +689,31 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
                            parameters:(NSDictionary *)parameters
                               success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+/**
+ Creates an `RKObjectRequestOperation` with a `GET` request for the URL returned by the router for the given route name, and enqueues it to the manager's operation queue.
+ 
+ The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
+ 
+ @param routeName The name of the route being loaded. Used to retrieve the `RKRoute` object from the router with the given name. Cannot be nil.
+ @param object The object to be interpolated against the path pattern of the `RKRoute` object retrieved with the given name. Used to compute the path to be appended to the HTTP client's base URL and used as the request URL. May be nil.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the mapped result created from object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @param upload A block object that allows to keep track of the upload progress.
+ @param download A block object that allows to keep track of the download progress.
+ 
+ @raises NSInvalidArgumentException Raised if no route is configured with the given name or the route returned specifies an HTTP method other than `GET`.
+ @see [RKRouter URLForRouteNamed:method:object:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)getObjectsAtPathForRouteNamed:(NSString *)routeName
+                               object:(id)object
+                           parameters:(NSDictionary *)parameters
+                              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+                               upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+                             download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download;
 
 ///-------------------------------------------
 /// @name Making Object Requests for an Object
@@ -669,6 +740,30 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 /**
+ Creates an `RKObjectRequestOperation` with a `GET` request for the given object, and enqueues it to the manager's operation queue.
+ 
+ The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
+ 
+ @param object The object with which to construct the object request operation. If `nil`, then the path must be provided.
+ @param path The path to be appended to the HTTP client's base URL and used as the request URL. If nil, the request URL will be obtained by consulting the router for a route registered for the given object's class and the `RKRequestMethodGET` request method.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @param upload A block object that allows to keep track of the upload progress.
+ @param download A block object that allows to keep track of the download progress.
+ 
+ @see [RKRouter URLForObject:method:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)getObject:(id)object
+             path:(NSString *)path
+       parameters:(NSDictionary *)parameters
+          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+           upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+         download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download;
+
+/**
  Creates an `RKObjectRequestOperation` with a `POST` request for the given object, and enqueues it to the manager's operation queue.
  
  @param object The object with which to construct the object request operation. If `nil`, then the path must be provided.
@@ -685,6 +780,28 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
         parameters:(NSDictionary *)parameters
            success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+/**
+ Creates an `RKObjectRequestOperation` with a `POST` request for the given object, and enqueues it to the manager's operation queue.
+ 
+ @param object The object with which to construct the object request operation. If `nil`, then the path must be provided.
+ @param path The path to be appended to the HTTP client's base URL and used as the request URL. If nil, the request URL will be obtained by consulting the router for a route registered for the given object's class and the `RKRequestMethodPOST` method.
+ @param parameters The parameters to be reverse merged with the parameterization of the given object and set as the request body.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @param upload A block object that allows to keep track of the upload progress.
+ @param download A block object that allows to keep track of the download progress.
+ 
+ @see [RKRouter URLForObject:method:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)postObject:(id)object
+              path:(NSString *)path
+        parameters:(NSDictionary *)parameters
+           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+            upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+          download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download;
 
 /**
  Creates an `RKObjectRequestOperation` with a `PUT` request for the given object, and enqueues it to the manager's operation queue.
@@ -705,6 +822,28 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 /**
+ Creates an `RKObjectRequestOperation` with a `PUT` request for the given object, and enqueues it to the manager's operation queue.
+ 
+ @param object The object with which to construct the object request operation. If `nil`, then the path must be provided.
+ @param path The path to be appended to the HTTP client's base URL and used as the request URL. If nil, the request URL will be obtained by consulting the router for a route registered for the given object's class and the `RKRequestMethodPUT` method.
+ @param parameters The parameters to be reverse merged with the parameterization of the given object and set as the request body.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @param upload A block object that allows to keep track of the upload progress.
+ @param download A block object that allows to keep track of the download progress.
+ 
+ @see [RKRouter URLForObject:method:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)putObject:(id)object
+             path:(NSString *)path
+       parameters:(NSDictionary *)parameters
+          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+           upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+         download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download;
+
+/**
  Creates an `RKObjectRequestOperation` with a `PATCH` request for the given object, and enqueues it to the manager's operation queue.
  
  @param object The object with which to construct the object request operation. If `nil`, then the path must be provided.
@@ -721,6 +860,28 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
          parameters:(NSDictionary *)parameters
             success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+/**
+ Creates an `RKObjectRequestOperation` with a `PATCH` request for the given object, and enqueues it to the manager's operation queue.
+ 
+ @param object The object with which to construct the object request operation. If `nil`, then the path must be provided.
+ @param path The path to be appended to the HTTP client's base URL and used as the request URL. If nil, the request URL will be obtained by consulting the router for a route registered for the given object's class and the `RKRequestMethodPATCH` method.
+ @param parameters The parameters to be reverse merged with the parameterization of the given object and set as the request body.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @param upload A block object that allows to keep track of the upload progress.
+ @param download A block object that allows to keep track of the download progress.
+ 
+ @see [RKRouter URLForObject:method:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)patchObject:(id)object
+               path:(NSString *)path
+         parameters:(NSDictionary *)parameters
+            success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+             upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+           download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download;
 
 /**
  Creates an `RKObjectRequestOperation` with a `DELETE` request for the given object, and enqueues it to the manager's operation queue.
@@ -741,6 +902,30 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
           parameters:(NSDictionary *)parameters
              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+/**
+ Creates an `RKObjectRequestOperation` with a `DELETE` request for the given object, and enqueues it to the manager's operation queue.
+ 
+ The type of object request operation created is determined by invoking `appropriateObjectRequestOperationWithObject:method:path:parameters:`.
+ 
+ @param object The object with which to construct the object request operation. If `nil`, then the path must be provided.
+ @param path The path to be appended to the HTTP client's base URL and used as the request URL. If nil, the request URL will be obtained by consulting the router for a route registered for the given object's class and the `RKRequestMethodDELETE` request method.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL.
+ @param success A block object to be executed when the object request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @param upload A block object that allows to keep track of the upload progress.
+ @param download A block object that allows to keep track of the download progress.
+ 
+ @see [RKRouter URLForObject:method:]
+ @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
+ */
+- (void)deleteObject:(id)object
+                path:(NSString *)path
+          parameters:(NSDictionary *)parameters
+             success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
+              upload:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))upload
+            download:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))download;
 
 ///------------------------------------------------
 /// @name Managing Request and Response Descriptors
