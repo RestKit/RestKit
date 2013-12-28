@@ -415,13 +415,16 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
 // Defined in RKObjectManager.h
 BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors);
 
+@interface RKObjectRequestOperation ()
+@property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
+@end
+
 @interface RKManagedObjectRequestOperation ()
 // Core Data specific
 @property (nonatomic, strong) NSManagedObjectContext *privateContext;
 @property (nonatomic, copy) NSManagedObjectID *targetObjectID;
 @property (nonatomic, strong) RKManagedObjectResponseMapperOperation *responseMapperOperation;
-@property (nonatomic, strong, readwrite) NSError *error;
-@property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @property (nonatomic, strong) NSDictionary *mappingInfo;
 @property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
