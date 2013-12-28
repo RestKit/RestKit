@@ -23,6 +23,15 @@
 #import "RKRoute.h"
 #import <objc/runtime.h>
 
+static NSDictionary *RKKeyPathsAndValuesOfObjectForKeyPaths(NSObject *object, NSArray *keyPaths)
+{
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    for (NSString *keyPath in keyPaths) {
+        dictionary[keyPath] = [object valueForKeyPath:keyPath];
+    }
+    return dictionary;
+}
+
 @interface RKRouter ()
 @property (nonatomic, strong, readwrite) RKRouteSet *routeSet;
 @end
@@ -71,8 +80,8 @@
 {
     NSParameterAssert(route);
     NSError *error = nil;
-    // TODO: Need a way to expand the properties of the object from the route
-    return [route.URITemplate URLWithVariables:nil relativeToBaseURL:self.baseURL error:&error];
+    NSDictionary *variables = RKKeyPathsAndValuesOfObjectForKeyPaths(object, route.URITemplate.keysOfVariables);
+    return [route.URITemplate URLWithVariables:variables relativeToBaseURL:self.baseURL error:&error];
 }
 
 @end

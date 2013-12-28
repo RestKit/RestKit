@@ -27,7 +27,7 @@
 - (void)testResourcePathForObject
 {
     RKRouter *router = [[RKRouter alloc] initWithBaseURL:[NSURL URLWithString:@"http://restkit.org/"]];
-    [router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodAny]];
+    [router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodAny]];
     RKTestUser *user = [RKTestUser new];
     user.userID = [NSNumber numberWithInteger:12345];
     NSURL *URL = [router URLForObject:user method:RKHTTPMethodGET];
@@ -45,7 +45,7 @@
 - (void)testResourcePathForRouteNamedInterpolatedWithObject
 {
     RKRouter *router = [[RKRouter alloc] initWithBaseURL:[NSURL URLWithString:@"http://restkit.org/"]];
-    [router.routeSet addRoute:[RKRoute routeWithName:@"user_bookmarks" URITemplateString:@"/users/:userID/bookmarks" method:RKHTTPMethodGET]];
+    [router.routeSet addRoute:[RKRoute routeWithName:@"user_bookmarks" URITemplateString:@"/users/{userID}/bookmarks" method:RKHTTPMethodGET]];
     RKTestUser *user = [RKTestUser new];
     user.userID = [NSNumber numberWithInteger:12345];
     NSURL *URL = [router URLForRouteNamed:@"user_bookmarks" method:nil object:user];

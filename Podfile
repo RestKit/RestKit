@@ -4,6 +4,7 @@ def import_pods
   pod 'RKSupport', path: 'Vendor/RKSupport'
   pod 'MIMEKit', path: 'Vendor/MIMEKit'
   
+  pod 'CSURITemplate', :head # Until new tag is created
   pod 'RestKit', path: '.'
   pod 'RestKit/Testing', path: '.'
   # pod 'RestKit/Search', path: '.'

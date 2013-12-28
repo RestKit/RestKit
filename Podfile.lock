@@ -17,7 +17,7 @@ PODS:
   - AFNetworking/Serialization (2.0.3)
   - AFNetworking/UIKit (2.0.3):
     - AFNetworking/NSURLConnection
-  - CSURITemplate (0.3)
+  - CSURITemplate (HEAD based on 0.3)
   - Expecta (0.2.3)
   - MIMEKit (1.0.0)
   - OCHamcrest (3.0.1)
@@ -56,6 +56,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (from `Vendor/AFNetworking`)
+  - CSURITemplate (HEAD)
   - Expecta (= 0.2.3)
   - MIMEKit (from `Vendor/MIMEKit`)
   - OCHamcrest (= 3.0.1)

@@ -182,14 +182,14 @@
     [router addRoute:[RKRoute routeWithName:@"testing" URITemplateString:@"/route" method:RKHTTPMethodGET]];
     RKRoute *route = [router routeForName:@"testing"];
     assertThat(route.name, is(equalTo(@"testing")));
-    assertThat(route.URITemplate, is(equalTo(@"/route")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/route")));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET)));
 }
 
 - (void)testAddRouteWithClassAndMethod
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodGET]];
     RKRoute *route = [router routeForClass:[RKTestUser class] method:RKHTTPMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestUser class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET)));
@@ -198,7 +198,7 @@
 - (void)testAddRouteWithClass
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodAny]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodAny]];
     RKRoute *route = [router routeForClass:[RKTestUser class] method:RKHTTPMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestUser class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodAny)));
@@ -207,7 +207,7 @@
 - (void)testRetrievingRouteForClassAndMethodWithBitmaskMatch
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodHEAD | RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodHEAD | RKHTTPMethodGET]];
     RKRoute *route = [router routeForClass:[RKTestUser class] method:RKHTTPMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestUser class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodHEAD | RKHTTPMethodGET)));
@@ -216,8 +216,8 @@
 - (void)testRetrievingRouteForClassAndMethodFavorsBitmaskMatchOverWildcard
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID/whatever" method:RKHTTPMethodAny]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodHEAD | RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}/whatever" method:RKHTTPMethodAny]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodHEAD | RKHTTPMethodGET]];
     RKRoute *route = [router routeForClass:[RKTestUser class] method:RKHTTPMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestUser class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodHEAD | RKHTTPMethodGET)));
@@ -226,8 +226,8 @@
 - (void)testRetrievingRouteForClassAndMethodFavorsExactMatchOverLessSpecificBitmaskMatch
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID/whatever" method:RKHTTPMethodAny]];
-    RKRoute *expectedRoute = [RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodPOST];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}/whatever" method:RKHTTPMethodAny]];
+    RKRoute *expectedRoute = [RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodPOST];
     [router addRoute:expectedRoute];
     RKRoute *route = [router routeForClass:[RKTestUser class] method:RKHTTPMethodPOST];
     assertThat(route, is(equalTo(expectedRoute)));
@@ -236,22 +236,22 @@
 - (void)testRouteForObjectAndMethodWithExactMatch
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodGET]];
     RKTestUser *user = [RKTestUser new];
     RKRoute *route = [router routeForObject:user method:RKHTTPMethodGET];
     assertThat(route, is(notNilValue()));
-    assertThat(route.URITemplate, is(equalTo(@"/users/:userID")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/users/{userID}")));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET)));
 }
 
 - (void)testRouteForObjectAndMethodWithSuperclassMatch
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodGET]];
     RKTestSubclassedObject *subclassedObject = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassedObject method:RKHTTPMethodGET];
     assertThat(route, is(notNilValue()));
-    assertThat(route.URITemplate, is(equalTo(@"/users/:userID")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/users/{userID}")));
     assertThat(route.objectClass, is(equalTo([RKTestObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET)));
 }
@@ -259,13 +259,13 @@
 - (void)testRouteForObjectFindsNearestSuperclassMatch
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodGET]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/subclasses/users/:userID" method:RKHTTPMethodGET]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestDeeplySubclassedObject class] URITemplateString:@"/deeply/subclassed/users/:userID" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/subclasses/users/{userID}" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestDeeplySubclassedObject class] URITemplateString:@"/deeply/subclassed/users/{userID}" method:RKHTTPMethodGET]];
     RKTestDeeplySubclassedObject *deeplySubclassedObject = [RKTestDeeplySubclassedObject new];
     RKRoute *route = [router routeForObject:deeplySubclassedObject method:RKHTTPMethodGET];
     assertThat(route, is(notNilValue()));
-    assertThat(route.URITemplate, is(equalTo(@"/deeply/subclassed/users/:userID")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/deeply/subclassed/users/{userID}")));
     assertThat(route.objectClass, is(equalTo([RKTestDeeplySubclassedObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET)));
 }
@@ -273,13 +273,13 @@
 - (void)testRouteForObjectPrefersSuperclassAnyMatchOverDistantParentMethodMatch
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodPOST]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/subclasses/users/:userID" method:RKHTTPMethodAny]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestDeeplySubclassedObject class] URITemplateString:@"/deeply/subclassed/users/:userID" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodPOST]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/subclasses/users/{userID}" method:RKHTTPMethodAny]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestDeeplySubclassedObject class] URITemplateString:@"/deeply/subclassed/users/{userID}" method:RKHTTPMethodGET]];
     RKTestDeeplySubclassedObject *deeplySubclassedObject = [RKTestDeeplySubclassedObject new];
     RKRoute *route = [router routeForObject:deeplySubclassedObject method:RKHTTPMethodPOST];
     assertThat(route, is(notNilValue()));
-    assertThat(route.URITemplate, is(equalTo(@"/subclasses/users/:userID")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/subclasses/users/{userID}")));
     assertThat(route.objectClass, is(equalTo([RKTestSubclassedObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodAny)));
 }
@@ -287,8 +287,8 @@
 - (void)testRetrievingRouteForObjectAndMethodFavorsExactMatchOverLessSpecificBitmaskMatch
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID/whatever" method:RKHTTPMethodAny]];
-    RKRoute *expectedRoute = [RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/:userID" method:RKHTTPMethodPOST];
+    [router addRoute:[RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}/whatever" method:RKHTTPMethodAny]];
+    RKRoute *expectedRoute = [RKRoute routeWithClass:[RKTestUser class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodPOST];
     [router addRoute:expectedRoute];
     RKTestUser *user = [RKTestUser new];
     RKRoute *route = [router routeForObject:user method:RKHTTPMethodPOST];
@@ -298,9 +298,9 @@
 - (void)testRoutesForClassReturnsAllRoutesForClass
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodGET]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodPOST]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodPOST]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodGET]];
     NSArray *routes = [router routesForClass:[RKTestObject class]];
     assertThat(routes, hasCountOf(2));
 }
@@ -308,9 +308,9 @@
 - (void)testRouteForObjectReturnsAllRoutesForClassAndSuperclasses
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodGET]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodPOST]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/users/:userID" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodPOST]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/users/{userID}" method:RKHTTPMethodGET]];
 
     RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     NSArray *routes = [router routesForObject:subclassed];
@@ -320,69 +320,69 @@
 - (void)testRouteForObjectAndMethodFavorsExactMatchOverSuperclass
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/1" method:RKHTTPMethodGET]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/2" method:RKHTTPMethodPOST]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/users/:userID/3" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/1" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/2" method:RKHTTPMethodPOST]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/users/{userID}/3" method:RKHTTPMethodGET]];
 
     RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKHTTPMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestSubclassedObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET)));
-    assertThat(route.URITemplate, is(equalTo(@"/users/:userID/3")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/users/{userID}/3")));
 }
 
 - (void)testRouteForObjectAndMethodFavorsWildcardMatchOnExactClassOverSuperclass
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/1" method:RKHTTPMethodGET]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/2" method:RKHTTPMethodPOST]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/users/:userID/3" method:RKHTTPMethodAny]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/1" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/2" method:RKHTTPMethodPOST]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] URITemplateString:@"/users/{userID}/3" method:RKHTTPMethodAny]];
 
     RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKHTTPMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestSubclassedObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodAny)));
-    assertThat(route.URITemplate, is(equalTo(@"/users/:userID/3")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/users/{userID}/3")));
 }
 
 - (void)testRouteForObjectAndMethodFavorsExactSuperclassMethodMatchOverWildcard
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/1" method:RKHTTPMethodGET]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/2" method:RKHTTPMethodAny]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/1" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/2" method:RKHTTPMethodAny]];
 
     RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKHTTPMethodGET];
     assertThat(route.objectClass, is(equalTo([RKTestObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET)));
-    assertThat(route.URITemplate, is(equalTo(@"/users/:userID/1")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/users/{userID}/1")));
 }
 
 - (void)testRouteForObjectAndMethodFavorsExactSuperclassBitmaskMethodMatchOverWildcard
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/1" method:RKHTTPMethodGET | RKHTTPMethodHEAD]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/2" method:RKHTTPMethodAny]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/1" method:RKHTTPMethodGET | RKHTTPMethodHEAD]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/2" method:RKHTTPMethodAny]];
     
     RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKHTTPMethodGET];
     assertThat(route, is(notNilValue()));
     assertThat(route.objectClass, is(equalTo([RKTestObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET | RKHTTPMethodHEAD)));
-    assertThat(route.URITemplate, is(equalTo(@"/users/:userID/1")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/users/{userID}/1")));
 }
 
 - (void)testRouteForObjectAndMethodFallsBackToSuperclassWildcardMatch
 {
     RKRouteSet *router = [RKRouteSet new];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/1" method:RKHTTPMethodGET]];
-    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/:userID/2" method:RKHTTPMethodAny]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/1" method:RKHTTPMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] URITemplateString:@"/users/{userID}/2" method:RKHTTPMethodAny]];
 
     RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKHTTPMethodPOST];
     assertThat(route.objectClass, is(equalTo([RKTestObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodAny)));
-    assertThat(route.URITemplate, is(equalTo(@"/users/:userID/2")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/users/{userID}/2")));
 }
 
 // TODO: Add tests for superclass match in routeForObject:
@@ -394,7 +394,7 @@
     RKRoute *route = [router routeForRelationship:@"friends" ofClass:[RKTestUser class] method:RKHTTPMethodGET];
     assertThat(route, is(notNilValue()));
     assertThat(route.name, is(equalTo(@"friends")));
-    assertThat(route.URITemplate, is(equalTo(@"/friends")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/friends")));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodGET)));
 }
 
@@ -405,7 +405,7 @@
     RKRoute *route = [router routeForRelationship:@"friends" ofClass:[RKTestUser class] method:RKHTTPMethodGET];
     assertThat(route, is(notNilValue()));
     assertThat(route.name, is(equalTo(@"friends")));
-    assertThat(route.URITemplate, is(equalTo(@"/friends")));
+    assertThat(route.URITemplate.templateString, is(equalTo(@"/friends")));
     assertThatInteger(route.method, is(equalToInteger(RKHTTPMethodAny)));
 }
 
