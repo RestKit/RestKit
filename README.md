@@ -398,7 +398,7 @@ Article *article = [Article new];
 UIImage *image = [UIImage imageNamed:@"some_image.png"];
 
 // Serialize the Article attributes then attach a file
-NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestForObject:article method:RKRequestMethodPOST path:nil parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:article method:RKRequestMethodPOST path:nil parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
     [formData appendPartWithFileData:UIImagePNGRepresentation(image)
                                 name:@"article[image]"
                             fileName:@"photo.png"
