@@ -296,6 +296,12 @@ class RestKitTestServer < Sinatra::Base
     ''
   end
 
+  post '/422' do
+    status 422
+    content_type 'application/json'
+    { :error => "Unprocessable Entity." }.to_json
+  end
+
   delete '/humans/1234/whitespace' do
     content_type 'application/json'
     status 200

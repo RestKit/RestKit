@@ -1275,6 +1275,44 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     }];
 }
 
+- (void)testThatManagedObjectContextIsNotSavedWhenOperationErrorIsMapped
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorMapping addAttributeMappingsFromDictionary:@{ @"self": @"errorMessage" }];
+    NSMutableIndexSet *errorCodes = [[NSMutableIndexSet alloc] init];
+    [errorCodes addIndexes:RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError)];
+    [errorCodes addIndexes:RKStatusCodeIndexSetForClass(RKStatusCodeClassServerError)];
+    RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:errorMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"error" statusCodes:errorCodes];
+    
+    NSManagedObjectContext *scratchContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    id mockContext = [OCMockObject partialMockForObject:scratchContext];
+    [[mockContext reject] save:((NSError __autoreleasing **)[OCMArg anyPointer])];
+    scratchContext.parentContext = [managedObjectStore mainQueueManagedObjectContext];
+    
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:mockContext];
+    human.name = @"Blake";
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/422" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"POST";
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor, errorDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = mockContext;
+    managedObjectRequestOperation.targetObject = human;
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    
+    expect(scratchContext.hasChanges).to.beTruthy();
+    expect([managedObjectStore.mainQueueManagedObjectContext existingObjectWithID:human.objectID error:nil]).to.beNil();
+    expect(managedObjectRequestOperation.error).toNot.beNil();
+    expect(managedObjectRequestOperation.mappingResult.dictionary[@"human"]).to.beNil();
+    expect(scratchContext.insertedObjects).to.haveCountOf(1);
+    [mockContext verify];
+}
+
 - (void)testThatMapperOperationDelegateIsPassedThroughToUnderlyingMapperOperation
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
