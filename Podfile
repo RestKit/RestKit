@@ -10,7 +10,6 @@ def import_pods
   
   pod 'AFNetworking', path: 'Vendor/AFNetworking'  
   
-  pod 'Specta', '0.2.1'
   pod 'OCMock', '2.2.1'
   pod 'OCHamcrest', '3.0.1'
   pod 'Expecta', '0.2.3'

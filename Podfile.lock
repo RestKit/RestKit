@@ -50,7 +50,6 @@ PODS:
   - RKSupport/RKParameterConstraint (1.0.0)
   - RKSupport/RKPathTemplate (1.0.0)
   - RKValueTransformers (1.0.1)
-  - Specta (0.2.1)
   - TransitionKit (2.0.0)
 
 DEPENDENCIES:
@@ -63,7 +62,6 @@ DEPENDENCIES:
   - RestKit/Testing (from `.`)
   - RKCLLocationValueTransformer (from `https://github.com/RestKit/RKCLLocationValueTransformer`)
   - RKSupport (from `Vendor/RKSupport`)
-  - Specta (= 0.2.1)
 
 EXTERNAL SOURCES:
   AFNetworking:
