@@ -394,10 +394,15 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 - (void)testDeletionOfObjectWithUnmappedResponseBody
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext withProperties:nil];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/humans/success" relativeToURL:[RKTestFactory baseURL]]];
     request.HTTPMethod = @"DELETE";
-    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
     managedObjectRequestOperation.targetObject = human;
     [managedObjectRequestOperation start];
@@ -447,11 +452,16 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 - (void)testThatDeletionOfObjectThatHasAlreadyBeenDeletedFromCoreDataDoesNotRaiseException
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext withProperties:nil];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/humans/success" relativeToURL:[RKTestFactory baseURL]]];
     request.HTTPMethod = @"DELETE";
     [managedObjectStore.persistentStoreManagedObjectContext saveToPersistentStore:nil];
-    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
     managedObjectRequestOperation.targetObject = human;
     [managedObjectRequestOperation start];
