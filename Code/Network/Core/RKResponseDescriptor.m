@@ -81,7 +81,7 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
     return [[self alloc] initWithMethods:methods
                   pathTemplateWithString:pathTemplateString
                     parameterConstraints:parameterConstraints
-                                 keyPath:(NSString *)keyPath
+                                 keyPath:keyPath
                              statusCodes:statusCodes
                                  mapping:mapping];
 }
@@ -91,7 +91,7 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
     self = [super init];
     if (self) {
         self.methods = methods;
-        self.pathTemplate = nil; // [RKPathTemplate pathTemplateWithString:pathTemplateString];
+        self.pathTemplate = (pathTemplateString == nil) ? nil : [RKPathTemplate pathTemplateWithString:pathTemplateString];
         self.parameterConstraints = parameterConstraints;
         self.keyPath = keyPath;
         self.statusCodes = statusCodes;
@@ -102,39 +102,41 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p methods=%@ pathTemplate=%@ keyPath=%@ statusCodes=%@ : %@>",
-            NSStringFromClass([self class]), self, RKStringDescribingHTTPMethods(self.methods), self.pathTemplate, self.keyPath, self.statusCodes ? RKStringFromIndexSet(self.statusCodes) : self.statusCodes, self.mapping];
+            NSStringFromClass([self class]), self, RKStringDescribingHTTPMethods(self.methods), self.pathTemplate, self.keyPath, (self.statusCodes) ? RKStringFromIndexSet(self.statusCodes) : self.statusCodes, self.mapping];
 }
 
 - (BOOL)matchesPath:(NSString *)path parameters:(NSDictionary **)parameters
 {
-//    if (!self.pathPattern || !path) return YES;
-//    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:self.pathPattern];
-//    return [pathMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
-    return YES;
+    if (self.pathTemplate == nil) return YES;
+    if (path == nil) return YES;
+    else return [self.pathTemplate matchesPath:path
+                                     variables:parameters];
 }
 
 - (BOOL)matchesURL:(NSURL *)URL relativeToBaseURL:(NSURL *)baseURL parameters:(NSDictionary **)parameters
 {
-//    NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(URL, self.baseURL);
-//    if (self.baseURL) {
-//        if (! RKURLIsRelativeToURL(URL, self.baseURL)) return NO;
-//        return [self matchesPath:pathAndQueryString];
-//    } else {
-//        return [self matchesPath:pathAndQueryString];
-//    }
+    if (self.pathTemplate == nil && baseURL == nil) return YES;
+    NSURL *urlWithNoQueryString = [[NSURL alloc] initWithScheme:[URL scheme]
+                                             host:[URL host]
+                                             path:[URL path]];
+    NSString *pathString = RKPathAndQueryStringFromURLRelativeToURL(urlWithNoQueryString, baseURL);
+    if (baseURL) {
+        if (! RKURLIsRelativeToURL(URL, baseURL)) return NO;
+        return [self matchesPath:pathString parameters:parameters];
+    } else if (parameters) {
+        return [self matchesPath:pathString parameters:parameters];
+    }
     return YES;
 }
 
 - (BOOL)matchesResponse:(NSHTTPURLResponse *)response request:(NSURLRequest *)request relativeToBaseURL:(NSURL *)baseURL parameters:(NSDictionary **)parameters
 {
-//    if (! [self matchesURL:response.URL]) return NO;
-//
-//    if (self.statusCodes) {
-//        if (! [self.statusCodes containsIndex:response.statusCode]) {
-//            return NO;
-//        }
-//    }
-
+    if (! [self matchesURL:response.URL relativeToBaseURL:baseURL parameters:parameters]) return NO;
+    if (self.statusCodes) {
+        if (! [self.statusCodes containsIndex:response.statusCode]) {
+            return NO;
+        }
+    }
     return YES;
 }
 

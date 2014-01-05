@@ -111,11 +111,11 @@
 /**
  Returns a Boolean value that indicates if the given URL object matches the base URL and path pattern of the receiver.
 
- This method considers both the `baseURL` and `pathPattern` of the receiver when evaluating the given URL object. The results evaluate in the following ways:
+ This method considers both the `baseURL` and `pathTemplateString` of the receiver when evaluating the given URL object. The results evaluate in the following ways:
 
- 1. If the `baseURL` and `pathPattern` of the receiver are both `nil`, then `YES` is returned.
+ 1. If the `baseURL` and `pathTemplateString` of the receiver are both `nil`, then `YES` is returned.
  1. If the `baseURL` of the receiver is `nil`, but the path pattern is not, then the entire path and query string of the given URL will be evaluated against the path pattern of the receiver using `matchesPath:`.
- 1. If the `baseURL` and the `pathPattern` are both non-nil, then the given URL is first checked to verify that it is relative to the base URL using a string prefix comparison. If the absolute string value of the given URL is prefixed with the string value of the base URL, then the URL is considered relative. If the given URL is found not to be relative to the receiver's baseURL, then `NO` is returned. If the URL is found to be relative to the base URL, then the path and query string of the URL are evaluated against the path pattern of the receiver using `matchesPath:`.
+ 1. If the `baseURL` and the `pathTemplateString` are both non-nil, then the given URL is first checked to verify that it is relative to the base URL using a string prefix comparison. If the absolute string value of the given URL is prefixed with the string value of the base URL, then the URL is considered relative. If the given URL is found not to be relative to the receiver's baseURL, then `NO` is returned. If the URL is found to be relative to the base URL, then the path and query string of the URL are evaluated against the path pattern of the receiver using `matchesPath:`.
 
  @param URL The URL to compare with the base URL and path pattern of the receiver.
  @return `YES` if the URL matches the base URL and path pattern of the receiver, else `NO`.
