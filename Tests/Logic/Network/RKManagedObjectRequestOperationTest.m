@@ -1291,7 +1291,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSManagedObjectContext *scratchContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     id mockContext = [OCMockObject partialMockForObject:scratchContext];
-    [[mockContext reject] save:((NSError __autoreleasing **)[OCMArg anyPointer])];
+    [(NSManagedObjectContext *)[mockContext reject] save:((NSError __autoreleasing **)[OCMArg anyPointer])];
     scratchContext.parentContext = [managedObjectStore mainQueueManagedObjectContext];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:mockContext];
