@@ -9,10 +9,10 @@ git submodule update --init
 
 # Bundler & CocoaPods
 bundle
-bundle exec pod install
+pod install
 
 # Run the build
-bundle exec rake server:stop || true
-bundle exec rake server:start
-bundle exec rake test
-bundle exec rake server:stop
+rake server:stop || true
+rake server:start
+rake test
+rake server:stop
