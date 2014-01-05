@@ -47,7 +47,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
-    rake (10.1.0)
+    rake (10.1.1)
     rakeup (1.1.0)
       rack (~> 1.5.0)
       rake (~> 10.1.0)
