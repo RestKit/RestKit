@@ -122,7 +122,6 @@ static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithRes
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
 - (id)parseResponseData:(NSError **)error;
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error;
-- (BOOL)hasEmptyResponse;
 @end
 
 @implementation RKResponseMapperOperation
@@ -253,14 +252,14 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     BOOL isErrorStatusCode = [RKErrorStatusCodes() containsIndex:self.response.statusCode];
     
     // If we are an error response and empty, we emit an error that the content is unmappable
-    if (isErrorStatusCode && [self hasEmptyResponse]) {
+    if (isErrorStatusCode && self.representation == nil) {
         self.error = RKUnprocessableErrorFromResponse(self.response);
         [self willFinish];
         return;
     }
 
     // If we are successful and empty, we may optionally consider the response mappable (i.e. 204 response or 201 with no body)
-    if ([self hasEmptyResponse] && self.treatsEmptyResponseAsSuccess) {
+    if (self.representation == nil && self.treatsEmptyResponseAsSuccess) {
         if (self.targetObject) {
             self.mappingResult = [[RKMappingResult alloc] initWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:[NSNull null]]];
         } else {
