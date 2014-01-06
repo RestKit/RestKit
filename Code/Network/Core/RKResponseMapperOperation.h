@@ -71,7 +71,7 @@
  */
 - (id)initWithRequest:(NSURLRequest *)request
              response:(NSHTTPURLResponse *)response
-                 data:(NSData *)data
+       representation:(id)representation
   responseDescriptors:(NSArray *)responseDescriptors;
 
 ///-----------------------------------------------
@@ -89,9 +89,9 @@
 @property (nonatomic, strong, readonly) NSHTTPURLResponse *response;
 
 /**
- The response data that is to be deserialized and mapped by the operation. May be `nil`.
+ The deserialized object representation parsed from the response data that is to be mapped by the operation. May be `nil`.
  */
-@property (nonatomic, strong, readonly) NSData *data;
+@property (nonatomic, strong, readonly) id representation;
 
 ///---------------------------------
 /// @name Configuring Object Mapping

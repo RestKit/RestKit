@@ -25,7 +25,6 @@
 #import "RKResponseMapperOperation.h"
 #import "RKMappingErrors.h"
 #import "RKDictionaryUtilities.h"
-#import "MIMETypeSerialization.h"
 
 #ifdef _COREDATADEFINES_H
 #import "RKManagedObjectMappingOperationDataSource.h"
@@ -106,23 +105,10 @@ static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithRes
     return failureReason;
 }
 
-/**
- A serial dispatch queue used for all deserialization of response bodies
- */
-static dispatch_queue_t RKResponseMapperSerializationQueue() {
-    static dispatch_queue_t serializationQueue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        serializationQueue = dispatch_queue_create("org.restkit.response-mapper.serialization", DISPATCH_QUEUE_SERIAL);
-    });
-    
-    return serializationQueue;
-}
-
 @interface RKResponseMapperOperation ()
 @property (nonatomic, strong, readwrite) NSURLRequest *request;
 @property (nonatomic, strong, readwrite) NSHTTPURLResponse *response;
-@property (nonatomic, strong, readwrite) NSData *data;
+@property (nonatomic, strong, readwrite) id representation;
 @property (nonatomic, strong, readwrite) NSArray *responseDescriptors;
 @property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, strong, readwrite) NSError *error;
@@ -170,7 +156,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 
 - (id)initWithRequest:(NSURLRequest *)request
              response:(NSHTTPURLResponse *)response
-                 data:(NSData *)data
+       representation:(id)representation
   responseDescriptors:(NSArray *)responseDescriptors;
 {
     NSParameterAssert(request);
@@ -181,7 +167,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     if (self) {
         self.request = request;
         self.response = response;
-        self.data = data;
+        self.representation = representation;
         self.responseDescriptors = responseDescriptors;
         self.matchingResponseDescriptors = [self buildMatchingResponseDescriptors];
         self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
@@ -190,29 +176,6 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     }
 
     return self;
-}
-
-- (id)parseResponseData:(NSError **)error
-{
-    NSString *MIMEType = [self.response MIMEType];
-    __block NSError *underlyingError = nil;
-    __block id object;
-    dispatch_sync(RKResponseMapperSerializationQueue(), ^{
-        object = [MIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
-    });
-    if (! object) {
-        NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-        [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable response (%ld) with content type '%@'", (long) self.response.statusCode, MIMEType]
-                    forKey:NSLocalizedDescriptionKey];
-        [userInfo setValue:[self.response URL] forKey:NSURLErrorFailingURLErrorKey];
-        [userInfo setValue:underlyingError forKey:NSUnderlyingErrorKey];
-        NSError *HTTPError = [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorCannotParseResponse userInfo:userInfo];
-
-        if (error) *error = HTTPError;
-
-        return nil;
-    }
-    return object;
 }
 
 - (NSArray *)buildMatchingResponseDescriptors
@@ -241,15 +204,16 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
                                  userInfo:nil];
 }
 
-- (BOOL)hasEmptyResponse
-{
-    // NOTE: Comparison to single string whitespace character to support Ruby on Rails `render :nothing => true`
-    static NSData *whitespaceData = nil;
-    if (! whitespaceData) whitespaceData = [[NSData alloc] initWithBytes:" " length:1];
-
-    NSUInteger length = [self.data length];
-    return (length == 0 || (length == 1 && [self.data isEqualToData:whitespaceData]));
-}
+// TODO: Need to ensure this is handled upstream...
+//- (BOOL)hasEmptyResponse
+//{
+//    // NOTE: Comparison to single string whitespace character to support Ruby on Rails `render :nothing => true`
+//    static NSData *whitespaceData = nil;
+//    if (! whitespaceData) whitespaceData = [[NSData alloc] initWithBytes:" " length:1];
+//
+//    NSUInteger length = [self.data length];
+//    return (length == 0 || (length == 1 && [self.data isEqualToData:whitespaceData]));
+//}
 
 - (void)setMappingMetadata:(NSDictionary *)mappingMetadata
 {
@@ -309,32 +273,23 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
         return;
     }
 
-    // Parse the response
-    NSError *error;
-    id parsedBody = [self parseResponseData:&error];
     if (self.isCancelled) return [self willFinish];
-    if (! parsedBody) {
-        RKLogError(@"Failed to parse response data: %@", [error localizedDescription]);
-        self.error = error;
-        [self willFinish];
-        return;
-    }
-    if (self.isCancelled) return [self willFinish];        
+    id representation = self.representation;
     
     // Invoke the will map deserialized response block
     if (self.willMapDeserializedResponseBlock) {
-        parsedBody = self.willMapDeserializedResponseBlock(parsedBody);
-        if (! parsedBody) {
+        representation = self.willMapDeserializedResponseBlock(representation);
+        if (! representation) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Mapping was declined due to a `willMapDeserializedResponseBlock` returning nil." };
             self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorMappingDeclined userInfo:userInfo];
-            RKLogError(@"Failed to parse response data: %@", [error localizedDescription]);
             [self willFinish];
             return;
         }
     }
 
     // Object map the response
-    self.mappingResult = [self performMappingWithObject:parsedBody error:&error];    
+    NSError *error;
+    self.mappingResult = [self performMappingWithObject:representation error:&error];
     
     // If the response is a client error return either the mapping error or the mapped result to the caller as the error
     if (isErrorStatusCode) {

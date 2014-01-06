@@ -73,7 +73,8 @@
     NSString *authString = [NSString stringWithFormat:@"TRUEREST username=%@&password=%@&apikey=123456&class=iphone", @"username", @"password"];
     [request addValue:authString forHTTPHeaderField:@"Authorization"];
     AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    RKResponseSerializationManager *serializationManager = [RKResponseSerializationManager new];
+    AFJSONResponseSerializer *responseDataSerializer = [AFJSONResponseSerializer new];
+    RKResponseSerializationManager *serializationManager = [RKResponseSerializationManager managerWithDataSerializer:responseDataSerializer];
     [serializationManager addResponseDescriptor:[self responseDescriptorForComplexUser]];
     RKObjectResponseSerializer *serializer = [serializationManager serializerWithRequest:request object:user];
     requestOperation.responseSerializer = serializer;

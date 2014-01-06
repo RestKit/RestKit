@@ -1,5 +1,5 @@
 //
-//  RKObjectResponseSerializer.m
+//  RKResponseSerialization.m
 //  RestKit
 //
 //  Created by Blake Watters on 11/16/13.
@@ -10,18 +10,33 @@
 #import "RKResponseMapperOperation.h"
 
 @interface RKResponseSerializationManager ()
+@property (nonatomic, strong, readwrite) AFHTTPResponseSerializer *dataSerializer;
 @property (nonatomic, strong) NSMutableArray *mutableResponseDescriptors;
 @end
 
 @implementation RKResponseSerializationManager
 
-- (id)init
++ (instancetype)managerWithDataSerializer:(AFHTTPResponseSerializer *)dataSerializer
+{
+    if (!dataSerializer) [NSException raise:NSInvalidArgumentException format:@"`%@` cannot be `nil`.", NSStringFromSelector(@selector(dataSerializer))];
+    return [[self alloc] initWithDataSerializer:dataSerializer];
+}
+
+- (id)initWithDataSerializer:(AFHTTPResponseSerializer *)dataSerializer
 {
     self = [super init];
     if (self) {
+        self.dataSerializer = dataSerializer;
         self.mutableResponseDescriptors = [NSMutableArray new];
     }
     return self;
+}
+
+- (id)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"Failed to call designated initializer. Call `%@` instead", NSStringFromSelector(@selector(managerWithDataSerializer:))]
+                                 userInfo:nil];
 }
 
 #pragma mark - NSCoding
@@ -81,7 +96,9 @@
 // TODO: Migrate functionality of `appropriateObjectRequestOperation...`
 - (RKObjectResponseSerializer *)serializerWithRequest:(NSURLRequest *)request object:(id)object
 {
-    RKObjectResponseSerializer *responseSerializer = [RKObjectResponseSerializer objectResponseSerializerWithRequest:request responseDescriptors:self.responseDescriptors];
+    AFHTTPResponseSerializer *dataSerializer = [self.dataSerializer copy];
+    dataSerializer.acceptableStatusCodes = nil; // TODO: Configure the acceptable status codes to exactly match those of the response descriptors.
+    RKObjectResponseSerializer *responseSerializer = [[RKObjectResponseSerializer alloc] initWithRequest:request dataSerializer:dataSerializer responseDescriptors:self.responseDescriptors];
     responseSerializer.targetObject = object;
     return responseSerializer;
 }
@@ -90,47 +107,66 @@
 
 @interface RKObjectResponseSerializer ()
 @property (nonatomic, strong, readwrite) NSURLRequest *request;
+@property (nonatomic, strong, readwrite) AFHTTPResponseSerializer *dataSerializer;
 @property (nonatomic, copy, readwrite) NSArray *responseDescriptors;
 @end
 
 @implementation RKObjectResponseSerializer
 
-+ (instancetype)objectResponseSerializerWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
+- (id)init
 {
-    RKObjectResponseSerializer *serializer = [self new];
-    serializer.request = request;
-    serializer.responseDescriptors = responseDescriptors;
-    return serializer;
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"Failure to call designated initializer: call `%@` instead", NSStringFromSelector(@selector(initWithRequest:dataSerializer:responseDescriptors:))]
+                                 userInfo:nil];
 }
 
-#pragma mark - 
+- (id)initWithRequest:(NSURLRequest *)request dataSerializer:(AFHTTPResponseSerializer *)dataSerializer responseDescriptors:(NSArray *)responseDescriptors
+{
+    self = [super init];
+    if (self) {
+        self.request = request;
+        self.dataSerializer = dataSerializer;
+        self.responseDescriptors = responseDescriptors;
+    }
+    return self;
+}
 
-//- (NSSet *)acceptableContentTypes
-//{
-//    return [self.contentResponseSerializer isKindOfClass:[AFHTTPResponseSerializer class]]
-//    ? [(AFHTTPResponseSerializer *)self.contentResponseSerializer acceptableContentTypes]
-//    : nil;
-//}
+#pragma mark - NSCoding
 
-//- (BOOL)validateResponse:(NSHTTPURLResponse *)response
-//                    data:(NSData *)data
-//                   error:(NSError *__autoreleasing *)error
-//{
-//}
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"To be implemented..." userInfo:nil];
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"To be implemented..." userInfo:nil];
+}
+
+#pragma mark - NSCopying
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"To be implemented..." userInfo:nil];
+}
+
+#pragma mark -
 
 - (id)responseObjectForResponse:(NSURLResponse *)response
                            data:(NSData *)data
                           error:(NSError *__autoreleasing *)error
 {
-    if (![self validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
+    if (![self.dataSerializer validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
         if ([(NSError *)(*error) code] == NSURLErrorCannotDecodeContentData) {
             return nil;
         }
     }
 
-    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithRequest:self.request response:(NSHTTPURLResponse *)response data:data responseDescriptors:self.responseDescriptors];
+    id responseObject = [self.dataSerializer responseObjectForResponse:response data:data error:error];
+    if (!responseObject) return nil;
+
+    RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithRequest:self.request response:(NSHTTPURLResponse *)response representation:responseObject responseDescriptors:self.responseDescriptors];
     mapperOperation.targetObject = self.targetObject;
-//    mapperOperation.contentSerializer = self.contentResponseSerializer;
     [mapperOperation start];
     if (mapperOperation.error) {
         *error = mapperOperation.error;

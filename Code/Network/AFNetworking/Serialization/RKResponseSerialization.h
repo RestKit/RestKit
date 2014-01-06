@@ -18,6 +18,26 @@
 @interface RKResponseSerializationManager : NSObject <NSCoding, NSCopying>
 
 ///------------------------------------------------
+/// @name Creating a Response Serialization Manager
+///------------------------------------------------
+
+// NOTE: The response data serializer should be configured to accept any status codes that you wish to map...
+/**
+ Creates and returns a response serialization manager with the given response data serializer.
+
+ @param dataSerializer An `AFHTTPResponseSerializer` object to use for deserializing the response data into an object mappable representation. Cannot be `nil`.
+ @return A newly created response serialization manager.
+ */
++ (instancetype)managerWithDataSerializer:(AFHTTPResponseSerializer *)dataSerializer;
+
+/**
+ The serializer responsible for deserializing the response data from the transport format into a Foundation representation that is suitable for object mapping.
+
+ The data serializer is typically tightly coupled to the Content-Type of the response. For example, when handling JSON responses with the `application/json` Content-Type the data serializer would be an instance of `AFJSONResponseSerializer`.
+ */
+@property (nonatomic, strong, readonly) AFHTTPResponseSerializer *dataSerializer;
+
+///------------------------------------------------
 /// @name Managing Response Descriptors
 ///------------------------------------------------
 
@@ -55,6 +75,7 @@
 - (void)removeResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
 
 // Creates and returns a response serializer to be used to process the given request and object
+// object can be `nil`
 - (RKObjectResponseSerializer *)serializerWithRequest:(NSURLRequest *)request object:(id)object;
 
 @end
@@ -64,10 +85,11 @@
  */
 @interface RKObjectResponseSerializer : AFHTTPResponseSerializer
 
-+ (instancetype)objectResponseSerializerWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors;
+- (id)initWithRequest:(NSURLRequest *)request dataSerializer:(AFHTTPResponseSerializer *)dataSerializer responseDescriptors:(NSArray *)responseDescriptors;
 
 @property (nonatomic, strong) NSURL *baseURL;
 @property (nonatomic, strong, readonly) NSURLRequest *request;
+@property (nonatomic, strong, readonly) AFHTTPResponseSerializer *dataSerializer;
 @property (nonatomic, copy, readonly) NSArray *responseDescriptors;
 
 /**
