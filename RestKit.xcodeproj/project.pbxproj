@@ -864,6 +864,7 @@
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
+		FCF5C60E186E0C4F007DA806 /* RKResponseDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseDescriptorTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1312,6 +1313,7 @@
 				25DBDB32183E6B520027A72F /* AFHTTPRequestOperationIntegrationTests.m */,
 				252627661879BB9800DE3E77 /* RKObjectRequestOperationManagerTest.m */,
 				252627691879BC5400DE3E77 /* RKResponseSerializationManagerTest.m */,
+				FCF5C60E186E0C4F007DA806 /* RKResponseDescriptorTest.m */,
 			);
 			name = Network;
 			path = Logic/Network;
