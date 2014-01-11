@@ -11,6 +11,10 @@
 #import "RKTestUser.h"
 #import "RKParameterConstraint.h"
 
+@interface RKResponseDescriptor ()
+NSURL *RKURLByDeletingQuery(NSURL *URL);
+@end
+
 @interface RKResponseDescriptorTest : SenTestCase
 {
     RKResponseDescriptor *firstDescriptor;
@@ -37,6 +41,22 @@
                                                                   keyPath:defaultKeyPath
                                                               statusCodes:defaultStatusCodes
                                                                   mapping:defaultMapping];
+}
+
+#pragma mark = Utilities
+
+- (void)testURLByDeletingQuery
+{
+    NSURL *URL = [NSURL URLWithString:@"http://localhost:5000/?field1=value1&field2=value2&field3=value3"];
+    expect([RKURLByDeletingQuery(URL) absoluteString]).to.equal(@"http://localhost:5000/");
+    URL = [NSURL URLWithString:@"http://localhost:5000/path?field1=value1&field2=value2&field3=value3"];
+    expect([RKURLByDeletingQuery(URL) absoluteString]).to.equal(@"http://localhost:5000/path");
+    URL = [NSURL URLWithString:@"http://localhost/path?field1=value1&field2=value2&field3=value3"];
+    expect([RKURLByDeletingQuery(URL) absoluteString]).to.equal(@"http://localhost/path");
+    URL = [NSURL URLWithString:@"http://www.localhost.com?field1=value1&field2=value2&field3=value3"];
+    expect([RKURLByDeletingQuery(URL) absoluteString]).to.equal(@"http://www.localhost.com");
+    URL = [NSURL URLWithString:@"http://localhost:5000/path"];
+    expect([RKURLByDeletingQuery(URL) absoluteString]).to.equal(@"http://localhost:5000/path");
 }
 
 #pragma mark - URL Matching

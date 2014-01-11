@@ -519,6 +519,7 @@
 		73D3907914CA1DD40093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		7F9CBC6174004E31AEC35813 /* libPods-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86EC453810D648768BF62304 /* libPods-osx.a */; };
+		AA30ECC2187B286D00152F5D /* RKResponseDescriptorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */; };
 		BE05BDD11782109F00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
 		BE05BDD2178214AA00F7C9C9 /* RKRouteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
@@ -864,7 +865,6 @@
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
-		FCF5C60E186E0C4F007DA806 /* RKResponseDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseDescriptorTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1313,7 +1313,6 @@
 				25DBDB32183E6B520027A72F /* AFHTTPRequestOperationIntegrationTests.m */,
 				252627661879BB9800DE3E77 /* RKObjectRequestOperationManagerTest.m */,
 				252627691879BC5400DE3E77 /* RKResponseSerializationManagerTest.m */,
-				FCF5C60E186E0C4F007DA806 /* RKResponseDescriptorTest.m */,
 			);
 			name = Network;
 			path = Logic/Network;
@@ -2175,6 +2174,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA30ECC2187B286D00152F5D /* RKResponseDescriptorTest.m in Sources */,
 				251610601456F2330060A5C5 /* RKManagedObjectStoreTest.m in Sources */,
 				251610A21456F2330060A5C5 /* Data Model.xcdatamodel in Sources */,
 				251610A41456F2330060A5C5 /* RKCat.m in Sources */,

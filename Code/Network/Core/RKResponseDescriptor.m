@@ -58,6 +58,17 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet)
     return string;
 }
 
+NSURL *RKURLByDeletingQuery(NSURL *URL);
+NSURL *RKURLByDeletingQuery(NSURL *URL)
+{
+    if ([URL query]) {
+        NSRange queryRange = [[URL absoluteString] rangeOfString:[NSString stringWithFormat:@"?%@", [URL query]]];
+        return [NSURL URLWithString:[[URL absoluteString] stringByReplacingCharactersInRange:queryRange withString:@""]];
+    } else {
+        return URL;
+    }
+}
+
 extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
 
 @interface RKResponseDescriptor ()
@@ -117,10 +128,7 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
 - (BOOL)matchesURL:(NSURL *)URL relativeToBaseURL:(NSURL *)baseURL parameters:(NSDictionary **)parameters
 {
     if (self.pathTemplate == nil && baseURL == nil) return YES;
-    NSURL *urlWithNoQueryString = [[NSURL alloc] initWithScheme:[URL scheme]
-                                             host:[URL host]
-                                             path:[URL path]];
-    NSString *pathString = RKPathAndQueryStringFromURLRelativeToURL(urlWithNoQueryString, baseURL);
+    NSString *pathString = RKPathAndQueryStringFromURLRelativeToURL(RKURLByDeletingQuery(URL), baseURL);
     if (baseURL) {
         if (! RKURLIsRelativeToURL(URL, baseURL)) return NO;
         return [self matchesPath:pathString parameters:parameters];
@@ -166,7 +174,8 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
             self.methods == otherDescriptor.methods &&
             [self.pathTemplate isEqual:otherDescriptor.pathTemplate] &&
             [self.keyPath isEqualToString:otherDescriptor.keyPath] &&
-            [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes]);
+            [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes] &&
+            [self.parameterConstraints isEqual:otherDescriptor.parameterConstraints]);
 }
 
 @end
