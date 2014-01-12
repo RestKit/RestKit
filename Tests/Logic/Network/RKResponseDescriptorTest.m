@@ -97,7 +97,7 @@ NSURL *RKURLByDeletingQuery(NSURL *URL);
     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/mismatch"];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/monkeys/{monkeyID}.json" parameterConstraints:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) mapping:mapping];
-    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(YES);
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:baseURL parameters:nil]).to.equal(NO);
 }
 
 - (void)testBaseURLNotNilAndPathTemplateNilAndGivenURLHostnameDoesNotMatch
@@ -267,6 +267,88 @@ NSURL *RKURLByDeletingQuery(NSURL *URL);
                                                                statusCodes:[NSIndexSet indexSetWithIndex:404]
                                                                    mapping:defaultMapping];
     expect([responseDescriptor isEqual:secondDescriptor]).to.beFalsy();
+}
+
+#pragma mark - Parameter Constraint Tests
+
+- (void)testDescriptorWithMatchingExactConstraints
+{
+    NSArray *constraints = @[ [RKParameterConstraint constraintWithParameter:@"monkeyID" value:@"1234"] ];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/monkeys/{monkeyID}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(YES);
+}
+
+- (void)testDescriptorWithNonMatchingExactConstraints
+{
+    NSArray *constraints = @[ [RKParameterConstraint constraintWithParameter:@"monkeyID" value:@"5678"] ];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/monkeys/{monkeyID}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(NO);
+}
+
+- (void)testDescriptorWithMatchingOptionalConstraints
+{
+    NSArray *constraints = [RKParameterConstraint constraintsWithDictionary:@{ @"animal_name" : @[ @"dog" ], RKOptionalParametersKey : @[ @"animal_name" ] }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/animals/{animal_name}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/animals/dog.json" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(YES);
+}
+
+- (void)testDescriptorWithNonMatchingOptionalConstraints
+{
+    NSArray *constraints = [RKParameterConstraint constraintsWithDictionary:@{ @"animal_name" : @[ @"dog" ], RKOptionalParametersKey : @[ @"animal_name" ] }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/animals/{animal_name}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/animals/cat.json" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(NO);
+}
+
+- (void)testDescriptorWithMissingOptionalConstraints
+{
+    NSArray *constraints = [RKParameterConstraint constraintsWithDictionary:@{ @"postID" : @[ @"1", @"2" ], RKOptionalParametersKey : @[ @"postID" ] }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/posts/{postID}" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/posts" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(YES);
+}
+
+- (void)testDescriptorWithMatchingRequiredConstraints
+{
+    NSArray *constraints = [RKParameterConstraint constraintsWithDictionary:@{ @"postID" : @[ @"1", @"2" ], RKRequiredParametersKey : @[ @"postID" ] }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/posts/{postID}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/posts/1.json" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(YES);
+}
+
+- (void)testDescriptorWithNonMatchingRequiredConstraints
+{
+    NSArray *constraints = [RKParameterConstraint constraintsWithDictionary:@{ @"postID" : @[ @"1", @"2" ], RKRequiredParametersKey : @[ @"postID" ] }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/posts/{postID}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/posts/9999.json" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(NO);
+}
+
+- (void)testDescriptorWithMissingRequiredConstraints
+{
+    NSArray *constraints = [RKParameterConstraint constraintsWithDictionary:@{ @"postID" : @[ @"1", @"2" ], RKRequiredParametersKey : @[ @"postID" ] }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/posts/{postID}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/posts" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(NO);
+}
+
+- (void)testDescriptorWithMatchingRegularExpressionConstraints
+{
+    NSArray *constraints =  @[ [RKParameterConstraint constraintWithParameter:@"monkeyID" value:[NSRegularExpression regularExpressionWithPattern:@"^[0-9]*$" options:0 error:nil]] ];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/monkeys/{monkeyID}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/monkeys/1234.json" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(YES);
+}
+
+- (void)testDescriptorWithNonMatchingRegularExpressionConstraints
+{
+    NSArray *constraints = @[ [RKParameterConstraint constraintWithParameter:@"monkeyID" value:[NSRegularExpression regularExpressionWithPattern:@"^[0-9]*$" options:0 error:nil]] ];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMethods:RKHTTPMethodAny pathTemplateString:@"/monkeys/{monkeyID}.json" parameterConstraints:constraints keyPath:nil statusCodes:nil mapping:nil];
+    NSURL *URL = [NSURL URLWithString:@"/monkeys/a1b2c3d4de.json" relativeToURL:nil];
+    expect([responseDescriptor matchesURL:URL relativeToBaseURL:nil parameters:nil]).to.equal(NO);
 }
 
 @end

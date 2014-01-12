@@ -121,8 +121,17 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
 {
     if (self.pathTemplate == nil) return YES;
     if (path == nil) return YES;
-    else return [self.pathTemplate matchesPath:path
-                                     variables:parameters];
+    else {
+        NSDictionary *params = @{};
+        BOOL matchesConstraints = YES;
+        BOOL matchesPath = [self.pathTemplate matchesPath:path variables:&params];
+        if (parameters) *parameters = params;
+        if (self.parameterConstraints) {
+            matchesConstraints = [RKParameterConstraint areConstraints:self.parameterConstraints
+                                                 satisfiedByParameters:params];
+        }
+        return matchesPath && matchesConstraints;
+    }
 }
 
 - (BOOL)matchesURL:(NSURL *)URL relativeToBaseURL:(NSURL *)baseURL parameters:(NSDictionary **)parameters
@@ -132,7 +141,7 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
     if (baseURL) {
         if (! RKURLIsRelativeToURL(URL, baseURL)) return NO;
         return [self matchesPath:pathString parameters:parameters];
-    } else if (parameters) {
+    } else {
         return [self matchesPath:pathString parameters:parameters];
     }
     return YES;
