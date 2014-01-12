@@ -184,7 +184,7 @@ extern NSString *RKStringDescribingHTTPMethods(RKHTTPMethodOptions method);
             [self.pathTemplate isEqual:otherDescriptor.pathTemplate] &&
             [self.keyPath isEqualToString:otherDescriptor.keyPath] &&
             [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes] &&
-            [self.parameterConstraints isEqual:otherDescriptor.parameterConstraints]);
+            [self.parameterConstraints isEqualToArray:otherDescriptor.parameterConstraints]);
 }
 
 @end
