@@ -789,9 +789,10 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 }
 
 - (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern
+                           withParameters:(NSDictionary *)parameters
 {
     NSAssert(self.paginationMapping, @"Cannot instantiate a paginator when `paginationMapping` is nil.");
-    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:pathPattern parameters:nil];
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:pathPattern parameters:parameters];
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:self.responseDescriptors];
 #ifdef _COREDATADEFINES_H
     paginator.managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
@@ -802,6 +803,11 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     Class HTTPOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses];
     if (HTTPOperationClass) [paginator setHTTPOperationClass:HTTPOperationClass];
     return paginator;
+}
+
+- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern
+{
+    return [self paginatorWithPathPattern:pathPattern withParameters:@{}];
 }
 
 #pragma mark - Request & Response Descriptors

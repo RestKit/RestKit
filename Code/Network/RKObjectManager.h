@@ -851,6 +851,19 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  Creates and returns a paginator object configured to paginate the collection resource accessible at the specified path pattern.
  
+ The paginator instantiated will be initialized with a URL built by appending the given pathPattern to the baseURL of the client plus the paramters specified. The response descriptors and Core Data configuration, if any, are inherited from the receiver.
+ 
+ @param pathPattern A patterned URL fragment to be appended to the baseURL of the receiver in order to construct the pattern URL with which to access the paginated collection.
+ @param parameters A dictionary of extra parameters to be sent on the request
+ @return The newly created paginator instance.
+ @see RKPaginator
+ @warning Will raise an exception if the value of the `paginationMapping` property is nil.
+ */
+- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern withParameters:(NSDictionary *)parameters;
+
+/**
+ Creates and returns a paginator object configured to paginate the collection resource accessible at the specified path pattern.
+ 
  The paginator instantiated will be initialized with a URL built by appending the given pathPattern to the baseURL of the client. The response descriptors and Core Data configuration, if any, are inherited from the receiver.
  
  @param pathPattern A patterned URL fragment to be appended to the baseURL of the receiver in order to construct the pattern URL with which to access the paginated collection.
@@ -859,6 +872,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @warning Will raise an exception if the value of the `paginationMapping` property is nil.
  */
 - (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
+
 
 @end
 
