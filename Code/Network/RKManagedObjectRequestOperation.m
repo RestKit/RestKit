@@ -622,17 +622,17 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
             if (! success || [weakSelf isCancelled]) {
                 return completionBlock(nil, error);
             }
-        }
         
-        // Persist our mapped objects
-        success = [weakSelf obtainPermanentObjectIDsForInsertedObjects:&error];
-        if (! success || [weakSelf isCancelled]) {
-            return completionBlock(nil, error);
-        }
-        
-        success = [weakSelf saveContext:&error];
-        if (! success || [weakSelf isCancelled]) {
-            return completionBlock(nil, error);
+            // Persist our mapped objects
+            success = [weakSelf obtainPermanentObjectIDsForInsertedObjects:&error];
+            if (! success || [weakSelf isCancelled]) {
+                return completionBlock(nil, error);
+            }
+            
+            success = [weakSelf saveContext:&error];
+            if (! success || [weakSelf isCancelled]) {
+                return completionBlock(nil, error);
+            }
         }
         
         // Refetch all managed objects nested at key paths within the results dictionary before returning

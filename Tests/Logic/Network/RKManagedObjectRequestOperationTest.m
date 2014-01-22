@@ -394,10 +394,15 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 - (void)testDeletionOfObjectWithUnmappedResponseBody
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext withProperties:nil];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/humans/success" relativeToURL:[RKTestFactory baseURL]]];
     request.HTTPMethod = @"DELETE";
-    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
     managedObjectRequestOperation.targetObject = human;
     [managedObjectRequestOperation start];
@@ -447,11 +452,16 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 - (void)testThatDeletionOfObjectThatHasAlreadyBeenDeletedFromCoreDataDoesNotRaiseException
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:humanMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext withProperties:nil];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/humans/success" relativeToURL:[RKTestFactory baseURL]]];
     request.HTTPMethod = @"DELETE";
     [managedObjectStore.persistentStoreManagedObjectContext saveToPersistentStore:nil];
-    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
     managedObjectRequestOperation.targetObject = human;
     [managedObjectRequestOperation start];
@@ -1273,6 +1283,44 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
         expect([human isNew]).to.equal(NO);
     }];
+}
+
+- (void)testThatManagedObjectContextIsNotSavedWhenOperationErrorIsMapped
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorMapping addAttributeMappingsFromDictionary:@{ @"self": @"errorMessage" }];
+    NSMutableIndexSet *errorCodes = [[NSMutableIndexSet alloc] init];
+    [errorCodes addIndexes:RKStatusCodeIndexSetForClass(RKStatusCodeClassClientError)];
+    [errorCodes addIndexes:RKStatusCodeIndexSetForClass(RKStatusCodeClassServerError)];
+    RKResponseDescriptor *errorDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:errorMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"error" statusCodes:errorCodes];
+    
+    NSManagedObjectContext *scratchContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    id mockContext = [OCMockObject partialMockForObject:scratchContext];
+    [(NSManagedObjectContext *)[mockContext reject] save:((NSError __autoreleasing **)[OCMArg anyPointer])];
+    scratchContext.parentContext = [managedObjectStore mainQueueManagedObjectContext];
+    
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:mockContext];
+    human.name = @"Blake";
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/422" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = @"POST";
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor, errorDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = mockContext;
+    managedObjectRequestOperation.targetObject = human;
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    
+    expect(scratchContext.hasChanges).to.beTruthy();
+    expect([managedObjectStore.mainQueueManagedObjectContext existingObjectWithID:human.objectID error:nil]).to.beNil();
+    expect(managedObjectRequestOperation.error).toNot.beNil();
+    expect(managedObjectRequestOperation.mappingResult.dictionary[@"human"]).to.beNil();
+    expect(scratchContext.insertedObjects).to.haveCountOf(1);
+    [mockContext verify];
 }
 
 - (void)testThatMapperOperationDelegateIsPassedThroughToUnderlyingMapperOperation
