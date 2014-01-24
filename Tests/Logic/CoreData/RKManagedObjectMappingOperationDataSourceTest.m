@@ -865,7 +865,7 @@
     [cloudMapping addAttributeMappingsFromArray:@[@"name"]];
 
     RKEntityMapping *stormMapping = [RKEntityMapping mappingForEntityForName:@"Storm" inManagedObjectStore:managedObjectStore];
-    [stormMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
+    [stormMapping addAttributeMappingsFromArray:@[@"name"]];
     [stormMapping addRelationshipMappingWithSourceKeyPath:@"clouds" mapping:cloudMapping];
 
     NSArray *cloudsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Nimbus" forKey:@"name"]];

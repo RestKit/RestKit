@@ -94,7 +94,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
         }
         nestedPropertyMapping.propertyValueClass = propertyMapping.propertyValueClass;
         nestedPropertyMapping.valueTransformer = propertyMapping.valueTransformer;
-        [nestedMappings addObject:nestedPropertyMapping];
+        if (nestedPropertyMapping) [nestedMappings addObject:nestedPropertyMapping];
     }
     
     return nestedMappings;
@@ -425,6 +425,11 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 
 - (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue withPropertyMapping:(RKPropertyMapping *)propertyMapping error:(NSError *__autoreleasing *)error
 {
+    if (! inputValue) {
+        *outputValue = nil;
+        // We only want to consider the transformation successful and assign nil if the mapping calls for it
+        return propertyMapping.objectMapping.assignsDefaultValueForMissingAttributes;
+    }
     Class transformedValueClass = propertyMapping.propertyValueClass ?: [self.objectMapping classForKeyPath:propertyMapping.destinationKeyPath];
     if (! transformedValueClass) {
         *outputValue = inputValue;
@@ -436,16 +441,16 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     return success;
 }
 
-- (void)applyAttributeMapping:(RKAttributeMapping *)attributeMapping withValue:(id)value
+- (BOOL)applyAttributeMapping:(RKAttributeMapping *)attributeMapping withValue:(id)value
 {
+    id transformedValue = nil;
+    NSError *error = nil;
+    if (! [self transformValue:value toValue:&transformedValue withPropertyMapping:attributeMapping error:&error]) return NO;
+
     if ([self.delegate respondsToSelector:@selector(mappingOperation:didFindValue:forKeyPath:mapping:)]) {
         [self.delegate mappingOperation:self didFindValue:value forKeyPath:attributeMapping.sourceKeyPath mapping:attributeMapping];
     }
     RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
-
-    id transformedValue = nil;
-    NSError *error = nil;
-    if (! [self transformValue:value toValue:&transformedValue withPropertyMapping:attributeMapping error:&error]) return;
     
     // If we have a nil value for a primitive property, we need to coerce it into a KVC usable value or bail out
     if (transformedValue == nil && RKPropertyInspectorIsPropertyAtKeyPathOfObjectPrimitive(attributeMapping.destinationKeyPath, self.destinationObject)) {
@@ -453,7 +458,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         transformedValue = RKPrimitiveValueForNilValueOfClass([self.objectMapping classForKeyPath:attributeMapping.destinationKeyPath]);
         if (! transformedValue) {
             RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- Unable to transform `nil` into primitive value representation", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
-            return;
+            return NO;
         }
     }
 
@@ -482,6 +487,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         }
     }
     [self.mappingInfo addPropertyMapping:attributeMapping];
+    return YES;
 }
 
 // Return YES if we mapped any attributes
@@ -503,9 +509,8 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         }
 
         id value = (attributeMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
-        if (value) {
+        if ([self applyAttributeMapping:attributeMapping withValue:value]) {
             appliedMappings = YES;
-            [self applyAttributeMapping:attributeMapping withValue:value];
         } else {
             if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotFindValueForKeyPath:mapping:)]) {
                 [self.delegate mappingOperation:self didNotFindValueForKeyPath:attributeMapping.sourceKeyPath mapping:attributeMapping];

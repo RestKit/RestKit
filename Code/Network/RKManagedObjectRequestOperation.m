@@ -415,13 +415,16 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
 // Defined in RKObjectManager.h
 BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *responseDescriptors);
 
+@interface RKObjectRequestOperation ()
+@property (nonatomic, strong, readwrite) NSError *error;
+@property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
+@end
+
 @interface RKManagedObjectRequestOperation ()
 // Core Data specific
 @property (nonatomic, strong) NSManagedObjectContext *privateContext;
 @property (nonatomic, copy) NSManagedObjectID *targetObjectID;
 @property (nonatomic, strong) RKManagedObjectResponseMapperOperation *responseMapperOperation;
-@property (nonatomic, strong, readwrite) NSError *error;
-@property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @property (nonatomic, strong) NSDictionary *mappingInfo;
 @property (nonatomic, strong) NSCachedURLResponse *cachedResponse;
@@ -544,7 +547,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         // Check for a change in the Etag
         NSString *cachedEtag = [[(NSHTTPURLResponse *)[self.cachedResponse response] allHeaderFields] objectForKey:@"ETag"];
         NSString *responseEtag = [[response allHeaderFields] objectForKey:@"ETag"];
-        if (! [cachedEtag isEqualToString:responseEtag]) return NO;
+        if (!(cachedEtag && responseEtag && [cachedEtag isEqualToString:responseEtag])) return NO;
         
         // Response data has changed
         NSData *responseData = self.HTTPRequestOperation.responseData;
@@ -613,21 +616,23 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
                 return completionBlock(nil, error);
             }
         }
+
+        if (!responseMappingError) {
+            success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
+            if (! success || [weakSelf isCancelled]) {
+                return completionBlock(nil, error);
+            }
         
-        success = [weakSelf deleteLocalObjectsMissingFromMappingResult:mappingResult error:&error];
-        if (! success || [weakSelf isCancelled]) {
-            return completionBlock(nil, error);
-        }
-        
-        // Persist our mapped objects
-        success = [weakSelf obtainPermanentObjectIDsForInsertedObjects:&error];
-        if (! success || [weakSelf isCancelled]) {
-            return completionBlock(nil, error);
-        }
-        
-        success = [weakSelf saveContext:&error];
-        if (! success || [weakSelf isCancelled]) {
-            return completionBlock(nil, error);
+            // Persist our mapped objects
+            success = [weakSelf obtainPermanentObjectIDsForInsertedObjects:&error];
+            if (! success || [weakSelf isCancelled]) {
+                return completionBlock(nil, error);
+            }
+            
+            success = [weakSelf saveContext:&error];
+            if (! success || [weakSelf isCancelled]) {
+                return completionBlock(nil, error);
+            }
         }
         
         // Refetch all managed objects nested at key paths within the results dictionary before returning

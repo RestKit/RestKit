@@ -498,7 +498,7 @@
     expect(request.HTTPMethod).to.equal(@"PATCH");
     expect(request.HTTPBody).notTo.beNil();
     NSString *string = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
-    expect(string).to.equal(@"key=value");
+    expect(string).to.equal(@"human[name]&key=value");
 }
 
 - (void)testAFHTTPClientCanModifyRequestsBuiltByObjectManager

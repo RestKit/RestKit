@@ -547,6 +547,10 @@
 		25CAAA9515254E7800CAE5D7 /* ArrayOfHumans.json in Resources */ = {isa = PBXBuildFile; fileRef = 25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */; };
 		25CDA0E7161E828D00F583F3 /* RKISODateFormatterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CDA0E2161E821000F583F3 /* RKISODateFormatterTest.m */; };
 		25CDA0E8161E828E00F583F3 /* RKISODateFormatterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CDA0E2161E821000F583F3 /* RKISODateFormatterTest.m */; };
+		25DA356F1836741D001A56A0 /* TKTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DA356D1836741C001A56A0 /* TKTransition.h */; };
+		25DA35701836741D001A56A0 /* TKTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DA356D1836741C001A56A0 /* TKTransition.h */; };
+		25DA35711836741D001A56A0 /* TKTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DA356E1836741C001A56A0 /* TKTransition.m */; };
+		25DA35721836741D001A56A0 /* TKTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DA356E1836741C001A56A0 /* TKTransition.m */; };
 		25DB7508151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */; };
 		25DB7509151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */; };
 		25E36E0215195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */; };
@@ -946,6 +950,8 @@
 		25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfHumans.json; sourceTree = "<group>"; };
 		25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseDescriptorTest.m; sourceTree = "<group>"; };
 		25CDA0E2161E821000F583F3 /* RKISODateFormatterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKISODateFormatterTest.m; sourceTree = "<group>"; };
+		25DA356D1836741C001A56A0 /* TKTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TKTransition.h; path = Code/TKTransition.h; sourceTree = "<group>"; };
+		25DA356E1836741C001A56A0 /* TKTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TKTransition.m; path = Code/TKTransition.m; sourceTree = "<group>"; };
 		25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+RKAdditionsTest.m"; sourceTree = "<group>"; };
 		25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchRequestMappingCacheTest.m; sourceTree = "<group>"; };
 		25E88C86165C5CC30042ABD0 /* RKConnectionDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKConnectionDescription.h; sourceTree = "<group>"; };
@@ -1648,6 +1654,8 @@
 		25C6C0A21716F6F800C98A73 /* TransitionKit */ = {
 			isa = PBXGroup;
 			children = (
+				25DA356D1836741C001A56A0 /* TKTransition.h */,
+				25DA356E1836741C001A56A0 /* TKTransition.m */,
 				25C6C0A51716F6F800C98A73 /* TKEvent.h */,
 				25C6C0A61716F6F800C98A73 /* TKEvent.m */,
 				25C6C0A71716F6F800C98A73 /* TKState.h */,
@@ -1866,6 +1874,7 @@
 				25C6C0C51716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				25C6C0CB1716F6F800C98A73 /* TransitionKit.h in Headers */,
 				25C6C0E81716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
+				25DA356F1836741D001A56A0 /* TKTransition.h in Headers */,
 				54CDB45B17B408B100FAC285 /* RKStringTokenizer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1976,6 +1985,7 @@
 				25C6C0C61716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				25C6C0CC1716F6F800C98A73 /* TransitionKit.h in Headers */,
 				25C6C0E91716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
+				25DA35701836741D001A56A0 /* TKTransition.h in Headers */,
 				54CDB45C17B408B100FAC285 /* RKStringTokenizer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2255,6 +2265,7 @@
 				25160DE6145650490060A5C5 /* RKPropertyInspector+CoreData.m in Sources */,
 				25160E0A145650490060A5C5 /* RKDynamicMapping.m in Sources */,
 				25160E0C145650490060A5C5 /* RKErrorMessage.m in Sources */,
+				25DA35711836741D001A56A0 /* TKTransition.m in Sources */,
 				25160E10145650490060A5C5 /* RKAttributeMapping.m in Sources */,
 				25160E17145650490060A5C5 /* RKMapperOperation.m in Sources */,
 				25160E1B145650490060A5C5 /* RKObjectMapping.m in Sources */,
@@ -2415,6 +2426,7 @@
 				25160F47145655C60060A5C5 /* RKErrorMessage.m in Sources */,
 				25160F4B145655C60060A5C5 /* RKAttributeMapping.m in Sources */,
 				25160F52145655C60060A5C5 /* RKMapperOperation.m in Sources */,
+				25DA35721836741D001A56A0 /* TKTransition.m in Sources */,
 				25160F56145655C60060A5C5 /* RKObjectMapping.m in Sources */,
 				25160F59145655C60060A5C5 /* RKMappingOperation.m in Sources */,
 				25160F5D145655C60060A5C5 /* RKMappingResult.m in Sources */,
@@ -2584,6 +2596,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2603,6 +2616,7 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -2619,6 +2633,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2630,6 +2645,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -2637,6 +2653,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
 				VALIDATE_PRODUCT = YES;
@@ -2650,6 +2667,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				INSTALL_PATH = "@rpath";
 				OBJROOT = "$(SRCROOT)/Build";
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
@@ -2667,6 +2685,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				INSTALL_PATH = "@rpath";
 				OBJROOT = "$(SRCROOT)/Build";
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
@@ -2730,6 +2749,7 @@
 		25160E88145651060060A5C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -2745,7 +2765,7 @@
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitFramework-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@rpath";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = RestKit;
@@ -2759,6 +2779,7 @@
 		25160E89145651060060A5C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2775,7 +2796,7 @@
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitFramework-Info.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@rpath";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = RestKit;
 				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers/RestKit";
@@ -2789,6 +2810,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2809,6 +2831,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

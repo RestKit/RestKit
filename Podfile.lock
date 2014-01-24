@@ -5,33 +5,33 @@ PODS:
     - RKValueTransformers (~> 1.0.0)
   - OCHamcrest (3.0.1)
   - OCMock (2.2.1)
-  - RestKit (0.21.0):
+  - RestKit (0.22.0):
     - RestKit/Core
-  - RestKit/Core (0.21.0):
+  - RestKit/Core (0.22.0):
     - RestKit/CoreData
     - RestKit/Network
     - RestKit/ObjectMapping
-  - RestKit/CoreData (0.21.0)
-  - RestKit/Network (0.21.0):
+  - RestKit/CoreData (0.22.0)
+  - RestKit/Network (0.22.0):
     - AFNetworking (~> 1.3.0)
     - RestKit/ObjectMapping
     - RestKit/Support
     - SOCKit
-  - RestKit/ObjectMapping (0.21.0):
+  - RestKit/ObjectMapping (0.22.0):
     - ISO8601DateFormatterValueTransformer (~> 0.5.0)
     - RestKit/Support
-    - RKValueTransformers (~> 1.0.0)
-  - RestKit/Search (0.21.0):
+    - RKValueTransformers (~> 1.0.1)
+  - RestKit/Search (0.22.0):
     - RestKit/CoreData
-  - RestKit/Support (0.21.0):
-    - TransitionKit (= 1.1.1)
-  - RestKit/Testing (0.21.0)
+  - RestKit/Support (0.22.0):
+    - TransitionKit (= 2.0.0)
+  - RestKit/Testing (0.22.0)
   - RKCLLocationValueTransformer (1.0.0):
     - RKValueTransformers (~> 1.0.0)
-  - RKValueTransformers (1.0.0)
+  - RKValueTransformers (1.0.1)
   - SOCKit (1.1)
-  - Specta (0.1.11)
-  - TransitionKit (1.1.1)
+  - Specta (0.2.1)
+  - TransitionKit (2.0.0)
 
 DEPENDENCIES:
   - Expecta (= 0.2.3)
@@ -41,7 +41,7 @@ DEPENDENCIES:
   - RestKit/Search (from `.`)
   - RestKit/Testing (from `.`)
   - RKCLLocationValueTransformer (from `https://github.com/RestKit/RKCLLocationValueTransformer`)
-  - Specta (= 0.1.11)
+  - Specta (= 0.2.1)
 
 EXTERNAL SOURCES:
   RestKit:
@@ -50,16 +50,16 @@ EXTERNAL SOURCES:
     :git: https://github.com/RestKit/RKCLLocationValueTransformer
 
 SPEC CHECKSUMS:
-  AFNetworking: 0700ec7a58c36ad217173e167f6e4df7270df66b
+  AFNetworking: 61fdd49e2ffe6380378df37b3b6e70630bb9dd66
   Expecta: dbc4a27fabb853bdd2e907e33f11ee43a9a47d0c
   ISO8601DateFormatterValueTransformer: d0af1f50a9df42db72d7418db31938b8473e0af8
   OCHamcrest: 782c52ae8c673e5d6060a65005cfd26d20d519ba
   OCMock: 80e4cfbc71a0e1bd28caf10a9fda27da7c4c8402
-  RestKit: c11a30e7bc73513d9d2c2695672aba7697d24181
+  RestKit: 8aedc01890f52f090ff30f60c709eab072dd14c3
   RKCLLocationValueTransformer: e4a127582a78df98035f75b611e48c0545b8884d
-  RKValueTransformers: 01dc043fd853f6e40459b2e732dff545298a0f91
+  RKValueTransformers: 1562d458b9c9d59ce777bfc5982f2e1aef2e9182
   SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581
-  Specta: 82746c6fd70b104c5d37cfbadb7bf15a2cbc4da0
-  TransitionKit: d0e3344aac92991395d4c2e72d9c5a8ceeb12910
+  Specta: 2d06220591110c6d9757d8be8ecf8e63aa40dc2a
+  TransitionKit: 433284465abacdc07852d7db6dd0cc075010059a
 
-COCOAPODS: 0.27.1
+COCOAPODS: 0.29.0

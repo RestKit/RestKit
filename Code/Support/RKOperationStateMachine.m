@@ -58,39 +58,39 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
         // NOTE: State transitions are guarded by a lock via start/finish/cancel action methods
         TKState *readyState = [TKState stateWithName:RKOperationStateReady];
         __weak __typeof(&*self)weakSelf = self;
-        [readyState setWillExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [readyState setWillExitStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation willChangeValueForKey:@"isReady"];
         }];
-        [readyState setDidExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [readyState setDidExitStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation didChangeValueForKey:@"isReady"];
         }];
 
         TKState *executingState = [TKState stateWithName:RKOperationStateExecuting];
-        [executingState setWillEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [executingState setWillEnterStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation willChangeValueForKey:@"isExecuting"];
         }];
         // NOTE: isExecuting KVO for `setDidEnterStateBlock:` configured below in `setExecutionBlock`
-        [executingState setWillExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [executingState setWillExitStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation willChangeValueForKey:@"isExecuting"];
         }];
-        [executingState setDidExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [executingState setDidExitStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation didChangeValueForKey:@"isExecuting"];
         }];
-        [executingState setDidEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [executingState setDidEnterStateBlock:^(TKState *state, TKTransition *transition) {
             [NSException raise:NSInternalInconsistencyException format:@"You must configure an execution block via `setExecutionBlock:`."];
         }];
 
         TKState *finishedState = [TKState stateWithName:RKOperationStateFinished];
-        [finishedState setWillEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [finishedState setWillEnterStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation willChangeValueForKey:@"isFinished"];
         }];
-        [finishedState setDidEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [finishedState setDidEnterStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation didChangeValueForKey:@"isFinished"];
         }];
-        [finishedState setWillExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [finishedState setWillExitStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation willChangeValueForKey:@"isFinished"];
         }];
-        [finishedState setDidExitStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+        [finishedState setDidExitStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation didChangeValueForKey:@"isFinished"];
         }];
 
@@ -134,7 +134,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
     if (! self.dispatchQueue) [NSException raise:NSInternalInconsistencyException format:@"You must configure an `operationQueue`."];
     [self performBlockWithLock:^{
         NSError *error = nil;
-        BOOL success = [self.stateMachine fireEvent:RKOperationEventStart error:&error];
+        BOOL success = [self.stateMachine fireEvent:RKOperationEventStart userInfo:nil error:&error];
         if (! success) [NSException raise:RKOperationFailureException format:@"The operation unexpectedly failed to start due to an error: %@", error];
     }];
 }
@@ -145,7 +145,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
     dispatch_async(self.dispatchQueue, ^{
         [self performBlockWithLock:^{
             NSError *error = nil;
-            BOOL success = [self.stateMachine fireEvent:RKOperationEventFinish error:&error];
+            BOOL success = [self.stateMachine fireEvent:RKOperationEventFinish userInfo:nil error:&error];
             if (! success) [NSException raise:RKOperationFailureException format:@"The operation unexpectedly failed to finish due to an error: %@", error];
         }];
     });
@@ -169,7 +169,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 {
     __weak __typeof(&*self)weakSelf = self;
     TKState *executingState = [self.stateMachine stateNamed:RKOperationStateExecuting];
-    [executingState setDidEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+    [executingState setDidEnterStateBlock:^(TKState *state, TKTransition *transition) {
         [weakSelf.operation didChangeValueForKey:@"isExecuting"];
         dispatch_async(weakSelf.dispatchQueue, ^{
             block();
@@ -181,7 +181,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 {
     __weak __typeof(&*self)weakSelf = self;
     TKState *finishedState = [self.stateMachine stateNamed:RKOperationStateFinished];
-    [finishedState setWillEnterStateBlock:^(TKState *state, TKStateMachine *stateMachine) {
+    [finishedState setWillEnterStateBlock:^(TKState *state, TKTransition *transition) {
         [weakSelf performBlockWithLock:^{
             // Must emit KVO as we are replacing the block configured in `initWithOperation:queue:`
             [weakSelf.operation willChangeValueForKey:@"isFinished"];

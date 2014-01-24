@@ -880,7 +880,7 @@
     assertThatInt([[dictionary valueForKey:@"id"] intValue], is(equalToInt(123)));
 }
 
-- (void)testShouldReturnNoWithoutErrorWhenGivenASourceObjectThatContainsNoMappableKeys
+- (void)testThatMappingSourceObjectWithNilValuesForSpecifiedKeysAssignsNilToDestinationObject
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
@@ -890,21 +890,26 @@
 
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"blue", @"favorite_color", @"coffee", @"preferred_beverage", nil];
     RKTestUser *user = [RKTestUser user];
+    user.name = @"name";
+    user.userID = @12345;
+    id mockUser = [OCMockObject partialMockForObject:user];
+    [[mockUser reject] setUserID:nil];
+    [(RKTestUser *)[mockUser reject] setName:nil];
 
-    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(NO)));
-    assertThat(error, is(notNilValue()));
-    assertThatInteger(operation.error.code, is(equalToInteger(RKMappingErrorUnmappableRepresentation)));
+    [mockUser verify];
 }
 
 - (void)testShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent
 {
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMappingOperationDelegate)];
-    
+    [[mockDelegate expect] mappingOperation:OCMOCK_ANY didFailWithError:OCMOCK_ANY];
+
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
     [mapping addPropertyMapping:idMapping];
@@ -1387,7 +1392,7 @@
     [mockUser verify];
 }
 
-- (void)testShouldOptionallyIgnoreAMissingSourceKeyPath
+- (void)testMappingFromMissingSourceKeyPathAssignsNil
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
@@ -1398,7 +1403,7 @@
     RKTestUser *user = [RKTestUser user];
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
-    [(RKTestUser *)[mockUser reject] setName:nil];
+    [(RKTestUser *)[mockUser expect] setName:nil];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
