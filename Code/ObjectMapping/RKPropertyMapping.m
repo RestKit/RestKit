@@ -49,9 +49,10 @@ static NSString *RKStringByReplacingUnderscoresWithBraces(NSString *string)
 
 - (BOOL)isEqualToMapping:(RKPropertyMapping *)otherMapping
 {
-    return [otherMapping isMemberOfClass:[self class]] &&
-            [self.sourceKeyPath isEqual:otherMapping.sourceKeyPath] &&
-            [self.destinationKeyPath isEqual:otherMapping.destinationKeyPath];
+    return
+    [otherMapping isMemberOfClass:[self class]] &&
+    ((self.sourceKeyPath == otherMapping.sourceKeyPath) || [self.sourceKeyPath isEqualToString:otherMapping.sourceKeyPath]) &&
+    ((self.destinationKeyPath == otherMapping.destinationKeyPath) || [self.destinationKeyPath isEqualToString:otherMapping.destinationKeyPath]);
 }
 
 - (void)setSourceKeyPath:(NSString *)sourceKeyPath
