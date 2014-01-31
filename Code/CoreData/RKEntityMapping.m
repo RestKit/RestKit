@@ -131,8 +131,11 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 - (NSString *)transformSourceKeyPath:(NSString *)keyPath;
 @end
 
-@interface RKEntityMapping ()
+@interface RKObjectMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
+@end
+
+@interface RKEntityMapping ()
 @property (nonatomic, strong) NSMutableArray *mutableConnections;
 @end
 
