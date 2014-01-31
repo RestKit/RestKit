@@ -635,7 +635,13 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     if (isManagedObjectRequestOperation && !self.managedObjectStore) RKLogWarning(@"Asked to create an `RKManagedObjectRequestOperation` object, but managedObjectStore is nil.");
     if (isManagedObjectRequestOperation && self.managedObjectStore) {
         // Construct a Core Data operation
-        NSManagedObjectContext *managedObjectContext = [object respondsToSelector:@selector(managedObjectContext)] ? [object managedObjectContext] : self.managedObjectStore.mainQueueManagedObjectContext;
+        NSManagedObjectContext *managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
+        if ([object isKindOfClass:[NSArray class]] && [[object firstObject] respondsToSelector:@selector(managedObjectContext)]) {
+            managedObjectContext = [[object firstObject] managedObjectContext];
+        } else if ([object respondsToSelector:@selector(managedObjectContext)]) {
+            managedObjectContext = [object managedObjectContext];
+        }
+        
         operation = [self managedObjectRequestOperationWithRequest:request responseDescriptors:matchingDescriptors managedObjectContext:managedObjectContext success:nil failure:nil];
 
         if ([object isKindOfClass:[NSManagedObject class]]) {
