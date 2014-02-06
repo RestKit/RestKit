@@ -174,7 +174,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (void)loadPage:(NSUInteger)pageNumber
 {
-    if (self.objectRequestOperation.HTTPRequestOperation.response) {
+    if (self.objectRequestOperation.isFinished) {
         // The user by calling loadPage is ready to perform the next request so invalidate objectRequestOperation
         self.objectRequestOperation = nil;
     }
@@ -193,7 +193,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         managedObjectRequestOperation.managedObjectContext = self.managedObjectContext;
         managedObjectRequestOperation.managedObjectCache = self.managedObjectCache;
         managedObjectRequestOperation.fetchRequestBlocks = self.fetchRequestBlocks;
-        managedObjectRequestOperation.deletesOrphanedObjects = NO;
+        managedObjectRequestOperation.deletesOrphanedObjects = pageNumber == 1 ? YES : NO;
         
         self.objectRequestOperation = managedObjectRequestOperation;
     } else {
