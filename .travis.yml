@@ -4,7 +4,8 @@ before_install:
     - brew uninstall xctool
     - brew install xctool
     - rvm use 2.0.0-p247
-    - ruby -v
+    - ruby --version
+    - bundle install
 install: bundle exec pod install
 script:
     - rake server:start test test:building_without_core_data
