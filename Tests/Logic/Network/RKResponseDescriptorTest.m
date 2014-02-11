@@ -244,8 +244,27 @@ describe(@"matchesResponse:", ^{
                 
                 it(@"returns YES", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://0.0.0.0:5000/api/v1/organizations/?client_search=t"];
+                    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    expect([responseDescriptor matchesResponse:response]).to.equal(YES);
+                    expect([responseDescriptor matchesResponse:response request:request]).to.equal(YES);
+                });
+            });
+            
+            context(@"and the path pattern is '/301'", ^{
+                context(@"and given the URL 'http://0.0.0.0:5000/redirected' after a redirect", ^{
+                    beforeEach(^{
+                        RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+                        responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/301" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+                        responseDescriptor.baseURL = [NSURL URLWithString:@"http://0.0.0.0:5000"];
+                    });
+                    
+                    it(@"returns YES", ^{
+                        NSURL *requestURL = [NSURL URLWithString:@"http://0.0.0.0:5000/301"];
+                        NSURL *responseURL = [NSURL URLWithString:@"http://0.0.0.0:5000/redirected"];
+                        NSURLRequest *request = [NSURLRequest requestWithURL:requestURL];
+                        NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
+                        expect([responseDescriptor matchesResponse:response request:request]).to.equal(YES);
+                    });
                 });
             });
         });
@@ -262,8 +281,9 @@ describe(@"matchesResponse:", ^{
                 
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation/"];
+                    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    expect([responseDescriptor matchesResponse:response]).to.equal(NO);
+                    expect([responseDescriptor matchesResponse:response request:request]).to.equal(NO);
                 });
             });
             
@@ -276,8 +296,9 @@ describe(@"matchesResponse:", ^{
                 
                 it(@"returns NO", ^{
                     NSURL *URL = [NSURL URLWithString:@"http://domain.com/domain/api/v1/recommendation?action=search&type=whatever"];
+                    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
                     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
-                    expect([responseDescriptor matchesResponse:response]).to.equal(NO);
+                    expect([responseDescriptor matchesResponse:response request:request]).to.equal(NO);
                 });
             });
         });

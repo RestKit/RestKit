@@ -525,6 +525,7 @@ BOOL RKURLIsRelativeToURL(NSURL *URL, NSURL *baseURL)
 
 NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL)
 {
+    if (!URL) return nil;
     if (baseURL) {
         if (! RKURLIsRelativeToURL(URL, baseURL)) return nil;
         return [[URL absoluteString] substringFromIndex:[[baseURL absoluteString] length]];
