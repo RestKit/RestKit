@@ -434,10 +434,10 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     return YES;
 }
 
-- (BOOL)mappingOperation:(RKMappingOperation *)mappingOperation shouldSetUnchangedValuesForObject:(id)object
+- (BOOL)mappingOperationShouldSetUnchangedValues:(RKMappingOperation *)mappingOperation
 {
     // Only new objects should have a temporary ID
-    if ([object isKindOfClass:[NSManagedObject class]] && [[(NSManagedObject *)object objectID] isTemporaryID]) {
+    if ([mappingOperation.destinationObject isKindOfClass:[NSManagedObject class]] && [[(NSManagedObject *)mappingOperation.destinationObject objectID] isTemporaryID]) {
         return YES;
     }
     else return NO;
