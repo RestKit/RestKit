@@ -24,11 +24,11 @@
 #import "RKRequestDescriptor.h"
 #import "RKRouter.h"
 
-// TODO: How to handle encoding to target format??
-@interface RKRequestSerializer : AFHTTPRequestSerializer
+@interface RKRequestSerializer : NSObject <NSCoding, NSCopying>
 
-// Hmmmm.... I could make this use
-+ (id)serializerWithHTTPRequestSerializer:(AFHTTPRequestSerializer *)HTTPRequestSerializer;
++ (instancetype)requestSerializerWithBaseURL:(NSURL *)baseURL transportSerializer:(AFHTTPRequestSerializer *)transportSerializer;
+
+@property (nonatomic, strong) AFHTTPRequestSerializer *transportSerializer;
 
 ///-----------------------------------
 /// @name Managing Request Descriptors
@@ -93,7 +93,7 @@ Returns an array containing the `RKRequestDescriptor` objects added to the manag
  */
 - (NSMutableURLRequest *)requestWithObject:(id)object
                                     method:(RKHTTPMethod)method
-                                      path:(NSString *)path
+                                 URLString:(NSString *)URLString
                                 parameters:(NSDictionary *)parameters
                                      error:(NSError * __autoreleasing *)error;
 
@@ -113,7 +113,7 @@ Returns an array containing the `RKRequestDescriptor` objects added to the manag
  */
 - (NSMutableURLRequest *)multipartFormRequestWithObject:(id)object
                                                  method:(RKHTTPMethod)method
-                                                   path:(NSString *)path
+                                              URLString:(NSString *)URLString
                                              parameters:(NSDictionary *)parameters
                               constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
                                                   error:(NSError * __autoreleasing *)error;
@@ -130,10 +130,10 @@ Returns an array containing the `RKRequestDescriptor` objects added to the manag
 
  @see `requestWithObject:method:path:parameters`
  */
-- (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName
-                                               object:(id)object
-                                           parameters:(NSDictionary *)parameters
-                                                error:(NSError * __autoreleasing *)error;
+- (NSMutableURLRequest *)requestWithURLForRouteNamed:(NSString *)routeName
+                                              object:(id)object
+                                          parameters:(NSDictionary *)parameters
+                                               error:(NSError * __autoreleasing *)error;
 /**
  Creates an `NSMutableURLRequest` object with the `NSURL` returned by the router for the relationship of the given object and the given parameters.
 
@@ -150,9 +150,9 @@ Returns an array containing the `RKRequestDescriptor` objects added to the manag
  @raises NSInvalidArgumentException Raised if no route is configured for a relationship of the given object's class with the given name.
  @see `requestWithObject:method:path:parameters`
  */
-- (NSMutableURLRequest *)requestWithPathForRelationship:(NSString *)relationship
+- (NSMutableURLRequest *)requestWithURLForRelationship:(NSString *)relationship
                                                ofObject:(id)object
-                                                 method:(RKHTTPMethodOptions)method
+                                                 method:(RKHTTPMethod)method
                                              parameters:(NSDictionary *)parameters
                                                   error:(NSError * __autoreleasing *)error;
 
