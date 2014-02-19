@@ -20,7 +20,7 @@
 
 #import <CoreData/CoreData.h>
 
-@class RKMapping, RKObjectManager;
+@class RKMapping;
 @protocol RKManagedObjectCaching;
 
 /**
