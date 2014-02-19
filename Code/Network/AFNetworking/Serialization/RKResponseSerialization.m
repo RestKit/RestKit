@@ -10,13 +10,13 @@
 #import "RKResponseMapperOperation.h"
 
 @interface RKResponseSerializationManager ()
-@property (nonatomic, strong, readwrite) AFHTTPResponseSerializer *dataSerializer;
+@property (nonatomic, strong, readwrite) AFHTTPResponseSerializer *transportSerializer;
 @property (nonatomic, strong) NSMutableArray *mutableResponseDescriptors;
 @end
 
 @implementation RKResponseSerializationManager
 
-+ (instancetype)managerWithDataSerializer:(AFHTTPResponseSerializer *)dataSerializer
++ (instancetype)managerWithTransportSerializer:(AFHTTPResponseSerializer *)dataSerializer
 {
     if (!dataSerializer) [NSException raise:NSInvalidArgumentException format:@"`%@` cannot be `nil`.", NSStringFromSelector(@selector(dataSerializer))];
     return [[self alloc] initWithDataSerializer:dataSerializer];
@@ -26,7 +26,7 @@
 {
     self = [super init];
     if (self) {
-        self.dataSerializer = dataSerializer;
+        self.transportSerializer = dataSerializer;
         self.mutableResponseDescriptors = [NSMutableArray new];
     }
     return self;
@@ -96,7 +96,7 @@
 // TODO: Migrate functionality of `appropriateObjectRequestOperation...`
 - (RKObjectResponseSerializer *)serializerWithRequest:(NSURLRequest *)request object:(id)object
 {
-    AFHTTPResponseSerializer *dataSerializer = [self.dataSerializer copy];
+    AFHTTPResponseSerializer *dataSerializer = [self.transportSerializer copy];
     dataSerializer.acceptableStatusCodes = nil; // TODO: Configure the acceptable status codes to exactly match those of the response descriptors.
     RKObjectResponseSerializer *responseSerializer = [[RKObjectResponseSerializer alloc] initWithRequest:request dataSerializer:dataSerializer responseDescriptors:self.responseDescriptors];
     responseSerializer.targetObject = object;

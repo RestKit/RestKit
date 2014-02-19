@@ -28,14 +28,14 @@
  @param dataSerializer An `AFHTTPResponseSerializer` object to use for deserializing the response data into an object mappable representation. Cannot be `nil`.
  @return A newly created response serialization manager.
  */
-+ (instancetype)managerWithDataSerializer:(AFHTTPResponseSerializer *)dataSerializer;
++ (instancetype)managerWithTransportSerializer:(AFHTTPResponseSerializer *)transportSerializer;
 
 /**
  The serializer responsible for deserializing the response data from the transport format into a Foundation representation that is suitable for object mapping.
 
- The data serializer is typically tightly coupled to the Content-Type of the response. For example, when handling JSON responses with the `application/json` Content-Type the data serializer would be an instance of `AFJSONResponseSerializer`.
+ The transport serializer is typically tightly coupled to the Content-Type of the response. For example, when handling JSON responses with the `application/json` Content-Type the data serializer would be an instance of `AFJSONResponseSerializer`.
  */
-@property (nonatomic, strong, readonly) AFHTTPResponseSerializer *dataSerializer;
+@property (nonatomic, strong, readonly) AFHTTPResponseSerializer *transportSerializer;
 
 ///------------------------------------------------
 /// @name Managing Response Descriptors
