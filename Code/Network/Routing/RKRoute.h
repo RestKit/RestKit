@@ -45,33 +45,33 @@
  Creates and returns a new named route object with the given name, path pattern and method.
 
  @param name A unique identifying name for the route.
- @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
+ @param URITemplateString A URI Template string describing the format of URL paths generated from the route.
  @param method The request method of the route. The method given must specify a single HTTP method to be used for requests using the route.
  @return A new named route object with the given name, path pattern and request method.
  @raise NSInvalidArgumentException Raised if the given HTTP request method is not an exact match of the RKHTTPMethod enum
  */
-+ (instancetype)routeWithName:(NSString *)name URITemplateString:(NSString *)pathPattern method:(RKHTTPMethodOptions)method;
++ (instancetype)routeWithName:(NSString *)name URITemplateString:(NSString *)URITemplateString method:(RKHTTPMethodOptions)method;
 
 /**
  Creates and returns a new class route object with the given object class, path pattern and method.
 
  @param objectClass The class that is represented by the route.
- @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
+ @param URITemplateString A URI Template string describing the format of URL paths generated from the route.
  @param method The request method of the route. More than one method may be specified via a bitwise OR.
  @return A new class route object with the given object class, path pattern and request method.
  */
-+ (instancetype)routeWithClass:(Class)objectClass URITemplateString:(NSString *)pathPattern method:(RKHTTPMethodOptions)method;
++ (instancetype)routeWithClass:(Class)objectClass URITemplateString:(NSString *)URITemplateString method:(RKHTTPMethodOptions)method;
 
 /**
  Creates and returns a new relationship route object with the given relationship name, object class, path pattern and method.
 
  @param name The name of the relationship represented by the route.
  @param objectClass The class containing the relationship represented by the route.
- @param pathPattern A SOCKit pattern describing the format of URL paths generated from the route.
+ @param URITemplateString A URI Template string describing the format of URL paths generated from the route.
  @param method The request method of the route. More than one method may be specified via a bitwise OR.
  @return A new class route object with the given object class, path pattern and request method.
  */
-+ (instancetype)routeWithRelationshipName:(NSString *)name objectClass:(Class)objectClass URITemplateString:(NSString *)pathPattern method:(RKHTTPMethodOptions)method;
++ (instancetype)routeWithRelationshipName:(NSString *)name objectClass:(Class)objectClass URITemplateString:(NSString *)URITemplateString method:(RKHTTPMethodOptions)method;
 
 ///---------------------------------
 /// @name Accessing Route Attributes
@@ -99,9 +99,9 @@
 @property (nonatomic, assign, readonly) RKHTTPMethodOptions method;
 
 /**
- The path pattern of the receiver.
+ The URI Template of the receiver.
 
- A SOCKit pattern that describes the format of the path portion of URL's generated from the receiver. Required and used by all route types.
+ A URI Template that is expanded to construct a complete URL. Required and used by all route types.
 
  @see `SOCPattern`
  */
