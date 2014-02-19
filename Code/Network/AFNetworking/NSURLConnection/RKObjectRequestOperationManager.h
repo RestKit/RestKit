@@ -34,6 +34,7 @@
 
 @property (nonatomic, strong) AFHTTPRequestOperationManager *HTTPRequestOperationManager;
 @property (nonatomic, readonly) NSURL *baseURL;
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 @property (nonatomic, strong) RKRequestSerializer *requestSerializer;
 @property (nonatomic, strong) RKResponseSerializationManager *responseSerializationManager;
@@ -53,9 +54,9 @@
                                                     success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                                                     failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
 
-///-------------------------------------
-/// @name Making Object Requests by Path
-///-------------------------------------
+///----------------------------------------
+/// @name Retrieving Collections of Objects
+///----------------------------------------
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request with a URL for the given path, and enqueues it to the manager's operation queue.
@@ -69,10 +70,10 @@
 
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (AFHTTPRequestOperation *)getObjectsAtPath:(NSString *)path
-                                  parameters:(NSDictionary *)parameters
-                                     success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
-                                     failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
+- (AFHTTPRequestOperation *)GETObjectsAtURLForString:(NSString *)URLString
+                                          parameters:(NSDictionary *)parameters
+                                             success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
+                                             failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
@@ -89,11 +90,11 @@
  @see [RKRouter URLForRelationship:ofObject:method:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (AFHTTPRequestOperation *)getObjectsAtPathForRelationship:(NSString *)relationshipName
-                                                   ofObject:(id)object
-                                                 parameters:(NSDictionary *)parameters
-                                                    success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
-                                                    failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
+- (AFHTTPRequestOperation *)GETObjectsAtURLForRelationship:(NSString *)relationshipName
+                                                  ofObject:(id)object
+                                                parameters:(NSDictionary *)parameters
+                                                   success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                   failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request for the URL returned by the router for the given route name, and enqueues it to the manager's operation queue.
@@ -110,11 +111,11 @@
  @see [RKRouter URLForRouteNamed:method:object:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (AFHTTPRequestOperation *)getObjectsAtPathForRouteNamed:(NSString *)routeName
-                                                   object:(id)object
-                                               parameters:(NSDictionary *)parameters
-                                                  success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
-                                                  failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
+- (AFHTTPRequestOperation *)GETObjectsAtURLForRouteNamed:(NSString *)routeName
+                                                  object:(id)object
+                                              parameters:(NSDictionary *)parameters
+                                                 success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                 failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure;
 
 ///------------------------------------
 /// @name Making Requests for an Object

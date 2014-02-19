@@ -37,8 +37,9 @@
     self = [self init];
     if (self) {
         self.HTTPRequestOperationManager = manager;
-        self.requestSerializer = [RKRequestSerializer serializer];
-        self.responseSerializationManager = [RKResponseSerializationManager managerWithDataSerializer:manager.responseSerializer];
+        self.requestSerializer = [RKRequestSerializer requestSerializerWithBaseURL:manager.baseURL transportSerializer:manager.requestSerializer];
+        self.responseSerializationManager = [RKResponseSerializationManager managerWithTransportSerializer:manager.responseSerializer];
+        self.operationQueue = manager.operationQueue;
     }
     return self;
 }
@@ -52,33 +53,72 @@
                                                     success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                                                     failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    AFHTTPResponseSerializer *responseSerializer = [self.responseSerializationManager serializerWithRequest:request object:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    operation.responseSerializer = responseSerializer;
+    operation.shouldUseCredentialStorage = self.HTTPRequestOperationManager.shouldUseCredentialStorage;
+    operation.credential = self.HTTPRequestOperationManager.credential;
+    operation.securityPolicy = self.HTTPRequestOperationManager.securityPolicy;
+    
+    [operation setCompletionBlockWithSuccess:success failure:failure];
+    
+    return operation;
 }
 
-- (AFHTTPRequestOperation *)getObjectsAtPath:(NSString *)path
-                                  parameters:(NSDictionary *)parameters
-                                     success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
-                                     failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+- (AFHTTPRequestOperation *)GETObjectsAtURLForString:(NSString *)URLString
+                            parameters:(NSDictionary *)parameters
+                               success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
+                               failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    NSError *error = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithObject:nil method:RKHTTPMethodGET URLString:URLString parameters:parameters error:&error];
+    if (! request) {
+        if (failure) failure(nil, error);
+        return nil;
+    }
+    
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    [self.operationQueue addOperation:operation];
+    
+    return operation;
 }
 
-- (AFHTTPRequestOperation *)getObjectsAtPathForRelationship:(NSString *)relationshipName
-                                                   ofObject:(id)object
-                                                 parameters:(NSDictionary *)parameters
-                                                    success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
-                                                    failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+- (AFHTTPRequestOperation *)GETObjectsAtURLForRelationship:(NSString *)relationshipName
+                                                  ofObject:(id)object
+                                                parameters:(NSDictionary *)parameters
+                                                   success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                   failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    NSError *error = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithURLForRelationship:relationshipName ofObject:object method:RKHTTPMethodGET parameters:parameters error:&error];
+    if (! request) {
+        if (failure) failure(nil, error);
+        return nil;
+    }
+    
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    [self.operationQueue addOperation:operation];
+    
+    return operation;
 }
 
-- (AFHTTPRequestOperation *)getObjectsAtPathForRouteNamed:(NSString *)routeName
-                                                   object:(id)object
-                                               parameters:(NSDictionary *)parameters
-                                                  success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
-                                                  failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+- (AFHTTPRequestOperation *)GETObjectsAtURLForRouteNamed:(NSString *)routeName
+                                                  object:(id)object
+                                              parameters:(NSDictionary *)parameters
+                                                 success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                 failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    NSError *error = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithURLForRouteNamed:routeName object:object parameters:parameters error:&error];
+    if (! request) {
+        if (failure) failure(nil, error);
+        return nil;
+    }
+    
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    [self.operationQueue addOperation:operation];
+    
+    return operation;
 }
 
 - (AFHTTPRequestOperation *)GET:(id)object
@@ -87,7 +127,17 @@
                         success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
                         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    NSError *error = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithObject:object method:RKHTTPMethodGET URLString:URLString parameters:parameters error:&error];
+    if (! request) {
+        if (failure) failure(nil, error);
+        return nil;
+    }
+    
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    [self.operationQueue addOperation:operation];
+    
+    return operation;
 }
 
 - (AFHTTPRequestOperation *)POST:(id)object
@@ -96,7 +146,17 @@
                          success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
                          failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    NSError *error = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithObject:object method:RKHTTPMethodPOST URLString:URLString parameters:parameters error:&error];
+    if (! request) {
+        if (failure) failure(nil, error);
+        return nil;
+    }
+    
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    [self.operationQueue addOperation:operation];
+    
+    return operation;
 }
 
 - (AFHTTPRequestOperation *)PUT:(id)object
@@ -105,7 +165,17 @@
                         success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
                         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    NSError *error = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithObject:object method:RKHTTPMethodPUT URLString:URLString parameters:parameters error:&error];
+    if (! request) {
+        if (failure) failure(nil, error);
+        return nil;
+    }
+    
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    [self.operationQueue addOperation:operation];
+    
+    return operation;
 }
 
 - (AFHTTPRequestOperation *)PATCH:(id)object
@@ -114,7 +184,17 @@
                           success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
                           failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    NSError *error = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithObject:object method:RKHTTPMethodPATCH URLString:URLString parameters:parameters error:&error];
+    if (! request) {
+        if (failure) failure(nil, error);
+        return nil;
+    }
+    
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    [self.operationQueue addOperation:operation];
+    
+    return operation;
 }
 
 - (AFHTTPRequestOperation *)DELETE:(id)object
@@ -123,7 +203,17 @@
                            success:(void (^)(AFHTTPRequestOperation *operation, RKMappingResult *mappingResult))success
                            failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Not yet implemented." userInfo:nil];
+    NSError *error = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithObject:object method:RKHTTPMethodDELETE URLString:URLString parameters:parameters error:&error];
+    if (! request) {
+        if (failure) failure(nil, error);
+        return nil;
+    }
+    
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    [self.operationQueue addOperation:operation];
+    
+    return operation;
 }
 
 @end
