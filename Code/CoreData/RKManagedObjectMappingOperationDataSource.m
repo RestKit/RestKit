@@ -268,7 +268,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         }
     }
 
-    if (managedObject == nil) {
+    if (managedObject == nil || [managedObject isDeleted]) {
         managedObject = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext];
         [managedObject setValuesForKeysWithDictionary:entityIdentifierAttributes];        
         if (entityMapping.persistentStore) [self.managedObjectContext assignObject:managedObject toPersistentStore:entityMapping.persistentStore];
