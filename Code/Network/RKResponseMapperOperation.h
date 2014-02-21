@@ -253,6 +253,8 @@
 ///----------------
 
 /**
+ **Deprecated - code outside of RKResponseMapperOperation should not need to use this function**
+ 
  Returns a representation of a mapping result as an `NSError` value.
  
  The returned `NSError` object is in the `RKErrorDomain` domain and has the `RKMappingErrorFromMappingResult` code. The value for the `NSLocalizedDescriptionKey` is computed by retrieving the objects in the mapping result as an array, evaluating `valueForKeyPath:@"description"` against the array, and joining the returned error messages by comma to form a single string value. The source error objects are returned with the `NSError` in the `userInfo` dictionary under the `RKObjectMapperErrorObjectsKey` key.
@@ -262,4 +264,4 @@
  @return An error object representing the objects contained in the mapping result.
  @see `RKErrorMessage`
  */
-NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult);
+NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult) DEPRECATED_ATTRIBUTE;

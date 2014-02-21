@@ -27,6 +27,7 @@
 #import "RKMappingErrors.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKDictionaryUtilities.h"
+#import "AFURLConnectionOperation.h"
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")
@@ -39,7 +40,13 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
 
-NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
+NSError *RKErrorFromMappingResultAndRequestResponse(RKMappingResult *mappingResult, NSURLRequest *request, NSHTTPURLResponse *response);
+
+NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult) {
+    return RKErrorFromMappingResultAndRequestResponse(mappingResult, nil, nil);
+}
+
+NSError *RKErrorFromMappingResultAndRequestResponse(RKMappingResult *mappingResult, NSURLRequest *request, NSHTTPURLResponse *response)
 {
     NSArray *collection = [mappingResult array];
     NSString *description = nil;
@@ -48,8 +55,17 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     } else {
         RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
     }
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
-                              description, NSLocalizedDescriptionKey, nil];
+    
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    [userInfo setValue:collection forKey:RKObjectMapperErrorObjectsKey];
+    [userInfo setValue:description forKey:NSLocalizedDescriptionKey];
+    if (request) {
+        [userInfo setValue:[request URL] forKey:NSURLErrorFailingURLErrorKey];
+        [userInfo setValue:request forKey:AFNetworkingOperationFailingURLRequestErrorKey];
+    }
+    if (response) {
+        [userInfo setValue:response forKey:AFNetworkingOperationFailingURLResponseErrorKey];
+    }
 
     NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorFromMappingResult userInfo:userInfo];
     return error;
@@ -342,7 +358,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     // If the response is a client error return either the mapping error or the mapped result to the caller as the error
     if (isErrorStatusCode) {
         if ([self.mappingResult count] > 0) {
-            error = RKErrorFromMappingResult(self.mappingResult);
+            error = RKErrorFromMappingResultAndRequestResponse(self.mappingResult, self.request, self.response);
         } else {
             // We encountered a client error that we could not map, throw unprocessable error
             if (! error) error = RKUnprocessableErrorFromResponse(self.response);
