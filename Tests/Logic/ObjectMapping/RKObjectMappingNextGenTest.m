@@ -2050,12 +2050,14 @@
 - (void)testReplacmentPolicyForToManyCoreDataRelationshipDoesNotDeleteNewValuesOnSecondMapping
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     
     RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [entityMapping addAttributeMappingsFromArray:@[ @"name" ]];
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
     [catMapping addAttributeMappingsFromArray:@[ @"name" ]];
+    catMapping.identificationAttributes = @[ @"name" ];
     RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping];
     relationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
     [entityMapping addPropertyMapping:relationshipMapping];
@@ -2064,7 +2066,7 @@
     NSDictionary *dictionary = @{ @"name": @"Blake", @"cats": @[ @{ @"name": @"Roy" } ] };
     
     RKMappingOperation *firstOperation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
-    RKManagedObjectMappingOperationDataSource *firstDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    RKManagedObjectMappingOperationDataSource *firstDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:managedObjectStore.managedObjectCache];
     firstOperation.dataSource = firstDataSource;
     
     [firstOperation performMapping:&error];
@@ -2075,7 +2077,7 @@
     assertThat(firstCatNames, hasItems(@"Roy", nil));
     
     RKMappingOperation *secondOperation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:entityMapping];
-    RKManagedObjectMappingOperationDataSource *secondDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    RKManagedObjectMappingOperationDataSource *secondDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:managedObjectStore.managedObjectCache];
     secondOperation.dataSource = secondDataSource;
     
     [secondOperation performMapping:&error];
