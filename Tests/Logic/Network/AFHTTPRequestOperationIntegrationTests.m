@@ -74,7 +74,7 @@
     [request addValue:authString forHTTPHeaderField:@"Authorization"];
     AFHTTPRequestOperation *requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     AFJSONResponseSerializer *responseDataSerializer = [AFJSONResponseSerializer new];
-    RKResponseSerializationManager *serializationManager = [RKResponseSerializationManager managerWithDataSerializer:responseDataSerializer];
+    RKResponseSerializationManager *serializationManager = [RKResponseSerializationManager managerWithTransportSerializer:responseDataSerializer];
     [serializationManager addResponseDescriptor:[self responseDescriptorForComplexUser]];
     RKObjectResponseSerializer *serializer = [serializationManager serializerWithRequest:request object:user];
     requestOperation.responseSerializer = serializer;
