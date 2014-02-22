@@ -85,11 +85,11 @@
  */
 @interface RKObjectResponseSerializer : AFHTTPResponseSerializer
 
-- (id)initWithRequest:(NSURLRequest *)request dataSerializer:(AFHTTPResponseSerializer *)dataSerializer responseDescriptors:(NSArray *)responseDescriptors;
+- (id)initWithRequest:(NSURLRequest *)request transportSerializer:(AFHTTPResponseSerializer *)transportSerializer responseDescriptors:(NSArray *)responseDescriptors;
 
 @property (nonatomic, strong) NSURL *baseURL;
 @property (nonatomic, strong, readonly) NSURLRequest *request;
-@property (nonatomic, strong, readonly) AFHTTPResponseSerializer *dataSerializer;
+@property (nonatomic, strong, readonly) AFHTTPResponseSerializer *transportSerializer;
 @property (nonatomic, copy, readonly) NSArray *responseDescriptors;
 
 /**

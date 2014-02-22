@@ -16,17 +16,17 @@
 
 @implementation RKResponseSerializationManager
 
-+ (instancetype)managerWithTransportSerializer:(AFHTTPResponseSerializer *)dataSerializer
++ (instancetype)managerWithTransportSerializer:(AFHTTPResponseSerializer *)transportSerializer
 {
-    if (!dataSerializer) [NSException raise:NSInvalidArgumentException format:@"`%@` cannot be `nil`.", NSStringFromSelector(@selector(dataSerializer))];
-    return [[self alloc] initWithDataSerializer:dataSerializer];
+    if (!transportSerializer) [NSException raise:NSInvalidArgumentException format:@"`%@` cannot be `nil`.", NSStringFromSelector(@selector(transportSerializer))];
+    return [[self alloc] initWithTransportSerializer:transportSerializer];
 }
 
-- (id)initWithDataSerializer:(AFHTTPResponseSerializer *)dataSerializer
+- (id)initWithTransportSerializer:(AFHTTPResponseSerializer *)transportSerializer
 {
     self = [super init];
     if (self) {
-        self.transportSerializer = dataSerializer;
+        self.transportSerializer = transportSerializer;
         self.mutableResponseDescriptors = [NSMutableArray new];
     }
     return self;
@@ -35,7 +35,7 @@
 - (id)init
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:@"Failed to call designated initializer. Call `%@` instead", NSStringFromSelector(@selector(managerWithDataSerializer:))]
+                                   reason:[NSString stringWithFormat:@"Failed to call designated initializer. Call `%@` instead", NSStringFromSelector(@selector(managerWithTransportSerializer::))]
                                  userInfo:nil];
 }
 
@@ -96,9 +96,9 @@
 // TODO: Migrate functionality of `appropriateObjectRequestOperation...`
 - (RKObjectResponseSerializer *)serializerWithRequest:(NSURLRequest *)request object:(id)object
 {
-    AFHTTPResponseSerializer *dataSerializer = [self.transportSerializer copy];
-    dataSerializer.acceptableStatusCodes = nil; // TODO: Configure the acceptable status codes to exactly match those of the response descriptors.
-    RKObjectResponseSerializer *responseSerializer = [[RKObjectResponseSerializer alloc] initWithRequest:request dataSerializer:dataSerializer responseDescriptors:self.responseDescriptors];
+    AFHTTPResponseSerializer *transportSerializer = [self.transportSerializer copy];
+    transportSerializer.acceptableStatusCodes = nil; // TODO: Configure the acceptable status codes to exactly match those of the response descriptors.
+    RKObjectResponseSerializer *responseSerializer = [[RKObjectResponseSerializer alloc] initWithRequest:request transportSerializer:transportSerializer responseDescriptors:self.responseDescriptors];
     responseSerializer.targetObject = object;
     return responseSerializer;
 }
@@ -107,7 +107,7 @@
 
 @interface RKObjectResponseSerializer ()
 @property (nonatomic, strong, readwrite) NSURLRequest *request;
-@property (nonatomic, strong, readwrite) AFHTTPResponseSerializer *dataSerializer;
+@property (nonatomic, strong, readwrite) AFHTTPResponseSerializer *transportSerializer;
 @property (nonatomic, copy, readwrite) NSArray *responseDescriptors;
 @end
 
@@ -116,16 +116,16 @@
 - (id)init
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:@"Failure to call designated initializer: call `%@` instead", NSStringFromSelector(@selector(initWithRequest:dataSerializer:responseDescriptors:))]
+                                   reason:[NSString stringWithFormat:@"Failure to call designated initializer: call `%@` instead", NSStringFromSelector(@selector(initWithRequest:transportSerializer:responseDescriptors:))]
                                  userInfo:nil];
 }
 
-- (id)initWithRequest:(NSURLRequest *)request dataSerializer:(AFHTTPResponseSerializer *)dataSerializer responseDescriptors:(NSArray *)responseDescriptors
+- (id)initWithRequest:(NSURLRequest *)request transportSerializer:(AFHTTPResponseSerializer *)transportSerializer responseDescriptors:(NSArray *)responseDescriptors
 {
     self = [super init];
     if (self) {
         self.request = request;
-        self.dataSerializer = dataSerializer;
+        self.transportSerializer = transportSerializer;
         self.responseDescriptors = responseDescriptors;
     }
     return self;
@@ -156,13 +156,13 @@
                            data:(NSData *)data
                           error:(NSError *__autoreleasing *)error
 {
-    if (![self.dataSerializer validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
+    if (![self.transportSerializer validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
         if ([(NSError *)(*error) code] == NSURLErrorCannotDecodeContentData) {
             return nil;
         }
     }
 
-    id responseObject = [self.dataSerializer responseObjectForResponse:response data:data error:error];
+    id responseObject = [self.transportSerializer responseObjectForResponse:response data:data error:error];
     if (!responseObject) return nil;
 
     RKObjectResponseMapperOperation *mapperOperation = [[RKObjectResponseMapperOperation alloc] initWithRequest:self.request response:(NSHTTPURLResponse *)response representation:responseObject responseDescriptors:self.responseDescriptors];
