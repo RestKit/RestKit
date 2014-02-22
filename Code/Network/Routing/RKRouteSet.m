@@ -207,4 +207,18 @@
     return nil;
 }
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    RKRouteSet *copy = [[[self class] allocWithZone:zone] init];
+    copy.routes = [self.routes mutableCopy];
+    return copy;
+}
+
+- (id)mutableCopyWithZone:(NSZone *)zone
+{
+    RKRouteSet *copy = [[[self class] allocWithZone:zone] init];
+    copy.routes = [self.routes mutableCopy];
+    return copy;
+}
+
 @end

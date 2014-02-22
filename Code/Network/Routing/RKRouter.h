@@ -37,7 +37,7 @@
  @see `RKRoute`
  @see `RKRouteSet`
  */
-@interface RKRouter : NSObject
+@interface RKRouter : NSObject <NSCopying>
 
 ///----------------------------
 /// @name Initializing a Router

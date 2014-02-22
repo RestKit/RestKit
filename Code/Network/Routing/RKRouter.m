@@ -84,4 +84,11 @@ static NSDictionary *RKKeyPathsAndValuesOfObjectForKeyPaths(NSObject *object, NS
     return [route.URITemplate URLWithVariables:variables relativeToBaseURL:self.baseURL error:&error];
 }
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    RKRouter *copy = [[[self class] allocWithZone:zone] initWithBaseURL:self.baseURL];
+    copy.routeSet = [[self routeSet] copyWithZone:zone];
+    return copy;
+}
+
 @end
