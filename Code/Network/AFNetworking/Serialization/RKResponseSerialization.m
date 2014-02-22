@@ -35,7 +35,7 @@
 - (id)init
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:@"Failed to call designated initializer. Call `%@` instead", NSStringFromSelector(@selector(managerWithTransportSerializer::))]
+                                   reason:[NSString stringWithFormat:@"Failed to call designated initializer. Call `%@` instead", NSStringFromSelector(@selector(managerWithTransportSerializer:))]
                                  userInfo:nil];
 }
 
