@@ -50,10 +50,11 @@
 }
 
 - (AFHTTPRequestOperation *)HTTPRequestOperationWithRequest:(NSURLRequest *)request
+                                                     object:(id)object
                                                     success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                                                     failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    AFHTTPResponseSerializer *responseSerializer = [self.responseSerializationManager serializerWithRequest:request object:nil];
+    AFHTTPResponseSerializer *responseSerializer = [self.responseSerializationManager serializerWithRequest:request object:object];
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     operation.responseSerializer = responseSerializer;
     operation.shouldUseCredentialStorage = self.HTTPRequestOperationManager.shouldUseCredentialStorage;
@@ -77,7 +78,7 @@
         return nil;
     }
     
-    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request object:nil success:success failure:failure];
     [self.operationQueue addOperation:operation];
     
     return operation;
@@ -96,7 +97,7 @@
         return nil;
     }
     
-    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request object:object success:success failure:failure];
     [self.operationQueue addOperation:operation];
     
     return operation;
@@ -115,7 +116,7 @@
         return nil;
     }
     
-    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request object:object success:success failure:failure];
     [self.operationQueue addOperation:operation];
     
     return operation;
@@ -134,7 +135,7 @@
         return nil;
     }
     
-    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request object:object success:success failure:failure];
     [self.operationQueue addOperation:operation];
     
     return operation;
@@ -153,7 +154,7 @@
         return nil;
     }
     
-    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request object:object success:success failure:failure];
     [self.operationQueue addOperation:operation];
     
     return operation;
@@ -172,7 +173,7 @@
         return nil;
     }
     
-    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request object:object success:success failure:failure];
     [self.operationQueue addOperation:operation];
     
     return operation;
@@ -191,7 +192,7 @@
         return nil;
     }
     
-    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request object:object success:success failure:failure];
     [self.operationQueue addOperation:operation];
     
     return operation;
@@ -210,7 +211,7 @@
         return nil;
     }
     
-    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];
+    AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request object:object success:success failure:failure];
     [self.operationQueue addOperation:operation];
     
     return operation;

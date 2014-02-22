@@ -110,7 +110,7 @@ RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndMethod(NSArray
 
 + (instancetype)requestSerializerWithBaseURL:(NSURL *)baseURL transportSerializer:(AFHTTPRequestSerializer *)transportSerializer
 {
-    RKRouter *router = [RKRouter routerWithBaseURL:baseURL];
+    RKRouter *router = [[RKRouter alloc] initWithBaseURL:baseURL];
     RKRequestSerializer *requestSerializer = [[[self class] alloc] initWithRouter:router transportSerializer:transportSerializer];
     return requestSerializer;
 }
