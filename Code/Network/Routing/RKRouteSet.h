@@ -25,7 +25,7 @@
 
  @see `RKRouter`
  */
-@interface RKRouteSet : NSObject <NSCopying, NSMutableCopying>
+@interface RKRouteSet : NSObject <NSCopying>
 
 ///---------------------------------
 /// @name Adding and Removing Routes
