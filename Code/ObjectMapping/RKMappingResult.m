@@ -65,13 +65,7 @@
 
 - (id)firstObject
 {
-    NSArray *collection = [self array];
-    NSUInteger count = [collection count];
-    if (count == 0) {
-        return nil;
-    }
-
-    return [collection objectAtIndex:0];
+    return [[self array] firstObject];
 }
 
 - (NSString *)description
