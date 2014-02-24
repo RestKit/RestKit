@@ -8,7 +8,7 @@ def import_pods
   pod 'RestKit/Testing', path: '.'
   # pod 'RestKit/Search', path: '.'
   
-  pod 'AFNetworking', path: 'Vendor/AFNetworking'  
+  pod 'AFNetworking', :head
   
   pod 'OCMock', '2.2.1'
   pod 'OCHamcrest', '3.0.1'

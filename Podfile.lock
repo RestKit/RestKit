@@ -53,7 +53,7 @@ PODS:
   - TransitionKit (2.0.0)
 
 DEPENDENCIES:
-  - AFNetworking (from `Vendor/AFNetworking`)
+  - AFNetworking (HEAD)
   - CSURITemplate (HEAD)
   - Expecta (= 0.2.3)
   - OCHamcrest (= 3.0.1)
@@ -64,8 +64,6 @@ DEPENDENCIES:
   - RKSupport (from `Vendor/RKSupport`)
 
 EXTERNAL SOURCES:
-  AFNetworking:
-    :path: Vendor/AFNetworking
   RestKit:
     :path: .
   RKCLLocationValueTransformer:
