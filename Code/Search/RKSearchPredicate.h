@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- `RKSearchPredicate` is a suclass of `NSCompoundPredicate` used to represent textual search operations against entities indexed by an instance of `RKSearchIndexer`.
+ `RKSearchPredicate` is a subclass of `NSCompoundPredicate` used to represent textual search operations against entities indexed by an instance of `RKSearchIndexer`.
 
  @see `RKSearchIndexer`
  */
