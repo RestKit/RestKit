@@ -463,6 +463,24 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
                                                         failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
 
 /**
+ Creates an `RKObjectRequestOperation` operation with the given request and response descriptors and sets the completion block with the given success and failure blocks.
+ 
+ In order to determine what kind of operation is created, each registered `RKObjectRequestOperation` subclass is consulted (in reverse order of when they were specified) to see if it can handle the specific request. The first class to return `YES` when sent a `canProcessRequest:` message is used to create an operation using `initWithHTTPRequestOperation:responseDescriptors:`. The type of HTTP request operation used to initialize the object request operation is determined by evaluating the subclasses of `RKHTTPRequestOperation` registered via `registerRequestOperationClass:` and defaults to `RKHTTPRequestOperation`.
+ 
+ @param request The request object to be loaded asynchronously during execution of the operation.
+ @param responseDescriptors An array of `RKResponseDescriptor` objects specifying how object mapping is to be performed on the response loaded by the network operation.
+ @param success A block object to be executed when the request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @return An `RKObjectRequestOperation` object that is ready to be sent.
+ 
+ @warning Instances of `RKObjectRequestOperation` are not capable of mapping the loaded `NSHTTPURLResponse` into a Core Data entity. Use an instance of `RKManagedObjectRequestOperation` if the response is to be mapped using an `RKEntityMapping`.
+ */
+- (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
+                                            responseDescriptors:(NSArray *)responseDescriptors
+                                                        success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                        failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+
+/**
  Creates an `RKManagedObjectRequestOperation` operation with the given request and managed object context, and sets the completion block with the given success and failure blocks.
  
  The given managed object context given will be used as the parent context of the private managed context in which the response is mapped and will be used to fetch the results upon invocation of the success completion block.
@@ -479,6 +497,30 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 #ifdef _COREDATADEFINES_H
 - (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
+                                                         managedObjectContext:(NSManagedObjectContext *)managedObjectContext
+                                                                      success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                                                      failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+#endif
+
+/**
+ Creates an `RKManagedObjectRequestOperation` operation with the given request, response descriptors, and managed object context, and sets the completion block with the given success and failure blocks.
+ 
+ The given managed object context given will be used as the parent context of the private managed context in which the response is mapped and will be used to fetch the results upon invocation of the success completion block.
+ 
+ In order to determine what kind of operation is created, each registered `RKManagedObjectRequestOperation` subclass is consulted (in reverse order of when they were specified) to see if it can handle the specific request. The first class to return `YES` when sent a `canProcessRequest:` message is used to create an operation using `initWithHTTPRequestOperation:responseDescriptors:`. The type of HTTP request operation used to initialize the object request operation is determined by evaluating the subclasses of `RKHTTPRequestOperation` registered via `registerRequestOperationClass:` and defaults to `RKHTTPRequestOperation`.
+ 
+ @param request The request object to be loaded asynchronously during execution of the operation.
+ @param responseDescriptors An array of `RKResponseDescriptor` objects specifying how object mapping is to be performed on the response loaded by the network operation.
+ @param managedObjectContext The managed object context with which to associate the operation. This context will be used as the parent context of a new operation local `NSManagedObjectContext` with the `NSPrivateQueueConcurrencyType` concurrency type. Upon success, the private context will be saved and changes resulting from the object mapping will be 'pushed' to the given context.
+ @param success A block object to be executed when the request operation finishes successfully. This block has no return value and takes two arguments: the created object request operation and the `RKMappingResult` object created by object mapping the response data of request.
+ @param failure A block object to be executed when the request operation finishes unsuccessfully, or that finishes successfully, but encountered an error while parsing the resonse data. This block has no return value and takes two arguments:, the created request operation and the `NSError` object describing the network or parsing error that occurred.
+ @return An `RKObjectRequestOperation` object that is ready to be sent.
+ 
+ @see `RKManagedObjectRequestOperation`
+ */
+#ifdef _COREDATADEFINES_H
+- (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
+                                                          responseDescriptors:(NSArray *)responseDescriptors
                                                          managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                                                                       failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
