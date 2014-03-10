@@ -31,6 +31,10 @@
 @property (nonatomic, copy) RKObjectMapping *(^objectMappingForRepresentationBlock)(id representation);
 @end
 
+@interface RKDynamicMapping (Copying)
+- (void)copyPropertiesFromMapping:(RKDynamicMapping *)mapping;
+@end
+
 @implementation RKDynamicMapping
 
 - (id)init
@@ -97,6 +101,45 @@
 {
     // Comparison of dynamic mappings is not currently supported
     return NO;
+}
+
+- (RKDynamicMapping *)inverseMapping
+{
+    RKDynamicMapping *inverseMapping = [[RKDynamicMapping alloc] init];
+    [inverseMapping copyPropertiesFromMapping:self];
+    
+    for (id matcherObject in self.matchers) {
+        if ([matcherObject isKindOfClass:[RKObjectMappingMatcher class]])
+        {
+            RKObjectMappingMatcher *matcher = matcherObject;
+            RKObjectMappingMatcher *inverseMatcher = [matcher matcherWithInverseObjectMapping];
+            [inverseMapping addMatcher:inverseMatcher];
+        }
+    }
+    
+    return inverseMapping;
+}
+
+- (void)copyPropertiesFromMapping:(RKDynamicMapping *)mapping
+{
+    self.forceCollectionMapping = mapping.forceCollectionMapping;
+    self.objectMappingForRepresentationBlock = mapping.objectMappingForRepresentationBlock;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    RKDynamicMapping *copy = [[[self class] allocWithZone:zone] init];
+    [copy copyPropertiesFromMapping:self];
+    copy.mutableMatchers = [NSMutableArray new];
+    
+    for (id matcherObject in self.matchers) {
+        if ([matcherObject isKindOfClass:[RKObjectMappingMatcher class]]) {
+            RKObjectMappingMatcher *matcher = matcherObject;
+            [copy addMatcher:[matcher copy]];
+        }
+    }
+    
+    return copy;
 }
 
 @end

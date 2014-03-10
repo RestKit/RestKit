@@ -20,7 +20,7 @@
 
  A predicate matcher object is initialized with a predicate object and an object mapping that is to be applied if the predicate evaluates to `YES` for the object being matched.
  */
-@interface RKObjectMappingMatcher : NSObject
+@interface RKObjectMappingMatcher : NSObject <NSCopying>
 
 ///-------------------------------------
 /// @name Constructing Key Path Matchers
@@ -71,5 +71,7 @@
  @return `YES` if the object matches the expectations of the receiver, else `NO`.
  */
 - (BOOL)matches:(id)object;
+
+- (instancetype)matcherWithInverseObjectMapping;
 
 @end

@@ -55,7 +55,7 @@
 
  Dynamic mappings can be used to map HTTP requests and responses by adding them to an `RKRequestDescriptor` or `RKResponseDescriptor` objects.
  */
-@interface RKDynamicMapping : RKMapping
+@interface RKDynamicMapping : RKMapping <NSCopying>
 
 ///------------------------------------------
 /// @name Configuring Block Mapping Selection
@@ -111,5 +111,7 @@
  @return The object mapping to be used to map the given object representation.
  */
 - (RKObjectMapping *)objectMappingForRepresentation:(id)representation;
+
+- (RKDynamicMapping *)inverseMapping;
 
 @end

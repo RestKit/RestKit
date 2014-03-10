@@ -20,6 +20,7 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 #import "RKObjectMapping.h"
+#import "RKDynamicMapping.h"
 #import "RKRelationshipMapping.h"
 #import "RKPropertyInspector.h"
 #import "RKLog.h"
@@ -78,15 +79,35 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     }
     
     for (RKRelationshipMapping *relationshipMapping in mapping.relationshipMappings) {
-        RKObjectMapping *mapping = (RKObjectMapping *) relationshipMapping.mapping;
-        if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
+        RKMapping *mapping = relationshipMapping.mapping;
+        if (! [mapping isKindOfClass:[RKObjectMapping class]] && ! [mapping isKindOfClass:[RKDynamicMapping class]]) {
             RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", relationshipMapping.sourceKeyPath, NSStringFromClass([mapping class]));
             continue;
         }
         if (predicate && !predicate(relationshipMapping)) continue;
-        RKMapping *inverseRelationshipMapping = [self invertMapping:mapping withPredicate:predicate];
-        if (inverseRelationshipMapping) [inverseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withMapping:inverseRelationshipMapping]];
+        if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+            RKObjectMapping *objectMapping = (RKObjectMapping *)mapping;
+            RKMapping *inverseRelationshipMapping = [self invertMapping:objectMapping withPredicate:predicate];
+            if (inverseRelationshipMapping) [inverseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withMapping:inverseRelationshipMapping]];
+        } else if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+            RKDynamicMapping *dynamicMapping = (RKDynamicMapping *)mapping;
+            RKMapping *inverseRelationshipMapping = [self invertDynamicMapping:dynamicMapping withPredicate:predicate];
+            if (inverseRelationshipMapping) [inverseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withMapping:inverseRelationshipMapping]];
+        }
     }
+    
+    return inverseMapping;
+}
+
+- (RKMapping *)invertDynamicMapping:(RKDynamicMapping *)mapping withPredicate:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate
+{
+    // Use an NSValue to obtain a non-copied key into our inversed mappings dictionary
+    NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:mapping];
+    RKDynamicMapping *inverseMapping = [self.invertedMappings objectForKey:dictionaryKey];
+    if (inverseMapping) return inverseMapping;
+    
+    inverseMapping = [mapping inverseMapping];
+    [self.invertedMappings setObject:inverseMapping forKey:dictionaryKey];
     
     return inverseMapping;
 }
