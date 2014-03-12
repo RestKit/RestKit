@@ -130,14 +130,7 @@
 {
     RKDynamicMapping *copy = [[[self class] allocWithZone:zone] init];
     [copy copyPropertiesFromMapping:self];
-    copy.mutableMatchers = [NSMutableArray new];
-    
-    for (id matcherObject in self.matchers) {
-        if ([matcherObject isKindOfClass:[RKObjectMappingMatcher class]]) {
-            RKObjectMappingMatcher *matcher = matcherObject;
-            [copy addMatcher:[matcher copy]];
-        }
-    }
+    copy.mutableMatchers = [self.matchers mutableCopy];
     
     return copy;
 }
