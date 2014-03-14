@@ -248,10 +248,6 @@
 		252EFAFB14D8EAEC004863C8 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAF914D8EAEC004863C8 /* RKEvent.m */; };
 		252EFB2814DA0689004863C8 /* NakedEvents.json in Resources */ = {isa = PBXBuildFile; fileRef = 252EFB2714DA0689004863C8 /* NakedEvents.json */; };
 		252EFB2914DA0689004863C8 /* NakedEvents.json in Resources */ = {isa = PBXBuildFile; fileRef = 252EFB2714DA0689004863C8 /* NakedEvents.json */; };
-		252F2E0818B4F83E00832EE7 /* RKRequestSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F2E0518B4F83E00832EE7 /* RKRequestSerializationTest.m */; };
-		252F2E0918B4F83E00832EE7 /* RKRequestSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F2E0518B4F83E00832EE7 /* RKRequestSerializationTest.m */; };
-		252F2E0A18B4F83E00832EE7 /* RKResponseSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F2E0718B4F83E00832EE7 /* RKResponseSerializationTest.m */; };
-		252F2E0B18B4F83E00832EE7 /* RKResponseSerializationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F2E0718B4F83E00832EE7 /* RKResponseSerializationTest.m */; };
 		253477F115FFBC61002C0E4E /* RKDictionaryUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 253477EF15FFBC60002C0E4E /* RKDictionaryUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253477F215FFBC61002C0E4E /* RKDictionaryUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 253477EF15FFBC60002C0E4E /* RKDictionaryUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253477F315FFBC61002C0E4E /* RKDictionaryUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 253477F015FFBC60002C0E4E /* RKDictionaryUtilities.m */; };
@@ -712,9 +708,7 @@
 		252EFB2014D9B35D004863C8 /* RKTestFixture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestFixture.h; path = Testing/RKTestFixture.h; sourceTree = "<group>"; };
 		252EFB2114D9B35D004863C8 /* RKTestFixture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestFixture.m; path = Testing/RKTestFixture.m; sourceTree = "<group>"; };
 		252EFB2714DA0689004863C8 /* NakedEvents.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = NakedEvents.json; sourceTree = "<group>"; };
-		252F2E0518B4F83E00832EE7 /* RKRequestSerializationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestSerializationTest.m; sourceTree = "<group>"; };
 		252F2E0618B4F83E00832EE7 /* RKResponseMapperOperationTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKResponseMapperOperationTest.h; sourceTree = "<group>"; };
-		252F2E0718B4F83E00832EE7 /* RKResponseSerializationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseSerializationTest.m; sourceTree = "<group>"; };
 		253477EF15FFBC60002C0E4E /* RKDictionaryUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDictionaryUtilities.h; sourceTree = "<group>"; };
 		253477F015FFBC60002C0E4E /* RKDictionaryUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilities.m; sourceTree = "<group>"; };
 		2536D1FC167270F100DF9BB0 /* RKRouterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouterTest.m; sourceTree = "<group>"; };
@@ -1307,9 +1301,7 @@
 		2516100B1456F2330060A5C5 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				252F2E0518B4F83E00832EE7 /* RKRequestSerializationTest.m */,
 				252F2E0618B4F83E00832EE7 /* RKResponseMapperOperationTest.h */,
-				252F2E0718B4F83E00832EE7 /* RKResponseSerializationTest.m */,
 				25CC5C58161DDADD0008BD21 /* RKResponseDescriptorTest.m */,
 				BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */,
 				252029081577C78600076FB4 /* RKRouteSetTest.m */,
@@ -2197,7 +2189,6 @@
 				251610DC1456F2330060A5C5 /* RKObjectMappingNextGenTest.m in Sources */,
 				251610DE1456F2330060A5C5 /* RKMappingOperationTest.m in Sources */,
 				251610E21456F2330060A5C5 /* RKMappingResultTest.m in Sources */,
-				252F2E0818B4F83E00832EE7 /* RKRequestSerializationTest.m in Sources */,
 				251610F01456F2340060A5C5 /* RKTestEnvironment.m in Sources */,
 				251611101456F2340060A5C5 /* NSStringRestKitTest.m in Sources */,
 				25B6E9DB14CF912500B1E881 /* RKSearchable.m in Sources */,
@@ -2226,7 +2217,6 @@
 				2536D1FD167270F100DF9BB0 /* RKRouterTest.m in Sources */,
 				25B639CC16961EFA0065EB7B /* RKMappingTestTest.m in Sources */,
 				25A73362169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */,
-				252F2E0A18B4F83E00832EE7 /* RKResponseSerializationTest.m in Sources */,
 				25A9827516A5FF4F0088A3CA /* RKConnectionDescriptionTest.m in Sources */,
 				2550DA2316B1FB62005A0CB8 /* RKPost.m in Sources */,
 				2582F56D173038760043B8BB /* RKInMemoryManagedObjectCacheTest.m in Sources */,
@@ -2335,7 +2325,6 @@
 				251610DF1456F2330060A5C5 /* RKMappingOperationTest.m in Sources */,
 				251610E31456F2330060A5C5 /* RKMappingResultTest.m in Sources */,
 				251610F11456F2340060A5C5 /* RKTestEnvironment.m in Sources */,
-				252F2E0918B4F83E00832EE7 /* RKRequestSerializationTest.m in Sources */,
 				251611111456F2340060A5C5 /* NSStringRestKitTest.m in Sources */,
 				25B6E9DC14CF912500B1E881 /* RKSearchable.m in Sources */,
 				25B6E9DE14CF912500B1E881 /* RKTestAddress.m in Sources */,
@@ -2364,7 +2353,6 @@
 				2546A95916628EDD0078E044 /* RKConnectionDescriptionTest.m in Sources */,
 				2536D1FE167270F100DF9BB0 /* RKRouterTest.m in Sources */,
 				25B639CD16961EFA0065EB7B /* RKMappingTestTest.m in Sources */,
-				252F2E0B18B4F83E00832EE7 /* RKResponseSerializationTest.m in Sources */,
 				25A73363169C8C230090A930 /* VersionedModel.xcdatamodeld in Sources */,
 				2550DA2416B1FB62005A0CB8 /* RKPost.m in Sources */,
 				2582F56E173038760043B8BB /* RKInMemoryManagedObjectCacheTest.m in Sources */,
