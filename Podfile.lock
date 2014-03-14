@@ -1,22 +1,23 @@
 PODS:
-  - AFNetworking (2.0.3):
+  - AFNetworking (2.2.0):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
     - AFNetworking/UIKit
-  - AFNetworking/NSURLConnection (2.0.3):
+  - AFNetworking/NSURLConnection (2.2.0):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.0.3):
+  - AFNetworking/NSURLSession (2.2.0):
     - AFNetworking/NSURLConnection
-  - AFNetworking/Reachability (2.0.3)
-  - AFNetworking/Security (2.0.3)
-  - AFNetworking/Serialization (2.0.3)
-  - AFNetworking/UIKit (2.0.3):
+  - AFNetworking/Reachability (2.2.0)
+  - AFNetworking/Security (2.2.0)
+  - AFNetworking/Serialization (2.2.0)
+  - AFNetworking/UIKit (2.2.0):
     - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
   - CSURITemplate (HEAD based on 0.3)
   - Expecta (0.2.3)
   - OCHamcrest (3.0.1)
@@ -29,7 +30,7 @@ PODS:
     - RestKit/ObjectMapping
   - RestKit/CoreData (1.0.0-development)
   - RestKit/Network (1.0.0-development):
-    - AFNetworking (~> 2.0.0)
+    - AFNetworking (~> 2.2.0)
     - CSURITemplate (~> 0.3)
     - RestKit/ObjectMapping
     - RestKit/Support
@@ -53,7 +54,6 @@ PODS:
   - TransitionKit (2.0.0)
 
 DEPENDENCIES:
-  - AFNetworking (HEAD)
   - CSURITemplate (HEAD)
   - Expecta (= 0.2.3)
   - OCHamcrest (= 3.0.1)
@@ -72,12 +72,12 @@ EXTERNAL SOURCES:
     :path: Vendor/RKSupport
 
 SPEC CHECKSUMS:
-  AFNetworking: e499052cbf3d743e9bb727bb37adb9dc2547ba15
+  AFNetworking: e8cfd8f3fe3bfe19124a0cc63f4d45752d892a56
   CSURITemplate: a2ab0f383c600646468de33b65f58f901388d8d4
   Expecta: dbc4a27fabb853bdd2e907e33f11ee43a9a47d0c
   OCHamcrest: 782c52ae8c673e5d6060a65005cfd26d20d519ba
   OCMock: 80e4cfbc71a0e1bd28caf10a9fda27da7c4c8402
-  RestKit: 66ac8f938bfc49efd696d449738ce959e5d66202
+  RestKit: d042e69e24d015c7902838a4c7dd26ae4d53d101
   RKCLLocationValueTransformer: e4a127582a78df98035f75b611e48c0545b8884d
   RKSupport: 162da690b0abf08d8f9e2b701f7a9fafd76a6e80
   RKValueTransformers: 1562d458b9c9d59ce777bfc5982f2e1aef2e9182
