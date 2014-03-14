@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#if __has_include("SOCKit.h")
+
 #import "RKPathMatcher.h"
 #import "SOCKit.h"
 #import "RKLog.h"
@@ -160,3 +162,5 @@ static NSUInteger RKNumberOfSlashesInString(NSString *string)
 }
 
 @end
+
+#endif

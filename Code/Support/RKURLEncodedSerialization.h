@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#if __has_include("AFNetworking.h")
+
 #import "RKSerialization.h"
 
 /**
@@ -72,3 +74,5 @@ NSString *RKPercentEscapedQueryStringFromStringWithEncoding(NSString *string, NS
  @return An `NSDictionary` object containing the keys and values contained in the query string of the given string.
  */
 NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding encoding);
+
+#endif

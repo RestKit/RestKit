@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#if __has_include("AFNetworking.h")
+
 #import "RKURLEncodedSerialization.h"
 
 @implementation RKURLEncodedSerialization
@@ -86,3 +88,5 @@ NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSString
     }
     return RKDictionaryFromURLEncodedStringWithEncoding(string, encoding);
 }
+
+#endif

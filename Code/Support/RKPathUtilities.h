@@ -31,6 +31,8 @@ NSString *RKCachesDirectory(void);
  */
 BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error);
 
+#if __has_include("SOCKit.h")
+
 /**
  Convenience method for generating a path against the properties of an object. Takes an `NSString` with property names prefixed with a colon and interpolates the values of the properties specified and returns the generated path.
  
@@ -45,6 +47,8 @@ BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error);
  @see `SOCPattern`
  */
 NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object);
+
+#endif
 
 /**
  Returns a MIME Type for a given path by using the Core Services framework.
