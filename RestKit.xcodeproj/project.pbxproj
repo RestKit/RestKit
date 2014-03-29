@@ -1313,7 +1313,8 @@
 				25160EBD1456532C0060A5C5 /* SOCKit.h */,
 				25160EBE1456532C0060A5C5 /* SOCKit.m */,
 			);
-			path = SOCKit;
+			name = SOCKit;
+			path = SOCKit/src;
 			sourceTree = "<group>";
 		};
 		25160FC51456F2330060A5C5 /* Tests */ = {
