@@ -859,6 +859,8 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @warning Will raise an exception if the value of the `paginationMapping` property is nil.
  */
 - (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
+- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern parameters:(NSDictionary*)parameters
+
 
 @end
 
