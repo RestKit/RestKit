@@ -88,7 +88,7 @@ namespace :docs do
   task :generate => 'appledoc:check' do
     command = apple_doc_command << " --no-create-docset --keep-intermediate-files --create-html `find Code/ -name '*.h'`"
     run(command, 1)
-    puts "Generated HTML documentationa at Docs/API/html"
+    puts "Generated HTML documentation at Docs/API/html"
   end
   
   desc "Check that documentation can be built from the source code via appledoc successfully."
