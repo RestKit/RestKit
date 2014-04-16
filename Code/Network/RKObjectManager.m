@@ -872,7 +872,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return [NSArray arrayWithArray:self.mutableFetchRequestBlocks];
 }
 
-- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL))block
+- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL, RKMappingResult *mappingResult))block
 {
     NSParameterAssert(block);
     [self.mutableFetchRequestBlocks addObject:block];

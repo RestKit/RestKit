@@ -90,10 +90,10 @@
     NSURL *URL = [NSURL URLWithString:stubbedPathPattern relativeToURL:objectManager.HTTPClient.baseURL];
     NSAssert(URL, @"Failed to build URL from path pattern '%@' relative to base URL '%@'", pathPattern, objectManager.HTTPClient.baseURL);
     for (RKFetchRequestBlock block in objectManager.fetchRequestBlocks) {
-        NSFetchRequest *fetchRequest = block(URL);
+        NSFetchRequest *fetchRequest = block(URL, nil);
         if (fetchRequest) {
             // Add a new block that matches our stubbed path
-            [objectManager addFetchRequestBlock:^NSFetchRequest *(NSURL *URL) {
+            [objectManager addFetchRequestBlock:^NSFetchRequest *(NSURL *URL, RKMappingResult *mappingResult) {
                 // TODO: Note that relativeString does not work because NSURLRequest drops the relative parent of the URL
                 //                if ([[URL relativeString] isEqualToString:relativeString]) {
                 if ([[URL path] isEqualToString:relativeString]) {

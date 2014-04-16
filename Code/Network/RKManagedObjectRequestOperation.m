@@ -285,12 +285,12 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
 
 @end
 
-NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL)
+NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL, RKMappingResult *mappingResult)
 {
     NSMutableArray *fetchRequests = [NSMutableArray array];
     NSFetchRequest *fetchRequest = nil;
     for (RKFetchRequestBlock block in [fetchRequestBlocks reverseObjectEnumerator]) {
-        fetchRequest = block(URL);
+        fetchRequest = block(URL, mappingResult);
         if (fetchRequest) [fetchRequests addObject:fetchRequest];
     }
     return fetchRequests;
@@ -568,7 +568,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 - (void)performMappingOnResponseWithCompletionBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))completionBlock
 {
     NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
-    NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
+    NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL, nil);
     if ([fetchRequests count] && [self canSkipMapping]) {
         RKLogDebug(@"Managed object mapping requested for cached response which was previously mapped: skipping...");
         NSMutableArray *managedObjects = [NSMutableArray array];
@@ -671,7 +671,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     return _blockSuccess;
 }
 
-- (NSSet *)localObjectsFromFetchRequests:(NSArray *)fetchRequests matchingRequestURL:(NSError **)error
+- (NSSet *)localObjectsFromFetchRequests:(NSArray *)fetchRequests matchingRequestURL:(NSError **)error withMappingResult:(RKMappingResult *)mappingResult
 {
     NSMutableSet *localObjects = [NSMutableSet set];    
     __block NSError *_blockError;
@@ -680,7 +680,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     // Pass the fetch request blocks a relative `NSURL` object if possible
     NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
     for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
-        NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
+        NSFetchRequest *fetchRequest = fetchRequestBlock(URL, mappingResult);
         if (fetchRequest) {
             // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
             [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
@@ -704,13 +704,13 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     return localObjects;
 }
 
-- (NSArray *)fetchRequestsMatchingResponseURL
+- (NSArray *)fetchRequestsMatchingResponseURL:(RKMappingResult *)mappingResult
 {
     // Pass the fetch request blocks a relative `NSURL` object if possible
     NSMutableArray *fetchRequests = [NSMutableArray array];
     NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
     for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
-        NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
+        NSFetchRequest *fetchRequest = fetchRequestBlock(URL, mappingResult);
         if (fetchRequest) {
             // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
             [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
@@ -728,8 +728,9 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         return YES;
     }
 
-    if (! [[self.HTTPRequestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]) {
-        RKLogDebug(@"Skipping deletion of orphaned objects: only performed for GET requests.");
+    if (! [[self.HTTPRequestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"GET"]
+    	&& ! [[self.HTTPRequestOperation.request.HTTPMethod uppercaseString] isEqualToString:@"POST"]) {
+        RKLogDebug(@"Skipping deletion of orphaned objects: only performed for GET and POST requests.");
         return YES;
     }
     
@@ -739,12 +740,12 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     }
     
     // Determine if there are any fetch request blocks to use for orphaned object cleanup
-    NSArray *fetchRequests = [self fetchRequestsMatchingResponseURL];
+    NSArray *fetchRequests = [self fetchRequestsMatchingResponseURL:mappingResult];
     if (! [fetchRequests count]) return YES;
     
     // Proceed with cleanup
     NSSet *managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo) ?: [NSSet set];
-    NSSet *localObjects = [self localObjectsFromFetchRequests:fetchRequests matchingRequestURL:error];
+    NSSet *localObjects = [self localObjectsFromFetchRequests:fetchRequests matchingRequestURL:error withMappingResult:mappingResult];
     if (! localObjects) {
         RKLogError(@"Failed when attempting to fetch local candidate objects for orphan cleanup: %@", error ? *error : nil);
         return NO;
