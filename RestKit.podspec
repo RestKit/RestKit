@@ -36,9 +36,13 @@ EOS
   
   s.subspec 'ObjectMapping' do |os|
     os.source_files   = 'Code/ObjectMapping.h', 'Code/ObjectMapping'
-    os.dependency       'RestKit/Support'
+    os.dependency       'RestKit/ObjectMappingSupport'
     os.dependency       'RKValueTransformers', '~> 1.0.1'
     os.dependency       'ISO8601DateFormatterValueTransformer', '~> 0.5.0'
+  end 
+  s.subspec 'ObjectMappingSupport' do |os|
+    os.source_files = 'Code/Support/RKMacros.h', 'Code/Support/RKLog.{h,m}', 'Code/Support/RKErrors.{h,m}', 'Vendor/LibComponentLogging/Core', 'Code/Support/lcl_config_components_RK.h', 'Code/Support/lcl_config_extensions_RK.h', 'Code/Support/lcl_config_logger_RK.h', 'Vendor/LibComponentLogging/NSLog', 'Code/Suppor
+t/RKDictionaryUtilities.{h,m}'
   end
   
   s.subspec 'Network' do |ns|
