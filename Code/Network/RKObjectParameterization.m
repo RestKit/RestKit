@@ -105,7 +105,7 @@
 {
     id transformedValue = nil;
     if ([value isKindOfClass:[NSDate class]]) {
-        [mapping.objectMapping.valueTransformer transformValue:value toValue:&transformedValue ofClass:[NSString class] error:nil];
+        [mapping.valueTransformer transformValue:value toValue:&transformedValue ofClass:[NSString class] error:nil];
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits
         transformedValue = [(NSDecimalNumber *)value stringValue];

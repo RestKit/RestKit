@@ -4,8 +4,9 @@ RestKit Test Environment
 RestKit ships with a testing infrastructure built around OCUnit and a Ruby testing server environment built on Sinatra. To be able to run the tests, you need to do a little bit of setup. These instructions are valid for **Xcode version 4.5 and higher**.
 
 1. Install the Xcode **Command Line Tools** by selecting the **Xcode** > **Preferences…** menu and then navigating to the **Downloads** tab, then clicking the **Install** button next to the appropriate entry in the table.
-2. After installation completes, ensure your command line Xcode installation is configured by executing `xcode-select -print-path`. If no path is returned, configure xcode-select by executing `xcode-select -switch /Applications/Xcode.app/Contents/Developer`.
-1. Ensure that you have **Ruby 1.9.3** available. We recommend installation via [RVM](http://beginrescueend.com/rvm/install/) or [Homebrew](http://mxcl.github.com/homebrew/).
+1. After installation completes, ensure your command line Xcode installation is configured by executing `xcode-select -print-path`. If no path is returned, configure xcode-select by executing `xcode-select -switch /Applications/Xcode.app/Contents/Developer`.
+1. Check out the Git submodules: `git submodule update --init --recursive`
+1. Ensure that you have **Ruby 2.0.0** available. We recommend installation via [rbenv](https://github.com/sstephenson/rbenv), [RVM](http://beginrescueend.com/rvm/install/) or [Homebrew](http://mxcl.github.com/homebrew/).
 1. Install the Ruby Bundler Gem (if necessary): `gem install bundler`
 1. Install the other required Gems via Bundler: `bundle`
 1. Install the required CocoaPods: `pod install`

@@ -535,3 +535,14 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL)
         return (query && [query length]) ? [NSString stringWithFormat:@"%@?%@", pathWithPrevervedTrailingSlash, query] : pathWithPrevervedTrailingSlash;
     }
 }
+
+NSIndexSet *RKStatusCodesOfResponsesWithOptionalBodies()
+{
+    NSMutableIndexSet *statusCodes = [NSMutableIndexSet indexSet];
+    [statusCodes addIndex:201];
+    [statusCodes addIndex:202];
+    [statusCodes addIndex:204];
+    [statusCodes addIndex:205];
+    [statusCodes addIndex:304];
+    return statusCodes;
+}

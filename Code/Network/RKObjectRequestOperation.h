@@ -156,7 +156,7 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
 ///-------------------------------------------------------
 
 /**
- Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the object request on completion. If `error` returns a value, which can be set during HTTP transport by the underlying `HTTPRequestOperation` or during object mapping by the `RKResponseMapperOperation` object, then `failure` is executed. If the object request operation is cancelled, then neither success nor failure will be executed. Otherwise, `success` is executed.
+ Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the object request on completion. If `error` returns a value, which can be set during HTTP transport by the underlying `HTTPRequestOperation` or during object mapping by the `RKResponseMapperOperation` object, then `failure` is executed. If the object request operation is cancelled, then the failure block will be executed with either a `RKOperationCancelledError` or a `NSURLErrorCancelled`, depending on the internal state of the operation at time of cancellation. Otherwise, `success` is executed.
 
  @param success The block to be executed on the completion of a successful operation. This block has no return value and takes two arguments: the receiver operation and the mapping result from object mapping the response data of the request.
  @param failure The block to be executed on the completion of an unsuccessful operation. This block has no return value and takes two arguments: the receiver operation and the error that occurred during the execution of the operation.

@@ -94,7 +94,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
         }
         nestedPropertyMapping.propertyValueClass = propertyMapping.propertyValueClass;
         nestedPropertyMapping.valueTransformer = propertyMapping.valueTransformer;
-        [nestedMappings addObject:nestedPropertyMapping];
+        if (nestedPropertyMapping) [nestedMappings addObject:nestedPropertyMapping];
     }
     
     return nestedMappings;
@@ -537,7 +537,6 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     NSAssert(anObject, @"Cannot map nested object without a nested source object");
     NSAssert(anotherObject, @"Cannot map nested object without a destination object");
     NSAssert(relationshipMapping, @"Cannot map a nested object relationship without a relationship mapping");
-    NSError *error = nil;
 
     RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
     NSDictionary *subOperationMetadata = RKDictionaryByMergingDictionaryWithDictionary(self.metadata, metadata);
@@ -550,7 +549,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     [subOperation start];
     
     if (subOperation.error) {
-        RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
+        RKLogWarning(@"WARNING: Failed mapping nested object: %@", [subOperation.error localizedDescription]);
     } else {
         [self.mappingInfo addPropertyMapping:relationshipMapping];
         [self.mappingInfo addMappingInfo:subOperation.mappingInfo forRelationshipMapping:relationshipMapping];

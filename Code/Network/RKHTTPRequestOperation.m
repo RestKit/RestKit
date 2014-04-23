@@ -35,8 +35,7 @@ NSString *RKStringFromIndexSet(NSIndexSet *indexSet); // Defined in RKResponseDe
 static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSURLRequest *request)
 {
     if (RKRequestMethodFromString(request.HTTPMethod) == RKRequestMethodHEAD) return NO;
-    if (response.statusCode == 304) return NO;
-    if (response.statusCode == 204) return NO;
+    if ([RKStatusCodesOfResponsesWithOptionalBodies() containsIndex:response.statusCode]) return NO;
     return YES;
 }
 

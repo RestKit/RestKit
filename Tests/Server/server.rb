@@ -296,6 +296,12 @@ class RestKitTestServer < Sinatra::Base
     ''
   end
 
+  post '/422' do
+    status 422
+    content_type 'application/json'
+    { :error => "Unprocessable Entity." }.to_json
+  end
+
   delete '/humans/1234/whitespace' do
     content_type 'application/json'
     status 200
@@ -340,6 +346,12 @@ class RestKitTestServer < Sinatra::Base
   get '/user_ids' do
     content_type 'application/json'
     { :user_ids => [1, 2, 3] }.to_json
+  end
+
+  get '/corrupted/json' do
+      content_type 'application/json'
+      status 200
+      'no json here'
   end
 
   # start the server if ruby file executed directly
