@@ -11,7 +11,7 @@ def import_pods
   pod 'Expecta', '0.2.3'
   
   # Used for testing Value Transformer integration
-  pod 'RKCLLocationValueTransformer', '~> 1.0.0'
+  pod 'RKCLLocationValueTransformer', '~> 1.1.0'
 end
 
 target :ios do
