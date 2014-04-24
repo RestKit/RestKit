@@ -19,6 +19,7 @@
 //
 
 #import "RKTestEnvironment.h"
+#import "RKPathMatcher.h"
 #import "RKPathUtilities.h"
 #import "RKObjectMapperTestModel.h"
 #import "RKURLEncodedSerialization.h"
