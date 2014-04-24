@@ -16,7 +16,6 @@
 #import <sys/xattr.h>
 #import "RKPathUtilities.h"
 #import "RKLog.h"
-#import "RKPathMatcher.h"
 
 NSString *RKExecutableName(void);
 
@@ -91,13 +90,6 @@ BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error)
     }
 
     return YES;
-}
-
-NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
-{
-    NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
-    RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
-    return [matcher pathFromObject:object addingEscapes:NO interpolatedParameters:nil];
 }
 
 static NSDictionary *RKDictionaryOfFileExtensionsToMIMETypes()

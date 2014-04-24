@@ -87,6 +87,7 @@
         NSArray *routes = [self routesForRelationship:route.name ofClass:route.objectClass];
         for (RKRoute *existingRoute in routes) {
             NSAssert(existingRoute.method != route.method, @"Cannot add a relationship route with the same name and class as an existing route.");
+            (void)existingRoute;
         }
     }
     [self.routes addObject:route];

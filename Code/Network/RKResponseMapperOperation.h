@@ -23,7 +23,7 @@
 #import "RKMappingResult.h"
 
 #ifdef _COREDATADEFINES_H
-#import "RKManagedObjectCaching.h"
+@protocol RKManagedObjectCaching;
 #endif
 
 /**

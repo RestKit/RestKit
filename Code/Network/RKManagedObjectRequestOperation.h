@@ -19,6 +19,8 @@
 //
 
 #ifdef _COREDATADEFINES_H
+#if __has_include("RKManagedObjectCaching.h")
+
 #import "RKObjectRequestOperation.h"
 #import "RKManagedObjectCaching.h"
 
@@ -203,4 +205,5 @@ typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL);
  */
 NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL);
 
+#endif
 #endif

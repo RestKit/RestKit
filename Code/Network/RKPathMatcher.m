@@ -48,6 +48,13 @@ static NSUInteger RKNumberOfSlashesInString(NSString *string)
     return [regex numberOfMatchesInString:string options:0 range:NSMakeRange(0, [string length])];
 }
 
+NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
+{
+    NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
+    RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
+    return [matcher pathFromObject:object addingEscapes:NO interpolatedParameters:nil];
+}
+
 @interface RKPathMatcher ()
 @property (nonatomic, strong) SOCPattern *socPattern;
 @property (nonatomic, copy) NSString *patternString; // SOCPattern keeps it private
