@@ -18,12 +18,15 @@
 //  limitations under the License.
 //
 
+#if __has_include("Network.h")
 #import "RKObjectManager.h"
+#import "RKObjectParameterization.h"
+#endif
+
 #import "RKObjectMapping.h"
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
 #import "RKValueTransformers.h"
-#import "RKObjectParameterization.h"
 #import "RKMappingResult.h"
 #import "RKMapperOperation.h"
 #import "RKDynamicMapping.h"

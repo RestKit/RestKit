@@ -23,10 +23,13 @@
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
-#import "RKResponseDescriptor.h"
 #import "RKDynamicMapping.h"
 #import "RKLog.h"
 #import "RKDictionaryUtilities.h"
+
+#if __has_include("RKResponseDescriptor.h")
+#import "RKResponseDescriptor.h"
+#endif
 
 NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";
 

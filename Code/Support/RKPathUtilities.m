@@ -93,12 +93,16 @@ BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error)
     return YES;
 }
 
+#if __has_include("SOCKit.h")
+
 NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
 {
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     RKPathMatcher *matcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
     return [matcher pathFromObject:object addingEscapes:NO interpolatedParameters:nil];
 }
+
+#endif
 
 static NSDictionary *RKDictionaryOfFileExtensionsToMIMETypes()
 {

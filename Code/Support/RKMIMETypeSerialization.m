@@ -102,10 +102,13 @@
 }
 
 - (void)addRegistrationsForKnownSerializations
-{    
+{
+#if __has_include("AFNetworking.h")
     // URL Encoded
     [self.registrations addObject:[[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:RKMIMETypeFormURLEncoded
                                                                              serializationClass:[RKURLEncodedSerialization class]]];
+#endif
+
     // JSON
     [self.registrations addObject:[[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:RKMIMETypeJSON
                                                                              serializationClass:[RKNSJSONSerialization class]]];

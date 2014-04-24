@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#if __has_include("SOCKit.h")
+
 #import <Foundation/Foundation.h>
 @class SOCPattern;
 
@@ -115,3 +117,5 @@
 @property (copy, readonly) NSDictionary *queryParameters;
 
 @end
+
+#endif
