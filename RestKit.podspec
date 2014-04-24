@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             =  'RestKit'
-  s.version          =  '0.23.0'
+  s.version          =  '0.23.1'
   s.summary          =  'RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X.'
   s.homepage         =  'http://www.restkit.org'
   s.social_media_url =  'https://twitter.com/RestKit'
@@ -70,10 +70,12 @@ EOS
   s.subspec 'CoreData' do |cdos|
     cdos.source_files = 'Code/CoreData.h', 'Code/CoreData'
     cdos.frameworks   = 'CoreData'
+    cdos.dependency 'RestKit/ObjectMapping'
   end
   
   s.subspec 'Testing' do |ts|
     ts.source_files = 'Code/Testing.h', 'Code/Testing'
+    ts.dependency 'RestKit/Network'
     ts.prefix_header_contents = <<-EOS
 #import <Availability.h>
 

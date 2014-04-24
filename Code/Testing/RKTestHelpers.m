@@ -27,7 +27,10 @@
 #import "RKRouteSet.h"
 
 #ifdef _COREDATADEFINES_H
+#if __has_include("RKCoreData.h")
+#define RKCoreDataIncluded
 #import "RKManagedObjectRequestOperation.h"
+#endif
 #endif
 
 @implementation RKTestHelpers
@@ -51,7 +54,7 @@
     [objectManager.router.routeSet removeRoute:route];
     RKRoute *stubbedRoute = [RKRoute routeWithName:routeName pathPattern:pathPattern method:route.method];
     [objectManager.router.routeSet addRoute:stubbedRoute];
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
     [self copyFetchRequestBlocksMatchingPathPattern:route.pathPattern toBlocksMatchingRelativeString:pathPattern onObjectManager:objectManager];
 #endif
     return stubbedRoute;
@@ -65,13 +68,13 @@
     [objectManager.router.routeSet removeRoute:route];
     RKRoute *stubbedRoute = [RKRoute routeWithRelationshipName:relationshipName objectClass:objectClass pathPattern:pathPattern method:method];
     [objectManager.router.routeSet addRoute:stubbedRoute];
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
     [self copyFetchRequestBlocksMatchingPathPattern:route.pathPattern toBlocksMatchingRelativeString:pathPattern onObjectManager:objectManager];
 #endif
     return stubbedRoute;
 }
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
 + (void)copyFetchRequestBlocksMatchingPathPattern:(NSString *)pathPattern
                    toBlocksMatchingRelativeString:(NSString *)relativeString
                                   onObjectManager:(RKObjectManager *)nilOrObjectManager

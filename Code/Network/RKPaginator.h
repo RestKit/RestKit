@@ -23,9 +23,7 @@
 #import "RKObjectMapping.h"
 #import "RKMappingResult.h"
 
-#ifdef _COREDATADEFINES_H
-#import "RKManagedObjectCaching.h"
-#endif
+@protocol RKManagedObjectCaching;
 
 /**
  Instances of `RKPaginator` retrieve paginated collections of mappable data from remote systems via HTTP. Paginators perform GET requests and use a patterned URL to construct a full URL reflecting the state of the paginator. Paginators rely on an instance of RKObjectMappingProvider to determine how to perform object mapping on the retrieved data. Paginators can load Core Data backed models provided that an instance of RKManagedObjectStore is assigned to the paginator.

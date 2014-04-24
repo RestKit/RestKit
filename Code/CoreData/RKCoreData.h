@@ -1,9 +1,9 @@
 //
-//  RestKit.h
+//  RKCoreData.h
 //  RestKit
 //
-//  Created by Blake Watters on 2/19/10.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Created by Samuel E. Giddins on 4/23/14.
+//  Copyright (c) 2014 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,25 +18,9 @@
 //  limitations under the License.
 //
 
-#ifndef _RESTKIT_
-#define _RESTKIT_
+#ifndef RestKit_RKCoreData_h
+#define RestKit_RKCoreData_h
 
-#import "ObjectMapping.h"
-#import "Network.h"
-#import "Support.h"
+#import "CoreData.h"
 
-#if __has_include("RKCoreData.h")
-#import "RKCoreData.h"
 #endif
-
-/**
- Set the App logging component. This header
- file is generally only imported by apps that
- are pulling in all of RestKit. By setting the
- log component to App here, we allow the app developer
- to use RKLog() in their own app.
- */
-#undef RKLogComponent
-#define RKLogComponent RKlcl_cApp
-
-#endif /* _RESTKIT_ */
