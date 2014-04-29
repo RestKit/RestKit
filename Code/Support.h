@@ -20,7 +20,6 @@
 
 // Load shared support code
 #import "RKErrors.h"
-#import "RKErrorMessage.h"
 #import "RKMIMETypes.h"
 #import "RKLog.h"
 #import "RKDotNetDateFormatter.h"

@@ -26,6 +26,7 @@
 #import "RKObjectManager.h"
 #import "RKHTTPUtilities.h"
 #import "RKObjectRequestOperation.h"
+#import "RKObjectParameterization.h"
 
 #ifdef _COREDATADEFINES_H
 #import "RKManagedObjectRequestOperation.h"
