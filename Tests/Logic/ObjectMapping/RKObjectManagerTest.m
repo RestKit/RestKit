@@ -1690,7 +1690,7 @@ RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(
     NSString *requestString = @"users/filtered?page=:currentPage&per_page=:perPage";
     RKPaginator *paginator = [[RKPaginator alloc] init];
     
-    paginator = [[RKObjectManager sharedManager] paginatorWithPathPattern:requestString withParameters:@{@"q": @"kurenn"}];
+    paginator = [[RKObjectManager sharedManager] paginatorWithPathPattern:requestString parameters:@{@"q": @"kurenn"}];
     
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     NSUInteger currentPage = 1;
