@@ -24,7 +24,7 @@
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
 #import "RKDynamicMapping.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKDictionaryUtilities.h"
 
 NSString * const RKMappingErrorKeyPathErrorKey = @"keyPath";

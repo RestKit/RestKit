@@ -1,9 +1,9 @@
 //
-//  Support.h
+//  Logging.h
 //  RestKit
 //
-//  Created by Blake Watters on 9/30/10.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Created by Ernesto Rivera on 5/16/14.
+//  Copyright (c) 2009-2013 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,14 +18,18 @@
 //  limitations under the License.
 //
 
-// Load shared support code
-#import "RKErrors.h"
-#import "RKMIMETypes.h"
-#import "Logging.h"
-#import "RKDotNetDateFormatter.h"
-#import "RKPathUtilities.h"
-#import "RKDictionaryUtilities.h"
-#import "RKURLEncodedSerialization.h"
-#import "RKNSJSONSerialization.h"
-#import "RKMIMETypeSerialization.h"
-#import "RKStringTokenizer.h"
+// *** Static Library ***
+#if !defined(COCOAPODS)
+
+    // LibComponentLogging
+    #import "RKLog.h"
+
+// *** CocoaPods ***
+#else
+
+    // LibComponentLogging
+    #if defined(COCOAPODS_POD_AVAILABLE_RestKit_Logging_LibComponentLogging)
+    #import "RKLog.h"
+    #endif
+
+#endif

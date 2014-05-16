@@ -22,7 +22,7 @@
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKObjectMapping.h"
 #import "RKEntityMapping.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKManagedObjectStore.h"
 #import "RKMappingOperation.h"
 #import "RKObjectMappingMatcher.h"

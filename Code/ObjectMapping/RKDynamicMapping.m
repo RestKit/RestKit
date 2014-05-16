@@ -20,7 +20,7 @@
 
 #import "RKDynamicMapping.h"
 #import "RKObjectMappingMatcher.h"
-#import "RKLog.h"
+#import "Logging.h"
 
 // Set Logging Component
 #undef RKLogComponent

@@ -21,7 +21,7 @@
 #import <CoreData/CoreData.h>
 #import <objc/message.h>
 #import "RKPropertyInspector+CoreData.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKObjectUtilities.h"
 #import "RKMacros.h"
 

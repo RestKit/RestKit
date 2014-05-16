@@ -20,7 +20,7 @@
 
 #import <objc/runtime.h>
 #import "RKManagedObjectStore.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
 #import "RKPathUtilities.h"
