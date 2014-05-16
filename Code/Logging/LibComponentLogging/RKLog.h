@@ -159,6 +159,12 @@ RKlcl_configure_by_name("App", level);
 #define RKLogSilenceWhileExecutingBlock(_block)                                        \
     RKLogToComponentWithLevelWhileExecutingBlock(RKLogComponent, RKLogLevelOff, _block)
 
+/**
+ Check whether the level for a component is equal or greater than a given level
+ */
+#define RKLogLevelForComponentIsEqualOrGreaterThan(_component, _level)                           \
+    (_RKlcl_component_level[(__RKlcl_log_symbol(_component))]) >= (__RKlcl_log_symbol(_level))
+
 
 /**
  Set the Default Log Level
