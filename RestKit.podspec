@@ -32,7 +32,7 @@ EOS
     cs.dependency 'RestKit/ObjectMapping'
     cs.dependency 'RestKit/Network'
     cs.dependency 'RestKit/CoreData'
-    cs.dependency 'RestKit/Logging/LibComponentLogging'
+    cs.dependency 'RestKit/Logging'
   end
   
   s.subspec 'ObjectMapping' do |os|
@@ -101,10 +101,12 @@ EOS
   end
   
   s.subspec 'Logging' do |sl|
-    sl.source_files   = 'Code/Logging.h'
+    sl.default_subspec = 'LibComponentLogging'
+    sl.subspec 'NSLog' do |sln|
+        sln.source_files   = 'Code/Logging.h', 'Code/Logging/NSLog'
+    end
     sl.subspec 'LibComponentLogging' do |slb|
         slb.source_files   = 'Code/Logging.h', 'Code/Logging/LibComponentLogging', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'
-        #slb.dependency 'RestKit/Logging'
         #slb.dependency 'LibComponentLogging-Core', '~> 1.3.2'
     end
   end

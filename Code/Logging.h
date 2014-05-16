@@ -30,6 +30,10 @@
     // LibComponentLogging
     #if defined(COCOAPODS_POD_AVAILABLE_RestKit_Logging_LibComponentLogging)
     #import "RKLog.h"
+
+    // NSLog
+    #else
+    #import "RKLog+NSLog.h"
     #endif
 
 #endif
