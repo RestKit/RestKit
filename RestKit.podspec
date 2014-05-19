@@ -113,6 +113,10 @@ EOS
         sln.source_files   = 'Code/Logging.h', 'Code/Logging/CocoaLumberjack'
         sln.dependency 'CocoaLumberjack'
     end
+    sl.subspec 'NBULog' do |sln|
+        sln.source_files   = 'Code/Logging.h', 'Code/Logging/NBULog'
+        sln.dependency 'NBULog'
+    end
   end
   
   s.subspec 'Support' do |ss|
