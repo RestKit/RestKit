@@ -31,6 +31,10 @@
     #if defined(COCOAPODS_POD_AVAILABLE_RestKit_Logging_LibComponentLogging)
     #import "RKLog.h"
 
+    // CocoaLumberJack
+    #elif defined(COCOAPODS_POD_AVAILABLE_CocoaLumberjack)
+    #import "RKLumberjack.h"
+
     // NSLog
     #else
     #import "RKNSLog.h"

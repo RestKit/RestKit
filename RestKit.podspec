@@ -109,6 +109,10 @@ EOS
         slb.source_files   = 'Code/Logging.h', 'Code/Logging/LibComponentLogging', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'
         #slb.dependency 'LibComponentLogging-Core', '~> 1.3.2'
     end
+    sl.subspec 'CocoaLumberjack' do |sln|
+        sln.source_files   = 'Code/Logging.h', 'Code/Logging/CocoaLumberjack'
+        sln.dependency 'CocoaLumberjack'
+    end
   end
   
   s.subspec 'Support' do |ss|
