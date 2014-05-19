@@ -33,7 +33,7 @@
 
     // NSLog
     #else
-    #import "RKLog+NSLog.h"
+    #import "RKNSLog.h"
     #endif
 
 #endif
