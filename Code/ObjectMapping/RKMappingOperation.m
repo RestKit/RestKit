@@ -350,7 +350,9 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     }
     
     // Always set the properties
-    if ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] && [self.dataSource mappingOperationShouldSetUnchangedValues:self]) return YES;
+    if ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] && [self.dataSource mappingOperationShouldSetUnchangedValues:self]) {
+        return [self validateValue:value atKeyPath:keyPath];
+    }
     
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null]) {
