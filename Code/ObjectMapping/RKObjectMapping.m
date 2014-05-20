@@ -167,7 +167,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     self.forceCollectionMapping = mapping.forceCollectionMapping;
     self.performsKeyValueValidation = mapping.performsKeyValueValidation;
     self.valueTransformer = mapping.valueTransformer;
-    self.sourceToDestinationKeyTransformationBlock = self.sourceToDestinationKeyTransformationBlock;
+    self.sourceToDestinationKeyTransformationBlock = mapping.sourceToDestinationKeyTransformationBlock;
 }
 
 - (id)copyWithZone:(NSZone *)zone
