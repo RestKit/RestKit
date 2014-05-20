@@ -21,6 +21,8 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 
+@class RKObjectRequestOperation;
+
 // Expose the default headers from AFNetworking's AFHTTPClient
 @interface AFHTTPClient ()
 @property (readonly, nonatomic) NSDictionary *defaultHeaders;
@@ -56,5 +58,7 @@
  **Default**: `nil`
  */
 @property (nonatomic, strong) NSSet *acceptableContentTypes;
+
+@property (nonatomic, weak) RKObjectRequestOperation* objectRequestOperation;
 
 @end
