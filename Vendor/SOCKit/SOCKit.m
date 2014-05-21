@@ -376,7 +376,8 @@ NSString* kTemporaryBackslashToken = @"/backslash/";
   }
 
   NSArray* values = nil;
-  NSAssert([self gatherParameterValues:&values fromString:sourceString], @"The pattern can't be used with this string.");
+  BOOL gathered = [self gatherParameterValues:&values fromString:sourceString];
+  NSAssert(gathered, @"The pattern can't be used with this string.");
 
   id returnValue = nil;
 
@@ -401,7 +402,8 @@ NSString* kTemporaryBackslashToken = @"/backslash/";
   NSMutableDictionary* kvs = [[NSMutableDictionary alloc] initWithCapacity:[_parameters count]];
 
   NSArray* values = nil;
-  NSAssert([self gatherParameterValues:&values fromString:sourceString], @"The pattern can't be used with this string.");
+  BOOL gathered = [self gatherParameterValues:&values fromString:sourceString];
+  NSAssert(gathered, @"The pattern can't be used with this string.");
 
   for (NSInteger ix = 0; ix < [values count]; ++ix) {
     SOCParameter* parameter = [_parameters objectAtIndex:ix];
