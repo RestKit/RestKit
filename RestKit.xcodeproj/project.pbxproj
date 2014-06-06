@@ -115,7 +115,7 @@
 		25160EFB1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */; };
 		25160F081456532C0060A5C5 /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EBD1456532C0060A5C5 /* SOCKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F091456532C0060A5C5 /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EBD1456532C0060A5C5 /* SOCKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160F0A1456532C0060A5C5 /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EBE1456532C0060A5C5 /* SOCKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		25160F0A1456532C0060A5C5 /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EBE1456532C0060A5C5 /* SOCKit.m */; };
 		25160F0B1456532C0060A5C5 /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EBE1456532C0060A5C5 /* SOCKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		25160F25145655AF0060A5C5 /* RestKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA1145650490060A5C5 /* RestKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F44145655C60060A5C5 /* RKDynamicMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D7C145650490060A5C5 /* RKDynamicMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -543,7 +543,7 @@
 		25CAAA9515254E7800CAE5D7 /* ArrayOfHumans.json in Resources */ = {isa = PBXBuildFile; fileRef = 25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */; };
 		25CDA0E7161E828D00F583F3 /* RKISODateFormatterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CDA0E2161E821000F583F3 /* RKISODateFormatterTest.m */; };
 		25CDA0E8161E828E00F583F3 /* RKISODateFormatterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CDA0E2161E821000F583F3 /* RKISODateFormatterTest.m */; };
-		25DA356F1836741D001A56A0 /* TKTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DA356D1836741C001A56A0 /* TKTransition.h */; };
+		25DA356F1836741D001A56A0 /* TKTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DA356D1836741C001A56A0 /* TKTransition.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25DA35701836741D001A56A0 /* TKTransition.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DA356D1836741C001A56A0 /* TKTransition.h */; };
 		25DA35711836741D001A56A0 /* TKTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DA356E1836741C001A56A0 /* TKTransition.m */; };
 		25DA35721836741D001A56A0 /* TKTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DA356E1836741C001A56A0 /* TKTransition.m */; };
@@ -1318,7 +1318,8 @@
 				25160EBD1456532C0060A5C5 /* SOCKit.h */,
 				25160EBE1456532C0060A5C5 /* SOCKit.m */,
 			);
-			path = SOCKit;
+			name = SOCKit;
+			path = SOCKit/src;
 			sourceTree = "<group>";
 		};
 		25160FC51456F2330060A5C5 /* Tests */ = {
@@ -1879,8 +1880,8 @@
 				25C6C0C11716F6F800C98A73 /* TKState.h in Headers */,
 				25C6C0C51716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				25C6C0CB1716F6F800C98A73 /* TransitionKit.h in Headers */,
-				25C6C0E81716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
 				25DA356F1836741D001A56A0 /* TKTransition.h in Headers */,
+				25C6C0E81716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
 				54CDB45B17B408B100FAC285 /* RKStringTokenizer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
