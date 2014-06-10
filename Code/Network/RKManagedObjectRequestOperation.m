@@ -541,7 +541,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         // Check if all the response descriptors are backed by Core Data
         NSMutableArray *matchingResponseDescriptors = [NSMutableArray array];
         for (RKResponseDescriptor *responseDescriptor in self.responseDescriptors) {
-            if ([responseDescriptor matchesResponse:response]) [matchingResponseDescriptors addObject:responseDescriptor];
+            if ([responseDescriptor matchesResponse:response request:request]) [matchingResponseDescriptors addObject:responseDescriptor];
         }
         if (! RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(matchingResponseDescriptors)) return NO;
 

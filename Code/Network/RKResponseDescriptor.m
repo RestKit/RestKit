@@ -121,9 +121,9 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
     }
 }
 
-- (BOOL)matchesResponse:(NSHTTPURLResponse *)response
+- (BOOL)matchesResponse:(NSHTTPURLResponse *)response request:(NSURLRequest *)request
 {
-    if (! [self matchesURL:response.URL]) return NO;
+    if (! ([self matchesURL:response.URL] || [self matchesURL:request.URL])) return NO;
 
     if (self.statusCodes) {
         if (! [self.statusCodes containsIndex:response.statusCode]) {

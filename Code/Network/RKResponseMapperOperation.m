@@ -221,7 +221,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 - (NSArray *)buildMatchingResponseDescriptors
 {
     NSIndexSet *indexSet = [self.responseDescriptors indexesOfObjectsPassingTest:^BOOL(RKResponseDescriptor *responseDescriptor, NSUInteger idx, BOOL *stop) {
-        return [responseDescriptor matchesResponse:self.response] && (RKRequestMethodFromString(self.request.HTTPMethod) & responseDescriptor.method);
+        return [responseDescriptor matchesResponse:self.response request:self.request] && (RKRequestMethodFromString(self.request.HTTPMethod) & responseDescriptor.method);
     }];
     return [self.responseDescriptors objectsAtIndexes:indexSet];
 }
