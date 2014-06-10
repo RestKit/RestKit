@@ -1,7 +1,5 @@
 language: objective-c
 rvm: 2.0.0
-before_install:
-    - brew bundle
 install:
     - bundle install
     - bundle exec pod install
