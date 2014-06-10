@@ -1,6 +1,6 @@
 PODS:
   - AFNetworking (1.3.4)
-  - Expecta (0.3.0)
+  - Expecta (HEAD based on 0.3.0)
   - ISO8601DateFormatterValueTransformer (0.6.0):
     - RKValueTransformers (~> 1.1.0)
   - OCHamcrest (3.0.1)
@@ -36,7 +36,7 @@ PODS:
   - TransitionKit (2.1.0)
 
 DEPENDENCIES:
-  - Expecta (~> 0.3.0)
+  - Expecta (HEAD)
   - OCHamcrest (= 3.0.1)
   - OCMock (= 2.2.1)
   - RestKit (from `.`)
