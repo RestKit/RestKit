@@ -34,14 +34,7 @@ GEM
       netrc
     cocoapods-try (0.3.0)
     colored (1.2)
-    columnize (0.3.6)
     daemons (1.1.9)
-    debugger (1.6.2)
-      columnize (>= 0.3.1)
-      debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.2.3)
-    debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.2.3)
     escape (0.0.4)
     eventmachine (1.0.3)
     fuzzy_match (2.0.4)
@@ -79,6 +72,8 @@ GEM
     xcodeproj (0.17.0)
       activesupport (~> 3.0)
       colored (~> 1.2)
+    xcpretty (0.1.6)
+    xctasks (0.2.1)
 
 PLATFORMS
   ruby
@@ -86,8 +81,9 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.6.1)
   cocoapods (~> 0.33.1)
-  debugger (~> 1.6.0)
   rakeup (~> 1.1.0)
   sinatra (~> 1.4.0)
   sinatra-contrib (~> 1.4.0)
   thin (~> 1.5.0)
+  xcpretty (~> 0.1.6)
+  xctasks (~> 0.2.1)

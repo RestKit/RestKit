@@ -1,7 +1,8 @@
 require 'rubygems'
 require 'bundler/setup'
+Bundler.setup
+require 'xctasks/test_task'
 require 'rakeup'
-require 'debugger'
 
 RakeUp::ServerTask.new do |t|
   t.port = 4567
@@ -10,36 +11,28 @@ RakeUp::ServerTask.new do |t|
   t.server = :thin
 end
 
+XCTasks::TestTask.new(:test) do |t|
+  t.workspace = 'RestKit.xcworkspace'
+  t.schemes_dir = 'Tests/Schemes'
+  t.runner = :xcpretty
+  t.actions = %w{test}
+  
+  t.subtask(ios: 'RestKitTests') do |s|
+    s.sdk = :iphonesimulator
+  end
+  
+  t.subtask(osx: 'RestKitFrameworkTests') do |s|
+    s.sdk = :macosx
+  end
+end
+
+task default: 'test'
+
 namespace :test do
-  task :prepare do    
-    system(%Q{mkdir -p "RestKit.xcworkspace/xcshareddata/xcschemes" && cp Tests/Schemes/*.xcscheme "RestKit.xcworkspace/xcshareddata/xcschemes/"})
-  end
-  
-  desc "Run the unit tests for iOS"
-  task :ios => :prepare do
-    $ios_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitTests -sdk iphonesimulator test -test-sdk iphonesimulator ONLY_ACTIVE_ARCH=NO")
-  end
-  
-  desc "Run the unit tests for OS X"
-  task :osx => :prepare do
-    $osx_success = system("xctool -workspace RestKit.xcworkspace -scheme RestKitFrameworkTests -sdk macosx test -test-sdk macosx")
-  end
-  
   # Provides validation that RestKit continues to build without Core Data. This requires conditional compilation that is error prone
   task :building_without_core_data do
     system("cd Examples/RKTwitter && pod install")
     system("xctool -workspace Examples/RKTwitter/RKTwitter.xcworkspace -scheme RKTwitterCocoaPods -sdk iphonesimulator clean build ONLY_ACTIVE_ARCH=NO")
-  end
-end
-
-desc 'Run all the RestKit tests'
-task :test => ['test:ios', 'test:osx'] do
-  puts "\033[0;31m!! iOS unit tests failed" unless $ios_success
-  puts "\033[0;31m!! OS X unit tests failed" unless $osx_success
-  if $ios_success && $osx_success
-    puts "\033[0;32m** All tests executed successfully"
-  else
-    exit(-1)
   end
 end
 
