@@ -165,3 +165,11 @@ desc "Validate a branch is ready for merging by checking for common issues"
 task :validate => ['build:examples', 'docs:check', :test] do  
   puts "Project state validated successfully. Proceed with merge."
 end
+
+task :lint do
+  system('bundle exex pod lib lint')
+end
+
+desc 'Runs the CI suite'
+task :ci => ['server:start', :test, 'test:building_without_core_data', :lint]
+
