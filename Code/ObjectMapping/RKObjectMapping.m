@@ -271,7 +271,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
 {
     for (RKPropertyMapping *mapping in self.propertyMappings) {
-        if ([mapping.sourceKeyPath isEqualToString:sourceKeyPath]) {
+        if (mapping.sourceKeyPath == sourceKeyPath || [mapping.sourceKeyPath isEqualToString:sourceKeyPath]) {
             return mapping;
         }
     }
