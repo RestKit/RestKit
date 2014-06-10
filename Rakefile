@@ -160,7 +160,7 @@ task :validate => ['build:examples', 'docs:check', :test] do
 end
 
 task :lint do
-  system('bundle exex pod lib lint')
+  system('bundle exec pod lib lint')
 end
 
 desc 'Runs the CI suite'
