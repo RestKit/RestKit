@@ -20,6 +20,10 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  HTTP methods for requests
  */
@@ -150,3 +154,7 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
  *  @return An index set of the status codes with optional response bodies
  */
 NSIndexSet *RKStatusCodesOfResponsesWithOptionalBodies(void);
+
+#ifdef __cplusplus
+}
+#endif

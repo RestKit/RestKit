@@ -23,7 +23,6 @@
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKMappingErrors.h"
-#import "RKResponseDescriptor.h"
 #import "RKDynamicMapping.h"
 #import "RKLog.h"
 #import "RKDictionaryUtilities.h"

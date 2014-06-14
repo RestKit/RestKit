@@ -18,6 +18,7 @@ Docs/API
 *.pbxuser
 *.perspectivev3
 *.xcuserdatad
+*.xccheckout
 
 Examples/RKDiscussionBoardExample/discussion_board_backend/public/system/attachments/*
 

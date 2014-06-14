@@ -2432,7 +2432,7 @@
 - (void)testShouldAutoConfigureDefaultDateFormatters
 {
     NSArray *dateFormatters = [RKObjectMapping defaultDateFormatters];
-    expect(dateFormatters).to.haveCountOf(3);
+    expect(dateFormatters).to.haveCountOf(6);
     expect([dateFormatters[2] dateFormat]).to.equal(@"yyyy-MM-dd");
     expect([dateFormatters[1] dateFormat]).to.equal(@"MM/dd/yyyy");
 
@@ -2451,10 +2451,10 @@
 
 - (void)testShouldLetYouAppendADateFormatterToTheList
 {
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     [RKObjectMapping addDefaultDateFormatter:dateFormatter];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(7));
 }
 
 - (void)testShouldAllowNewlyAddedDateFormatterToRunFirst
@@ -2488,10 +2488,10 @@
 
 - (void)testShouldLetYouConfigureANewDateFormatterFromAStringAndATimeZone
 {
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:EDTTimeZone];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(7));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     assertThat(dateFormatter.timeZone, is(equalTo(EDTTimeZone)));
 }
@@ -2517,9 +2517,9 @@
 
 - (void)testShouldConfigureANewDateFormatterInTheUTCTimeZoneIfPassedANilTimeZone
 {
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(6));
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:nil];
-    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
+    assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(7));
     NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     assertThat(dateFormatter.timeZone, is(equalTo(UTCTimeZone)));
