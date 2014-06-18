@@ -286,12 +286,12 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
 
 @end
 
-NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL)
+NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL, id userInfo)
 {
     NSMutableArray *fetchRequests = [NSMutableArray array];
     NSFetchRequest *fetchRequest = nil;
     for (RKFetchRequestBlock block in [fetchRequestBlocks reverseObjectEnumerator]) {
-        fetchRequest = block(URL);
+        fetchRequest = block(URL, userInfo);
         if (fetchRequest) [fetchRequests addObject:fetchRequest];
     }
     return fetchRequests;
@@ -569,7 +569,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 - (void)performMappingOnResponseWithCompletionBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))completionBlock
 {
     NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
-    NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
+    NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL, self.userInfo);
     if ([fetchRequests count] && [self canSkipMapping]) {
         RKLogDebug(@"Managed object mapping requested for cached response which was previously mapped: skipping...");
         NSMutableArray *managedObjects = [NSMutableArray array];
@@ -681,7 +681,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     // Pass the fetch request blocks a relative `NSURL` object if possible
     NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
     for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
-        NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
+        NSFetchRequest *fetchRequest = fetchRequestBlock(URL, self.userInfo);
         if (fetchRequest) {
             // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
             [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
@@ -711,7 +711,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     NSMutableArray *fetchRequests = [NSMutableArray array];
     NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
     for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
-        NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
+        NSFetchRequest *fetchRequest = fetchRequestBlock(URL, self.userInfo);
         if (fetchRequest) {
             // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
             [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];

@@ -151,6 +151,11 @@
  */
 @property (nonatomic, copy) NSArray *fetchRequestBlocks;
 
+/**
+ An user defined object that can be passed to the fetch request block.
+ */
+@property (nonatomic, strong) id userInfo;
+
 ///------------------------------------
 /// @name Managing Completion Behaviors
 ///------------------------------------
@@ -192,18 +197,20 @@
  A block that returns `nil` is considered not to match the given URL.
 
  @param URL The URL object to build a fetch request for.
+ @param userInfo The userInfo of the managed object request operation containing additional data that can be useful to establish the right managed objects that corresponds to the contents of the resource at the given URL.
  @return An `NSFetchRequest` object corresponding to the given URL, or nil if the URL could not be processed.
  */
-typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL);
+typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL, id userInfo);
 
 /**
  Returns an array of fetch request objects from an array of `RKFetchRequestBlock` objects given a URL.
  
  @param fetchRequestBlocks An array of `RKFetchRequestBlock` blocks to
  @param URL The URL for which to return a fetch request.
+ @param userInfo An user defined object containing additional data.
  @return An array of fetch requests from all blocks that match the given URL.
  */
-NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL);
+NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL, id userInfo);
 
 #endif
 #endif

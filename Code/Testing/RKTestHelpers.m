@@ -93,7 +93,7 @@
     NSURL *URL = [NSURL URLWithString:stubbedPathPattern relativeToURL:objectManager.HTTPClient.baseURL];
     NSAssert(URL, @"Failed to build URL from path pattern '%@' relative to base URL '%@'", pathPattern, objectManager.HTTPClient.baseURL);
     for (RKFetchRequestBlock block in objectManager.fetchRequestBlocks) {
-        NSFetchRequest *fetchRequest = block(URL);
+        NSFetchRequest *fetchRequest = block(URL, nil);
         if (fetchRequest) {
             // Add a new block that matches our stubbed path
             [objectManager addFetchRequestBlock:^NSFetchRequest *(NSURL *URL) {
