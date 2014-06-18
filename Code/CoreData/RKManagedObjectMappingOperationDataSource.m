@@ -450,28 +450,38 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 {
     if (! [mappingOperation.mapping isKindOfClass:[RKEntityMapping class]]) return NO;
     RKEntityMapping *entityMapping = (RKEntityMapping *)mappingOperation.mapping;
-    NSString *modificationKey = [entityMapping.modificationAttribute name];
-    if (! modificationKey) return NO;
-    id currentValue = [mappingOperation.destinationObject valueForKey:modificationKey];
-    if (! currentValue) return NO;
-    if (! [currentValue respondsToSelector:@selector(compare:)]) return NO;
-    
-    RKPropertyMapping *propertyMappingForModificationKey = [[(RKEntityMapping *)mappingOperation.mapping propertyMappingsByDestinationKeyPath] objectForKey:modificationKey];
-    id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];
-    if (! rawValue) return NO;
-    Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
 
-    id transformedValue = nil;
-    NSError *error = nil;
-    id<RKValueTransforming> valueTransformer = propertyMappingForModificationKey.valueTransformer ?: entityMapping.valueTransformer;
-    [valueTransformer transformValue:rawValue toValue:&transformedValue ofClass:attributeClass error:&error];
-    if (! transformedValue) return NO;
-    
-    if ([currentValue isKindOfClass:[NSString class]]) {
-        return [currentValue isEqualToString:transformedValue];
-    } else {
-        return [currentValue compare:transformedValue] != NSOrderedAscending;
+    if ([entityMapping.modificationAttributes count] == 0) return NO;
+
+    for (NSAttributeDescription *modificationAttribute in entityMapping.modificationAttributes) {
+        NSString *modificationKey = [modificationAttribute name];
+        if (! modificationKey) return NO;
+        id currentValue = [mappingOperation.destinationObject valueForKey:modificationKey];
+        if (! currentValue) return NO;
+        if (! [currentValue respondsToSelector:@selector(compare:)]) return NO;
+
+        RKPropertyMapping *propertyMappingForModificationKey = [[(RKEntityMapping *)mappingOperation.mapping propertyMappingsByDestinationKeyPath] objectForKey:modificationKey];
+        id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];
+        if (! rawValue) return NO;
+        Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
+
+        id transformedValue = nil;
+        NSError *error = nil;
+        id<RKValueTransforming> valueTransformer = propertyMappingForModificationKey.valueTransformer ?: entityMapping.valueTransformer;
+        [valueTransformer transformValue:rawValue toValue:&transformedValue ofClass:attributeClass error:&error];
+
+        if (! transformedValue) return NO;
+
+        if ([currentValue isKindOfClass:[NSString class]]) {
+            if (! [currentValue isEqualToString:transformedValue]) {
+                return NO;
+            }
+        } else if ([currentValue compare:transformedValue] == NSOrderedAscending) {
+            return NO;
+        }
     }
+    
+    return YES;
 }
 
 @end

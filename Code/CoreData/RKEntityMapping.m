@@ -298,21 +298,25 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return propertyClass;
 }
 
-- (void)setModificationAttribute:(NSAttributeDescription *)modificationAttribute
+- (void)setModificationAttributes:(NSArray *)modificationAttributes
 {
-    if (modificationAttribute && ![self.entity.properties containsObject:modificationAttribute]) [NSException raise:NSInvalidArgumentException format:@"The attribute given is not a property of the '%@' entity.", [self.entity name]];
-    _modificationAttribute = modificationAttribute;
+    for (NSAttributeDescription *attribute in modificationAttributes) {
+        if (! [self.entity.properties containsObject:attribute]) [NSException raise:NSInvalidArgumentException format:@"The attribute '%@' is not a property of the '%@' entity.", attribute, [self.entity name]];
+    }
+
+    _modificationAttributes = modificationAttributes;
 }
 
-- (void)setModificationAttributeForName:(NSString *)attributeName
+- (void)setModificationAttributesForNames:(NSArray *)attributeNames
 {
-    if (attributeName) {
-        NSAttributeDescription *attribute = [[self.entity attributesByName] objectForKey:attributeName];
-        if (!attribute) [NSException raise:NSInvalidArgumentException format:@"No attribute with the name '%@' was found in the '%@' entity.", attributeName, self.entity.name];
-        self.modificationAttribute = attribute;
-    } else {
-        self.modificationAttribute = nil;
+    NSMutableArray *attributes = [NSMutableArray array];
+    for (NSString *name in attributeNames) {
+        NSAttributeDescription *attribute = [[self.entity attributesByName] objectForKey:name];
+        if (!attribute) [NSException raise:NSInvalidArgumentException format:@"No attribute with the name '%@' was found in the '%@' entity.", name, self.entity.name];
+        [attributes addObject:attribute];
     }
+
+    self.modificationAttributes = [attributes count] != 0 ? attributes : nil;
 }
 
 + (void)setEntityIdentificationInferenceEnabled:(BOOL)enabled
@@ -331,6 +335,21 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
+
+- (void)setModificationAttribute:(NSAttributeDescription *)modificationAttribute
+{
+    self.modificationAttributes = @[modificationAttribute];
+}
+
+- (NSAttributeDescription *)modificationAttribute
+{
+    return [self.modificationAttributes lastObject];
+}
+
+- (void)setModificationAttributeForName:(NSString *)attributeName
+{
+    [self setModificationAttributesForNames:@[attributeName]];
+}
 
 - (NSString *)modificationKey
 {
