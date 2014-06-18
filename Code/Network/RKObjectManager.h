@@ -852,7 +852,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param fetchRequestBlocks An array of `RKResponseDescriptor` objects to be added to the manager.
  @exception NSInvalidArgumentException Raised if any element of the given array is not an `RKFetchRequestBlock` object.
  */
-- (void)addFetchRequestBlocksFromArray:(NSArray *)fetchRequestBlocks;
+- (void)addFetchRequestBlocksFromArray:(NSArray *)blocks;
 #endif
 
 ///------------------------------------

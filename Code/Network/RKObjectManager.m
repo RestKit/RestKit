@@ -886,9 +886,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     [self.mutableFetchRequestBlocks addObject:block];
 }
 
-- (void)addFetchRequestBlocksFromArray:(NSArray *)fetchRequestBlocks
+- (void)addFetchRequestBlocksFromArray:(NSArray *)blocks
 {
-    for (RKFetchRequestBlock block in fetchRequestBlocks) {
+    for (RKFetchRequestBlock block in blocks) {
         [self addFetchRequestBlock:block];
     }
 }
