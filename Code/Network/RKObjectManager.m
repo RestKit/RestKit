@@ -866,6 +866,11 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     [self.mutableResponseDescriptors removeObject:responseDescriptor];
 }
 
+- (void)removeAllResponseDescriptors
+{
+    [self.mutableResponseDescriptors removeAllObjects];
+}
+
 #pragma mark - Fetch Request Blocks
 
 #ifdef RKCoreDataIncluded
@@ -875,10 +880,17 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     return [NSArray arrayWithArray:self.mutableFetchRequestBlocks];
 }
 
-- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL))block
+- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL, id userInfo))block
 {
     NSParameterAssert(block);
     [self.mutableFetchRequestBlocks addObject:block];
+}
+
+- (void)addFetchRequestBlocksFromArray:(NSArray *)fetchRequestBlocks
+{
+    for (RKFetchRequestBlock block in fetchRequestBlocks) {
+        [self addFetchRequestBlock:block];
+    }
 }
 
 #endif

@@ -59,7 +59,7 @@
  To illustrate this concept, please consider the following real-world example which builds a fetch request for retrieving the Terminals that exist in an Airport:
 
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
-    [manager addFetchRequestBlock:^NSFetchRequest *(NSURL *URL) {
+    [manager addFetchRequestBlock:^NSFetchRequest *(NSURL *URL, id userInfo) {
         RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:@"/airports/:airport_id/terminals.json"];
 
         NSDictionary *argsDict = nil;

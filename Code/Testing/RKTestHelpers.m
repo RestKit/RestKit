@@ -96,7 +96,7 @@
         NSFetchRequest *fetchRequest = block(URL, nil);
         if (fetchRequest) {
             // Add a new block that matches our stubbed path
-            [objectManager addFetchRequestBlock:^NSFetchRequest *(NSURL *URL) {
+            [objectManager addFetchRequestBlock:^NSFetchRequest *(NSURL *URL, id userInfo) {
                 // TODO: Note that relativeString does not work because NSURLRequest drops the relative parent of the URL
                 //                if ([[URL relativeString] isEqualToString:relativeString]) {
                 if ([[URL path] isEqualToString:relativeString]) {
