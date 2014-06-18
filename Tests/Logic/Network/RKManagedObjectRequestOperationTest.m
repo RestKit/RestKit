@@ -89,7 +89,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:mockRequestOperation responseDescriptors:@[ responseDescriptor ]];
     
     __block NSURL *blockURL = nil;
-    RKFetchRequestBlock fetchRequesBlock = ^NSFetchRequest *(NSURL *URL) {
+    RKFetchRequestBlock fetchRequesBlock = ^NSFetchRequest *(NSURL *URL, id userInfo) {
         blockURL = URL;
         return nil;
     };
@@ -113,7 +113,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [[[mockRequestOperation stub] andReturn:request] request];
     [[[mockRequestOperation stub] andReturn:response] response];
     RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:mockRequestOperation responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock fetchRequesBlock = ^NSFetchRequest *(NSURL *URL) {
+    RKFetchRequestBlock fetchRequesBlock = ^NSFetchRequest *(NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
     };
     
@@ -135,7 +135,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [[[mockRequestOperation stub] andReturn:response] response];
     RKManagedObjectRequestOperation *operation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:mockRequestOperation responseDescriptors:@[ responseDescriptor ]];
     __block NSURL *blockURL = nil;
-    RKFetchRequestBlock fetchRequesBlock = ^NSFetchRequest *(NSURL *URL) {
+    RKFetchRequestBlock fetchRequesBlock = ^NSFetchRequest *(NSURL *URL, id userInfo) {
         blockURL = URL;
         return nil;
     };
@@ -171,7 +171,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 // 304 'Not Modified'
 - (void)testThatManagedObjectsAreFetchedWhenHandlingAResponseThatCanSkipMapping
 {
-    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     
@@ -254,7 +254,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
     RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"user" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
 
-    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
 
@@ -274,7 +274,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
-    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
 
@@ -641,7 +641,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
@@ -665,7 +665,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
@@ -691,7 +691,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/posts.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Tag"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
@@ -725,7 +725,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/posts.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Tag"];
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"posts.@count == 0"];
         return fetchRequest;
@@ -780,7 +780,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     managedObjectRequestOperation.managedObjectCache = managedObjectCache;
-    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Tag"];
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"posts.@count == 0"];
         return fetchRequest;
@@ -819,7 +819,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/with_to_one_relationship.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
@@ -854,7 +854,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/self_referential.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock fetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ fetchRequestBlock ];
@@ -902,10 +902,10 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/nested_self_referential.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock humanFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock humanFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
-    RKFetchRequestBlock houseFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock houseFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"House"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ humanFetchRequestBlock, houseFetchRequestBlock ];
@@ -1059,13 +1059,13 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/lists.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock listFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock listFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"List"];
     };
-    RKFetchRequestBlock authorFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock authorFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Author"];
     };
-    RKFetchRequestBlock entryFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock entryFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Entry"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ listFetchRequestBlock, authorFetchRequestBlock, entryFetchRequestBlock ];
@@ -1119,13 +1119,13 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/humans/self_referential.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock humanFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock humanFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
-    RKFetchRequestBlock parentFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock parentFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Parent"];
     };
-    RKFetchRequestBlock childFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock childFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Child"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ humanFetchRequestBlock, parentFetchRequestBlock, childFetchRequestBlock ];
@@ -1165,10 +1165,10 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/JSON/NakedEvents.json" relativeToURL:[RKTestFactory baseURL]]];
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    RKFetchRequestBlock meetingFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock meetingFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Meeting"];
     };
-    RKFetchRequestBlock eventFetchRequestBlock = ^NSFetchRequest * (NSURL *URL) {
+    RKFetchRequestBlock eventFetchRequestBlock = ^NSFetchRequest * (NSURL *URL, id userInfo) {
         return [NSFetchRequest fetchRequestWithEntityName:@"Party"];
     };
     managedObjectRequestOperation.fetchRequestBlocks = @[ meetingFetchRequestBlock, eventFetchRequestBlock ];
@@ -1484,7 +1484,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     managedObjectRequestOperation.managedObjectCache = managedObjectCache;
-    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.deletesOrphanedObjects = YES;
@@ -1518,10 +1518,10 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     managedObjectRequestOperation.managedObjectCache = managedObjectCache;
-    RKFetchRequestBlock postFetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock postFetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Post"];
     };
-    RKFetchRequestBlock tagFetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock tagFetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Tag"];
     };
     managedObjectRequestOperation.deletesOrphanedObjects = YES;
@@ -1548,7 +1548,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     managedObjectRequestOperation.managedObjectCache = managedObjectCache;
-    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.deletesOrphanedObjects = YES;
@@ -1574,7 +1574,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     managedObjectRequestOperation.managedObjectCache = managedObjectCache;
-    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.deletesOrphanedObjects = YES;
@@ -1600,7 +1600,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     managedObjectRequestOperation.managedObjectCache = managedObjectCache;
-    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.deletesOrphanedObjects = YES;
@@ -1631,7 +1631,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor, userResponseDescriptor ]];
     managedObjectRequestOperation.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
     managedObjectRequestOperation.managedObjectCache = managedObjectCache;
-    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL){
+    RKFetchRequestBlock fetchRequestBlock = ^(NSURL *URL, id userInfo){
         return [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     };
     managedObjectRequestOperation.deletesOrphanedObjects = YES;

@@ -816,6 +816,12 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 - (void)removeResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
 
+/**
+ Removes all the response descriptors from the manager.
+ 
+ */
+- (void)removeAllResponseDescriptors;
+
 ///----------------------------------------
 /// @name Configuring Core Data Integration
 ///----------------------------------------
@@ -836,9 +842,17 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  Adds the given `RKFetchRequestBlock` block to the manager.
  
- @param block A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
+ @param block A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a `NSURL` and a userInfo arguments.
  */
-- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL))block;
+- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL, id userInfo))block;
+
+/**
+ Adds the `RKFetchRequestBlock` objects contained in a given array to the manager.
+ 
+ @param fetchRequestBlocks An array of `RKResponseDescriptor` objects to be added to the manager.
+ @exception NSInvalidArgumentException Raised if any element of the given array is not an `RKFetchRequestBlock` object.
+ */
+- (void)addFetchRequestBlocksFromArray:(NSArray *)blocks;
 #endif
 
 ///------------------------------------
