@@ -619,7 +619,7 @@
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
-    expect(^{ [mapping setModificationAttributesForNames:@[ @"INVALID"] ]; }).to.raiseWithReason(NSInvalidArgumentException, @"No attribute with the name 'INVALID' was found in the 'Human' entity.");
+    expect(^{ [mapping setModificationAttributesForNames:@[ @"INVALID" ]]; }).to.raiseWithReason(NSInvalidArgumentException, @"No attribute with the name 'INVALID' was found in the 'Human' entity.");
 }
 
 - (void)testAssigningAttributeFromOtherEntityRaisesInvalidArgumentException
@@ -627,7 +627,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     NSEntityDescription *catEntity = managedObjectStore.managedObjectModel.entitiesByName[@"Cat"];
-    expect(^{ mapping.modificationAttributes = @[ catEntity.attributesByName[@"name"] ]; }).to.raiseWithReason(NSInvalidArgumentException, @"The attribute given is not a property of the 'Human' entity.");
+    expect(^{ mapping.modificationAttributes = @[ catEntity.attributesByName[@"name"] ]; }).to.raiseWithReason(NSInvalidArgumentException, @"The attribute 'name' is not a property of the 'Human' entity.");
 }
 
 - (void)testAssigningNilModificationAttribute

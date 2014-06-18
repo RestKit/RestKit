@@ -301,7 +301,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 - (void)setModificationAttributes:(NSArray *)modificationAttributes
 {
     for (NSAttributeDescription *attribute in modificationAttributes) {
-        if (! [self.entity.properties containsObject:attribute]) [NSException raise:NSInvalidArgumentException format:@"The attribute '%@' is not a property of the '%@' entity.", attribute, [self.entity name]];
+        if (! [self.entity.properties containsObject:attribute]) [NSException raise:NSInvalidArgumentException format:@"The attribute '%@' is not a property of the '%@' entity.", attribute.name, [self.entity name]];
     }
 
     _modificationAttributes = modificationAttributes;
