@@ -357,7 +357,6 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
         // Configure an operation queue to enable easy testing of connection operations
         NSOperationQueue *operationQueue = [NSOperationQueue new];
         dataSource.operationQueue = operationQueue;
-        dataSource.parentOperation = mappingOperation;
         return dataSource;
     } else {
         return [RKObjectMappingOperationDataSource new];

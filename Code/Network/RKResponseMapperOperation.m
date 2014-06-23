@@ -427,6 +427,7 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     __block NSError *blockError = nil;
     __block RKMappingResult *mappingResult = nil;
     self.operationQueue = [NSOperationQueue new];
+	self.operationQueue.suspended = YES;
     [self.managedObjectContext performBlockAndWait:^{
         // We may have been cancelled before we made it onto the MOC's queue
         if ([self isCancelled]) return;
@@ -441,7 +442,6 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         RKManagedObjectMappingOperationDataSource *dataSource = [[dataSourceClass alloc] initWithManagedObjectContext:self.managedObjectContext
                                                                                                                 cache:self.managedObjectCache];
         dataSource.operationQueue = self.operationQueue;
-        dataSource.parentOperation = self.mapperOperation;
 
         [self.operationQueue setMaxConcurrentOperationCount:1];
         [self.operationQueue setName:[NSString stringWithFormat:@"Relationship Connection Queue for '%@'", self.mapperOperation]];
@@ -487,6 +487,7 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     // Mapping completed without error, allow the connection operations to execute
     if ([self.operationQueue operationCount]) {
         RKLogTrace(@"Awaiting execution of %ld enqueued connection operations: %@", (long) [self.operationQueue operationCount], [self.operationQueue operations]);
+		self.operationQueue.suspended = NO;
         [self.operationQueue waitUntilAllOperationsAreFinished];
     }
 

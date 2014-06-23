@@ -1359,7 +1359,8 @@
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                                       cache:managedObjectCache];
     mappingOperationDataSource.operationQueue = [NSOperationQueue new];
-
+	mappingOperationDataSource.operationQueue.suspended = YES;
+	
     NSDictionary *representation = @{ @"human": @{ @"name": @"Blake Watters", @"favoriteCatID": @(12345) }, @"cat": @{ @"railsID": @(12345) } };
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat"
                                                       inManagedObjectStore:managedObjectStore];
@@ -1374,9 +1375,9 @@
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation
                                                                mappingsDictionary:@{ @"human": humanMapping , @"cat": catMapping }];
     mapper.mappingOperationDataSource = mappingOperationDataSource;
-    mappingOperationDataSource.parentOperation = mapper;
     [mapper start];
 
+	mappingOperationDataSource.operationQueue.suspended = NO;
     [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
 
     RKCat *cat = [mapper.mappingResult.dictionary objectForKey:@"cat"];
@@ -1430,7 +1431,8 @@
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                                       cache:managedObjectCache];
     mappingOperationDataSource.operationQueue = [NSOperationQueue new];
-
+ 	mappingOperationDataSource.operationQueue.suspended = YES;
+ 
     NSDictionary *representation = @{ @"name": @"Blake Watters", @"railsID": @123, @"hoardedCats": @[ @{ @"name": @"Asia", @"railsID": @12345 }] };
     RKEntityMapping *catHoarderMapping = [RKEntityMapping mappingForEntityForName:@"CatHoarder" inManagedObjectStore:managedObjectStore];
     [catHoarderMapping addAttributeMappingsFromArray:@[ @"name", @"railsID" ]];
@@ -1441,8 +1443,10 @@
 
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: catHoarderMapping }];
     mapper.mappingOperationDataSource = mappingOperationDataSource;
-    mappingOperationDataSource.parentOperation = mapper;
+
     [mapper start];
+
+	mappingOperationDataSource.operationQueue.suspended = NO;
     [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
 
     NSManagedObject *catHoarder = [mapper.mappingResult firstObject];

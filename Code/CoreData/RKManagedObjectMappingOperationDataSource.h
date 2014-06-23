@@ -66,18 +66,9 @@
 ///---------------------------------------------------
 
 /**
- The parent operation upon which instances of `RKRelationshipConnectionOperation` created by the data source are dependent upon.
- 
- When connecting relationships as part of a managed object mapping operation, it is possible that the mapping operation itself will create managed objects that should be used to satisfy the connections mappings of representations being mapped. To support such cases, is is desirable to defer the execution of connection operations until the execution of the aggregate mapping operation is complete. The `parentOperation` property provides support for deferring the execution of the enqueued relationship connection operations by establishing a dependency between the connection operations and a parent operation, such as an instance of `RKMapperOperation` such that they will not be executed by the `operationQueue` until the parent operation has finished executing.
- */
-@property (nonatomic, weak) NSOperation *parentOperation;
-
-/**
  The operation queue in which instances of `RKRelationshipConnectionOperation` will be enqueued to connect the relationships of mapped objects.
  
  If `nil`, then current operation queue as returned from `[NSOperationQueue currentQueue]` will be used.
- 
- Please see the documentation for `parentOperation` for a discussion of this property's function.
  */
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 

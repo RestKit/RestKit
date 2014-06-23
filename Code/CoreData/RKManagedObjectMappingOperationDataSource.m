@@ -36,8 +36,6 @@
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
-static void *RKManagedObjectMappingOperationDataSourceAssociatedObjectKey = &RKManagedObjectMappingOperationDataSourceAssociatedObjectKey;
-
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings);
 
 static id RKValueForAttributeMappingInRepresentation(RKAttributeMapping *attributeMapping, NSDictionary *representation)
@@ -323,10 +321,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
                 RKDeleteInvalidNewManagedObject(mappingOperation.destinationObject);
             }];
         }] : nil;
-        
-        // Add a dependency on the parent operation. If we are being mapped as part of a relationship, then the assignment of the mapped object to a parent may well fulfill the validation requirements. This ensures that the relationship mapping has completed before we evaluate the object for deletion.
-        if (self.parentOperation) [deletionOperation addDependency:self.parentOperation];
-
+		
         RKRelationshipConnectionOperation *connectionOperation = nil;
         if ([connections count]) {
             connectionOperation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject connections:connections managedObjectCache:self.managedObjectCache];
@@ -342,10 +337,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
                 }
             }];
             
-            if (self.parentOperation) [connectionOperation addDependency:self.parentOperation];
             [deletionOperation addDependency:connectionOperation];
             [operationQueue addOperation:connectionOperation];
-            RKLogTrace(@"Enqueued %@ dependent upon parent operation %@ to operation queue %@", connectionOperation, self.parentOperation, operationQueue);
+            RKLogTrace(@"Enqueued %@ to operation queue %@", connectionOperation, operationQueue);
         }
         
         // Enqueue our deletion operation for execution after all the connections
@@ -353,23 +347,13 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
         // Handle tombstone deletion by predicate
         if ([(RKEntityMapping *)mappingOperation.objectMapping deletionPredicate]) {
-            RKManagedObjectDeletionOperation *predicateDeletionOperation = nil;
-            // Attach a deletion operation for execution after the parent operation completes
-            predicateDeletionOperation = (RKManagedObjectDeletionOperation *)objc_getAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey);
-            if (! predicateDeletionOperation) {
-                predicateDeletionOperation = [[RKManagedObjectDeletionOperation alloc] initWithManagedObjectContext:self.managedObjectContext];
+            RKManagedObjectDeletionOperation *predicateDeletionOperation = [[RKManagedObjectDeletionOperation alloc] initWithManagedObjectContext:self.managedObjectContext];
 
-                // Attach a deletion operation for execution after the parent operation completes
-                if (self.parentOperation) {
-                    objc_setAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey, predicateDeletionOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-                    [predicateDeletionOperation addDependency:self.parentOperation];
-                }
+			// Ensure predicate deletion executes after any connections have been established
+			if (connectionOperation) [predicateDeletionOperation addDependency:connectionOperation];
 
-                // Ensure predicate deletion executes after any connections have been established
-                if (connectionOperation) [predicateDeletionOperation addDependency:connectionOperation];
+			[operationQueue addOperation:predicateDeletionOperation];
 
-                [operationQueue addOperation:predicateDeletionOperation];
-            }
             [predicateDeletionOperation addEntityMapping:(RKEntityMapping *)mappingOperation.objectMapping];
         }
     }
