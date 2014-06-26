@@ -104,6 +104,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
 static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPaths)
 {
     for (NSString *keyPath in keyPaths) {
+        if([keyPath isKindOfClass:[NSNull class]]) return YES;
         if ([representation valueForKeyPath:keyPath]) return YES;
     }
     return NO;
