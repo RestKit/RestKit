@@ -307,6 +307,42 @@
     expect([error localizedDescription]).to.equal(@"Cannot map an entity mapping that contains connection mappings with a data source whose managed object cache is nil.");
 }
 
+#pragma mark - Value Transformers
+
+- (void)testCustomAttributeMappingValueTransformer
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:entity];
+    
+    RKValueTransformer *valueTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
+       
+        return ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSString class]]);
+    
+    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
+        
+        RKValueTransformerTestInputValueIsKindOfClass(inputValue, [NSString class], error);
+        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, [NSString class], error);
+        
+        *outputValue = [(NSString *)inputValue uppercaseString];
+        return YES;
+    }];
+    RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
+    nameMapping.valueTransformer = valueTransformer;
+    [mapping addAttributeMappingsFromArray:@[ nameMapping ]];
+    mapping.identificationAttributes = @[ @"name" ];
+    
+    NSDictionary *representation = @{ @"name" : @"Blake Watters" };
+    
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                      cache:managedObjectStore.managedObjectCache];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:representation withMapping:mapping inRelationship:nil];
+    
+    RKHuman *human = (RKHuman *)object;
+    assertThat(human, isNot(nilValue()));
+    assertThat(human.name, is(equalTo(@"BLAKE WATTERS")));
+}
+
 #pragma mark - Rearrange Me
 
 - (void)testCompoundEntityIdentifierWithFetchRequestCache

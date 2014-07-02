@@ -1,8 +1,7 @@
 language: objective-c
-before_install:
-    - brew bundle
+rvm: 2.0.0
 install:
     - bundle install
     - bundle exec pod install
 script:
-    - bundle exec rake server:start test test:building_without_core_data
+    - bundle exec rake ci

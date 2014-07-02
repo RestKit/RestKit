@@ -5,7 +5,6 @@ require 'bundler/setup'
 require 'sinatra/base'
 require 'sinatra/multi_route'
 require 'json'
-require 'debugger'
 
 class Person < Struct.new(:name, :age)
   def to_json(*args)

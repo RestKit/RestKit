@@ -19,6 +19,7 @@
 //
 
 #ifdef _COREDATADEFINES_H
+#if __has_include("RKManagedObjectCaching.h")
 
 #import "RKManagedObjectRequestOperation.h"
 #import "RKLog.h"
@@ -906,4 +907,5 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 
 @end
 
+#endif
 #endif

@@ -8,10 +8,10 @@ def import_pods
   pod 'Specta', '0.2.1'
   pod 'OCMock', '2.2.1'
   pod 'OCHamcrest', '3.0.1'
-  pod 'Expecta', '0.2.3'
+  pod 'Expecta', :head
   
   # Used for testing Value Transformer integration
-  pod 'RKCLLocationValueTransformer', :git => 'https://github.com/RestKit/RKCLLocationValueTransformer'
+  pod 'RKCLLocationValueTransformer', '~> 1.1.0'
 end
 
 target :ios do

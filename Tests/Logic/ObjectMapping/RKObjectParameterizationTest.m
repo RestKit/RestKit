@@ -114,6 +114,30 @@
 
 #pragma clang diagnostic pop
 
+- (void)testShouldSerializeADateToAStringUsingTheAttributeMappingValueTransformer
+{
+    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    dateFormatter.dateFormat = @"MM/dd/yyyy";
+    dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    RKAttributeMapping *propertyMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"date" toKeyPath:@"date-form-name"];
+
+    propertyMapping.valueTransformer = dateFormatter;
+
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addPropertyMapping: propertyMapping];
+
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[NSDictionary class] rootKeyPath:nil method:RKRequestMethodAny];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:object requestDescriptor:requestDescriptor error:&error];
+
+    NSData *data = [RKMIMETypeSerialization dataFromObject:parameters MIMEType:RKMIMETypeFormURLEncoded error:&error];
+    NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    expect(error).to.beNil();
+    expect(string).to.equal(@"date-form-name=01/01/1970&key1-form-name=value1");
+}
+
 - (void)testShouldSerializeADateToJSON
 {
     NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];

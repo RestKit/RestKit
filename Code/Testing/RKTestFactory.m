@@ -27,8 +27,11 @@
 #import "RKObjectRequestOperation.h"
 
 #ifdef _COREDATADEFINES_H
+#if __has_include("RKCoreData.h")
+#define RKCoreDataIncluded
 #import "RKManagedObjectStore.h"
 #import "RKManagedObjectStore+RKSearchAdditions.h"
+#endif
 #endif
 
 // Expose MIME Type singleton and initialization routine
@@ -128,7 +131,7 @@
         return objectManager;
     }];
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
         NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
         RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
@@ -178,7 +181,7 @@
     return [[RKTestFactory sharedFactory] sharedObjectFromFactory:factoryName];
 }
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
 + (id)insertManagedObjectForEntityForName:(NSString *)entityName
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
                            withProperties:(NSDictionary *)properties
@@ -215,7 +218,7 @@
     return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesObjectManager];
 }
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
 + (id)managedObjectStore
 {
     return [self sharedObjectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
@@ -242,7 +245,7 @@
 
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
     [RKManagedObjectStore setDefaultStore:nil];
 #endif
     
@@ -272,7 +275,7 @@
     // Cancel any object mapping in the response mapping queue
     [[RKObjectRequestOperation responseMappingQueue] cancelAllOperations];
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
     if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
@@ -288,7 +291,7 @@
     
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
     [RKManagedObjectStore setDefaultStore:nil];
 #endif
 }

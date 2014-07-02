@@ -23,6 +23,12 @@
 #import "RKMacros.h"
 #import "AFNetworking.h"
 
+#ifdef _COREDATADEFINES_H
+#if __has_include("RKCoreData.h")
+#define RKCoreDataIncluded
+#endif
+#endif
+
 @protocol RKSerialization;
 @class RKManagedObjectStore, RKObjectRequestOperation, RKManagedObjectRequestOperation,
 RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
@@ -477,7 +483,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see `RKManagedObjectRequestOperation`
  */
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
 - (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
                                                          managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
@@ -814,7 +820,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /// @name Configuring Core Data Integration
 ///----------------------------------------
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
 /**
  A Core Data backed object store for persisting objects that have been fetched from the Web
  */
