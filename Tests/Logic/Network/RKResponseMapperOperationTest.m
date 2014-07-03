@@ -518,6 +518,44 @@ NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
     expect(testUser.name).to.equal(@"application/json");
 }
 
+- (void)testThatResponseMapperMakesResponseMappingArgumentsAvailableToMetadataWithNilKeyPath
+{
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:responseURL];
+    [request setAllHTTPHeaderFields:@{ @"Content-Type": @"application/xml" }];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"name\": \"Blake\"}" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    RKTestUser *testUser = [RKTestUser new];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"@metadata.mapping.arguments.version": @"name" }];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/api/:version/users" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithRequest:request response:response data:data responseDescriptors:@[ responseDescriptor ]];
+    mapper.targetObject = testUser;
+    [mapper start];
+    expect(testUser.name).to.equal(@"v1");
+}
+
+- (void)testThatResponseMapperMakesResponseMappingArgumentsAvailableToMetadataWithNonNilKeyPath
+{
+    NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:responseURL];
+    [request setAllHTTPHeaderFields:@{ @"Content-Type": @"application/xml" }];
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:responseURL statusCode:200 HTTPVersion:@"1.1" headerFields:@{@"Content-Type": @"application/json"}];
+    NSData *data = [@"{\"users\":{\"name\": \"Blake\"}}" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    RKTestUser *testUser = [RKTestUser new];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"@metadata.mapping.arguments.users.version": @"name" }];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:@"/api/:version/users" keyPath:@"users" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    RKObjectResponseMapperOperation *mapper = [[RKObjectResponseMapperOperation alloc] initWithRequest:request response:response data:data responseDescriptors:@[ responseDescriptor ]];
+    mapper.targetObject = testUser;
+    [mapper start];
+    expect(testUser.name).to.equal(@"v1");
+}
+
 - (void)testThatResponseMapperMergesExistingMetadata
 {
     NSURL *responseURL = [NSURL URLWithString:@"http://restkit.org/api/v1/users"];

@@ -131,6 +131,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) NSArray *matchingResponseDescriptors;
 @property (nonatomic, strong, readwrite) NSDictionary *responseMappingsDictionary;
+@property (nonatomic, strong, readwrite) NSDictionary *responseMappingArgumentsDictionary;
 @property (nonatomic, strong) RKMapperOperation *mapperOperation;
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id);
 @property (nonatomic, copy) void(^didFinishMappingBlock)(RKMappingResult *, NSError *);
@@ -188,6 +189,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
         self.responseDescriptors = responseDescriptors;
         self.matchingResponseDescriptors = [self buildMatchingResponseDescriptors];
         self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
+        self.responseMappingArgumentsDictionary = [self buildResponseMappingArgumentsDictionary];
         self.treatsEmptyResponseAsSuccess = YES;
         self.mappingMetadata = @{}; // Initialize the metadata
     }
@@ -236,6 +238,30 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     return dictionary;
 }
 
+- (NSDictionary *)buildResponseMappingArgumentsDictionary
+{
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    for (RKResponseDescriptor *responseDescriptor in self.matchingResponseDescriptors) {
+        
+        NSDictionary *arguments = [responseDescriptor parsedArgumentsFromResponse:self.response];
+        if (arguments)
+        {
+            // We don't add nil keypath at an [NSNull null] key, because that causes a crash later
+            // in RKDictionaryByMergingDictionaryWithDictionary
+            if (responseDescriptor.keyPath)
+            {
+                [dictionary setObject:arguments forKey:responseDescriptor.keyPath];
+            }
+            else
+            {
+                [dictionary addEntriesFromDictionary:arguments];
+            }
+        }
+    }
+    
+    return dictionary;
+}
+
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
@@ -259,6 +285,12 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     NSDictionary *HTTPMetadata = @{ @"HTTP": @{ @"request":  @{ @"URL": self.request.URL, @"method": self.request.HTTPMethod, @"headers": [self.request allHTTPHeaderFields] ?: @{} },
                                                 @"response": @{ @"URL": self.response.URL, @"headers": [self.response allHeaderFields] ?: @{} } } };
     _mappingMetadata = RKDictionaryByMergingDictionaryWithDictionary(HTTPMetadata, mappingMetadata);
+    
+    if (self.responseMappingArgumentsDictionary)
+    {
+        NSDictionary *argumentsMetadata = @{ @"mapping" : @{ @"arguments" : self.responseMappingArgumentsDictionary } };
+        _mappingMetadata = RKDictionaryByMergingDictionaryWithDictionary(argumentsMetadata, _mappingMetadata);
+    }
 }
 
 - (void)cancel
