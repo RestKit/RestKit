@@ -62,10 +62,13 @@ NSDictionary *RKDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncodedS
     return queryComponents;
 }
 
+#if __has_include("AFHTTPClient.h")
 extern NSString *AFQueryStringFromParametersWithEncoding(NSDictionary *parameters, NSStringEncoding stringEncoding);
+#endif
+
 NSString *RKURLEncodedStringFromDictionaryWithEncoding(NSDictionary *dictionary, NSStringEncoding encoding)
 {
-#if __has_include("AFNetworking.h")
+#if __has_include("AFHTTPClient.h")
     return AFQueryStringFromParametersWithEncoding(dictionary, encoding);
 #else
     return nil;
