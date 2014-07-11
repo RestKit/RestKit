@@ -317,7 +317,7 @@ manager.managedObjectStore = managedObjectStore;
 ### Load a Collection of Objects at a Path
 ``` objective-c
 RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
-[manager getObjectsAtPath:@"/articles" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult)) {
+[manager getObjectsAtPath:@"/articles" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 }];
 ```
@@ -462,10 +462,10 @@ RKManagedObjectImporter *importer = [[RKManagedObjectImporter alloc] initWithMan
 // JSON looks like {"articles": [ {"title": "Article 1", "body": "Text", "author": "Blake" ]}
 NSError *error;
 NSBundle *mainBundle = [NSBundle mainBundle];
-[importer importObjectsFromItemAtPath:[mainBundle pathForResource:@"articles" ofType:@"json"]
-                              withMapping:articleMapping
-                                  keyPath:@"articles"
-                                    error:&error];
+[importer importObjectsFromItemAtPath:[mainBundle pathForResource:@"articles" ofType:@"json"]    
+                          withMapping:articleMapping
+                              keyPath:@"articles"
+                                error:&error];
 
 BOOL success = [importer finishImporting:&error];
 if (success) {
