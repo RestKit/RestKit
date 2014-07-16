@@ -8,7 +8,7 @@
 
 #import "NSManagedObject+RKAdditions.h"
 #import "NSManagedObjectContext+RKAdditions.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKManagedObjectStore.h"
 
 @implementation NSManagedObject (RKAdditions)
