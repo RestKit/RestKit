@@ -1,6 +1,6 @@
 # RestKit
 
-[![Build Status](http://img.shields.io/travis/RestKit/RestKit/development,master.svg?style=flat)](https://travis-ci.org/RestKit/RestKit)
+[![Build Status](http://img.shields.io/travis/RestKit/RestKit/development.svg?style=flat)](https://travis-ci.org/RestKit/RestKit)
 [![Pod Version](http://img.shields.io/cocoapods/v/RestKit.svg?style=flat)](http://cocoadocs.org/docsets/RestKit/)
 [![Pod Platform](http://img.shields.io/cocoapods/p/RestKit.svg?style=flat)](http://cocoadocs.org/docsets/RestKit/)
 [![Pod License](http://img.shields.io/cocoapods/l/RestKit.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0.html)
