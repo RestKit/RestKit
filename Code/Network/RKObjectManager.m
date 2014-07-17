@@ -791,10 +791,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     [self enqueueObjectRequestOperation:operation];
 }
 
-- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern
+- (RKPaginator *)paginatorForRequest:(NSURLRequest *)request
 {
     NSAssert(self.paginationMapping, @"Cannot instantiate a paginator when `paginationMapping` is nil.");
-    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:pathPattern parameters:nil];
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:self.responseDescriptors];
 #ifdef RKCoreDataIncluded
     paginator.managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
@@ -805,6 +804,25 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     Class HTTPOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses];
     if (HTTPOperationClass) [paginator setHTTPOperationClass:HTTPOperationClass];
     return paginator;
+}
+
+- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern
+{
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:pathPattern parameters:nil];
+    return [self paginatorForRequest:request];
+}
+
+- (RKPaginator *)paginatorForObject:(id)object
+                               path:(NSString *)path
+                         parameters:(NSDictionary *)parameters
+            withRelativePathPattern:(NSString *)paginatorPathPattern
+{
+    RKRequestMethod method = RKRequestMethodGET;
+    NSString *requestPath = (path) ? path : [[self.router URLForObject:object method:method] relativeString];
+    requestPath = [requestPath stringByAppendingPathComponent: paginatorPathPattern];
+    id requestParameters = [self mergedParametersWithObject:object method:method parameters:parameters];
+    NSMutableURLRequest *request = [self requestWithMethod:RKStringFromRequestMethod(method) path:requestPath parameters:requestParameters];
+    return [self paginatorForRequest: request];
 }
 
 #pragma mark - Request & Response Descriptors
