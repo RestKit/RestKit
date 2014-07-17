@@ -167,7 +167,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     self.forceCollectionMapping = mapping.forceCollectionMapping;
     self.performsKeyValueValidation = mapping.performsKeyValueValidation;
     self.valueTransformer = mapping.valueTransformer;
-    self.sourceToDestinationKeyTransformationBlock = self.sourceToDestinationKeyTransformationBlock;
+    self.sourceToDestinationKeyTransformationBlock = mapping.sourceToDestinationKeyTransformationBlock;
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -271,7 +271,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
 {
     for (RKPropertyMapping *mapping in self.propertyMappings) {
-        if ([mapping.sourceKeyPath isEqualToString:sourceKeyPath]) {
+        if (mapping.sourceKeyPath == sourceKeyPath || [mapping.sourceKeyPath isEqualToString:sourceKeyPath]) {
             return mapping;
         }
     }

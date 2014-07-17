@@ -8,7 +8,7 @@ def import_pods
   pod 'Specta', '0.2.1'
   pod 'OCMock', '2.2.1'
   pod 'OCHamcrest', '3.0.1'
-  pod 'Expecta', '0.2.3'
+  pod 'Expecta', '0.3.1'
   
   # Used for testing Value Transformer integration
   pod 'RKCLLocationValueTransformer', '~> 1.1.0'

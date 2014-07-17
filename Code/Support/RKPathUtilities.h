@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  Returns the path to the Application Data directory for the executing application. On iOS, this is a sandboxed path specific for the executing application. On OS X, this is an application specific path under `NSApplicationSupportDirectory` (i.e. ~/Application Support).
 
@@ -52,3 +56,7 @@ NSString *RKMIMETypeFromPathExtension(NSString *path);
  @param path The path to the item that is to be excluded from backup.
  */
 void RKSetExcludeFromBackupAttributeForItemAtPath(NSString *path);
+
+#ifdef __cplusplus
+}
+#endif
