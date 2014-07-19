@@ -335,22 +335,22 @@ static NSURL *RKRelativeURLFromURLAndResponseDescriptors(NSURL *URL, NSArray *re
     return URL;
 }
 
-static NSSet *RKGatherManagedObjectsFromObjectWithRelationshipMapping(id object, RKRelationshipMapping *relationshipMapping)
+static void RKGatherManagedObjectsFromObjectWithRelationshipMapping(id object, RKRelationshipMapping *relationshipMapping, NSMutableSet *managedObjects)
 {
-    NSMutableSet *managedObjects = [NSMutableSet set];
     NSSet *relationshipValue = RKFlattenCollectionToSet([object valueForKeyPath:relationshipMapping.destinationKeyPath]);
     for (id relatedObject in relationshipValue) {
+        if ([managedObjects containsObject:relatedObject]) continue;
         if ([relatedObject isKindOfClass:[NSManagedObject class]]) [managedObjects addObject:relatedObject];
         
         if ([relationshipMapping.mapping isKindOfClass:[RKObjectMapping class]]) {
             for (RKRelationshipMapping *childRelationshipMapping in [(RKObjectMapping *)relationshipMapping.mapping relationshipMappings]) {
-                [managedObjects unionSet:RKGatherManagedObjectsFromObjectWithRelationshipMapping(relatedObject, childRelationshipMapping)];
+                RKGatherManagedObjectsFromObjectWithRelationshipMapping(relatedObject, childRelationshipMapping, managedObjects);
             }
         } else if ([relationshipMapping.mapping isKindOfClass:[RKDynamicMapping class]]) {
             for (RKObjectMapping *objectMapping in [(RKDynamicMapping *)relationshipMapping.mapping objectMappings]) {
                 @try {
                     for (RKRelationshipMapping *childRelationshipMapping in objectMapping.relationshipMappings) {
-                        [managedObjects unionSet:RKGatherManagedObjectsFromObjectWithRelationshipMapping(relatedObject, childRelationshipMapping)];
+                        RKGatherManagedObjectsFromObjectWithRelationshipMapping(relatedObject, childRelationshipMapping, managedObjects);
                     }
                 }
                 @catch (NSException *exception) {
@@ -359,7 +359,6 @@ static NSSet *RKGatherManagedObjectsFromObjectWithRelationshipMapping(id object,
             }
         }
     }
-    return managedObjects;
 }
 
 static NSSet *RKManagedObjectsFromObjectWithMappingInfo(id object, RKMappingInfo *mappingInfo)
@@ -373,9 +372,9 @@ static NSSet *RKManagedObjectsFromObjectWithMappingInfo(id object, RKMappingInfo
     if ([[mappingInfo propertyMappings] count] == 0) {
         // This object was matched, but no changes were made. Gather all related objects
         for (RKRelationshipMapping *relationshipMapping in [mappingInfo.objectMapping relationshipMappings]) {
-            [managedObjects unionSet:RKGatherManagedObjectsFromObjectWithRelationshipMapping(object, relationshipMapping)];
+            RKGatherManagedObjectsFromObjectWithRelationshipMapping(object, relationshipMapping, managedObjects);
         }
-    } else {    
+    } else {
         for (NSString *destinationKeyPath in mappingInfo.relationshipMappingInfo) {
             id relationshipValue = [object valueForKeyPath:destinationKeyPath];
             NSArray *mappingInfos = [mappingInfo.relationshipMappingInfo objectForKey:destinationKeyPath];
