@@ -177,8 +177,8 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.method == otherDescriptor.method &&
-    [self.pathPattern isEqualToString:otherDescriptor.pathPattern] &&
-    [self.keyPath isEqualToString:otherDescriptor.keyPath] &&
+    ((self.pathPattern == otherDescriptor.pathPattern) || [self.pathPattern isEqualToString:otherDescriptor.pathPattern]) &&
+    ((self.keyPath == otherDescriptor.keyPath) || [self.keyPath isEqualToString:otherDescriptor.keyPath]) &&
     [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes];
 }
 
