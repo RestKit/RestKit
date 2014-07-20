@@ -241,22 +241,20 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                     [mutableUserInfo setValue:blockError forKey:NSUnderlyingErrorKey];
                     NSString *reason = [NSString stringWithFormat:@"expected to %@ with value %@ '%@', but it did not",
                                         expectation, [event.value class], event.value];
-                    *error = [self errorForExpectation:expectation
-                                              withCode:RKMappingTestEvaluationBlockError
-                                              userInfo:mutableUserInfo
-                                           description:[blockError localizedDescription]
-                                                reason:reason];
-                    
-                    *error = blockError;
+                    if (error) *error = [self errorForExpectation:expectation
+                                                         withCode:RKMappingTestEvaluationBlockError
+                                                         userInfo:mutableUserInfo
+                                                      description:[blockError localizedDescription]
+                                                           reason:reason];
                 } else {
                     NSString *description = [NSString stringWithFormat:@"evaluation block returned `NO` for %@ value '%@'", [event.value class], event.value];
                     NSString *reason = [NSString stringWithFormat:@"expected to %@ with value %@ '%@', but it did not",
                                         expectation, [event.value class], event.value];
-                    *error = [self errorForExpectation:expectation
-                                              withCode:RKMappingTestEvaluationBlockError
-                                              userInfo:userInfo
-                                           description:description
-                                                reason:reason];
+                    if (error) *error = [self errorForExpectation:expectation
+                                                         withCode:RKMappingTestEvaluationBlockError
+                                                         userInfo:userInfo
+                                                      description:description
+                                                           reason:reason];
                 }
             }
         } else if (propertyExpectation.value) {
