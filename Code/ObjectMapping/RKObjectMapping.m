@@ -39,9 +39,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 - (void)copyPropertiesFromMapping:(RKObjectMapping *)mapping;
 @end
 
-@interface RKAttributeMapping (Copying)
-- (void)copyPropertiesFromMapping:(RKAttributeMapping *)mapping;
-@end
 
 @interface RKMappingInverter : NSObject
 @property (nonatomic, strong) RKObjectMapping *mapping;
@@ -79,7 +76,8 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     for (RKAttributeMapping *attributeMapping in mapping.attributeMappings) {
         if (predicate && !predicate(attributeMapping)) continue;
         RKAttributeMapping *invertedAttributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:attributeMapping.destinationKeyPath toKeyPath:attributeMapping.sourceKeyPath];
-        [invertedAttributeMapping copyPropertiesFromMapping:attributeMapping];
+        invertedAttributeMapping.propertyValueClass = attributeMapping.propertyValueClass;
+        invertedAttributeMapping.valueTransformer = attributeMapping.valueTransformer;
         [inverseMapping addPropertyMapping:invertedAttributeMapping];
     }
     

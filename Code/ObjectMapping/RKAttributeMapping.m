@@ -36,10 +36,4 @@
     return attributeMapping;
 }
 
-- (void)copyPropertiesFromMapping:(RKAttributeMapping *)mapping
-{
-    self.propertyValueClass = mapping.propertyValueClass;
-    self.valueTransformer = mapping.valueTransformer;
-}
-
 @end
