@@ -340,7 +340,7 @@ static void RKGatherManagedObjectsFromObjectWithRelationshipMapping(id object, R
     NSSet *relationshipValue = RKFlattenCollectionToSet([object valueForKeyPath:relationshipMapping.destinationKeyPath]);
     for (id relatedObject in relationshipValue) {
         if ([managedObjects containsObject:relatedObject]) continue;
-        if ([relatedObject isKindOfClass:[NSManagedObject class]]) [managedObjects addObject:relatedObject];
+        [managedObjects addObject:relatedObject];
         
         if ([relationshipMapping.mapping isKindOfClass:[RKObjectMapping class]]) {
             for (RKRelationshipMapping *childRelationshipMapping in [(RKObjectMapping *)relationshipMapping.mapping relationshipMappings]) {
