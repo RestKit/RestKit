@@ -430,7 +430,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             }
         }
     }
-    
+    [self.managedObjectContext processPendingChanges];
     return YES;
 }
 

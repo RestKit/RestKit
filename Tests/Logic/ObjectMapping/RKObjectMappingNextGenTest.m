@@ -43,6 +43,9 @@
 #import "RKHuman.h"
 #import "RKCat.h"
 #import "RKHouse.h"
+#import "RKMeeting.h"
+#import "RKTopic.h"
+#import "RKSlides.h"
 
 @interface RKExampleGroupWithUserArray : NSObject {
     NSString *_name;
@@ -2044,7 +2047,8 @@
     expect([human.cats count]).to.equal(1);
     NSArray *names = [human.cats valueForKey:@"name"];
     assertThat(names, hasItems(@"Roy", nil));
-    expect([existingCat isDeleted]).to.equal(YES);
+    BOOL isDeleted = ([existingCat isDeleted] || ![existingCat managedObjectContext]);
+    expect(isDeleted).to.equal(YES);
 }
 
 - (void)testReplacmentPolicyForToManyCoreDataRelationshipDoesNotDeleteNewValuesOnSecondMapping
@@ -2086,6 +2090,60 @@
     assertThat(secondCatNames, hasItems(@"Roy", nil));
 }
 
+- (void)testReplacmentPolicyForToManyCoreDataRelationshipDoesNotPropagateIsDeletedOnSecondMapping
+{
+  RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+  managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+  RKMeeting *meeting = [NSEntityDescription insertNewObjectForEntityForName:@"Meeting" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+  
+  RKEntityMapping *meetingMapping = [RKEntityMapping mappingForEntityForName:@"Meeting" inManagedObjectStore:managedObjectStore];
+  [meetingMapping addAttributeMappingsFromArray:@[ @"name" ]];
+  RKEntityMapping *topicMapping = [RKEntityMapping mappingForEntityForName:@"Topic" inManagedObjectStore:managedObjectStore];
+  [topicMapping addAttributeMappingsFromArray:@[ @"name" ]];
+  topicMapping.identificationAttributes = @[ @"name" ];
+  RKEntityMapping *slidesMapping = [RKEntityMapping mappingForEntityForName:@"Slides" inManagedObjectStore:managedObjectStore];
+  [slidesMapping addAttributeMappingsFromArray:@[ @"filename" ]];
+  slidesMapping.identificationAttributes = @[ @"filename" ];
+  
+  RKRelationshipMapping *slidesRelationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"slides" toKeyPath:@"slides" withMapping:slidesMapping];
+  [topicMapping addPropertyMapping:slidesRelationshipMapping];
+  
+  RKRelationshipMapping *topicsRelationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"topics" toKeyPath:@"topics" withMapping:topicMapping];
+  topicsRelationshipMapping.assignmentPolicy = RKReplaceAssignmentPolicy;
+  [meetingMapping addPropertyMapping:topicsRelationshipMapping];
+  
+  NSError *error = nil;
+  NSDictionary *dictionary = @{ @"name": @"Imporant Meeting", @"topics": @[ @{ @"name": @"Security",@"slides":@{ @"filename": @"SecuritySlides" }},@{ @"filename": @"Food",@"slides": @{ @"name": @"FoodSlides" }} ] };
+  
+  RKMappingOperation *firstOperation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:meeting mapping:meetingMapping];
+  RKManagedObjectMappingOperationDataSource *firstDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:managedObjectStore.managedObjectCache];
+  firstOperation.dataSource = firstDataSource;
+  
+  [firstOperation performMapping:&error];
+  [meeting.managedObjectContext save:&error];
+  
+  expect([meeting.topics count]).to.equal(2);
+  NSOrderedSet *firstMeetingTopics = meeting.topics;
+  RKSlides *firstSlides = [[firstMeetingTopics firstObject] slides];
+  expect(firstSlides.filename).to.contain(@"SecuritySlides");
+  
+  RKMappingOperation *secondOperation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:meeting mapping:meetingMapping];
+  RKManagedObjectMappingOperationDataSource *secondDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:managedObjectStore.managedObjectCache];
+  secondOperation.dataSource = secondDataSource;
+  
+  [secondOperation performMapping:&error];
+  [meeting.managedObjectContext save:&error];
+  
+  expect([meeting.topics count]).to.equal(2);
+  NSOrderedSet *secondMeetingTopics = meeting.topics;
+  RKSlides *secondSlides = [[secondMeetingTopics firstObject] slides];
+  expect(secondSlides.filename).to.contain(@"SecuritySlides");
+  
+  BOOL isDeleted = ([firstSlides isDeleted] || ![firstSlides managedObjectContext]);
+  expect(isDeleted).to.equal(YES);
+  
+}
+
 - (void)testReplacmentPolicyForToOneCoreDataRelationshipDeletesExistingValues
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
@@ -2111,7 +2169,8 @@
     NSError *error = nil;
     [operation performMapping:&error];
     expect(human.favoriteCat.name).to.equal(@"Roy");
-    expect([existingCat isDeleted]).to.equal(YES);
+    BOOL isDeleted = ([existingCat isDeleted] || ![existingCat managedObjectContext]);
+    expect(isDeleted).to.equal(YES);
 }
 
 - (void)testReplacmentPolicyForToOneCoreDataRelationshipDeletesExistingValuesAndRespectsAssignsNilForMissingRelationships
@@ -2140,7 +2199,8 @@
     NSError *error = nil;
     [operation performMapping:&error];
     expect(human.favoriteCat).to.beNil();
-    expect([existingCat isDeleted]).to.equal(YES);
+    BOOL isDeleted = ([existingCat isDeleted] || ![existingCat managedObjectContext]);
+    expect(isDeleted).to.equal(YES);
 }
 
 // NOTE: Using `assignsNilForMissingRelationships` with `RKAssignmentPolicyUnion` is functionally a no-op and leaves the existing values alone
