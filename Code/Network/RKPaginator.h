@@ -111,7 +111,12 @@
  */
 - (void)setHTTPOperationClass:(Class)operationClass;
 
-- (void)setObjectRequestOperationClass:(Class)objectRequestOperation;
+/**
+ Sets the `RKObjectRequestOperation` subclass to be used when constructing HTTP request operations for requests dispatched by the paginator.
+ 
+ **Default**: `[RKObjectRequestOperation class]`
+ */
+- (void)setObjectRequestOperationClass:(Class)operationClass;
 
 ///-----------------------------------
 /// @name Setting the Completion Block

@@ -110,7 +110,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     _HTTPOperationClass = operationClass;
 }
 
-- (void)setObjectRequestOperation:(Class)objectRequestOperation
+- (void)setObjectRequestOperationClass:(Class)objectRequestOperation
 {
 	NSAssert(objectRequestOperation == nil || [objectRequestOperation isSubclassOfClass:[RKObjectRequestOperation class]], @"The objectRequestOperation class must be a subclass of `RKObjectRequestOperation`");
     _objectRequestOperationClass = objectRequestOperation;
