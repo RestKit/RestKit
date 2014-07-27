@@ -111,6 +111,8 @@
  */
 - (void)setHTTPOperationClass:(Class)operationClass;
 
+- (void)setObjectRequestOperationClass:(Class)objectRequestOperation;
+
 ///-----------------------------------
 /// @name Setting the Completion Block
 ///-----------------------------------
