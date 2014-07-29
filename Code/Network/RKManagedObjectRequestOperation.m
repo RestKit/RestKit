@@ -874,7 +874,9 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     NSMutableIndexSet *deleteableStatusCodes = [NSMutableIndexSet indexSet];
     [deleteableStatusCodes addIndex:404]; // Not Found
     [deleteableStatusCodes addIndex:410]; // Gone
-    if (self.error && self.targetObjectID
+	[deleteableStatusCodes addIndexes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    if (self.error == nil
+		&& self.targetObjectID
         && [[[self.HTTPRequestOperation.request HTTPMethod] uppercaseString] isEqualToString:@"DELETE"]
         && [deleteableStatusCodes containsIndex:self.HTTPRequestOperation.response.statusCode]) {
         NSError *error = nil;
