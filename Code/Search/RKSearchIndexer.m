@@ -292,7 +292,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     
     // Enqueue an operation for each object to index
     NSArray *objectIDsForObjectsToIndex = [objectsToIndex valueForKey:@"objectID"];
-    __weak __typeof(&*self)weakSelf = self;
+    __weak __typeof(self)weakSelf = self;
     __block NSBlockOperation *indexingOperation = [NSBlockOperation blockOperationWithBlock:^{
         if ([indexingOperation isCancelled]) return;
         [weakSelf.indexingContext performBlockAndWait:^{

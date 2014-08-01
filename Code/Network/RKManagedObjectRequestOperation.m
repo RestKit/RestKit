@@ -601,7 +601,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];    
-    __weak __typeof(&*self)weakSelf = self;
+    __weak __typeof(self)weakSelf = self;
     [self.responseMapperOperation setDidFinishMappingBlock:^(RKMappingResult *mappingResult, NSError *responseMappingError) {
         if ([weakSelf isCancelled]) return completionBlock(mappingResult, responseMappingError);
         
