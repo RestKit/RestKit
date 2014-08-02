@@ -194,7 +194,7 @@
  @param URL The URL object to build a fetch request for.
  @return An `NSFetchRequest` object corresponding to the given URL, or nil if the URL could not be processed.
  */
-typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL);
+typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL, RKMappingResult* mappingResult);
 
 /**
  Returns an array of fetch request objects from an array of `RKFetchRequestBlock` objects given a URL.
@@ -203,7 +203,7 @@ typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL);
  @param URL The URL for which to return a fetch request.
  @return An array of fetch requests from all blocks that match the given URL.
  */
-NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL);
+NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL, RKMappingResult *mappingResult);
 
 #endif
 #endif

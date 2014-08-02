@@ -838,7 +838,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @param block A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
  */
-- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL))block;
+- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL, RKMappingResult *mappingResult))block;
 #endif
 
 ///------------------------------------
