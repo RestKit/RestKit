@@ -23,7 +23,7 @@
 #endif
 
 #import "RKEntityByAttributeCache.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
 #import "NSManagedObject+RKAdditions.h"

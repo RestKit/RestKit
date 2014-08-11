@@ -21,7 +21,7 @@
 #import "RKSearchIndexer.h"
 #import "RKSearchWordEntity.h"
 #import "RKSearchWord.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKStringTokenizer.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 
