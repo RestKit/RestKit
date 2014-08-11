@@ -19,7 +19,7 @@
 //
 
 // *** Static Library ***
-#if !defined(COCOAPODS)
+#if !defined(COCOAPODS) || !defined(COCOAPODS_POD_AVAILABLE_RestKit)
 
     // LibComponentLogging
     #import "RKLog.h"
