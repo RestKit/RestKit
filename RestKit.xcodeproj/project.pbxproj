@@ -608,9 +608,7 @@
 		C0F11CE81908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C0F11CE91908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
-		E5102D5C19260E9000E2FED0 /* RKLog+NSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = E5102D5519260E9000E2FED0 /* RKLog+NSLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E5102D5D19260E9000E2FED0 /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = E5102D5619260E9000E2FED0 /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E5102D5E19260EB100E2FED0 /* RKLog+NSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = E5102D5519260E9000E2FED0 /* RKLog+NSLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E5102D5F19260EDF00E2FED0 /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = E5102D5619260E9000E2FED0 /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -993,7 +991,6 @@
 		C0F11CE2190883380054AEA0 /* RKPathMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcher.m; sourceTree = "<group>"; };
 		C0F11CE71908C7E60054AEA0 /* RKCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCoreData.h; sourceTree = "<group>"; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E5102D5519260E9000E2FED0 /* RKLog+NSLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKLog+NSLog.h"; sourceTree = "<group>"; };
 		E5102D5619260E9000E2FED0 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
@@ -1777,7 +1774,6 @@
 			isa = PBXGroup;
 			children = (
 				E5102D4E19260E8F00E2FED0 /* LibComponentLogging */,
-				E5102D5419260E9000E2FED0 /* NSLog */,
 			);
 			path = Logging;
 			sourceTree = "<group>";
@@ -1792,14 +1788,6 @@
 				25160DA7145650490060A5C5 /* lcl_config_logger_RK.h */,
 			);
 			path = LibComponentLogging;
-			sourceTree = "<group>";
-		};
-		E5102D5419260E9000E2FED0 /* NSLog */ = {
-			isa = PBXGroup;
-			children = (
-				E5102D5519260E9000E2FED0 /* RKLog+NSLog.h */,
-			);
-			path = NSLog;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1868,7 +1856,6 @@
 				25104F2F15C30E7400829135 /* RKSearchIndexer.h in Headers */,
 				25104F3515C30EF500829135 /* RKSearchPredicate.h in Headers */,
 				25104F3B15C30F2100829135 /* RKSearchWordEntity.h in Headers */,
-				E5102D5C19260E9000E2FED0 /* RKLog+NSLog.h in Headers */,
 				25F53AE215E7B612008B54E6 /* RKHTTPUtilities.h in Headers */,
 				2598888D15EC169E006CAE95 /* RKPropertyMapping.h in Headers */,
 				254372A815F54995006E8424 /* RKObjectParameterization.h in Headers */,
@@ -2024,7 +2011,6 @@
 				25A199D516ED035A00792629 /* RKBenchmark.h in Headers */,
 				25C6C0BE1716F6F800C98A73 /* TKEvent.h in Headers */,
 				25C6C0C21716F6F800C98A73 /* TKState.h in Headers */,
-				E5102D5E19260EB100E2FED0 /* RKLog+NSLog.h in Headers */,
 				25C6C0C61716F6F800C98A73 /* TKStateMachine.h in Headers */,
 				25C6C0CC1716F6F800C98A73 /* TransitionKit.h in Headers */,
 				25C6C0E91716F79B00C98A73 /* RKOperationStateMachine.h in Headers */,
