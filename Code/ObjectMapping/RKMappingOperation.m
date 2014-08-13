@@ -115,6 +115,8 @@ static NSString *const RKParentKey = @"@parent";
 static NSString *const RKParentKeyPathPrefix = @"@parent.";
 static NSString *const RKRootKey = @"@root";
 static NSString *const RKRootKeyPathPrefix = @"@root.";
+static NSString *const RKSelfKey = @"self";
+static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 @interface RKMappingSourceObject : NSProxy
 - (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSDictionary *)metadata;
@@ -156,6 +158,8 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         return self.parentObject;
     } else if ([key isEqualToString:RKRootKey]) {
         return self.rootObject;
+    } else if ([key isEqualToString:RKSelfKey]) {
+        return self.object;
     } else {
         return [self.object valueForKey:key];
     }
@@ -175,6 +179,9 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     } else if ([keyPath hasPrefix:RKRootKeyPathPrefix]) {
         NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
         return [self.rootObject valueForKeyPath:rootKeyPath];
+    } else if ([keyPath hasPrefix:RKSelfKeyPathPrefix]) {
+        NSString *selfKeyPath = [keyPath substringFromIndex:[RKSelfKeyPathPrefix length]];
+        return [self.object valueForKeyPath:selfKeyPath];
     } else {
         return [self.object valueForKeyPath:keyPath];
     }
@@ -510,7 +517,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
             continue;
         }
 
-        id value = (attributeMapping.sourceKeyPath == nil) ? [self.sourceObject valueForKeyPath:@"self"] : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
+        id value = (attributeMapping.sourceKeyPath == nil) ? [self.sourceObject valueForKey:@"self"] : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if ([self applyAttributeMapping:attributeMapping withValue:value]) {
             appliedMappings = YES;
         } else {
