@@ -37,7 +37,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
     NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
-    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
+    [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName", @"railsID", @"catIDs" ]];
     
     // Check that the entity now exists
     searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
@@ -55,7 +55,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
     
     // Check the userInfo of the Human entity for the searchable attributes
     NSArray *attributes = [entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
-    assertThat(attributes, is(equalTo(@[ @"name", @"nickName" ])));
+    assertThat(attributes, is(equalTo(@[ @"name", @"nickName", @"railsID", @"catIDs" ])));
 }
 
 - (void)testAddingSearchIndexingToEntityWithMixtureOfNSAttributeDescriptionAndStringNames
@@ -86,7 +86,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
     assertThat(attributes, is(equalTo(@[ @"name", @"nickName" ])));
 }
 
-- (void)testAddingSearchIndexingToNonStringAttributeTypeRaisesException
+- (void)testAddingSearchIndexingToNotSupportedAttributeTypeRaisesException
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
     NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
@@ -95,14 +95,14 @@ static NSManagedObjectModel *RKManagedObjectModel()
     
     NSException *exception = nil;
     @try {
-        [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"railsID" ]];
+        [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"railsID", @"updatedAt" ]];
     }
     @catch (NSException *e) {
         exception = e;
     }
     @finally {
         assertThat(exception, is(notNilValue()));
-        assertThat(exception.reason, containsString(@"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, got 200."));
+        assertThat(exception.reason, containsString(@"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, NSTransformableAttributeType, NSInteger16AttributeType, NSInteger32AttributeType, NSInteger64AttributeType, NSDecimalAttributeType, NSDoubleAttributeType, NSFloatAttributeType got 900."));
     }
 }
 
