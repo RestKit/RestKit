@@ -510,7 +510,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
             continue;
         }
 
-        id value = (attributeMapping.sourceKeyPath == nil) ? [self.sourceObject performSelector:@selector(object)] : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
+        id value = (attributeMapping.sourceKeyPath == nil) ? [self.sourceObject valueForKeyPath:@"self"] : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if ([self applyAttributeMapping:attributeMapping withValue:value]) {
             appliedMappings = YES;
         } else {
