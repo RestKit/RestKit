@@ -22,6 +22,15 @@
 - (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping;
 @end
 
+@interface RKKeyPathClassObjectMappingMatcher : RKObjectMappingMatcher
+
+@property (nonatomic, copy) NSString *keyPath;
+@property (nonatomic, readwrite) Class expectedClass;
+
+- (id)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping;
+
+@end
+
 @interface RKPredicateObjectMappingMatcher : RKObjectMappingMatcher
 @property (nonatomic, strong) NSPredicate *predicate;
 
@@ -35,6 +44,11 @@
 + (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
     return [[RKKeyPathObjectMappingMatcher alloc] initWithKeyPath:keyPath expectedValue:expectedValue objectMapping:objectMapping];
+}
+
++ (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping
+{
+    return [[RKKeyPathClassObjectMappingMatcher alloc] initWithKeyPath:keyPath expectedClass:expectedClass objectMapping:objectMapping];
 }
 
 + (instancetype)matcherWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
@@ -91,6 +105,36 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p when `%@` == '%@' objectMapping: %@>", NSStringFromClass([self class]), self, self.keyPath, self.expectedValue, self.objectMapping];
+}
+
+@end
+
+@implementation RKKeyPathClassObjectMappingMatcher
+
+- (id)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping
+{
+    NSParameterAssert(keyPath);
+    NSParameterAssert(expectedClass);
+    NSParameterAssert(objectMapping);
+    self = [super init];
+    if (self) {
+        self.keyPath = keyPath;
+        self.expectedClass = expectedClass;
+        self.objectMapping = objectMapping;
+    }
+    
+    return self;
+}
+
+- (BOOL)matches:(id)object
+{
+    id value = [object valueForKeyPath:self.keyPath];
+    return [[value class] isSubclassOfClass:self.expectedClass];
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p when `%@` == '%@' objectMapping: %@>", NSStringFromClass([self class]), self, self.keyPath, self.expectedClass, self.objectMapping];
 }
 
 @end
