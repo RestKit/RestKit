@@ -129,7 +129,6 @@
 - (BOOL)matches:(id)object
 {
     id value = [object valueForKeyPath:self.keyPath];
-    if (value == nil) return NO;
     return [[value class] isSubclassOfClass:self.expectedClass];
 }
 
