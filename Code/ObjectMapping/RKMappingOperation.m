@@ -437,7 +437,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     if (! inputValue) {
         *outputValue = nil;
         // We only want to consider the transformation successful and assign nil if the mapping calls for it
-        return propertyMapping.objectMapping.assignsDefaultValueForMissingAttributes;
+        return !propertyMapping.objectMapping.assignsDefaultValueForMissingAttributes;
     }
     Class transformedValueClass = propertyMapping.propertyValueClass ?: [self.objectMapping classForKeyPath:propertyMapping.destinationKeyPath];
     if (! transformedValueClass) {
