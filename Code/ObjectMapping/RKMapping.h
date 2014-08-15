@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#import <Foundation/Foundation.h>
+
 /**
  `RKMapping` is an abstract class for objects defining RestKit object mappings. Its interface is common to all object mapping classes, including its concrete subclasses `RKObjectMapping` and `RKDynamicMapping`.
  */
