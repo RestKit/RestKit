@@ -277,6 +277,9 @@
 #ifdef RKCoreDataIncluded
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
     if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
         // Search component is optional
         [[RKManagedObjectStore defaultStore] performSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)];
@@ -286,6 +289,8 @@
             [searchIndexer performSelector:@selector(cancelAllIndexingOperations)];
         }
     }
+#pragma clang diagnostic pop
+
 #endif
 
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
