@@ -705,7 +705,7 @@ dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) 
     }
     
     return nil;
-};
+}];
 ```
 
 Notable within this code are the calls to `setObjectMapping:whenValueOfKeyPath:isEqualTo:`. This is the declarative

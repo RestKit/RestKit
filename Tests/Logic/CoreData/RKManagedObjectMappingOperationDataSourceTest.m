@@ -1322,6 +1322,50 @@
     expect(catsWithID419).to.haveCountOf(1);
 }
 
+- (void)testMappingStringIdentificationAttributesFromElementsOnAnArrayDoesNotDuplicateManagedObjects
+{
+    NSDictionary *representation = @{ @"userSessions": @[@{ @"name": @"Mr. User",
+                                                            @"identification": @54321,
+                                                            @"catIDs": @[ @"418", @"419", @"431",@"441", @"457", @"486", @"504" ] },
+                                                         @{ @"name": @"Miss User",
+                                                            @"identification": @54322,
+                                                            @"catIDs": @[ @"418", @"419", @"431",@"441", @"457", @"486", @"504" ] }] };
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    catMapping.identificationAttributes = @[ @"name" ];
+    [catMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"name"]];
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"identification" toKeyPath:@"railsID"]];
+    [humanMapping setIdentificationAttributes:@[ @"railsID" ]];
+    [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"catIDs" toKeyPath:@"cats" withMapping:catMapping]];
+    
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ @"userSessions": humanMapping }];
+    mapper.mappingOperationDataSource = mappingOperationDataSource;
+    [mapper start];
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Cat"];
+    
+    NSArray *allCats = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:NULL];
+    
+    NSPredicate *catOnePredicate  = [NSPredicate predicateWithFormat:@"name == %@", @"418"];
+    [fetchRequest setPredicate:catOnePredicate];
+    NSArray *catsWithID418 = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:NULL];
+    
+    NSPredicate *catTwoPredicate = [NSPredicate predicateWithFormat:@"name == %@", @"419"];
+    [fetchRequest setPredicate:catTwoPredicate];
+    NSArray *catsWithID419 = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:NULL];
+    
+    expect(catsWithID418).to.haveCountOf(1);
+    expect(catsWithID419).to.haveCountOf(1);
+
+    expect(allCats).to.haveCountOf(7);
+}
+
 - (void)testManagedObjectsMappedWithRequiredRelationshipsThatAreSetByConnectionsAreNotPrematurelyDeleted
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];

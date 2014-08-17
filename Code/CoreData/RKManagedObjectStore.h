@@ -151,7 +151,7 @@
  
  As an alternative to resetting the persistent store, you may wish to consider simply deleting all managed objects out of the managed object context. If your data set is not very large, this can be a performant operation and is significantly easier to implement correctly. An example implementation for truncating all managed objects from the store is provided below:
  
-    NSBlockOpertation *operation = [NSBlockOperation blockOperationWithBlock:^{
+    NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
         NSManagedObjectContext *managedObjectContext = [RKManagedObjectStore defaultStore].persistentStoreManagedObjectContext;
         [managedObjectContext performBlockAndWait:^{
             NSError *error = nil;
@@ -162,7 +162,7 @@
                 NSArray *objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
                 if (! objects) RKLogWarning(@"Failed execution of fetch request %@: %@", fetchRequest, error);
                 for (NSManagedObject *managedObject in objects) {
-                    [managedObjectContext deleteObject:managedObjectContext];
+                    [managedObjectContext deleteObject:managedObject];
                 }
             }
      
