@@ -20,7 +20,7 @@
 
 #import "RKPathMatcher.h"
 #import "SOCKit.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKDictionaryUtilities.h"
 
 static NSString *RKEncodeURLString(NSString *unencodedString);

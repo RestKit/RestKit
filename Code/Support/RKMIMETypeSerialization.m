@@ -21,7 +21,7 @@
 #import "RKMIMETypeSerialization.h"
 #import "RKErrors.h"
 #import "RKSerialization.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKURLEncodedSerialization.h"
 #import "RKNSJSONSerialization.h"
 

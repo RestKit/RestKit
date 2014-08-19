@@ -22,7 +22,7 @@
 #if __has_include("RKManagedObjectCaching.h")
 
 #import "RKManagedObjectRequestOperation.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKHTTPUtilities.h"
 #import "RKResponseMapperOperation.h"
 #import "RKObjectRequestOperationSubclass.h"

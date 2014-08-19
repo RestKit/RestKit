@@ -21,7 +21,7 @@
 #import "RKPaginator.h"
 #import "RKMappingOperation.h"
 #import "SOCKit.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKPathMatcher.h"
 #import "RKHTTPUtilities.h"
 

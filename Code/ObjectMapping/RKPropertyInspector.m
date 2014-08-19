@@ -20,7 +20,7 @@
 
 #import <objc/runtime.h>
 #import "RKPropertyInspector.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKObjectUtilities.h"
 
 // Set Logging Component

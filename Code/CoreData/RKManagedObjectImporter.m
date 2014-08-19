@@ -29,7 +29,7 @@
 #import "RKFetchRequestManagedObjectCache.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKPathUtilities.h"
-#import "RKLog.h"
+#import "Logging.h"
 
 // Set Logging Component
 #undef RKLogComponent

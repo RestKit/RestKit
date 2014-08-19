@@ -22,7 +22,7 @@
 #import "RKSerialization.h"
 #import "RKObjectParameterization.h"
 #import "RKMIMETypeSerialization.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKObjectMappingOperationDataSource.h"
 #import "RKObjectMapping.h"
 #import "RKMappingOperation.h"

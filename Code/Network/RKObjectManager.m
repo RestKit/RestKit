@@ -25,7 +25,7 @@
 #import "RKResponseDescriptor.h"
 #import "RKDictionaryUtilities.h"
 #import "RKMIMETypes.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKMIMETypeSerialization.h"
 #import "RKPathMatcher.h"
 #import "RKMappingErrors.h"
