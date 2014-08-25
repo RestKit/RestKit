@@ -509,7 +509,7 @@ fetchRequest.predicate = predicate;
 
 // Contains article1 due to body text containing 'match'
 NSArray *matches = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:nil];
-NSLog(@"Found the matching articls: %@", matches);
+NSLog(@"Found the matching articles: %@", matches);
 ```
 
 ### Unit Test a Mapping
