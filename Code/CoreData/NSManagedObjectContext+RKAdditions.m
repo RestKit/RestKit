@@ -52,7 +52,9 @@
          4. Save the child context to the parent context (the main one) which will work,
          5. Save the main context - a NSObjectInaccessibleException will occur and Core Data will either crash your app or lock it up (a semaphore is not correctly released on the first error so the next fetch request will block forever.
          */
-        [contextToSave obtainPermanentIDsForObjects:[[contextToSave insertedObjects] allObjects] error:&localError];
+         [contextToSave performBlockAndWait:^{
+             [contextToSave obtainPermanentIDsForObjects:[[contextToSave insertedObjects] allObjects] error:&localError];
+         }];
         if (localError) {
             if (error) *error = localError;
             return NO;
