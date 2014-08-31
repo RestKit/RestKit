@@ -572,10 +572,10 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     if ([fetchRequests count] && [self canSkipMapping]) {
         RKLogDebug(@"Managed object mapping requested for cached response which was previously mapped: skipping...");
         NSMutableArray *managedObjects = [NSMutableArray array];
-        [self.privateContext performBlockAndWait:^{
+        [self.managedObjectContext performBlockAndWait:^{
             NSError *error = nil;
             for (NSFetchRequest *fetchRequest in fetchRequests) {
-                NSArray *fetchedObjects = [self.privateContext executeFetchRequest:fetchRequest error:&error];
+                NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
                 if (fetchedObjects) {
                     [managedObjects addObjectsFromArray:fetchedObjects];
                 } else {
