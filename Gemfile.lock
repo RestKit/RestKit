@@ -79,7 +79,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.6.1)
   cocoapods (~> 0.33.1)
   rakeup (~> 1.2.0)
   sinatra (~> 1.4.0)
