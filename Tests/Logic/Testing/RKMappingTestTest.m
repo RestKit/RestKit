@@ -12,7 +12,7 @@
 #import "RKHuman.h"
 #import "RKCat.h"
 
-@interface RKMappingTestTest : SenTestCase
+@interface RKMappingTestTest : XCTestCase
 @property (nonatomic, strong) id objectRepresentation;
 @property (nonatomic, strong) RKMappingTest *mappingTest;
 @end
