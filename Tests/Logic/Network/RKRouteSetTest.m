@@ -61,7 +61,7 @@
     RKRouteSet *router = [RKRouteSet new];
     RKRoute *route = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route];
-    STAssertThrowsSpecificNamed([router addRoute:route], NSException, NSInternalInconsistencyException, @"Cannot add a route that is already added to the router.");
+    XCTAssertThrowsSpecificNamed([router addRoute:route], NSException, NSInternalInconsistencyException, @"Cannot add a route that is already added to the router.");
 }
 
 - (void)testCannotAddARouteWithAnExistingName
@@ -70,7 +70,7 @@
     RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route1];
     RKRoute *route2 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes2" method:RKRequestMethodGET];
-    STAssertThrowsSpecificNamed([router addRoute:route2], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same name as an existing route.");
+    XCTAssertThrowsSpecificNamed([router addRoute:route2], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same name as an existing route.");
 }
 
 - (void)testCanAddARouteWithAnExistingResourcePathPattern
@@ -79,7 +79,7 @@
     RKRoute *route1 = [RKRoute routeWithName:@"test_router" pathPattern:@"/routes" method:RKRequestMethodGET];
     [router addRoute:route1];
     RKRoute *route2 = [RKRoute routeWithName:@"test_router2" pathPattern:@"/routes" method:RKRequestMethodGET];
-    STAssertNoThrowSpecificNamed([router addRoute:route2], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same path pattern as an existing route.");
+    XCTAssertNoThrowSpecificNamed([router addRoute:route2], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same path pattern as an existing route.");
 }
 
 - (void)testCannotAddARouteWithAnExistingObjectClassAndMethod
@@ -90,9 +90,9 @@
     RKRoute *routeWithObjectClassAndDifferentPath = [RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/routes2" method:RKRequestMethodPOST];
 
     [router addRoute:routeWithObjectClassAndMethod];
-    STAssertNoThrowSpecificNamed([router addRoute:routeWithObjectClassAndDifferentMethod], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same class and method as an existing route.");
+    XCTAssertNoThrowSpecificNamed([router addRoute:routeWithObjectClassAndDifferentMethod], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same class and method as an existing route.");
 
-    STAssertThrowsSpecificNamed([router addRoute:routeWithObjectClassAndDifferentPath], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same class and method as an existing route.");
+    XCTAssertThrowsSpecificNamed([router addRoute:routeWithObjectClassAndDifferentPath], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same class and method as an existing route.");
 }
 
 - (void)testCannotAddARouteForAnExistingRelationshipNameAndMethod
@@ -103,9 +103,9 @@
     RKRoute *routeWithIdenticalClassAndMethod = [RKRoute routeWithRelationshipName:@"friends" objectClass:[RKTestUser class] pathPattern:@"/friends" method:RKRequestMethodGET];
 
     [router addRoute:routeWithObjectClassAndMethod];
-    STAssertNoThrowSpecificNamed([router addRoute:routeWithObjectClassAndDifferentMethod], NSException, NSInternalInconsistencyException, @"Cannot add a relationship route with the same name and class as an existing route.");
+    XCTAssertNoThrowSpecificNamed([router addRoute:routeWithObjectClassAndDifferentMethod], NSException, NSInternalInconsistencyException, @"Cannot add a relationship route with the same name and class as an existing route.");
 
-    STAssertThrowsSpecificNamed([router addRoute:routeWithIdenticalClassAndMethod], NSException, NSInternalInconsistencyException, @"Cannot add a relationship route with the same name and class as an existing route.");
+    XCTAssertThrowsSpecificNamed([router addRoute:routeWithIdenticalClassAndMethod], NSException, NSInternalInconsistencyException, @"Cannot add a relationship route with the same name and class as an existing route.");
 }
 
 - (void)testCanAddARouteWithAnExistingObjectClassIfMethodIsAny
@@ -115,14 +115,14 @@
     [router addRoute:route1];
 
     RKRoute *route2 = [RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/routes" method:RKRequestMethodPOST];
-    STAssertNoThrowSpecificNamed([router addRoute:route2], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same class and method as an existing route.");
+    XCTAssertNoThrowSpecificNamed([router addRoute:route2], NSException, NSInternalInconsistencyException, @"Cannot add a route with the same class and method as an existing route.");
 }
 
 - (void)testCannotRemoveARouteThatDoesNotExistInRouter
 {
     RKRouteSet *router = [RKRouteSet new];
     RKRoute *route = [RKRoute routeWithName:@"fake" pathPattern:@"whatever" method:RKRequestMethodGET];
-    STAssertThrowsSpecificNamed([router removeRoute:route], NSException, NSInternalInconsistencyException, @"Cannot remove a route that is not added to the router.");
+    XCTAssertThrowsSpecificNamed([router removeRoute:route], NSException, NSInternalInconsistencyException, @"Cannot remove a route that is not added to the router.");
 }
 
 - (void)testAllRoutes

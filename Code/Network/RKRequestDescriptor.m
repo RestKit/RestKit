@@ -112,7 +112,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.objectClass == otherDescriptor.objectClass &&
     self.method == otherDescriptor.method &&
-    [self.rootKeyPath isEqualToString:otherDescriptor.rootKeyPath];
+    ((self.rootKeyPath == otherDescriptor.rootKeyPath) || [self.rootKeyPath isEqualToString:otherDescriptor.rootKeyPath]);
 }
 
 @end

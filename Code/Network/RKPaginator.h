@@ -57,7 +57,7 @@
 /**
  Initializes a RKPaginator object with the a provided patternURL and mappingProvider.
 
- @param request A request with a URL containing a dynamic pattern specifying how paginated resources are to be acessed.
+ @param request A request with a URL containing a dynamic pattern specifying how paginated resources are to be accessed.
  @param paginationMapping The pagination mapping specifying how pagination metadata is to be mapped from responses.
  @param responseDescriptors An array of response descriptors describing how to map object representations loaded by object request operations dispatched by the paginator.
  @return The receiver, initialized with the request, pagination mapping, and response descriptors.

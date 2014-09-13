@@ -115,6 +115,8 @@ static NSString *const RKParentKey = @"@parent";
 static NSString *const RKParentKeyPathPrefix = @"@parent.";
 static NSString *const RKRootKey = @"@root";
 static NSString *const RKRootKeyPathPrefix = @"@root.";
+static NSString *const RKSelfKey = @"self";
+static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 @interface RKMappingSourceObject : NSProxy
 - (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSDictionary *)metadata;
@@ -156,6 +158,8 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         return self.parentObject;
     } else if ([key isEqualToString:RKRootKey]) {
         return self.rootObject;
+    } else if ([key isEqualToString:RKSelfKey]) {
+        return self.object;
     } else {
         return [self.object valueForKey:key];
     }
@@ -175,6 +179,9 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     } else if ([keyPath hasPrefix:RKRootKeyPathPrefix]) {
         NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
         return [self.rootObject valueForKeyPath:rootKeyPath];
+    } else if ([keyPath hasPrefix:RKSelfKeyPathPrefix]) {
+        NSString *selfKeyPath = [keyPath substringFromIndex:[RKSelfKeyPathPrefix length]];
+        return [self.object valueForKeyPath:selfKeyPath];
     } else {
         return [self.object valueForKeyPath:keyPath];
     }
@@ -332,11 +339,12 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         if (!success) {
             self.error = validationError;
             if (validationError) {
-                RKLogError(@"Validation failed while mapping attribute at key path '%@' to value %@. Error: %@", keyPath, *value, [validationError localizedDescription]);
+                RKLogError(@"Validation failed while mapping attribute at key path '%@' to value. Error: %@", keyPath, [validationError localizedDescription]);
                 RKLogValidationError(validationError);
             } else {
-                RKLogWarning(@"Destination object %@ rejected attribute value %@ for keyPath %@. Skipping...", self.destinationObject, *value, keyPath);
+                RKLogWarning(@"Destination object %@ rejected attribute value for keyPath %@. Skipping...", self.destinationObject, keyPath);
             }
+            RKLogDebug(@"(Value for key path '%@': %@)", keyPath, *value);
         }
     }
 
@@ -510,7 +518,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
             continue;
         }
 
-        id value = (attributeMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
+        id value = (attributeMapping.sourceKeyPath == nil) ? [self.sourceObject valueForKey:@"self"] : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if ([self applyAttributeMapping:attributeMapping withValue:value]) {
             appliedMappings = YES;
         } else {
@@ -644,7 +652,8 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     NSMutableArray *relationshipCollection = [NSMutableArray arrayWithCapacity:[value count]];
     if (RKObjectIsCollectionOfCollections(value)) {
         RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
-        RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
+        RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects", relationshipMapping.sourceKeyPath);
+        RKLogDebug(@"(Value at key path '%@': %@)", relationshipMapping.sourceKeyPath, value);
     }
     
     if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {

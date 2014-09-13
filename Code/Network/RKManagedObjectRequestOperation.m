@@ -568,8 +568,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 
 - (void)performMappingOnResponseWithCompletionBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))completionBlock
 {
-    NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
-    NSArray *fetchRequests = RKArrayOfFetchRequestFromBlocksWithURL(self.fetchRequestBlocks, URL);
+    NSArray *fetchRequests = [self fetchRequestsMatchingResponseURL];
     if ([fetchRequests count] && [self canSkipMapping]) {
         RKLogDebug(@"Managed object mapping requested for cached response which was previously mapped: skipping...");
         NSMutableArray *managedObjects = [NSMutableArray array];
@@ -601,7 +600,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     self.responseMapperOperation.managedObjectCache = self.managedObjectCache;
     [self.responseMapperOperation setWillMapDeserializedResponseBlock:self.willMapDeserializedResponseBlock];
     [self.responseMapperOperation setQueuePriority:[self queuePriority]];    
-    __weak __typeof(&*self)weakSelf = self;
+    __weak __typeof(self)weakSelf = self;
     [self.responseMapperOperation setDidFinishMappingBlock:^(RKMappingResult *mappingResult, NSError *responseMappingError) {
         if ([weakSelf isCancelled]) return completionBlock(mappingResult, responseMappingError);
         
@@ -674,34 +673,24 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 
 - (NSSet *)localObjectsFromFetchRequests:(NSArray *)fetchRequests matchingRequestURL:(NSError **)error
 {
-    NSMutableSet *localObjects = [NSMutableSet set];    
+    NSMutableSet *localObjects = [NSMutableSet set];
     __block NSError *_blockError;
     __block NSArray *_blockObjects;
     
-    // Pass the fetch request blocks a relative `NSURL` object if possible
-    NSURL *URL = RKRelativeURLFromURLAndResponseDescriptors(self.HTTPRequestOperation.response.URL, self.responseDescriptors);
-    for (RKFetchRequestBlock fetchRequestBlock in [self.fetchRequestBlocks reverseObjectEnumerator]) {
-        NSFetchRequest *fetchRequest = fetchRequestBlock(URL);
-        if (fetchRequest) {
-            // Workaround for iOS 5 -- The log statement crashes if the entity is not assigned before logging
-            [fetchRequest setEntity:[[[[self.privateContext persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[fetchRequest entityName]]];
-            RKLogDebug(@"Found fetch request matching URL '%@': %@", URL, fetchRequest);
-
-            [self.privateContext performBlockAndWait:^{
-                _blockObjects = [self.privateContext executeFetchRequest:fetchRequest error:&_blockError];
-            }];
-
-            if (_blockObjects == nil) {
-                if (error) *error = _blockError;
-                return nil;
-            }
-            RKLogTrace(@"Fetched local objects matching URL '%@' with fetch request '%@': %@", URL, fetchRequest, _blockObjects);
-            [localObjects addObjectsFromArray:_blockObjects];
-        } else {
-            RKLogTrace(@"Fetch request block %@ returned nil fetch request for URL: '%@'", fetchRequestBlock, URL);
+    for (NSFetchRequest *fetchRequest in fetchRequests) {
+        [self.privateContext performBlockAndWait:^{
+            _blockObjects = [self.privateContext executeFetchRequest:fetchRequest error:&_blockError];
+        }];
+        
+        if (_blockObjects == nil) {
+            if (error) *error = _blockError;
+            return nil;
         }
+        RKLogTrace(@"Fetched local objects matching URL with fetch request '%@': %@", fetchRequest, _blockObjects);
+        [localObjects addObjectsFromArray:_blockObjects];
+        
     }
-
+    
     return localObjects;
 }
 
@@ -835,7 +824,11 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         }];
     }
     
-    if ([self.privateContext hasChanges]) {
+    __block BOOL hasChanges;
+    [self.privateContext performBlockAndWait:^{
+        hasChanges = [self.privateContext hasChanges];
+    }];
+    if (hasChanges) {
         return [self saveContext:self.privateContext error:error];
     } else if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
         NSManagedObjectContext *context = [(NSManagedObject *)self.targetObject managedObjectContext];
