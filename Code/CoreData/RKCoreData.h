@@ -1,9 +1,9 @@
 //
-//  Network.h
+//  RKCoreData.h
 //  RestKit
 //
-//  Created by Blake Watters on 9/30/10.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Created by Samuel E. Giddins on 4/23/14.
+//  Copyright (c) 2014 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,17 +18,9 @@
 //  limitations under the License.
 //
 
-#import "RKRoute.h"
-#import "RKRouteSet.h"
-#import "RKRouter.h"
-#import "RKRequestDescriptor.h"
-#import "RKResponseDescriptor.h"
-#import "RKObjectManager.h"
-#import "RKHTTPUtilities.h"
-#import "RKObjectRequestOperation.h"
-#import "RKObjectParameterization.h"
-#import "RKPathMatcher.h"
+#ifndef RestKit_RKCoreData_h
+#define RestKit_RKCoreData_h
 
-#ifdef _COREDATADEFINES_H
-#import "RKManagedObjectRequestOperation.h"
+#import "CoreData.h"
+
 #endif

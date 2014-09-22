@@ -115,6 +115,8 @@ static NSString *const RKParentKey = @"@parent";
 static NSString *const RKParentKeyPathPrefix = @"@parent.";
 static NSString *const RKRootKey = @"@root";
 static NSString *const RKRootKeyPathPrefix = @"@root.";
+static NSString *const RKSelfKey = @"self";
+static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 @interface RKMappingSourceObject : NSProxy
 - (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSDictionary *)metadata;
@@ -156,6 +158,8 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
         return self.parentObject;
     } else if ([key isEqualToString:RKRootKey]) {
         return self.rootObject;
+    } else if ([key isEqualToString:RKSelfKey]) {
+        return self.object;
     } else {
         return [self.object valueForKey:key];
     }
@@ -175,6 +179,9 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     } else if ([keyPath hasPrefix:RKRootKeyPathPrefix]) {
         NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
         return [self.rootObject valueForKeyPath:rootKeyPath];
+    } else if ([keyPath hasPrefix:RKSelfKeyPathPrefix]) {
+        NSString *selfKeyPath = [keyPath substringFromIndex:[RKSelfKeyPathPrefix length]];
+        return [self.object valueForKeyPath:selfKeyPath];
     } else {
         return [self.object valueForKeyPath:keyPath];
     }
@@ -350,7 +357,9 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     }
     
     // Always set the properties
-    if ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] && [self.dataSource mappingOperationShouldSetUnchangedValues:self]) return YES;
+    if ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] && [self.dataSource mappingOperationShouldSetUnchangedValues:self]) {
+        return [self validateValue:value atKeyPath:keyPath];
+    }
     
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null]) {
@@ -508,7 +517,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
             continue;
         }
 
-        id value = (attributeMapping.sourceKeyPath == nil) ? self.sourceObject : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
+        id value = (attributeMapping.sourceKeyPath == nil) ? [self.sourceObject valueForKey:@"self"] : [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if ([self applyAttributeMapping:attributeMapping withValue:value]) {
             appliedMappings = YES;
         } else {
@@ -537,7 +546,6 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     NSAssert(anObject, @"Cannot map nested object without a nested source object");
     NSAssert(anotherObject, @"Cannot map nested object without a destination object");
     NSAssert(relationshipMapping, @"Cannot map a nested object relationship without a relationship mapping");
-    NSError *error = nil;
 
     RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
     NSDictionary *subOperationMetadata = RKDictionaryByMergingDictionaryWithDictionary(self.metadata, metadata);
@@ -550,7 +558,7 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
     [subOperation start];
     
     if (subOperation.error) {
-        RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
+        RKLogWarning(@"WARNING: Failed mapping nested object: %@", [subOperation.error localizedDescription]);
     } else {
         [self.mappingInfo addPropertyMapping:relationshipMapping];
         [self.mappingInfo addMappingInfo:subOperation.mappingInfo forRelationshipMapping:relationshipMapping];

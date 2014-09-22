@@ -305,7 +305,7 @@
     RKChild *child = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     child.railsID = [NSNumber numberWithInteger:12345];
 
-    __weak __typeof(&*self)weakSelf = self;
+    __weak __typeof(self)weakSelf = self;
     __block BOOL done = NO;
     RKEntityByAttributeCache *cache = self.cache;
     [cache addObjects:[NSSet setWithObject:human] completion:^{

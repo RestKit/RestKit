@@ -1,9 +1,10 @@
 # RestKit
 
-[![Build Status](https://travis-ci.org/RestKit/RestKit.png?branch=master,development)](https://travis-ci.org/RestKit/RestKit)
-![Pod Version](https://cocoapod-badges.herokuapp.com/v/RestKit/badge.png)
-![Pod Platform](https://cocoapod-badges.herokuapp.com/p/RestKit/badge.png)
-[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/RestKit.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=rkuser|?&theme=basic#RestKit)
+[![Build Status](http://img.shields.io/travis/RestKit/RestKit/development.svg?style=flat)](https://travis-ci.org/RestKit/RestKit)
+[![Pod Version](http://img.shields.io/cocoapods/v/RestKit.svg?style=flat)](http://cocoadocs.org/docsets/RestKit/)
+[![Pod Platform](http://img.shields.io/cocoapods/p/RestKit.svg?style=flat)](http://cocoadocs.org/docsets/RestKit/)
+[![Pod License](http://img.shields.io/cocoapods/l/RestKit.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Visit our IRC channel](http://img.shields.io/badge/IRC-%23RestKit-green.svg?style=flat)](https://kiwiirc.com/client/irc.freenode.net/?nick=rkuser|?&theme=basic#RestKit)
 
 RestKit is a modern Objective-C framework for implementing RESTful web services clients on iOS and Mac OS X. It provides a powerful [object mapping](https://github.com/RestKit/RestKit/wiki/Object-mapping) engine that seamlessly integrates with [Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html) and a simple set of networking primitives for mapping HTTP requests and responses built on top of [AFNetworking](https://github.com/AFNetworking/AFNetworking). It has an elegant, carefully designed set of APIs that make accessing and modeling RESTful resources feel almost magical. For example, here's how to access the Twitter public timeline and turn the JSON contents into an array of Tweet objects:
 
@@ -316,7 +317,7 @@ manager.managedObjectStore = managedObjectStore;
 ### Load a Collection of Objects at a Path
 ``` objective-c
 RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
-[manager getObjectsAtPath:@"/articles" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult)) {
+[manager getObjectsAtPath:@"/articles" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 }];
 ```
@@ -400,7 +401,7 @@ Article *article = [Article new];
 UIImage *image = [UIImage imageNamed:@"some_image.png"];
 
 // Serialize the Article attributes then attach a file
-NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestForObject:article method:RKRequestMethodPOST path:nil parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:article method:RKRequestMethodPOST path:nil parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
     [formData appendPartWithFileData:UIImagePNGRepresentation(image)
                                 name:@"article[image]"
                             fileName:@"photo.png"
@@ -461,10 +462,10 @@ RKManagedObjectImporter *importer = [[RKManagedObjectImporter alloc] initWithMan
 // JSON looks like {"articles": [ {"title": "Article 1", "body": "Text", "author": "Blake" ]}
 NSError *error;
 NSBundle *mainBundle = [NSBundle mainBundle];
-[importer importObjectsFromItemAtPath:[mainBundle pathForResource:@"articles" ofType:@"json"]
-                              withMapping:articleMapping
-                                  keyPath:@"articles"
-                                    error:&error];
+[importer importObjectsFromItemAtPath:[mainBundle pathForResource:@"articles" ofType:@"json"]    
+                          withMapping:articleMapping
+                              keyPath:@"articles"
+                                error:&error];
 
 BOOL success = [importer finishImporting:&error];
 if (success) {

@@ -63,6 +63,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, assign, readwrite) RKRequestMethod method;
 @property (nonatomic, copy, readwrite) NSString *pathPattern;
+@property (nonatomic, strong, readwrite) RKPathMatcher *pathPatternMatcher;
 @property (nonatomic, copy, readwrite) NSString *keyPath;
 @property (nonatomic, copy, readwrite) NSIndexSet *statusCodes;
 @end
@@ -97,6 +98,16 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
     return mappingDescriptor;
 }
 
+- (void)setPathPattern:(NSString *)pathPattern
+{
+    _pathPattern = pathPattern;
+    if (pathPattern) {
+        self.pathPatternMatcher = [RKPathMatcher pathMatcherWithPattern:pathPattern];
+    } else {
+        self.pathPatternMatcher = nil;
+    }
+}
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p method=%@ pathPattern=%@ keyPath=%@ statusCodes=%@ : %@>",
@@ -106,8 +117,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 - (BOOL)matchesPath:(NSString *)path
 {
     if (!self.pathPattern || !path) return YES;
-    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:self.pathPattern];
-    return [pathMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
+    return [self.pathPatternMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
 }
 
 - (BOOL)matchesURL:(NSURL *)URL
@@ -167,8 +177,8 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
     return
     [self.mapping isEqualToMapping:otherDescriptor.mapping] &&
     self.method == otherDescriptor.method &&
-    [self.pathPattern isEqualToString:otherDescriptor.pathPattern] &&
-    [self.keyPath isEqualToString:otherDescriptor.keyPath] &&
+    ((self.pathPattern == otherDescriptor.pathPattern) || [self.pathPattern isEqualToString:otherDescriptor.pathPattern]) &&
+    ((self.keyPath == otherDescriptor.keyPath) || [self.keyPath isEqualToString:otherDescriptor.keyPath]) &&
     [self.statusCodes isEqualToIndexSet:otherDescriptor.statusCodes];
 }
 
