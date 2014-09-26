@@ -490,10 +490,10 @@
     expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
 }
 
-- (void)testThatObjectParametersAreSentDuringDeleteObjectIfAllowed
+- (void)testThatObjectParametersAreSentDuringForUnsupportedMethodIfForced
 {
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    objectManager.allowBodyForDELETEMethod = YES;
+    objectManager.forceRequestBodyMethods = RKRequestMethodDELETE;
     
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addAttributeMappingsFromArray:@[ @"name" ]];
@@ -508,7 +508,7 @@
     NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
     expect(dictionary).to.equal(@{ @"name": @"Blake" });
     
-    objectManager.allowBodyForDELETEMethod = NO;
+    objectManager.forceRequestBodyMethods = 0;
     [objectManager removeRequestDescriptor:requestDesriptor];
 }
 
