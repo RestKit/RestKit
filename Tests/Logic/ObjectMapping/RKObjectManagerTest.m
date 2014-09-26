@@ -492,14 +492,24 @@
 
 - (void)testThatObjectParametersAreSentDuringDeleteObjectIfAllowed
 {
-    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
-    temporaryHuman.name = @"My Name";
-    temporaryHuman.railsID = @204;
-    _objectManager.allowBodyForDELETEMethod = YES;
-    NSURLRequest *request = [_objectManager requestWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:nil];
-    _objectManager.allowBodyForDELETEMethod = NO;
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.allowBodyForDELETEMethod = YES;
+    
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    
+    RKRequestDescriptor *requestDesriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[RKObjectMapperTestModel class] rootKeyPath:nil method:RKRequestMethodAny];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:requestDesriptor];
+    
+    RKObjectMapperTestModel *model = [RKObjectMapperTestModel new];
+    model.name = @"Blake";
+    NSURLRequest *request = [objectManager requestWithObject:model method:RKRequestMethodDELETE path:@"/path" parameters:nil];
     NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
-    expect(dictionary).to.equal(@{ @"name": @"My Name" });
+    expect(dictionary).to.equal(@{ @"name": @"Blake" });
+    
+    objectManager.allowBodyForDELETEMethod = NO;
+    [objectManager removeRequestDescriptor:requestDesriptor];
 }
 
 - (void)testInitializationOfObjectRequestOperationProducesCorrectURLRequest
