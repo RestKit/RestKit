@@ -416,7 +416,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                                 parameters:(NSDictionary *)parameters
 {
     NSMutableURLRequest* request;
-    if (parameters && !([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || [method isEqualToString:@"DELETE"])) {
+    if (parameters && !([method isEqualToString:@"GET"] || [method isEqualToString:@"HEAD"] || ([method isEqualToString:@"DELETE"] && !self.allowBodyForDELETEMethod))) {
         // NOTE: If the HTTP client has been subclasses, then the developer may be trying to perform signing on the request
         NSDictionary *parametersForClient = [self.HTTPClient isMemberOfClass:[AFHTTPClient class]] ? nil : parameters;
         request = [self.HTTPClient requestWithMethod:method path:path parameters:parametersForClient];
@@ -459,7 +459,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     RKObjectParameters *objectParameters = [RKObjectParameters new];
     for (id objectToParameterize in objectsToParameterize) {
         RKRequestDescriptor *requestDescriptor = RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(self.requestDescriptors, objectToParameterize, method);
-        if ((method != RKRequestMethodGET && method != RKRequestMethodDELETE) && requestDescriptor) {
+        if ((method != RKRequestMethodGET && !(method == RKRequestMethodDELETE && !self.allowBodyForDELETEMethod)) && requestDescriptor) {
             NSError *error = nil;
             NSDictionary *parametersForObject = [RKObjectParameterization parametersWithObject:objectToParameterize requestDescriptor:requestDescriptor error:&error];
             if (error) {

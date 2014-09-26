@@ -322,6 +322,15 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 @property (nonatomic, strong) RKRouter *router;
 
+/**
+ A Boolean value that indicates if the receiver should add HTTP body to DELETE requests instead of ignoring it.
+ 
+ When `YES` maps object to HTTP body for DELETE requests like for other, that support it.
+ 
+ **Default:** `NO`
+ */
+@property (nonatomic, assign) BOOL allowBodyForDELETEMethod;
+
 ///--------------------------------------------------
 /// @name Configuring Request and Response MIME Types
 ///--------------------------------------------------

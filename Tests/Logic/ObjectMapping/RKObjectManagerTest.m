@@ -490,6 +490,18 @@
     expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
 }
 
+- (void)testThatObjectParametersAreSentDuringDeleteObjectIfAllowed
+{
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
+    temporaryHuman.name = @"My Name";
+    temporaryHuman.railsID = @204;
+    _objectManager.allowBodyForDELETEMethod = YES;
+    NSURLRequest *request = [_objectManager requestWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:nil];
+    _objectManager.allowBodyForDELETEMethod = NO;
+    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    expect(dictionary).to.equal(@{ @"name": @"My Name" });
+}
+
 - (void)testInitializationOfObjectRequestOperationProducesCorrectURLRequest
 {
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
