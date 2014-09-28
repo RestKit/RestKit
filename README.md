@@ -324,7 +324,7 @@ RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithStr
 
 ### Manage a Queue of Object Request Operations
 ``` objective-c
-RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 
 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://restkit.org/articles/1234.json"]];
 RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
