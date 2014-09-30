@@ -48,11 +48,13 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 {
     NSCAssert([connection isForeignKeyConnection], @"Only valid for a foreign key connection");
     NSMutableDictionary *destinationEntityAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[connection.attributes count]];
-    for (NSString *sourceAttribute in connection.attributes) {
-        NSString *destinationAttribute = [connection.attributes objectForKey:sourceAttribute];
-        id sourceValue = [managedObject valueForKey:sourceAttribute];
-        [destinationEntityAttributeValues setValue:sourceValue ?: [NSNull null] forKey:destinationAttribute];
-    }
+    [managedObject.managedObjectContext performBlockAndWait:^{
+        for (NSString *sourceAttribute in connection.attributes) {
+            NSString *destinationAttribute = [connection.attributes objectForKey:sourceAttribute];
+            id sourceValue = [managedObject valueForKey:sourceAttribute];
+            [destinationEntityAttributeValues setValue:sourceValue ?: [NSNull null] forKey:destinationAttribute];
+        }
+    }];
     return RKConnectionAttributeValuesIsNotConnectable(destinationEntityAttributeValues) ? nil : destinationEntityAttributeValues;
 }
 
@@ -151,8 +153,9 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
     if ([connection isForeignKeyConnection]) {
         NSDictionary *attributeValues = RKConnectionAttributeValuesWithObject(connection, self.managedObject);
         // If there are no attribute values available for connecting, skip the connection entirely
-        if (! attributeValues) {
-            *shouldConnectRelationship = NO;
+        if (! attributeValues || !self.managedObjectContext) {
+            // fix for DE112 removing child object from parent
+            // *shouldConnectRelationship = NO;
             return nil;
         }
         NSSet *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[connection.relationship destinationEntity]
