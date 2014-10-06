@@ -18,34 +18,21 @@
 //  limitations under the License.
 //
 
-// *** Static Library ***
-#if !defined(COCOAPODS)
 
-    // LibComponentLogging
-    #import "RKLog.h"
+// LibComponentLogging
+#if __has_include("RKLog.h")
+#import "RKLog.h"
 
-// *** CocoaPods ***
+// CocoaLumberJack
+#elif __has_include("RKLumberjack.h")
+#import "RKLumberjack.h"
+
+// NBULog
+#elif __has_include("NBULog+RestKit.h")
+#import "NBULog+RestKit.h"
+
+// NSLog
 #else
-
-    // LibComponentLogging
-    #if defined(COCOAPODS_POD_AVAILABLE_RestKit_Logging_LibComponentLogging)
-    #import "RKLog.h"
-
-    // CocoaLumberJack
-    #elif defined(COCOAPODS_POD_AVAILABLE_RestKit_Logging_CocoaLumberjack)
-    #import "RKLumberjack.h"
-
-    // NBULog
-    #elif defined(COCOAPODS_POD_AVAILABLE_RestKit_Logging_NBULog)
-    #import "NBULog+RestKit.h"
-
-    // NSLog
-    #elif defined(COCOAPODS_POD_AVAILABLE_RestKit_Logging_NSLog)
-    #import "RKNSLog.h"
-
-    // No RestKit Pod installed (RestKit installed as a static library)
-    #else
-    #import "RKLog.h"
-    #endif
-
+#import "RKNSLog.h"
 #endif
+
