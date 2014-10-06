@@ -1,9 +1,9 @@
 //
-//  Support.h
+//  Logging.h
 //  RestKit
 //
-//  Created by Blake Watters on 9/30/10.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Created by Ernesto Rivera on 5/16/14.
+//  Copyright (c) 2009-2013 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,14 +18,21 @@
 //  limitations under the License.
 //
 
-// Load shared support code
-#import "RKErrors.h"
-#import "RKMIMETypes.h"
-#import "Logging.h"
-#import "RKDotNetDateFormatter.h"
-#import "RKPathUtilities.h"
-#import "RKDictionaryUtilities.h"
-#import "RKURLEncodedSerialization.h"
-#import "RKNSJSONSerialization.h"
-#import "RKMIMETypeSerialization.h"
-#import "RKStringTokenizer.h"
+
+// LibComponentLogging
+#if __has_include("RKLog.h")
+#import "RKLog.h"
+
+// CocoaLumberJack
+#elif __has_include("RKLumberjack.h")
+#import "RKLumberjack.h"
+
+// NBULog
+#elif __has_include("NBULog+RestKit.h")
+#import "NBULog+RestKit.h"
+
+// NSLog
+#else
+#import "RKNSLog.h"
+#endif
+

@@ -606,6 +606,8 @@
 		C0F11CE81908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C0F11CE91908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
+		E5102D5D19260E9000E2FED0 /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = E5102D5619260E9000E2FED0 /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E5102D5F19260EDF00E2FED0 /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = E5102D5619260E9000E2FED0 /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -986,6 +988,7 @@
 		C0F11CE2190883380054AEA0 /* RKPathMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcher.m; sourceTree = "<group>"; };
 		C0F11CE71908C7E60054AEA0 /* RKCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCoreData.h; sourceTree = "<group>"; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E5102D5619260E9000E2FED0 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1131,6 +1134,8 @@
 				25160D58145650490060A5C5 /* Network */,
 				2502C8E715F79CF70060FD75 /* CoreData.h */,
 				25160D45145650490060A5C5 /* CoreData */,
+				E5102D5619260E9000E2FED0 /* Logging.h */,
+				E5102D4D19260E8F00E2FED0 /* Logging */,
 				2502C8EB15F79CF70060FD75 /* Support.h */,
 				25160DA2145650490060A5C5 /* Support */,
 				2502C8EC15F79CF70060FD75 /* Testing.h */,
@@ -1231,14 +1236,9 @@
 				2595B46C15F670530087A59B /* RKMIMETypeSerialization.m */,
 				2595B46D15F670530087A59B /* RKNSJSONSerialization.h */,
 				2595B46E15F670530087A59B /* RKNSJSONSerialization.m */,
-				25160DA5145650490060A5C5 /* lcl_config_components_RK.h */,
-				25160DA6145650490060A5C5 /* lcl_config_extensions_RK.h */,
-				25160DA7145650490060A5C5 /* lcl_config_logger_RK.h */,
 				25160DBB145650490060A5C5 /* RestKit-Prefix.pch */,
 				25160DBE145650490060A5C5 /* RKDotNetDateFormatter.h */,
 				25160DBF145650490060A5C5 /* RKDotNetDateFormatter.m */,
-				25160DC1145650490060A5C5 /* RKLog.h */,
-				25160DC2145650490060A5C5 /* RKLog.m */,
 				25160DC3145650490060A5C5 /* RKMIMETypes.h */,
 				25160DC4145650490060A5C5 /* RKMIMETypes.m */,
 				25160DC5145650490060A5C5 /* RKSerialization.h */,
@@ -1764,6 +1764,26 @@
 			name = Mapping;
 			sourceTree = "<group>";
 		};
+		E5102D4D19260E8F00E2FED0 /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				E5102D4E19260E8F00E2FED0 /* LibComponentLogging */,
+			);
+			path = Logging;
+			sourceTree = "<group>";
+		};
+		E5102D4E19260E8F00E2FED0 /* LibComponentLogging */ = {
+			isa = PBXGroup;
+			children = (
+				25160DC1145650490060A5C5 /* RKLog.h */,
+				25160DC2145650490060A5C5 /* RKLog.m */,
+				25160DA5145650490060A5C5 /* lcl_config_components_RK.h */,
+				25160DA6145650490060A5C5 /* lcl_config_extensions_RK.h */,
+				25160DA7145650490060A5C5 /* lcl_config_logger_RK.h */,
+			);
+			path = LibComponentLogging;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1812,6 +1832,7 @@
 				25EC1A3D14F72B2800C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
 				25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
 				257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */,
+				E5102D5D19260E9000E2FED0 /* Logging.h in Headers */,
 				257ABAB61511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
 				259D98541550C69A008C90F5 /* RKEntityByAttributeCache.h in Headers */,
 				259D985E155218E5008C90F5 /* RKEntityCache.h in Headers */,
@@ -1971,6 +1992,7 @@
 				259B96F81604CCCC0000C250 /* UIImageView+AFNetworking.h in Headers */,
 				259B96FA1604CCCC0000C250 /* AFNetworking.h in Headers */,
 				25F53F3A1606269400A093BE /* RKObjectRequestOperationSubclass.h in Headers */,
+				E5102D5F19260EDF00E2FED0 /* Logging.h in Headers */,
 				25A226D71618A57500952D72 /* RKObjectUtilities.h in Headers */,
 				2507C328161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
 				25E88C89165C5CC30042ABD0 /* RKConnectionDescription.h in Headers */,

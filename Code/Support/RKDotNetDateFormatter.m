@@ -19,7 +19,7 @@
 //
 
 #import "RKDotNetDateFormatter.h"
-#import "RKLog.h"
+#import "Logging.h"
 
 static BOOL RKDotNetDateFormatterIsValidRange(NSRange rangeOfMatch)
 {

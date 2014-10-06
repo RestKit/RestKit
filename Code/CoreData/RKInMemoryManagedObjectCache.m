@@ -20,7 +20,7 @@
 
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKEntityCache.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKEntityByAttributeCache.h"
 
 // Set Logging Component

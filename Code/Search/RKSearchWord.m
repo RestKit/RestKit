@@ -19,7 +19,7 @@
 //
 
 #import "RKSearchWord.h"
-#import "RKLog.h"
+#import "Logging.h"
 
 // Set Logging Component
 #undef RKLogComponent

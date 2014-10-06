@@ -19,7 +19,7 @@
 //
 
 #import "RKFetchRequestManagedObjectCache.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
 #import "RKObjectUtilities.h"
