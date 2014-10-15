@@ -747,26 +747,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 
         // nil out the property if necessary
         if (value == nil) {
-            Class relationshipClass = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
-            BOOL mappingToCollection = RKClassIsCollection(relationshipClass);
-            if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy && mappingToCollection) {
-                // Unioning `nil` with the existing value is functionally equivalent to doing nothing, so just continue
-                continue;
-            } else if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
-                NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Invalid assignment policy: cannot union a one-to-one relationship." };
-                self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorInvalidAssignmentPolicy userInfo:userInfo];
-                continue;
-            } else if (relationshipMapping.assignmentPolicy == RKReplaceAssignmentPolicy) {
-                if (! [self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
-                    continue;
-                }
-            }
-
-            if ([self shouldSetValue:&value forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
-                RKLogTrace(@"Setting nil for relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
-                [self.destinationObject setValue:value forKeyPath:relationshipMapping.destinationKeyPath];
-            }
-
+            [self setRelationshipToNil:relationshipMapping];
             continue;
         }
 
@@ -802,6 +783,17 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
                 RKLogWarning(@"Failed to transform single object");
             }
         }
+        
+        // Handle case where incoming content is a collection, but we want a single object
+        if (relationshipClass && !mappingToCollection && RKObjectIsCollection(value)) {
+            RKLogDebug(@"Asked to map a collection into a has-one relationship. Transforming to an instance of: %@", NSStringFromClass(relationshipClass));
+            value = [value lastObject];
+            if (value == nil) {
+                if (! self.objectMapping.assignsNilForMissingRelationships) continue;
+                [self setRelationshipToNil:relationshipMapping];
+                continue;
+            }
+        }
 
         BOOL setValueForRelationship;
         if (RKObjectIsCollection(value)) {
@@ -823,6 +815,30 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     }
 
     return [mappingsApplied count] > 0;
+}
+
+- (void)setRelationshipToNil:(RKRelationshipMapping *)relationshipMapping
+{
+    id value = nil;
+    Class relationshipClass = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
+    BOOL mappingToCollection = RKClassIsCollection(relationshipClass);
+    if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy && mappingToCollection) {
+        // Unioning `nil` with the existing value is functionally equivalent to doing nothing, so just continue
+        return;
+    } else if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Invalid assignment policy: cannot union a one-to-one relationship." };
+        self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorInvalidAssignmentPolicy userInfo:userInfo];
+        return;
+    } else if (relationshipMapping.assignmentPolicy == RKReplaceAssignmentPolicy) {
+        if (! [self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
+            return;
+        }
+    }
+    
+    if ([self shouldSetValue:&value forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
+        RKLogTrace(@"Setting nil for relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
+        [self.destinationObject setValue:value forKeyPath:relationshipMapping.destinationKeyPath];
+    }
 }
 
 - (void)applyNestedMappings
