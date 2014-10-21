@@ -38,7 +38,7 @@ NSDictionary *RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(NSDic
          id escapedValue = value;
          if ([value respondsToSelector:@selector(stringByReplacingPercentEscapesUsingEncoding:)])
              escapedValue = [value stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-         [results setObject:escapedValue forKey:escapedKey];
+         results[escapedKey] = escapedValue;
      }];
     return results;
 }

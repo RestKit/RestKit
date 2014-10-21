@@ -85,7 +85,7 @@
  @param objectClass The class that the mapping targets. Cannot be `nil`.
  @return The receiver, initialized with the given class.
  */
-- (id)initWithClass:(Class)objectClass;
+- (instancetype)initWithClass:(Class)objectClass;
 
 /**
  Returns an object mapping with an `objectClass` of `NSMutableDictionary`.

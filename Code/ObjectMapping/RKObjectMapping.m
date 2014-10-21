@@ -63,11 +63,11 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     // Use an NSValue to obtain a non-copied key into our inversed mappings dictionary
     NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:mapping];
-    RKObjectMapping *inverseMapping = [self.invertedMappings objectForKey:dictionaryKey];
+    RKObjectMapping *inverseMapping = (self.invertedMappings)[dictionaryKey];
     if (inverseMapping) return inverseMapping;
     
     inverseMapping = [RKObjectMapping requestMapping];
-    [self.invertedMappings setObject:inverseMapping forKey:dictionaryKey];
+    (self.invertedMappings)[dictionaryKey] = inverseMapping;
     [inverseMapping copyPropertiesFromMapping:mapping];
     // We want to serialize `nil` values
     inverseMapping.assignsDefaultValueForMissingAttributes = YES;
@@ -150,7 +150,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     });
 }
 
-- (id)initWithClass:(Class)objectClass
+- (instancetype)initWithClass:(Class)objectClass
 {
     self = [super init];
     if (self) {
@@ -323,7 +323,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
 - (void)addAttributeMappingsFromDictionary:(NSDictionary *)keyPathToAttributeNames
 {
     for (NSString *attributeKeyPath in keyPathToAttributeNames) {
-        [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeKeyPath toKeyPath:[keyPathToAttributeNames objectForKey:attributeKeyPath]]];
+        [self addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeKeyPath toKeyPath:keyPathToAttributeNames[attributeKeyPath]]];
     }
 }
 

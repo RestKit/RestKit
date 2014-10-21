@@ -48,7 +48,7 @@ static NSString *RKCacheKeyForEntityWithAttributeValues(NSEntityDescription *ent
     NSArray *sortedAttributes = [[attributeValues allKeys] sortedArrayUsingSelector:@selector(compare:)];
     NSMutableArray *sortedValues = [NSMutableArray arrayWithCapacity:[sortedAttributes count]];
     for (NSString *attributeName in sortedAttributes) {
-        id cacheKeyValue = RKCacheKeyValueForEntityAttributeWithValue(entity, attributeName, [attributeValues objectForKey:attributeName]);
+        id cacheKeyValue = RKCacheKeyValueForEntityAttributeWithValue(entity, attributeName, attributeValues[attributeName]);
         [sortedValues addObject:cacheKeyValue];
     };
     
@@ -67,7 +67,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 
     if ([collectionKeys count] > 0) {
         for (NSString *attributeName in collectionKeys) {
-            id attributeValue = [attributeValues objectForKey:attributeName];
+            id attributeValue = attributeValues[attributeName];
             for (id value in attributeValue) {
                 NSMutableDictionary *mutableAttributeValues = [attributeValues mutableCopy];
                 [mutableAttributeValues setValue:value forKey:attributeName];
@@ -92,7 +92,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 
 @implementation RKEntityByAttributeCache
 
-- (id)initWithEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames managedObjectContext:(NSManagedObjectContext *)context
+- (instancetype)initWithEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames managedObjectContext:(NSManagedObjectContext *)context
 {
     NSParameterAssert(entity);
     NSParameterAssert(attributeNames);
@@ -179,7 +179,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
                        self.entity.name, self.attributes, self.managedObjectContext, (unsigned long)self.managedObjectContext.concurrencyType);
             self.cacheKeysToObjectIDs = [NSMutableDictionary dictionary];
             for (NSDictionary *dictionary in dictionaries) {
-                NSManagedObjectID *objectID = [dictionary objectForKey:@"objectID"];
+                NSManagedObjectID *objectID = dictionary[@"objectID"];
                 NSDictionary *attributeValues = [dictionary dictionaryWithValuesForKeys:self.attributes];
                 [self cacheObjectID:objectID forAttributeValues:attributeValues];
             }
@@ -243,7 +243,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     for (NSString *cacheKey in cacheKeys) {
         __block NSSet *objectIDs = nil;
         dispatch_sync(self.queue, ^{
-            objectIDs = [[NSSet alloc] initWithSet:[self.cacheKeysToObjectIDs objectForKey:cacheKey] copyItems:YES];
+            objectIDs = [[NSSet alloc] initWithSet:(self.cacheKeysToObjectIDs)[cacheKey] copyItems:YES];
         });
         if ([objectIDs count]) {
             /**
@@ -270,7 +270,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     NSParameterAssert(objectID);
     NSParameterAssert(attributeValues);
     NSString *cacheKey = RKCacheKeyForEntityWithAttributeValues(self.entity, attributeValues);
-    NSMutableSet *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
+    NSMutableSet *objectIDs = (self.cacheKeysToObjectIDs)[cacheKey];
     if (objectIDs) {
         if (! [objectIDs containsObject:objectID]) {
             [objectIDs addObject:objectID];
@@ -289,7 +289,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     NSParameterAssert(attributeValues);
     NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
     for (NSString *cacheKey in cacheKeys) {
-        NSMutableSet *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
+        NSMutableSet *objectIDs = (self.cacheKeysToObjectIDs)[cacheKey];
         if (objectIDs && [objectIDs containsObject:objectID]) {
             [objectIDs removeObject:objectID];
         }
@@ -302,7 +302,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
         NSArray *cacheKeys = RKCacheKeysForEntityFromAttributeValues(self.entity, attributeValues);
         dispatch_barrier_async(self.queue, ^{
             for (NSString *cacheKey in cacheKeys) {
-                NSMutableSet *objectIDs = [self.cacheKeysToObjectIDs objectForKey:cacheKey];
+                NSMutableSet *objectIDs = (self.cacheKeysToObjectIDs)[cacheKey];
                 if (objectIDs && [objectIDs containsObject:objectID]) {
                     [objectIDs removeObject:objectID];
                 }
@@ -331,7 +331,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
             attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
             
             NSAssert([entity isKindOfEntity:self.entity], @"Cannot add object with entity '%@' to cache for entity of '%@'", [entity name], [self.entity name]);
-            [newObjectIDsToAttributeValues setObject:attributeValues forKey:objectID];
+            newObjectIDsToAttributeValues[objectID] = attributeValues;
         }
         
         if ([newObjectIDsToAttributeValues count]) {
@@ -366,7 +366,7 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
             attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
             
             NSAssert([entity isKindOfEntity:self.entity], @"Cannot remove object with entity '%@' from cache for entity of '%@'", [entity name], [self.entity name]);
-            [deletedObjectIDsToAttributeValues setObject:attributeValues forKey:objectID];
+            deletedObjectIDsToAttributeValues[objectID] = attributeValues;
         }
         
         if ([deletedObjectIDsToAttributeValues count]) {

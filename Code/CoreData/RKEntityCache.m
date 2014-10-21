@@ -27,7 +27,7 @@
 
 @implementation RKEntityCache
 
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)context
+- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)context
 {
     NSAssert(context, @"Cannot initialize entity cache with a nil context");
     self = [super init];
@@ -39,7 +39,7 @@
     return self;
 }
 
-- (id)init
+- (instancetype)init
 {
     return [self initWithManagedObjectContext:nil];
 }

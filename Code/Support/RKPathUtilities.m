@@ -23,7 +23,7 @@ NSString *RKApplicationDataDirectory(void)
 {
 #if TARGET_OS_IPHONE
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    return ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    return ([paths count] > 0) ? paths[0] : nil;
 #else
     NSFileManager *sharedFM = [NSFileManager defaultManager];
 
@@ -59,7 +59,7 @@ NSString *RKExecutableName(void)
 NSString *RKCachesDirectory(void)
 {
 #if TARGET_OS_IPHONE
-    return [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    return NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
 #else
     NSString *path = nil;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);

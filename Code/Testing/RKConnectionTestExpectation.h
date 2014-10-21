@@ -52,7 +52,7 @@
  @param value The value that is expected to be set for the relationship when the connection is established.
  @return The receiver, initialized with the given relationship name, attributes dictionary, and expected value.
  */
-- (id)initWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value;
+- (instancetype)initWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value;
 
 ///------------------------------------
 /// @name Accessing Expectation Details
@@ -80,7 +80,7 @@
  
  @return A string describing the expected connection.
  */
-- (NSString *)summary;
+@property (nonatomic, readonly, copy) NSString *summary;
 
 @end
 

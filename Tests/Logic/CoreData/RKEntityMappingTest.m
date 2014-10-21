@@ -66,7 +66,7 @@
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"(name).id" toKeyPath:@"railsID"];
     [mapping addPropertyMapping:idMapping];
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:@"users"];
+    mappingsDictionary[@"users"] = mapping;
 
     id mockCacheStrategy = [OCMockObject partialMockForObject:managedObjectStore.managedObjectCache];
     [[[mockCacheStrategy expect] andForwardToRealObject] managedObjectsWithEntity:OCMOCK_ANY
@@ -116,9 +116,9 @@
     NSDictionary *attributesByName = [entity attributesByName];
     NSDictionary *propertiesByName = [entity propertiesByName];
     NSDictionary *relationshipsByName = [entity relationshipsByName];
-    assertThat([attributesByName objectForKey:@"favoriteColors"], is(notNilValue()));
-    assertThat([propertiesByName objectForKey:@"favoriteColors"], is(notNilValue()));
-    assertThat([relationshipsByName objectForKey:@"favoriteColors"], is(nilValue()));
+    assertThat(attributesByName[@"favoriteColors"], is(notNilValue()));
+    assertThat(propertiesByName[@"favoriteColors"], is(notNilValue()));
+    assertThat(relationshipsByName[@"favoriteColors"], is(nilValue()));
 
     NSDictionary *propertyNamesAndTypes = [[RKPropertyInspector sharedInspector] propertyInspectionForEntity:entity];
     assertThat([(RKPropertyInspectorPropertyInfo *)[propertyNamesAndTypes objectForKey:@"favoriteColors"] keyValueCodingClass], is(notNilValue()));

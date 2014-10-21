@@ -162,8 +162,8 @@
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"error1, error2");
 
-    NSArray *objects = [[requestOperation.error userInfo] objectForKey:RKObjectMapperErrorObjectsKey];
-    RKErrorMessage *error1 = [objects objectAtIndex:0];
+    NSArray *objects = [requestOperation.error userInfo][RKObjectMapperErrorObjectsKey];
+    RKErrorMessage *error1 = objects[0];
     RKErrorMessage *error2 = [objects lastObject];
 
     expect(error1.errorMessage).to.equal(@"error1");

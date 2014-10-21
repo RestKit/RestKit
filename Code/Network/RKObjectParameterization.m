@@ -54,7 +54,7 @@
     return [parameterization mapObjectToParameters:error];
 }
 
-- (id)initWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor
+- (instancetype)initWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor
 {
     NSParameterAssert(object);
     NSParameterAssert(requestDescriptor);

@@ -140,7 +140,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     }
 }
 
-- (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
     self = [super init];
     if (self) {
@@ -156,7 +156,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     return self;
 }
 
-- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator
+- (instancetype)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator
 {
     self = [self initWithManagedObjectModel:persistentStoreCoordinator.managedObjectModel];
     if (self) {
@@ -166,7 +166,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     return self;
 }
 
-- (id)init
+- (instancetype)init
 {
     NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
     return [self initWithManagedObjectModel:managedObjectModel];
@@ -207,7 +207,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     NSDictionary *options = nil;
     if (nilOrOptions) {
         NSMutableDictionary *mutableOptions = [nilOrOptions mutableCopy];
-        [mutableOptions setObject:(seedPath ?: [NSNull null]) forKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+        mutableOptions[RKSQLitePersistentStoreSeedDatabasePathOption] = (seedPath ?: [NSNull null]);
         options = mutableOptions;
     } else {
         options = @{ RKSQLitePersistentStoreSeedDatabasePathOption: (seedPath ?: [NSNull null]),
@@ -228,7 +228,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     NSDictionary *seedOptions = nil;
     if (nilOrOptions) {
         NSMutableDictionary *mutableOptions = [nilOrOptions mutableCopy];
-        [mutableOptions setObject:(seedPath ?: [NSNull null]) forKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+        mutableOptions[RKSQLitePersistentStoreSeedDatabasePathOption] = (seedPath ?: [NSNull null]);
         seedOptions = mutableOptions;
     } else {
         seedOptions = @{ RKSQLitePersistentStoreSeedDatabasePathOption: (seedPath ?: [NSNull null]) };

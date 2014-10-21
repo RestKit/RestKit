@@ -52,7 +52,7 @@
  @warning As this initialization code path is typical for generating seed databases, the value of
     `resetsStoreBeforeImporting` is initialized to **YES**.
  */
-- (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel storePath:(NSString *)storePath;
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel storePath:(NSString *)storePath;
 
 /**
  Initializes the receiver with a given persistent store in which to persist imported managed objects.
@@ -66,7 +66,7 @@
     managed object model are determined from the given persistent store and a new managed object context with
     the private queue concurrency type is constructed.
  */
-- (id)initWithPersistentStore:(NSPersistentStore *)persistentStore;
+- (instancetype)initWithPersistentStore:(NSPersistentStore *)persistentStore;
 
 /**
  A Boolean value indicating whether existing managed objects in the persistent store should

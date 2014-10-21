@@ -40,7 +40,7 @@
 {
     __block NSMutableDictionary *entityInspection;
     dispatch_sync(self.queue, ^{
-        entityInspection = [self.inspectionCache objectForKey:[entity name]];
+        entityInspection = (self.inspectionCache)[[entity name]];
     });
     if (entityInspection) return entityInspection;
 
@@ -113,7 +113,7 @@
     }
 
     dispatch_barrier_async(self.queue, ^{
-        [self.inspectionCache setObject:entityInspection forKey:[entity name]];
+        (self.inspectionCache)[[entity name]] = entityInspection;
         RKLogDebug(@"Cached property inspection for Entity '%@': %@", entity, entityInspection);
     });
     return entityInspection;
