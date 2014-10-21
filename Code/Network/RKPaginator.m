@@ -60,7 +60,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 @implementation RKPaginator
 
-- (id)initWithRequest:(NSURLRequest *)request
+- (instancetype)initWithRequest:(NSURLRequest *)request
     paginationMapping:(RKObjectMapping *)paginationMapping
   responseDescriptors:(NSArray *)responseDescriptors;
 {
@@ -282,7 +282,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (NSNumber *)perPageNumber
 {
-    return [NSNumber numberWithUnsignedInteger:self.perPage];
+    return @(self.perPage);
 }
 
 - (void)setPerPageNumber:(NSNumber *)perPageNumber
@@ -292,7 +292,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (NSNumber *)currentPageNumber
 {
-    return [NSNumber numberWithUnsignedInteger:self.currentPage];
+    return @(self.currentPage);
 }
 
 - (void)setCurrentPageNumber:(NSNumber *)currentPageNumber
@@ -302,7 +302,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (NSNumber *)pageCountNumber
 {
-    return [NSNumber numberWithUnsignedInteger:self.pageCount];
+    return @(self.pageCount);
 }
 
 - (void)setPageCountNumber:(NSNumber *)pageCountNumber
@@ -312,7 +312,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (NSNumber *)objectCountNumber
 {
-    return [NSNumber numberWithUnsignedInteger:self.objectCount];
+    return @(self.objectCount);
 }
 
 - (void)setObjectCountNumber:(NSNumber *)objectCountNumber
@@ -322,7 +322,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 - (NSNumber *)offsetNumber
 {
-    return [NSNumber numberWithUnsignedInteger:self.offset];
+    return @(self.offset);
 }
 
 - (void)setOffsetNumber:(NSNumber *)offsetNumber

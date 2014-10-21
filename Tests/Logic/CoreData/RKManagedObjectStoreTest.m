@@ -121,7 +121,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Blake"];
     NSArray *array = [seededStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     assertThat(array, isNot(isEmpty()));
-    RKHuman *seededHuman = [array objectAtIndex:0];
+    RKHuman *seededHuman = array[0];
     assertThat([[seededHuman.objectID URIRepresentation] URLByDeletingLastPathComponent], is(equalTo([[seedObjectID URIRepresentation] URLByDeletingLastPathComponent])));
 }
 
@@ -146,7 +146,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     assertThatBool(success, is(equalToBool(YES)));
 
     // Check that the persistent store has changed
-    NSPersistentStore *newPersistentStore = [managedObjectStore.persistentStoreCoordinator.persistentStores objectAtIndex:0];
+    NSPersistentStore *newPersistentStore = (managedObjectStore.persistentStoreCoordinator.persistentStores)[0];
     assertThat(newPersistentStore, isNot(equalTo(persistentStore)));
 
     // Check that the object is gone
@@ -198,18 +198,18 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
 
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:storePath error:&error];
     assertThat(attributes, is(notNilValue()));
-    NSDate *modificationDate = [attributes objectForKey:NSFileModificationDate];
+    NSDate *modificationDate = attributes[NSFileModificationDate];
 
     BOOL success = [managedObjectStore resetPersistentStores:&error];
     assertThatBool(success, is(equalToBool(YES)));
 
     // Check that the persistent store has changed
-    NSPersistentStore *newPersistentStore = [managedObjectStore.persistentStoreCoordinator.persistentStores objectAtIndex:0];
+    NSPersistentStore *newPersistentStore = (managedObjectStore.persistentStoreCoordinator.persistentStores)[0];
     assertThat(newPersistentStore, isNot(equalTo(persistentStore)));
 
     attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:storePath error:&error];
     assertThat(attributes, is(notNilValue()));
-    NSDate *newModificationDate = [attributes objectForKey:NSFileModificationDate];
+    NSDate *newModificationDate = attributes[NSFileModificationDate];
 
     NSDate *laterDate = [modificationDate laterDate:newModificationDate];
     assertThat(laterDate, is(equalTo(newModificationDate)));
@@ -254,7 +254,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Blake"];
     NSArray *array = [seededStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     assertThat(array, isNot(isEmpty()));
-    RKHuman *seededHuman = [array objectAtIndex:0];
+    RKHuman *seededHuman = array[0];
     assertThat([[seededHuman.objectID URIRepresentation] URLByDeletingLastPathComponent], is(equalTo([[seedObjectID URIRepresentation] URLByDeletingLastPathComponent])));
 
     // Check that the secondary object does not exist
@@ -535,7 +535,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSManagedObjectModel *model_v2 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 2);
     
     // Add search indexing on the title attribute
-    NSEntityDescription *articleEntity = [[model_v2 entitiesByName] objectForKey:@"Article"];
+    NSEntityDescription *articleEntity = [model_v2 entitiesByName][@"Article"];
     [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
      
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v2];
@@ -551,7 +551,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 4);
     BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:^(NSManagedObjectModel *model, NSURL *sourceURL) {
         if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"2.0"]]) {
-            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
+            NSEntityDescription *articleEntity = [model entitiesByName][@"Article"];
             [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
         }
     }];
@@ -565,8 +565,8 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSManagedObjectModel *model_v1 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
     
     // Add search indexing on the title attribute
-    NSEntityDescription *articleEntity = [[model_v1 entitiesByName] objectForKey:@"Article"];
-    NSEntityDescription *tagEntity = [[model_v1 entitiesByName] objectForKey:@"Tag"];
+    NSEntityDescription *articleEntity = [model_v1 entitiesByName][@"Article"];
+    NSEntityDescription *tagEntity = [model_v1 entitiesByName][@"Tag"];
     [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
     [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
     
@@ -583,19 +583,19 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"VersionedModel" withExtension:@"momd"];
     BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:^(NSManagedObjectModel *model, NSURL *sourceURL) {
         if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"1.0"]]) {
-            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
-            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+            NSEntityDescription *articleEntity = [model entitiesByName][@"Article"];
+            NSEntityDescription *tagEntity = [model entitiesByName][@"Tag"];
             [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
             [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
         } else if ([[model versionIdentifiers] isEqualToSet:[NSSet setWithObject:@"2.0"]]) {
-            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
-            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+            NSEntityDescription *articleEntity = [model entitiesByName][@"Article"];
+            NSEntityDescription *tagEntity = [model entitiesByName][@"Tag"];
             [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title", @"body" ]];
             [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
         } else if ([[model versionIdentifiers] containsObject:@"3.0"] || [[model versionIdentifiers] containsObject:@"4.0"]) {
             // We index the same attributes on v3 and v4
-            NSEntityDescription *articleEntity = [[model entitiesByName] objectForKey:@"Article"];
-            NSEntityDescription *tagEntity = [[model entitiesByName] objectForKey:@"Tag"];
+            NSEntityDescription *articleEntity = [model entitiesByName][@"Article"];
+            NSEntityDescription *tagEntity = [model entitiesByName][@"Tag"];
             [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title", @"body", @"authorName" ]];
             [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
         }

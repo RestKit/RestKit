@@ -17,7 +17,7 @@
 #import "RKPost.h"
 
 @interface RKManagedObjectRequestOperation ()
-- (NSArray *)fetchRequestsMatchingResponseURL;
+@property (nonatomic, readonly, copy) NSArray *fetchRequestsMatchingResponseURL;
 @end
 NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
 
@@ -165,7 +165,7 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(managedObjectRequestOperation.mappingResult).notTo.beNil();
     NSArray *managedObjectContexts = [[managedObjectRequestOperation.mappingResult array] valueForKeyPath:@"@distinctUnionOfObjects.managedObjectContext"];
     expect([managedObjectContexts count]).to.equal(1);
-    expect(managedObjectContexts).to.equal([NSArray arrayWithObject:managedObjectStore.mainQueueManagedObjectContext]);
+    expect(managedObjectContexts).to.equal(@[managedObjectStore.mainQueueManagedObjectContext]);
 }
 
 // 304 'Not Modified'

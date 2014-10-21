@@ -80,7 +80,7 @@
     return [[RKBlockObjectMatchingMatcher alloc] initWithPossibleMappings:mappings block:block];
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {

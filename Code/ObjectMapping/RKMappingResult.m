@@ -26,7 +26,7 @@
 
 @implementation RKMappingResult
 
-- (id)initWithDictionary:(id)dictionary
+- (instancetype)initWithDictionary:(id)dictionary
 {
     NSParameterAssert(dictionary);
     self = [self init];

@@ -152,7 +152,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:destinationObject];
 }
 
-- (id)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
+- (instancetype)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
 {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(mapping != nil, @"Cannot perform a mapping operation without a mapping");
@@ -216,8 +216,8 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                           reason:(NSString *)reason
 {
     NSMutableDictionary *fullUserInfo = [userInfo mutableCopy];
-    [fullUserInfo setObject:description forKey:NSLocalizedDescriptionKey];
-    [fullUserInfo setObject:reason forKey:NSLocalizedFailureReasonErrorKey];
+    fullUserInfo[NSLocalizedDescriptionKey] = description;
+    fullUserInfo[NSLocalizedFailureReasonErrorKey] = reason;
     return [NSError errorWithDomain:RKMappingTestErrorDomain code:errorCode userInfo:fullUserInfo];
 }
 

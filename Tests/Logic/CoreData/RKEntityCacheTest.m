@@ -82,7 +82,7 @@
 - (void)testRetrievalOfObjectForEntityWithAttributeValue
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     NSError *error = nil;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
 
@@ -100,9 +100,9 @@
 - (void)testRetrievalOfObjectsForEntityWithAttributeValue
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     NSError *error = nil;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
 
@@ -121,10 +121,10 @@
 - (void)testThatFlushEmptiesAllUnderlyingAttributeCaches
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     human1.name = @"Blake";
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     human2.name = @"Sarah";
 
     __block BOOL done = NO;
@@ -167,10 +167,10 @@
     expect(done).will.equal(YES);
 
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     human1.name = @"Blake";
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     human2.name = @"Sarah";
     
     __block NSError *error;
@@ -208,10 +208,10 @@
     expect(done).will.equal(YES);
 
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     human1.name = @"Blake";
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     human2.name = @"Sarah";
     
     __block NSError *error;

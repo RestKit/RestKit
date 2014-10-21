@@ -35,7 +35,7 @@
  @param dictionary A dictionary wherein the keys represent mapped key paths and the values represent the objects mapped at those key paths. Cannot be nil.
  @return The receiver, initialized with the given dictionary.
  */
-- (id)initWithDictionary:(NSDictionary *)dictionary;
+- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
 ///----------------------------------------
 /// @name Retrieving Result Representations
@@ -57,7 +57,7 @@
 
  @return The first object contained in the mapping result.
  */
-- (id)firstObject;
+@property (nonatomic, readonly, strong) id firstObject;
 
 /**
  Returns a representation of the mapping result as an array of objects.
@@ -75,7 +75,7 @@
 
  @return A set containing the objects contained in the mapping result.
  */
-- (NSSet *)set;
+@property (nonatomic, readonly, copy) NSSet *set;
 
 ///----------------------------------------
 /// @name Counting Entries
@@ -86,6 +86,6 @@
 
  @return A count of the number of mapped objects in the mapping result.
  */
-- (NSUInteger)count;
+@property (nonatomic, readonly) NSUInteger count;
 
 @end

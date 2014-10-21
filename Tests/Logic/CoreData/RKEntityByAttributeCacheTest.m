@@ -74,7 +74,7 @@
 - (void)testLoadSetsCountAppropriately
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     NSError *error = nil;
     [self.managedObjectContext save:&error];
 
@@ -86,9 +86,9 @@
 - (void)testFlushCacheRemovesObjects
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     __block BOOL done = NO;
@@ -110,9 +110,9 @@
 - (void)testFlushCacheReturnsCountToZero
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];
@@ -126,7 +126,7 @@
 - (void)testRetrievalByNumericValue
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
     [self.cache load:nil];
     expect([self.cache isLoaded]).will.equal(YES);
@@ -140,7 +140,7 @@
 - (void)testRetrievalOfNumericPropertyByStringValue
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
     [self.cache load:nil];
     expect([self.cache isLoaded]).will.equal(YES);
@@ -155,9 +155,9 @@
 - (void)testRetrievalOfObjectsWithAttributeValue
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     __block BOOL done = NO;
@@ -176,9 +176,9 @@
 - (void)testRetrievalOfObjectsWithCollectionAttributeValue
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:5678];
+    human2.railsID = @5678;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];
@@ -198,13 +198,13 @@
                                              managedObjectContext:self.managedObjectContext];
 
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     human1.name = @"Blake";
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:5678];
+    human2.railsID = @5678;
     human2.name = @"Jeff";
     RKHuman *human3 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human3.railsID = [NSNumber numberWithInteger:9999];
+    human3.railsID = @9999;
     human3.name = @"Blake";
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
@@ -240,7 +240,7 @@
 - (void)testAddingObjectToCache
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human, nil] completion:nil];
@@ -250,9 +250,9 @@
 - (void)testAddingObjectWithDuplicateAttributeValue
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];
@@ -264,7 +264,7 @@
 - (void)testRemovingObjectFromCache
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human, nil] completion:nil];
@@ -276,9 +276,9 @@
 - (void)testRemovingObjectWithExistingAttributeValue
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];
@@ -301,9 +301,9 @@
 - (void)testContainsObjectReturnsNoForSubEntities
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     RKChild *child = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    child.railsID = [NSNumber numberWithInteger:12345];
+    child.railsID = @12345;
 
     __weak __typeof(self)weakSelf = self;
     __block BOOL done = NO;
@@ -319,7 +319,7 @@
 - (void)testContainsObjectWithAttributeValue
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObject:human] completion:nil];
@@ -331,11 +331,11 @@
     assertThatInteger([self.cache count], is(equalToInteger(0)));
     
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     RKHuman *human3 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human3.railsID = [NSNumber numberWithInteger:123456];
+    human3.railsID = @123456;
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, human3, nil] completion:nil];
     expect([self.cache count]).will.equal(3);
@@ -344,11 +344,11 @@
 - (void)testCountOfAttributeValues
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     RKHuman *human3 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human3.railsID = [NSNumber numberWithInteger:123456];
+    human3.railsID = @123456;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, human3, nil] completion:nil];
@@ -358,9 +358,9 @@
 - (void)testCountWithAttributeValue
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];
@@ -385,9 +385,9 @@
     // Put some objects into the cache
     // Delete them
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:56789];
+    human2.railsID = @56789;
     [self.managedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];
@@ -405,9 +405,9 @@
 - (void)testCacheIsFlushedOnMemoryWarning
 {
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
     
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];

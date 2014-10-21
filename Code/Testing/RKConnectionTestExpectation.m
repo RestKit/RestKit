@@ -36,7 +36,7 @@
     return [[self alloc] initWithRelationshipName:relationshipName attributes:attributes value:value];
 }
 
-- (id)initWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value
+- (instancetype)initWithRelationshipName:(NSString *)relationshipName attributes:(NSDictionary *)attributes value:(id)value
 {
     NSParameterAssert(relationshipName);
     NSAssert(value == nil ||

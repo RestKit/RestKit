@@ -74,7 +74,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
     return sharedInspector;
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -98,7 +98,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
 {
     __block NSMutableDictionary *inspection;
     dispatch_sync(self.queue, ^{
-        inspection = [self.inspectionCache objectForKey:objectClass];
+        inspection = (self.inspectionCache)[objectClass];
     });
     if (inspection) return inspection;
     
@@ -149,7 +149,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
     }
 
     dispatch_barrier_async(self.queue, ^{
-        [self.inspectionCache setObject:inspection forKey:(id<NSCopying>)objectClass];
+        (self.inspectionCache)[(id<NSCopying>)objectClass] = inspection;
         RKLogDebug(@"Cached property inspection for Class '%@': %@", NSStringFromClass(objectClass), inspection);
     });
     return inspection;

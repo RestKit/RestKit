@@ -203,7 +203,7 @@
     
     expect(operation.mappingResult).notTo.beNil();
     expect([operation.mappingResult array]).notTo.beEmpty();
-    RKHuman *human = (RKHuman *)[[operation.mappingResult array] objectAtIndex:0];
+    RKHuman *human = (RKHuman *)[operation.mappingResult array][0];
     expect(human.objectID).to.equal(temporaryHuman.objectID);
     expect(human.railsID).to.equal(1);
 }
@@ -1275,7 +1275,7 @@
     
     expect(operation.mappingResult).notTo.beNil();
     expect([operation.mappingResult array]).notTo.beEmpty();
-    RKHuman *human = (RKHuman *)[[operation.mappingResult array] objectAtIndex:0];
+    RKHuman *human = (RKHuman *)[operation.mappingResult array][0];
     expect(human.objectID).to.equal(temporaryHuman.objectID);
     expect(human.railsID).to.equal(1);
 }

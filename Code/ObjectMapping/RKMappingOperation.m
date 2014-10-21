@@ -379,7 +379,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
 @implementation RKMappingInfo
 
-- (id)initWithObjectMapping:(RKObjectMapping *)objectMapping dynamicMapping:(RKDynamicMapping *)dynamicMapping
+- (instancetype)initWithObjectMapping:(RKObjectMapping *)objectMapping dynamicMapping:(RKDynamicMapping *)dynamicMapping
 {
     self = [self init];
     if (self) {
@@ -408,12 +408,12 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
 - (void)addMappingInfo:(RKMappingInfo *)mappingInfo forRelationshipMapping:(RKRelationshipMapping *)relationshipMapping
 {
-    NSMutableArray *arrayOfMappingInfo = [self.mutableRelationshipMappingInfo objectForKey:relationshipMapping.destinationKeyPath];
+    NSMutableArray *arrayOfMappingInfo = (self.mutableRelationshipMappingInfo)[relationshipMapping.destinationKeyPath];
     if (arrayOfMappingInfo) {
         [arrayOfMappingInfo addObject:mappingInfo];
     } else {
         arrayOfMappingInfo = [NSMutableArray arrayWithObject:mappingInfo];
-        [self.mutableRelationshipMappingInfo setObject:arrayOfMappingInfo forKey:relationshipMapping.destinationKeyPath];
+        (self.mutableRelationshipMappingInfo)[relationshipMapping.destinationKeyPath] = arrayOfMappingInfo;
     }
 }
 
@@ -455,7 +455,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
 @implementation RKMappingOperation
 
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
+- (instancetype)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
 {
     return [self initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectOrDynamicMapping metadataList:nil];
 }
@@ -1049,7 +1049,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
                 RKLogDebug(@"Collection mapping forced for NSDictionary, mapping each key/value independently...");
                 NSArray *objectsToMap = [NSMutableArray arrayWithCapacity:[value count]];
                 for (id key in value) {
-                    NSDictionary *dictionaryToMap = [NSDictionary dictionaryWithObject:[value valueForKey:key] forKey:key];
+                    NSDictionary *dictionaryToMap = @{key: [value valueForKey:key]};
                     [(NSMutableArray *)objectsToMap addObject:dictionaryToMap];
                 }
                 value = objectsToMap;

@@ -14,7 +14,7 @@ NSString * const RKSearchWordsRelationshipName = @"searchWords";
 
 @implementation RKSearchWordEntity
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -24,7 +24,7 @@ NSString * const RKSearchWordsRelationshipName = @"searchWords";
         [attribute setName:RKSearchWordAttributeName];
         [attribute setIndexed:YES];
         [attribute setAttributeType:NSStringAttributeType];
-        [self setProperties:[NSArray arrayWithObject:attribute]];
+        [self setProperties:@[attribute]];
     }
 
     return self;

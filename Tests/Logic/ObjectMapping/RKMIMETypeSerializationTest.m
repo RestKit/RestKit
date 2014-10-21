@@ -162,7 +162,7 @@
 
 - (void)testDeserializationOfObjectInvokesRegisteredSerializationClass
 {
-    NSArray *parsedData = [NSArray array];
+    NSArray *parsedData = @[];
     NSError *error = nil;
     NSData *data = [@"foobar" dataUsingEncoding:NSUTF8StringEncoding];
     id mockSerializationClass = [OCMockObject mockForClass:[RKNSJSONSerialization class]];

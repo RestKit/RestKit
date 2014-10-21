@@ -29,7 +29,7 @@
     RKRouter *router = [[RKRouter alloc] initWithBaseURL:[NSURL URLWithString:@"http://restkit.org/"]];
     [router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] pathPattern:@"/users/:userID" method:RKRequestMethodAny]];
     RKTestUser *user = [RKTestUser new];
-    user.userID = [NSNumber numberWithInteger:12345];
+    user.userID = @12345;
     NSURL *URL = [router URLForObject:user method:RKRequestMethodGET];
     assertThat(URL.path, is(equalTo(@"/users/12345")));
 }
@@ -47,7 +47,7 @@
     RKRouter *router = [[RKRouter alloc] initWithBaseURL:[NSURL URLWithString:@"http://restkit.org/"]];
     [router.routeSet addRoute:[RKRoute routeWithName:@"user_bookmarks" pathPattern:@"/users/:userID/bookmarks" method:RKRequestMethodGET]];
     RKTestUser *user = [RKTestUser new];
-    user.userID = [NSNumber numberWithInteger:12345];
+    user.userID = @12345;
     NSURL *URL = [router URLForRouteNamed:@"user_bookmarks" method:nil object:user];
     assertThat(URL.path, is(equalTo(@"/users/12345/bookmarks")));
 }

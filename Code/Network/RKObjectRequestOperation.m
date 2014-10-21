@@ -49,7 +49,7 @@ static NSString *RKLogTruncateString(NSString *string)
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSDictionary *envVars = [[NSProcessInfo processInfo] environment];
-        maxMessageLength = RKLogIsStringBlank([envVars objectForKey:@"RKLogMaxLength"]) ? NSIntegerMax : [[envVars objectForKey:@"RKLogMaxLength"] integerValue];
+        maxMessageLength = RKLogIsStringBlank(envVars[@"RKLogMaxLength"]) ? NSIntegerMax : [envVars[@"RKLogMaxLength"] integerValue];
     });
     
     return ([string length] <= maxMessageLength)
@@ -197,8 +197,8 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
     RKHTTPRequestOperation *HTTPRequestOperation = objectRequestOperation.HTTPRequestOperation;
     NSTimeInterval objectRequestExecutionDuration = [[NSDate date] timeIntervalSinceDate:objc_getAssociatedObject(objectRequestOperation, RKOperationStartDate)];
     NSTimeInterval httpRequestExecutionDuration = [objc_getAssociatedObject(HTTPRequestOperation, RKOperationFinishDate) timeIntervalSinceDate:objc_getAssociatedObject(HTTPRequestOperation, RKOperationStartDate)];
-    NSDate *mappingDidStartTime = [notification.userInfo objectForKey:RKObjectRequestOperationMappingDidFinishUserInfoKey];
-    NSTimeInterval mappingDuration = [mappingDidStartTime isEqual:[NSNull null]] ? 0.0 : [mappingDidStartTime timeIntervalSinceDate:[notification.userInfo objectForKey:RKObjectRequestOperationMappingDidStartUserInfoKey]];
+    NSDate *mappingDidStartTime = (notification.userInfo)[RKObjectRequestOperationMappingDidFinishUserInfoKey];
+    NSTimeInterval mappingDuration = [mappingDidStartTime isEqual:[NSNull null]] ? 0.0 : [mappingDidStartTime timeIntervalSinceDate:(notification.userInfo)[RKObjectRequestOperationMappingDidStartUserInfoKey]];
     
     NSString *statusCodeString = RKStringFromStatusCode([HTTPRequestOperation.response statusCode]);
     NSString *statusCodeDescription = statusCodeString ? [NSString stringWithFormat:@" %@ ", statusCodeString] : @" ";
@@ -339,7 +339,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 }
 
 // Designated initializer
-- (id)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors
+- (instancetype)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors
 {
     NSParameterAssert(requestOperation);
     NSParameterAssert(responseDescriptors);
@@ -378,7 +378,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     return self;
 }
 
-- (id)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
+- (instancetype)initWithRequest:(NSURLRequest *)request responseDescriptors:(NSArray *)responseDescriptors
 {
     NSParameterAssert(request);
     NSParameterAssert(responseDescriptors);    
@@ -531,7 +531,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
                     // corresponding to the cache entry completed successfully, and we can reliably skip mapping if a subsequent request results
                     // in the use of this cachedResponse.
                     NSMutableDictionary *userInfo = cachedResponse.userInfo ? [cachedResponse.userInfo mutableCopy] : [NSMutableDictionary dictionary];
-                    [userInfo setObject:@YES forKey:RKResponseHasBeenMappedCacheUserInfoKey];
+                    userInfo[RKResponseHasBeenMappedCacheUserInfoKey] = @YES;
                     NSCachedURLResponse *newCachedResponse = [[NSCachedURLResponse alloc] initWithResponse:cachedResponse.response data:cachedResponse.rkData userInfo:userInfo storagePolicy:cachedResponse.storagePolicy];
                     [[NSURLCache sharedURLCache] storeCachedResponse:newCachedResponse forRequest:weakSelf.HTTPRequestOperation.request];
                 }
