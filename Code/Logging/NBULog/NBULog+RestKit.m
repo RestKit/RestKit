@@ -25,8 +25,8 @@
 
 #define MAX_MODULES 10
 
-static int _restKitLogLevel;
-static int _restKitModulesLogLevel[MAX_MODULES];
+static DDLogLevel _restKitLogLevel;
+static DDLogLevel _restKitModulesLogLevel[MAX_MODULES];
 
 @implementation NBULog (RestKit)
 
@@ -48,23 +48,23 @@ static int _restKitModulesLogLevel[MAX_MODULES];
                                                                                        @(RESTKIT_MODULE_TESTING)            : @"Testing",
                                                                                        @(RESTKIT_MODULE_UI)                 : @"UI"}
                                                                    contextLevelBlock:^{ return [NBULog restKitLogLevel]; }
-                                                                setContextLevelBlock:^(int level) { [NBULog setRestKitLogLevel:level]; }
+                                                                setContextLevelBlock:^(DDLogLevel level) { [NBULog setRestKitLogLevel:level]; }
                                                           contextLevelForModuleBlock:^(int module) { return [NBULog restKitLogLevelForModule:module]; }
-                                                       setContextLevelForModuleBlock:^(int module, int level) { [NBULog setRestKitLogLevel:level
+                                                       setContextLevelForModuleBlock:^(int module, DDLogLevel level) { [NBULog setRestKitLogLevel:level
                                                                                                                                  forModule:module]; }]];
 }
 
-+ (int)restKitLogLevel
++ (DDLogLevel)restKitLogLevel
 {
     return _restKitLogLevel;
 }
 
-+ (void)setRestKitLogLevel:(int)LOG_LEVEL_XXX
++ (void)setRestKitLogLevel:(DDLogLevel)logLevel
 {
 #ifdef DEBUG
-    _restKitLogLevel = LOG_LEVEL_XXX == LOG_LEVEL_DEFAULT ? LOG_LEVEL_INFO : LOG_LEVEL_XXX;
+    _restKitLogLevel = logLevel == LOG_LEVEL_DEFAULT ? DDLogLevelInfo : logLevel;
 #else
-    _restKitLogLevel = LOG_LEVEL_XXX == LOG_LEVEL_DEFAULT ? LOG_LEVEL_WARN : LOG_LEVEL_XXX;
+    _restKitLogLevel = logLevel == LOG_LEVEL_DEFAULT ? DDLogLevelWarning : logLevel;
 #endif
     
     // Reset all modules' levels
@@ -75,7 +75,7 @@ static int _restKitModulesLogLevel[MAX_MODULES];
     }
 }
 
-+ (int)restKitLogLevelForModule:(int)RESTKIT_MODULE_XXX
++ (DDLogLevel)restKitLogLevelForModule:(int)RESTKIT_MODULE_XXX
 {
     int logLevel = _restKitModulesLogLevel[RESTKIT_MODULE_XXX];
     
@@ -83,10 +83,10 @@ static int _restKitModulesLogLevel[MAX_MODULES];
     return logLevel == LOG_LEVEL_DEFAULT ? _restKitLogLevel : logLevel;
 }
 
-+ (void)setRestKitLogLevel:(int)LOG_LEVEL_XXX
++ (void)setRestKitLogLevel:(DDLogLevel)logLevel
                  forModule:(int)RESTKIT_MODULE_XXX
 {
-    _restKitModulesLogLevel[RESTKIT_MODULE_XXX] = LOG_LEVEL_XXX;
+    _restKitModulesLogLevel[RESTKIT_MODULE_XXX] = logLevel;
 }
 
 @end

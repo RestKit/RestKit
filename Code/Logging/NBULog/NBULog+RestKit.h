@@ -58,21 +58,21 @@
 /// @name Adjusting RestKit Log Levels
 
 /// The current RestKit log level.
-+ (int)restKitLogLevel;
++ (DDLogLevel)restKitLogLevel;
 
 /// Dynamically set the RestKit log level for all modules at once.
-/// @param LOG_LEVEL_XXX The desired log level.
+/// @param logLevel The desired log level.
 /// @note Setting this value clears all modules' levels.
-+ (void)setRestKitLogLevel:(int)LOG_LEVEL_XXX;
++ (void)setRestKitLogLevel:(DDLogLevel)logLevel;
 
 /// Get the current RestKit log level for a given module.
 /// @param RESTKIT_MODULE_XXX The target module.
-+ (int)restKitLogLevelForModule:(int)RESTKIT_MODULE_XXX;
++ (DDLogLevel)restKitLogLevelForModule:(int)RESTKIT_MODULE_XXX;
 
 /// Dynamically set the RestKit log level for a given module.
-/// @param LOG_LEVEL_XXX The desired log level.
+/// @param logLevel The desired log level.
 /// @param RESTKIT_MODULE_XXX The target module.
-+ (void)setRestKitLogLevel:(int)LOG_LEVEL_XXX
++ (void)setRestKitLogLevel:(DDLogLevel)logLevel
                  forModule:(int)RESTKIT_MODULE_XXX;
 
 @end

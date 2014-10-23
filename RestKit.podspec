@@ -115,7 +115,7 @@ EOS
     end
     sl.subspec 'NBULog' do |sln|
         sln.source_files   = 'Code/Logging.h', 'Code/Logging/NBULog'
-        sln.dependency 'NBULog'
+        sln.dependency 'NBULog', '>= 1.2.0'
     end
   end
   
