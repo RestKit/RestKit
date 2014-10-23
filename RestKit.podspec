@@ -77,7 +77,7 @@ EOS
   s.subspec 'Testing' do |ts|
     ts.source_files = 'Code/Testing.h', 'Code/Testing'
     ts.dependency 'RestKit/Network'
-    ts.dependency 'RestKit/Logging/LibComponentLogging'
+    ts.dependency 'RestKit/Logging'
     ts.prefix_header_contents = <<-EOS
 #import <Availability.h>
 
@@ -121,6 +121,7 @@ EOS
   
   s.subspec 'Support' do |ss|
     ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support'
+    ss.dependency 'RestKit/Logging'
     ss.dependency 'TransitionKit', '2.1.0'
   end
 end
