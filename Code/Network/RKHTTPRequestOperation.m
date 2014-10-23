@@ -19,8 +19,7 @@
 //
 
 #import "RKHTTPRequestOperation.h"
-#import "RKLog.h"
-#import "lcl_RK.h"
+#import "Logging.h"
 #import "RKHTTPUtilities.h"
 #import "RKMIMETypes.h"
 
