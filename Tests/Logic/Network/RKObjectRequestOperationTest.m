@@ -730,6 +730,66 @@
     expect(user.phone).to.equal(@"867-5309");
 }
 
+
+- (void)testCopyingOperationWithSuccessBlock
+{
+	RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+	[userMapping addAttributeMappingsFromDictionary:@{ @"@metadata.phoneNumber": @"phone" }];
+	RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+	
+	RKTestComplexUser *user = [RKTestComplexUser new];
+	user.firstname = @"Blake";
+	user.lastname = @"Watters";
+	user.email = @"blake@restkit.org";
+	
+	NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans" relativeToURL:[RKTestFactory baseURL]]];
+	request.HTTPMethod = @"POST";
+	RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+	
+	__block BOOL invoked = NO;
+	[requestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+		invoked = YES;
+	} failure:nil];
+	[requestOperation start];
+	expect([requestOperation isFinished]).will.beTruthy();
+	expect(invoked).will.beTruthy();
+	
+	RKObjectRequestOperation *copiedOperation = [requestOperation copy];
+	copiedOperation.mappingMetadata = @{ @"phoneNumber": @"867-5309" };
+	copiedOperation.targetObject = user;
+	invoked = NO;
+	[copiedOperation start];
+	[copiedOperation waitUntilFinished];
+	expect(requestOperation.error).to.beNil();
+	expect(requestOperation.mappingResult).notTo.beNil();
+	expect(user.phone).to.equal(@"867-5309");
+	expect(invoked).will.beTruthy();
+}
+
+
+- (void)testCopyingOperationWithFaiureBlock
+{
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/errors.json" relativeToURL:[RKTestFactory baseURL]]];
+	RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ ]];
+	
+	__block NSError *blockError = nil;
+	[requestOperation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
+		blockError = error;
+	}];
+	
+	[requestOperation start];
+	expect([requestOperation isFinished]).will.beTruthy();
+	expect(blockError).willNot.beNil();
+	
+	RKObjectRequestOperation *copiedOperation = [requestOperation copy];
+	blockError = nil;
+	[copiedOperation start];
+	[copiedOperation waitUntilFinished];
+	expect([requestOperation isFinished]).will.beTruthy();
+	expect(blockError).willNot.beNil();
+}
+
+
 #pragma mark -
 
 - (void)testThatCacheEntryIsFlaggedWhenMappingCompletes

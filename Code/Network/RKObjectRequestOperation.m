@@ -295,6 +295,8 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id deserializedResponseBody);
 @property (nonatomic, strong) NSDate *mappingDidStartDate;
 @property (nonatomic, strong) NSDate *mappingDidFinishDate;
+@property (nonatomic, copy) void (^successBlock)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult);
+@property (nonatomic, copy) void (^failureBlock)(RKObjectRequestOperation *operation, NSError *error);
 @end
 
 @implementation RKObjectRequestOperation
@@ -457,6 +459,11 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 // See above setCompletionBlock:
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
+
+    //Keep blocks for copyWithZone
+    self.successBlock = success;
+    self.failureBlock = failure;
+
     self.completionBlock = ^ {
         if ([self isCancelled] && !self.error) {
             self.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:nil];
@@ -570,8 +577,8 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     operation.successCallbackQueue = self.successCallbackQueue;
     operation.failureCallbackQueue = self.failureCallbackQueue;
     operation.willMapDeserializedResponseBlock = self.willMapDeserializedResponseBlock;
-    operation.completionBlock = self.completionBlock;
-    
+    [operation setCompletionBlockWithSuccess:self.successBlock failure:self.failureBlock];
+
     return operation;
 }
 
