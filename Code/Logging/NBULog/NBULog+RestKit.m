@@ -77,7 +77,7 @@ static DDLogLevel _restKitModulesLogLevel[MAX_MODULES];
 
 + (DDLogLevel)restKitLogLevelForModule:(int)RESTKIT_MODULE_XXX
 {
-    int logLevel = _restKitModulesLogLevel[RESTKIT_MODULE_XXX];
+    DDLogLevel logLevel = _restKitModulesLogLevel[RESTKIT_MODULE_XXX];
     
     // Fallback to the default log level if necessary
     return logLevel == LOG_LEVEL_DEFAULT ? _restKitLogLevel : logLevel;
