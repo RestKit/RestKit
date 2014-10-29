@@ -190,7 +190,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (NSArray *)propertyMappings
 {
-    return [NSArray arrayWithArray:_mutablePropertyMappings];
+    return _mutablePropertyMappings;
 }
 
 - (NSDictionary *)propertyMappingsBySourceKeyPath
