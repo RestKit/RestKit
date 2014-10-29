@@ -271,7 +271,7 @@
 /**
  A dictionary of metadata available for mapping in addition to the source object.
  */
-@property (nonatomic, copy) NSDictionary *metadata;
+@property (nonatomic, strong) NSDictionary *metadata;
 
 ///-------------------------------------------
 /// @name Configuring Delegate and Data Source

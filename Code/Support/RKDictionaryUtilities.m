@@ -15,17 +15,18 @@ NSDictionary *RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1,
 
     NSMutableDictionary *mergedDictionary = [dict1 mutableCopy];
 
-    [dict2 enumerateKeysAndObjectsUsingBlock:^(id key2, id obj2, BOOL *stop) {
-        id obj1 = [dict1 valueForKey:key2];
+    for (id key2 in dict2) {
+        id obj2 = [dict2 objectForKey:key2];
+        id obj1 = [dict1 objectForKey:key2];
         if ([obj1 isKindOfClass:[NSDictionary class]] && [obj2 isKindOfClass:[NSDictionary class]]) {
             NSDictionary *mergedSubdict = RKDictionaryByMergingDictionaryWithDictionary(obj1, obj2);
-            [mergedDictionary setValue:mergedSubdict forKey:key2];
+            [mergedDictionary setObject:mergedSubdict forKey:key2];
         } else {
-            [mergedDictionary setValue:obj2 forKey:key2];
+            [mergedDictionary setObject:obj2 forKey:key2];
         }
-    }];
+    }
     
-    return [mergedDictionary copy];
+    return mergedDictionary;
 }
 
 NSDictionary *RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(NSDictionary *dictionary)
