@@ -152,7 +152,9 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 - (id)valueForKey:(NSString *)key
 {
-    if ([key isEqualToString:RKMetadataKey]) {
+    if ([key characterAtIndex:0] != '@') {
+        return [self.object valueForKey:key];
+    } else if ([key isEqualToString:RKMetadataKey]) {
         return self.metadata;
     } else if ([key isEqualToString:RKParentKey]) {
         return self.parentObject;
@@ -170,7 +172,9 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
  */
 - (id)valueForKeyPath:(NSString *)keyPath
 {
-    if ([keyPath hasPrefix:RKMetadataKeyPathPrefix]) {
+    if ([keyPath characterAtIndex:0] != '@') {
+        return [self.object valueForKeyPath:keyPath];
+    } else if ([keyPath hasPrefix:RKMetadataKeyPathPrefix]) {
         NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
         return [self.metadata valueForKeyPath:metadataKeyPath];
     } else if ([keyPath hasPrefix:RKParentKeyPathPrefix]) {
