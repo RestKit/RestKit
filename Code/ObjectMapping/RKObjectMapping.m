@@ -104,7 +104,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 @interface RKObjectMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
-@property (nonatomic, strong) NSMutableArray *mutablePropertyMappings;
+@property (nonatomic, copy, readwrite) NSArray *propertyMappings;
 
 @property (nonatomic, weak, readonly) NSArray *mappedKeyPaths;
 @property (nonatomic, copy) RKSourceToDesinationKeyTransformationBlock sourceToDestinationKeyTransformationBlock;
@@ -148,7 +148,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     self = [super init];
     if (self) {
         self.objectClass = objectClass;
-        self.mutablePropertyMappings = [NSMutableArray new];
+        self.propertyMappings = [NSArray new];
         self.assignsDefaultValueForMissingAttributes = NO;
         self.assignsNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
@@ -174,7 +174,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     RKObjectMapping *copy = [[[self class] allocWithZone:zone] initWithClass:self.objectClass];
     [copy copyPropertiesFromMapping:self];
-    copy.mutablePropertyMappings = [NSMutableArray new];
 
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
         [copy addPropertyMapping:[propertyMapping copy]];
@@ -186,11 +185,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 + (void)setDefaultSourceToDestinationKeyTransformationBlock:(RKSourceToDesinationKeyTransformationBlock)block
 {
     defaultSourceToDestinationKeyTransformationBlock = block;
-}
-
-- (NSArray *)propertyMappings
-{
-    return _mutablePropertyMappings;
 }
 
 - (NSDictionary *)propertyMappingsBySourceKeyPath
@@ -248,10 +242,10 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     NSAssert1([[self mappedKeyPaths] containsObject:propertyMapping.destinationKeyPath] == NO,
               @"Unable to add mapping for keyPath %@, one already exists...", propertyMapping.destinationKeyPath);
-    NSAssert(self.mutablePropertyMappings, @"self.mutablePropertyMappings is nil");
+    NSAssert(self.propertyMappings, @"self.propertyMappings is nil");
     NSAssert(propertyMapping.objectMapping == nil, @"Cannot add a property mapping object that has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the mapping: `[propertyMapping copy]`");
     propertyMapping.objectMapping = self;
-    [self.mutablePropertyMappings addObject:propertyMapping];
+    self.propertyMappings = [self.propertyMappings arrayByAddingObject:propertyMapping];
 }
 
 - (void)addPropertyMappingsFromArray:(NSArray *)arrayOfPropertyMappings
@@ -341,9 +335,11 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (void)removePropertyMapping:(RKPropertyMapping *)attributeOrRelationshipMapping
 {
-    if ([self.mutablePropertyMappings containsObject:attributeOrRelationshipMapping]) {
+    if ([self.propertyMappings containsObject:attributeOrRelationshipMapping]) {
         attributeOrRelationshipMapping.objectMapping = nil;
-        [self.mutablePropertyMappings removeObject:attributeOrRelationshipMapping];
+        NSMutableArray *mappings = [[NSMutableArray alloc] initWithArray:self.propertyMappings];
+        [mappings removeObject:attributeOrRelationshipMapping];
+        self.propertyMappings = [mappings copy];
     }
 }
 

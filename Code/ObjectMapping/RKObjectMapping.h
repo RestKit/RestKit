@@ -105,7 +105,7 @@
 /**
  The aggregate collection of attribute and relationship mappings within this object mapping.
  */
-@property (nonatomic, strong, readonly) NSArray *propertyMappings;
+@property (nonatomic, copy, readonly) NSArray *propertyMappings;
 
 /**
  Returns the property mappings of the receiver in a dictionary, where the keys are the source key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
