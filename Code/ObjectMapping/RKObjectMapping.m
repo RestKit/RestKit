@@ -337,7 +337,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     if ([self.propertyMappings containsObject:attributeOrRelationshipMapping]) {
         attributeOrRelationshipMapping.objectMapping = nil;
-        NSMutableArray *mappings = [[NSMutableArray alloc] initWithArray:self.propertyMappings];
+        NSMutableArray *mappings = [[NSMutableArray alloc] initWithArray:self.propertyMappings]; //alloc/init avoids autorelease
         [mappings removeObject:attributeOrRelationshipMapping];
         self.propertyMappings = [mappings copy];
     }
