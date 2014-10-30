@@ -398,6 +398,8 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (Class)classForKeyPath:(NSString *)keyPath
 {
+    if (keyPath == nil) return self.objectClass;
+
     RKPropertyInspector *inspector = [RKPropertyInspector sharedInspector];
 
     if ([keyPath rangeOfString:@"." options:NSLiteralSearch].length == 0) {
