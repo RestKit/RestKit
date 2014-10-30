@@ -222,7 +222,7 @@
  1. `@"root"` - Returns the root node of the representation being mapped. When a large JSON document is being mapped by an instance of `RKMapperOperation` this will point to the parsed JSON document that was used to initialize the operation.
  1. `@"parent"` - Returns the direct parent node of the `sourceObject` being mapped or `nil` if the `sourceObject` is itself a root node.
  */
-@interface RKMappingOperation : NSOperation
+@interface RKMappingOperation : NSObject
 
 ///---------------------------------------
 /// @name Initializing a Mapping Operation
@@ -316,6 +316,13 @@
  @return A Boolean value indicating if the mapping operation was successful.
  */
 - (BOOL)performMapping:(NSError **)error;
+
+///-------------------------
+/// @NSOperation type methods
+///-------------------------
+- (void)start;
+- (BOOL)isCancelled;
+- (void)cancel;
 
 @end
 
