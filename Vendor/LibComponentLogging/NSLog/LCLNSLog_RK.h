@@ -23,6 +23,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+@protocol RKLogging
+
++ (void)logWithComponent:(uint32_t /*_RKlcl_component_t*/)component
+                   level:(uint32_t /*_RKlcl_level_t*/)level
+                    file:(const char *)file
+                    line:(uint32_t)line
+                function:(const char *)function
+                  format:(NSString *)format, ... NS_FORMAT_FUNCTION(6, 7);
+
+@end
+
+/* Global variable.  Can be reassigned at runtime to switch logging implementation. */
+extern Class <RKLogging> RKLoggingClass;
+
+
+@interface RKNSLogLogger : NSObject <RKLogging>
+@end
 
 //
 // RKLCLNSLog
@@ -88,12 +105,12 @@
 #else
 #define _RKlcl_logger(_component, _level, _format, ...) {                        \
     _RKlcl_logger_autoreleasepool_begin                                          \
-    NSLog(@"%s %s:%@:%d " _format,                                             \
-          _RKlcl_level_header_1[_level],                                         \
-          _RKlcl_component_header[_component],                                   \
-          [@__FILE__ lastPathComponent],                                       \
-          __LINE__,                                                            \
-          ## __VA_ARGS__);                                                     \
+    [RKLoggingClass logWithComponent:_component                                  \
+                               level:_level                                      \
+                                file:__FILE__                                    \
+                                line:__LINE__                                    \
+                            function:__PRETTY_FUNCTION__                         \
+                              format:_format, ## __VA_ARGS__];                   \
     _RKlcl_logger_autoreleasepool_end                                            \
 }
 #endif
