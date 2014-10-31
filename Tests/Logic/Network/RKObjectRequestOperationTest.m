@@ -122,7 +122,7 @@
     
     // iOS8 (and presumably 10.10) returns NSURLErrorUnsupportedURL which means the HTTP NSURLProtocol does not accept it
     NSArray *validErrorCodes = @[ @(NSURLErrorBadURL), @(NSURLErrorUnsupportedURL) ];
-    assertThat(validErrorCodes, hasItem(@([requestOperation.error code])));
+    expect(validErrorCodes).to.contain(requestOperation.error.code);
 }
 
 #pragma mark - Complex JSON
