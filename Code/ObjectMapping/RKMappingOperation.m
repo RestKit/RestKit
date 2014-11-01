@@ -339,11 +339,12 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         if (!success) {
             self.error = validationError;
             if (validationError) {
-                RKLogError(@"Validation failed while mapping attribute at key path '%@' to value %@. Error: %@", keyPath, *value, [validationError localizedDescription]);
+                RKLogError(@"Validation failed while mapping attribute at key path '%@' to value. Error: %@", keyPath, [validationError localizedDescription]);
                 RKLogValidationError(validationError);
             } else {
-                RKLogWarning(@"Destination object %@ rejected attribute value %@ for keyPath %@. Skipping...", self.destinationObject, *value, keyPath);
+                RKLogWarning(@"Destination object %@ rejected attribute value for keyPath %@. Skipping...", self.destinationObject, keyPath);
             }
+            RKLogDebug(@"(Value for key path '%@': %@)", keyPath, *value);
         }
     }
 
@@ -651,7 +652,8 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     NSMutableArray *relationshipCollection = [NSMutableArray arrayWithCapacity:[value count]];
     if (RKObjectIsCollectionOfCollections(value)) {
         RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
-        RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
+        RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects", relationshipMapping.sourceKeyPath);
+        RKLogDebug(@"(Value at key path '%@': %@)", relationshipMapping.sourceKeyPath, value);
     }
     
     if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
