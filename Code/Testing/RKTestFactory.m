@@ -30,7 +30,6 @@
 #if __has_include("RKCoreData.h")
 #define RKCoreDataIncluded
 #import "RKManagedObjectStore.h"
-#import "RKManagedObjectStore+RKSearchAdditions.h"
 #endif
 #endif
 
@@ -66,7 +65,7 @@
 + (RKTestFactory *)sharedFactory
 {
     static RKTestFactory *sharedFactory = nil;
-    if (! sharedFactory) {
+    if (!sharedFactory) {
         sharedFactory = [RKTestFactory new];
     }
 
@@ -104,7 +103,7 @@
 - (id)sharedObjectFromFactory:(NSString *)factoryName
 {
     id sharedObject = [self.sharedObjectsByFactoryName objectForKey:factoryName];
-    if (! sharedObject) {
+    if (!sharedObject) {
         sharedObject = [self objectFromFactory:factoryName properties:nil];
         [self.sharedObjectsByFactoryName setObject:sharedObject forKey:factoryName];
     }
@@ -189,7 +188,7 @@
     __block id managedObject;
     __block NSError *error;
     __block BOOL success;
-    if (! managedObjectContext) managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
+    if (!managedObjectContext) managedObjectContext = [[RKTestFactory managedObjectStore] mainQueueManagedObjectContext];
     [managedObjectContext performBlockAndWait:^{
         managedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:managedObjectContext];
         success = [managedObjectContext obtainPermanentIDsForObjects:@[managedObject] error:&error];
@@ -248,7 +247,7 @@
 #ifdef RKCoreDataIncluded
     [RKManagedObjectStore setDefaultStore:nil];
 #endif
-    
+
     // Restore the default MIME Type Serializations in case a test has manipulated the registry
     [[RKMIMETypeSerialization sharedSerialization] addRegistrationsForKnownSerializations];
 
@@ -257,7 +256,7 @@
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
         [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
-    
+
     // Clear the NSURLCache
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
@@ -267,28 +266,33 @@
 + (void)tearDown
 {
     if ([RKTestFactory sharedFactory].tearDownBlock) [RKTestFactory sharedFactory].tearDownBlock();
-    
+
     // Cancel any network operations and clear the cache
     [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    
+
     // Cancel any object mapping in the response mapping queue
     [[RKObjectRequestOperation responseMappingQueue] cancelAllOperations];
 
 #ifdef RKCoreDataIncluded
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
     if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {
         // Search component is optional
         [[RKManagedObjectStore defaultStore] performSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)];
-        
+
         if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(searchIndexer)]) {
             id searchIndexer = [[RKManagedObjectStore defaultStore] valueForKey:@"searchIndexer"];
             [searchIndexer performSelector:@selector(cancelAllIndexingOperations)];
         }
     }
+#pragma clang diagnostic pop
+
 #endif
-    
+
     [[RKTestFactory sharedFactory].sharedObjectsByFactoryName removeAllObjects];
     [RKObjectManager setSharedManager:nil];
 #ifdef RKCoreDataIncluded

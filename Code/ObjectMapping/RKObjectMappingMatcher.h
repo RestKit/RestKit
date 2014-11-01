@@ -14,7 +14,9 @@
 
  ## Key Path Matching
 
- A key path matcher object is initialized with a key path, an expected value to be read from the key path, and an object mapping that is to be applied if the match evaluates to `YES`.  When evaluating the match, the matcher invokes `valueForKeyPath:` on the object being matched and compares the value returned with the `expectedValue` via the `RKObjectIsEqualToObject` function. This provides a flexible, semantic match of the property value.
+ A key path matcher object is initialized with a key path, an expected value to be read from the key path, and an object mapping that is to be applied if the match evaluates to `YES`.  When evaluating the match, the matcher invokes `valueForKeyPath:` on the object being matched and compares the value returned with the `expectedValue` via the `RKObjectIsEqualToObject` function. This provides a flexible, semantic match of the property value. 
+ 
+ Alternatively, a key path matcher object can be initialized with an expected class instead. When evaluating the match, the matcher invokes `valueForKeyPath:` on the object being matched and compares the value returned with the `expectedClass` via the `isSubclassOfClass:` method. This provides a flexible, semantic match of the property value class.
 
  ## Predicate Matching
 
@@ -35,6 +37,16 @@
  @return The receiver, initialized with the given key path, expected value, and object mapping.
  */
 + (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping;
+
+/**
+ Creates and returns a key path matcher object with a given key path, expected class, and an object mapping that applies in the event of a positive match.
+ 
+ @param keyPath The key path to obtain the comparison value from the object being matched via `valueForKeyPath:`.
+ @param expectedClass The Class that is expected to be read from `keyPath` if there is a match.
+ @param objectMapping The object mapping object that applies if the comparison value is equal to the expected value.
+ @return The receiver, initialized with the given key path, expected value, and object mapping.
+ */
++ (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping;
 
 ///--------------------------------------
 /// @name Constructing Predicate Matchers

@@ -45,6 +45,24 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
 
+- (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeClass
+{
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
+    RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
+    [girlMapping addAttributeMappingsFromArray:@[@"name"]];
+    RKObjectMapping *boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+    [boyMapping addAttributeMappingsFromArray:@[@"name"]];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedClass:[NSString class] objectMapping:girlMapping]];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
+    assertThat(mapping, is(notNilValue()));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
+    [dynamicMapping removeMatcher:dynamicMapping.matchers.firstObject];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"numeric_type" expectedClass:[NSNumber class] objectMapping:boyMapping]];
+    mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
+    assertThat(mapping, is(notNilValue()));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
+}
+
 - (void)testShouldMatchOnAnNSNumberAttributeValue
 {
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
