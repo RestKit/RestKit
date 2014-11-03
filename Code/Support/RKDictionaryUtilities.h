@@ -24,6 +24,8 @@ extern "C" {
 
 #import <Foundation/Foundation.h>
 
+NSArray *RKInsertInDictionaryList(NSArray *list, NSDictionary *dict3, NSDictionary *dict2, NSDictionary *dict1);
+
 /**
  Reverse merges two dictionary to produce a new dictionary wherein the keys in the second dictionary have taken precedence in instances where keys overlap. The merge is performed recursively such that subdictionaries are reverse merged as well.
  

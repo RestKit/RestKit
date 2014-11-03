@@ -2673,8 +2673,7 @@
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.HTTP.request.URL": @"website" }];
     RKTestUser *user = [RKTestUser new];
-    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping];
-    mappingOperation.metadata = metadata;
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping metadata:@[metadata]];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     mappingOperation.dataSource = dataSource;
     [mappingOperation start];
@@ -2690,8 +2689,7 @@
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.HTTP.request.headers.Content-Type": @"emailAddress" }];
     RKTestUser *user = [RKTestUser new];
-    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping];
-    mappingOperation.metadata = metadata;
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping metadata:@[metadata]];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     mappingOperation.dataSource = dataSource;
     [mappingOperation start];

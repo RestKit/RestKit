@@ -52,7 +52,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
 // Duplicating interface from `RKMappingOperation.m`
 @interface RKMappingSourceObject : NSProxy
-- (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSDictionary *)metadata;
+- (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
 @end
 
 @interface RKMapperOperation ()
@@ -228,13 +228,10 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
     RKLogDebug(@"Asked to map source object %@ with mapping %@", mappableObject, mapping);
 
-    // Merge the metadata for the mapping operation
-    NSDictionary *mapperMetadata = RKDictionaryByMergingDictionaryWithDictionary(metadata, @{ @"mapping": @{ @"rootKeyPath": keyPath } });
-    NSDictionary *operationMetadata = RKDictionaryByMergingDictionaryWithDictionary(self.metadata, mapperMetadata);
+    NSArray *metadataList = RKInsertInDictionaryList(nil, self.metadata, metadata, @{ @"mapping": @{ @"rootKeyPath": keyPath } });
 
-    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject mapping:mapping];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject mapping:mapping metadata:metadataList];
     mappingOperation.dataSource = self.mappingOperationDataSource;
-    mappingOperation.metadata = operationMetadata;
     if ([self.delegate respondsToSelector:@selector(mapper:willStartMappingOperation:forKeyPath:)]) {
         [self.delegate mapper:self willStartMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
     }
@@ -293,7 +290,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
         {
             // Ensure that we are working with a dictionary when we call down into the data source
             NSDictionary *representationDictionary = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null]: representation };
-            id mappingSourceObject = [[RKMappingSourceObject alloc] initWithObject:representationDictionary parentObject:nil rootObject:representation metadata:self.metadata];
+            id mappingSourceObject = [[RKMappingSourceObject alloc] initWithObject:representationDictionary parentObject:nil rootObject:representation metadata:self.metadata? @[self.metadata] : nil];
             object = [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:mappingSourceObject withMapping:objectMapping inRelationship:nil];
         }
         return object;

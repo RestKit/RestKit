@@ -81,7 +81,7 @@
 {
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:self.object destinationObject:dictionary mapping:self.mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:self.object destinationObject:dictionary mapping:self.mapping metadata:nil];
     operation.dataSource = dataSource;
     operation.delegate = self;
     [operation start];

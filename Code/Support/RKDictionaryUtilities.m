@@ -8,6 +8,20 @@
 
 #import "RKDictionaryUtilities.h"
 
+NSArray *RKInsertInDictionaryList(NSArray *list, NSDictionary *dict3, NSDictionary *dict2, NSDictionary *dict1)
+{
+    if (dict3 == nil && dict2 == nil && dict1 == nil)
+        return list;
+    NSMutableArray *newArray = [[NSMutableArray alloc] initWithArray:list];
+    if (dict3)
+        [newArray insertObject:dict3 atIndex:0];
+    if (dict2)
+        [newArray insertObject:dict2 atIndex:0];
+    if (dict1)
+        [newArray insertObject:dict1 atIndex:0];
+    return newArray;
+}
+
 NSDictionary *RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2)
 {
     if (! dict1) return dict2;

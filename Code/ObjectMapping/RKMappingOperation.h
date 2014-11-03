@@ -238,6 +238,8 @@
  */
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping;
 
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping metadata:(NSArray *)metadataList;
+
 ///--------------------------------------
 /// @name Accessing Mapping Configuration
 ///--------------------------------------
@@ -271,7 +273,7 @@
 /**
  A dictionary of metadata available for mapping in addition to the source object.
  */
-@property (nonatomic, copy) NSDictionary *metadata;
+@property (nonatomic, strong, readonly) NSArray *metadataList;
 
 ///-------------------------------------------
 /// @name Configuring Delegate and Data Source
