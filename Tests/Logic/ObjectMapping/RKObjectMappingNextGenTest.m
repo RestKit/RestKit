@@ -738,6 +738,9 @@
     NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"} ] };
     RKTestUser *user = [RKTestUser new];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    OCMockObject *mockDataSource = [OCMockObject partialMockForObject:dataSource];
+    BOOL yesVal = YES;
+    [[[mockDataSource stub] andReturnValue:OCMOCK_VALUE(yesVal)] mappingOperationShouldCollectMappingInfo:OCMOCK_ANY];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:user mapping:mapping];
     mappingOperation.dataSource = dataSource;
     [mappingOperation start];
@@ -760,6 +763,9 @@
     NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"}, @{ @"name": @"Dan Gellert" } ] };
     RKTestUser *user = [RKTestUser new];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    OCMockObject *mockDataSource = [OCMockObject partialMockForObject:dataSource];
+    BOOL yesVal = YES;
+    [[[mockDataSource stub] andReturnValue:OCMOCK_VALUE(yesVal)] mappingOperationShouldCollectMappingInfo:OCMOCK_ANY];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:user mapping:mapping];
     mappingOperation.dataSource = dataSource;
     [mappingOperation start];
@@ -781,6 +787,9 @@
     NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"}, @{ @"name": @"Dan Gellert" } ] };
     RKTestUser *user = [RKTestUser new];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    OCMockObject *mockDataSource = [OCMockObject partialMockForObject:dataSource];
+    BOOL yesVal = YES;
+    [[[mockDataSource stub] andReturnValue:OCMOCK_VALUE(yesVal)] mappingOperationShouldCollectMappingInfo:OCMOCK_ANY];
     RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: mapping }];
     mapperOperation.targetObject = user;
     mapperOperation.mappingOperationDataSource = dataSource;

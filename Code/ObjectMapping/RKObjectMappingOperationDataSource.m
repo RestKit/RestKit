@@ -34,4 +34,9 @@
     return [mapping.objectClass new];
 }
 
+- (BOOL)mappingOperationShouldCollectMappingInfo:(RKMappingOperation *)mappingOperation
+{
+    return NO;
+}
+
 @end

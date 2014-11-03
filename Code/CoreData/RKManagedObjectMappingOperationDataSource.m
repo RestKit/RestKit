@@ -483,4 +483,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
 }
 
+- (BOOL)mappingOperationShouldCollectMappingInfo:(RKMappingOperation *)mappingOperation
+{
+    return YES;
+}
+
 @end
