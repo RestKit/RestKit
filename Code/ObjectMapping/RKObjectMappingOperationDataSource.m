@@ -29,4 +29,9 @@
     return [mapping.objectClass new];
 }
 
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping
+{
+    return [mapping.objectClass new];
+}
+
 @end

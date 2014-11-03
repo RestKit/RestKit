@@ -323,10 +323,21 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         concreteMapping = (RKObjectMapping *)mapping;
     }
     
-    NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
-    NSDictionary *metadata = RKDictionaryByMergingDictionaryWithDictionary(self.metadata, @{ @"mapping": @{ @"parentObject": (self.destinationObject ?: [NSNull null]) } });
-    RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation parentObject:parentRepresentation rootObject:self.rootSourceObject metadata:metadata];
-    return [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
+    id destinationObject = nil;
+    if ([self.dataSource respondsToSelector:@selector(mappingOperation:targetObjectForMapping:inRelationship:)])
+    {
+        destinationObject = [self.dataSource mappingOperation:self targetObjectForMapping:concreteMapping inRelationship:relationshipMapping];
+    }
+    
+    if (destinationObject == nil)
+    {
+        NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
+        NSDictionary *metadata = RKDictionaryByMergingDictionaryWithDictionary(self.metadata, @{ @"mapping": @{ @"parentObject": (self.destinationObject ?: [NSNull null]) } });
+        RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation parentObject:parentRepresentation rootObject:self.rootSourceObject metadata:metadata];
+        destinationObject = [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
+    }
+
+    return destinationObject;
 }
 
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString *)keyPath
