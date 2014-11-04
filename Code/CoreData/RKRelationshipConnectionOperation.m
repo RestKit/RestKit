@@ -22,7 +22,7 @@
 #import "RKRelationshipConnectionOperation.h"
 #import "RKConnectionDescription.h"
 #import "RKEntityMapping.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKManagedObjectCaching.h"
 #import "RKObjectMappingMatcher.h"
 #import "RKErrors.h"

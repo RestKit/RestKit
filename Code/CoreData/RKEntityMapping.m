@@ -22,7 +22,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKObjectMappingMatcher.h"
 #import "RKPropertyInspector+CoreData.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKRelationshipMapping.h"
 #import "RKObjectUtilities.h"
 

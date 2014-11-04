@@ -19,7 +19,7 @@
 //
 
 #import "RKObjectMappingOperationDataSource.h"
-#import "RKLog.h"
+#import "Logging.h"
 #import "RKResponseDescriptor.h"
 #import "RKPathMatcher.h"
 #import "RKHTTPUtilities.h"
