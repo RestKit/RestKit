@@ -16,13 +16,6 @@ Pod::Spec.new do |s|
   # Exclude optional Search and Testing modules
   s.default_subspec = 'Core'
   
-  # Add Core Data to the PCH if the Core Data subspec is imported. This enables conditional compilation to kick in.
-  s.prefix_header_contents = <<-EOS
-#ifdef COCOAPODS_POD_AVAILABLE_RestKit_CoreData
-    #import <CoreData/CoreData.h>
-#endif
-EOS
-
   # Preserve the layout of headers in the Code directory
   s.header_mappings_dir = 'Code'
 
@@ -71,6 +64,11 @@ EOS
     cdos.source_files = 'Code/CoreData.h', 'Code/CoreData'
     cdos.frameworks   = 'CoreData'
     cdos.dependency 'RestKit/ObjectMapping'
+
+    # Add Core Data to the PCH if the Core Data subspec is imported. This enables conditional compilation to kick in.
+    cdos.prefix_header_contents = <<-EOS
+#import <CoreData/CoreData.h>
+EOS
   end
   
   s.subspec 'Testing' do |ts|
