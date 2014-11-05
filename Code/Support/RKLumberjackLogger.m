@@ -8,8 +8,6 @@
 
 #if __has_include("DDLog.h")
 #import "RKLumberjackLogger.h"
-#import "lcl_RK.h"
-#import "RKLog.h"
 #import "DDLog.h"
 
 @implementation RKLumberjackLogger
@@ -62,7 +60,7 @@
 
 + (void)logWithComponent:(_RKlcl_component_t)component
                    level:(_RKlcl_level_t)level
-                    file:(const char *)path
+                    path:(const char *)path
                     line:(uint32_t)line
                 function:(const char *)function
                   format:(NSString *)format, ...
@@ -89,17 +87,18 @@
 /* Create a DDRegisteredDynamicLogging class for each RestKit component */
 
 #undef   _RKlcl_component
-#define  _RKlcl_component(_identifier, _header, _name) \
-@interface RKLumberjackLog##_identifier : NSObject <DDRegisteredDynamicLogging> @end \
-@implementation RKLumberjackLog##_identifier \
-+ (int)ddLogLevel { \
-    _RKlcl_level_t level = _RKlcl_component_level[RKlcl_c##_identifier]; \
-    return [RKLumberjackLogger ddLogLevelFromRKLogLevel:level]; \
-} \
-+ (void)ddSetLogLevel:(int)logLevel { \
-    RKLogConfigureByName(_name, [RKLumberjackLogger rkLogLevelFromDDLogLevel:logLevel]); \
-} \
-@end
+#define  _RKlcl_component(_identifier, _header, _name)                                       \
+    @interface RKLumberjackLog##_identifier : NSObject <DDRegisteredDynamicLogging>          \
+    @end                                                                                     \
+    @implementation RKLumberjackLog##_identifier                                             \
+    + (int)ddLogLevel {                                                                      \
+        _RKlcl_level_t level = _RKlcl_component_level[RKlcl_c##_identifier];                 \
+        return [RKLumberjackLogger ddLogLevelFromRKLogLevel:level];                          \
+    }                                                                                        \
+    + (void)ddSetLogLevel:(int)logLevel {                                                    \
+        RKLogConfigureByName(_name, [RKLumberjackLogger rkLogLevelFromDDLogLevel:logLevel]); \
+    }                                                                                        \
+    @end
 
 #include "lcl_config_components_RK.h"
 #undef   _RKlcl_component

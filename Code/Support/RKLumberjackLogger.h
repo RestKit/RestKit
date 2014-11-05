@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+
 #if __has_include("DDLog.h")
-#import "LCLNSLog_RK.h"
+#import "RKLog.h"
 
 @interface RKLumberjackLogger : NSObject <RKLogging>
 @end
