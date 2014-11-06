@@ -95,6 +95,16 @@
 
 - (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation;
 
+/**
+ Asks the data source if the mapping operation should collect `RKMappingInfo` information during the mapping
+ (stored in the `mappingInfo` property).  If not needed, it can be a substantially faster to skip it.  The
+ `mappingInfo` property will be nil if not collected.
+
+ If this method is not implemented by the data source, then the mapping operation defaults to `YES`.
+ 
+ @param mappingOperation The mapping operation that is querying the data source.
+ @return `YES` if the mapping operation should collect mapping information, else `NO`.
+*/
 - (BOOL)mappingOperationShouldCollectMappingInfo:(RKMappingOperation *)mappingOperation;
 
 @end
