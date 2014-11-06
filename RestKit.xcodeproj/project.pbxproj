@@ -107,10 +107,6 @@
 		25160EE31456532C0060A5C5 /* lcl_RK.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EA21456532C0060A5C5 /* lcl_RK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160EE41456532C0060A5C5 /* lcl_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EA31456532C0060A5C5 /* lcl_RK.m */; };
 		25160EE51456532C0060A5C5 /* lcl_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EA31456532C0060A5C5 /* lcl_RK.m */; };
-		25160EF81456532C0060A5C5 /* LCLNSLog_RK.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EB01456532C0060A5C5 /* LCLNSLog_RK.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160EF91456532C0060A5C5 /* LCLNSLog_RK.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EB01456532C0060A5C5 /* LCLNSLog_RK.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160EFA1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */; };
-		25160EFB1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */; };
 		25160F081456532C0060A5C5 /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EBD1456532C0060A5C5 /* SOCKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F091456532C0060A5C5 /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EBD1456532C0060A5C5 /* SOCKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F0A1456532C0060A5C5 /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EBE1456532C0060A5C5 /* SOCKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -605,6 +601,10 @@
 		C0F11CE6190883460054AEA0 /* RKPathMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = C0F11CE2190883380054AEA0 /* RKPathMatcher.m */; };
 		C0F11CE81908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C0F11CE91908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DB1148441A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DB1148451A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DB1148461A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */; };
+		DB1148471A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
 /* End PBXBuildFile section */
 
@@ -721,8 +721,6 @@
 		25160EA21456532C0060A5C5 /* lcl_RK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_RK.h; sourceTree = "<group>"; };
 		25160EA31456532C0060A5C5 /* lcl_RK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lcl_RK.m; sourceTree = "<group>"; };
 		25160EA71456532C0060A5C5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		25160EB01456532C0060A5C5 /* LCLNSLog_RK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LCLNSLog_RK.h; sourceTree = "<group>"; };
-		25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LCLNSLog_RK.m; sourceTree = "<group>"; };
 		25160EBD1456532C0060A5C5 /* SOCKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOCKit.h; sourceTree = "<group>"; };
 		25160EBE1456532C0060A5C5 /* SOCKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOCKit.m; sourceTree = "<group>"; };
 		25160F161456538B0060A5C5 /* libxml2.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
@@ -988,6 +986,8 @@
 		C0F11CE2190883380054AEA0 /* RKPathMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcher.m; sourceTree = "<group>"; };
 		C0F11CE71908C7E60054AEA0 /* RKCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCoreData.h; sourceTree = "<group>"; };
 		D8EFCBE1978F7946E0081FAD /* Pods-osx.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.debug.xcconfig"; path = "Pods/Target Support Files/Pods-osx/Pods-osx.debug.xcconfig"; sourceTree = "<group>"; };
+		DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLumberjackLogger.h; sourceTree = "<group>"; };
+		DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKLumberjackLogger.m; sourceTree = "<group>"; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1251,6 +1251,8 @@
 				25160DBF145650490060A5C5 /* RKDotNetDateFormatter.m */,
 				25160DC1145650490060A5C5 /* RKLog.h */,
 				25160DC2145650490060A5C5 /* RKLog.m */,
+				DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */,
+				DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */,
 				25160DC3145650490060A5C5 /* RKMIMETypes.h */,
 				25160DC4145650490060A5C5 /* RKMIMETypes.m */,
 				25160DC5145650490060A5C5 /* RKSerialization.h */,
@@ -1294,7 +1296,6 @@
 			isa = PBXGroup;
 			children = (
 				25160EA11456532C0060A5C5 /* Core */,
-				25160EAE1456532C0060A5C5 /* NSLog */,
 			);
 			path = LibComponentLogging;
 			sourceTree = "<group>";
@@ -1307,15 +1308,6 @@
 				25160EA71456532C0060A5C5 /* README.md */,
 			);
 			path = Core;
-			sourceTree = "<group>";
-		};
-		25160EAE1456532C0060A5C5 /* NSLog */ = {
-			isa = PBXGroup;
-			children = (
-				25160EB01456532C0060A5C5 /* LCLNSLog_RK.h */,
-				25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */,
-			);
-			path = NSLog;
 			sourceTree = "<group>";
 		};
 		25160EB71456532C0060A5C5 /* SOCKit */ = {
@@ -1792,6 +1784,7 @@
 				252CCE7217E0CA2700B7F0BF /* ISO8601DateFormatterValueTransformer.h in Headers */,
 				25160E0F145650490060A5C5 /* RKAttributeMapping.h in Headers */,
 				25160E16145650490060A5C5 /* RKMapperOperation.h in Headers */,
+				DB1148441A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */,
 				25160E18145650490060A5C5 /* RKMapperOperation_Private.h in Headers */,
 				25160E1A145650490060A5C5 /* RKObjectMapping.h in Headers */,
 				25160E1C145650490060A5C5 /* RKMapping.h in Headers */,
@@ -1809,7 +1802,6 @@
 				25160E4C145650490060A5C5 /* RKMIMETypes.h in Headers */,
 				25160E4E145650490060A5C5 /* RKSerialization.h in Headers */,
 				25160EE21456532C0060A5C5 /* lcl_RK.h in Headers */,
-				25160EF81456532C0060A5C5 /* LCLNSLog_RK.h in Headers */,
 				25160F081456532C0060A5C5 /* SOCKit.h in Headers */,
 				25160E2E145650490060A5C5 /* RestKit.h in Headers */,
 				25B408261491CDDC00F21111 /* RKPathUtilities.h in Headers */,
@@ -1896,7 +1888,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				25160EE31456532C0060A5C5 /* lcl_RK.h in Headers */,
-				25160EF91456532C0060A5C5 /* LCLNSLog_RK.h in Headers */,
 				25160F091456532C0060A5C5 /* SOCKit.h in Headers */,
 				25160F44145655C60060A5C5 /* RKDynamicMapping.h in Headers */,
 				25160F46145655C60060A5C5 /* RKErrorMessage.h in Headers */,
@@ -1904,6 +1895,7 @@
 				252CCE7317E0CA2700B7F0BF /* ISO8601DateFormatterValueTransformer.h in Headers */,
 				25160F51145655C60060A5C5 /* RKMapperOperation.h in Headers */,
 				25160F53145655C60060A5C5 /* RKMapperOperation_Private.h in Headers */,
+				DB1148451A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */,
 				25160F55145655C60060A5C5 /* RKObjectMapping.h in Headers */,
 				25160F57145655C60060A5C5 /* RKMapping.h in Headers */,
 				25160F58145655C60060A5C5 /* RKMappingOperation.h in Headers */,
@@ -2278,6 +2270,7 @@
 				25160DE2145650490060A5C5 /* RKManagedObjectStore.m in Sources */,
 				25160DE6145650490060A5C5 /* RKPropertyInspector+CoreData.m in Sources */,
 				25160E0A145650490060A5C5 /* RKDynamicMapping.m in Sources */,
+				DB1148461A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */,
 				25160E0C145650490060A5C5 /* RKErrorMessage.m in Sources */,
 				25DA35711836741D001A56A0 /* TKTransition.m in Sources */,
 				25160E10145650490060A5C5 /* RKAttributeMapping.m in Sources */,
@@ -2293,7 +2286,6 @@
 				25160E4B145650490060A5C5 /* RKLog.m in Sources */,
 				25160E4D145650490060A5C5 /* RKMIMETypes.m in Sources */,
 				25160EE41456532C0060A5C5 /* lcl_RK.m in Sources */,
-				25160EFA1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */,
 				25160F0A1456532C0060A5C5 /* SOCKit.m in Sources */,
 				25B408281491CDDC00F21111 /* RKPathUtilities.m in Sources */,
 				25B6E95814CF7A1C00B1E881 /* RKErrors.m in Sources */,
@@ -2434,11 +2426,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				25160EE51456532C0060A5C5 /* lcl_RK.m in Sources */,
-				25160EFB1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */,
 				25160F0B1456532C0060A5C5 /* SOCKit.m in Sources */,
 				25160F45145655C60060A5C5 /* RKDynamicMapping.m in Sources */,
 				25160F47145655C60060A5C5 /* RKErrorMessage.m in Sources */,
 				25160F4B145655C60060A5C5 /* RKAttributeMapping.m in Sources */,
+				DB1148471A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */,
 				25160F52145655C60060A5C5 /* RKMapperOperation.m in Sources */,
 				25DA35721836741D001A56A0 /* TKTransition.m in Sources */,
 				25160F56145655C60060A5C5 /* RKObjectMapping.m in Sources */,
