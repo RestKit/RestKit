@@ -152,6 +152,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 - (id)valueForKey:(NSString *)key
 {
+    /* Using firstChar as a small performance enhancement -- one check can avoid several isEqual: calls */
     unichar firstChar = [key length] > 0 ? [key characterAtIndex:0] : 0;
 
     if (firstChar == 's' && [key isEqualToString:RKSelfKey]) {
@@ -174,6 +175,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
  */
 - (id)valueForKeyPath:(NSString *)keyPath
 {
+    /* Using firstChar as a small performance enhancement -- one check can avoid several hasPrefix calls */
     unichar firstChar = [keyPath length] > 0 ? [keyPath characterAtIndex:0] : 0;
 
     if (firstChar == 's' && [keyPath hasPrefix:RKSelfKeyPathPrefix]) {
