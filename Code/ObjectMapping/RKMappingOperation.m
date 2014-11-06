@@ -271,7 +271,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 @property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping; // The concrete mapping
 @property (nonatomic, strong) NSArray *nestedAttributeMappings;
 @property (nonatomic, strong) RKMappingInfo *mappingInfo;
-@property (nonatomic) BOOL cancelled;
+@property (nonatomic, getter=isCancelled) BOOL cancelled;
 @end
 
 @implementation RKMappingOperation
@@ -855,14 +855,9 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     }
 }
 
-- (BOOL)isCancelled
-{
-    return _cancelled;
-}
-
 - (void)cancel
 {
-    _cancelled = YES;
+    self.cancelled = YES;
     RKLogDebug(@"Mapping operation cancelled: %@", self);
 }
 
