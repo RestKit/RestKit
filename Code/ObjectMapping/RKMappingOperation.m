@@ -749,7 +749,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
             }
             
             if (! objectMapping) continue; // Mapping declined
-            NSArray *propertyKeyPaths = [relationshipMapping valueForKeyPath:@"mapping.propertyMappings.sourceKeyPath"];
+            NSArray *propertyKeyPaths = [objectMapping valueForKeyPath:@"propertyMappings.sourceKeyPath"];
             if (! RKObjectContainsValueForKeyPaths(value, propertyKeyPaths)) {
                 continue;
             }
