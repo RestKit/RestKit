@@ -266,6 +266,11 @@
 @property (nonatomic, strong, readonly) id destinationObject;
 
 /**
+ Property which is `YES` when the destinationObject was provided from the data source, and `NO` when the destination object was provided to the operation.
+ */
+@property (nonatomic, readonly) BOOL newDestinationObject;
+
+/**
  The mapping defining how values contained in the source object should be transformed to the destination object via key-value coding.
 
  Will either be an instance of `RKObjectMapping` or `RKDynamicMapping`.
