@@ -216,6 +216,15 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationship
+{
+    if (! [mapping isKindOfClass:[RKEntityMapping class]]) {
+        return [mapping.objectClass new];
+    }
+
+    return nil;
+}
+
 - (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForRepresentation:(NSDictionary *)representation withMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationship
 {
     NSAssert(representation, @"Mappable data cannot be nil");

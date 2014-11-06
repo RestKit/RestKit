@@ -281,10 +281,19 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     }
 
     if (objectMapping) {
-        // Ensure that we are working with a dictionary when we call down into the data source
-        NSDictionary *representationDictionary = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null]: representation };
-        id mappingSourceObject = [[RKMappingSourceObject alloc] initWithObject:representationDictionary parentObject:nil rootObject:representation metadata:self.metadata];
-        return [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:mappingSourceObject withMapping:objectMapping inRelationship:nil];
+        id object = nil;
+        if ([self.mappingOperationDataSource respondsToSelector:@selector(mappingOperation:targetObjectForMapping:inRelationship:)])
+        {
+            object = [self.mappingOperationDataSource mappingOperation:nil targetObjectForMapping:objectMapping inRelationship:nil];
+        }
+        if (object == nil)
+        {
+            // Ensure that we are working with a dictionary when we call down into the data source
+            NSDictionary *representationDictionary = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null]: representation };
+            id mappingSourceObject = [[RKMappingSourceObject alloc] initWithObject:representationDictionary parentObject:nil rootObject:representation metadata:self.metadata];
+            object = [self.mappingOperationDataSource mappingOperation:nil targetObjectForRepresentation:mappingSourceObject withMapping:objectMapping inRelationship:nil];
+        }
+        return object;
     }
 
     return nil;
