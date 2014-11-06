@@ -18,10 +18,36 @@
 //  limitations under the License.
 //
 
-// NSLog
+//
+// Integration with LibComponentLogging Core.
+//
 
-#ifdef RKLOG_USE_NSLOGGER
-#import "LCLNSLogger_RK.h"
-#else
-#import "LCLNSLog_RK.h"
+// ARC/non-ARC autorelease pool
+#define _RKlcl_logger_autoreleasepool_arc 0
+#if defined(__has_feature)
+#   if __has_feature(objc_arc)
+#   undef  _RKlcl_logger_autoreleasepool_arc
+#   define _RKlcl_logger_autoreleasepool_arc 1
+#   endif
 #endif
+
+#if _RKlcl_logger_autoreleasepool_arc
+  #define _RKlcl_logger_autoreleasepool_begin  @autoreleasepool {
+  #define _RKlcl_logger_autoreleasepool_end    }
+#else
+  #define _RKlcl_logger_autoreleasepool_begin  NSAutoreleasePool *_RKlcl_logpool = [[NSAutoreleasePool alloc] init];
+  #define _RKlcl_logger_autoreleasepool_end    [_RKlcl_logpool release];
+#endif
+
+
+#define _RKlcl_logger(_component, _level, _format, ...) {                        \
+    _RKlcl_logger_autoreleasepool_begin                                          \
+    [RKGetLoggingClass() logWithComponent:_component                             \
+                                    level:_level                                 \
+                                     path:__FILE__                               \
+                                     line:__LINE__                               \
+                                 function:__PRETTY_FUNCTION__                    \
+                                   format:_format, ## __VA_ARGS__];              \
+    _RKlcl_logger_autoreleasepool_end                                            \
+}
+
