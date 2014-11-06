@@ -57,7 +57,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
         // NOTE: State transitions are guarded by a lock via start/finish/cancel action methods
         TKState *readyState = [TKState stateWithName:RKOperationStateReady];
-        __weak __typeof(&*self)weakSelf = self;
+        __weak __typeof(self)weakSelf = self;
         [readyState setWillExitStateBlock:^(TKState *state, TKTransition *transition) {
             [weakSelf.operation willChangeValueForKey:@"isReady"];
         }];
@@ -167,7 +167,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
 - (void)setExecutionBlock:(void (^)(void))block
 {
-    __weak __typeof(&*self)weakSelf = self;
+    __weak __typeof(self)weakSelf = self;
     TKState *executingState = [self.stateMachine stateNamed:RKOperationStateExecuting];
     [executingState setDidEnterStateBlock:^(TKState *state, TKTransition *transition) {
         [weakSelf.operation didChangeValueForKey:@"isExecuting"];
@@ -179,7 +179,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
 - (void)setFinalizationBlock:(void (^)(void))block
 {
-    __weak __typeof(&*self)weakSelf = self;
+    __weak __typeof(self)weakSelf = self;
     TKState *finishedState = [self.stateMachine stateNamed:RKOperationStateFinished];
     [finishedState setWillEnterStateBlock:^(TKState *state, TKTransition *transition) {
         [weakSelf performBlockWithLock:^{

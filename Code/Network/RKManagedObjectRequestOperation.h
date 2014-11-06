@@ -19,6 +19,8 @@
 //
 
 #ifdef _COREDATADEFINES_H
+#if __has_include("RKManagedObjectCaching.h")
+
 #import "RKObjectRequestOperation.h"
 #import "RKManagedObjectCaching.h"
 
@@ -52,7 +54,7 @@
 
  ## Fetch Request Blocks and Deleting Orphaned Objects
 
- A common problem when accessing remote resources representing collections of objects is the problem of deletion of remote objects. The `RKManagedObjectRequestOperation` class provides support for the cleanup of such orphaned objects. In order to utilize the functionality, the operation must be able to compare a set of reference objects to the retrieved payload in order to determine which objects exist in the local store, but are no longer being returned by the server. This reference set of objects is built by executing an `NSFetchRequest` that corresponds to the URL being loaded. Configuration of this fetch request is done via an `RKFetchRequestBlock` block object. This block takes a single `NSURL` argument and returns an `NSFetchRequest` objects. An array of these blocks can be provided to the managed object request operation and the array will be searched in reverse order until a non-nil value is returned by a block. Any block that cannot build a fetch request for the given URL is expected to return `nil` to indicate that it does not match the given URL. Processing of the URL is typically performed using an `RKPathMatcher` object against the value returned from the `relativePath` or `relativeString` methods of `NSURL`.
+ A common problem when accessing remote resources representing collections of objects is the problem of deletion of remote objects. The `RKManagedObjectRequestOperation` class provides support for the cleanup of such orphaned objects. In order to utilize the functionality, the operation must be able to compare a set of reference objects to the retrieved payload in order to determine which objects exist in the local store, but are no longer being returned by the server. This reference set of objects is built by executing an `NSFetchRequest` that corresponds to the URL being loaded. Configuration of this fetch request is done via an `RKFetchRequestBlock` block object. This block takes a single `NSURL` argument and returns an `NSFetchRequest` object. An array of these blocks can be provided to the managed object request operation and the array will be searched in reverse order until a non-nil value is returned by a block. Any block that cannot build a fetch request for the given URL is expected to return `nil` to indicate that it does not match the given URL. Processing of the URL is typically performed using an `RKPathMatcher` object against the value returned from the `relativePath` or `relativeString` methods of `NSURL`.
 
  To illustrate this concept, please consider the following real-world example which builds a fetch request for retrieving the Terminals that exist in an Airport:
 
@@ -203,4 +205,5 @@ typedef NSFetchRequest *(^RKFetchRequestBlock)(NSURL *URL);
  */
 NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSURL *URL);
 
+#endif
 #endif

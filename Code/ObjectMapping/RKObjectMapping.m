@@ -135,9 +135,12 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 + (void)initialize
 {
-    // Add an ISO8601DateFormatter to the transformation stack for backwards compatibility
-    RKISO8601DateFormatter *dateFormatter = [RKISO8601DateFormatter defaultISO8601DateFormatter];
-    [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Add an ISO8601DateFormatter to the transformation stack for backwards compatibility
+        RKISO8601DateFormatter *dateFormatter = [RKISO8601DateFormatter defaultISO8601DateFormatter];
+        [[RKValueTransformer defaultValueTransformer] insertValueTransformer:dateFormatter atIndex:0];
+    });
 }
 
 - (id)initWithClass:(Class)objectClass
@@ -164,7 +167,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     self.forceCollectionMapping = mapping.forceCollectionMapping;
     self.performsKeyValueValidation = mapping.performsKeyValueValidation;
     self.valueTransformer = mapping.valueTransformer;
-    self.sourceToDestinationKeyTransformationBlock = self.sourceToDestinationKeyTransformationBlock;
+    self.sourceToDestinationKeyTransformationBlock = mapping.sourceToDestinationKeyTransformationBlock;
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -268,7 +271,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
 {
     for (RKPropertyMapping *mapping in self.propertyMappings) {
-        if ([mapping.sourceKeyPath isEqualToString:sourceKeyPath]) {
+        if (mapping.sourceKeyPath == sourceKeyPath || [mapping.sourceKeyPath isEqualToString:sourceKeyPath]) {
             return mapping;
         }
     }

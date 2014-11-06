@@ -22,11 +22,14 @@
 #import "RKMappingOperation.h"
 #import "SOCKit.h"
 #import "RKLog.h"
-#import "RKPathUtilities.h"
+#import "RKPathMatcher.h"
 #import "RKHTTPUtilities.h"
 
 #ifdef _COREDATADEFINES_H
+#if __has_include("RKCoreData.h")
+#define RKCoreDataIncluded
 #import "RKManagedObjectRequestOperation.h"
+#endif
 #endif
 
 static NSUInteger RKPaginatorDefaultPerPage = 25;
@@ -186,7 +189,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     NSMutableURLRequest *mutableRequest = [self.request mutableCopy];
     mutableRequest.URL = self.URL;
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
     if (self.managedObjectContext) {
         RKHTTPRequestOperation *requestOperation = [[self.HTTPOperationClass alloc] initWithRequest:mutableRequest];
         RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:self.responseDescriptors];

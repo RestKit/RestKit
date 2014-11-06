@@ -1,9 +1,9 @@
 //
-//  RKTestEnvironment.h
+//  RKCoreData.h
 //  RestKit
 //
-//  Created by Blake Watters on 1/15/10.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Created by Samuel E. Giddins on 4/23/14.
+//  Copyright (c) 2014 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,25 +18,9 @@
 //  limitations under the License.
 //
 
-#import <XCTest/XCTest.h>
-#import <OCMock/OCMock.h>
-#import <OCMock/NSNotificationCenter+OCMAdditions.h>
+#ifndef RestKit_RKCoreData_h
+#define RestKit_RKCoreData_h
 
-// If Kiwi has been imported, skip Hamcrest
-#ifndef KW_VERSION
-    #define HC_SHORTHAND
-    #import "OCHamcrest.h"
+#import "CoreData.h"
+
 #endif
-
-#define EXP_SHORTHAND
-#import "Expecta.h"
-
-#import <RestKit/RestKit.h>
-#import <RestKit/Testing.h>
-
-/*
- Base class for RestKit test cases. Provides initialization of testing infrastructure.
- */
-@interface RKTestCase : XCTestCase
-@end
-

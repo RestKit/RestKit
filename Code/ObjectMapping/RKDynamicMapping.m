@@ -95,8 +95,7 @@
 
 - (BOOL)isEqualToMapping:(RKMapping *)otherMapping
 {
-    // Comparison of dynamic mappings is not currently supported
-    return NO;
+    return (self == otherMapping);
 }
 
 @end

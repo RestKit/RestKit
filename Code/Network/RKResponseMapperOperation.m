@@ -29,7 +29,10 @@
 #import "RKDictionaryUtilities.h"
 
 #ifdef _COREDATADEFINES_H
+#if __has_include("RKCoreData.h")
+#define RKCoreDataIncluded
 #import "RKManagedObjectMappingOperationDataSource.h"
+#endif
 #endif
 
 // Set Logging Component
@@ -390,7 +393,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 
 @end
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
 
 static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
 {

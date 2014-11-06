@@ -18,6 +18,10 @@
 //  limitations under the License.
 //
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  MIME Type Constants
  */
@@ -42,3 +46,7 @@ extern NSString * const RKMIMETypeTextXML;
  @return `YES` if the given MIME Type matches any identifier in the set, else `NO`.
  */
 BOOL RKMIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes);
+    
+#ifdef __cplusplus
+}
+#endif

@@ -24,6 +24,7 @@
 #import "RKLog.h"
 #import "RKStringTokenizer.h"
 #import "NSManagedObjectContext+RKAdditions.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -56,7 +57,10 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     NSMutableArray *attributeNames = [NSMutableArray arrayWithCapacity:[attributes count]];
     for (id attributeIdentifier in attributes) {
         NSAttributeDescription *attribute = nil;
-        if ([attributeIdentifier isKindOfClass:[NSString class]]) {
+        if ([attributeIdentifier isKindOfClass:[NSString class]] ||
+            [attributeIdentifier isKindOfClass:[NSArray class]] ||
+            [attributeIdentifier isKindOfClass:[NSSet class]] ||
+            [attributeIdentifier isKindOfClass:[NSNumber class]]) {
             // Look it up by name
             attribute = [[entity attributesByName] objectForKey:attributeIdentifier];
             NSAssert(attribute, @"Invalid attribute identifier given: No attribute with the name '%@' found in the '%@' entity.", attributeIdentifier, entity.name);
@@ -64,11 +68,11 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
             attribute = attributeIdentifier;
         } else {
             @throw [NSException exceptionWithName:NSInvalidArgumentException
-                                           reason:[NSString stringWithFormat:@"Unable to configure search indexing: Invalid attribute identifier of type '%@' given, expected an NSString or NSAttributeDescription. (Value: %@)", [attributeIdentifier class], attributeIdentifier]
+                                           reason:[NSString stringWithFormat:@"Unable to configure search indexing: Invalid attribute identifier of type '%@' given, expected an NSString, NSNumber, NSArray, NSSet or NSAttributeDescription. (Value: %@)", [attributeIdentifier class], attributeIdentifier]
                                          userInfo:nil];
         }
 
-        NSAssert(attribute.attributeType == NSStringAttributeType, @"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, got %ld.", (unsigned long) attribute.attributeType);
+        NSAssert(attribute.attributeType == NSStringAttributeType || attribute.attributeType == NSTransformableAttributeType || (attribute.attributeType >= NSInteger16AttributeType && attribute.attributeType <= NSFloatAttributeType), @"Invalid attribute identifier given: Expected an attribute of type NSStringAttributeType, NSTransformableAttributeType, NSInteger16AttributeType, NSInteger32AttributeType, NSInteger64AttributeType, NSDecimalAttributeType, NSDoubleAttributeType, NSFloatAttributeType got %ld.", (unsigned long) attribute.attributeType);
         [attributeNames addObject:attribute.name];
     }
 
@@ -167,43 +171,54 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
             NSMutableSet *searchWords = [NSMutableSet set];
             for (NSString *searchableAttribute in searchableAttributes) {
                 NSString *attributeValue = [managedObject valueForKey:searchableAttribute];
-                if (attributeValue) {
-                    RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
-                    NSSet *tokens = [searchTokenizer tokenize:attributeValue];
-                    for (NSString *word in tokens) {
-                        if (word && [word length] > 0) {
-                            RKSearchWord *searchWord = nil;
-                            NSError *error = nil;
-                            if ([self.delegate respondsToSelector:@selector(searchIndexer:searchWordForWord:inManagedObjectContext:error:)]) {
-                                // Let our delegate retrieve an existing search word
-                                searchWord = [self.delegate searchIndexer:self searchWordForWord:word inManagedObjectContext:managedObjectContext error:&error];
-                            } else {
-                                // Fall back to vanilla fetch request
-                                fetchRequest.predicate = [predicateTemplate predicateWithSubstitutionVariables:@{ @"SEARCH_WORD" : word }];
-                                NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
-                                searchWord = ([results count] > 0) ? [results objectAtIndex:0] : nil;
-                            }
-                            if (error == nil) {
-                                if (! searchWord) {
-                                    if ([self.delegate respondsToSelector:@selector(searchIndexer:shouldInsertSearchWordForWord:inManagedObjectContext:)]) {
-                                        if (! [self.delegate searchIndexer:self shouldInsertSearchWordForWord:word inManagedObjectContext:managedObjectContext]) {
-                                            continue;
+                id collectionOfStrings = RKObjectIsCollection(attributeValue) ? attributeValue : (attributeValue ? @[attributeValue] : @[]);
+                for (id object in collectionOfStrings) {
+                    if ([object isKindOfClass:[NSString class]]) {
+                        attributeValue = object;
+                    } else if ([object isKindOfClass:[NSNumber class]]) {
+                        attributeValue = [(NSNumber *)object stringValue];
+                    } else {
+                        attributeValue = nil;
+                    }
+                    
+                    if (attributeValue) {
+                        RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
+                        NSSet *tokens = [searchTokenizer tokenize:attributeValue];
+                        for (NSString *word in tokens) {
+                            if (word && [word length] > 0) {
+                                RKSearchWord *searchWord = nil;
+                                NSError *error = nil;
+                                if ([self.delegate respondsToSelector:@selector(searchIndexer:searchWordForWord:inManagedObjectContext:error:)]) {
+                                    // Let our delegate retrieve an existing search word
+                                    searchWord = [self.delegate searchIndexer:self searchWordForWord:word inManagedObjectContext:managedObjectContext error:&error];
+                                } else {
+                                    // Fall back to vanilla fetch request
+                                    fetchRequest.predicate = [predicateTemplate predicateWithSubstitutionVariables:@{ @"SEARCH_WORD" : word }];
+                                    NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                                    searchWord = ([results count] > 0) ? [results objectAtIndex:0] : nil;
+                                }
+                                if (error == nil) {
+                                    if (! searchWord) {
+                                        if ([self.delegate respondsToSelector:@selector(searchIndexer:shouldInsertSearchWordForWord:inManagedObjectContext:)]) {
+                                            if (! [self.delegate searchIndexer:self shouldInsertSearchWordForWord:word inManagedObjectContext:managedObjectContext]) {
+                                                continue;
+                                            }
+                                        }
+                                        searchWord = [NSEntityDescription insertNewObjectForEntityForName:RKSearchWordEntityName inManagedObjectContext:managedObjectContext];
+                                        searchWord.word = word;
+                                        
+                                        if ([self.delegate respondsToSelector:@selector(searchIndexer:didInsertSearchWord:forWord:inManagedObjectContext:)]) {
+                                            [self.delegate searchIndexer:self didInsertSearchWord:searchWord forWord:word inManagedObjectContext:managedObjectContext];
                                         }
                                     }
-                                    searchWord = [NSEntityDescription insertNewObjectForEntityForName:RKSearchWordEntityName inManagedObjectContext:managedObjectContext];
-                                    searchWord.word = word;
                                     
-                                    if ([self.delegate respondsToSelector:@selector(searchIndexer:didInsertSearchWord:forWord:inManagedObjectContext:)]) {
-                                        [self.delegate searchIndexer:self didInsertSearchWord:searchWord forWord:word inManagedObjectContext:managedObjectContext];
-                                    }
+                                    NSAssert([[searchWord managedObjectContext] isEqual:managedObjectContext], @"Serious Core Data error: Expected `NSManagedObject` for the 'RKSearchWord' entity in context %@, but got one in %@", managedObject, [searchWord managedObjectContext]);
+                                    [searchWords addObject:searchWord];
+                                    
+                                    if (progressBlock) progressBlock(managedObject, searchWord, &stop);
+                                } else {
+                                    RKLogError(@"Failed to retrieve search word: %@", error);
                                 }
-
-                                NSAssert([[searchWord managedObjectContext] isEqual:managedObjectContext], @"Serious Core Data error: Expected `NSManagedObject` for the 'RKSearchWord' entity in context %@, but got one in %@", managedObject, [searchWord managedObjectContext]);
-                                [searchWords addObject:searchWord];
-                                                                
-                                if (progressBlock) progressBlock(managedObject, searchWord, &stop);
-                            } else {
-                                RKLogError(@"Failed to retrieve search word: %@", error);
                             }
                         }
                         
@@ -292,7 +307,7 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     
     // Enqueue an operation for each object to index
     NSArray *objectIDsForObjectsToIndex = [objectsToIndex valueForKey:@"objectID"];
-    __weak __typeof(&*self)weakSelf = self;
+    __weak __typeof(self)weakSelf = self;
     __block NSBlockOperation *indexingOperation = [NSBlockOperation blockOperationWithBlock:^{
         if ([indexingOperation isCancelled]) return;
         [weakSelf.indexingContext performBlockAndWait:^{
