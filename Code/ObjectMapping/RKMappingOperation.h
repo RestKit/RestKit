@@ -222,7 +222,7 @@
  1. `@"root"` - Returns the root node of the representation being mapped. When a large JSON document is being mapped by an instance of `RKMapperOperation` this will point to the parsed JSON document that was used to initialize the operation.
  1. `@"parent"` - Returns the direct parent node of the `sourceObject` being mapped or `nil` if the `sourceObject` is itself a root node.
  */
-@interface RKMappingOperation : NSOperation
+@interface RKMappingOperation : NSObject
 
 ///---------------------------------------
 /// @name Initializing a Mapping Operation
@@ -305,12 +305,27 @@
  */
 @property (nonatomic, readonly) RKMappingInfo *mappingInfo;
 
+/**
+ Property to indicate whether this operation has been cancelled or not.  It will be `NO` until `-cancel` is called, after which it will return `YES`.
+ */
+@property (nonatomic, readonly, getter=isCancelled) BOOL cancelled;
+
+/**
+ Cancels the operation, by setting the `cancelled` property to `YES`.  Various steps of the process check the `cancelled` property and will abort when it gets set.
+ */
+- (void)cancel;
+
 ///-------------------------
 /// @name Performing Mapping
 ///-------------------------
 
 /**
- Process all mappable values from the mappable dictionary and assign them to the target object according to the rules expressed in the object mapping definition
+ Process all mappable values from the mappable dictionary and assign them to the target object according to the rules expressed in the object mapping definition.  The error properties need to be checked to see if the operation was successful.
+ */
+- (void)start;
+
+/**
+ Process all mappable values from the mappable dictionary and assign them to the target object according to the rules expressed in the object mapping definition.
 
  @param error A pointer to an `NSError` reference to capture any error that occurs during the mapping. May be `nil`.
  @return A Boolean value indicating if the mapping operation was successful.
