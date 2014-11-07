@@ -106,6 +106,11 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 @property (nonatomic, weak, readwrite) Class objectClass;
 @property (nonatomic, copy, readwrite) NSArray *propertyMappings;
 
+@property (nonatomic, strong) NSArray *relationshipMappings;
+@property (nonatomic, strong) NSArray *attributeMappings;
+@property (nonatomic, strong) NSArray *simpleAttributeMappings;
+@property (nonatomic, strong) NSArray *keyPathAttributeMappings;
+
 @property (nonatomic, weak, readonly) NSArray *mappedKeyPaths;
 @property (nonatomic, copy) RKSourceToDesinationKeyTransformationBlock sourceToDestinationKeyTransformationBlock;
 @end
@@ -216,26 +221,35 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (NSArray *)attributeMappings
 {
-    NSMutableArray *mappings = [NSMutableArray array];
-    for (RKAttributeMapping *mapping in self.propertyMappings) {
-        if ([mapping isMemberOfClass:[RKAttributeMapping class]]) {
-            [mappings addObject:mapping];
-        }
-    }
-
-    return mappings;
+    return _attributeMappings ?: [NSArray array];
 }
 
 - (NSArray *)relationshipMappings
 {
-    NSMutableArray *mappings = [NSMutableArray array];
-    for (RKAttributeMapping *mapping in self.propertyMappings) {
-        if ([mapping isMemberOfClass:[RKRelationshipMapping class]]) {
-            [mappings addObject:mapping];
-        }
-    }
+    return _relationshipMappings ?: [NSArray array];
+}
 
-    return mappings;
+- (NSArray *)simpleAttributeMappings
+{
+    return _simpleAttributeMappings ?: [NSArray array];
+}
+
+- (NSArray *)keyPathAttributeMappings
+{
+    return _keyPathAttributeMappings ?: [NSArray array];
+}
+
+static NSArray *RKAddProperty(NSArray *array, RKPropertyMapping *mapping)
+{
+    return (array)? [array arrayByAddingObject:mapping] : [NSArray arrayWithObject:mapping];
+}
+
+static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
+{
+    if (![array containsObject:mapping]) return array;
+    NSMutableArray *mappings = [[NSMutableArray alloc] initWithArray:array]; //alloc/init avoids autorelease
+    [mappings removeObject:mapping];
+    return [mappings copy];
 }
 
 - (void)addPropertyMapping:(RKPropertyMapping *)propertyMapping
@@ -246,6 +260,20 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     NSAssert(propertyMapping.objectMapping == nil, @"Cannot add a property mapping object that has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the mapping: `[propertyMapping copy]`");
     propertyMapping.objectMapping = self;
     self.propertyMappings = [self.propertyMappings arrayByAddingObject:propertyMapping];
+
+    if ([propertyMapping isMemberOfClass:[RKRelationshipMapping class]]) {
+        self.relationshipMappings = RKAddProperty(self.relationshipMappings, propertyMapping);
+    }
+    else if ([propertyMapping isMemberOfClass:[RKAttributeMapping class]])
+    {
+        self.attributeMappings = RKAddProperty(self.attributeMappings, propertyMapping);
+        if ([propertyMapping.sourceKeyPath rangeOfString:@"." options:NSLiteralSearch].length == 0) {
+            self.simpleAttributeMappings = RKAddProperty(self.simpleAttributeMappings, propertyMapping);
+        }
+        else {
+            self.keyPathAttributeMappings = RKAddProperty(self.keyPathAttributeMappings, propertyMapping);
+        }
+    }
 }
 
 - (void)addPropertyMappingsFromArray:(NSArray *)arrayOfPropertyMappings
@@ -337,9 +365,11 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     if ([self.propertyMappings containsObject:attributeOrRelationshipMapping]) {
         attributeOrRelationshipMapping.objectMapping = nil;
-        NSMutableArray *mappings = [[NSMutableArray alloc] initWithArray:self.propertyMappings]; //alloc/init avoids autorelease
-        [mappings removeObject:attributeOrRelationshipMapping];
-        self.propertyMappings = [mappings copy];
+        self.propertyMappings = RKRemoveProperty(self.propertyMappings, attributeOrRelationshipMapping);
+        self.relationshipMappings = RKRemoveProperty(self.relationshipMappings, attributeOrRelationshipMapping);
+        self.attributeMappings = RKRemoveProperty(self.attributeMappings, attributeOrRelationshipMapping);
+        self.simpleAttributeMappings = RKRemoveProperty(self.simpleAttributeMappings, attributeOrRelationshipMapping);
+        self.keyPathAttributeMappings = RKRemoveProperty(self.keyPathAttributeMappings, attributeOrRelationshipMapping);
     }
 }
 

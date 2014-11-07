@@ -72,7 +72,7 @@ static id RKPrimitiveValueForNilValueOfClass(Class keyValueCodingClass)
     }
 }
 
-// Key comes from: [[self.nestedAttributeSubstitution allKeys] lastObject] AND [[self.nestedAttributeSubstitution allValues] lastObject];
+// Key comes from: nestedAttributeSubstitutionKey AND nestedAttributeSubstitutionValue;
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings);
 NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id value, NSArray *propertyMappings)
 {
@@ -276,10 +276,14 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 @property (nonatomic, strong, readwrite) id parentSourceObject;
 @property (nonatomic, strong, readwrite) id rootSourceObject;
 @property (nonatomic, strong, readwrite) id destinationObject;
-@property (nonatomic, strong) NSDictionary *nestedAttributeSubstitution;
+@property (nonatomic, strong) NSString *nestedAttributeSubstitutionKey;
+@property (nonatomic, strong) id nestedAttributeSubstitutionValue;
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping; // The concrete mapping
 @property (nonatomic, strong) NSArray *nestedAttributeMappings;
+@property (nonatomic, strong) NSArray *simpleAttributeMappings;
+@property (nonatomic, strong) NSArray *keyPathAttributeMappings;
+@property (nonatomic, strong) NSArray *relationshipMappings;
 @property (nonatomic, strong) RKMappingInfo *mappingInfo;
 @property (nonatomic, getter=isCancelled) BOOL cancelled;
 @end
@@ -416,44 +420,63 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 - (NSArray *)applyNestingToMappings:(NSArray *)propertyMappings
 {
-    NSString *attributeName = [[self.nestedAttributeSubstitution allKeys] lastObject];
-    id value = [[self.nestedAttributeSubstitution allValues] lastObject];
-    return self.nestedAttributeSubstitution ? RKApplyNestingAttributeValueToMappings(attributeName, value, propertyMappings) : propertyMappings;
+    if (self.nestedAttributeSubstitutionKey == nil) return propertyMappings;
+    
+    return RKApplyNestingAttributeValueToMappings(self.nestedAttributeSubstitutionKey, self.nestedAttributeSubstitutionValue, propertyMappings);
+}
+
+- (void)_cacheMappings
+{
+    if (!_nestedAttributeMappings)
+    {
+        if (self.nestedAttributeSubstitutionKey == nil) {
+            _relationshipMappings = self.objectMapping.relationshipMappings;
+            _nestedAttributeMappings = self.objectMapping.attributeMappings;
+            _simpleAttributeMappings = self.objectMapping.simpleAttributeMappings;
+            _keyPathAttributeMappings = self.objectMapping.keyPathAttributeMappings;
+        }
+        else {
+            _nestedAttributeMappings = [self applyNestingToMappings:self.objectMapping.attributeMappings];
+            _relationshipMappings = [self applyNestingToMappings:self.objectMapping.relationshipMappings];
+            NSMutableArray *simpleList = [[NSMutableArray alloc] initWithCapacity:[_nestedAttributeMappings count]];
+            NSMutableArray *keyPathList = [[NSMutableArray alloc] initWithCapacity:[_nestedAttributeMappings count]];
+            
+            // The nested substitution may have changed which properties are simple vs keyPath, so we have to
+            // re-check based on the nesting result.
+            for (RKPropertyMapping *mapping in _nestedAttributeMappings) {
+                BOOL isSimple = [mapping.sourceKeyPath rangeOfString:@"." options:NSLiteralSearch].length == 0;
+                NSMutableArray *arrayToAdd = isSimple? simpleList : keyPathList;
+                [arrayToAdd addObject:mapping];
+            }
+            
+            _simpleAttributeMappings = simpleList;
+            _keyPathAttributeMappings = keyPathList;
+        }
+    }
 }
 
 - (NSArray *)nestedAttributeMappings
 {
-    if (!_nestedAttributeMappings) _nestedAttributeMappings = [self applyNestingToMappings:self.objectMapping.attributeMappings];
+    [self _cacheMappings];
     return _nestedAttributeMappings;
 }
 
 - (NSArray *)simpleAttributeMappings
 {
-    NSMutableArray *mappings = [NSMutableArray array];
-    for (RKAttributeMapping *mapping in self.nestedAttributeMappings) {
-        if ([mapping.sourceKeyPath rangeOfString:@"."].location == NSNotFound) {
-            [mappings addObject:mapping];
-        }
-    }
-
-    return mappings;
+    [self _cacheMappings];
+    return _simpleAttributeMappings;
 }
 
 - (NSArray *)keyPathAttributeMappings
 {
-    NSMutableArray *mappings = [NSMutableArray array];
-    for (RKAttributeMapping *mapping in self.nestedAttributeMappings) {
-        if ([mapping.sourceKeyPath rangeOfString:@"."].location != NSNotFound) {
-            [mappings addObject:mapping];
-        }
-    }
-
-    return mappings;
+    [self _cacheMappings];
+    return _keyPathAttributeMappings;
 }
 
 - (NSArray *)relationshipMappings
 {
-    return [self applyNestingToMappings:self.objectMapping.relationshipMappings];
+    [self _cacheMappings];
+    return _relationshipMappings;
 }
 
 - (BOOL)transformValue:(id)inputValue toValue:(__autoreleasing id *)outputValue withPropertyMapping:(RKPropertyMapping *)propertyMapping error:(NSError *__autoreleasing *)error
@@ -527,7 +550,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 - (BOOL)applyAttributeMappings:(NSArray *)attributeMappings
 {
     // If we have a nesting substitution value, we have already succeeded
-    BOOL appliedMappings = (self.nestedAttributeSubstitution != nil);
+    BOOL appliedMappings = (self.nestedAttributeSubstitutionKey != nil);
 
     if (!self.objectMapping.performsKeyValueValidation) {
         RKLogDebug(@"Key-value validation is disabled for mapping, skipping...");
@@ -856,7 +879,8 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         id attributeValue = [[self.sourceObject allKeys] lastObject];
         if (attributeValue) {
             RKLogDebug(@"Found nesting value of '%@' for attribute '%@'", attributeValue, attributeMapping.destinationKeyPath);
-            self.nestedAttributeSubstitution = @{ attributeMapping.destinationKeyPath: attributeValue };
+            self.nestedAttributeSubstitutionKey = attributeMapping.destinationKeyPath;
+            self.nestedAttributeSubstitutionValue = attributeValue;
             [self applyAttributeMapping:attributeMapping withValue:attributeValue];
         } else {
             RKLogWarning(@"Unable to find nesting value for attribute '%@'", attributeMapping.destinationKeyPath);
@@ -870,7 +894,8 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         id attributeValue = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if (attributeValue) {
             RKLogDebug(@"Found nesting value of '%@' for attribute '%@'", attributeValue, attributeMapping.sourceKeyPath);
-            self.nestedAttributeSubstitution = @{ attributeMapping.sourceKeyPath: attributeValue };
+            self.nestedAttributeSubstitutionKey = attributeMapping.sourceKeyPath;
+            self.nestedAttributeSubstitutionValue = attributeValue;
         } else {
             RKLogWarning(@"Unable to find nesting value for attribute '%@'", attributeMapping.destinationKeyPath);
         }
