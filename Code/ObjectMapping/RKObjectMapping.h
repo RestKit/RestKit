@@ -129,16 +129,16 @@
 @property (nonatomic, readonly) NSArray *attributeMappings;
 
 /**
- The collection of simple attribute mappings within this object mapping.
+ The collection of single key attribute mappings within this object mapping.
  
- A simple mapping is one where the source key path is a simple key, and not a true path.
+ These are mappings where the source key path is a single key, and not a key path with multiple components.
  */
-@property (nonatomic, readonly) NSArray *simpleAttributeMappings;
+@property (nonatomic, readonly) NSArray *keyAttributeMappings;
 
 /**
  The collection of key path attribute mappings within this object mapping.
  
- A key path mapping is one where the source key path is actually a path with multiple components, and not simple.
+ A key path mapping is one where the source key path is actually a path with multiple components.
  */
 @property (nonatomic, readonly) NSArray *keyPathAttributeMappings;
 

@@ -108,7 +108,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 @property (nonatomic, strong) NSArray *relationshipMappings;
 @property (nonatomic, strong) NSArray *attributeMappings;
-@property (nonatomic, strong) NSArray *simpleAttributeMappings;
+@property (nonatomic, strong) NSArray *keyAttributeMappings;
 @property (nonatomic, strong) NSArray *keyPathAttributeMappings;
 
 @property (nonatomic, weak, readonly) NSArray *mappedKeyPaths;
@@ -154,6 +154,10 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     if (self) {
         self.objectClass = objectClass;
         self.propertyMappings = [NSArray new];
+        self.relationshipMappings = [NSArray new];
+        self.attributeMappings = [NSArray new];
+        self.keyAttributeMappings = [NSArray new];
+        self.keyPathAttributeMappings = [NSArray new];
         self.assignsDefaultValueForMissingAttributes = NO;
         self.assignsNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
@@ -221,22 +225,22 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (NSArray *)attributeMappings
 {
-    return _attributeMappings ?: [NSArray array];
+    return _attributeMappings;
 }
 
 - (NSArray *)relationshipMappings
 {
-    return _relationshipMappings ?: [NSArray array];
+    return _relationshipMappings;
 }
 
-- (NSArray *)simpleAttributeMappings
+- (NSArray *)keyAttributeMappings
 {
-    return _simpleAttributeMappings ?: [NSArray array];
+    return _keyAttributeMappings;
 }
 
 - (NSArray *)keyPathAttributeMappings
 {
-    return _keyPathAttributeMappings ?: [NSArray array];
+    return _keyPathAttributeMappings;
 }
 
 static NSArray *RKAddProperty(NSArray *array, RKPropertyMapping *mapping)
@@ -268,7 +272,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
     {
         self.attributeMappings = RKAddProperty(self.attributeMappings, propertyMapping);
         if ([propertyMapping.sourceKeyPath rangeOfString:@"." options:NSLiteralSearch].length == 0) {
-            self.simpleAttributeMappings = RKAddProperty(self.simpleAttributeMappings, propertyMapping);
+            self.keyAttributeMappings = RKAddProperty(self.keyAttributeMappings, propertyMapping);
         }
         else {
             self.keyPathAttributeMappings = RKAddProperty(self.keyPathAttributeMappings, propertyMapping);
@@ -368,7 +372,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
         self.propertyMappings = RKRemoveProperty(self.propertyMappings, attributeOrRelationshipMapping);
         self.relationshipMappings = RKRemoveProperty(self.relationshipMappings, attributeOrRelationshipMapping);
         self.attributeMappings = RKRemoveProperty(self.attributeMappings, attributeOrRelationshipMapping);
-        self.simpleAttributeMappings = RKRemoveProperty(self.simpleAttributeMappings, attributeOrRelationshipMapping);
+        self.keyAttributeMappings = RKRemoveProperty(self.keyAttributeMappings, attributeOrRelationshipMapping);
         self.keyPathAttributeMappings = RKRemoveProperty(self.keyPathAttributeMappings, attributeOrRelationshipMapping);
     }
 }

@@ -425,14 +425,14 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     return RKApplyNestingAttributeValueToMappings(self.nestedAttributeSubstitutionKey, self.nestedAttributeSubstitutionValue, propertyMappings);
 }
 
-- (void)_cacheMappings
+- (void)cacheMappingsIfNeeded
 {
     if (!_nestedAttributeMappings)
     {
         if (self.nestedAttributeSubstitutionKey == nil) {
             _relationshipMappings = self.objectMapping.relationshipMappings;
             _nestedAttributeMappings = self.objectMapping.attributeMappings;
-            _simpleAttributeMappings = self.objectMapping.simpleAttributeMappings;
+            _simpleAttributeMappings = self.objectMapping.keyAttributeMappings;
             _keyPathAttributeMappings = self.objectMapping.keyPathAttributeMappings;
         }
         else {
@@ -457,25 +457,25 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 - (NSArray *)nestedAttributeMappings
 {
-    [self _cacheMappings];
+    [self cacheMappingsIfNeeded];
     return _nestedAttributeMappings;
 }
 
 - (NSArray *)simpleAttributeMappings
 {
-    [self _cacheMappings];
+    [self cacheMappingsIfNeeded];
     return _simpleAttributeMappings;
 }
 
 - (NSArray *)keyPathAttributeMappings
 {
-    [self _cacheMappings];
+    [self cacheMappingsIfNeeded];
     return _keyPathAttributeMappings;
 }
 
 - (NSArray *)relationshipMappings
 {
-    [self _cacheMappings];
+    [self cacheMappingsIfNeeded];
     return _relationshipMappings;
 }
 
