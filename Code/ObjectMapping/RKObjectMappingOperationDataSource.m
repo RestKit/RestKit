@@ -42,7 +42,7 @@
 
 - (BOOL)mappingOperationShouldSetUnchangedValues:(RKMappingOperation *)mappingOperation
 {
-    return mappingOperation.newDestinationObject;
+    return [mappingOperation isNewDestinationObject];
 }
 
 @end

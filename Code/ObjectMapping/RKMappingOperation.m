@@ -425,7 +425,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 @property (nonatomic, getter=isCancelled) BOOL cancelled;
 @property (nonatomic) BOOL collectsMappingInfo;
 @property (nonatomic) BOOL shouldSetUnchangedValues;
-@property (nonatomic, readwrite) BOOL newDestinationObject;
+@property (nonatomic, readwrite, getter=isNewDestinationObject) BOOL newDestinationObject;
 @end
 
 @implementation RKMappingOperation

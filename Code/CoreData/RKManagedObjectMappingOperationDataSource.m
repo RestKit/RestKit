@@ -453,7 +453,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         return [[(NSManagedObject *)mappingOperation.destinationObject objectID] isTemporaryID];
     }
     
-    return mappingOperation.newDestinationObject;
+    return [mappingOperation isNewDestinationObject];
 }
 
 - (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation
