@@ -371,7 +371,7 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
     // Ensure repeated invocations of verify only result in a single mapping operation
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
-        RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:self.destinationObject mapping:self.mapping metadata:nil];
+        RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:self.destinationObject mapping:self.mapping];
         id<RKMappingOperationDataSource> dataSource = [self dataSourceForMappingOperation:mappingOperation];
         mappingOperation.dataSource = dataSource;
         mappingOperation.delegate = self;

@@ -37,6 +37,8 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitObjectMapping
 
+#pragma mark - Mapping utilities
+
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 /**
@@ -66,7 +68,7 @@ static BOOL RKIsManagedObject(id object)
 static id RKPrimitiveValueForNilValueOfClass(Class keyValueCodingClass)
 {
     if ([keyValueCodingClass isSubclassOfClass:[NSNumber class]]) {
-        return @(0);
+        return @0;
     } else {
         return nil;
     }
@@ -110,6 +112,8 @@ static BOOL RKObjectContainsValueForMappings(id representation, NSArray *propert
     return NO;
 }
 
+#pragma mark - Metadata utilities
+
 static NSString *const RKMetadataKey = @"@metadata";
 static NSString *const RKMetadataKeyPathPrefix = @"@metadata.";
 static NSString *const RKParentKey = @"@parent";
@@ -119,11 +123,36 @@ static NSString *const RKRootKeyPathPrefix = @"@root.";
 static NSString *const RKSelfKey = @"self";
 static NSString *const RKSelfKeyPathPrefix = @"self.";
 
-@interface RKMappingMetadataWrapper : NSObject
+/**
+ Inserts up to two objects a the start of the metadata list.  metadata1 will be at the front if both are provided.
+ */
+static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2)
+{
+    if (metadata1 == nil && metadata2 == nil)
+        return list;
+    NSMutableArray *newArray = [[NSMutableArray alloc] initWithArray:list];
+    if (metadata2)
+        [newArray insertObject:metadata2 atIndex:0];
+    if (metadata1)
+        [newArray insertObject:metadata1 atIndex:0];
+    return newArray;
+}
+
+
+/**
+ Class used in the single case of RKMappingSourceObject needing to return a single object
+ for the "@metadata" key, which a special implementation of -valueForKeyPath:
+ to iterate over the list of metadata dictionaries (which RKMappingSourceObject usually does).
+ This usually only happens from the parentObjectForRelationshipMapping: implementation, but
+ in case it does this class provides the implementation.
+ */
+@interface RKMetadataWrapper : NSObject
 - (id)initWithMetadataList:(NSArray *)list;
 @property (nonatomic, strong) NSArray *metadataList;
 @end
-@implementation RKMappingMetadataWrapper
+
+@implementation RKMetadataWrapper
+
 - (id)initWithMetadataList:(NSArray *)list {
     if (self = [super init]) {
         self.metadataList = list;
@@ -152,6 +181,62 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     return nil;
 }
 @end
+
+/**
+ Class meant to represent parts of the "mapping" sub-dictionary of the "@metadata" keys, but
+ being more efficient to create than actual NSDictionary instances.  We can add any object properties
+ to this class, and if non-nil that value will be used, otherwise it is a passthrough.
+ */
+@interface RKMappingMetadata : NSObject
+@property (nonatomic) BOOL inValueForKeyPath;
+@property (nonatomic) id parentObject;
+@end
+
+@implementation RKMappingMetadata
+
+- (id)valueForKeyPath:(NSString *)keyPath
+{
+    static NSString *mappingPrefix = @"mapping.";
+
+    /* We only allow paths with a "mapping." prefix, to simulate being a nested object */
+    if ([keyPath hasPrefix:mappingPrefix]) {
+        self.inValueForKeyPath = YES;
+        id value = [super valueForKeyPath:[keyPath substringFromIndex:[mappingPrefix length]]];
+        self.inValueForKeyPath = NO;
+        return value;
+    }
+    
+    return nil;
+}
+
+/* Only return values from valueForKey: if we are being routed from valueForKeyPath:.  This
+ avoids us from returning value values from say "@metadata.collectionIndex" without the mapping prefix.
+ */
+- (id)valueForKey:(NSString *)key
+{
+    return self.inValueForKeyPath? [super valueForKey:key] : nil;
+}
+
+/* Return nil for any unknown keys, so the next object in the metadata list gets checked */
+- (id)valueForUndefinedKey:(NSString *)key
+{
+    return nil;
+}
+
+@end
+
+/**
+ Subclass of RKMappingMetadata for use for holding the collectionIndex during a to-many mapping operation.
+ Needs to be a subclass since the scalar property cannot return nil from valueForKey, so this can only
+ be used when the collectionIndex is definitely set.
+ */
+@interface RKMappingIndexMetadata : RKMappingMetadata
+@property (nonatomic) NSUInteger collectionIndex;
+@end
+
+@implementation RKMappingIndexMetadata
+@end
+
 
 @interface RKMappingSourceObject : NSProxy
 - (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
@@ -206,7 +291,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     } else if (firstChar != '@') {
         return [self.object valueForKey:key];
     } else if ([key isEqualToString:RKMetadataKey]) {
-        return [[RKMappingMetadataWrapper alloc] initWithMetadataList:self.metadataList];
+        return [[RKMetadataWrapper alloc] initWithMetadataList:self.metadataList];
     } else if ([key isEqualToString:RKParentKey]) {
         return self.parentObject;
     } else if ([key isEqualToString:RKRootKey]) {
@@ -254,6 +339,9 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 }
 
 @end
+
+
+#pragma mark - RKMappingInfo
 
 @interface RKMappingInfo ()
 @property (nonatomic, assign, readwrite) NSUInteger collectionIndex;
@@ -316,6 +404,8 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 @end
 
+#pragma mark - RKMappingOperation
+
 @interface RKMappingOperation ()
 @property (nonatomic, strong, readwrite) RKMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
@@ -340,10 +430,10 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
 {
-    return [self initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectOrDynamicMapping metadata:nil];
+    return [self initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectOrDynamicMapping metadataList:nil];
 }
 
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping metadata:(NSArray *)metadataList
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping metadataList:(NSArray *)metadataList
 {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(objectOrDynamicMapping != nil, @"Cannot perform a mapping operation without a mapping");
@@ -402,7 +492,9 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     if (destinationObject == nil)
     {
         NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
-        NSArray *metadata = RKInsertInDictionaryList(self.metadataList, @{ @"mapping": @{ @"parentObject": (self.destinationObject ?: [NSNull null]) } }, nil, nil);
+        RKMappingMetadata *parentMetadata = [RKMappingMetadata new];
+        parentMetadata.parentObject = self.destinationObject ?: [NSNull null];
+        NSArray *metadata = RKInsertInMetadataList(self.metadataList, parentMetadata, nil);
         RKMappingSourceObject *sourceObject = [[RKMappingSourceObject alloc] initWithObject:dictionaryRepresentation parentObject:parentRepresentation rootObject:self.rootSourceObject metadata:metadata];
         destinationObject = [self.dataSource mappingOperation:self targetObjectForRepresentation:(NSDictionary *)sourceObject withMapping:concreteMapping inRelationship:relationshipMapping];
     }
@@ -652,15 +744,14 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     return appliedMappings;
 }
 
-- (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject parent:(id)parentSourceObject withRelationshipMapping:(RKRelationshipMapping *)relationshipMapping metadata:(NSDictionary *)metadata
+- (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject parent:(id)parentSourceObject withRelationshipMapping:(RKRelationshipMapping *)relationshipMapping metadataList:(NSArray *)metadataList
 {
     NSAssert(anObject, @"Cannot map nested object without a nested source object");
     NSAssert(anotherObject, @"Cannot map nested object without a destination object");
     NSAssert(relationshipMapping, @"Cannot map a nested object relationship without a relationship mapping");
 
     RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
-    NSArray *subOperationMetadata = RKInsertInDictionaryList(self.metadataList, metadata, nil, nil);
-    RKMappingOperation *subOperation = [[RKMappingOperation alloc] initWithSourceObject:anObject destinationObject:anotherObject mapping:relationshipMapping.mapping metadata:subOperationMetadata];
+    RKMappingOperation *subOperation = [[RKMappingOperation alloc] initWithSourceObject:anObject destinationObject:anotherObject mapping:relationshipMapping.mapping metadataList:metadataList];
     subOperation.dataSource = self.dataSource;
     subOperation.delegate = self.delegate;
     subOperation.parentSourceObject = parentSourceObject;
@@ -700,6 +791,12 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 
 - (BOOL)mapOneToOneRelationshipWithValue:(id)value mapping:(RKRelationshipMapping *)relationshipMapping
 {
+    static dispatch_once_t onceToken;
+    static NSDictionary *noIndexMetadata;
+    dispatch_once(&onceToken, ^{
+        noIndexMetadata = @{ @"mapping" : @{ @"collectionIndex" : [NSNull null] } };
+    });
+
     // One to one relationship
     RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
     
@@ -715,7 +812,9 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         RKLogDebug(@"Mapping %@ declined mapping for representation %@: returned `nil` destination object.", relationshipMapping.mapping, destinationObject);
         return NO;
     }
-    [self mapNestedObject:value toObject:destinationObject parent:parentSourceObject withRelationshipMapping:relationshipMapping metadata:@{ @"mapping": @{ @"collectionIndex": [NSNull null] } }];
+
+    NSArray *subOperationMetadata = RKInsertInMetadataList(self.metadataList, noIndexMetadata, nil);
+    [self mapNestedObject:value toObject:destinationObject parent:parentSourceObject withRelationshipMapping:relationshipMapping metadataList:subOperationMetadata];
 
     // If the relationship has changed, set it
     if ([self shouldSetValue:&destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping]) {
@@ -784,10 +883,13 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     }
 
     id parentSourceObject = [self parentObjectForRelationshipMapping:relationshipMapping];
+    RKMappingIndexMetadata *indexMetadata = [RKMappingIndexMetadata new];
+    NSArray *subOperationMetadata = RKInsertInMetadataList(self.metadataList, indexMetadata, nil);
     [value enumerateObjectsUsingBlock:^(id nestedObject, NSUInteger collectionIndex, BOOL *stop) {
         id mappableObject = [self destinationObjectForMappingRepresentation:nestedObject parentRepresentation:parentSourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
         if (mappableObject) {
-            if ([self mapNestedObject:nestedObject toObject:mappableObject parent:parentSourceObject withRelationshipMapping:relationshipMapping metadata:@{ @"mapping": @{ @"collectionIndex": @(collectionIndex) } }]) {
+            indexMetadata.collectionIndex = collectionIndex;
+            if ([self mapNestedObject:nestedObject toObject:mappableObject parent:parentSourceObject withRelationshipMapping:relationshipMapping metadataList:subOperationMetadata]) {
                 [relationshipCollection addObject:mappableObject];
             }
         } else {

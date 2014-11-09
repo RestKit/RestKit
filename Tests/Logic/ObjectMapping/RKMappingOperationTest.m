@@ -536,7 +536,7 @@
 
     NSDictionary *metadata = @{ @"mapping": @{ @"collectionIndex": @25 } };
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
-    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:userMapping metadata:@[metadata]];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:userMapping metadataList:@[metadata]];
     mappingOperation.dataSource = dataSource;
     BOOL success = [mappingOperation performMapping:nil];
     expect(success).to.equal(YES);

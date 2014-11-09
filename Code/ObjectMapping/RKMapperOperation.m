@@ -228,9 +228,12 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
     RKLogDebug(@"Asked to map source object %@ with mapping %@", mappableObject, mapping);
 
-    NSArray *metadataList = RKInsertInDictionaryList(nil, self.metadata, metadata, @{ @"mapping": @{ @"rootKeyPath": keyPath } });
+    NSMutableArray *metadataList = [[NSMutableArray alloc] initWithCapacity:3];
+    [metadataList addObject:@{ @"mapping": @{ @"rootKeyPath": keyPath } }];
+    if (metadata) [metadataList addObject:metadata];
+    if (self.metadata) [metadataList addObject:self.metadata];
 
-    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject mapping:mapping metadata:metadataList];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject mapping:mapping metadataList:metadataList];
     mappingOperation.dataSource = self.mappingOperationDataSource;
     if ([self.delegate respondsToSelector:@selector(mapper:willStartMappingOperation:forKeyPath:)]) {
         [self.delegate mapper:self willStartMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
