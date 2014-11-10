@@ -22,6 +22,35 @@
 
 @class NSEntityDescription;
 
+/**
+ * The object used to store attributes for each property; used as the value in the class dictionary.
+ */
+@interface RKPropertyInspectorPropertyInfo : NSObject
+
+/**
+ Creates a new RKPropertyInspectorPropertyInfo instance with the given information
+ */
++ (id)propertyInfoWithName:(NSString *)name keyValueClass:(Class)kvClass isPrimitive:(BOOL)isPrimitive;
+
+/**
+ The name of the property
+ */
+@property (nonatomic, copy, readonly) NSString *name;
+
+/**
+ The class used for key-value coding access to the property.
+ 
+ If the property is an object type, then the class set for this key will be the type of the property. If the property is a primitive, then the class set for the key will be the boxed type used for KVC access to the property. For example, an `NSInteger` property is boxed to an `NSNumber` for KVC purposes.
+ */
+@property (nonatomic, strong, readonly) Class keyValueCodingClass;
+
+/**
+ A BOOL value that indicates if the property is a primitive (non-object) value.
+ */
+@property (nonatomic, readonly) BOOL isPrimitive;
+
+@end
+
 ///--------------------------------------------------
 /// @name Keys for the Property Inspection Dictionary
 ///--------------------------------------------------
@@ -29,19 +58,19 @@
 /**
  The name of the property
  */
-extern NSString * const RKPropertyInspectionNameKey;
+extern NSString * const RKPropertyInspectionNameKey DEPRECATED_MSG_ATTRIBUTE("Use the RKPropertyInspectorPropertyInfo name property");
 
 /**
  The class used for key-value coding access to the property.
  
  If the property is an object object type, then the class set for this key will be the type of the property. If the property is a primitive, then the class set for the key will be the boxed type used for KVC access to the property. For example, an `NSInteger` property is boxed to an `NSNumber` for KVC purposes.
  */
-extern NSString * const RKPropertyInspectionKeyValueCodingClassKey;
+extern NSString * const RKPropertyInspectionKeyValueCodingClassKey DEPRECATED_MSG_ATTRIBUTE("Use the RKPropertyInspectorPropertyInfo keyValueCodingClass property");
 
 /**
  A Boolean value that indicates if the property is a primitive (non-object) value.
  */
-extern NSString * const RKPropertyInspectionIsPrimitiveKey;
+extern NSString * const RKPropertyInspectionIsPrimitiveKey DEPRECATED_MSG_ATTRIBUTE("Use the RKPropertyInspectorPropertyInfo isPrimitive property");
 
 /**
  The `RKPropertyInspector` class provides an interface for introspecting the properties and attributes of classes using the reflection capabilities of the Objective-C runtime. Once inspected, the properties inspection details are cached.
@@ -64,7 +93,7 @@ extern NSString * const RKPropertyInspectionIsPrimitiveKey;
 ///------------------------------------------------------
 
 /**
- Returns a dictionary keyed by property name that includes the key-value coding class of the property and a Boolean indicating if the property is backed by a primitive (non-object) value. The dictionary for each property includes details about the key-value coding class representing the property and if the property is backed by a primitive type.
+ Returns a dictionary keyed by property name that includes the key-value coding class of the property and a Boolean indicating if the property is backed by a primitive (non-object) value. The RKPropertyInspectorPropertyInfo object for each property includes details about the key-value coding class representing the property and if the property is backed by a primitive type.
  
  @param objectClass The class to inspect the properties of.
  @return A dictionary keyed by property name that includes details about all declared properties of the class.

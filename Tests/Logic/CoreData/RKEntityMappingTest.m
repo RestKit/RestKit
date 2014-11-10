@@ -121,7 +121,12 @@
     assertThat([relationshipsByName objectForKey:@"favoriteColors"], is(nilValue()));
 
     NSDictionary *propertyNamesAndTypes = [[RKPropertyInspector sharedInspector] propertyInspectionForEntity:entity];
+    assertThat([(RKPropertyInspectorPropertyInfo *)[propertyNamesAndTypes objectForKey:@"favoriteColors"] keyValueCodingClass], is(notNilValue()));
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     assertThat([propertyNamesAndTypes objectForKey:@"favoriteColors"][RKPropertyInspectionKeyValueCodingClassKey], is(notNilValue()));
+#pragma GCC diagnostic pop
 }
 
 - (void)testMappingAnArrayToATransformableWithoutABackingManagedObjectSubclass
