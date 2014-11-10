@@ -123,7 +123,7 @@
 {
     NSDictionary *entityInspection = [self propertyInspectionForEntity:entity];
     RKPropertyInspectorPropertyInfo *propertyInspection = [entityInspection objectForKey:propertyName];
-    return [propertyInspection keyValueCodingClass];
+    return propertyInspection.keyValueCodingClass;
 }
 
 @end
@@ -136,13 +136,21 @@
 
 - (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath isPrimitive:(BOOL *)isPrimitive
 {
-    NSArray *components = [keyPath componentsSeparatedByString:@"."];
+    NSRange dotRange = [keyPath rangeOfString:@"." options:NSLiteralSearch];
+    RKPropertyInspector *inspector = [RKPropertyInspector sharedInspector];
     Class currentPropertyClass = [self class];
     Class propertyClass = nil;
+
+    if (dotRange.length == 0) {
+        propertyClass = [inspector classForPropertyNamed:keyPath ofEntity:[self entity]];
+        return propertyClass ?: [inspector classForPropertyNamed:keyPath ofClass:currentPropertyClass isPrimitive:isPrimitive];
+    }
+
+    NSArray *components = [keyPath componentsSeparatedByString:@"."];
     for (NSString *property in components) {
         if (isPrimitive) *isPrimitive = NO; // Core Data does not enable you to model primitives
-        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofEntity:[self entity]];
-        propertyClass = propertyClass ?: [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:currentPropertyClass isPrimitive:isPrimitive];
+        propertyClass = [inspector classForPropertyNamed:property ofEntity:[self entity]];
+        propertyClass = propertyClass ?: [inspector classForPropertyNamed:property ofClass:currentPropertyClass isPrimitive:isPrimitive];
         if (! propertyClass) break;
         currentPropertyClass = propertyClass;
     }

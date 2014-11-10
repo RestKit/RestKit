@@ -49,22 +49,6 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
     return self;
 }
 
-/* In case external code calls us as a dictionary */
-- (id)objectForKey:(id)key
-{
-    return [self valueForKey:key];
-}
-
-- (id)objectForKeyedSubscript:(id)key
-{
-    return [self valueForKey:key];
-}
-
-- (id)valueForUndefinedKey:(NSString *)key
-{
-    return nil;
-}
-
 @end
 
 
@@ -175,8 +159,8 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
 {
     NSDictionary *classInspection = [self propertyInspectionForClass:objectClass];
     RKPropertyInspectorPropertyInfo *propertyInspection = [classInspection objectForKey:propertyName];
-    if (isPrimitive) *isPrimitive = [propertyInspection isPrimitive];
-    return [propertyInspection keyValueCodingClass];
+    if (isPrimitive) *isPrimitive = propertyInspection.isPrimitive;
+    return propertyInspection.keyValueCodingClass;
 }
 
 @end
@@ -200,7 +184,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
 
     NSArray *components = [keyPath componentsSeparatedByString:@"."];
     for (NSString *property in components) {
-        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass isPrimitive:isPrimitive];
+        propertyClass = [inspector classForPropertyNamed:property ofClass:propertyClass isPrimitive:isPrimitive];
         if (! propertyClass) break;
     }
     
