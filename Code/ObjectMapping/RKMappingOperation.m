@@ -101,10 +101,11 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
 }
 
 // Returns YES if there is a value present for at least one key path in the given collection
-static BOOL RKObjectContainsValueForKeyPaths(id representation, NSArray *keyPaths)
+static BOOL RKObjectContainsValueForMappings(id representation, NSArray *propertyMappings)
 {
-    for (NSString *keyPath in keyPaths) {
-        if ([representation valueForKeyPath:keyPath]) return YES;
+    for (RKPropertyMapping *mapping in propertyMappings) {
+        NSString *keyPath = mapping.sourceKeyPath;
+        if (keyPath && [representation valueForKeyPath:keyPath]) return YES;
     }
     return NO;
 }
@@ -729,7 +730,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 - (BOOL)applyRelationshipMappings
 {
     NSAssert(self.dataSource, @"Cannot perform relationship mapping without a data source");
-    NSMutableArray *mappingsApplied = [NSMutableArray array];
+    NSUInteger mappingsApplied = 0;
 
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         if ([self isCancelled]) return NO;
@@ -749,14 +750,13 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
             }
             
             if (! objectMapping) continue; // Mapping declined
-            NSArray *propertyKeyPaths = [relationshipMapping valueForKeyPath:@"mapping.propertyMappings.sourceKeyPath"];
-            if (! RKObjectContainsValueForKeyPaths(value, propertyKeyPaths)) {
+            if (! RKObjectContainsValueForMappings(value, objectMapping.propertyMappings)) {
                 continue;
             }
         }
 
         // Track that we applied this mapping
-        [mappingsApplied addObject:relationshipMapping];
+        mappingsApplied++;
 
         if (value == nil) {
             RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
@@ -812,22 +812,25 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         // Handle case where incoming content is a single object, but we want a collection
         Class relationshipClass = [self.objectMapping classForKeyPath:relationshipMapping.destinationKeyPath];
         BOOL mappingToCollection = RKClassIsCollection(relationshipClass);
-        if (mappingToCollection && !RKObjectIsCollection(value)) {
-            Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
+        BOOL objectIsCollection = RKObjectIsCollection(value);
+        if (mappingToCollection && !objectIsCollection) {
             RKLogDebug(@"Asked to map a single object into a collection relationship. Transforming to an instance of: %@", NSStringFromClass(relationshipClass));
             if ([relationshipClass isSubclassOfClass:[NSArray class]]) {
                 value = [relationshipClass arrayWithObject:value];
+                objectIsCollection = YES;
             } else if ([relationshipClass isSubclassOfClass:[NSSet class]]) {
                 value = [relationshipClass setWithObject:value];
-            } else if (orderedSetClass && [relationshipClass isSubclassOfClass:orderedSetClass]) {
+                objectIsCollection = YES;
+            } else if ([relationshipClass isSubclassOfClass:[NSOrderedSet class]]) {
                 value = [relationshipClass orderedSetWithObject:value];
+                objectIsCollection = YES;
             } else {
                 RKLogWarning(@"Failed to transform single object");
             }
         }
 
         BOOL setValueForRelationship;
-        if (RKObjectIsCollection(value)) {
+        if (objectIsCollection) {
             setValueForRelationship = [self mapOneToManyRelationshipWithValue:value mapping:relationshipMapping];
         } else {
             setValueForRelationship = [self mapOneToOneRelationshipWithValue:value mapping:relationshipMapping];
@@ -845,7 +848,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         if (self.error) break;
     }
 
-    return [mappingsApplied count] > 0;
+    return mappingsApplied > 0;
 }
 
 - (void)applyNestedMappings
