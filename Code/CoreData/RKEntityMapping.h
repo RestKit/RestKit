@@ -115,7 +115,7 @@
 @property (nonatomic, copy) NSPredicate *identificationPredicate;
 
 /**
- An optional attribute of the receiver's entity that can be used to detect modification of a given instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object if it is found to be not modified.
+ An optional array of attributes of the receiver's entity that can be used to detect modification of a given instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object if it is found to be not modified.
  
  A common modification attribute is a 'last modified' or 'updated at' timestamp that specifies the timestamp of the last change to an object. When the `modificationAttribute` is non-nil, the mapper will compare the value returned of the attribute on an existing object instance with the value in the representation being mapped. 
  
@@ -123,17 +123,17 @@
  
  @raises NSInvalidArgumentException Raised if the attribute given is not a property of the receiver's entity.
  */
-@property (nonatomic, strong) NSAttributeDescription *modificationAttribute;
+@property (nonatomic, strong) NSArray *modificationAttributes;
 
 /**
- Sets the `modificationAttribute` to the receiver to the attribute with the specified name.
+ Sets the `modificationAttributes` to the receiver to the attributes with the specified names.
  
- The given name must correspond to the name of an attribute within the receiver's entity.
+ The given names must correspond to the names of attributes within the receiver's entity.
  
- @param attributeName The name of an attribute in the entity of the receiver.
- @raises NSInvalidArgumentException Raised if no attribute could be found with the given name.
+ @param attributeNames Names of attribute in the entity of the receiver.
+ @raises NSInvalidArgumentException Raised if no attributes could be found with given names.
  */
-- (void)setModificationAttributeForName:(NSString *)attributeName;
+- (void)setModificationAttributesForNames:(NSArray *)attributeNames;
 
 ///---------------------------------------------------------------
 /// @name Specifying a Persistent Store for Newly Inserted Objects
@@ -296,5 +296,7 @@ NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entit
 
 
 @interface RKEntityMapping (Deprecations)
+@property (nonatomic, strong) NSAttributeDescription *modificationAttribute DEPRECATED_ATTRIBUTE_MESSAGE("Use `setModificationAttributesForNames:` instead");
 @property (nonatomic, copy) NSString *modificationKey DEPRECATED_ATTRIBUTE_MESSAGE("Use `setModificationAttributeForName:` instead");
+- (void)setModificationAttributeForName:(NSString *)attributeName DEPRECATED_ATTRIBUTE_MESSAGE("Use `setModificationAttributesForNames:` instead");
 @end
