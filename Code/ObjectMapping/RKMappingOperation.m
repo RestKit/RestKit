@@ -138,7 +138,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     return newArray;
 }
 
-@interface RKMappingSourceObject : NSProxy
+@interface RKMappingSourceObject : NSObject
 - (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
 - (id)metadataValueForKey:(NSString *)key;
 - (id)metadataValueForKeyPath:(NSString *)keyPath;
@@ -251,12 +251,17 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
 {
-    return [self.object methodSignatureForSelector:selector];
+    return [_object methodSignatureForSelector:selector];
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
-    [invocation invokeWithTarget:self.object];
+    [invocation invokeWithTarget:_object];
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+    return _object;
 }
 
 - (id)metadataValueForKey:(NSString *)key
@@ -287,9 +292,9 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     unichar firstChar = [key length] > 0 ? [key characterAtIndex:0] : 0;
 
     if (firstChar == 's' && [key isEqualToString:RKSelfKey]) {
-        return self.object;
+        return _object;
     } else if (firstChar != '@') {
-        return [self.object valueForKey:key];
+        return [_object valueForKey:key];
     } else if ([key isEqualToString:RKMetadataKey]) {
         return [[RKMetadataWrapper alloc] initWithMappingSource:self];
     } else if ([key isEqualToString:RKParentKey]) {
@@ -297,7 +302,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     } else if ([key isEqualToString:RKRootKey]) {
         return self.rootObject;
     } else {
-        return [self.object valueForKey:key];
+        return [_object valueForKey:key];
     }
 }
 
@@ -311,9 +316,9 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
     if (firstChar == 's' && [keyPath hasPrefix:RKSelfKeyPathPrefix]) {
         NSString *selfKeyPath = [keyPath substringFromIndex:[RKSelfKeyPathPrefix length]];
-        return [self.object valueForKeyPath:selfKeyPath];
+        return [_object valueForKeyPath:selfKeyPath];
     } else if (firstChar != '@') {
-        return [self.object valueForKeyPath:keyPath];
+        return [_object valueForKeyPath:keyPath];
     } else if ([keyPath hasPrefix:RKMetadataKeyPathPrefix]) {
         NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
         return [self metadataValueForKeyPath:metadataKeyPath];
@@ -324,7 +329,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
         return [self.rootObject valueForKeyPath:rootKeyPath];
     } else {
-        return [self.object valueForKeyPath:keyPath];
+        return [_object valueForKeyPath:keyPath];
     }
 }
 
@@ -335,7 +340,27 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
 - (Class)class
 {
-    return [self.object class];
+    return [_object class];
+}
+
+- (BOOL)isKindOfClass:(Class)aClass
+{
+    return [_object isKindOfClass:aClass];
+}
+
+- (BOOL)respondsToSelector:(SEL)aSelector
+{
+    return [_object respondsToSelector:aSelector];
+}
+
+- (BOOL)conformsToProtocol:(Protocol *)aProtocol
+{
+    return [_object conformsToProtocol:aProtocol];
+}
+
+- (Class)rk_classForPropertyAtKeyPath:(NSString *)keyPath isPrimitive:(BOOL *)isPrimitive
+{
+    return [_object rk_classForPropertyAtKeyPath:keyPath isPrimitive:isPrimitive];
 }
 
 @end
