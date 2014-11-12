@@ -420,10 +420,18 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
 
 - (Class)classForKeyPath:(NSString *)keyPath
 {
+    if (keyPath == nil) return self.objectClass;
+
+    RKPropertyInspector *inspector = [RKPropertyInspector sharedInspector];
+
+    if ([keyPath rangeOfString:@"." options:NSLiteralSearch].length == 0) {
+        return [inspector classForPropertyNamed:keyPath ofClass:self.objectClass isPrimitive:nil];
+    }
+
     NSArray *components = [keyPath componentsSeparatedByString:@"."];
     Class propertyClass = self.objectClass;
     for (NSString *property in components) {
-        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass isPrimitive:nil];
+        propertyClass = [inspector classForPropertyNamed:property ofClass:propertyClass isPrimitive:nil];
         if (! propertyClass) break;
     }
 
