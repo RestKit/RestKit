@@ -129,6 +129,20 @@
 @property (nonatomic, readonly) NSArray *attributeMappings;
 
 /**
+ The collection of single key attribute mappings within this object mapping.
+ 
+ These are mappings where the source key path is a single key, and not a key path with multiple components.
+ */
+@property (nonatomic, readonly) NSArray *keyAttributeMappings;
+
+/**
+ The collection of key path attribute mappings within this object mapping.
+ 
+ A key path mapping is one where the source key path is actually a path with multiple components.
+ */
+@property (nonatomic, readonly) NSArray *keyPathAttributeMappings;
+
+/**
  The collection of relationship mappings within this object mapping.
  */
 @property (nonatomic, readonly) NSArray *relationshipMappings;
