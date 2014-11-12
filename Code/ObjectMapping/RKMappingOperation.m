@@ -287,6 +287,7 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
 @property (nonatomic, strong) NSArray *relationshipMappings;
 @property (nonatomic, strong) RKMappingInfo *mappingInfo;
 @property (nonatomic, getter=isCancelled) BOOL cancelled;
+@property (nonatomic) BOOL collectsMappingInfo;
 @end
 
 @implementation RKMappingOperation
@@ -543,7 +544,9 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
             [self.delegate mappingOperation:self didNotSetUnchangedValue:transformedValue forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
     }
-    [self.mappingInfo addPropertyMapping:attributeMapping];
+    if (self.collectsMappingInfo) {
+        [self.mappingInfo addPropertyMapping:attributeMapping];
+    }
     return YES;
 }
 
@@ -607,9 +610,11 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
     
     if (subOperation.error) {
         RKLogWarning(@"WARNING: Failed mapping nested object: %@", [subOperation.error localizedDescription]);
-    } else {
+    } else if (self.collectsMappingInfo) {
         [self.mappingInfo addPropertyMapping:relationshipMapping];
-        [self.mappingInfo addMappingInfo:subOperation.mappingInfo forRelationshipMapping:relationshipMapping];
+        if (subOperation.mappingInfo) {
+            [self.mappingInfo addMappingInfo:subOperation.mappingInfo forRelationshipMapping:relationshipMapping];
+        }
     }
 
     return YES;
@@ -936,6 +941,9 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         }
     }
     
+    self.collectsMappingInfo = (![self.dataSource respondsToSelector:@selector(mappingOperationShouldCollectMappingInfo:)] ||
+                                [self.dataSource mappingOperationShouldCollectMappingInfo:self]);
+
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([self.mapping isKindOfClass:[RKDynamicMapping class]]) {
         self.objectMapping = [(RKDynamicMapping *)self.mapping objectMappingForRepresentation:self.sourceObject];
@@ -949,10 +957,14 @@ static NSString *const RKSelfKeyPathPrefix = @"self.";
         if ([self.delegate respondsToSelector:@selector(mappingOperation:didSelectObjectMapping:forDynamicMapping:)]) {
             [self.delegate mappingOperation:self didSelectObjectMapping:self.objectMapping forDynamicMapping:(RKDynamicMapping *)self.mapping];
         }
-        self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:self.objectMapping dynamicMapping:(RKDynamicMapping *)self.mapping];
+        if (self.collectsMappingInfo) {
+            self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:self.objectMapping dynamicMapping:(RKDynamicMapping *)self.mapping];
+        }
     } else if ([self.mapping isKindOfClass:[RKObjectMapping class]]) {
         self.objectMapping = (RKObjectMapping *)self.mapping;
-        self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:self.objectMapping dynamicMapping:nil];
+        if (self.collectsMappingInfo) {
+            self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:self.objectMapping dynamicMapping:nil];
+        }
     }
     
     BOOL canSkipMapping = [self.dataSource respondsToSelector:@selector(mappingOperationShouldSkipPropertyMapping:)] && [self.dataSource mappingOperationShouldSkipPropertyMapping:self];

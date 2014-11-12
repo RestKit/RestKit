@@ -251,14 +251,17 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             [self.delegate mapper:self didFinishMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
         }
         
-        id infoKey = keyPath ?: [NSNull null];
-        NSMutableArray *infoForKeyPath = [self.mutableMappingInfo objectForKey:infoKey];
-        if (infoForKeyPath) {
-            [infoForKeyPath addObject:mappingOperation.mappingInfo];
-        } else {
-            infoForKeyPath = [NSMutableArray arrayWithObject:mappingOperation.mappingInfo];
-            [self.mutableMappingInfo setValue:infoForKeyPath forKey:infoKey];
+        if (mappingOperation.mappingInfo) {
+            id infoKey = keyPath ?: [NSNull null];
+            NSMutableArray *infoForKeyPath = [self.mutableMappingInfo objectForKey:infoKey];
+            if (infoForKeyPath) {
+                [infoForKeyPath addObject:mappingOperation.mappingInfo];
+            } else {
+                infoForKeyPath = [NSMutableArray arrayWithObject:mappingOperation.mappingInfo];
+                [self.mutableMappingInfo setValue:infoForKeyPath forKey:infoKey];
+            }
         }
+        
         return YES;
     }
 }
