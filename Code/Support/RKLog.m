@@ -45,7 +45,7 @@
 {
     RKlcl_configure_by_name("RestKit*", RKLogLevelDefault);
     RKlcl_configure_by_name("App", RKLogLevelDefault);
-    RKSetLoggingClass([RKLOG_CLASS class]);
+    if (RKGetLoggingClass() == Nil) RKSetLoggingClass([RKLOG_CLASS class]);
     RKLogInfo(@"RestKit logging initialized...");
 }
 
@@ -64,11 +64,6 @@ void RKSetLoggingClass(Class <RKLogging> loggingClass)
 }
 
 @implementation RKNSLogLogger
-
-+ (void)load
-{
-    if (RKLoggingClass == Nil) RKLoggingClass = self;
-}
 
 + (void)logWithComponent:(_RKlcl_component_t)component
                    level:(_RKlcl_level_t)level
