@@ -31,6 +31,13 @@
 
 @end
 
+@interface RKKeyPathValueMapObjectMappingMatcher : RKObjectMappingMatcher
+@property (nonatomic, copy) NSString *keyPath;
+@property (nonatomic, copy) NSDictionary *valueMap;
+
+- (id)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping;
+@end
+
 @interface RKPredicateObjectMappingMatcher : RKObjectMappingMatcher
 @property (nonatomic, strong) NSPredicate *predicate;
 
@@ -51,6 +58,11 @@
     return [[RKKeyPathClassObjectMappingMatcher alloc] initWithKeyPath:keyPath expectedClass:expectedClass objectMapping:objectMapping];
 }
 
++ (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping
+{
+    return [[RKKeyPathValueMapObjectMappingMatcher alloc] initWithKeyPath:keyPath expectedValueMap:valueToObjectMapping];
+}
+
 + (instancetype)matcherWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
 {
     return [[RKPredicateObjectMappingMatcher alloc] initWithPredicate:predicate objectMapping:objectMapping];
@@ -69,6 +81,12 @@
     }
 
     return self;
+}
+
+- (NSArray *)possibleObjectMappings
+{
+    RKObjectMapping *mapping = self.objectMapping;
+    return mapping ? @[mapping] : nil;
 }
 
 - (BOOL)matches:(id)object
@@ -135,6 +153,45 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p when `%@` == '%@' objectMapping: %@>", NSStringFromClass([self class]), self, self.keyPath, self.expectedClass, self.objectMapping];
+}
+
+@end
+
+@implementation RKKeyPathValueMapObjectMappingMatcher
+
+- (id)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping
+{
+    NSParameterAssert(keyPath);
+    NSParameterAssert(valueToObjectMapping.count > 0);
+    self = [super init];
+    if (self) {
+        self.keyPath = keyPath;
+        self.valueMap = valueToObjectMapping;
+    }
+    
+    return self;
+}
+
+- (NSArray *)possibleObjectMappings
+{
+    return [self.valueMap allValues];
+}
+
+- (BOOL)matches:(id)object
+{
+    id value = [object valueForKeyPath:self.keyPath];
+    RKObjectMapping *mapping = [self.valueMap objectForKey:value];
+    if (mapping) {
+        self.objectMapping = mapping;
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p when `%@` in '%@'>", NSStringFromClass([self class]), self, self.keyPath, [self.valueMap allKeys]];
 }
 
 @end

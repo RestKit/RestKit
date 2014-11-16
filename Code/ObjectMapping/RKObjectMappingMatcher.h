@@ -48,6 +48,16 @@
  */
 + (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping;
 
+/**
+ Creates and returns a key path matcher object with a given key path, and a map of expected values to associated RKObjectMapping objects that applies in the event of a positive match with its associated value.  This method can evaluate the keyPath once
+ 
+ @param keyPath The key path to obtain the comparison value from the object being matched via `valueForKeyPath:`.
+ @param expectedValue The value that is expected to be read from `keyPath` if there is a match.
+ @param objectMapping The object mapping object that applies if the comparison value is equal to the expected value.
+ @return The receiver, initialized with the given key path, expected value, and object mapping.
+ */
++ (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping;
+
 ///--------------------------------------
 /// @name Constructing Predicate Matchers
 ///--------------------------------------
@@ -64,6 +74,11 @@
 ///-----------------------------------
 /// @name Accessing the Object Mapping
 ///-----------------------------------
+
+/**
+ Returns the list of all known RKObjectMapping instances which could be returned from this matcher.  This is called when added to or removed from an RKDynamicMapping, and is used to populate the `objectMappings` property there.  The default implementation returns the single value set in the `objectMapping` property, so if that is the only possibility then this method does not need to be overridden.
+ */
+@property (nonatomic, readonly) NSArray *possibleObjectMappings;
 
 /**
  The object mapping object that applies when the receiver matches a given object.
