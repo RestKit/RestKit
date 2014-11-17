@@ -244,8 +244,7 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
     id mockStore = [OCMockObject partialMockForObject:managedObjectStore];
-    BOOL success = NO;
-    [[[mockStore stub] andReturnValue:OCMOCK_VALUE(success)] save:[OCMArg anyPointer]];
+    [[[mockStore stub] andReturnValue:@NO] save:[OCMArg anyPointer]];
 
     RKObjectMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];

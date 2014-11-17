@@ -396,11 +396,9 @@ static NSManagedObjectModel *RKManagedObjectModel()
     [human setValue:@"This is my name" forKey:@"name"];
     
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
-    BOOL returnValue = NO;
-    [[[mockDelegate expect] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"this" inManagedObjectContext:managedObjectContext];
-    returnValue = YES;
-    [[[mockDelegate expect] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"my" inManagedObjectContext:managedObjectContext];
-    [[[mockDelegate expect] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"name" inManagedObjectContext:managedObjectContext];
+    [[[mockDelegate expect] andReturnValue:@NO] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"this" inManagedObjectContext:managedObjectContext];
+    [[[mockDelegate expect] andReturnValue:@YES] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"my" inManagedObjectContext:managedObjectContext];
+    [[[mockDelegate expect] andReturnValue:@YES] searchIndexer:OCMOCK_ANY shouldInsertSearchWordForWord:@"name" inManagedObjectContext:managedObjectContext];
     indexer.delegate = mockDelegate;
      
     NSUInteger count = [indexer indexManagedObject:human];
@@ -429,8 +427,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
     [human setValue:@"This is my name" forKey:@"name"];
     
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
-    BOOL returnValue = YES;
-    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:indexer shouldInsertSearchWordForWord:OCMOCK_ANY inManagedObjectContext:OCMOCK_ANY];
+    [[[mockDelegate stub] andReturnValue:@YES] searchIndexer:indexer shouldInsertSearchWordForWord:OCMOCK_ANY inManagedObjectContext:OCMOCK_ANY];
     [[mockDelegate expect] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:@"this" inManagedObjectContext:managedObjectContext];
     [[mockDelegate expect] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:@"is" inManagedObjectContext:managedObjectContext];
     [[mockDelegate expect] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:@"my" inManagedObjectContext:managedObjectContext];
@@ -458,13 +455,12 @@ static NSManagedObjectModel *RKManagedObjectModel()
     [human setValue:@"This is my name" forKey:@"name"];
     
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
-    BOOL returnValue = NO;
     RKSearchWord *searchWord = [NSEntityDescription insertNewObjectForEntityForName:@"RKSearchWord" inManagedObjectContext:managedObjectContext];
     [[[mockDelegate expect] andReturn:searchWord] searchIndexer:indexer searchWordForWord:@"this" inManagedObjectContext:managedObjectContext error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
     [[[mockDelegate expect] andReturn:searchWord] searchIndexer:indexer searchWordForWord:@"is" inManagedObjectContext:managedObjectContext error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
     [[[mockDelegate expect] andReturn:searchWord] searchIndexer:indexer searchWordForWord:@"my" inManagedObjectContext:managedObjectContext error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
     [[[mockDelegate expect] andReturn:searchWord] searchIndexer:indexer searchWordForWord:@"name" inManagedObjectContext:managedObjectContext error:(NSError * __autoreleasing *)[OCMArg anyPointer]];
-    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:indexer shouldInsertSearchWordForWord:OCMOCK_ANY inManagedObjectContext:OCMOCK_ANY];
+    [[[mockDelegate stub] andReturnValue:@NO] searchIndexer:indexer shouldInsertSearchWordForWord:OCMOCK_ANY inManagedObjectContext:OCMOCK_ANY];
     [[mockDelegate reject] searchIndexer:indexer didInsertSearchWord:OCMOCK_ANY forWord:OCMOCK_ANY inManagedObjectContext:OCMOCK_ANY];
     indexer.delegate = mockDelegate;
     
@@ -489,8 +485,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
     [human setValue:@"This is my name" forKey:@"name"];
     
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSearchIndexerDelegate)];
-    BOOL returnValue = NO;
-    [[[mockDelegate expect] andReturnValue:OCMOCK_VALUE(returnValue)] searchIndexer:indexer shouldIndexManagedObject:human];
+    [[[mockDelegate expect] andReturnValue:@NO] searchIndexer:indexer shouldIndexManagedObject:human];
     indexer.delegate = mockDelegate;
     
     [indexer indexChangedObjectsInManagedObjectContext:managedObjectContext waitUntilFinished:YES];
