@@ -55,6 +55,10 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 - (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
 @end
 
+@interface RKMappingOperation (Private)
+@property (nonatomic, readwrite, getter=isNewDestinationObject) BOOL newDestinationObject;
+@end
+
 @interface RKMapperMetadata : NSObject
 @property NSUInteger collectionIndex;
 @property NSString *rootKeyPath;
@@ -152,7 +156,8 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 {
     NSAssert([representation respondsToSelector:@selector(setValue:forKeyPath:)], @"Expected self.object to be KVC compliant");
     id destinationObject = nil;
-
+    BOOL isNewObject = NO;
+    
     if (self.targetObject) {
         destinationObject = self.targetObject;
         RKObjectMapping *objectMapping = nil;
@@ -174,15 +179,17 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             } else {
                 // There is more than one mapping present. We are likely mapping secondary key paths to new objects
                 destinationObject = [self objectForRepresentation:representation withMapping:mapping];
+                isNewObject = YES;
             }
         }
     } else {
         destinationObject = [self objectForRepresentation:representation withMapping:mapping];
+        isNewObject = YES;
     }
 
     if (mapping && destinationObject) {
         NSArray *metadataList = [NSArray arrayWithObjects:@{ @"mapping": @{ @"rootKeyPath": keyPath } }, self.metadata, nil];
-        BOOL success = [self mapRepresentation:representation toObject:destinationObject atKeyPath:keyPath usingMapping:mapping metadataList:metadataList];
+        BOOL success = [self mapRepresentation:representation toObject:destinationObject isNew:isNewObject atKeyPath:keyPath usingMapping:mapping metadataList:metadataList];
         if (success) {
             return destinationObject;
         }
@@ -225,7 +232,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
         id destinationObject = [self objectForRepresentation:mappableObject withMapping:mapping];
         if (destinationObject) {
             mappingData.collectionIndex = index;
-            BOOL success = [self mapRepresentation:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping metadataList:metadataList];
+            BOOL success = [self mapRepresentation:mappableObject toObject:destinationObject isNew:YES atKeyPath:keyPath usingMapping:mapping metadataList:metadataList];
             if (success) [mappedObjects addObject:destinationObject];
         }
         *stop = [self isCancelled];
@@ -235,7 +242,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 }
 
 // The workhorse of this entire process. Emits object loading operations
-- (BOOL)mapRepresentation:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping metadataList:(NSArray *)metadataList
+- (BOOL)mapRepresentation:(id)mappableObject toObject:(id)destinationObject isNew:(BOOL)newDestination atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping metadataList:(NSArray *)metadataList
 {
     NSAssert(destinationObject != nil, @"Cannot map without a target object to assign the results to");
     NSAssert(mappableObject != nil, @"Cannot map without a collection of attributes");
@@ -245,6 +252,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject mapping:mapping metadataList:metadataList];
     mappingOperation.dataSource = self.mappingOperationDataSource;
+    mappingOperation.newDestinationObject = newDestination;
     if ([self.delegate respondsToSelector:@selector(mapper:willStartMappingOperation:forKeyPath:)]) {
         [self.delegate mapper:self willStartMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
     }
