@@ -138,6 +138,11 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     return newArray;
 }
 
+@interface RKMappingSourceObject : NSProxy
+- (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
+- (id)metadataValueForKey:(NSString *)key;
+- (id)metadataValueForKeyPath:(NSString *)keyPath;
+@end
 
 /**
  Class used in the single case of RKMappingSourceObject needing to return a single object
@@ -147,38 +152,26 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
  in case it does this class provides the implementation.
  */
 @interface RKMetadataWrapper : NSObject
-- (id)initWithMetadataList:(NSArray *)list;
-@property (nonatomic, strong) NSArray *metadataList;
+- (id)initWithMappingSource:(RKMappingSourceObject *)source;
+@property (nonatomic, strong) RKMappingSourceObject *mappingSource;
 @end
 
 @implementation RKMetadataWrapper
 
-- (id)initWithMetadataList:(NSArray *)list {
+- (id)initWithMappingSource:(RKMappingSourceObject *)source {
     if (self = [super init]) {
-        self.metadataList = list;
+        self.mappingSource = source;
     }
     return self;
 }
 
 - (id)valueForKey:(NSString *)key
 {
-    for (NSDictionary *dict in self.metadataList)
-    {
-        id val = [dict valueForKey:key];
-        if (val != nil) return val;
-    }
-    
-    return nil;
+    return [self.mappingSource metadataValueForKey:key];
 }
 - (id)valueForKeyPath:(NSString *)keyPath
 {
-    for (NSDictionary *dict in self.metadataList)
-    {
-        id val = [dict valueForKeyPath:keyPath];
-        if (val != nil) return val;
-    }
-    
-    return nil;
+    return [self.mappingSource metadataValueForKeyPath:keyPath];
 }
 @end
 
@@ -238,10 +231,6 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 @end
 
 
-@interface RKMappingSourceObject : NSProxy
-- (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
-@end
-
 @interface RKMappingSourceObject ()
 @property (nonatomic, strong) id object;
 @property (nonatomic, strong) id parentObject;
@@ -270,6 +259,17 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     [invocation invokeWithTarget:self.object];
 }
 
+- (id)metadataValueForKey:(NSString *)key
+{
+    for (NSDictionary *dict in self.metadataList)
+    {
+        id val = [dict valueForKey:key];
+        if (val != nil) return val;
+    }
+    
+    return nil;
+}
+
 - (id)metadataValueForKeyPath:(NSString *)keyPath
 {
     for (NSDictionary *dict in self.metadataList)
@@ -291,7 +291,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     } else if (firstChar != '@') {
         return [self.object valueForKey:key];
     } else if ([key isEqualToString:RKMetadataKey]) {
-        return [[RKMetadataWrapper alloc] initWithMetadataList:self.metadataList];
+        return [[RKMetadataWrapper alloc] initWithMappingSource:self];
     } else if ([key isEqualToString:RKParentKey]) {
         return self.parentObject;
     } else if ([key isEqualToString:RKRootKey]) {
