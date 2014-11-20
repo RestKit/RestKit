@@ -51,7 +51,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 }
 
 // Duplicating interface from `RKMappingOperation.m`
-@interface RKMappingSourceObject : NSProxy
+@interface RKMappingSourceObject : NSObject
 - (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
 @end
 
