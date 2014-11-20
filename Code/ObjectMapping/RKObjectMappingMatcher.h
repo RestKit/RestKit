@@ -54,7 +54,7 @@
  @param keyPath The key path to obtain the comparison value from the object being matched via `valueForKeyPath:`.
  @param expectedValue The value that is expected to be read from `keyPath` if there is a match.
  @param objectMapping The object mapping object that applies if the comparison value is equal to the expected value.
- @return The receiver, initialized with the given key path, expected value, and object mapping.
+ @return The receiver, initialized with the given key path and expected value map.
  */
 + (instancetype)matcherWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping;
 
@@ -70,6 +70,16 @@
  @return The receiver, initialized with the given key path, expected value, and object mapping.
  */
 + (instancetype)matcherWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping;
+
+
+/**
+ Creates and returns a matcher object with a given block which returns the RKObjectMapping instance to use, and an optional array of possible object mappings which could be returned.
+ 
+ @param possibleMappings The list of known possible RKObjectMapping instances which could be returned.  This is used to aid RKDynamicMapping's -objectMappings method which is used in some instances, but is not required for mapping.  The block could return a new instance if needed.
+ @param block The block with which to evaluate the matched object, and return the object mapping to use.
+ @return The receiver, initialized with the given block ans possible mappings.
+ */
++ (instancetype)matcherWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block;
 
 ///-----------------------------------
 /// @name Accessing the Object Mapping

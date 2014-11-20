@@ -55,15 +55,6 @@
     return self.possibleObjectMappings;
 }
 
-- (void)setPossibleObjectMappings:(NSArray *)possibleObjectMappings forRepresentationBlock:(RKObjectMapping *(^)(id representation))block;
-{
-    self.objectMappingForRepresentationBlock = block;
-    
-    if (possibleObjectMappings.count > 0) {
-        self.possibleObjectMappings = [self.possibleObjectMappings arrayByAddingObjectsFromArray:possibleObjectMappings];
-    }
-}
-
 - (void)addMatcher:(RKObjectMappingMatcher *)matcher
 {
     NSParameterAssert(matcher);

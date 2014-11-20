@@ -44,6 +44,13 @@
 - (id)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping;
 @end
 
+@interface RKBlockObjectMatchingMatcher : RKObjectMappingMatcher
+@property (nonatomic, copy) NSArray *possibleMappings;
+@property (nonatomic, copy) RKObjectMapping *(^block)(id representation);
+- (id)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block;
+@end
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation RKObjectMappingMatcher
@@ -66,6 +73,11 @@
 + (instancetype)matcherWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
 {
     return [[RKPredicateObjectMappingMatcher alloc] initWithPredicate:predicate objectMapping:objectMapping];
+}
+
++ (instancetype)matcherWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block
+{
+    return [[RKBlockObjectMatchingMatcher alloc] initWithPossibleMappings:mappings block:block];
 }
 
 - (id)init
@@ -219,6 +231,43 @@
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p when '%@' objectMapping: %@>", NSStringFromClass([self class]), self, self.predicate, self.objectMapping];
+}
+
+@end
+
+@implementation RKBlockObjectMatchingMatcher
+
+- (id)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block
+{
+    NSParameterAssert(block);
+    self = [super init];
+    if (self) {
+        self.block = block;
+        self.possibleMappings = mappings;
+    }
+    
+    return self;
+}
+
+- (NSArray *)possibleObjectMappings
+{
+    return self.possibleMappings;
+}
+
+- (BOOL)matches:(id)object
+{
+    RKObjectMapping *mapping = self.block(object);
+    if (mapping) {
+        self.objectMapping = mapping;
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p when '%@'>", NSStringFromClass([self class]), self, self.block];
 }
 
 @end

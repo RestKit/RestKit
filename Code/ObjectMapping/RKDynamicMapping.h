@@ -69,14 +69,6 @@
 - (void)setObjectMappingForRepresentationBlock:(RKObjectMapping *(^)(id representation))block;
 
 /**
- Sets a block to be invoked to determine the appropriate concrete object mapping with which to map an object representation, along with the possible known RKObjectMapping instances which could be returned.
-
- @param block The block object to invoke to select the object mapping with which to map the given object representation. The block returns an object mapping and accepts a single parameter: the object representation being mapped.
- @param possibleObjectMappings The list of RKObjectMapping instances which could possibly be returned.  These will then be returned in the `objectMappings` value (along with any others added via matchers).
- */
-- (void)setPossibleObjectMappings:(NSArray *)possibleObjectMappings forRepresentationBlock:(RKObjectMapping *(^)(id representation))block;
-
-/**
  Returns the array of matchers objects added to the receiver.
  */
 @property (nonatomic, strong, readonly) NSArray *matchers;
