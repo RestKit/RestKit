@@ -424,6 +424,8 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 @property (nonatomic, strong) RKMappingInfo *mappingInfo;
 @property (nonatomic, getter=isCancelled) BOOL cancelled;
 @property (nonatomic) BOOL collectsMappingInfo;
+@property (nonatomic) BOOL shouldSetUnchangedValues;
+@property (nonatomic, readwrite, getter=isNewDestinationObject) BOOL newDestinationObject;
 @end
 
 @implementation RKMappingOperation
@@ -531,7 +533,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     }
     
     // Always set the properties
-    if ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] && [self.dataSource mappingOperationShouldSetUnchangedValues:self]) {
+    if (self.shouldSetUnchangedValues) {
         return [self validateValue:value atKeyPath:keyPath];
     }
     
@@ -756,6 +758,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     subOperation.delegate = self.delegate;
     subOperation.parentSourceObject = parentSourceObject;
     subOperation.rootSourceObject = self.rootSourceObject;
+    subOperation.newDestinationObject = YES;
     [subOperation start];
     
     if (subOperation.error) {
@@ -1107,6 +1110,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorNilDestinationObject userInfo:userInfo];
             return;
         }
+        self.newDestinationObject = YES;
     }
     
     id dataSource = self.dataSource;
@@ -1117,6 +1121,9 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     self.collectsMappingInfo = (![dataSource respondsToSelector:@selector(mappingOperationShouldCollectMappingInfo:)] ||
                                 [dataSource mappingOperationShouldCollectMappingInfo:self]);
 
+    self.shouldSetUnchangedValues = ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] &&
+                                     [self.dataSource mappingOperationShouldSetUnchangedValues:self]);
+    
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
         self.objectMapping = objectMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:sourceObject];
