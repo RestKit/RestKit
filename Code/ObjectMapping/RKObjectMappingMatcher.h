@@ -76,7 +76,7 @@
  Creates and returns a matcher object with a given block which returns the RKObjectMapping instance to use, and an optional array of possible object mappings which could be returned.
  
  @param possibleMappings The list of known possible RKObjectMapping instances which could be returned.  This is used to aid RKDynamicMapping's -objectMappings method which is used in some instances, but is not required for mapping.  The block could return a new instance if needed.
- @param block The block with which to evaluate the matched object, and return the object mapping to use.
+ @param block The block with which to evaluate the matched object, and return the object mapping to use.  Return nil if no match (i.e. a `NO` return from the `-matches:` method).
  @return The receiver, initialized with the given block ans possible mappings.
  */
 + (instancetype)matcherWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block;

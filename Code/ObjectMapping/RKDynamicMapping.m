@@ -64,9 +64,9 @@
     } else {
         [self.mutableMatchers addObject:matcher];
 
-        NSArray *possible = [matcher possibleObjectMappings];
-        if (possible.count > 0) {
-            self.possibleObjectMappings = [self.possibleObjectMappings arrayByAddingObjectsFromArray:possible];
+        NSArray *newPossibleMappings = [matcher possibleObjectMappings];
+        if (newPossibleMappings.count > 0) {
+            self.possibleObjectMappings = [self.possibleObjectMappings arrayByAddingObjectsFromArray:newPossibleMappings];
         }
     }
 }
