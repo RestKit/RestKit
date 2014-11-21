@@ -35,7 +35,7 @@
 @property (nonatomic, copy) NSString *keyPath;
 @property (nonatomic, copy) NSDictionary *valueMap;
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping;
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping;
 @end
 
 @interface RKPredicateObjectMappingMatcher : RKObjectMappingMatcher
@@ -47,7 +47,7 @@
 @interface RKBlockObjectMatchingMatcher : RKObjectMappingMatcher
 @property (nonatomic, copy) NSArray *possibleMappings;
 @property (nonatomic, copy) RKObjectMapping *(^block)(id representation);
-- (id)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block;
+- (instancetype)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block;
 @end
 
 
@@ -171,7 +171,7 @@
 
 @implementation RKKeyPathValueMapObjectMappingMatcher
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping
 {
     NSParameterAssert(keyPath);
     NSParameterAssert(valueToObjectMapping.count > 0);
@@ -237,7 +237,7 @@
 
 @implementation RKBlockObjectMatchingMatcher
 
-- (id)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block
+- (instancetype)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block
 {
     NSParameterAssert(block);
     self = [super init];
