@@ -6,7 +6,7 @@ PODS:
   - OCHamcrest (3.0.1)
   - OCMock (2.2.4)
   - RestKit (0.23.3):
-    - RestKit/Core
+    - RestKit/Core (= 0.23.3)
   - RestKit/Core (0.23.3):
     - RestKit/CoreData
     - RestKit/Network
@@ -55,11 +55,11 @@ SPEC CHECKSUMS:
   ISO8601DateFormatterValueTransformer: a705384ea6531255258e25b6480ba1180db703a0
   OCHamcrest: 207233b7d7a44dadd66aca398947cc7e029c9be5
   OCMock: 6db79185520e24f9f299548f2b8b07e41d881bd5
-  RestKit: ed18af01bf1fef0444cd6c4d11a6d0fb085979a8
+  RestKit: 95b0cece7f283e718bcd301f47e913006374c0e4
   RKCLLocationValueTransformer: 4803de0b5bdd81a1ebedb93a8a1d715f92ceb3f4
   RKValueTransformers: b705e7b4651b9206b94600408462b74554bba969
   SOCKit: d8d0dd3688ae1026c12367570da8fa8e1a6980fb
   Specta: 9141310f46b1f68b676650ff2854e1ed0b74163a
   TransitionKit: 6a6f3ddda38ae758778aa889dcb930e4f8d64edc
 
-COCOAPODS: 0.34.4
+COCOAPODS: 0.35.0
