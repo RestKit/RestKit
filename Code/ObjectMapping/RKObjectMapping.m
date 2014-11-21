@@ -271,6 +271,10 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
             self.keyPathAttributeMappings = RKAddProperty(self.keyPathAttributeMappings, propertyMapping);
         }
     }
+    
+    if (propertyMapping.propertyValueClass == Nil && ![self.objectClass isSubclassOfClass:[NSDictionary class]]) {
+        propertyMapping.propertyValueClass = [self classForKeyPath:propertyMapping.destinationKeyPath];
+    }
 }
 
 - (void)addPropertyMappingsFromArray:(NSArray *)arrayOfPropertyMappings
