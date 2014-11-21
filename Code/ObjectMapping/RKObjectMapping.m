@@ -104,7 +104,14 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 @interface RKObjectMapping ()
 @property (nonatomic, weak, readwrite) Class objectClass;
-@property (nonatomic, strong) NSMutableArray *mutablePropertyMappings;
+@property (nonatomic, copy, readwrite) NSArray *propertyMappings;
+
+@property (nonatomic, strong) NSArray *relationshipMappings;
+@property (nonatomic, strong) NSArray *attributeMappings;
+@property (nonatomic, strong) NSArray *keyAttributeMappings;
+@property (nonatomic, strong) NSArray *keyPathAttributeMappings;
+@property (nonatomic, strong) NSMutableDictionary *propertiesBySourceKeyPath;
+@property (nonatomic, strong) NSMutableDictionary *propertiesByDestinationKeyPath;
 
 @property (nonatomic, weak, readonly) NSArray *mappedKeyPaths;
 @property (nonatomic, copy) RKSourceToDesinationKeyTransformationBlock sourceToDestinationKeyTransformationBlock;
@@ -148,7 +155,13 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     self = [super init];
     if (self) {
         self.objectClass = objectClass;
-        self.mutablePropertyMappings = [NSMutableArray new];
+        self.propertyMappings = [NSArray new];
+        self.relationshipMappings = [NSArray new];
+        self.attributeMappings = [NSArray new];
+        self.keyAttributeMappings = [NSArray new];
+        self.keyPathAttributeMappings = [NSArray new];
+        self.propertiesBySourceKeyPath = [NSMutableDictionary new];
+        self.propertiesByDestinationKeyPath = [NSMutableDictionary new];
         self.assignsDefaultValueForMissingAttributes = NO;
         self.assignsNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
@@ -174,7 +187,6 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 {
     RKObjectMapping *copy = [[[self class] allocWithZone:zone] initWithClass:self.objectClass];
     [copy copyPropertiesFromMapping:self];
-    copy.mutablePropertyMappings = [NSMutableArray new];
 
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
         [copy addPropertyMapping:[propertyMapping copy]];
@@ -188,31 +200,14 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     defaultSourceToDestinationKeyTransformationBlock = block;
 }
 
-- (NSArray *)propertyMappings
-{
-    return [NSArray arrayWithArray:_mutablePropertyMappings];
-}
-
 - (NSDictionary *)propertyMappingsBySourceKeyPath
 {
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[self.propertyMappings count]];
-    for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
-        if (! propertyMapping.sourceKeyPath) continue;
-        [dictionary setObject:propertyMapping forKey:propertyMapping.sourceKeyPath];
-    }
-    
-    return dictionary;
+    return [self.propertiesBySourceKeyPath copy];
 }
 
 - (NSDictionary *)propertyMappingsByDestinationKeyPath
 {
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[self.propertyMappings count]];
-    for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
-        if (! propertyMapping.destinationKeyPath) continue;
-        [dictionary setObject:propertyMapping forKey:propertyMapping.destinationKeyPath];
-    }
-    
-    return dictionary;
+    return [self.propertiesByDestinationKeyPath copy];
 }
 
 - (NSArray *)mappedKeyPaths
@@ -222,36 +217,64 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (NSArray *)attributeMappings
 {
-    NSMutableArray *mappings = [NSMutableArray array];
-    for (RKAttributeMapping *mapping in self.propertyMappings) {
-        if ([mapping isMemberOfClass:[RKAttributeMapping class]]) {
-            [mappings addObject:mapping];
-        }
-    }
-
-    return mappings;
+    return _attributeMappings;
 }
 
 - (NSArray *)relationshipMappings
 {
-    NSMutableArray *mappings = [NSMutableArray array];
-    for (RKAttributeMapping *mapping in self.propertyMappings) {
-        if ([mapping isMemberOfClass:[RKRelationshipMapping class]]) {
-            [mappings addObject:mapping];
-        }
-    }
+    return _relationshipMappings;
+}
 
-    return mappings;
+- (NSArray *)keyAttributeMappings
+{
+    return _keyAttributeMappings;
+}
+
+- (NSArray *)keyPathAttributeMappings
+{
+    return _keyPathAttributeMappings;
+}
+
+static NSArray *RKAddProperty(NSArray *array, RKPropertyMapping *mapping)
+{
+    return (array)? [array arrayByAddingObject:mapping] : [NSArray arrayWithObject:mapping];
+}
+
+static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
+{
+    if (![array containsObject:mapping]) return array;
+    NSMutableArray *mappings = [[NSMutableArray alloc] initWithArray:array]; //alloc/init avoids autorelease
+    [mappings removeObject:mapping];
+    return [mappings copy];
 }
 
 - (void)addPropertyMapping:(RKPropertyMapping *)propertyMapping
 {
     NSAssert1([[self mappedKeyPaths] containsObject:propertyMapping.destinationKeyPath] == NO,
               @"Unable to add mapping for keyPath %@, one already exists...", propertyMapping.destinationKeyPath);
-    NSAssert(self.mutablePropertyMappings, @"self.mutablePropertyMappings is nil");
+    NSAssert(self.propertyMappings, @"self.propertyMappings is nil");
     NSAssert(propertyMapping.objectMapping == nil, @"Cannot add a property mapping object that has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the mapping: `[propertyMapping copy]`");
     propertyMapping.objectMapping = self;
-    [self.mutablePropertyMappings addObject:propertyMapping];
+    self.propertyMappings = [self.propertyMappings arrayByAddingObject:propertyMapping];
+    if (propertyMapping.sourceKeyPath) [self.propertiesBySourceKeyPath setObject:propertyMapping forKey:propertyMapping.sourceKeyPath];
+    if (propertyMapping.destinationKeyPath) [self.propertiesByDestinationKeyPath setObject:propertyMapping forKey:propertyMapping.destinationKeyPath];
+    if ([propertyMapping isMemberOfClass:[RKRelationshipMapping class]]) {
+        self.relationshipMappings = RKAddProperty(self.relationshipMappings, propertyMapping);
+    }
+    else if ([propertyMapping isMemberOfClass:[RKAttributeMapping class]])
+    {
+        self.attributeMappings = RKAddProperty(self.attributeMappings, propertyMapping);
+        if ([propertyMapping.sourceKeyPath rangeOfString:@"." options:NSLiteralSearch].length == 0) {
+            self.keyAttributeMappings = RKAddProperty(self.keyAttributeMappings, propertyMapping);
+        }
+        else {
+            self.keyPathAttributeMappings = RKAddProperty(self.keyPathAttributeMappings, propertyMapping);
+        }
+    }
+    
+    if (propertyMapping.propertyValueClass == Nil && ![self.objectClass isSubclassOfClass:[NSDictionary class]]) {
+        propertyMapping.propertyValueClass = [self classForKeyPath:propertyMapping.destinationKeyPath];
+    }
 }
 
 - (void)addPropertyMappingsFromArray:(NSArray *)arrayOfPropertyMappings
@@ -270,31 +293,24 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
 {
-    for (RKPropertyMapping *mapping in self.propertyMappings) {
-        if (mapping.sourceKeyPath == sourceKeyPath || [mapping.sourceKeyPath isEqualToString:sourceKeyPath]) {
-            return mapping;
-        }
-    }
-
-    return nil;
+    return [_propertiesBySourceKeyPath objectForKey:sourceKeyPath];
 }
 
 - (id)mappingForDestinationKeyPath:(NSString *)destinationKeyPath
 {
-    for (RKPropertyMapping *mapping in self.propertyMappings) {
-        if ([mapping.destinationKeyPath isEqualToString:destinationKeyPath]) {
-            return mapping;
-        }
-    }
-
-    return nil;
+    return [_propertiesByDestinationKeyPath objectForKey:destinationKeyPath];
 }
 
 // Evaluate each component individually so that camelization, etc. considers each component individually
 - (NSString *)transformSourceKeyPath:(NSString *)keyPath
 {
     if (!self.sourceToDestinationKeyTransformationBlock) return keyPath;
-    
+
+    NSRange dotRange = [keyPath rangeOfString:@"." options:NSLiteralSearch];
+    if (dotRange.length == 0) {
+        return self.sourceToDestinationKeyTransformationBlock(self, keyPath);
+    }
+
     NSArray *components = [keyPath componentsSeparatedByString:@"."];
     NSMutableArray *mutableComponents = [NSMutableArray arrayWithCapacity:[components count]];
     [components enumerateObjectsUsingBlock:^(id component, NSUInteger idx, BOOL *stop) {
@@ -341,9 +357,15 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (void)removePropertyMapping:(RKPropertyMapping *)attributeOrRelationshipMapping
 {
-    if ([self.mutablePropertyMappings containsObject:attributeOrRelationshipMapping]) {
+    if ([self.propertyMappings containsObject:attributeOrRelationshipMapping]) {
         attributeOrRelationshipMapping.objectMapping = nil;
-        [self.mutablePropertyMappings removeObject:attributeOrRelationshipMapping];
+        self.propertyMappings = RKRemoveProperty(self.propertyMappings, attributeOrRelationshipMapping);
+        self.relationshipMappings = RKRemoveProperty(self.relationshipMappings, attributeOrRelationshipMapping);
+        self.attributeMappings = RKRemoveProperty(self.attributeMappings, attributeOrRelationshipMapping);
+        self.keyAttributeMappings = RKRemoveProperty(self.keyAttributeMappings, attributeOrRelationshipMapping);
+        self.keyPathAttributeMappings = RKRemoveProperty(self.keyPathAttributeMappings, attributeOrRelationshipMapping);
+        [self.propertiesBySourceKeyPath removeObjectForKey:attributeOrRelationshipMapping.sourceKeyPath];
+        [self.propertiesByDestinationKeyPath removeObjectForKey:attributeOrRelationshipMapping.destinationKeyPath];
     }
 }
 
@@ -402,10 +424,18 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 - (Class)classForKeyPath:(NSString *)keyPath
 {
+    if (keyPath == nil) return self.objectClass;
+
+    RKPropertyInspector *inspector = [RKPropertyInspector sharedInspector];
+
+    if ([keyPath rangeOfString:@"." options:NSLiteralSearch].length == 0) {
+        return [inspector classForPropertyNamed:keyPath ofClass:self.objectClass isPrimitive:nil];
+    }
+
     NSArray *components = [keyPath componentsSeparatedByString:@"."];
     Class propertyClass = self.objectClass;
     for (NSString *property in components) {
-        propertyClass = [[RKPropertyInspector sharedInspector] classForPropertyNamed:property ofClass:propertyClass isPrimitive:nil];
+        propertyClass = [inspector classForPropertyNamed:property ofClass:propertyClass isPrimitive:nil];
         if (! propertyClass) break;
     }
 

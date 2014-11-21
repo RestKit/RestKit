@@ -239,7 +239,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:mapping metadata:nil];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user isNew:YES atKeyPath:@"" usingMapping:mapping metadataList:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThatInt([user.userID intValue], is(equalToInt(31337)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
@@ -738,6 +738,8 @@
     NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"} ] };
     RKTestUser *user = [RKTestUser new];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    OCMockObject *mockDataSource = [OCMockObject partialMockForObject:dataSource];
+    [[[mockDataSource stub] andReturnValue:@YES] mappingOperationShouldCollectMappingInfo:OCMOCK_ANY];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:user mapping:mapping];
     mappingOperation.dataSource = dataSource;
     [mappingOperation start];
@@ -760,6 +762,8 @@
     NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"}, @{ @"name": @"Dan Gellert" } ] };
     RKTestUser *user = [RKTestUser new];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    OCMockObject *mockDataSource = [OCMockObject partialMockForObject:dataSource];
+    [[[mockDataSource stub] andReturnValue:@YES] mappingOperationShouldCollectMappingInfo:OCMOCK_ANY];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:user mapping:mapping];
     mappingOperation.dataSource = dataSource;
     [mappingOperation start];
@@ -781,6 +785,8 @@
     NSDictionary *representation = @{ @"name": @"Blake Watters", @"friends": @[ @{ @"name": @"Jeff Arena"}, @{ @"name": @"Dan Gellert" } ] };
     RKTestUser *user = [RKTestUser new];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    OCMockObject *mockDataSource = [OCMockObject partialMockForObject:dataSource];
+    [[[mockDataSource stub] andReturnValue:@YES] mappingOperationShouldCollectMappingInfo:OCMOCK_ANY];
     RKMapperOperation *mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:representation mappingsDictionary:@{ [NSNull null]: mapping }];
     mapperOperation.targetObject = user;
     mapperOperation.mappingOperationDataSource = dataSource;
@@ -799,7 +805,7 @@
 - (void)testShouldNotifyTheDelegateWhenItFailedToMapAnObject
 {
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMapperOperationDelegate)];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:NSClassFromString(@"OCPartialMockObject")];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [mapping addAttributeMappingsFromArray:@[@"name"]];
 
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
@@ -813,9 +819,9 @@
     [[mockDelegate expect] mapper:mapper didFailMappingOperation:OCMOCK_ANY forKeyPath:nil withError:OCMOCK_ANY];
     mapper.delegate = mockDelegate;
     [mapper start];
+    [mockInspector stopMocking];
     [mockObject verify];
     [mockDelegate verify];
-    [mockInspector stopMocking];
 }
 
 #pragma mark - RKObjectMappingOperationTests
@@ -1339,7 +1345,7 @@
     operation.delegate = mockDelegate;
     NSError *error = nil;
     [[mockDelegate expect] mappingOperation:operation didFindValue:[NSNull null] forKeyPath:@"name" mapping:nameMapping];
-    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE((BOOL){YES})] mappingOperation:operation shouldSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
+    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE(YES)] mappingOperation:operation shouldSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
     [[mockDelegate expect] mappingOperation:operation didSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
     operation.dataSource = dataSource;
     [operation performMapping:&error];
@@ -1385,8 +1391,7 @@
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     id mockMapping = [OCMockObject partialMockForObject:mapping];
-    BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] assignsDefaultValueForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:@YES] assignsDefaultValueForMissingAttributes];
     NSError *error = nil;
     [operation performMapping:&error];
     [mockUser verify];
@@ -1408,8 +1413,7 @@
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     id mockMapping = [OCMockObject partialMockForObject:mapping];
-    BOOL returnValue = NO;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetDefaultValueForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:@NO] shouldSetDefaultValueForMissingAttributes];
     NSError *error = nil;
     [operation performMapping:&error];
     assertThat(user.name, is(equalTo(@"Blake Watters")));
@@ -1606,7 +1610,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping metadata:nil];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user isNew:YES atKeyPath:@"" usingMapping:userMapping metadataList:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.address, isNot(nilValue()));
@@ -1628,7 +1632,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping metadata:nil];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user isNew:YES atKeyPath:@"" usingMapping:userMapping metadataList:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friends, isNot(nilValue()));
@@ -1651,7 +1655,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping metadata:nil];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user isNew:YES atKeyPath:@"" usingMapping:userMapping metadataList:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsOrderedSet, isNot(nilValue()));
@@ -1671,7 +1675,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping metadata:nil];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user isNew:YES atKeyPath:@"" usingMapping:userMapping metadataList:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friends, isNot(nilValue()));
@@ -1693,7 +1697,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping metadata:nil];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user isNew:YES atKeyPath:@"" usingMapping:userMapping metadataList:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsSet, isNot(nilValue()));
@@ -1716,7 +1720,7 @@
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
-    BOOL success = [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping metadata:nil];
+    BOOL success = [mapper mapRepresentation:userInfo toObject:user isNew:YES atKeyPath:@"" usingMapping:userMapping metadataList:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsOrderedSet, isNot(nilValue()));
@@ -1748,7 +1752,7 @@
     RKMapperOperation *mapper = [RKMapperOperation new];
     mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
-    [mapper mapRepresentation:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping metadata:nil];
+    [mapper mapRepresentation:userInfo toObject:user isNew:NO atKeyPath:@"" usingMapping:userMapping metadataList:nil];
 }
 
 - (void)testSkippingOfIdenticalObjectsInformsDelegate
@@ -1775,7 +1779,7 @@
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKMappingOperationDelegate)];
-    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE((BOOL){NO})] mappingOperation:operation shouldSetValue:OCMOCK_ANY forKeyPath:OCMOCK_ANY usingMapping:OCMOCK_ANY];
+    [[[mockDelegate stub] andReturnValue:OCMOCK_VALUE(NO)] mappingOperation:operation shouldSetValue:OCMOCK_ANY forKeyPath:OCMOCK_ANY usingMapping:OCMOCK_ANY];
     [[mockDelegate expect] mappingOperation:operation didNotSetUnchangedValue:OCMOCK_ANY forKeyPath:@"address" usingMapping:hasOneMapping];
     operation.delegate = mockDelegate;
     [operation performMapping:nil];
@@ -1809,7 +1813,7 @@
 
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser reject] setFriends:OCMOCK_ANY];
-    [mapper mapRepresentation:userInfo toObject:mockUser atKeyPath:@"" usingMapping:userMapping metadata:nil];
+    [mapper mapRepresentation:userInfo toObject:mockUser isNew:NO atKeyPath:@"" usingMapping:userMapping metadataList:nil];
     [mockUser verify];
 }
 
@@ -1834,8 +1838,7 @@
     NSMutableDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
     [dictionary removeObjectForKey:@"address"];
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
-    BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] assignsNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:@YES] assignsNilForMissingRelationships];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mockMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -1864,8 +1867,7 @@
     NSMutableDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
     [dictionary removeObjectForKey:@"address"];
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
-    BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:@YES] setNilForMissingRelationships];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mockMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -2671,8 +2673,7 @@
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.HTTP.request.URL": @"website" }];
     RKTestUser *user = [RKTestUser new];
-    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping];
-    mappingOperation.metadata = metadata;
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping metadataList:@[metadata]];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     mappingOperation.dataSource = dataSource;
     [mappingOperation start];
@@ -2688,8 +2689,7 @@
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.HTTP.request.headers.Content-Type": @"emailAddress" }];
     RKTestUser *user = [RKTestUser new];
-    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping];
-    mappingOperation.metadata = metadata;
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:objectRepresentation destinationObject:user mapping:userMapping metadataList:@[metadata]];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     mappingOperation.dataSource = dataSource;
     [mappingOperation start];

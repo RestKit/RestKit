@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             =  'RestKit'
-  s.version          =  '0.23.3'
+  s.version          =  '0.24.0'
   s.summary          =  'RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X.'
   s.homepage         =  'http://www.restkit.org'
   s.social_media_url =  'https://twitter.com/RestKit'
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
 
   # Platform setup
   s.requires_arc = true
-  s.ios.deployment_target = '5.0'
+  s.ios.deployment_target = '5.1.1'
   s.osx.deployment_target = '10.7'
   
   # Exclude optional Search and Testing modules
@@ -99,7 +99,7 @@ EOS
   end
   
   s.subspec 'Support' do |ss|
-    ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core', 'Vendor/LibComponentLogging/NSLog'
+    ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core'
     ss.dependency 'TransitionKit', '2.1.0'
   end
 end

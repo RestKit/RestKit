@@ -95,6 +95,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1BBF770CA495AD12361E6DA5 /* Pods-RKTwitterCocoaPods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKTwitterCocoaPods.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RKTwitterCocoaPods/Pods-RKTwitterCocoaPods.debug.xcconfig"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* RKTwitterAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitterAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* RKTwitterAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTwitterAppDelegate.m; sourceTree = "<group>"; };
@@ -126,8 +127,8 @@
 		7666CC5642F94148AF23256A /* libPods-RKTwitterCocoaPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RKTwitterCocoaPods.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		84F524C112824D5000C370EA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		84F524C512824D5B00C370EA /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		89EB9DE2DCB14C1EB97E9637 /* Pods-RKTwitterCocoaPods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKTwitterCocoaPods.xcconfig"; path = "Pods/Pods-RKTwitterCocoaPods.xcconfig"; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* RKTwitter-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RKTwitter-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		EC32B4B0491C719850D46F92 /* Pods-RKTwitterCocoaPods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKTwitterCocoaPods.release.xcconfig"; path = "Pods/Target Support Files/Pods-RKTwitterCocoaPods/Pods-RKTwitterCocoaPods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,7 +210,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				89EB9DE2DCB14C1EB97E9637 /* Pods-RKTwitterCocoaPods.xcconfig */,
+				A54F9C18924391E57B4EFF4D /* Pods */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -253,6 +254,15 @@
 				7666CC5642F94148AF23256A /* libPods-RKTwitterCocoaPods.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A54F9C18924391E57B4EFF4D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1BBF770CA495AD12361E6DA5 /* Pods-RKTwitterCocoaPods.debug.xcconfig */,
+				EC32B4B0491C719850D46F92 /* Pods-RKTwitterCocoaPods.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -341,7 +351,7 @@
 		25160FB51456E8A30060A5C5 /* RestKitTests.octest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = RestKitTests.octest;
+			path = RestKitTests.xctest;
 			remoteRef = 25160FB41456E8A30060A5C5 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -355,7 +365,7 @@
 		25160FB91456E8A30060A5C5 /* RestKitFrameworkTests.octest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = RestKitFrameworkTests.octest;
+			path = RestKitFrameworkTests.xctest;
 			remoteRef = 25160FB81456E8A30060A5C5 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -420,7 +430,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-RKTwitterCocoaPods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RKTwitterCocoaPods/Pods-RKTwitterCocoaPods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -504,7 +514,7 @@
 		};
 		25AABD1217B69CC50061DC5B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89EB9DE2DCB14C1EB97E9637 /* Pods-RKTwitterCocoaPods.xcconfig */;
+			baseConfigurationReference = 1BBF770CA495AD12361E6DA5 /* Pods-RKTwitterCocoaPods.debug.xcconfig */;
 			buildSettings = {
 				BUILD_STYLE = Debug;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -522,7 +532,7 @@
 		};
 		25AABD1317B69CC50061DC5B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89EB9DE2DCB14C1EB97E9637 /* Pods-RKTwitterCocoaPods.xcconfig */;
+			baseConfigurationReference = EC32B4B0491C719850D46F92 /* Pods-RKTwitterCocoaPods.release.xcconfig */;
 			buildSettings = {
 				BUILD_STYLE = Release;
 				CLANG_ENABLE_OBJC_ARC = YES;
