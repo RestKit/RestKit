@@ -43,6 +43,25 @@
     mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
+    assertThat(dynamicMapping.objectMappings, containsInAnyOrder(girlMapping, boyMapping, nil));
+}
+
+- (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValueMap
+{
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
+    RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
+    [girlMapping addAttributeMappingsFromArray:@[@"name"]];
+    RKObjectMapping *boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+    [boyMapping addAttributeMappingsFromArray:@[@"name"]];
+    NSDictionary *valueMap = @{ @"Girl" : girlMapping, @"Boy" : boyMapping };
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValueMap:valueMap]];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
+    assertThat(mapping, is(notNilValue()));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
+    mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
+    assertThat(mapping, is(notNilValue()));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
+    assertThat(dynamicMapping.objectMappings, containsInAnyOrder(girlMapping, boyMapping, nil));
 }
 
 - (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeClass
@@ -53,6 +72,7 @@
     RKObjectMapping *boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
     [boyMapping addAttributeMappingsFromArray:@[@"name"]];
     [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedClass:[NSString class] objectMapping:girlMapping]];
+    assertThat(dynamicMapping.objectMappings, containsInAnyOrder(girlMapping, nil));
     RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
@@ -61,6 +81,7 @@
     mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
+    assertThat(dynamicMapping.objectMappings, containsInAnyOrder(boyMapping, nil));
 }
 
 - (void)testShouldMatchOnAnNSNumberAttributeValue
@@ -72,6 +93,23 @@
     [boyMapping addAttributeMappingsFromArray:@[@"name"]];
     [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"numeric_type" expectedValue:@(0) objectMapping:girlMapping]];
     [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"numeric_type" expectedValue:@(1) objectMapping:boyMapping]];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
+    assertThat(mapping, is(notNilValue()));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
+    mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
+    assertThat(mapping, is(notNilValue()));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
+}
+
+- (void)testShouldMatchOnAnNSNumberAttributeValueMap
+{
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
+    RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
+    [girlMapping addAttributeMappingsFromArray:@[@"name"]];
+    RKObjectMapping *boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+    [boyMapping addAttributeMappingsFromArray:@[@"name"]];
+    NSDictionary *valueMap = @{ @0 : girlMapping, @1 : boyMapping };
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"numeric_type" expectedValueMap:valueMap]];
     RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
@@ -95,6 +133,30 @@
     mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
     assertThat(mapping, is(notNilValue()));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
+}
+
+- (void)testMappingSelectionUsingBlockMatchers
+{
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
+    RKObjectMapping *girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
+    [girlMapping addAttributeMappingsFromArray:@[@"name"]];
+    RKObjectMapping *boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+    [boyMapping addAttributeMappingsFromArray:@[@"name"]];
+    [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithPossibleMappings:@[boyMapping, girlMapping] block:^RKObjectMapping *(id representation) {
+        if ([[representation valueForKey:@"type"] isEqualToString:@"Girl"]) {
+            return girlMapping;
+        } else if ([[representation valueForKey:@"type"] isEqualToString:@"Boy"]) {
+            return boyMapping;
+        }
+        return nil;
+    }]];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
+    assertThat(mapping, is(notNilValue()));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Girl")));
+    mapping = [dynamicMapping objectMappingForRepresentation:[RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"]];
+    assertThat(mapping, is(notNilValue()));
+    assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
+    assertThat(dynamicMapping.objectMappings, containsInAnyOrder(girlMapping, boyMapping, nil));
 }
 
 - (void)testThatRegistrationOfMatcherASecondTimeMovesToTopOfTheStack
