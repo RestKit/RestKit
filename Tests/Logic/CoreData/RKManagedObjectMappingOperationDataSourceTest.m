@@ -851,12 +851,12 @@
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
     catMapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
-
+    
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     humanMapping.identificationAttributes = @[ @"railsID" ];
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"catsInOrderByAge" withMapping:catMapping]];;
-
+    
     NSArray *catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
     NSDictionary *mappableData = @{ @"name": @"Blake", @"favoriteCatID": @31337, @"cats": catsData };
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -869,6 +869,66 @@
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat([human catsInOrderByAge], isNot(isEmpty()));
+}
+
+- (void)testShouldPreserveOrderedHasManyRelationshipOrder
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSManagedObjectContext *managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromArray:@[@"catIDs", @"railsID"]];
+    humanMapping.identificationAttributes = @[ @"railsID"];
+    
+    // Make a long list of cat names so the probability of a fluke pass is low.
+    // TODO: Narrow this down properly so we have a non-intermittent test once the cause is found.
+    NSMutableArray *catNames = [NSMutableArray array];
+    for (NSUInteger i = 0; i < 1000; i++) {
+        [catNames addObject:[NSString stringWithFormat:@"Cat %d", i]];
+    }
+    
+    for (NSString *name in catNames) {
+        RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectContext];
+        cat.name = name;
+    }
+    
+    NSRelationshipDescription *catsRelationship = [[humanMapping.entity relationshipsByName] valueForKey:@"catsInOrderByAge"];
+    RKConnectionDescription *catsConnection = [[RKConnectionDescription alloc] initWithRelationship:catsRelationship attributes:@{ @"catIDs" : @"name" }];
+    [humanMapping addConnection:catsConnection];
+
+    NSDictionary *mappableData = @{ @"railsID" : @1, @"catIDs" : catNames };
+
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    mappingOperationDataSource.operationQueue = operationQueue;
+        
+    [operationQueue setSuspended:YES];
+    
+    [managedObjectContext performBlockAndWait:^{
+        RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:mappableData mappingsDictionary:@{ [NSNull null] : humanMapping}];
+        mapper.mappingOperationDataSource = mappingOperationDataSource;
+        [mapper start];
+    }];
+    
+    [operationQueue setSuspended:NO];
+    [operationQueue waitUntilAllOperationsAreFinished];
+    
+    [managedObjectContext performBlockAndWait:^{
+        NSError *error;
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"railsID = %@", @1];
+        fetchRequest.fetchLimit = 1;
+        NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        RKParent *human = [results lastObject];
+        assertThat(human, is(notNilValue()));
+        NSOrderedSet *catsInOrderByAge = [human catsInOrderByAge];
+        assertThat(catsInOrderByAge, hasCountOf(catNames.count));
+        RKCat *firstCat = [catsInOrderByAge firstObject];
+        assertThat(firstCat.name, is(equalTo(catNames.firstObject)));
+    }];
 }
 
 - (void)testShouldMapNullToAHasManyRelationship
