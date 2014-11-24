@@ -16,13 +16,13 @@ NSDictionary *RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1,
     NSMutableDictionary *mergedDictionary = [dict1 mutableCopy];
 
     for (id key2 in dict2) {
-        id obj2 = [dict2 objectForKey:key2];
-        id obj1 = [dict1 objectForKey:key2];
+        id obj2 = dict2[key2];
+        id obj1 = dict1[key2];
         if ([obj1 isKindOfClass:[NSDictionary class]] && [obj2 isKindOfClass:[NSDictionary class]]) {
             NSDictionary *mergedSubdict = RKDictionaryByMergingDictionaryWithDictionary(obj1, obj2);
-            [mergedDictionary setObject:mergedSubdict forKey:key2];
+            mergedDictionary[key2] = mergedSubdict;
         } else {
-            [mergedDictionary setObject:obj2 forKey:key2];
+            mergedDictionary[key2] = obj2;
         }
     }
     
@@ -38,7 +38,7 @@ NSDictionary *RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(NSDic
          id escapedValue = value;
          if ([value respondsToSelector:@selector(stringByReplacingPercentEscapesUsingEncoding:)])
              escapedValue = [value stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-         [results setObject:escapedValue forKey:escapedKey];
+         results[escapedKey] = escapedValue;
      }];
     return results;
 }

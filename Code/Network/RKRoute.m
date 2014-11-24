@@ -89,7 +89,7 @@ NSString *RKStringDescribingRequestMethod(RKRequestMethod method)
     return route;
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {

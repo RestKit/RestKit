@@ -51,7 +51,7 @@ static char searchIndexerAssociationKey;
 
     if (! self.searchIndexer) [self createSearchIndexer];
 
-    NSEntityDescription *entity = [[self.managedObjectModel entitiesByName] objectForKey:entityName];
+    NSEntityDescription *entity = [self.managedObjectModel entitiesByName][entityName];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:attributes];
 }
 

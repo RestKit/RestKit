@@ -42,14 +42,14 @@ static NSString * AFPercentEscapedQueryStringValueFromStringWithEncoding(NSStrin
 @property (readwrite, nonatomic, strong) id field;
 @property (readwrite, nonatomic, strong) id value;
 
-- (id)initWithField:(id)field value:(id)value;
+- (instancetype)initWithField:(id)field value:(id)value NS_DESIGNATED_INITIALIZER;
 
 - (NSString *)URLEncodedStringValueWithEncoding:(NSStringEncoding)stringEncoding;
 @end
 
 @implementation RKAFQueryStringPair
 
-- (id)initWithField:(id)field value:(id)value {
+- (instancetype)initWithField:(id)field value:(id)value {
     self = [super init];
     if (!self) {
         return nil;
@@ -98,7 +98,7 @@ NSArray * RKAFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
         NSDictionary *dictionary = value;
         // Sort dictionary keys to ensure consistent ordering in query string, which is important when deserializing potentially ambiguous sequences, such as an array of dictionaries
         for (id nestedKey in [dictionary.allKeys sortedArrayUsingDescriptors:@[ sortDescriptor ]]) {
-            id nestedValue = [dictionary objectForKey:nestedKey];
+            id nestedValue = dictionary[nestedKey];
             if (nestedValue) {
                 [mutableQueryStringComponents addObjectsFromArray:RKAFQueryStringPairsFromKeyAndValue((key ? [NSString stringWithFormat:@"%@[%@]", key, nestedKey] : nestedKey), nestedValue)];
             }
@@ -144,21 +144,21 @@ NSDictionary *RKDictionaryFromURLEncodedStringWithEncoding(NSString *URLEncodedS
     for (NSString *keyValuePairString in [URLEncodedString componentsSeparatedByString:@"&"]) {
         NSArray *keyValuePairArray = [keyValuePairString componentsSeparatedByString:@"="];
         if ([keyValuePairArray count] < 2) continue; // Verify that there is at least one key, and at least one value.  Ignore extra = signs
-        NSString *key = [[keyValuePairArray objectAtIndex:0] stringByReplacingPercentEscapesUsingEncoding:encoding];
-        NSString *value = [[keyValuePairArray objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:encoding];
+        NSString *key = [keyValuePairArray[0] stringByReplacingPercentEscapesUsingEncoding:encoding];
+        NSString *value = [keyValuePairArray[1] stringByReplacingPercentEscapesUsingEncoding:encoding];
 
         // URL spec says that multiple values are allowed per key
-        id results = [queryComponents objectForKey:key];
+        id results = queryComponents[key];
         if (results) {
             if ([results isKindOfClass:[NSMutableArray class]]) {
                 [(NSMutableArray *)results addObject:value];
             } else {
                 // On second occurrence of the key, convert into an array
                 NSMutableArray *values = [NSMutableArray arrayWithObjects:results, value, nil];
-                [queryComponents setObject:values forKey:key];
+                queryComponents[key] = values;
             }
         } else {
-            [queryComponents setObject:value forKey:key];
+            queryComponents[key] = value;
         }
     }
     return queryComponents;

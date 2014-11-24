@@ -76,7 +76,7 @@
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
  
  */
-- (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel NS_DESIGNATED_INITIALIZER;
 
 /**
  Initializes the receiver with an existing persistent store coordinator.
@@ -88,7 +88,7 @@
  @param persistentStoreCoordinator The persistent store coordinator with which to initialize the receiver.
  @return The receiver, initialized with the managed object model of the given persistent store coordinator and the persistent store coordinator.
  */
-- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
+- (instancetype)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
 
 /**
  Initializes the receiver with a managed object model obtained by merging the models from all of the application's non-framework bundles.
@@ -98,7 +98,7 @@
 
  @warning Obtaining a managed object model by merging all bundles may result in an application error if versioned object models are in use.
  */
-- (id)init;
+- (instancetype)init;
 
 ///-----------------------------------------------------------------------------
 /// @name Configuring Persistent Stores

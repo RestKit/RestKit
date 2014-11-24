@@ -72,7 +72,7 @@
  @param name A name for the benchmark.
  @return A new benchmark object with the given name.
  */
-+ (id)benchmarkWithName:(NSString *)name;
++ (instancetype)benchmarkWithName:(NSString *)name;
 
 /**
  Initializes a new benchmark object with a name.
@@ -80,7 +80,7 @@
  @param name The name to initialize the receiver with.
  @return The receiver, initialized with the given name.
  */
-- (id)initWithName:(NSString *)name;
+- (instancetype)initWithName:(NSString *)name;
 
 ///----------------------------
 /// @name Performing Benchmarks

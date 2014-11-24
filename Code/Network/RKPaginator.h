@@ -62,9 +62,9 @@
  @param responseDescriptors An array of response descriptors describing how to map object representations loaded by object request operations dispatched by the paginator.
  @return The receiver, initialized with the request, pagination mapping, and response descriptors.
  */
-- (id)initWithRequest:(NSURLRequest *)request
+- (instancetype)initWithRequest:(NSURLRequest *)request
     paginationMapping:(RKObjectMapping *)paginationMapping
-  responseDescriptors:(NSArray *)responseDescriptors;
+  responseDescriptors:(NSArray *)responseDescriptors NS_DESIGNATED_INITIALIZER;
 
 ///-----------------------------
 /// @name Configuring Networking
@@ -226,14 +226,14 @@
 
  @return `YES` if the paginator knows the page count, otherwise `NO`.
  */
-- (BOOL)hasPageCount;
+@property (nonatomic, readonly) BOOL hasPageCount;
 
 /**
  Returns a Boolean value indicating if the total number of objects in the collection is known by the paginator.
 
  @return `YES` if the paginator knows the number of objects in the paginated collection, otherwise `NO`.
  */
-- (BOOL)hasObjectCount;
+@property (nonatomic, readonly) BOOL hasObjectCount;
 
 /**
  Returns a Boolean value indicating if there is a next page in the collection.
@@ -241,7 +241,7 @@
  @return `YES` if there is a next page, otherwise `NO`.
  @exception NSInternalInconsistencyException Raised if isLoaded or hasPageCount is `NO`.
  */
-- (BOOL)hasNextPage;
+@property (nonatomic, readonly) BOOL hasNextPage;
 
 /**
  Returns a Boolean value indicating if there is a previous page in the collection.
@@ -249,7 +249,7 @@
  @return `YES` if there is a previous page, otherwise `NO`.
  @exception NSInternalInconsistencyException Raised if isLoaded is `NO`.
  */
-- (BOOL)hasPreviousPage;
+@property (nonatomic, readonly) BOOL hasPreviousPage;
 
 ///------------------------
 /// @name Paginator Actions

@@ -68,7 +68,7 @@
  @param entity An entity with which to initialize the receiver.
  @returns The receiver, initialized with the given entity.
  */
-- (id)initWithEntity:(NSEntityDescription *)entity;
+- (instancetype)initWithEntity:(NSEntityDescription *)entity;
 
 /**
  A convenience initializer that creates and returns an entity mapping for the entity with the given name in

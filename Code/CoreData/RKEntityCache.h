@@ -37,7 +37,7 @@
  @param context The managed object context containing objects to be cached.
  @returns The receiver, initialized with the given context.
  */
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)context;
+- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)context NS_DESIGNATED_INITIALIZER;
 
 /**
  The managed object context with which the receiver is associated.

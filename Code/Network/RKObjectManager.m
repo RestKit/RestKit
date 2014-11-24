@@ -112,7 +112,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @implementation RKObjectParameters
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -124,26 +124,26 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 - (void)addParameters:(NSDictionary *)parameters atRootKeyPath:(NSString *)rootKeyPath inArray:(BOOL)inArray
 {
     id rootKey = rootKeyPath ?: [NSNull null];
-    id nonNestedParameters = rootKeyPath ? [parameters objectForKey:rootKeyPath] : parameters;
-    id value = [self.parameters objectForKey:rootKey];
+    id nonNestedParameters = rootKeyPath ? parameters[rootKeyPath] : parameters;
+    id value = (self.parameters)[rootKey];
     if (value) {
         if ([value isKindOfClass:[NSMutableArray class]]) {
             [value addObject:nonNestedParameters];
         } else if ([value isKindOfClass:[NSDictionary class]]) {
             NSMutableArray *mutableArray = [NSMutableArray arrayWithObjects:value, nonNestedParameters, nil];
-            [self.parameters setObject:mutableArray forKey:rootKey];
+            (self.parameters)[rootKey] = mutableArray;
         } else {
             [NSException raise:NSInvalidArgumentException format:@"Unexpected argument of type '%@': expected an NSDictionary or NSArray.", [value class]];
         }
     } else {
-        [self.parameters setObject:(inArray ? @[ nonNestedParameters ] : nonNestedParameters) forKey:rootKey];
+        (self.parameters)[rootKey] = (inArray ? @[ nonNestedParameters ] : nonNestedParameters);
     }
 }
 
 - (id)requestParameters
 {
     if ([self.parameters count] == 0) return nil;
-    id valueAtNullKey = [self.parameters objectForKey:[NSNull null]];
+    id valueAtNullKey = (self.parameters)[[NSNull null]];
     if (valueAtNullKey) {
         if ([self.parameters count] == 1) return valueAtNullKey;
 
@@ -162,7 +162,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @property (nonatomic, readonly) NSSet *mappings;
 
-- (id)initWithMapping:(RKMapping *)mapping;
+- (instancetype)initWithMapping:(RKMapping *)mapping NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -172,7 +172,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @implementation RKMappingGraphVisitor
 
-- (id)initWithMapping:(RKMapping *)mapping
+- (instancetype)initWithMapping:(RKMapping *)mapping
 {
     self = [super init];
     if (self) {
@@ -348,7 +348,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 @implementation RKObjectManager
 
-- (id)initWithHTTPClient:(AFHTTPClient *)client
+- (instancetype)initWithHTTPClient:(AFHTTPClient *)client
 {
     self = [super init];
     if (self) {

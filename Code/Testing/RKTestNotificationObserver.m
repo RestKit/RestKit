@@ -48,7 +48,7 @@
     return [self notificationObserverForName:notificationName object:nil];
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {

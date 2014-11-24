@@ -87,7 +87,7 @@
     assertThatBool(url1 == url2, is(equalToBool(NO)));
     TestMappable *object = [[TestMappable alloc] init];
     [object setUrl:url1];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:url2, @"url", nil];
+    NSDictionary *dictionary = @{@"url": url2};
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
@@ -251,7 +251,7 @@
     operation.dataSource = dataSource;
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
-    NSOrderedSet *expectedSet = [NSOrderedSet orderedSetWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    NSOrderedSet *expectedSet = [NSOrderedSet orderedSetWithObjects:@1, @2, @3, nil];
     assertThat(object.orderedSet, is(equalTo(expectedSet)));
 }
 
@@ -262,14 +262,14 @@
     TestMappable *object = [[TestMappable alloc] init];
 
     TestMappable *data = [[TestMappable alloc] init];
-    data.orderedSet = [NSOrderedSet orderedSetWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    data.orderedSet = [NSOrderedSet orderedSetWithObjects:@1, @2, @3, nil];
 
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
-    NSArray *expectedArray = [NSArray arrayWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    NSArray *expectedArray = @[@1, @2, @3];
     assertThat(object.array, is(equalTo(expectedArray)));
 }
 
@@ -278,7 +278,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addAttributeMappingsFromArray:@[@"boolString"]];
     TestMappable *object = [[TestMappable alloc] init];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"FAIL" forKey:@"boolString"];
+    NSDictionary *dictionary = @{@"boolString": @"FAIL"};
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -294,7 +294,7 @@
     [mapping addAttributeMappingsFromArray:@[@"boolString"]];
     TestMappable *object = [[TestMappable alloc] init];
     object.boolString = @"should not change";
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"REJECT" forKey:@"boolString"];
+    NSDictionary *dictionary = @{@"boolString": @"REJECT"};
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -309,7 +309,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addAttributeMappingsFromArray:@[@"boolString"]];
     TestMappable *object = [[TestMappable alloc] init];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"MODIFY" forKey:@"boolString"];
+    NSDictionary *dictionary = @{@"boolString": @"MODIFY"};
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -326,7 +326,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addAttributeMappingsFromArray:@[@"date"]];
     TestMappable *object = [[TestMappable alloc] init];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"2011-07-07T04:35:28Z" forKey:@"date"];
+    NSDictionary *dictionary = @{@"date": @"2011-07-07T04:35:28Z"};
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -342,7 +342,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addAttributeMappingsFromArray:@[@"date"]];
     TestMappable *object = [[TestMappable alloc] init];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"457574400" forKey:@"date"];
+    NSDictionary *dictionary = @{@"date": @"457574400"};
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -358,7 +358,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addAttributeMappingsFromArray:@[@"date"]];
     TestMappable *object = [[TestMappable alloc] init];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"08/09/2011" forKey:@"date"];
+    NSDictionary *dictionary = @{@"date": @"08/09/2011"};
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -375,7 +375,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addAttributeMappingsFromArray:@[@"date"]];
     TestMappable *object = [[TestMappable alloc] init];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"2011-08-09T00:00Z" forKey:@"date"];
+    NSDictionary *dictionary = @{@"date": @"2011-08-09T00:00Z"};
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
@@ -397,9 +397,9 @@
     dateFormatter.timeZone = EDTTimeZone;
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping addAttributeMappingsFromArray:@[@"date"]];
-    mapping.dateFormatters = [NSArray arrayWithObject:dateFormatter];
+    mapping.dateFormatters = @[dateFormatter];
     TestMappable *object = [[TestMappable alloc] init];
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"11-27-1982" forKey:@"date"];
+    NSDictionary *dictionary = @{@"date": @"11-27-1982"};
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;

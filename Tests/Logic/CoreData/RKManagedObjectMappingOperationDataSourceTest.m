@@ -43,7 +43,7 @@
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
-    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:[NSDictionary dictionary] withMapping:mapping inRelationship:nil];
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:@{} withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat([object class], is(equalTo([RKMappableObject class])));
 }
@@ -56,7 +56,7 @@
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     mapping.identificationAttributes = @[ @"railsID" ];
     
-    NSDictionary *data = [NSDictionary dictionary];
+    NSDictionary *data = @{};
     id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(instanceOf([RKHuman class])));
@@ -69,7 +69,7 @@
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     
-    NSDictionary *data = [NSDictionary dictionary];    
+    NSDictionary *data = @{};    
     id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(instanceOf([RKHuman class])));
@@ -84,7 +84,7 @@
     mapping.identificationAttributes = @[ @"railsID" ];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
-    NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNull null] forKey:@"id"];    
+    NSDictionary *data = @{@"id": [NSNull null]};    
     id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(instanceOf([RKHuman class])));
@@ -101,7 +101,7 @@
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInt:123];
+    human.railsID = @123;
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     NSError *error = nil;
@@ -111,7 +111,7 @@
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
+    NSDictionary *data = @{@"id": @123};
     id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human);
@@ -126,7 +126,7 @@
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInt:123];
+    human.railsID = @123;
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     NSError *error = nil;
@@ -134,8 +134,8 @@
     NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
     expect(count).to.beGreaterThan(0);
     
-    NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
-    NSDictionary *nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
+    NSDictionary *data = @{@"id": @123};
+    NSDictionary *nestedDictionary = @{@"monkey": data};
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
@@ -182,7 +182,7 @@
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInt:123];
+    human.railsID = @123;
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     // Check the count
@@ -191,7 +191,7 @@
     NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
     expect(count).to.beGreaterThan(0);
     
-    NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];    
+    NSDictionary *data = @{@"id": @123};    
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];    
     NSManagedObject *object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
@@ -209,17 +209,17 @@
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
-    human.railsID = [NSNumber numberWithInt:123];
+    human.railsID = @123;
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     // Check the count
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
-    assertThat([NSNumber numberWithInteger:count], is(greaterThan([NSNumber numberWithInteger:0])));
+    assertThat([NSNumber numberWithInteger:count], is(greaterThan(@0)));
     
-    NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
-    NSDictionary *nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
+    NSDictionary *data = @{@"id": @123};
+    NSDictionary *nestedDictionary = @{@"monkey": data};
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
@@ -267,17 +267,17 @@
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     human.name = @"Testing";
-    human.railsID = [NSNumber numberWithInteger:12345];
+    human.railsID = @12345;
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     // Check the count
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
-    assertThatInteger(count, is(greaterThan([NSNumber numberWithInteger:0])));
+    assertThatInteger(count, is(greaterThan(@0)));
     
-    NSDictionary *data = [NSDictionary dictionaryWithObject:@"12345" forKey:@"railsID"];
-    NSDictionary *nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
+    NSDictionary *data = @{@"railsID": @"12345"};
+    NSDictionary *nestedDictionary = @{@"monkey": data};
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
@@ -365,7 +365,7 @@
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
-    assertThat([NSNumber numberWithInteger:count], is(greaterThan([NSNumber numberWithInteger:0])));
+    assertThat([NSNumber numberWithInteger:count], is(greaterThan(@0)));
     
     NSDictionary *representation = @{ @"monkey": @{ @"id": @"12345", @"name": @"Reginald", @"created_at": createdAtString } };
     
@@ -396,7 +396,7 @@
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
     NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
-    assertThat([NSNumber numberWithInteger:count], is(greaterThan([NSNumber numberWithInteger:0])));
+    assertThat([NSNumber numberWithInteger:count], is(greaterThan(@0)));
     
     NSDictionary *representation = @{ @"monkey": @{ @"id": @"12345", @"name": @"Reginald", @"created_at": createdAtString } };
     
@@ -527,12 +527,12 @@
     // Create two humans matching the identifier, but differ in matching the 
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     human1.name = @"Colin";
-    human1.railsID = [NSNumber numberWithInt:123];
+    human1.railsID = @123;
     human1.age = @28;
     
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     human2.name = @"Blake";
-    human2.railsID = [NSNumber numberWithInt:123];
+    human2.railsID = @123;
     human2.age = @30;
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
     
@@ -543,7 +543,7 @@
     
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
                                                                                                                                       cache:managedObjectStore.managedObjectCache];
-    NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
+    NSDictionary *data = @{@"id": @123};
     id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
     expect(object).notTo.beNil();
     expect(object).to.equal(human1);
@@ -632,11 +632,11 @@
     // Create some humans to connect
     RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     blake.name = @"Blake";
-    blake.favoriteCatID = [NSNumber numberWithInt:31340];
+    blake.favoriteCatID = @31340;
 
     RKHuman *jeremy = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     jeremy.name = @"Jeremy";
-    jeremy.favoriteCatID = [NSNumber numberWithInt:31340];
+    jeremy.favoriteCatID = @31340;
 
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
@@ -719,11 +719,11 @@
 
     RKCat *roy = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     roy.name = @"Reginald Royford Williams III";
-    roy.railsID = [NSNumber numberWithInt:31338];
+    roy.railsID = @31338;
 
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
-    NSArray *catIDs = [NSArray arrayWithObjects:@31337, [NSNumber numberWithInt:31338], nil];
+    NSArray *catIDs = @[@31337, @31338];
     NSDictionary *mappableData = @{ @"name": @"Blake", @"catIDs": catIDs };
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
 
@@ -761,11 +761,11 @@
 
     RKCat *roy = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     roy.name = @"Reginald Royford Williams III";
-    roy.railsID = [NSNumber numberWithInt:31338];
+    roy.railsID = @31338;
 
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
-    NSArray *catIDs = [NSArray arrayWithObjects:@31337, [NSNumber numberWithInt:31338], nil];
+    NSArray *catIDs = @[@31337, @31338];
     NSDictionary *mappableData = @{ @"name": @"Blake", @"catIDs": catIDs };
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
 
@@ -832,7 +832,7 @@
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping addRelationshipMappingWithSourceKeyPath:@"cats" mapping:catMapping];
 
-    NSArray *catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
+    NSArray *catsData = @[@{@"name": @"Asia"}];
     NSDictionary *mappableData = @{ @"name": @"Blake", @"favoriteCatID": @31337, @"cats": catsData };
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
@@ -857,7 +857,7 @@
     [humanMapping addAttributeMappingsFromArray:@[@"name", @"favoriteCatID"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"catsInOrderByAge" withMapping:catMapping]];;
 
-    NSArray *catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
+    NSArray *catsData = @[@{@"name": @"Asia"}];
     NSDictionary *mappableData = @{ @"name": @"Blake", @"favoriteCatID": @31337, @"cats": catsData };
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
@@ -904,7 +904,7 @@
     [stormMapping addAttributeMappingsFromArray:@[@"name"]];
     [stormMapping addRelationshipMappingWithSourceKeyPath:@"clouds" mapping:cloudMapping];
 
-    NSArray *cloudsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Nimbus" forKey:@"name"]];
+    NSArray *cloudsData = @[@{@"name": @"Nimbus"}];
     NSDictionary *mappableData = @{ @"name": @"Hurricane", @"clouds": cloudsData };
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Storm" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSManagedObject *storm = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -1459,16 +1459,16 @@
 
     [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
 
-    RKCat *cat = [mapper.mappingResult.dictionary objectForKey:@"cat"];
+    RKCat *cat = (mapper.mappingResult.dictionary)[@"cat"];
     expect(cat.railsID).to.equal(12345);
     expect(cat.managedObjectContext).notTo.beNil();
 
-    RKHuman *blake = [mapper.mappingResult.dictionary objectForKey:@"human"];
+    RKHuman *blake = (mapper.mappingResult.dictionary)[@"human"];
     expect(blake.name).to.equal(@"Blake Watters");
     expect(blake.managedObjectContext).notTo.beNil();
     expect([blake isDeleted]).to.beFalsy();
     expect([blake valueForKey:@"favoriteCat"]).notTo.beNil();
-    expect([blake valueForKey:@"favoriteCat"]).to.equal([mapper.mappingResult.dictionary objectForKey:@"cat"]);
+    expect([blake valueForKey:@"favoriteCat"]).to.equal((mapper.mappingResult.dictionary)[@"cat"]);
 }
 
 - (void)testDeletionOperationAfterManagedObjectContextIsDeallocated

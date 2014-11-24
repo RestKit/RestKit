@@ -16,7 +16,7 @@
     return [[self alloc] initWithSearchText:searchText type:type];
 }
 
-- (id)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type
+- (instancetype)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type
 {
     RKStringTokenizer *tokenizer = [RKStringTokenizer new];
     NSSet *searchWords = [tokenizer tokenize:searchText];

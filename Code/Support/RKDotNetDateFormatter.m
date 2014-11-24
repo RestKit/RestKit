@@ -88,7 +88,7 @@ static NSTimeInterval RKDotNetDateFormatterMillisecondsFromSeconds(NSTimeInterva
     return [NSString stringWithFormat:@"/Date(%1.0lf%@)/", milliseconds, timeZoneOffset];
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {

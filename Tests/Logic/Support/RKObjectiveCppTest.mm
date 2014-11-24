@@ -45,7 +45,7 @@
 }
 
 - (void)testCompilesWithDictionaryUtilities {
-    NSDictionary *dict = RKDictionaryByMergingDictionaryWithDictionary([NSDictionary dictionary], [NSDictionary dictionary]);
+    NSDictionary *dict = RKDictionaryByMergingDictionaryWithDictionary(@{}, @{});
     expect(dict).notTo.beNil();
 }
 

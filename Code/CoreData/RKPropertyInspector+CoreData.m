@@ -40,7 +40,7 @@
 {
     __block NSMutableDictionary *entityInspection;
     dispatch_sync(self.queue, ^{
-        entityInspection = [self.inspectionCache objectForKey:[entity name]];
+        entityInspection = (self.inspectionCache)[[entity name]];
     });
     if (entityInspection) return entityInspection;
 
@@ -76,7 +76,7 @@
                     info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
                                                                    keyValueClass:destinationClass
                                                                      isPrimitive:NO];
-                    [entityInspection setObject:info forKey:name];
+                    entityInspection[name] = info;
                 }
             }
         }
@@ -90,13 +90,13 @@
                 info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
                                                                keyValueClass:[NSOrderedSet class]
                                                                  isPrimitive:NO];
-                [entityInspection setObject:info forKey:name];
+                entityInspection[name] = info;
             } else {
                 RKPropertyInspectorPropertyInfo *info;
                 info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
                                                                keyValueClass:[NSSet class]
                                                                  isPrimitive:NO];
-                [entityInspection setObject:info forKey:name];
+                entityInspection[name] = info;
             }
         } else {
             NSEntityDescription *destinationEntity = [relationshipDescription destinationEntity];
@@ -108,12 +108,12 @@
             info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
                                                            keyValueClass:destinationClass ?: [NSNull null]
                                                              isPrimitive:NO];
-            [entityInspection setObject:info forKey:name];
+            entityInspection[name] = info;
         }
     }
 
     dispatch_barrier_async(self.queue, ^{
-        [self.inspectionCache setObject:entityInspection forKey:[entity name]];
+        (self.inspectionCache)[[entity name]] = entityInspection;
         RKLogDebug(@"Cached property inspection for Entity '%@': %@", entity, entityInspection);
     });
     return entityInspection;
@@ -122,7 +122,7 @@
 - (Class)classForPropertyNamed:(NSString *)propertyName ofEntity:(NSEntityDescription *)entity
 {
     NSDictionary *entityInspection = [self propertyInspectionForEntity:entity];
-    RKPropertyInspectorPropertyInfo *propertyInspection = [entityInspection objectForKey:propertyName];
+    RKPropertyInspectorPropertyInfo *propertyInspection = entityInspection[propertyName];
     return propertyInspection.keyValueCodingClass;
 }
 

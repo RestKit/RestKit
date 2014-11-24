@@ -42,7 +42,7 @@
  @param managedObjectCache The managed object cache used by the receiver to find existing object instances by their identification attributes.
  @return The receiver, initialized with the given managed object context and managed objet cache.
  */
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache;
+- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache;
 
 ///-----------------------------------------------------
 /// @name Accessing the Managed Object Context and Cache

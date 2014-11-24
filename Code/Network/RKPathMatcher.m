@@ -103,8 +103,8 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
 {
     NSArray *components = [self.sourcePath componentsSeparatedByString:@"?"];
     if ([components count] > 1) {
-        self.rootPath = [components objectAtIndex:0];
-        self.queryParameters = RKQueryParametersFromStringWithEncoding([components objectAtIndex:1], NSUTF8StringEncoding);
+        self.rootPath = components[0];
+        self.queryParameters = RKQueryParametersFromStringWithEncoding(components[1], NSUTF8StringEncoding);
         return YES;
     }
     return NO;
@@ -157,7 +157,7 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
         NSMutableDictionary *parsedParameters = [[self.socPattern parameterDictionaryFromSourceString:path] mutableCopy];
         if (addEscapes) {
             for (NSString *key in [parsedParameters allKeys]) {
-                NSString *unescapedParameter = [[parsedParameters objectForKey:key] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                NSString *unescapedParameter = [parsedParameters[key] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 [parsedParameters setValue:unescapedParameter forKey:key];
             }
         }

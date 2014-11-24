@@ -46,7 +46,7 @@
  @return The receiver, initialized with the given entity, attribute, and managed object
     context.
  */
-- (id)initWithEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames managedObjectContext:(NSManagedObjectContext *)context;
+- (instancetype)initWithEntity:(NSEntityDescription *)entity attributes:(NSArray *)attributeNames managedObjectContext:(NSManagedObjectContext *)context;
 
 ///-----------------------------
 /// @name Getting Cache Identity
@@ -101,12 +101,12 @@
 /**
  A Boolean value indicating if the cache has loaded associations between cache attribute values and managed object ID's.
  */
-- (BOOL)isLoaded;
+@property (nonatomic, getter=isLoaded, readonly) BOOL loaded;
 
 /**
  Returns a count of the total number of cached objects.
  */
-- (NSUInteger)count;
+@property (nonatomic, readonly) NSUInteger count;
 
 /**
  Returns the total number of cached objects whose attributes match the values in the given dictionary of attribute values.
@@ -121,7 +121,7 @@
 
  @return The number of unique attribute values within the receiver.
  */
-- (NSUInteger)countOfAttributeValues;
+@property (nonatomic, readonly) NSUInteger countOfAttributeValues;
 
 /**
  Returns a Boolean value that indicates whether a given object is present
