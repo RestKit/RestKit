@@ -34,6 +34,8 @@
  */
 @interface RKOperationStateMachine : NSObject
 
+- (instancetype)init __attribute__((unavailable("Invoke initWithOperation: instead.")));
+
 ///-----------------------------------
 /// @name Initializing a State Machine
 ///-----------------------------------
@@ -45,7 +47,7 @@
  @param dispatchQueue The dispatch queue on which the operation executes concurrently.
  @return The receiver, initialized with the given operation and queue.
  */
-- (instancetype)initWithOperation:(NSOperation *)operation dispatchQueue:(dispatch_queue_t)dispatchQueue;
+- (instancetype)initWithOperation:(NSOperation *)operation dispatchQueue:(dispatch_queue_t)dispatchQueue NS_DESIGNATED_INITIALIZER;
 
 ///-----------------------
 /// @name Inspecting State

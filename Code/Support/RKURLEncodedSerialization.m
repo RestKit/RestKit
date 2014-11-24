@@ -42,14 +42,14 @@ static NSString * AFPercentEscapedQueryStringValueFromStringWithEncoding(NSStrin
 @property (readwrite, nonatomic, strong) id field;
 @property (readwrite, nonatomic, strong) id value;
 
-- (id)initWithField:(id)field value:(id)value;
+- (instancetype)initWithField:(id)field value:(id)value NS_DESIGNATED_INITIALIZER;
 
 - (NSString *)URLEncodedStringValueWithEncoding:(NSStringEncoding)stringEncoding;
 @end
 
 @implementation RKAFQueryStringPair
 
-- (id)initWithField:(id)field value:(id)value {
+- (instancetype)initWithField:(id)field value:(id)value {
     self = [super init];
     if (!self) {
         return nil;

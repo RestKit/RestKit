@@ -43,13 +43,13 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 @property (nonatomic, strong) RKObjectMapping *mapping;
 @property (nonatomic, strong) NSMutableDictionary *invertedMappings;
 
-- (id)initWithMapping:(RKObjectMapping *)mapping;
+- (instancetype)initWithMapping:(RKObjectMapping *)mapping;
 - (RKObjectMapping *)inverseMappingWithPredicate:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate;
 @end
 
 @implementation RKMappingInverter
 
-- (id)initWithMapping:(RKObjectMapping *)mapping
+- (instancetype)initWithMapping:(RKObjectMapping *)mapping
 {
     self = [self init];
     if (self) {
@@ -237,7 +237,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
 
 static NSArray *RKAddProperty(NSArray *array, RKPropertyMapping *mapping)
 {
-    return (array)? [array arrayByAddingObject:mapping] : [NSArray arrayWithObject:mapping];
+    return (array)? [array arrayByAddingObject:mapping] : @[mapping];
 }
 
 static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
@@ -256,8 +256,8 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
     NSAssert(propertyMapping.objectMapping == nil, @"Cannot add a property mapping object that has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the mapping: `[propertyMapping copy]`");
     propertyMapping.objectMapping = self;
     self.propertyMappings = [self.propertyMappings arrayByAddingObject:propertyMapping];
-    if (propertyMapping.sourceKeyPath) [self.propertiesBySourceKeyPath setObject:propertyMapping forKey:propertyMapping.sourceKeyPath];
-    if (propertyMapping.destinationKeyPath) [self.propertiesByDestinationKeyPath setObject:propertyMapping forKey:propertyMapping.destinationKeyPath];
+    if (propertyMapping.sourceKeyPath) (self.propertiesBySourceKeyPath)[propertyMapping.sourceKeyPath] = propertyMapping;
+    if (propertyMapping.destinationKeyPath) (self.propertiesByDestinationKeyPath)[propertyMapping.destinationKeyPath] = propertyMapping;
     if ([propertyMapping isMemberOfClass:[RKRelationshipMapping class]]) {
         self.relationshipMappings = RKAddProperty(self.relationshipMappings, propertyMapping);
     }
@@ -293,12 +293,12 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
 
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
 {
-    return [_propertiesBySourceKeyPath objectForKey:sourceKeyPath];
+    return _propertiesBySourceKeyPath[sourceKeyPath];
 }
 
 - (id)mappingForDestinationKeyPath:(NSString *)destinationKeyPath
 {
-    return [_propertiesByDestinationKeyPath objectForKey:destinationKeyPath];
+    return _propertiesByDestinationKeyPath[destinationKeyPath];
 }
 
 // Evaluate each component individually so that camelization, etc. considers each component individually

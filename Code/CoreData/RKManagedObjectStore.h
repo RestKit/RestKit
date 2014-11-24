@@ -76,7 +76,7 @@
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
  
  */
-- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel;
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel NS_DESIGNATED_INITIALIZER;
 
 /**
  Initializes the receiver with an existing persistent store coordinator.

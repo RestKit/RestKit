@@ -52,7 +52,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
 // Duplicating interface from `RKMappingOperation.m`
 @interface RKMappingSourceObject : NSObject
-- (id)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
+- (instancetype)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata;
 @end
 
 @interface RKMappingOperation (Private)
@@ -271,7 +271,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
         
         if (mappingOperation.mappingInfo) {
             id infoKey = keyPath ?: [NSNull null];
-            NSMutableArray *infoForKeyPath = [self.mutableMappingInfo objectForKey:infoKey];
+            NSMutableArray *infoForKeyPath = (self.mutableMappingInfo)[infoKey];
             if (infoForKeyPath) {
                 [infoForKeyPath addObject:mappingOperation.mappingInfo];
             } else {

@@ -129,7 +129,7 @@ static BOOL RKDeleteInvalidNewManagedObject(NSManagedObject *managedObject)
 
 @interface RKManagedObjectDeletionOperation : NSOperation
 
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 - (void)addEntityMapping:(RKEntityMapping *)entityMapping;
 @end
 
@@ -140,7 +140,7 @@ static BOOL RKDeleteInvalidNewManagedObject(NSManagedObject *managedObject)
 
 @implementation RKManagedObjectDeletionOperation
 
-- (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     self = [self init];
     if (self) {

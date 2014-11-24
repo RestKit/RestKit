@@ -38,7 +38,7 @@
 @property (nonatomic, strong) id object;
 @property (nonatomic, strong) RKRequestDescriptor *requestDescriptor;
 
-- (id)initWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor;
+- (instancetype)initWithObject:(id)object requestDescriptor:(RKRequestDescriptor *)requestDescriptor;
 - (NSDictionary *)mapObjectToParameters:(NSError **)error;
 
 // Convenience methods

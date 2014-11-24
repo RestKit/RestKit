@@ -64,7 +64,7 @@
  */
 - (instancetype)initWithRequest:(NSURLRequest *)request
     paginationMapping:(RKObjectMapping *)paginationMapping
-  responseDescriptors:(NSArray *)responseDescriptors;
+  responseDescriptors:(NSArray *)responseDescriptors NS_DESIGNATED_INITIALIZER;
 
 ///-----------------------------
 /// @name Configuring Networking
