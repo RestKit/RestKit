@@ -49,6 +49,6 @@
  @param type The type of the new compound predicate.
  @return The receiver with its type set to the given type and its subpredicates set to an array of subpredicates for searching for the given text.
  */
-- (instancetype)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type;
+- (instancetype)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type NS_DESIGNATED_INITIALIZER;
 
 @end

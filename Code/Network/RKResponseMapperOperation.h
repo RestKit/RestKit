@@ -72,7 +72,7 @@
 - (instancetype)initWithRequest:(NSURLRequest *)request
              response:(NSHTTPURLResponse *)response
                  data:(NSData *)data
-  responseDescriptors:(NSArray *)responseDescriptors;
+  responseDescriptors:(NSArray *)responseDescriptors NS_DESIGNATED_INITIALIZER;
 
 ///-----------------------------------------------
 /// @name Accessing HTTP Request and Response Data

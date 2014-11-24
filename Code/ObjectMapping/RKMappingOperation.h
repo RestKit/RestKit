@@ -247,7 +247,7 @@
  @param metadataList A list of objects (usually dictionaries) which provide metadata to the operation, available via the @metadata key in mapping paths.  Each object should respond to -valueForKeyPath:, and return nil if the requested key path is not represented in the object (in which case the following object in the list will be consulted).
  @return The receiver, initialized with a source object, a destination object, and a mapping.
  */
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping metadataList:(NSArray *)metadataList;
+- (instancetype)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping metadataList:(NSArray *)metadataList;
 
 ///--------------------------------------
 /// @name Accessing Mapping Configuration

@@ -61,19 +61,19 @@ static NSString *RKLogTruncateString(NSString *string)
 
 @interface NSCachedURLResponse (RKLeakFix)
 
-- (NSData *)rkData;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSData *rkData;
 
 @end
 
 @interface RKObjectRequestOperationLogger : NSObject
 
-+ (id)sharedLogger;
++ (RKObjectRequestOperationLogger*)sharedLogger;
 
 @end
 
 @implementation RKObjectRequestOperationLogger
 
-+ (id)sharedLogger
++ (RKObjectRequestOperationLogger*)sharedLogger
 {
     static RKObjectRequestOperationLogger *sharedInstance = nil;
     static dispatch_once_t onceToken;
@@ -90,7 +90,7 @@ static NSString *RKLogTruncateString(NSString *string)
     };
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {

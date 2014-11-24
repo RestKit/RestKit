@@ -112,7 +112,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @implementation RKObjectParameters
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -162,7 +162,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @property (nonatomic, readonly) NSSet *mappings;
 
-- (id)initWithMapping:(RKMapping *)mapping;
+- (instancetype)initWithMapping:(RKMapping *)mapping NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -172,7 +172,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @implementation RKMappingGraphVisitor
 
-- (id)initWithMapping:(RKMapping *)mapping
+- (instancetype)initWithMapping:(RKMapping *)mapping
 {
     self = [super init];
     if (self) {

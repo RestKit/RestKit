@@ -76,7 +76,7 @@
                     info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
                                                                    keyValueClass:destinationClass
                                                                      isPrimitive:NO];
-                    [entityInspection setObject:info forKey:name];
+                    entityInspection[name] = info;
                 }
             }
         }
@@ -90,13 +90,13 @@
                 info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
                                                                keyValueClass:[NSOrderedSet class]
                                                                  isPrimitive:NO];
-                [entityInspection setObject:info forKey:name];
+                entityInspection[name] = info;
             } else {
                 RKPropertyInspectorPropertyInfo *info;
                 info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
                                                                keyValueClass:[NSSet class]
                                                                  isPrimitive:NO];
-                [entityInspection setObject:info forKey:name];
+                entityInspection[name] = info;
             }
         } else {
             NSEntityDescription *destinationEntity = [relationshipDescription destinationEntity];
@@ -108,7 +108,7 @@
             info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
                                                            keyValueClass:destinationClass ?: [NSNull null]
                                                              isPrimitive:NO];
-            [entityInspection setObject:info forKey:name];
+            entityInspection[name] = info;
         }
     }
 
@@ -122,7 +122,7 @@
 - (Class)classForPropertyNamed:(NSString *)propertyName ofEntity:(NSEntityDescription *)entity
 {
     NSDictionary *entityInspection = [self propertyInspectionForEntity:entity];
-    RKPropertyInspectorPropertyInfo *propertyInspection = [entityInspection objectForKey:propertyName];
+    RKPropertyInspectorPropertyInfo *propertyInspection = entityInspection[propertyName];
     return propertyInspection.keyValueCodingClass;
 }
 

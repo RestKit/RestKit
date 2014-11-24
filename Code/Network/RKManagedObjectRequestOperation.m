@@ -173,7 +173,7 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
  */
 @interface RKRefetchingMappingResult : NSProxy
 
-- (id)initWithMappingResult:(RKMappingResult *)mappingResult
+- (instancetype)initWithMappingResult:(RKMappingResult *)mappingResult
        managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                 mappingInfo:(NSDictionary *)mappingInfo;
 @end
@@ -202,7 +202,7 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     _managedObjectContext = nil;
 }
 
-- (id)initWithMappingResult:(RKMappingResult *)mappingResult
+- (instancetype)initWithMappingResult:(RKMappingResult *)mappingResult
        managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                 mappingInfo:(NSDictionary *)mappingInfo;
 {

@@ -139,7 +139,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
 - (id)parseResponseData:(NSError **)error;
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error;
-- (BOOL)hasEmptyResponse;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasEmptyResponse;
 @end
 
 @implementation RKResponseMapperOperation
