@@ -25,7 +25,7 @@ RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTweet class]];
 RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:nil];
 NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1/statuses/public_timeline.json"];
 NSURLRequest *request = [NSURLRequest requestWithURL:url];
-RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]]; 
+RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
 [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
     NSLog(@"The public timeline Tweets: %@", [result array]);
 } failure:nil];
@@ -176,7 +176,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
   </tr>
 </table>
 
-### 
+###
 
 ## Examples
 
@@ -261,7 +261,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 [operation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
     // The `description` method of the class the error is mapped to is used to construct the value of the localizedDescription
 	NSLog(@"Loaded this error: %@", [error localizedDescription]);
-    
+
     // You can access the model object used to construct the `NSError` via the `userInfo`
     RKErrorMessage *errorMessage =  [[error.userInfo objectForKey:RKObjectMapperErrorObjectsKey] firstObject];
 }];
@@ -426,7 +426,7 @@ rdu.code = @"rdu";
 
 // Enqueue a GET for '/airports/jfk/weather', '/airports/lga/weather', '/airports/rdu/weather'
 RKRoute *route = [RKRoute routeWithName:@"airport_weather" resourcePathPattern:@"/airports/:code/weather" method:RKRequestMethodGET];
-                                
+
 [manager enqueueBatchOfObjectRequestOperationsWithRoute:route
                                                 objects:@[ jfk, lga, rdu]
                                                progress:^(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations) {
@@ -462,7 +462,7 @@ RKManagedObjectImporter *importer = [[RKManagedObjectImporter alloc] initWithMan
 // JSON looks like {"articles": [ {"title": "Article 1", "body": "Text", "author": "Blake" ]}
 NSError *error;
 NSBundle *mainBundle = [NSBundle mainBundle];
-[importer importObjectsFromItemAtPath:[mainBundle pathForResource:@"articles" ofType:@"json"]    
+[importer importObjectsFromItemAtPath:[mainBundle pathForResource:@"articles" ofType:@"json"]
                           withMapping:articleMapping
                               keyPath:@"articles"
                                 error:&error];
@@ -528,7 +528,7 @@ RKMappingTest *mappingTest = [[RKMappingTest alloc] initWithMapping:mapping sour
 
 ## Requirements
 
-RestKit requires [iOS 5.0](http://developer.apple.com/library/ios/#releasenotes/General/WhatsNewIniPhoneOS/Articles/iOS5.html#//apple_ref/doc/uid/TP30915195-SW1) and above or [Mac OS X 10.7](http://developer.apple.com/library/mac/#releasenotes/MacOSX/WhatsNewInOSX/Articles/MacOSX10_7.html#//apple_ref/doc/uid/TP40010355-SW5) and above.
+RestKit requires [iOS 5.1.1](http://developer.apple.com/library/ios/#releasenotes/General/WhatsNewIniPhoneOS/Articles/iOS5.html#//apple_ref/doc/uid/TP30915195-SW1) and above or [Mac OS X 10.7](http://developer.apple.com/library/mac/#releasenotes/MacOSX/WhatsNewInOSX/Articles/MacOSX10_7.html#//apple_ref/doc/uid/TP40010355-SW5) and above.
 
 Several third-party open source libraries are used within RestKit, including:
 
@@ -588,7 +588,7 @@ Change to the directory of your Xcode project, and Create and Edit your Podfile 
 $ cd /path/to/MyProject
 $ touch Podfile
 $ edit Podfile
-platform :ios, '5.0' 
+platform :ios, '5.0'
 # Or platform :osx, '10.7'
 pod 'RestKit', '~> 0.20.0'
 
