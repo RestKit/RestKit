@@ -242,10 +242,13 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
 - (instancetype)initWithObject:(id)object parentObject:(id)parentObject rootObject:(id)rootObject metadata:(NSArray *)metadata
 {
-    self.object = object;
-    self.parentObject = parentObject;
-    self.rootObject = rootObject;
-    self.metadataList = metadata;
+    self = [self init];
+    if (self) {
+        _object = object;
+        _parentObject = parentObject;
+        _rootObject = rootObject;
+        _metadataList = metadata;
+    }
     return self;
 }
 
