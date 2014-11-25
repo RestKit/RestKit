@@ -46,7 +46,8 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     if ([collection count] > 0) {
         description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
     } else {
-        RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
+        description = @"Expected mapping result to contain at least one object to construct an error";
+        RKLogWarning(@"%@", description);
     }
     NSDictionary *userInfo = @{RKObjectMapperErrorObjectsKey: collection,
                               NSLocalizedDescriptionKey: description};
