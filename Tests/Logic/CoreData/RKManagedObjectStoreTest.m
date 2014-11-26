@@ -20,6 +20,7 @@
 
 #import "RKTestEnvironment.h"
 #import "RKHuman.h"
+#import "RKCat.h"
 #import "RKPathUtilities.h"
 #import "RKSearchIndexer.h"
 
@@ -602,6 +603,56 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     }];
     expect(success).to.equal(YES);
     expect(error).to.beNil();
+}
+
+#pragma mark - Context Merging Tests
+
+- (void)testInsertingAndUpdatingBeforeSave_doesntMergeSaveNotificationInError
+{
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    RKManagedObjectStore *seedStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    NSString *seedPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Seed.sqlite"];
+    NSError *error;
+    NSPersistentStore *persistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    expect(persistentStore).notTo.beNil();
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:seedPath];
+    expect(fileExists).to.beTruthy();
+
+    [seedStore createManagedObjectContexts];
+    
+    NSManagedObjectContext* context = [seedStore newChildManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType tracksChanges:YES];
+    
+    id contextPartialMock = [OCMockObject partialMockForObject:context];
+    [[[contextPartialMock stub] andDo:^(NSInvocation* inv)
+    {
+        XCTFail(@"should not try and merge changes in to the context that generated them");
+    }] mergeChangesFromContextDidSaveNotification:OCMOCK_ANY];
+    
+    //Add some data that traverses a relationship, and then update some of that data before even inserting it
+    [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:contextPartialMock];
+    RKCat* cat1 = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:contextPartialMock];
+    cat1.color = @"Orange";
+    [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:contextPartialMock];
+    
+    XCTestExpectation* testCompleted = [self expectationWithDescription:@"did not merge"];
+    
+    [contextPartialMock performBlock:^
+    {
+        NSError* firstSaveErr = nil;
+        [contextPartialMock save:&firstSaveErr];
+        NSAssert(!firstSaveErr, @"Error saving");
+        
+        [seedStore.persistentStoreManagedObjectContext performBlock:^
+         {
+             NSError* persistentSaveErr = nil;
+             [seedStore.persistentStoreManagedObjectContext save:&persistentSaveErr];
+             
+             [testCompleted fulfill];
+         }];
+    }];
+    
+    [self waitForExpectationsWithTimeout:1.0 handler:nil];
 }
 
 @end
