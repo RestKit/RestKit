@@ -101,7 +101,13 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
 - (void)handleManagedObjectContextDidSaveNotification:(NSNotification *)notification
 {
     NSAssert([notification object] == self.observedContext, @"Received Managed Object Context Did Save Notification for Unexpected Context: %@", [notification object]);
-    if (! [self.objectIDsFromChildDidSaveNotification isEqual:RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification)]) {
+    
+    //the save could have potentially assigned permament IDs to temporary ones
+    //that were being held on to. This would result in merging a notification back
+    //in to the child that triggered it, and bad things happen when you do that.
+    NSSet* childIDs = [self permanentObjectIDsForIds:self.objectIDsFromChildDidSaveNotification inContext:self.mergeContext];
+    
+    if (! [childIDs isEqual:RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification)]) {
         [self.mergeContext performBlock:^{
             [self.mergeContext mergeChangesFromContextDidSaveNotification:notification];
         }];
@@ -109,6 +115,31 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
         RKLogDebug(@"Skipping merge of `NSManagedObjectContextDidSaveNotification`: the save event originated from the mergeContext and thus no save is necessary.");
     }
     self.objectIDsFromChildDidSaveNotification = nil;
+}
+
+- (NSSet*)permanentObjectIDsForIds:(NSSet*)objectIDs inContext:(NSManagedObjectContext*)context
+{
+    NSMutableSet* permanentIds = [NSMutableSet setWithCapacity:objectIDs.count];
+    NSMutableSet* objectsForTemps = [NSMutableSet setWithCapacity:objectIDs.count];
+    
+    for (NSManagedObjectID* oldID in objectIDs)
+    {
+        if ([oldID isTemporaryID])
+        {
+            [objectsForTemps addObject:[context objectWithID:oldID]];
+        }
+        else
+        {
+            [permanentIds addObject:oldID];
+        }
+    }
+    
+    NSError* err = nil;
+    [context obtainPermanentIDsForObjects:[objectsForTemps allObjects] error:&err];
+    NSCAssert(!err, @"unable to obtain permanent ids for objects");
+    
+    [permanentIds unionSet:[objectsForTemps valueForKey:@"objectID"]];
+    return permanentIds;
 }
 
 @end
