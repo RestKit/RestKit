@@ -627,7 +627,13 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
             return operation;
         }
         path = [URL relativeString];
-        routingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
+        
+        if (parameters == nil) {
+            parameters = @{};
+        }
+        
+        routingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route },
+                             @"query": @{ @"parameters": parameters} };
     }
     
 #ifdef RKCoreDataIncluded
@@ -695,7 +701,14 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
     NSAssert(URL, @"Failed to generate URL for relationship named '%@' for object: %@", relationshipName, object);
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
-    operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
+    
+    if (parameters == nil) {
+        parameters = @{};
+    }
+    
+    operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route },
+                         @"query": @{ @"parameters": parameters} };
+    
     [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
@@ -714,7 +727,14 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSAssert(route.method & RKRequestMethodGET, @"Expected route named '%@' to specify a GET, but it does not", routeName);
     
     RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
-    operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
+    
+    if (parameters == nil) {
+        parameters = @{};
+    }
+    
+    operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route },
+                                   @"query": @{ @"parameters": parameters} };
+    
     [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 
