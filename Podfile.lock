@@ -55,7 +55,7 @@ SPEC CHECKSUMS:
   ISO8601DateFormatterValueTransformer: a705384ea6531255258e25b6480ba1180db703a0
   OCHamcrest: 207233b7d7a44dadd66aca398947cc7e029c9be5
   OCMock: 6db79185520e24f9f299548f2b8b07e41d881bd5
-  RestKit: dcfcf0b3018837ad01b6123699274b606a0627d4
+  RestKit: ce0a13d517eb2de12d98ff3953141352ecbd920a
   RKCLLocationValueTransformer: 4803de0b5bdd81a1ebedb93a8a1d715f92ceb3f4
   RKValueTransformers: 67b4ea3eb6a1c1a0b8c3c37eb4e4c05e4febeba2
   SOCKit: d8d0dd3688ae1026c12367570da8fa8e1a6980fb
