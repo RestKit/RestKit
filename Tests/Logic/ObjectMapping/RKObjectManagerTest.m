@@ -1334,6 +1334,52 @@
     expect(anotherUser.position).to.equal(@1);
 }
 
+- (void)testMappingMetadataQueryParameters
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.query.parameters.userID": @"position" }];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithName:@"load_human" pathPattern:@"/JSON/humans/:userID\\.json" method:RKRequestMethodGET]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:@"/JSON/humans/:userID\\.json" keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    RKTestUser *user = [RKTestUser new];
+    user.userID = @1;
+    __block RKMappingResult *mappingResult = nil;
+    [objectManager getObjectsAtPathForRouteNamed:@"load_human" object:user parameters:@{ @"userID" : @"12" } success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    
+    expect(mappingResult).willNot.beNil();
+    RKTestUser *anotherUser = [mappingResult firstObject];
+    expect(anotherUser).notTo.equal(user);
+    expect(anotherUser.name).to.equal(@"Blake Watters");
+    expect(anotherUser.position).to.equal(@12);
+}
+
+- (void)testMappingMetadataQueryParametersNoneSupplied
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.query.parameters.userID": @"position" }];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithName:@"load_human" pathPattern:@"/JSON/humans/:userID\\.json" method:RKRequestMethodGET]];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:@"/JSON/humans/:userID\\.json" keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    RKTestUser *user = [RKTestUser new];
+    user.userID = @1;
+    __block RKMappingResult *mappingResult = nil;
+    [objectManager getObjectsAtPathForRouteNamed:@"load_human" object:user parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    
+    expect(mappingResult).willNot.beNil();
+    RKTestUser *anotherUser = [mappingResult firstObject];
+    expect(anotherUser).notTo.equal(user);
+    expect(anotherUser.name).to.equal(@"Blake Watters");
+    expect(anotherUser.position).to.beNil;
+}
+
 - (void)testRoutingMetadataWithAppropriateObjectRequestOperation
 {
     NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
