@@ -641,7 +641,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     {
         NSError* firstSaveErr = nil;
         [(NSManagedObjectContext*)contextPartialMock save:&firstSaveErr];
-        NSAssert(!firstSaveErr, @"Error saving");
+        expect(firstSaveErr).to.beNil();
         
         [seedStore.persistentStoreManagedObjectContext performBlock:^
          {
