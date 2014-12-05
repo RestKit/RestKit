@@ -19,7 +19,12 @@
 //
 
 /**
- RestKit Logging is based on the LibComponentLogging framework
+ RestKit Logging that can be configured using RKSetLoggingClass.
+ 
+ At load RestKit will try to set the class to eihter:
+ - LCLNSLogger_RK: LibComponentLogging if available.
+ - RKLumberjackLogger: CocoaLumberjack if available.
+ - RKNSLogLogger: Standard NSLog if all of the above are unavailable.
 
  @see lcl_config_components_RK.h
  @see lcl_config_logger_RK.h

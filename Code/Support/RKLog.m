@@ -23,7 +23,7 @@
 @interface RKNSLogLogger : NSObject <RKLogging>
 @end
 
-#if RKLOG_USE_NSLOGGER && __has_include("LCLNSLogger_RK.h")
+#if __has_include("LCLNSLogger_RK.h")
   #import "LCLNSLogger_RK.h"
   #define RKLOG_CLASS LCLNSLogger_RK
 
