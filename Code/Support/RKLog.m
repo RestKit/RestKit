@@ -27,6 +27,10 @@
   #import "LCLNSLogger_RK.h"
   #define RKLOG_CLASS LCLNSLogger_RK
 
+#elif __has_include("NBULog.h")
+  #import "RKNBULog.h"
+  #define RKLOG_CLASS RKNBULogger
+
 #elif __has_include("DDLog.h")
   #import "RKLumberjackLogger.h"
   #define RKLOG_CLASS RKLumberjackLogger
