@@ -34,16 +34,16 @@
 #endif
 
 /// RestKit modules
-#define RESTKIT_MODULE_DEFAULT          0
-#define RESTKIT_MODULE_NETWORK          1
-#define RESTKIT_MODULE_NETWORKCOREDATA  2
-#define RESTKIT_MODULE_OBJECTMAPPING    3
-#define RESTKIT_MODULE_COREDATA         4
-#define RESTKIT_MODULE_COREDATACACHE    5
-#define RESTKIT_MODULE_SEARCH           6
-#define RESTKIT_MODULE_SUPPORT          7
-#define RESTKIT_MODULE_TESTING          8
-#define RESTKIT_MODULE_UI               9
+#define RESTKIT_MODULE_DEFAULT          RKlcl_cRestKit
+#define RESTKIT_MODULE_NETWORK          RKlcl_cRestKitNetwork
+#define RESTKIT_MODULE_NETWORKCOREDATA  RKlcl_cRestKitNetworkCoreData
+#define RESTKIT_MODULE_OBJECTMAPPING    RKlcl_cRestKitObjectMapping
+#define RESTKIT_MODULE_COREDATA         RKlcl_cRestKitCoreData
+#define RESTKIT_MODULE_COREDATACACHE    RKlcl_cRestKitCoreDataCache
+#define RESTKIT_MODULE_SEARCH           RKlcl_cRestKitSearch
+#define RESTKIT_MODULE_SUPPORT          RKlcl_cRestKitSupport
+#define RESTKIT_MODULE_TESTING          RKlcl_cRestKitTesting
+#define RESTKIT_MODULE_UI               RKlcl_cRestKitUI
 
 #import "RKLog.h"
 
@@ -83,20 +83,6 @@
 @interface RKNBULogger : NSObject <RKLogging>
 
 @end
-
-
-// Macros used internally by RestKit
-
-//#define RKlcl_cRestKit                  RESTKIT_MODULE_DEFAULT
-//#define RKlcl_cRestKitObjectMapping     RESTKIT_MODULE_OBJECTMAPPING
-//#define RKlcl_cRestKitCoreData          RESTKIT_MODULE_COREDATA
-//#define RKlcl_cRestKitCoreDataCache     RESTKIT_MODULE_COREDATACACHE
-//#define RKlcl_cRestKitNetwork           RESTKIT_MODULE_NETWORK
-//#define RKlcl_cRestKitNetworkCoreData   RESTKIT_MODULE_NETWORKCOREDATA
-//#define RKlcl_cRestKitSearch            RESTKIT_MODULE_SEARCH
-//#define RKlcl_cRestKitTesting           RESTKIT_MODULE_TESTING
-//#define RKlcl_cRestKitUI                RESTKIT_MODULE_UI
-//#define RKlcl_cRestKitSupport           RESTKIT_MODULE_SUPPORT
 
 #endif
 

@@ -24,11 +24,6 @@
 #import "RKNBULog.h"
 #import <NBULog/NBULogContextDescription.h>
 
-#define MAX_MODULES 10
-
-static DDLogLevel _restKitLogLevel;
-static DDLogLevel _restKitModulesLogLevel[MAX_MODULES];
-
 @implementation NBULog (RestKit)
 
 + (void)load
@@ -57,37 +52,52 @@ static DDLogLevel _restKitModulesLogLevel[MAX_MODULES];
 
 + (DDLogLevel)restKitLogLevel
 {
-    return _restKitLogLevel;
+    return [self levelFromRKLevel:_RKlcl_component_level[RKlcl_cRestKit]];
 }
 
 + (void)setRestKitLogLevel:(DDLogLevel)logLevel
 {
-#ifdef DEBUG
-    _restKitLogLevel = logLevel == LOG_LEVEL_DEFAULT ? DDLogLevelInfo : logLevel;
-#else
-    _restKitLogLevel = logLevel == LOG_LEVEL_DEFAULT ? DDLogLevelWarning : logLevel;
-#endif
-    
-    // Reset all modules' levels
-    for (int i = 0; i < MAX_MODULES; i++)
-    {
-        [self setRestKitLogLevel:LOG_LEVEL_DEFAULT
-                       forModule:i];
-    }
+    RKlcl_configure_by_name("RestKit*", [self rkLevelFromLevel:logLevel]);
 }
 
 + (DDLogLevel)restKitLogLevelForModule:(int)RESTKIT_MODULE_XXX
 {
-    DDLogLevel logLevel = _restKitModulesLogLevel[RESTKIT_MODULE_XXX];
-    
-    // Fallback to the default log level if necessary
-    return logLevel == LOG_LEVEL_DEFAULT ? _restKitLogLevel : logLevel;
+    return [self levelFromRKLevel:_RKlcl_component_level[RESTKIT_MODULE_XXX]];
 }
 
 + (void)setRestKitLogLevel:(DDLogLevel)logLevel
                  forModule:(int)RESTKIT_MODULE_XXX
 {
-    _restKitModulesLogLevel[RESTKIT_MODULE_XXX] = logLevel;
+    RKlcl_configure_by_component(RESTKIT_MODULE_XXX, [self rkLevelFromLevel:logLevel]);
+}
+
+#pragma mark - Conversions
+
++ (DDLogLevel)levelFromRKLevel:(_RKlcl_level_t)rkLevel
+{
+    switch (rkLevel)
+    {
+        case RKlcl_vCritical:   return DDLogLevelError;
+        case RKlcl_vError:      return DDLogLevelError;
+        case RKlcl_vWarning:    return DDLogLevelWarning;
+        case RKlcl_vInfo:       return DDLogLevelInfo;
+        case RKlcl_vDebug:      return DDLogLevelDebug;
+        case RKlcl_vTrace:      return DDLogLevelVerbose;
+        default:                return DDLogLevelOff;
+    }
+}
+
++ (_RKlcl_level_t)rkLevelFromLevel:(DDLogLevel)level
+{
+    switch (level)
+    {
+        case DDLogLevelError:   return RKlcl_vError;
+        case DDLogLevelWarning: return RKlcl_vWarning;
+        case DDLogLevelInfo:    return RKlcl_vInfo;
+        case DDLogLevelDebug:   return RKlcl_vDebug;
+        case DDLogLevelVerbose: return RKlcl_vTrace;
+        default:                return RKlcl_vOff;
+    }
 }
 
 @end
@@ -102,21 +112,6 @@ static DDLogLevel _restKitModulesLogLevel[MAX_MODULES];
                 function:(const char *)function
                   format:(NSString *)format, ...
 {
-    int module;
-    switch (rkComponent)
-    {
-        case RKlcl_cRestKit:                module = RESTKIT_MODULE_DEFAULT;         break;
-        case RKlcl_cRestKitObjectMapping:   module = RESTKIT_MODULE_OBJECTMAPPING;   break;
-        case RKlcl_cRestKitCoreData:        module = RESTKIT_MODULE_COREDATA;        break;
-        case RKlcl_cRestKitCoreDataCache:   module = RESTKIT_MODULE_COREDATACACHE;   break;
-        case RKlcl_cRestKitNetwork:         module = RESTKIT_MODULE_NETWORK;         break;
-        case RKlcl_cRestKitNetworkCoreData: module = RESTKIT_MODULE_NETWORKCOREDATA; break;
-        case RKlcl_cRestKitSearch:          module = RESTKIT_MODULE_SEARCH;          break;
-        case RKlcl_cRestKitTesting:         module = RESTKIT_MODULE_TESTING;         break;
-        case RKlcl_cRestKitUI:              module = RESTKIT_MODULE_UI;              break;
-        case RKlcl_cRestKitSupport:         module = RESTKIT_MODULE_SUPPORT;         break;
-    }
-
     DDLogFlag flag;
     switch (rkLevel)
     {
@@ -128,7 +123,7 @@ static DDLogLevel _restKitModulesLogLevel[MAX_MODULES];
         case RKlcl_vTrace:      flag = DDLogFlagVerbose;    break;
     }
     
-    DDLogLevel level = [NBULog restKitLogLevelForModule:module];
+    DDLogLevel level = [NBULog restKitLogLevelForModule:rkComponent];
     
     if (!(level & flag))
         return;
@@ -141,7 +136,7 @@ static DDLogLevel _restKitModulesLogLevel[MAX_MODULES];
     [DDLog log:async
          level:level
           flag:flag
-       context:RESTKIT_LOG_CONTEXT + module
+       context:RESTKIT_LOG_CONTEXT + rkComponent
           file:path
       function:function
           line:line
