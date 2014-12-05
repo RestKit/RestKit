@@ -45,7 +45,7 @@
 {
     RKlcl_configure_by_name("RestKit*", RKLogLevelDefault);
     RKlcl_configure_by_name("App", RKLogLevelDefault);
-    if (RKGetLoggingClass() == Nil) RKSetLoggingClass([RKLOG_CLASS class]);
+    if (!RKGetLoggingClass()) RKSetLoggingClass([RKLOG_CLASS class]);
     RKLogInfo(@"RestKit logging initialized...");
 }
 
