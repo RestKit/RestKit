@@ -96,7 +96,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectParameterization.html">RKObjectParameterization</a></td>
-    <td>Performs mapping of a given object into an <tt>NSDictionary</tt> represenation suitable for use as the parameters of an HTTP request.</td>
+    <td>Performs mapping of a given object into an <tt>NSDictionary</tt> representation suitable for use as the parameters of an HTTP request.</td>
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectRequestOperation.html">RKObjectRequestOperation</a></td>
