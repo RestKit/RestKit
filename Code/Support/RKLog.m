@@ -23,9 +23,13 @@
 @interface RKNSLogLogger : NSObject <RKLogging>
 @end
 
-#if RKLOG_USE_NSLOGGER && __has_include("LCLNSLogger_RK.h")
+#if __has_include("LCLNSLogger_RK.h")
   #import "LCLNSLogger_RK.h"
   #define RKLOG_CLASS LCLNSLogger_RK
+
+#elif __has_include("NBULog.h")
+  #import "RKNBULog.h"
+  #define RKLOG_CLASS RKNBULogger
 
 #elif __has_include("DDLog.h")
   #import "RKLumberjackLogger.h"
@@ -45,7 +49,7 @@
 {
     RKlcl_configure_by_name("RestKit*", RKLogLevelDefault);
     RKlcl_configure_by_name("App", RKLogLevelDefault);
-    if (RKGetLoggingClass() == Nil) RKSetLoggingClass([RKLOG_CLASS class]);
+    if (!RKGetLoggingClass()) RKSetLoggingClass([RKLOG_CLASS class]);
     RKLogInfo(@"RestKit logging initialized...");
 }
 
