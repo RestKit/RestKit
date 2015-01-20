@@ -256,10 +256,10 @@ NSString * const RKMappingTestVerificationFailureException = @"RKMappingTestVeri
                     NSString *reason = [NSString stringWithFormat:@"expected to %@ with value %@ '%@', but it did not",
                                         expectation, [event.value class], event.value];
                     if (error) *error = [self errorForExpectation:expectation
-                                              withCode:RKMappingTestEvaluationBlockError
-                                              userInfo:userInfo
-                                           description:description
-                                                reason:reason];
+                                                         withCode:RKMappingTestEvaluationBlockError
+                                                         userInfo:userInfo
+                                                      description:description
+                                                           reason:reason];
                 }
             }
         } else if (propertyExpectation.value) {
