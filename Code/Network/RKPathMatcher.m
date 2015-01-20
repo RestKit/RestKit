@@ -146,7 +146,7 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
         NSMutableDictionary *parsedParameters = [[self.socPattern parameterDictionaryFromSourceString:path] mutableCopy];
         if (addEscapes) {
             for (NSString *key in [parsedParameters allKeys]) {
-                NSString *unescapedParameter = [[parsedParameters objectForKey:key] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                NSString *unescapedParameter = [parsedParameters[key] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                 [parsedParameters setValue:unescapedParameter forKey:key];
             }
         }
