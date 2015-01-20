@@ -250,6 +250,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         NSArray *identificationAttributes = [entityMapping.identificationAttributes valueForKey:@"name"];
         id existingObjectsOfRelationship = identificationAttributes ? [mappingOperation.destinationObject valueForKeyPath:relationship.destinationKeyPath] : RKMutableCollectionValueWithObjectForKeyPath(mappingOperation.destinationObject, relationship.destinationKeyPath);
         if (existingObjectsOfRelationship && !RKObjectIsCollection(existingObjectsOfRelationship)) existingObjectsOfRelationship = @[ existingObjectsOfRelationship ];
+        NSSet *setWithNull = [NSSet setWithObject:[NSNull null]];
         for (NSManagedObject *existingObject in existingObjectsOfRelationship) {
             if (! identificationAttributes && ![existingObject isDeleted]) {
                 managedObject = existingObject;
@@ -258,7 +259,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             }
             
             NSDictionary *identificationAttributeValues = [existingObject dictionaryWithValuesForKeys:identificationAttributes];
-            if ([[NSSet setWithArray:[identificationAttributeValues allValues]] isEqualToSet:[NSSet setWithObject:[NSNull null]]]) {
+            if ([[NSSet setWithArray:[identificationAttributeValues allValues]] isEqualToSet:setWithNull]) {
                 managedObject = existingObject;
                 break;
             }
