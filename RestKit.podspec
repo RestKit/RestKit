@@ -100,6 +100,6 @@ EOS
 
   s.subspec 'Support' do |ss|
     ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core'
-    ss.dependency 'TransitionKit', '2.1.0'
+    ss.dependency 'TransitionKit', '~> 2.1.0'
   end
 end
