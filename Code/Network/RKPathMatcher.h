@@ -73,7 +73,7 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object);
  @param arguments A pointer to a dictionary that contains the key/values from the pattern (and parameter) matching.
  @return A boolean value indicating if the path string successfully matched the pattern.
  */
-- (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments;
+//- (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments;
 
 ///---------------------------------
 /// @name Matching Patterns to Paths
