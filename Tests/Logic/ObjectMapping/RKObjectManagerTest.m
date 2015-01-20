@@ -1334,7 +1334,45 @@
     expect(anotherUser.position).to.equal(@1);
 }
 
-- (void)testMappingMetadataQueryParameters
+- (void)testMappingMetadataQueryParametersByPath
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.query.parameters.userID": @"position" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:@"/JSON/humans/:userID\\.json" keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    __block RKMappingResult *mappingResult = nil;
+    [objectManager getObjectsAtPath:@"/JSON/humans/1.json" parameters:@{ @"userID" : @"12" } success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    
+    expect(mappingResult).willNot.beNil();
+    RKTestUser *user = [mappingResult firstObject];
+    expect(user.name).to.equal(@"Blake Watters");
+    expect(user.position).to.equal(@12);
+}
+
+- (void)testMappingMetadataByPathNoneSupplied
+{
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.query.parameters.userID": @"position" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:@"/JSON/humans/:userID\\.json" keyPath:@"human" statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    
+    __block RKMappingResult *mappingResult = nil;
+    [objectManager getObjectsAtPath:@"/JSON/humans/1.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    
+    expect(mappingResult).willNot.beNil();
+    RKTestUser *user = [mappingResult firstObject];
+    expect(user.name).to.equal(@"Blake Watters");
+    expect(user.position).to.beNil;
+}
+
+- (void)testMappingMetadataQueryParametersByRoute
 {
     RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
@@ -1357,7 +1395,7 @@
     expect(anotherUser.position).to.equal(@12);
 }
 
-- (void)testMappingMetadataQueryParametersNoneSupplied
+- (void)testMappingMetadataQueryParametersByRouteNoneSupplied
 {
     RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
@@ -1378,6 +1416,67 @@
     expect(anotherUser).notTo.equal(user);
     expect(anotherUser.name).to.equal(@"Blake Watters");
     expect(anotherUser.position).to.beNil;
+}
+
+- (void)testMappingMetadataQueryParametersByRelationship
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    managedObjectStore.managedObjectCache = managedObjectCache;
+    
+    NSManagedObject *post = [NSEntityDescription insertNewObjectForEntityForName:@"Post" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [post setValue:@"The Post" forKey:@"title"];
+    [post setValue:@(1234) forKey:@"postID"];
+    
+    RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
+    [tagMapping addAttributeMappingsFromDictionary:@{ @"@metadata.routing.parameters.postID": @"postID", @"@metadata.query.parameters.name": @"name" }];
+    [tagMapping addConnectionForRelationship:@"posts" connectedBy:@{ @"postID": @"postID" }];
+    
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:tagMapping method:RKRequestMethodAny pathPattern:@"/posts/:postID/tags" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithRelationshipName:@"tags" objectClass:[RKPost class] pathPattern:@"/posts/:postID/tags" method:RKRequestMethodGET]];
+    __block RKMappingResult *mappingResult = nil;
+    [objectManager getObjectsAtPathForRelationship:@"tags" ofObject:post parameters:@{ @"name" : @"injectName" } success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    expect(mappingResult).willNot.beNil();
+    NSArray *tags = [mappingResult array];
+    expect(tags).notTo.beNil();
+    NSArray *tagNames = @[@"injectName", @"injectName"];
+    expect([tags valueForKey:@"name"]).to.equal(tagNames);
+    NSSet *connectedTags = [post valueForKey:@"tags"];
+    expect(connectedTags).notTo.beEmpty();
+}
+
+- (void)testMappingMetadataQueryParametersByRelationshipNoneSupplied
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    managedObjectStore.managedObjectCache = managedObjectCache;
+    
+    NSManagedObject *post = [NSEntityDescription insertNewObjectForEntityForName:@"Post" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    [post setValue:@"The Post" forKey:@"title"];
+    [post setValue:@(1234) forKey:@"postID"];
+    
+    RKEntityMapping *tagMapping = [RKEntityMapping mappingForEntityForName:@"Tag" inManagedObjectStore:managedObjectStore];
+    [tagMapping addAttributeMappingsFromDictionary:@{ @"@metadata.routing.parameters.postID": @"postID", @"@metadata.query.parameters.name": @"name" }];
+    [tagMapping addConnectionForRelationship:@"posts" connectedBy:@{ @"postID": @"postID" }];
+    
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:tagMapping method:RKRequestMethodAny pathPattern:@"/posts/:postID/tags" keyPath:nil statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:responseDescriptor];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithRelationshipName:@"tags" objectClass:[RKPost class] pathPattern:@"/posts/:postID/tags" method:RKRequestMethodGET]];
+    __block RKMappingResult *mappingResult = nil;
+    [objectManager getObjectsAtPathForRelationship:@"tags" ofObject:post parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *blockMappingResult) {
+        mappingResult = blockMappingResult;
+    } failure:nil];
+    expect(mappingResult).willNot.beNil();
+    NSArray *tags = [mappingResult array];
+    expect(tags).notTo.beNil();
+    expect([tags valueForKey:@"name"]).to.beNil;
+    NSSet *connectedTags = [post valueForKey:@"tags"];
+    expect(connectedTags).notTo.beEmpty();
 }
 
 - (void)testRoutingMetadataWithAppropriateObjectRequestOperation

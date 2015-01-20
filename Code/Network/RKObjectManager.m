@@ -630,6 +630,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         
         routingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route },
                              @"query": @{ @"parameters": parameters ?: @{} } };
+    } else if (parameters) {
+        routingMetadata = @{ @"query": @{ @"parameters": parameters } };
     }
     
 #ifdef RKCoreDataIncluded
