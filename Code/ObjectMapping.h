@@ -21,8 +21,13 @@
 #import "RKObjectMapping.h"
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
-#import "RKValueTransformers.h"
 #import "RKMappingResult.h"
 #import "RKMapperOperation.h"
 #import "RKDynamicMapping.h"
 #import "RKErrorMessage.h"
+
+#if __has_include(<RKValueTransformers/RKValueTransformers.h>)
+#   import <RKValueTransformers/RKValueTransformers.h>
+#else
+#   import "RKValueTransformers.h"
+#endif

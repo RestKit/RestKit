@@ -38,16 +38,16 @@
 #import "RKRouteSet.h"
 
 #ifdef _COREDATADEFINES_H
-#if __has_include("RKCoreData.h")
-#define RKCoreDataIncluded
-#import "RKManagedObjectStore.h"
-#import "RKManagedObjectRequestOperation.h"
-#endif
+#   if __has_include("RKCoreData.h")
+#       define RKCoreDataIncluded
+#       import "RKManagedObjectStore.h"
+#       import "RKManagedObjectRequestOperation.h"
+#   endif
 #endif
 
 #if !__has_feature(objc_arc)
-#error RestKit must be built with ARC.
-// You can turn on ARC for only RestKit files by adding "-fobjc-arc" to the build phase for each of its files.
+#error RestKit must be built with ARC. \
+You can turn on ARC for only RestKit files by adding "-fobjc-arc" to the build phase for each of its files.
 #endif
 
 //////////////////////////////////
