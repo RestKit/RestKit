@@ -614,6 +614,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                                            method:(RKRequestMethod)method
                                              path:(NSString *)path
                                        parameters:(NSDictionary *)parameters
+                                          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
+                                          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     RKObjectRequestOperation *operation = nil;
     NSURLRequest *request = [self requestWithObject:object method:method path:path parameters:parameters];
@@ -639,7 +641,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     if (isManagedObjectRequestOperation && self.managedObjectStore) {
         // Construct a Core Data operation
         NSManagedObjectContext *managedObjectContext = [object respondsToSelector:@selector(managedObjectContext)] ? [object managedObjectContext] : self.managedObjectStore.mainQueueManagedObjectContext;
-        operation = [self managedObjectRequestOperationWithRequest:request responseDescriptors:matchingDescriptors managedObjectContext:managedObjectContext success:nil failure:nil];
+        operation = [self managedObjectRequestOperationWithRequest:request responseDescriptors:matchingDescriptors managedObjectContext:managedObjectContext success:success failure:failure];
 
         if ([object isKindOfClass:[NSManagedObject class]]) {
             static NSPredicate *temporaryObjectsPredicate = nil;
@@ -658,7 +660,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         }
     } else {
         // Non-Core Data operation
-        operation = [self objectRequestOperationWithRequest:request responseDescriptors:matchingDescriptors success:nil failure:nil];
+        operation = [self objectRequestOperationWithRequest:request responseDescriptors:matchingDescriptors success:success failure:failure];
     }
 #else
     // Non-Core Data operation
@@ -668,6 +670,14 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     if (RKDoesArrayOfResponseDescriptorsContainMappingForClass(self.responseDescriptors, [object class])) operation.targetObject = object;
     operation.mappingMetadata = routingMetadata;
     return operation;
+}
+
+- (id)appropriateObjectRequestOperationWithObject:(id)object
+                                           method:(RKRequestMethod)method
+                                             path:(NSString *)path
+                                       parameters:(NSDictionary *)parameters
+{
+	return [self appropriateObjectRequestOperationWithObject:object method:method path:path parameters:parameters success:nil failure:nil];
 }
 
 - (NSURL *)URLWithRoute:(RKRoute *)route object:(id)object interpolatedParameters:(NSDictionary **)interpolatedParameters
@@ -694,9 +704,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSDictionary *interpolatedParameters = nil;
     NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
     NSAssert(URL, @"Failed to generate URL for relationship named '%@' for object: %@", relationshipName, object);
-    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters success:success failure:failure];
     operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
-    [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -713,9 +722,8 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
     NSAssert(URL, @"No route found named '%@'", routeName);
     NSAssert(route.method & RKRequestMethodGET, @"Expected route named '%@' to specify a GET, but it does not", routeName);
     
-    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:[URL relativeString] parameters:parameters success:success failure:failure];
     operation.mappingMetadata = @{ @"routing": @{ @"parameters": interpolatedParameters, @"route": route } };
-    [operation setCompletionBlockWithSuccess:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 
 }
@@ -726,8 +734,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
                  failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     NSParameterAssert(path);
-    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:path parameters:parameters];
-    [operation setCompletionBlockWithSuccess:success failure:failure];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:path parameters:parameters success:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -738,8 +745,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
-    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodGET path:path parameters:parameters];
-    [operation setCompletionBlockWithSuccess:success failure:failure];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodGET path:path parameters:parameters success:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -750,8 +756,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
-    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPOST path:path parameters:parameters];
-    [operation setCompletionBlockWithSuccess:success failure:failure];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPOST path:path parameters:parameters success:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -762,8 +767,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
-    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPUT path:path parameters:parameters];
-    [operation setCompletionBlockWithSuccess:success failure:failure];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPUT path:path parameters:parameters success:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -774,8 +778,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
-    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPATCH path:path parameters:parameters];
-    [operation setCompletionBlockWithSuccess:success failure:failure];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodPATCH path:path parameters:parameters success:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -786,8 +789,7 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
     NSAssert(object || path, @"Cannot make a request without an object or a path.");
-    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodDELETE path:path parameters:parameters];
-    [operation setCompletionBlockWithSuccess:success failure:failure];
+    RKObjectRequestOperation *operation = [self appropriateObjectRequestOperationWithObject:object method:RKRequestMethodDELETE path:path parameters:parameters success:success failure:failure];
     [self enqueueObjectRequestOperation:operation];
 }
 
@@ -928,9 +930,9 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
         NSURL *URL = [self URLWithRoute:route object:object interpolatedParameters:&interpolatedParameters];
         NSAssert(URL, @"Failed to generate URL for route %@ with object %@", route, object);
         if ([route isClassRoute]) {
-            operation = [self appropriateObjectRequestOperationWithObject:object method:route.method path:[URL relativeString] parameters:nil];
+            operation = [self appropriateObjectRequestOperationWithObject:object method:route.method path:[URL relativeString] parameters:nil success:nil failure:nil];
         } else {
-            operation = [self appropriateObjectRequestOperationWithObject:nil method:route.method path:[URL relativeString] parameters:nil];
+            operation = [self appropriateObjectRequestOperationWithObject:nil method:route.method path:[URL relativeString] parameters:nil success:nil failure:nil];
         }
         operation.mappingMetadata = @{ @"routing": interpolatedParameters, @"route": route };
         [operations addObject:operation];
