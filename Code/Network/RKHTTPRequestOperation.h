@@ -18,8 +18,13 @@
 //  limitations under the License.
 //
 
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
+#if __has_include(<AFNetworking/AFNetworking.h>)
+#   import <AFNetworking/AFHTTPClient.h>
+#   import <AFNetworking/AFHTTPRequestOperation.h>
+#else
+#   import "AFHTTPClient.h"
+#   import "AFHTTPRequestOperation.h"
+#endif
 
 // Expose the default headers from AFNetworking's AFHTTPClient
 @interface AFHTTPClient ()
