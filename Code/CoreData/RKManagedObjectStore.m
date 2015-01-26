@@ -335,8 +335,12 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 
 - (BOOL)resetPersistentStores:(NSError **)error
 {
-    [self.mainQueueManagedObjectContext reset];
-    [self.persistentStoreManagedObjectContext reset];
+    [self.mainQueueManagedObjectContext performBlockAndWait:^{
+        [self.mainQueueManagedObjectContext reset];
+    }];
+    [self.persistentStoreManagedObjectContext performBlockAndWait:^{
+        [self.persistentStoreManagedObjectContext reset];
+    }];
     
     NSError *localError;
     for (NSPersistentStore *persistentStore in self.persistentStoreCoordinator.persistentStores) {

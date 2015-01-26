@@ -15,7 +15,7 @@
 #import "RKRelationshipConnectionOperation.h"
 #import "RKFetchRequestManagedObjectCache.h"
 
-@interface RKRelationshipConnectionOperationTest : SenTestCase
+@interface RKRelationshipConnectionOperationTest : XCTestCase
 
 @end
 

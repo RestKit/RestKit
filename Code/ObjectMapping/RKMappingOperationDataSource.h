@@ -48,6 +48,23 @@
 @optional
 
 /**
+ Asks the data source for the target object for an object mapping operation the mapping object that will be used to perform the mapping.
+ 
+ If not implemented or it returns nil, then the
+  `mappingOperation:targetObjectForRepresentation:withMapping:inRelationship:` method will be called to determine the target.
+ 
+ It is preferable to implement this method if the `representation` is not needed to determine the target object,
+ as obtaining that value is somewhat expensive.
+ 
+ @param mappingOperation The mapping operation requesting the target object.
+ @param representation A dictionary representation of the properties to be mapped onto the retrieved target object.
+ @param mapping The object mapping to be used to perform a mapping from the representation to the target object.
+ @return A key-value coding compliant object to perform the mapping on to.
+ */
+- (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping;
+
+
+/**
  Tells the data source to commit any changes to the underlying data store.
 
  @param mappingOperation The mapping operation that has completed its work.
@@ -77,5 +94,17 @@
 - (BOOL)mappingOperationShouldSetUnchangedValues:(RKMappingOperation *)mappingOperation;
 
 - (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation;
+
+/**
+ Asks the data source if the mapping operation should collect `RKMappingInfo` information during the mapping
+ (stored in the `mappingInfo` property).  If not needed, it can be a substantially faster to skip it.  The
+ `mappingInfo` property will be nil if not collected.
+
+ If this method is not implemented by the data source, then the mapping operation defaults to `YES`.
+ 
+ @param mappingOperation The mapping operation that is querying the data source.
+ @return `YES` if the mapping operation should collect mapping information, else `NO`.
+*/
+- (BOOL)mappingOperationShouldCollectMappingInfo:(RKMappingOperation *)mappingOperation;
 
 @end

@@ -9,7 +9,7 @@
 #import "RKTestEnvironment.h"
 #import "RKHTTPRequestOperation.h"
 
-@interface RKHTTPRequestOperationTest : SenTestCase
+@interface RKHTTPRequestOperationTest : XCTestCase
 
 @end
 

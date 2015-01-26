@@ -137,8 +137,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    NSUInteger currentPage = 1;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)1)] currentPage];
     expect([paginator.URL relativeString]).to.equal(@"/paginate?per_page=25&page=1");
 }
 
@@ -147,8 +146,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    NSUInteger currentPage = 1;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)1)] currentPage];
     expect([[mockPaginator URL] query]).to.equal(@"per_page=25&page=1");
 }
 
@@ -157,8 +155,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationOffsetURL];
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    NSUInteger currentPage = 1;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)1)] currentPage];
     expect([[mockPaginator URL] query]).to.equal(@"limit=25&offset=0");
 }
 
@@ -323,21 +320,15 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 {
     RKPaginator *paginator = [RKPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    BOOL isLoaded = YES;
-    NSUInteger perPage = 5;
-    NSUInteger pageCount = 3;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(isLoaded)] isLoaded];
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(perPage)] perPage];
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(pageCount)] pageCount];
+    [[[mockPaginator stub] andReturnValue:@YES] isLoaded];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)5)] perPage];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)3)] pageCount];
 
-    NSUInteger currentPage = 1;
-    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE((NSUInteger)1)] currentPage];
     assertThatBool([mockPaginator hasNextPage], is(equalToBool(YES)));
-    currentPage = 2;
-    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE((NSUInteger)2)] currentPage];
     assertThatBool([mockPaginator hasNextPage], is(equalToBool(YES)));
-    currentPage = 3;
-    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE((NSUInteger)3)] currentPage];
     assertThatBool([mockPaginator hasNextPage], is(equalToBool(NO)));
 }
 
@@ -345,50 +336,40 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 {
     RKPaginator *paginator = [RKPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    BOOL loaded = NO;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(loaded)] isLoaded];
-    STAssertThrows([mockPaginator hasNextPage], @"Expected exception due to isLoaded == NO");
+    [[[mockPaginator stub] andReturnValue:@NO] isLoaded];
+    XCTAssertThrows([mockPaginator hasNextPage], @"Expected exception due to isLoaded == NO");
 }
 
 - (void)testHasNextPageRaisesExpectionWhenPageCountIsUnknown
 {
     RKPaginator *paginator = [RKPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    BOOL loaded = YES;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(loaded)] isLoaded];
-    BOOL hasPageCount = NO;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(hasPageCount)] hasPageCount];
-    STAssertThrows([mockPaginator hasNextPage], @"Expected exception due to pageCount == NSUIntegerMax");
+    [[[mockPaginator stub] andReturnValue:@YES] isLoaded];
+    [[[mockPaginator stub] andReturnValue:@NO] hasPageCount];
+    XCTAssertThrows([mockPaginator hasNextPage], @"Expected exception due to pageCount == NSUIntegerMax");
 }
 
 - (void)testHasPreviousPageRaisesExpectionWhenNotLoaded
 {
     RKPaginator *paginator = [RKPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    BOOL loaded = NO;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(loaded)] isLoaded];
-    STAssertThrows([mockPaginator hasPreviousPage], @"Expected exception due to isLoaded == NO");
+    [[[mockPaginator stub] andReturnValue:@NO] isLoaded];
+    XCTAssertThrows([mockPaginator hasPreviousPage], @"Expected exception due to isLoaded == NO");
 }
 
 - (void)testKnowledgeOfPreviousPage
 {
     RKPaginator *paginator = [RKPaginator new];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    BOOL isLoaded = YES;
-    NSUInteger perPage = 5;
-    NSUInteger pageCount = 3;
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(isLoaded)] isLoaded];
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(perPage)] perPage];
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(pageCount)] pageCount];
+    [[[mockPaginator stub] andReturnValue:@YES] isLoaded];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)5)] perPage];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE((NSUInteger)3)] pageCount];
 
-    NSUInteger currentPage = 3;
-    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE((NSUInteger)3)] currentPage];
     assertThatBool([mockPaginator hasPreviousPage], is(equalToBool(YES)));
-    currentPage = 2;
-    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE((NSUInteger)2)] currentPage];
     assertThatBool([mockPaginator hasPreviousPage], is(equalToBool(YES)));
-    currentPage = 1;
-    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE((NSUInteger)1)] currentPage];
     assertThatBool([mockPaginator hasPreviousPage], is(equalToBool(NO)));
 }
 

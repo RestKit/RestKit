@@ -121,7 +121,7 @@
     assertThat([relationshipsByName objectForKey:@"favoriteColors"], is(nilValue()));
 
     NSDictionary *propertyNamesAndTypes = [[RKPropertyInspector sharedInspector] propertyInspectionForEntity:entity];
-    assertThat([propertyNamesAndTypes objectForKey:@"favoriteColors"][RKPropertyInspectionKeyValueCodingClassKey], is(notNilValue()));
+    assertThat([(RKPropertyInspectorPropertyInfo *)[propertyNamesAndTypes objectForKey:@"favoriteColors"] keyValueCodingClass], is(notNilValue()));
 }
 
 - (void)testMappingAnArrayToATransformableWithoutABackingManagedObjectSubclass

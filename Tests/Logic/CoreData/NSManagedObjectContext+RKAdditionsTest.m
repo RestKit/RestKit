@@ -10,7 +10,7 @@
 #import "NSManagedObjectContext+RKAdditions.h"
 #import "RKHuman.h"
 
-@interface NSManagedObjectContext_RKAdditionsTest : SenTestCase
+@interface NSManagedObjectContext_RKAdditionsTest : XCTestCase
 
 @end
 

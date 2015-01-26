@@ -60,7 +60,6 @@
 		25119FB6154A34B400C6BC58 /* parents_and_children.json in Resources */ = {isa = PBXBuildFile; fileRef = 25119FB5154A34B400C6BC58 /* parents_and_children.json */; };
 		25119FB7154A34B400C6BC58 /* parents_and_children.json in Resources */ = {isa = PBXBuildFile; fileRef = 25119FB5154A34B400C6BC58 /* parents_and_children.json */; };
 		25160D1A14564E810060A5C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D1914564E810060A5C5 /* Foundation.framework */; };
-		25160D2814564E820060A5C5 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D2714564E820060A5C5 /* SenTestingKit.framework */; };
 		25160D2A14564E820060A5C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D2914564E820060A5C5 /* UIKit.framework */; };
 		25160D2B14564E820060A5C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D1914564E810060A5C5 /* Foundation.framework */; };
 		25160DDB145650490060A5C5 /* RKEntityMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D4C145650490060A5C5 /* RKEntityMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -103,16 +102,11 @@
 		25160E4C145650490060A5C5 /* RKMIMETypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DC3145650490060A5C5 /* RKMIMETypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E4D145650490060A5C5 /* RKMIMETypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DC4145650490060A5C5 /* RKMIMETypes.m */; };
 		25160E4E145650490060A5C5 /* RKSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DC5145650490060A5C5 /* RKSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160E79145651060060A5C5 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D2714564E820060A5C5 /* SenTestingKit.framework */; };
 		25160E7A145651060060A5C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160E63145651060060A5C5 /* Cocoa.framework */; };
 		25160EE21456532C0060A5C5 /* lcl_RK.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EA21456532C0060A5C5 /* lcl_RK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160EE31456532C0060A5C5 /* lcl_RK.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EA21456532C0060A5C5 /* lcl_RK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160EE41456532C0060A5C5 /* lcl_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EA31456532C0060A5C5 /* lcl_RK.m */; };
 		25160EE51456532C0060A5C5 /* lcl_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EA31456532C0060A5C5 /* lcl_RK.m */; };
-		25160EF81456532C0060A5C5 /* LCLNSLog_RK.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EB01456532C0060A5C5 /* LCLNSLog_RK.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160EF91456532C0060A5C5 /* LCLNSLog_RK.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EB01456532C0060A5C5 /* LCLNSLog_RK.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160EFA1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */; };
-		25160EFB1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */; };
 		25160F081456532C0060A5C5 /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EBD1456532C0060A5C5 /* SOCKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F091456532C0060A5C5 /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160EBD1456532C0060A5C5 /* SOCKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F0A1456532C0060A5C5 /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160EBE1456532C0060A5C5 /* SOCKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -607,6 +601,10 @@
 		C0F11CE6190883460054AEA0 /* RKPathMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = C0F11CE2190883380054AEA0 /* RKPathMatcher.m */; };
 		C0F11CE81908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C0F11CE91908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DB1148441A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DB1148451A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DB1148461A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */; };
+		DB1148471A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */; };
 		E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E457EFC3D502479D8B4FCF2A /* libPods-ios.a */; };
 /* End PBXBuildFile section */
 
@@ -640,6 +638,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		04D69B4B2A54475834B333CF /* Pods-osx.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.release.xcconfig"; path = "Pods/Target Support Files/Pods-osx/Pods-osx.release.xcconfig"; sourceTree = "<group>"; };
+		061E3E4524CE8EF78257C26C /* Pods-ios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.release.xcconfig"; path = "Pods/Target Support Files/Pods-ios/Pods-ios.release.xcconfig"; sourceTree = "<group>"; };
+		147F950728350A64F103F55D /* Pods-ios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ios/Pods-ios.debug.xcconfig"; sourceTree = "<group>"; };
 		2501405215366000004E0466 /* RKObjectiveCppTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RKObjectiveCppTest.mm; sourceTree = "<group>"; };
 		2502C8E715F79CF70060FD75 /* CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreData.h; sourceTree = "<group>"; };
 		2502C8E815F79CF70060FD75 /* Network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Network.h; sourceTree = "<group>"; };
@@ -669,8 +670,7 @@
 		25119FB5154A34B400C6BC58 /* parents_and_children.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = parents_and_children.json; sourceTree = "<group>"; };
 		25160D1614564E810060A5C5 /* libRestKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		25160D1914564E810060A5C5 /* Foundation.framework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		25160D2614564E820060A5C5 /* RestKitTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestKitTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		25160D2714564E820060A5C5 /* SenTestingKit.framework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		25160D2614564E820060A5C5 /* RestKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		25160D2914564E820060A5C5 /* UIKit.framework */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		25160D4C145650490060A5C5 /* RKEntityMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKEntityMapping.h; sourceTree = "<group>"; };
 		25160D4D145650490060A5C5 /* RKEntityMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEntityMapping.m; sourceTree = "<group>"; };
@@ -717,12 +717,10 @@
 		25160E66145651060060A5C5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		25160E67145651060060A5C5 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		25160E68145651060060A5C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		25160E78145651060060A5C5 /* RestKitFrameworkTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestKitFrameworkTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		25160E78145651060060A5C5 /* RestKitFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestKitFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		25160EA21456532C0060A5C5 /* lcl_RK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_RK.h; sourceTree = "<group>"; };
 		25160EA31456532C0060A5C5 /* lcl_RK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lcl_RK.m; sourceTree = "<group>"; };
 		25160EA71456532C0060A5C5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		25160EB01456532C0060A5C5 /* LCLNSLog_RK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LCLNSLog_RK.h; sourceTree = "<group>"; };
-		25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LCLNSLog_RK.m; sourceTree = "<group>"; };
 		25160EBD1456532C0060A5C5 /* SOCKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOCKit.h; sourceTree = "<group>"; };
 		25160EBE1456532C0060A5C5 /* SOCKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOCKit.m; sourceTree = "<group>"; };
 		25160F161456538B0060A5C5 /* libxml2.dylib */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
@@ -983,13 +981,14 @@
 		73D3907314CA1A4A0093E3D6 /* child.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = child.json; sourceTree = "<group>"; };
 		73D3907814CA1D710093E3D6 /* channels.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = channels.xml; sourceTree = "<group>"; };
 		86EC453810D648768BF62304 /* libPods-osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-osx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.xcconfig"; path = "Pods/Pods-ios.xcconfig"; sourceTree = SOURCE_ROOT; };
 		BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouteTest.m; sourceTree = "<group>"; };
 		C0F11CE1190883380054AEA0 /* RKPathMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPathMatcher.h; sourceTree = "<group>"; };
 		C0F11CE2190883380054AEA0 /* RKPathMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcher.m; sourceTree = "<group>"; };
 		C0F11CE71908C7E60054AEA0 /* RKCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCoreData.h; sourceTree = "<group>"; };
+		D8EFCBE1978F7946E0081FAD /* Pods-osx.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.debug.xcconfig"; path = "Pods/Target Support Files/Pods-osx/Pods-osx.debug.xcconfig"; sourceTree = "<group>"; };
+		DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLumberjackLogger.h; sourceTree = "<group>"; };
+		DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKLumberjackLogger.m; sourceTree = "<group>"; };
 		E457EFC3D502479D8B4FCF2A /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.xcconfig"; path = "Pods/Pods-osx.xcconfig"; sourceTree = SOURCE_ROOT; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1015,7 +1014,6 @@
 				2516112C1456F51D0060A5C5 /* libxml2.dylib in Frameworks */,
 				2516112B1456F5170060A5C5 /* CFNetwork.framework in Frameworks */,
 				251611291456F50F0060A5C5 /* SystemConfiguration.framework in Frameworks */,
-				25160D2814564E820060A5C5 /* SenTestingKit.framework in Frameworks */,
 				25160D2A14564E820060A5C5 /* UIKit.framework in Frameworks */,
 				25160D2B14564E820060A5C5 /* Foundation.framework in Frameworks */,
 				E2F2B89961FC462B981CEB7A /* libPods-ios.a in Frameworks */,
@@ -1038,7 +1036,6 @@
 			files = (
 				25565959161FC3CD00F5BB20 /* SystemConfiguration.framework in Frameworks */,
 				25565956161FC3C300F5BB20 /* CoreServices.framework in Frameworks */,
-				25160E79145651060060A5C5 /* SenTestingKit.framework in Frameworks */,
 				25160E7A145651060060A5C5 /* Cocoa.framework in Frameworks */,
 				7F9CBC6174004E31AEC35813 /* libPods-osx.a in Frameworks */,
 			);
@@ -1047,6 +1044,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		15BB5BBD8E8B9B2C9C8B11BC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				147F950728350A64F103F55D /* Pods-ios.debug.xcconfig */,
+				061E3E4524CE8EF78257C26C /* Pods-ios.release.xcconfig */,
+				D8EFCBE1978F7946E0081FAD /* Pods-osx.debug.xcconfig */,
+				04D69B4B2A54475834B333CF /* Pods-osx.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		25104F0E15C30C7900829135 /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -1083,8 +1091,7 @@
 				25160E8D145652E40060A5C5 /* Vendor */,
 				25160D1814564E810060A5C5 /* Frameworks */,
 				25160D1714564E810060A5C5 /* Products */,
-				8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */,
-				ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */,
+				15BB5BBD8E8B9B2C9C8B11BC /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1092,9 +1099,9 @@
 			isa = PBXGroup;
 			children = (
 				25160D1614564E810060A5C5 /* libRestKit.a */,
-				25160D2614564E820060A5C5 /* RestKitTests.octest */,
+				25160D2614564E820060A5C5 /* RestKitTests.xctest */,
 				25160E62145651060060A5C5 /* RestKit.framework */,
-				25160E78145651060060A5C5 /* RestKitFrameworkTests.octest */,
+				25160E78145651060060A5C5 /* RestKitFrameworkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1116,7 +1123,6 @@
 				25160F7B145657220060A5C5 /* SystemConfiguration.framework */,
 				25160F161456538B0060A5C5 /* libxml2.dylib */,
 				25160D1914564E810060A5C5 /* Foundation.framework */,
-				25160D2714564E820060A5C5 /* SenTestingKit.framework */,
 				25160D2914564E820060A5C5 /* UIKit.framework */,
 				25160E63145651060060A5C5 /* Cocoa.framework */,
 				25EC1B0014F8078100C3CF3F /* CoreFoundation.framework */,
@@ -1245,6 +1251,8 @@
 				25160DBF145650490060A5C5 /* RKDotNetDateFormatter.m */,
 				25160DC1145650490060A5C5 /* RKLog.h */,
 				25160DC2145650490060A5C5 /* RKLog.m */,
+				DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */,
+				DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */,
 				25160DC3145650490060A5C5 /* RKMIMETypes.h */,
 				25160DC4145650490060A5C5 /* RKMIMETypes.m */,
 				25160DC5145650490060A5C5 /* RKSerialization.h */,
@@ -1288,7 +1296,6 @@
 			isa = PBXGroup;
 			children = (
 				25160EA11456532C0060A5C5 /* Core */,
-				25160EAE1456532C0060A5C5 /* NSLog */,
 			);
 			path = LibComponentLogging;
 			sourceTree = "<group>";
@@ -1301,15 +1308,6 @@
 				25160EA71456532C0060A5C5 /* README.md */,
 			);
 			path = Core;
-			sourceTree = "<group>";
-		};
-		25160EAE1456532C0060A5C5 /* NSLog */ = {
-			isa = PBXGroup;
-			children = (
-				25160EB01456532C0060A5C5 /* LCLNSLog_RK.h */,
-				25160EB11456532C0060A5C5 /* LCLNSLog_RK.m */,
-			);
-			path = NSLog;
 			sourceTree = "<group>";
 		};
 		25160EB71456532C0060A5C5 /* SOCKit */ = {
@@ -1786,6 +1784,7 @@
 				252CCE7217E0CA2700B7F0BF /* ISO8601DateFormatterValueTransformer.h in Headers */,
 				25160E0F145650490060A5C5 /* RKAttributeMapping.h in Headers */,
 				25160E16145650490060A5C5 /* RKMapperOperation.h in Headers */,
+				DB1148441A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */,
 				25160E18145650490060A5C5 /* RKMapperOperation_Private.h in Headers */,
 				25160E1A145650490060A5C5 /* RKObjectMapping.h in Headers */,
 				25160E1C145650490060A5C5 /* RKMapping.h in Headers */,
@@ -1803,7 +1802,6 @@
 				25160E4C145650490060A5C5 /* RKMIMETypes.h in Headers */,
 				25160E4E145650490060A5C5 /* RKSerialization.h in Headers */,
 				25160EE21456532C0060A5C5 /* lcl_RK.h in Headers */,
-				25160EF81456532C0060A5C5 /* LCLNSLog_RK.h in Headers */,
 				25160F081456532C0060A5C5 /* SOCKit.h in Headers */,
 				25160E2E145650490060A5C5 /* RestKit.h in Headers */,
 				25B408261491CDDC00F21111 /* RKPathUtilities.h in Headers */,
@@ -1890,7 +1888,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				25160EE31456532C0060A5C5 /* lcl_RK.h in Headers */,
-				25160EF91456532C0060A5C5 /* LCLNSLog_RK.h in Headers */,
 				25160F091456532C0060A5C5 /* SOCKit.h in Headers */,
 				25160F44145655C60060A5C5 /* RKDynamicMapping.h in Headers */,
 				25160F46145655C60060A5C5 /* RKErrorMessage.h in Headers */,
@@ -1898,6 +1895,7 @@
 				252CCE7317E0CA2700B7F0BF /* ISO8601DateFormatterValueTransformer.h in Headers */,
 				25160F51145655C60060A5C5 /* RKMapperOperation.h in Headers */,
 				25160F53145655C60060A5C5 /* RKMapperOperation_Private.h in Headers */,
+				DB1148451A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */,
 				25160F55145655C60060A5C5 /* RKObjectMapping.h in Headers */,
 				25160F57145655C60060A5C5 /* RKMapping.h in Headers */,
 				25160F58145655C60060A5C5 /* RKMappingOperation.h in Headers */,
@@ -2034,8 +2032,8 @@
 			);
 			name = RestKitTests;
 			productName = RestKitTests;
-			productReference = 25160D2614564E820060A5C5 /* RestKitTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = 25160D2614564E820060A5C5 /* RestKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		25160E61145651060060A5C5 /* RestKitFramework */ = {
 			isa = PBXNativeTarget;
@@ -2073,8 +2071,8 @@
 			);
 			name = RestKitFrameworkTests;
 			productName = RestKitFrameworkTests;
-			productReference = 25160E78145651060060A5C5 /* RestKitFrameworkTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = 25160E78145651060060A5C5 /* RestKitFrameworkTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -2083,7 +2081,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastTestingUpgradeCheck = 0510;
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = RestKit;
 			};
 			buildConfigurationList = 25160D1014564E810060A5C5 /* Build configuration list for PBXProject "RestKit" */;
@@ -2217,7 +2215,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-osx-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-osx/Pods-osx-resources.sh\"\n";
 		};
 		212C92B936E847348494D6F7 /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2231,7 +2229,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-ios-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ios/Pods-ios-resources.sh\"\n";
 		};
 		25160D2414564E820060A5C5 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2272,6 +2270,7 @@
 				25160DE2145650490060A5C5 /* RKManagedObjectStore.m in Sources */,
 				25160DE6145650490060A5C5 /* RKPropertyInspector+CoreData.m in Sources */,
 				25160E0A145650490060A5C5 /* RKDynamicMapping.m in Sources */,
+				DB1148461A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */,
 				25160E0C145650490060A5C5 /* RKErrorMessage.m in Sources */,
 				25DA35711836741D001A56A0 /* TKTransition.m in Sources */,
 				25160E10145650490060A5C5 /* RKAttributeMapping.m in Sources */,
@@ -2287,7 +2286,6 @@
 				25160E4B145650490060A5C5 /* RKLog.m in Sources */,
 				25160E4D145650490060A5C5 /* RKMIMETypes.m in Sources */,
 				25160EE41456532C0060A5C5 /* lcl_RK.m in Sources */,
-				25160EFA1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */,
 				25160F0A1456532C0060A5C5 /* SOCKit.m in Sources */,
 				25B408281491CDDC00F21111 /* RKPathUtilities.m in Sources */,
 				25B6E95814CF7A1C00B1E881 /* RKErrors.m in Sources */,
@@ -2428,11 +2426,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				25160EE51456532C0060A5C5 /* lcl_RK.m in Sources */,
-				25160EFB1456532C0060A5C5 /* LCLNSLog_RK.m in Sources */,
 				25160F0B1456532C0060A5C5 /* SOCKit.m in Sources */,
 				25160F45145655C60060A5C5 /* RKDynamicMapping.m in Sources */,
 				25160F47145655C60060A5C5 /* RKErrorMessage.m in Sources */,
 				25160F4B145655C60060A5C5 /* RKAttributeMapping.m in Sources */,
+				DB1148471A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */,
 				25160F52145655C60060A5C5 /* RKMapperOperation.m in Sources */,
 				25DA35721836741D001A56A0 /* TKTransition.m in Sources */,
 				25160F56145655C60060A5C5 /* RKObjectMapping.m in Sources */,
@@ -2612,8 +2610,10 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2648,8 +2648,10 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -2705,7 +2707,7 @@
 		};
 		25160D3E14564E820060A5C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */;
+			baseConfigurationReference = 147F950728350A64F103F55D /* Pods-ios.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2717,20 +2719,15 @@
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
 				OBJROOT = "$(SRCROOT)/Build";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					SenTestingKit,
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = "$(SRCROOT)/Build/Products";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
 		25160D3F14564E820060A5C5 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8F2DFE1E847347368405F3B5 /* Pods-ios.xcconfig */;
+			baseConfigurationReference = 061E3E4524CE8EF78257C26C /* Pods-ios.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2742,14 +2739,9 @@
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
 				OBJROOT = "$(SRCROOT)/Build";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					SenTestingKit,
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = "$(SRCROOT)/Build/Products";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};
@@ -2811,7 +2803,7 @@
 		};
 		25160E8B145651060060A5C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */;
+			baseConfigurationReference = D8EFCBE1978F7946E0081FAD /* Pods-osx.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -2825,13 +2817,12 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
 		25160E8C145651060060A5C5 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ED192D1B86AB47D7927731B0 /* Pods-osx.xcconfig */;
+			baseConfigurationReference = 04D69B4B2A54475834B333CF /* Pods-osx.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -2845,7 +2836,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};

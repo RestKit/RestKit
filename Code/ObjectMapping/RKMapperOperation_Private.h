@@ -22,7 +22,7 @@
 
 - (id)mapRepresentation:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
 - (NSArray *)mapRepresentations:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
-- (BOOL)mapRepresentation:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping metadata:(NSDictionary *)metadata;
+- (BOOL)mapRepresentation:(id)mappableObject toObject:(id)destinationObject isNew:(BOOL)isNew atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping metadataList:(NSArray *)metadata;
 - (id)objectForRepresentation:(id)representation withMapping:(RKMapping *)mapping;
 
 @end

@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
 #import <OCMock/NSNotificationCenter+OCMAdditions.h>
 
@@ -37,6 +37,6 @@
 /*
  Base class for RestKit test cases. Provides initialization of testing infrastructure.
  */
-@interface RKTestCase : SenTestCase
+@interface RKTestCase : XCTestCase
 @end
 
