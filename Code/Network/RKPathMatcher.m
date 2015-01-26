@@ -58,6 +58,7 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
 @interface RKPathMatcher ()
 @property (nonatomic, strong) SOCPattern *socPattern;
 @property (nonatomic, copy) NSString *patternString; // SOCPattern keeps it private
+@property (nonatomic, copy) NSString *sourcePath;
 @end
 
 @implementation RKPathMatcher
@@ -66,6 +67,8 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
 {
     RKPathMatcher *copy = [[[self class] allocWithZone:zone] init];
     copy.socPattern = self.socPattern;
+    copy.patternString = self.patternString;
+    copy.sourcePath = self.sourcePath;
     return copy;
 }
 
@@ -81,21 +84,16 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
 + (instancetype)pathMatcherWithPath:(NSString *)pathString
 {
     RKPathMatcher *matcher = [self new];
+    matcher.sourcePath = pathString;
     return matcher;
 }
 
-- (BOOL)matchesPath:(NSString*)pathString
+- (BOOL)itMatchesAndHasParsedArguments:(NSDictionary **)arguments andPattern:(NSString*)pattern andSourcePath:(NSString*)sourcePath tokenizeQueryStrings:(BOOL)shouldTokenize
 {
-    NSAssert((self.socPattern != NULL && pathString != NULL), @"Matcher is insufficiently configured.  Before attempting pattern matching, you must provide a path string and a pattern to match it against.");
-    return [self.socPattern stringMatches:pathString];
-}
-
-- (BOOL)itMatchesAndHasParsedArguments:(NSDictionary **)arguments andSourcePath:(NSString*)sourcePath tokenizeQueryStrings:(BOOL)shouldTokenize
-{
-    NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using pathMatcherWithPattern: before attempting a pattern match.");
     NSMutableDictionary *argumentsCollection = [NSMutableDictionary dictionary];
     NSString *rootPath = [sourcePath copy];
     NSArray *components = [sourcePath componentsSeparatedByString:@"?"];
+    SOCPattern *socPattern = [SOCPattern patternWithString:pattern];
     
     // Bifurcate Source Path From Query Parameters
     
@@ -107,28 +105,26 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
         }
     }
     
-    bool rootPathMatchesPattern = RKNumberOfSlashesInString(self.patternString) == RKNumberOfSlashesInString(rootPath);
+    bool rootPathMatchesPattern = RKNumberOfSlashesInString(pattern) == RKNumberOfSlashesInString(rootPath);
     
-    if (![self matchesPath:rootPath]) return NO;
+    if (![socPattern stringMatches:rootPath]) return NO;
     if (!arguments) return YES && rootPathMatchesPattern;
-    NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:rootPath];
+    NSDictionary *extracted = [socPattern parameterDictionaryFromSourceString:rootPath];
     if (extracted) [argumentsCollection addEntriesFromDictionary:RKDictionaryByReplacingPercentEscapesInEntriesFromDictionary(extracted)];
     *arguments = argumentsCollection;
     return YES && rootPathMatchesPattern;
 }
-// This method is temporarily disabled, as it was not used, and is not thread safe. Don't mess with the instance variables (self.socPattern) when multiple threads can use this class simultaneously.
-/*
- - (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments
- {
 
- NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform patterm matching.");
- self.socPattern = [SOCPattern patternWithString:patternString];
- return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
- }
- */
+- (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments
+{
+    NSAssert(self.sourcePath != NULL, @"Matcher is not configured correctly. Instantiate it using pathMatcherWithPath: to use matchesPattern:tokenizeQueryStrings:parsedArguments");
+    NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform patterm matching.");
+    return [self itMatchesAndHasParsedArguments:arguments andPattern:patternString andSourcePath:self.sourcePath tokenizeQueryStrings:shouldTokenize];
+}
+
 - (BOOL)matchesPath:(NSString *)sourceString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments
 {
-    return [self itMatchesAndHasParsedArguments:arguments andSourcePath:sourceString tokenizeQueryStrings:shouldTokenize];
+    return [self itMatchesAndHasParsedArguments:arguments andPattern:self.patternString andSourcePath:sourceString tokenizeQueryStrings:shouldTokenize];
 }
 
 - (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes interpolatedParameters:(NSDictionary **)interpolatedParameters
