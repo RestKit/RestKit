@@ -892,6 +892,12 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         NSMutableSet *destinationSet = [destinationObject mutableSetValueForKeyPath:relationshipMapping.destinationKeyPath];
         [destinationSet setSet:valueForRelationship];
     } else if ([valueForRelationship isKindOfClass:[NSArray class]]) {
+        if (!RKIsManagedObject([destinationObject valueForKey:relationshipMapping.destinationKeyPath])) {
+            RKLogTrace(@"Can't map `NSArray`. %@ is not a managed object.", relationshipMapping.destinationKeyPath);
+            
+            return NO;
+        }
+        
         RKLogTrace(@"Mapped `NSArray` relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, valueForRelationship);
         NSMutableArray *destinationArray = [destinationObject mutableArrayValueForKeyPath:relationshipMapping.destinationKeyPath];
         [destinationArray setArray:valueForRelationship];
