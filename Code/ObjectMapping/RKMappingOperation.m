@@ -555,10 +555,6 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
                     RKLogWarning(@"Destination object %@ rejected attribute value for keyPath %@. Skipping...", self.destinationObject, keyPath);
                 }
                 RKLogDebug(@"(Value for key path '%@': %@)", keyPath, *value);
-            } else {
-                if(*value == [NSNull null]) {
-                    *value = nil;
-                }
             }
         }
     }
