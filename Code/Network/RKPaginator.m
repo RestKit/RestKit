@@ -205,9 +205,6 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 #else
     self.objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
 #endif
-    
-    // Add KVO to ensure notification of loaded state prior to execution of completion block
-    [self.objectRequestOperation addObserver:self forKeyPath:@"isFinished" options:0 context:nil];
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
@@ -230,10 +227,12 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         return deserializedResponseBody;
     }];
     [self.objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        [self finish];
         if (self.successBlock) {
             self.successBlock(self, [mappingResult array], self.currentPage);
         }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        [self finish];
         if (self.failureBlock) {
             self.failureBlock(self, error);
         }
@@ -262,14 +261,11 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
             [self hasObjectCount] ? @(self.objectCount) : @"???"];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void)finish
 {
-    if ([keyPath isEqualToString:@"isFinished"] && [self.objectRequestOperation isFinished]) {
-        self.loaded = (self.objectRequestOperation.mappingResult != nil);
-        self.mappingResult = self.objectRequestOperation.mappingResult;
-        self.error = self.objectRequestOperation.error;
-        [object removeObserver:self forKeyPath:@"isFinished"];
-    }
+    self.loaded = (self.objectRequestOperation.mappingResult != nil);
+    self.mappingResult = self.objectRequestOperation.mappingResult;
+    self.error = self.objectRequestOperation.error;
 }
 
 - (void)cancel
