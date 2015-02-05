@@ -556,7 +556,6 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
                 }
                 RKLogDebug(@"(Value for key path '%@': %@)", keyPath, *value);
             } else {
-//                Class propertyClass = [self.objectMapping classForKeyPath:keyPath];
                 if(*value == [NSNull null]) {
                     *value = nil;
                 }
