@@ -69,10 +69,10 @@
  @param responseDescriptors An array whose elements are `RKResponseDescriptor` objects specifying object mapping configurations that may be applied to the response.
  @return The receiver, initialized with the response, data, and response descriptor objects.
  */
-- (id)initWithRequest:(NSURLRequest *)request
+- (instancetype)initWithRequest:(NSURLRequest *)request
              response:(NSHTTPURLResponse *)response
                  data:(NSData *)data
-  responseDescriptors:(NSArray *)responseDescriptors;
+  responseDescriptors:(NSArray *)responseDescriptors NS_DESIGNATED_INITIALIZER;
 
 ///-----------------------------------------------
 /// @name Accessing HTTP Request and Response Data

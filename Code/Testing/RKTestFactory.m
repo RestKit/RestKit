@@ -72,7 +72,7 @@
     return sharedFactory;
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -87,12 +87,12 @@
 
 - (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block
 {
-    [self.factoryBlocks setObject:[block copy] forKey:factoryName];
+    (self.factoryBlocks)[factoryName] = [block copy];
 }
 
 - (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties
 {
-    id (^block)() = [self.factoryBlocks objectForKey:factoryName];
+    id (^block)() = (self.factoryBlocks)[factoryName];
     NSAssert(block, @"No factory is defined with the name '%@'", factoryName);
 
     id object = block();
@@ -102,10 +102,10 @@
 
 - (id)sharedObjectFromFactory:(NSString *)factoryName
 {
-    id sharedObject = [self.sharedObjectsByFactoryName objectForKey:factoryName];
+    id sharedObject = (self.sharedObjectsByFactoryName)[factoryName];
     if (!sharedObject) {
         sharedObject = [self objectFromFactory:factoryName properties:nil];
-        [self.sharedObjectsByFactoryName setObject:sharedObject forKey:factoryName];
+        (self.sharedObjectsByFactoryName)[factoryName] = sharedObject;
     }
     return sharedObject;
 }

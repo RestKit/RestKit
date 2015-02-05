@@ -168,7 +168,7 @@ static NSDictionary *RKStatusCodesToNamesDictionary()
 
 NSString * RKStringFromStatusCode(NSInteger statusCode)
 {
-    return [RKStatusCodesToNamesDictionary() objectForKey:@(statusCode)];
+    return RKStatusCodesToNamesDictionary()[@(statusCode)];
 }
 
 
@@ -438,19 +438,19 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
     }
     
     // Check Pragma: no-cache
-    NSString *pragma = [headers objectForKey:@"Pragma"];
+    NSString *pragma = headers[@"Pragma"];
     if (pragma && [pragma isEqualToString:@"no-cache"]) {
         // Uncacheable response
         return nil;
     }
     
     // Define "now" based on the request
-    NSString *date = [headers objectForKey:@"Date"];
+    NSString *date = headers[@"Date"];
     // If no Date: header, define now from local clock
     NSDate *now = date ? RKDateFromHTTPDateString(date) : [NSDate date];
     
     // Look at info from the Cache-Control: max-age=n header
-    NSString *cacheControl = [[headers objectForKey:@"Cache-Control"] lowercaseString];
+    NSString *cacheControl = [headers[@"Cache-Control"] lowercaseString];
     if (cacheControl)
     {
         NSRange foundRange = [cacheControl rangeOfString:@"no-store"];
@@ -480,7 +480,7 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
     }
     
     // If not Cache-Control found, look at the Expires header
-    NSString *expires = [headers objectForKey:@"Expires"];
+    NSString *expires = headers[@"Expires"];
     if (expires) {
         NSTimeInterval expirationInterval = 0;
         NSDate *expirationDate = RKDateFromHTTPDateString(expires);
@@ -503,7 +503,7 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
     }
     
     // If no cache control defined, try some heristic to determine an expiration date
-    NSString *lastModified = [headers objectForKey:@"Last-Modified"];
+    NSString *lastModified = headers[@"Last-Modified"];
     if (lastModified) {
         NSTimeInterval age = 0;
         NSDate *lastModifiedDate = RKDateFromHTTPDateString(lastModified);

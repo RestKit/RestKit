@@ -30,7 +30,7 @@
 
 @implementation RKRouter
 
-- (id)initWithBaseURL:(NSURL *)baseURL
+- (instancetype)initWithBaseURL:(NSURL *)baseURL
 {
     self = [super init];
     if (self) {
@@ -42,7 +42,7 @@
     return self;
 }
 
-- (id)init
+- (instancetype)init
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"%@ Failed to call designated initializer. Invoke initWithBaseURL: instead.", NSStringFromClass([self class])]

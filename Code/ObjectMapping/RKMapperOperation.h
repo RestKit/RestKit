@@ -89,7 +89,7 @@
  @param mappingsDictionary An `NSDictionary` wherein the keys are mappable key paths in `object` and the values are `RKMapping` objects specifying how the representations at its key path are to be mapped.
  @return The receiver, initialized with the given object and and dictionary of key paths to mappings.
  */
-- (id)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary;
+- (instancetype)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary NS_DESIGNATED_INITIALIZER;
 
 ///------------------------------------------
 /// @name Accessing Mapping Result and Errors

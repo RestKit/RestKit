@@ -88,7 +88,7 @@
  @param sourceToDestinationEntityAttributes A dictionary specifying how attributes on the source entity correspond to attributes on the destination entity.
  @return The receiver, initialized with the given relationship and attributes.
  */
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)sourceToDestinationEntityAttributes;
+- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)sourceToDestinationEntityAttributes;
 
 /**
  The dictionary of attributes specifying how attributes on the source entity for the relationship correspond to attributes on the destination entity.
@@ -102,7 +102,7 @@
  
  @return `YES` if the receiver describes a foreign key connection, else `NO`.
  */
-- (BOOL)isForeignKeyConnection;
+@property (nonatomic, getter=isForeignKeyConnection, readonly) BOOL foreignKeyConnection;
 
 ///-------------------------------------------
 /// @name Connecting Relationships by Key Path
@@ -115,7 +115,7 @@
  @param keyPath The key path from which to read the value that is to be set for the relationship.
  @return The receiver, initialized with the given relationship and key path.
  */
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath;
+- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath;
 
 /**
  The key path that is to be evaluated to obtain the value for the relationship.
@@ -129,7 +129,7 @@
  
  @return `YES` if the receiver describes a key path connection, else `NO`.
  */
-- (BOOL)isKeyPathConnection;
+@property (nonatomic, getter=isKeyPathConnection, readonly) BOOL keyPathConnection;
 
 ///-------------------------------------------------
 /// @name Accessing the Relationship to be Connected

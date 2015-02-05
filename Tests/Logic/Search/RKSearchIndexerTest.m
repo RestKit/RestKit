@@ -34,63 +34,63 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testAddingSearchIndexingToEntity
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
-    NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
+    NSEntityDescription *searchWordEntity = (managedObjectModel.entitiesByName)[@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName", @"railsID", @"catIDs" ]];
     
     // Check that the entity now exists
-    searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    searchWordEntity = (managedObjectModel.entitiesByName)[@"RKSearchWord"];
     assertThat(searchWordEntity, is(notNilValue()));
     
     // Check that Human now has a searchWords relationship
-    NSRelationshipDescription *searchWordsRelationship = [[entity relationshipsByName] objectForKey:@"searchWords"];
+    NSRelationshipDescription *searchWordsRelationship = [entity relationshipsByName][@"searchWords"];
     assertThat(searchWordsRelationship, is(notNilValue()));
     
     // Check that RKSearchWord now has a RKHuman inverse
-    NSRelationshipDescription *humanInverse = [[searchWordEntity relationshipsByName] objectForKey:@"Human"];
+    NSRelationshipDescription *humanInverse = [searchWordEntity relationshipsByName][@"Human"];
     assertThat(humanInverse, is(notNilValue()));
     assertThat([humanInverse inverseRelationship], is(equalTo(searchWordsRelationship)));
     assertThat([searchWordsRelationship inverseRelationship], is(equalTo(humanInverse)));
     
     // Check the userInfo of the Human entity for the searchable attributes
-    NSArray *attributes = [entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
+    NSArray *attributes = (entity.userInfo)[RKSearchableAttributeNamesUserInfoKey];
     assertThat(attributes, is(equalTo(@[ @"name", @"nickName", @"railsID", @"catIDs" ])));
 }
 
 - (void)testAddingSearchIndexingToEntityWithMixtureOfNSAttributeDescriptionAndStringNames
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
-    NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
+    NSEntityDescription *searchWordEntity = (managedObjectModel.entitiesByName)[@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
-    NSAttributeDescription *nickNameAttribute = [entity.attributesByName objectForKey:@"nickName"];
+    NSAttributeDescription *nickNameAttribute = (entity.attributesByName)[@"nickName"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", nickNameAttribute ]];
     
     // Check that the entity now exists
-    searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    searchWordEntity = (managedObjectModel.entitiesByName)[@"RKSearchWord"];
     assertThat(searchWordEntity, is(notNilValue()));
     
     // Check that Human now has a searchWords relationship
-    NSRelationshipDescription *searchWordsRelationship = [[entity relationshipsByName] objectForKey:@"searchWords"];
+    NSRelationshipDescription *searchWordsRelationship = [entity relationshipsByName][@"searchWords"];
     assertThat(searchWordsRelationship, is(notNilValue()));
     
     // Check that RKSearchWord now has a RKHuman inverse
-    NSRelationshipDescription *humanInverse = [[searchWordEntity relationshipsByName] objectForKey:@"Human"];
+    NSRelationshipDescription *humanInverse = [searchWordEntity relationshipsByName][@"Human"];
     assertThat(humanInverse, is(notNilValue()));
     assertThat([humanInverse inverseRelationship], is(equalTo(searchWordsRelationship)));
     assertThat([searchWordsRelationship inverseRelationship], is(equalTo(humanInverse)));
     
     // Check the userInfo of the Human entity for the searchable attributes
-    NSArray *attributes = [entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
+    NSArray *attributes = (entity.userInfo)[RKSearchableAttributeNamesUserInfoKey];
     assertThat(attributes, is(equalTo(@[ @"name", @"nickName" ])));
 }
 
 - (void)testAddingSearchIndexingToNotSupportedAttributeTypeRaisesException
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
-    NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
+    NSEntityDescription *searchWordEntity = (managedObjectModel.entitiesByName)[@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
     
     NSException *exception = nil;
@@ -109,8 +109,8 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testAddingSearchIndexingToNonExistantAttributeRaisesException
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
-    NSEntityDescription *searchWordEntity = [managedObjectModel.entitiesByName objectForKey:@"RKSearchWord"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
+    NSEntityDescription *searchWordEntity = (managedObjectModel.entitiesByName)[@"RKSearchWord"];
     assertThat(searchWordEntity, is(nilValue()));
     
     NSException *exception = nil;
@@ -129,26 +129,26 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testAddingSearchIndexingToTwoEntitiesManipulatesTheSameSearchWordEntity
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *humanEntity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
-    NSEntityDescription *catEntity = [[managedObjectModel entitiesByName] objectForKey:@"Cat"];
+    NSEntityDescription *humanEntity = [managedObjectModel entitiesByName][@"Human"];
+    NSEntityDescription *catEntity = [managedObjectModel entitiesByName][@"Cat"];
 
     [RKSearchIndexer addSearchIndexingToEntity:humanEntity
                       onAttributes:@[ @"name", @"nickName" ]];
     [RKSearchIndexer addSearchIndexingToEntity:catEntity
                       onAttributes:@[ @"name", @"nickName" ]];
 
-    NSEntityDescription *searchWordEntity = [[managedObjectModel entitiesByName] objectForKey:RKSearchWordEntityName];
+    NSEntityDescription *searchWordEntity = [managedObjectModel entitiesByName][RKSearchWordEntityName];
     
-    NSRelationshipDescription *humanRelationship = [[searchWordEntity relationshipsByName] objectForKey:@"Human"];
+    NSRelationshipDescription *humanRelationship = [searchWordEntity relationshipsByName][@"Human"];
     assertThat(humanRelationship, is(notNilValue()));
-    NSRelationshipDescription *catRelationship = [[searchWordEntity relationshipsByName] objectForKey:@"Cat"];
+    NSRelationshipDescription *catRelationship = [searchWordEntity relationshipsByName][@"Cat"];
     assertThat(catRelationship, is(notNilValue()));
 }
 
 - (void)testIndexingManagedObject
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -173,7 +173,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testIndexingManagedObjectUsingIndexingContext
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
 
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -207,7 +207,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testIndexingOnManagedObjectContextSave
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -235,7 +235,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testIndexingOnManagedObjectContextSaveUsingIndexingContext
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
 
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -280,7 +280,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testIndexingChangesInManagedObjectContextWithoutSave
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -306,7 +306,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testIndexingChangesInManagedObjectContextWithoutSaveUsingIndexingContext
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
 
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -340,7 +340,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testCancellationOfIndexingInAnIndexingContext
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -382,7 +382,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testThatDelegateCanDenyCreationOfSearchWordForWord
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
 
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -413,7 +413,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testThatDelegateIsInformedWhenSearchWordIsCreated
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -441,7 +441,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testThatDelegateCanBeUsedToFetchExistingSearchWords
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -471,7 +471,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testThatTheDelegateCanDeclineIndexingOfAnObject
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
@@ -497,7 +497,7 @@ static NSManagedObjectModel *RKManagedObjectModel()
 - (void)testThatTheDelegateIsNotifiedAfterIndexingHasCompleted
 {
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
-    NSEntityDescription *entity = [[managedObjectModel entitiesByName] objectForKey:@"Human"];
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
     [RKSearchIndexer addSearchIndexingToEntity:entity onAttributes:@[ @"name", @"nickName" ]];
     
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];

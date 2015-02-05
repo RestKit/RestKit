@@ -116,6 +116,6 @@ typedef BOOL (^RKMappingTestExpectationEvaluationBlock)(RKPropertyMappingTestExp
 
  @return A string describing the expected sourceKeyPath to destinationKeyPath mapping.
  */
-- (NSString *)summary;
+@property (nonatomic, readonly, copy) NSString *summary;
 
 @end

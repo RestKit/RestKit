@@ -59,7 +59,7 @@
 
 - (void)testShouldSerializeToFormEncodedData
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"key2": @"value2"};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
@@ -76,7 +76,7 @@
 
 - (void)testShouldSerializeADate
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"date": [NSDate dateWithTimeIntervalSince1970:0]};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
@@ -93,7 +93,7 @@
 
 - (void)testShouldSerializeADateToAStringUsingThePreferredDateFormatter
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"date": [NSDate dateWithTimeIntervalSince1970:0]};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.dateFormat = @"MM/dd/yyyy";
@@ -116,7 +116,7 @@
 
 - (void)testShouldSerializeADateToAStringUsingTheAttributeMappingValueTransformer
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"date": [NSDate dateWithTimeIntervalSince1970:0]};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.dateFormat = @"MM/dd/yyyy";
@@ -140,7 +140,7 @@
 
 - (void)testShouldSerializeADateToJSON
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"date": [NSDate dateWithTimeIntervalSince1970:0]};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"date" toKeyPath:@"date-form-name"]];
@@ -158,7 +158,7 @@
 
 - (void)testShouldSerializeNSDecimalNumberAttributesToJSON
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDecimalNumber decimalNumberWithString:@"18274191731731.4557723623"], @"number", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"number": [NSDecimalNumber decimalNumberWithString:@"18274191731731.4557723623"]};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"number" toKeyPath:@"number-form-name"]];
@@ -176,12 +176,10 @@
 
 - (void)testShouldSerializeRelationshipsToo
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2",
-                            [NSArray arrayWithObjects:
-                             [NSDictionary dictionaryWithObjectsAndKeys:@"relationship1Value1", @"relatioship1Key1", nil],
-                             [NSDictionary dictionaryWithObjectsAndKeys:@"relationship1Value2", @"relatioship1Key1", nil], nil], @"relationship1",
-                            [NSDictionary dictionaryWithObjectsAndKeys:@"subValue1", @"subKey1", nil], @"relationship2",
-                            nil];
+    NSDictionary *object = @{@"key1": @"value1", @"key2": @"value2",
+                            @"relationship1": @[@{@"relatioship1Key1": @"relationship1Value1"},
+                             @{@"relatioship1Key1": @"relationship1Value2"}],
+                            @"relationship2": @{@"subKey1": @"subValue1"}};
 
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
@@ -202,7 +200,7 @@
 
 - (void)testShouldSerializeToJSON
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"key2": @"value2"};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
@@ -220,7 +218,7 @@
 
 - (void)testShouldSetReturnEmptyDictionaryIfItDoesNotFindAnythingToSerialize
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"key2": @"value2"};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
     
@@ -233,7 +231,7 @@
 
 - (void)testEmptyParameterizationRespectsRootKeyPath
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"key2": @"value2"};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
     
@@ -271,7 +269,7 @@
 
 - (void)testShouldEncloseTheSerializationInAContainerIfRequested
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"key2": @"value2"};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
@@ -311,7 +309,7 @@
 
 - (void)testShouldSerializeAnNSNumberContainingABooleanToTrueFalseIfRequested
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSNumber numberWithBool:YES], @"boolean", nil];
+    NSDictionary *object = @{@"key1": @"value1", @"boolean": @YES};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     RKAttributeMapping *attributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"boolean" toKeyPath:@"boolean-value"];
     [mapping addPropertyMapping:attributeMapping];    
@@ -328,9 +326,8 @@
 
 - (void)testShouldSerializeANSOrderedSetToJSON
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1",
-                            [NSOrderedSet orderedSetWithObjects:@"setElementOne", @"setElementTwo", @"setElementThree", nil], @"set",
-                            nil];
+    NSDictionary *object = @{@"key1": @"value1",
+                            @"set": [NSOrderedSet orderedSetWithObjects:@"setElementOne", @"setElementTwo", @"setElementThree", nil]};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"set" toKeyPath:@"set-form-name"]];
@@ -347,9 +344,8 @@
 
 - (void)testShouldSerializeAnNSSetToJSON
 {
-    NSDictionary *object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1",
-                            [NSSet setWithObjects:@"setElementOne", nil], @"set",
-                            nil];
+    NSDictionary *object = @{@"key1": @"value1",
+                            @"set": [NSSet setWithObjects:@"setElementOne", nil]};
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"set" toKeyPath:@"set-form-name"]];
@@ -439,7 +435,7 @@
 - (void)testParameterizationofBooleanPropertiesFromManagedObjectProperty
 {
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
-    human.isHappy = [NSNumber numberWithBool:YES];
+    human.isHappy = @YES;
     human.name = @"Blake Watters";
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
@@ -459,7 +455,7 @@
 - (void)testParameterizationofBooleanPropertiesFromManagedObjectPropertyWithFalseValue
 {
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
-    human.isHappy = [NSNumber numberWithBool:NO];
+    human.isHappy = @NO;
     human.name = @"Blake Watters";
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"]];
@@ -567,11 +563,11 @@
 
 #pragma mark - Dynamic Request Paramterization
 
-typedef enum {
+typedef NS_ENUM(NSInteger, RKFlightSearchMode) {
     RKSearchByFlightNumberMode = 1,
     RKSearchByRouteMode = 2,
     RKSearcyByOtherMode
-} RKFlightSearchMode;
+} ;
 
 @interface RKDynamicParameterizationFlightSearch : NSObject
 @property (nonatomic, assign) RKFlightSearchMode mode;
@@ -700,7 +696,7 @@ typedef enum {
     address1.city = @"Carrboro";
     RKTestAddress *address2 = [RKTestAddress new];
     address2.city = @"New York City";
-    user.friends = [NSArray arrayWithObjects:address1, address2, nil];
+    user.friends = @[address1, address2];
 
     RKObjectMapping *serializationMapping = [userMapping inverseMapping];
     NSDictionary *params = [RKObjectParameterization parametersWithObject:user requestDescriptor:[RKRequestDescriptor requestDescriptorWithMapping:serializationMapping objectClass:[RKTestUser class] rootKeyPath:nil method:RKRequestMethodAny] error:nil];
@@ -736,7 +732,7 @@ typedef enum {
     assertThat(error, is(nilValue()));
     assertThat([parsedJSON valueForKey:@"name"], is(equalTo(@"Blake Watters")));
     NSArray *catNames = [[parsedJSON valueForKeyPath:@"cats.name"] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    assertThat(catNames, is(equalTo([NSArray arrayWithObjects:@"Asia", @"Roy", nil])));
+    assertThat(catNames, is(equalTo(@[@"Asia", @"Roy"])));
 }
 
 - (void)testParameterizingHasManyRelationshipToNestedKeyPath
@@ -753,7 +749,7 @@ typedef enum {
     address1.city = @"Carrboro";
     RKTestAddress *address2 = [RKTestAddress new];
     address2.city = @"New York City";
-    user.friends = [NSArray arrayWithObjects:address1, address2, nil];
+    user.friends = @[address1, address2];
     
     
     RKObjectMapping *requestMapping = [RKObjectMapping requestMapping];
