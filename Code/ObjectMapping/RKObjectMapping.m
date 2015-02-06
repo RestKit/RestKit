@@ -69,8 +69,8 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     inverseMapping = [RKObjectMapping requestMapping];
     (self.invertedMappings)[dictionaryKey] = inverseMapping;
     [inverseMapping copyPropertiesFromMapping:mapping];
-    // We want to serialize `nil` values
-    inverseMapping.assignsDefaultValueForMissingAttributes = YES;
+    // We potentially want to serialize `nil` values, adopt the strategy from the mapping we're inverting.
+    inverseMapping.assignsDefaultValueForMissingAttributes = mapping.assignsDefaultValueForMissingAttributes;
     
     for (RKAttributeMapping *attributeMapping in mapping.attributeMappings) {
         if (predicate && !predicate(attributeMapping)) continue;
