@@ -103,6 +103,31 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
     NSAssert([notification object] == self.observedContext, @"Received Managed Object Context Did Save Notification for Unexpected Context: %@", [notification object]);
     if (! [self.objectIDsFromChildDidSaveNotification isEqual:RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification)]) {
         [self.mergeContext performBlock:^{
+            
+            /*
+             Fault updated objects before merging changes into mainQueueManagedObjectContext.
+
+             This enables NSFetchedResultsController to update and re-sort its fetch results and to call its delegate methods
+             in response Managed Object updates merged from another context.
+             See:
+             http://stackoverflow.com/a/3927811/489376
+             http://stackoverflow.com/a/16296365/489376
+             for issue details.
+             */
+            for (NSManagedObject *object in [[notification userInfo] objectForKey:NSUpdatedObjectsKey]) {
+                NSManagedObjectID *objectID = [object objectID];
+                if (objectID && ![objectID isTemporaryID]) {
+                    NSError *error = nil;
+                    NSManagedObject * updatedObject = [self.mergeContext existingObjectWithID:objectID error:&error];
+                    if (error) {
+                        RKLogDebug(@"Failed to get existing object for objectID (%@). Failed with error: %@", objectID, error);
+                    }
+                    else {
+                        [updatedObject willAccessValueForKey:nil];
+                    }
+                }
+            }
+            
             [self.mergeContext mergeChangesFromContextDidSaveNotification:notification];
         }];
     } else {
