@@ -267,4 +267,17 @@
     expect(operation.destinationObject).to.equal(@{ @"Blake": @{} });
 }
 
+- (void)testRemoveAttributeMappingWithNilDestinationKeyPath
+{
+    // This test fails also if we create directly a mapping from "(something) => (null)"
+    // but the inverseMapping case is a more common use case
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"name"]];
+
+    RKObjectMapping *inverseMapping = [mapping inverseMapping];
+    [inverseMapping removePropertyMapping:[inverseMapping mappingForSourceKeyPath:@"name"]];
+    expect([inverseMapping mappingForSourceKeyPath:@"name"]).to.beNil;
+}
+
+
 @end
