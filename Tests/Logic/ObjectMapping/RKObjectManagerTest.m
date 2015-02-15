@@ -1815,4 +1815,32 @@ RKRequestDescriptor *RKRequestDescriptorFromArrayMatchingObjectAndRequestMethod(
     expect(requestDescriptor).to.beNil();
 }
 
+- (void)testThatPaginatorPathPatternWithOutParamsDictionaryEvaluatesAgainstPaginator
+{
+    
+    NSString *requestString = @"users/filtered?page=:currentPage&per_page=:perPage";
+    RKPaginator *paginator = [[RKPaginator alloc] init];
+    
+    paginator = [[RKObjectManager sharedManager] paginatorWithPathPattern:requestString];
+    
+    id mockPaginator = [OCMockObject partialMockForObject:paginator];
+    NSUInteger currentPage = 1;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    expect([paginator.URL relativeString]).to.equal(@"/users/filtered?per_page=25&page=1");
+}
+
+- (void)testThatPaginatorPathPatternWithParamsDictionaryEvaluatesAgainstPaginator
+{
+    
+    NSString *requestString = @"users/filtered?page=:currentPage&per_page=:perPage";
+    RKPaginator *paginator = [[RKPaginator alloc] init];
+    
+    paginator = [[RKObjectManager sharedManager] paginatorWithPathPattern:requestString parameters:@{@"q": @"kurenn"}];
+    
+    id mockPaginator = [OCMockObject partialMockForObject:paginator];
+    NSUInteger currentPage = 1;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    expect([paginator.URL relativeString]).to.equal(@"/users/filtered?per_page=25&page=1&q=kurenn");
+}
+
 @end
