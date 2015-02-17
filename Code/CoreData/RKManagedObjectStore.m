@@ -399,11 +399,17 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                 }
             }
 
-            // Add a new store with the same options
-            NSPersistentStore *newStore = [self.persistentStoreCoordinator addPersistentStoreWithType:persistentStore.type
-                                                                                        configuration:persistentStore.configurationName
-                                                                                                  URL:persistentStore.URL
-                                                                                              options:persistentStore.options error:&localError];
+            NSString *seedPath = [persistentStore.options valueForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+            // Add a new store with the same options, except RKSQLitePersistentStoreSeedDatabasePathOption option
+            // that is not expected in this method.
+            NSMutableDictionary *mutableOptions = [persistentStore.options mutableCopy];
+            [mutableOptions removeObjectForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+            mutableOptions = [[mutableOptions allKeys] count] > 0 ? mutableOptions : nil;
+            NSPersistentStore *newStore = [self addSQLitePersistentStoreAtPath:[persistentStore.URL path]
+                                                        fromSeedDatabaseAtPath:seedPath
+                                                             withConfiguration:persistentStore.configurationName
+                                                                       options:mutableOptions
+                                                                         error:&localError];
             if (! newStore) {
                 if (error) *error = localError;
                 return NO;
