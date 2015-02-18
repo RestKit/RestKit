@@ -386,24 +386,36 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                 RKLogDebug(@"Skipped removal of persistent store file: URL for persistent store is not a file URL. (%@)", URL);
             }
 
-            // Reclone the persistent store from the seed path if necessary
+            NSPersistentStore *newStore;
             if ([persistentStore.type isEqualToString:NSSQLiteStoreType]) {
+                // Seed path for reclone the persistent store from the seed path if necessary
                 NSString *seedPath = [persistentStore.options valueForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
-                if (seedPath && ![seedPath isEqual:[NSNull null]]) {
-                    success = [self copySeedDatabaseIfNecessaryFromPath:seedPath toPath:[persistentStore.URL path] error:&localError];
-                    if (! success) {
-                        RKLogError(@"Failed reset of SQLite persistent store: Failed to copy seed database.");
-                        if (error) *error = localError;
-                        return NO;
-                    }
+                if ([seedPath isEqual:[NSNull null]]) {
+                    seedPath = nil;
                 }
+                
+                // Add a new store with the same options, except RKSQLitePersistentStoreSeedDatabasePathOption option
+                // that is not expected in this method.
+                NSMutableDictionary *mutableOptions = [persistentStore.options mutableCopy];
+                [mutableOptions removeObjectForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+                mutableOptions = [mutableOptions count] > 0 ? mutableOptions : nil;
+                // This method is only for NSSQLiteStoreType
+                newStore = [self addSQLitePersistentStoreAtPath:[persistentStore.URL path]
+                                         fromSeedDatabaseAtPath:seedPath
+                                              withConfiguration:persistentStore.configurationName
+                                                        options:mutableOptions
+                                                          error:&localError];
             }
-
-            // Add a new store with the same options
-            NSPersistentStore *newStore = [self.persistentStoreCoordinator addPersistentStoreWithType:persistentStore.type
-                                                                                        configuration:persistentStore.configurationName
-                                                                                                  URL:persistentStore.URL
-                                                                                              options:persistentStore.options error:&localError];
+            else {
+                // Add a new store with the same options
+                newStore = [self.persistentStoreCoordinator addPersistentStoreWithType:persistentStore.type
+                                                                         configuration:persistentStore.configurationName
+                                                                                   URL:persistentStore.URL
+                                                                               options:persistentStore.options error:&localError];
+                
+            }
+            
+            
             if (! newStore) {
                 if (error) *error = localError;
                 return NO;
