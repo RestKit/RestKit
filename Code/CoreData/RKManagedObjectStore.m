@@ -404,7 +404,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
             // that is not expected in this method.
             NSMutableDictionary *mutableOptions = [persistentStore.options mutableCopy];
             [mutableOptions removeObjectForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
-            mutableOptions = [[mutableOptions allKeys] count] > 0 ? mutableOptions : nil;
+            mutableOptions = [mutableOptions count] > 0 ? mutableOptions : nil;
             NSPersistentStore *newStore = [self addSQLitePersistentStoreAtPath:[persistentStore.URL path]
                                                         fromSeedDatabaseAtPath:seedPath
                                                              withConfiguration:persistentStore.configurationName
