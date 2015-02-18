@@ -386,20 +386,15 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                 RKLogDebug(@"Skipped removal of persistent store file: URL for persistent store is not a file URL. (%@)", URL);
             }
 
-            // Reclone the persistent store from the seed path if necessary
+            NSString *seedPath;
+            // Seed path for reclone the persistent store from the seed path if necessary
             if ([persistentStore.type isEqualToString:NSSQLiteStoreType]) {
-                NSString *seedPath = [persistentStore.options valueForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
-                if (seedPath && ![seedPath isEqual:[NSNull null]]) {
-                    success = [self copySeedDatabaseIfNecessaryFromPath:seedPath toPath:[persistentStore.URL path] error:&localError];
-                    if (! success) {
-                        RKLogError(@"Failed reset of SQLite persistent store: Failed to copy seed database.");
-                        if (error) *error = localError;
-                        return NO;
-                    }
+                seedPath = [persistentStore.options valueForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+                if ([seedPath isEqual:[NSNull null]]) {
+                    seedPath = nil;
                 }
             }
-
-            NSString *seedPath = [persistentStore.options valueForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+            
             // Add a new store with the same options, except RKSQLitePersistentStoreSeedDatabasePathOption option
             // that is not expected in this method.
             NSMutableDictionary *mutableOptions = [persistentStore.options mutableCopy];
