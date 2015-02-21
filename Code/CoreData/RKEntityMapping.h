@@ -23,6 +23,8 @@
 #import "RKConnectionDescription.h"
 #import "RKMacros.h"
 
+typedef NSPredicate * (^RKEntityMappingPredicateWithRepresentationBlock)(NSDictionary *representation);
+
 @class RKManagedObjectStore;
 
 /**
@@ -115,6 +117,13 @@
 @property (nonatomic, copy) NSPredicate *identificationPredicate;
 
 /**
+ An optional block to create a predicate given the response representation. The predicate is used to filter identified objects during mapping.
+ 
+ @return The identification predicate block.
+ */
+@property (nonatomic, copy) RKEntityMappingPredicateWithRepresentationBlock identificationPredicateBlock;
+
+/**
  An optional attribute of the receiver's entity that can be used to detect modification of a given instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object if it is found to be not modified.
  
  A common modification attribute is a 'last modified' or 'updated at' timestamp that specifies the timestamp of the last change to an object. When the `modificationAttribute` is non-nil, the mapper will compare the value returned of the attribute on an existing object instance with the value in the representation being mapped. 
@@ -134,6 +143,13 @@
  @raises NSInvalidArgumentException Raised if no attribute could be found with the given name.
  */
 - (void)setModificationAttributeForName:(NSString *)attributeName;
+
+/**
+Sets an optional block to create a predicate given the representation being mapped. The predicate is used to filter identified objects during mapping.
+ 
+ @param block A block to be called during mapping. This block returns an identification predicate that is used to filter identified objects during mapping and takes one arguments: the representation being mapped.
+ */
+- (void)setIdentificationPredicateBlock:(NSPredicate * (^)(NSDictionary *representation))block;
 
 ///---------------------------------------------------------------
 /// @name Specifying a Persistent Store for Newly Inserted Objects
