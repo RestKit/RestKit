@@ -96,7 +96,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectParameterization.html">RKObjectParameterization</a></td>
-    <td>Performs mapping of a given object into an <tt>NSDictionary</tt> represenation suitable for use as the parameters of an HTTP request.</td>
+    <td>Performs mapping of a given object into an <tt>NSDictionary</tt> representation suitable for use as the parameters of an HTTP request.</td>
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectRequestOperation.html">RKObjectRequestOperation</a></td>
@@ -316,7 +316,7 @@ manager.managedObjectStore = managedObjectStore;
 
 ### Load a Collection of Objects at a Path
 ``` objective-c
-RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 [manager getObjectsAtPath:@"/articles" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 }];
@@ -347,7 +347,7 @@ RKObjectMapping *requestMapping = [RKObjectMapping requestMapping]; // objectCla
 // under the 'article' key path
 RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:requestMapping objectClass:[Article class] rootKeyPath:@"article" method:RKRequestMethodAny];
 
-RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 [manager addRequestDescriptor:requestDescriptor];
 [manager addResponseDescriptor:articleDescriptor];
 
@@ -383,7 +383,7 @@ RKLogWithLevelWhileExecutingBlock(RKLogLevelTrace, ^{
 
 ### Configure Routing
 ``` objective-c
-RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 
 // Class Routing
 [manager.router.routeSet addRoute:[RKRoute routeWithClass:[GGSegment class] pathPattern:@"/segments/:segmentID\\.json" method:RKRequestMethodGET]];

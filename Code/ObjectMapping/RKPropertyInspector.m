@@ -148,7 +148,8 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
         currentClass = (superclass == [NSObject class] || (nsManagedObject && superclass == nsManagedObject)) ? nil : superclass;
     }
 
-    dispatch_barrier_async(self.queue, ^{
+    /* dispatch_barrier_async is dangerous if we are called from +initialize */
+    dispatch_barrier_sync(self.queue, ^{
         (self.inspectionCache)[(id<NSCopying>)objectClass] = inspection;
         RKLogDebug(@"Cached property inspection for Class '%@': %@", NSStringFromClass(objectClass), inspection);
     });
