@@ -559,6 +559,23 @@
     expect(parameters).to.equal((@{ @"name": @"Blake Watters", @"website": [NSNull null] }));
 }
 
+- (void)testSerializingOmitsNullAttributesWhenAssignsDefaultValueForMissingAttributesIsFalse
+{
+    RKTestUser *blake = [RKTestUser new];
+    blake.name = @"Blake Watters";
+    blake.website = nil;
+
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"website"]];
+    mapping.assignsDefaultValueForMissingAttributes = NO;
+
+    NSError *error = nil;
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[RKTestUser class] rootKeyPath:nil method:RKRequestMethodAny];
+    NSDictionary *parameters = [RKObjectParameterization parametersWithObject:blake requestDescriptor:requestDescriptor error:&error];
+    expect(error).to.beNil();
+    expect(parameters).to.equal((@{@"name" : @"Blake Watters"}));
+}
+
 @end
 
 #pragma mark - Dynamic Request Paramterization

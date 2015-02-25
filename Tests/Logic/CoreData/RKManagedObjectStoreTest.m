@@ -264,6 +264,28 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     assertThat(array, isEmpty());
 }
 
+- (void)testResetPersistentStoreThatNeedsMigration
+{
+    NSError *error = nil;
+    
+    // Create a seed Store with model version 1
+    NSManagedObjectModel *model_v1 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
+    RKManagedObjectStore *managedObjectStoreModel_v1 = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v1];
+    NSString *seedPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"SeedV1.sqlite"];
+    [managedObjectStoreModel_v1 addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:nil];
+    
+    // Adding persistent store for model version 2
+    NSManagedObjectModel *model_v2 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 2);
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"SeededStore.sqlite"];
+    RKManagedObjectStore *managedObjectStoreModel_v2 = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v2];
+    [managedObjectStoreModel_v2 addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath withConfiguration:nil options:nil error:&error];
+    [managedObjectStoreModel_v2 createManagedObjectContexts];
+    
+    BOOL success = [managedObjectStoreModel_v2 resetPersistentStores:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    expect(error).to.beNil();
+}
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 - (void)testThatAddingASQLiteStoreExcludesThePathFromiCloudBackups
 {

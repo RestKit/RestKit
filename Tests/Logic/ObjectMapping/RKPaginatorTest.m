@@ -27,6 +27,20 @@
 - (void)waitUntilFinished;
 @end
 
+@interface RKCustomPaginator : RKPaginator
+@property (nonatomic, strong) NSString* perPageStr;
+@end
+
+@implementation RKCustomPaginator
+-(void) setPerPage:(NSUInteger)perPage {
+    [super setPerPage:perPage];
+    
+    // log how many items are being pulled back per page.
+    self.perPageStr = [NSString stringWithFormat:@"You're pulling in %@ items per page.", @(self.perPage)];
+    NSLog(@"%@", self.perPageStr);
+}
+@end
+
 @interface RKPaginatorTest : RKTestCase
 @property (nonatomic, readonly) NSURL *paginationURL;
 @property (nonatomic, readonly) RKObjectMapping *paginationMapping;
@@ -65,6 +79,17 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     [paginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"offset" toKeyPath:@"offset"]];
 
     return paginationMapping;
+}
+
+- (RKObjectMapping *)customPaginationMapping
+{
+    RKObjectMapping *customPaginationMapping = [RKObjectMapping mappingForClass:[RKCustomPaginator class]];
+    [customPaginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"current_page" toKeyPath:@"currentPage"]];
+    [customPaginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"per_page" toKeyPath:@"perPage"]];
+    [customPaginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"total_entries" toKeyPath:@"objectCount"]];
+    [customPaginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"offset" toKeyPath:@"offset"]];
+    
+    return customPaginationMapping;
 }
 
 - (NSURL *)paginationURL
@@ -435,6 +460,18 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     }
     expect(exception).notTo.beNil();
     expect([exception reason]).to.equal(@"Cannot perform a load while one is already in progress.");
+}
+
+- (void) testLoadingAPageWithCustomPaginator
+{
+    RKObjectManager* manager = [RKTestFactory objectManager];
+    [RKObjectManager setSharedManager:manager];
+    
+    manager.paginationMapping = [self customPaginationMapping];
+    RKPaginator* paginator = [manager paginatorWithPathPattern:RKPaginatorTestResourcePathPattern];
+    expect(paginator.class).to.equal(RKCustomPaginator.class);
+    [paginator loadPage:1];
+    [paginator waitUntilFinished];
 }
 
 - (void)testHavingRequestOperationUponCompletion

@@ -25,7 +25,7 @@ PODS:
   - RestKit/Search (0.24.0):
     - RestKit/CoreData
   - RestKit/Support (0.24.0):
-    - TransitionKit (= 2.1.0)
+    - TransitionKit (~> 2.1.0)
   - RestKit/Testing (0.24.0):
     - RestKit/Network
   - RKCLLocationValueTransformer (1.1.0):
@@ -33,7 +33,7 @@ PODS:
   - RKValueTransformers (1.1.1)
   - SOCKit (1.1)
   - Specta (0.2.1)
-  - TransitionKit (2.1.0)
+  - TransitionKit (2.1.1)
 
 DEPENDENCIES:
   - Expecta (= 0.3.1)
@@ -55,11 +55,11 @@ SPEC CHECKSUMS:
   ISO8601DateFormatterValueTransformer: a705384ea6531255258e25b6480ba1180db703a0
   OCHamcrest: 207233b7d7a44dadd66aca398947cc7e029c9be5
   OCMock: 6db79185520e24f9f299548f2b8b07e41d881bd5
-  RestKit: dcfcf0b3018837ad01b6123699274b606a0627d4
+  RestKit: 2de92bacf59485ce361c60fd6c1547d93ece5631
   RKCLLocationValueTransformer: 4803de0b5bdd81a1ebedb93a8a1d715f92ceb3f4
   RKValueTransformers: 67b4ea3eb6a1c1a0b8c3c37eb4e4c05e4febeba2
   SOCKit: d8d0dd3688ae1026c12367570da8fa8e1a6980fb
   Specta: 9141310f46b1f68b676650ff2854e1ed0b74163a
-  TransitionKit: 6a6f3ddda38ae758778aa889dcb930e4f8d64edc
+  TransitionKit: 9ce324caba25cb0a4c9f3334302d89685595455c
 
 COCOAPODS: 0.35.0

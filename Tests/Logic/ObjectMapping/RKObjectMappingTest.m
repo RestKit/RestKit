@@ -112,6 +112,19 @@
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(NO)));
 }
 
+- (void)testThatTwoMappingsWithNilSourceKeyPathAreConsideredEqual
+{
+    RKObjectMapping *relationshipMapping1 = [RKObjectMapping mappingForClass:[NSNumber class]];
+    RKObjectMapping *relationshipMapping2 = [RKObjectMapping mappingForClass:[NSNumber class]];
+    
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[NSString class]];
+    [mapping1 addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"that" withMapping:relationshipMapping1]];;
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[NSString class]];
+    [mapping2 addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"that" withMapping:relationshipMapping2]];;
+    
+    assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
+}
+
 - (void)testThatAddingAPropertyMappingThatExistsInAnotherMappingTriggersException
 {
     RKObjectMapping *firstMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];

@@ -160,9 +160,9 @@
 			isa = PBXGroup;
 			children = (
 				250DF24714C67E9A0001DEFA /* libRestKit.a */,
-				250DF24914C67E9A0001DEFA /* RestKitTests.octest */,
+				250DF24914C67E9A0001DEFA /* RestKitTests.xctest */,
 				250DF24B14C67E9A0001DEFA /* RestKit.framework */,
-				250DF24D14C67E9A0001DEFA /* RestKitFrameworkTests.octest */,
+				250DF24D14C67E9A0001DEFA /* RestKitFrameworkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -202,7 +202,7 @@
 		25D6390B135184CE000879B1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0620;
 			};
 			buildConfigurationList = 25D6390E135184CE000879B1 /* Build configuration list for PBXProject "RKMacOSX" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -235,10 +235,10 @@
 			remoteRef = 250DF24614C67E9A0001DEFA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		250DF24914C67E9A0001DEFA /* RestKitTests.octest */ = {
+		250DF24914C67E9A0001DEFA /* RestKitTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = RestKitTests.octest;
+			path = RestKitTests.xctest;
 			remoteRef = 250DF24814C67E9A0001DEFA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -249,10 +249,10 @@
 			remoteRef = 250DF24A14C67E9A0001DEFA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		250DF24D14C67E9A0001DEFA /* RestKitFrameworkTests.octest */ = {
+		250DF24D14C67E9A0001DEFA /* RestKitFrameworkTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = RestKitFrameworkTests.octest;
+			path = RestKitFrameworkTests.xctest;
 			remoteRef = 250DF24C14C67E9A0001DEFA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -327,7 +327,9 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
@@ -354,7 +356,9 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

@@ -37,8 +37,8 @@ static NSString *RKPredicateCacheKeyForAttributeValues(NSDictionary *attributesV
     NSMutableArray *keyFragments = [NSMutableArray array];
     for (NSString *attributeName in sortedKeys) {
         id value = attributesValues[attributeName];
-        char *suffix = [value respondsToSelector:@selector(count)] ? "+" : ".";
-        [keyFragments addObject:[attributeName stringByAppendingString:@(suffix)]];
+        NSString *suffix = [value respondsToSelector:@selector(count)] ? @"+" : @".";
+        [keyFragments addObject:[attributeName stringByAppendingString:suffix]];
     }
     return [keyFragments componentsJoinedByString:@":"];
 }

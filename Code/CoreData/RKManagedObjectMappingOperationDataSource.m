@@ -161,8 +161,7 @@ static BOOL RKDeleteInvalidNewManagedObject(NSManagedObject *managedObject)
     [self.managedObjectContext performBlockAndWait:^{
         NSMutableSet *objectsToDelete = [NSMutableSet set];
         for (RKEntityMapping *entityMapping in self.entityMappings) {
-            NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-            [fetchRequest setEntity:entityMapping.entity];
+            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[entityMapping.entity name]];
             [fetchRequest setPredicate:entityMapping.deletionPredicate];
             NSError *error = nil;
             NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
@@ -250,6 +249,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         NSArray *identificationAttributes = [entityMapping.identificationAttributes valueForKey:@"name"];
         id existingObjectsOfRelationship = identificationAttributes ? [mappingOperation.destinationObject valueForKeyPath:relationship.destinationKeyPath] : RKMutableCollectionValueWithObjectForKeyPath(mappingOperation.destinationObject, relationship.destinationKeyPath);
         if (existingObjectsOfRelationship && !RKObjectIsCollection(existingObjectsOfRelationship)) existingObjectsOfRelationship = @[ existingObjectsOfRelationship ];
+        NSSet *setWithNull = [NSSet setWithObject:[NSNull null]];
         for (NSManagedObject *existingObject in existingObjectsOfRelationship) {
             if (! identificationAttributes && ![existingObject isDeleted]) {
                 managedObject = existingObject;
@@ -258,7 +258,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
             }
             
             NSDictionary *identificationAttributeValues = [existingObject dictionaryWithValuesForKeys:identificationAttributes];
-            if ([[NSSet setWithArray:[identificationAttributeValues allValues]] isEqualToSet:[NSSet setWithObject:[NSNull null]]]) {
+            if ([[NSSet setWithArray:[identificationAttributeValues allValues]] isEqualToSet:setWithNull]) {
                 managedObject = existingObject;
                 break;
             }
@@ -281,7 +281,8 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
 
     if (managedObject == nil) {
-        managedObject = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext];
+        NSEntityDescription *localEntity = [NSEntityDescription entityForName:[entity name] inManagedObjectContext:self.managedObjectContext];
+        managedObject = [[NSManagedObject alloc] initWithEntity:localEntity insertIntoManagedObjectContext:self.managedObjectContext];
         [managedObject setValuesForKeysWithDictionary:entityIdentifierAttributes];        
         if (entityMapping.persistentStore) [self.managedObjectContext assignObject:managedObject toPersistentStore:entityMapping.persistentStore];
 

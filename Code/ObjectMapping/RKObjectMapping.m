@@ -256,7 +256,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
     NSAssert(propertyMapping.objectMapping == nil, @"Cannot add a property mapping object that has already been added to another `RKObjectMapping` object. You probably want to obtain a copy of the mapping: `[propertyMapping copy]`");
     propertyMapping.objectMapping = self;
     self.propertyMappings = [self.propertyMappings arrayByAddingObject:propertyMapping];
-    if (propertyMapping.sourceKeyPath) (self.propertiesBySourceKeyPath)[propertyMapping.sourceKeyPath] = propertyMapping;
+    [self.propertiesBySourceKeyPath setObject:propertyMapping forKey:propertyMapping.sourceKeyPath ?: [NSNull null]];
     if (propertyMapping.destinationKeyPath) (self.propertiesByDestinationKeyPath)[propertyMapping.destinationKeyPath] = propertyMapping;
     if ([propertyMapping isMemberOfClass:[RKRelationshipMapping class]]) {
         self.relationshipMappings = RKAddProperty(self.relationshipMappings, propertyMapping);
@@ -293,7 +293,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
 
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath
 {
-    return _propertiesBySourceKeyPath[sourceKeyPath];
+    return _propertiesBySourceKeyPath[sourceKeyPath ?: [NSNull null]];
 }
 
 - (id)mappingForDestinationKeyPath:(NSString *)destinationKeyPath
@@ -364,7 +364,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
         self.attributeMappings = RKRemoveProperty(self.attributeMappings, attributeOrRelationshipMapping);
         self.keyAttributeMappings = RKRemoveProperty(self.keyAttributeMappings, attributeOrRelationshipMapping);
         self.keyPathAttributeMappings = RKRemoveProperty(self.keyPathAttributeMappings, attributeOrRelationshipMapping);
-        [self.propertiesBySourceKeyPath removeObjectForKey:attributeOrRelationshipMapping.sourceKeyPath];
+        [self.propertiesBySourceKeyPath removeObjectForKey:attributeOrRelationshipMapping.sourceKeyPath ?: [NSNull null]];
         [self.propertiesByDestinationKeyPath removeObjectForKey:attributeOrRelationshipMapping.destinationKeyPath];
     }
 }
