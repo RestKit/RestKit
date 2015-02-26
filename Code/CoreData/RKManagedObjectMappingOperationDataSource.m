@@ -459,15 +459,15 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 - (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation
 {
-    if (! [mappingOperation.mapping isKindOfClass:[RKEntityMapping class]]) return NO;
-    RKEntityMapping *entityMapping = (RKEntityMapping *)mappingOperation.mapping;
+    if (! [mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) return NO;
+    RKEntityMapping *entityMapping = (RKEntityMapping *)mappingOperation.objectMapping;
     NSString *modificationKey = [entityMapping.modificationAttribute name];
     if (! modificationKey) return NO;
     id currentValue = [mappingOperation.destinationObject valueForKey:modificationKey];
     if (! currentValue) return NO;
     if (! [currentValue respondsToSelector:@selector(compare:)]) return NO;
     
-    RKPropertyMapping *propertyMappingForModificationKey = [(RKEntityMapping *)mappingOperation.mapping mappingForDestinationKeyPath:modificationKey];
+    RKPropertyMapping *propertyMappingForModificationKey = [(RKEntityMapping *)mappingOperation.objectMapping mappingForDestinationKeyPath:modificationKey];
     id rawValue = [[mappingOperation sourceObject] valueForKeyPath:propertyMappingForModificationKey.sourceKeyPath];
     if (! rawValue) return NO;
     Class attributeClass = [entityMapping classForProperty:propertyMappingForModificationKey.destinationKeyPath];
