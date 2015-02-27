@@ -321,6 +321,26 @@
     expect(entityMapping.identificationAttributes).to.beNil();
 }
 
+- (void)testEntityMappingCopy
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.identificationAttributes = RKIdentificationAttributesInferredFromEntity(entityMapping.entity);
+    entityMapping.identificationPredicate = [NSPredicate predicateWithValue:YES];
+    entityMapping.deletionPredicate = [NSPredicate predicateWithValue:NO];
+    [entityMapping setModificationAttributeForName:@"railsID"];
+    [entityMapping addConnectionForRelationship:@"cats" connectedBy:@{ @"railsID": @"railsID", @"name": @"name" }];
+    
+    RKEntityMapping *entityMappingCopy = [entityMapping copy];
+    
+    expect(entityMappingCopy.entity).to.equal(entityMapping.entity);
+    expect(entityMappingCopy.identificationAttributes).to.equal(entityMapping.identificationAttributes);
+    expect(entityMappingCopy.identificationPredicate).to.equal(entityMapping.identificationPredicate);
+    expect(entityMappingCopy.deletionPredicate).to.equal(entityMapping.deletionPredicate);
+    expect(entityMappingCopy.modificationAttribute).to.equal(entityMapping.modificationAttribute);
+    expect(entityMappingCopy.connections.count == entityMapping.connections.count);
+}
+
 #pragma mark - Entity Identification
 
 - (void)testThatInitEntityIdentificationAttributesToNil
