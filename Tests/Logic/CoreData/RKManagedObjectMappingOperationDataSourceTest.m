@@ -1799,6 +1799,7 @@
     NSError *error = nil;
     // Concrete mapping is determined during mapping process
     [mappingOperation performMapping:&error];
+    [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
     assertThat(error, is(nilValue()));
     
     BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipPropertyMapping:mappingOperation];
