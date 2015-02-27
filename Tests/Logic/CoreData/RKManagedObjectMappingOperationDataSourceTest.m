@@ -1773,4 +1773,37 @@
     expect(canSkipMapping).to.equal(NO);
 }
 
+- (void)testThatDynamicMappingCanSkipPropertyMapping
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [NSOperationQueue new];
+    
+    NSDictionary *representation = @{ @"name": @"Blake Watters", @"railsID": @123 };
+    RKDynamicMapping *dynamicMapping = [[RKDynamicMapping alloc] init];
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
+        RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+        [humanMapping addAttributeMappingsFromArray:@[ @"name", @"railsID" ]];
+        [humanMapping setModificationAttributeForName:@"name"];
+        
+        return humanMapping;
+    }];
+    
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [human setValue:@"Blake Watters" forKey:@"name"];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:dynamicMapping];
+    mappingOperation.dataSource = mappingOperationDataSource;
+    
+    NSError *error = nil;
+    // Concrete mapping is determined during mapping process
+    [mappingOperation performMapping:&error];
+    [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
+    assertThat(error, is(nilValue()));
+    
+    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipPropertyMapping:mappingOperation];
+    expect(canSkipMapping).to.equal(YES);
+}
+
 @end
