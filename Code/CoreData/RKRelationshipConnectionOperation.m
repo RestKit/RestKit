@@ -52,8 +52,10 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 
     for (NSString *sourceAttribute in connection.attributes) {
         NSString *destinationAttribute = (connection.attributes)[sourceAttribute];
-        id sourceValue = [managedObject valueForKey:sourceAttribute];
-        [destinationEntityAttributeValues setValue:sourceValue ?: [NSNull null] forKey:destinationAttribute];
+        [managedObject.managedObjectContext performBlockAndWait:^{
+            id sourceValue = [managedObject valueForKey:sourceAttribute];
+            [destinationEntityAttributeValues setValue:sourceValue ?: [NSNull null] forKey:destinationAttribute];
+        }];
     }
     }];
     return RKConnectionAttributeValuesIsNotConnectable(destinationEntityAttributeValues) ? nil : destinationEntityAttributeValues;
