@@ -482,7 +482,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     [paginator waitUntilFinished];
 }
 
-- (void) testLoadingAPageWithCustomPaginatorContainingParameter
+- (void) testLoadingPagesWithCustomPaginatorContainingParameter
 {
     RKObjectManager* manager = [RKTestFactory objectManager];
     [RKObjectManager setSharedManager:manager];
@@ -490,6 +490,9 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     manager.paginationMapping = [self customPaginationMapping];
     RKPaginator* paginator = [manager paginatorWithPathPattern:RKPaginatorTestResourcePathPattern parameters:@{@"param1":@"value1"}];
     [paginator loadPage:1];
+    [paginator waitUntilFinished];
+    expect(paginator.URL.relativeString).to.contain(@"param1=value1");
+    [paginator loadNextPage];
     [paginator waitUntilFinished];
     expect(paginator.URL.relativeString).to.contain(@"param1=value1");
 }
