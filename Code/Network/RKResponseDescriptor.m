@@ -156,7 +156,6 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
             return NO;
         }
     }
-    
     return YES;
 }
 
