@@ -116,37 +116,63 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 - (BOOL)matchesPath:(NSString *)path
 {
+    return [self matchesPath:path parsedArguments:nil];
+}
+
+- (BOOL)matchesPath:(NSString *)path parsedArguments:(NSDictionary **)outParsedArguments
+{
     if (!self.pathPattern || !path) return YES;
-    return [self.pathPatternMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:nil];
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPattern:self.pathPattern];
+    return [pathMatcher matchesPath:path tokenizeQueryStrings:NO parsedArguments:outParsedArguments];
 }
 
 - (BOOL)matchesURL:(NSURL *)URL
 {
+    return [self matchesURL:URL parsedArguments:nil];
+}
+
+- (BOOL)matchesURL:(NSURL *)URL parsedArguments:(NSDictionary **)outParsedArguments
+{
     NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(URL, self.baseURL);
     if (self.baseURL) {
         if (! RKURLIsRelativeToURL(URL, self.baseURL)) return NO;
-        return [self matchesPath:pathAndQueryString];
+        return [self matchesPath:pathAndQueryString parsedArguments:outParsedArguments];
     } else {
-        return [self matchesPath:pathAndQueryString];
+        return [self matchesPath:pathAndQueryString parsedArguments:outParsedArguments];
     }
 }
 
 - (BOOL)matchesResponse:(NSHTTPURLResponse *)response
 {
-    if (! [self matchesURL:response.URL]) return NO;
+    return [self matchesResponse:response parsedArguments:nil];
+}
 
+- (BOOL)matchesResponse:(NSHTTPURLResponse *)response parsedArguments:(NSDictionary **)outParsedArguments
+{
+    if (![self matchesURL:response.URL parsedArguments:outParsedArguments]) return NO;
+    
     if (self.statusCodes) {
         if (! [self.statusCodes containsIndex:response.statusCode]) {
             return NO;
         }
     }
-
     return YES;
 }
 
 - (BOOL)matchesMethod:(RKRequestMethod)method
 {
     return self.method & method;
+}
+
+- (NSDictionary *)parsedArgumentsFromResponse:(NSHTTPURLResponse *)response
+{
+    NSDictionary *parsedArguments = nil;
+    if ([self matchesResponse:response parsedArguments:&parsedArguments])
+    {
+        return parsedArguments;
+    }
+    
+    return nil;
 }
 
 - (BOOL)isEqual:(id)object

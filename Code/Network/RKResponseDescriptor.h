@@ -158,6 +158,16 @@
  */
 - (BOOL)matchesResponse:(NSHTTPURLResponse *)response;
 
+/**
+ Returns a dictionary of parsed arguments extracted from the URL of the given response object.
+ 
+ @param response The HTTP response object to compare with the base URL, path pattern, and status codes set of the receiver.
+ @return A dictionary of parsed arguments if the response matches the base URL, path pattern, and status codes set of the receiver, else `nil`.
+ @see `matchesResponse:`
+ 
+ */
+- (NSDictionary *)parsedArgumentsFromResponse:(NSHTTPURLResponse *)response;
+
 ///-------------------------
 /// @name Comparing Response Descriptors
 ///-------------------------
