@@ -819,6 +819,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 - (BOOL)saveContext:(NSError **)error
 {
     if (self.willSaveMappingContextBlock) {
+        self.mappingResult = _responseMapperOperation.mappingResult;
         [self.privateContext performBlockAndWait:^{
             self.willSaveMappingContextBlock(self.privateContext);
         }];
