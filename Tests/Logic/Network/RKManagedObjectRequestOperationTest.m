@@ -1660,6 +1660,28 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(blockMappingContext).notTo.beNil();
 }
 
+- (void)testThatWillSaveMappingContextMappingResultIsAvailable {
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    
+    __block RKMappingResult *mappingResult = nil;
+    __weak RKManagedObjectRequestOperation *operationWeak = managedObjectRequestOperation;
+    [managedObjectRequestOperation setWillSaveMappingContextBlock:^(NSManagedObjectContext *mappingContext) {
+        RKManagedObjectRequestOperation *operationStrong = operationWeak;
+        mappingResult = operationStrong.mappingResult;
+    }];
+    
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    expect(mappingResult).notTo.beNil();
+}
+
 - (void)testLoadingManagedObjectsWithAttributeKeyPath
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
