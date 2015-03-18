@@ -112,6 +112,14 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     expect([paginator.patternURL absoluteString]).to.equal(@"http://restkit.org");
 }
 
+- (void)testInitCopiesPatternURLWithParameters
+{
+    NSURL *patternURL = [NSURL URLWithString:@"http://restkit.org?param1=value1"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:patternURL];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    expect([paginator.patternURL absoluteString]).to.equal(@"http://restkit.org?param1=value1");
+}
+
 - (void)testInitDoesNotHavePageCount
 {
     NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
@@ -472,6 +480,21 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     expect(paginator.class).to.equal(RKCustomPaginator.class);
     [paginator loadPage:1];
     [paginator waitUntilFinished];
+}
+
+- (void) testLoadingPagesWithCustomPaginatorContainingParameter
+{
+    RKObjectManager* manager = [RKTestFactory objectManager];
+    [RKObjectManager setSharedManager:manager];
+    
+    manager.paginationMapping = [self customPaginationMapping];
+    RKPaginator* paginator = [manager paginatorWithPathPattern:RKPaginatorTestResourcePathPattern parameters:@{@"param1":@"value1"}];
+    [paginator loadPage:1];
+    [paginator waitUntilFinished];
+    expect(paginator.URL.relativeString).to.contain(@"param1=value1");
+    [paginator loadNextPage];
+    [paginator waitUntilFinished];
+    expect(paginator.URL.relativeString).to.contain(@"param1=value1");
 }
 
 - (void)testHavingRequestOperationUponCompletion

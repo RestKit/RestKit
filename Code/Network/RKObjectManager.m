@@ -802,8 +802,13 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 - (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern
 {
+    return [self paginatorWithPathPattern:pathPattern parameters:nil];
+}
+
+- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern parameters:(NSDictionary *)parameters
+{
     NSAssert(self.paginationMapping, @"Cannot instantiate a paginator when `paginationMapping` is nil.");
-    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:pathPattern parameters:nil];
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:pathPattern parameters:parameters];
     RKPaginator *paginator = [[self.paginationMapping.objectClass alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:self.responseDescriptors];
 #ifdef RKCoreDataIncluded
     paginator.managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
