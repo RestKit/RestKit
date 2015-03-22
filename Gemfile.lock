@@ -37,7 +37,7 @@ GEM
     colored (1.2)
     daemons (1.1.9)
     escape (0.0.4)
-    eventmachine (1.0.3)
+    eventmachine (1.0.7)
     fuzzy_match (2.0.4)
     i18n (0.6.11)
     json (1.8.1)
