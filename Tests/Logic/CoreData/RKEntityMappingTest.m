@@ -341,7 +341,7 @@
     expect(entityMappingCopy.connections.count == entityMapping.connections.count);
 }
 
-- (void)testEntityDynamicPropertyMappingNotCrashing {
+- (void)testEntityDynamicPropertyMappingWithFetchRequestBlockNotCrashing {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     
     RKDynamicMapping *humanMapping = [RKDynamicMapping new];
@@ -363,11 +363,20 @@
     [catMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
     [catMapping addRelationshipMappingWithSourceKeyPath:@"human" mapping:humanMapping];
     
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:catMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"cats" statusCodes:nil];
+    NSURLRequest *request = [NSURLRequest  requestWithURL:[NSURL URLWithString:@"/cats/cats_with_humans" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    
+    NSFetchRequest*(^requestBlock)(NSURL *url) = ^(NSURL *url) {
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Cat"];
+        return request;
+    };
+    
+    managedObjectRequestOperation.fetchRequestBlocks = @[[requestBlock copy]];
+    managedObjectRequestOperation.savesToPersistentStore = NO;
+    
     NSException *exception = nil;
     @try {
-        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:catMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"cats" statusCodes:nil];
-        NSURLRequest *request = [NSURLRequest  requestWithURL:[NSURL URLWithString:@"/cats/cats_with_humans" relativeToURL:[RKTestFactory baseURL]]];
-        RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
         [managedObjectRequestOperation start];
         [managedObjectRequestOperation waitUntilFinished];
     }
