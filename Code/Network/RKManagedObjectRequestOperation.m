@@ -377,11 +377,28 @@ static NSSet *RKManagedObjectsFromObjectWithMappingInfo(id object, RKMappingInfo
         }
     } else {    
         for (NSString *destinationKeyPath in mappingInfo.relationshipMappingInfo) {
-            id relationshipValue = [object valueForKeyPath:destinationKeyPath];
+            id relationshipValue = nil;
+            // Objects in collection may have different types, so destination keypath may be not applicable to each of them
+            if([object conformsToProtocol:@protocol(NSFastEnumeration)]) {
+                NSMutableSet* results = [NSMutableSet set];
+                for (id item in object) {
+                    @try {
+                        id value = [item valueForKeyPath:destinationKeyPath];
+                        [results addObject:value];
+                    } @catch(NSException*) {
+                        continue;
+                    }
+                }
+                
+                relationshipValue = results;
+            } else {
+                relationshipValue = [object valueForKeyPath:destinationKeyPath];
+            }
+            
             NSArray *mappingInfos = (mappingInfo.relationshipMappingInfo)[destinationKeyPath];
             for (RKMappingInfo *relationshipMappingInfo in mappingInfos) {
                 NSUInteger index = [mappingInfos indexOfObject:relationshipMappingInfo];
-                id mappedObjectAtIndex = ([relationshipValue respondsToSelector:@selector(objectAtIndex:)]) ? [NSSet setWithObject:relationshipValue[index]] : relationshipValue;
+                id mappedObjectAtIndex = ([relationshipValue respondsToSelector:@selector(objectAtIndex:)]) ? relationshipValue[index] : relationshipValue;
                 [managedObjects unionSet:RKFlattenCollectionToSet(RKManagedObjectsFromObjectWithMappingInfo(mappedObjectAtIndex, relationshipMappingInfo))];
             }
         }
@@ -400,7 +417,7 @@ static NSSet *RKManagedObjectsFromMappingResultWithMappingInfo(RKMappingResult *
         id objectsAtRoot = mappingResultDictionary[rootKey];
         for (RKMappingInfo *mappingInfo in mappingInfoArray) {
             NSUInteger index = [mappingInfoArray indexOfObject:mappingInfo];
-            id mappedObjectAtIndex = ([objectsAtRoot respondsToSelector:@selector(objectAtIndex:)]) ? [NSSet setWithObject:objectsAtRoot[index]] : objectsAtRoot;
+            id mappedObjectAtIndex = ([objectsAtRoot respondsToSelector:@selector(objectAtIndex:)]) ? objectsAtRoot[index] : objectsAtRoot;
             
             NSSet *managedObjects = RKManagedObjectsFromObjectWithMappingInfo(mappedObjectAtIndex, mappingInfo);
             if (managedObjects) {
