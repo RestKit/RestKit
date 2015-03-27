@@ -341,6 +341,44 @@
     expect(entityMappingCopy.connections.count == entityMapping.connections.count);
 }
 
+- (void)testEntityDynamicPropertyMappingNotCrashing {
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    
+    RKDynamicMapping *humanMapping = [RKDynamicMapping new];
+    
+    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
+    childMapping.identificationAttributes = @[ @"railsID" ];
+    [childMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
+    
+    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
+    parentMapping.identificationAttributes = @[ @"railsID" ];
+    [parentMapping addAttributeMappingsFromArray:@[@"name", @"age", @"railsID"]];
+    [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
+    
+    [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Parent" objectMapping:parentMapping]];
+    [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Child" objectMapping:childMapping]];
+    
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    catMapping.identificationAttributes = @[ @"railsID" ];
+    [catMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
+    [catMapping addRelationshipMappingWithSourceKeyPath:@"human" mapping:humanMapping];
+    
+    NSException *exception = nil;
+    @try {
+        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:catMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"cats" statusCodes:nil];
+        NSURLRequest *request = [NSURLRequest  requestWithURL:[NSURL URLWithString:@"/cats/cats_with_humans" relativeToURL:[RKTestFactory baseURL]]];
+        RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+        [managedObjectRequestOperation start];
+        [managedObjectRequestOperation waitUntilFinished];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(nilValue()));
+    }
+}
+
 #pragma mark - Entity Identification
 
 - (void)testThatInitEntityIdentificationAttributesToNil

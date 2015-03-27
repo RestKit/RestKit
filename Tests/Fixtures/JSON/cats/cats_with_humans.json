@@ -1,0 +1,22 @@
+{
+    "cats" : [
+        {
+            "name": "Asia",
+            "id": 1234,
+            "human": {"name": "Gargamel", "type": "Child", "id": 1111 }
+        },
+        {
+            "name": "Roy",
+            "id": 5678,
+            "human": {
+              "name": "Dan",
+              "type": "Parent",
+              "age": 33,
+              "id": 2222,
+              "children": [
+                {"name": "John", "type": "Child", "id": 3333 }
+              ]
+              }
+        }
+    ]
+}

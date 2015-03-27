@@ -581,6 +581,7 @@
 		54CDB45C17B408B100FAC285 /* RKStringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKStringTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54CDB45D17B408B100FAC285 /* RKStringTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */; };
 		54CDB45E17B408B100FAC285 /* RKStringTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */; };
+		59800D591AC569A800397BD1 /* cats_with_humans.json in Resources */ = {isa = PBXBuildFile; fileRef = 59800D581AC5636F00397BD1 /* cats_with_humans.json */; };
 		5C927E141608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5C927E151608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -970,6 +971,7 @@
 		3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty_human.json; sourceTree = "<group>"; };
 		54CDB45917B408B100FAC285 /* RKStringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKStringTokenizer.h; sourceTree = "<group>"; };
 		54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKStringTokenizer.m; sourceTree = "<group>"; };
+		59800D581AC5636F00397BD1 /* cats_with_humans.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cats_with_humans.json; sourceTree = "<group>"; };
 		5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilitiesTest.m; sourceTree = "<group>"; };
 		5CCC295515B7124A0045F0F5 /* RKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMacros.h; sourceTree = "<group>"; };
 		7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCaching.h; sourceTree = "<group>"; };
@@ -1393,6 +1395,7 @@
 				25160FDD1456F2330060A5C5 /* error.json */,
 				25160FDE1456F2330060A5C5 /* errors.json */,
 				25160FDF1456F2330060A5C5 /* Foursquare.json */,
+				59800D571AC5636F00397BD1 /* cats */,
 				25160FE01456F2330060A5C5 /* humans */,
 				25160FE41456F2330060A5C5 /* nested_user.json */,
 				25160FE51456F2330060A5C5 /* RailsUser.json */,
@@ -1688,6 +1691,14 @@
 				25EC1ADA14F8022600C3CF3F /* RestKitTests-Info.plist */,
 			);
 			path = PLISTs;
+			sourceTree = "<group>";
+		};
+		59800D571AC5636F00397BD1 /* cats */ = {
+			isa = PBXGroup;
+			children = (
+				59800D581AC5636F00397BD1 /* cats_with_humans.json */,
+			);
+			path = cats;
 			sourceTree = "<group>";
 		};
 		E4081DFC15FB89DF00364948 /* ManagedObjectCaching */ = {
@@ -2109,6 +2120,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59800D591AC569A800397BD1 /* cats_with_humans.json in Resources */,
 				251610641456F2330060A5C5 /* blake.png in Resources */,
 				251610661456F2330060A5C5 /* ArrayOfNestedDictionaries.json in Resources */,
 				251610681456F2330060A5C5 /* ArrayOfResults.json in Resources */,
