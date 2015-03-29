@@ -48,11 +48,13 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
 {
     NSCAssert([connection isForeignKeyConnection], @"Only valid for a foreign key connection");
     NSMutableDictionary *destinationEntityAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[connection.attributes count]];
-    for (NSString *sourceAttribute in connection.attributes) {
-        NSString *destinationAttribute = (connection.attributes)[sourceAttribute];
-        id sourceValue = [managedObject valueForKey:sourceAttribute];
-        [destinationEntityAttributeValues setValue:sourceValue ?: [NSNull null] forKey:destinationAttribute];
-    }
+    [managedObject.managedObjectContext performBlockAndWait:^{
+        for (NSString *sourceAttribute in connection.attributes) {
+            NSString *destinationAttribute = (connection.attributes)[sourceAttribute];
+            id sourceValue = [managedObject valueForKey:sourceAttribute];
+            [destinationEntityAttributeValues setValue:sourceValue ?: [NSNull null] forKey:destinationAttribute];
+        }
+    }];
     return RKConnectionAttributeValuesIsNotConnectable(destinationEntityAttributeValues) ? nil : destinationEntityAttributeValues;
 }
 
