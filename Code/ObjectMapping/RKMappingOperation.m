@@ -853,6 +853,11 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorInvalidAssignmentPolicy userInfo:userInfo];
         return NO;
     }
+    
+    // Remove existing destination entity before mapping the new one
+    if (relationshipMapping.assignmentPolicy == RKAssignmentPolicyReplace && ![self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
+        return NO;
+    }
 
     id parentSourceObject = [self parentObjectForRelationshipMapping:relationshipMapping];
     id destinationObject = [self destinationObjectForMappingRepresentation:value parentRepresentation:parentSourceObject withMapping:relationshipMapping.mapping inRelationship:relationshipMapping];
@@ -866,10 +871,6 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
     // If the relationship has changed, set it
     if ([self shouldSetValue:&destinationObject forKeyPath:destinationKeyPath usingMapping:relationshipMapping]) {
-        if (! [self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
-            return NO;
-        }
-        
         RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, destinationKeyPath, destinationObject);
         [self.destinationObject setValue:destinationObject forKeyPath:destinationKeyPath];
     } else {
