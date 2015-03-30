@@ -53,11 +53,6 @@ class RestKitTestServer < Sinatra::Base
     render_fixture('/JSON/humans/and_cats.json', :status => 201)
   end
 
-  get '/cats/cats_with_humans' do
-    content_type 'application/json'
-    render_fixture('/JSON/cats/cats_with_humans.json', :status => 200)
-  end
-
   post '/humans/fail' do
     content_type 'application/json'
     render_fixture('/JSON/errors.json', :status => 500)

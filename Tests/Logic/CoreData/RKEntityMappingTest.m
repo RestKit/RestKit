@@ -344,31 +344,63 @@
 - (void)testEntityDynamicPropertyMappingWithFetchRequestBlockNotCrashing {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     
-    RKDynamicMapping *humanMapping = [RKDynamicMapping new];
-    
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
     childMapping.identificationAttributes = @[ @"railsID" ];
     [childMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
     
     RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
     parentMapping.identificationAttributes = @[ @"railsID" ];
-    [parentMapping addAttributeMappingsFromArray:@[@"name", @"age", @"railsID"]];
+    [parentMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
     [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
     
+    RKDynamicMapping *humanMapping = [[RKDynamicMapping alloc] init];
     [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Parent" objectMapping:parentMapping]];
     [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Child" objectMapping:childMapping]];
     
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"HoardedCat" inManagedObjectStore:managedObjectStore];
     catMapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
     [catMapping addRelationshipMappingWithSourceKeyPath:@"human" mapping:humanMapping];
     
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:catMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"cats" statusCodes:nil];
-    NSURLRequest *request = [NSURLRequest  requestWithURL:[NSURL URLWithString:@"/cats/cats_with_humans" relativeToURL:[RKTestFactory baseURL]]];
-    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    RKEntityMapping *catHoarderMapping = [RKEntityMapping mappingForEntityForName:@"CatHoarder" inManagedObjectStore:managedObjectStore];
+    [catHoarderMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"hoardedCats" withMapping:catMapping]];
+    catHoarderMapping.identificationAttributes = @[ @"railsID" ];
+    [catHoarderMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
+    
+    NSURL *baseURL = [NSURL URLWithString:@"http://example.org"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"path" relativeToURL:baseURL]];
+    request.HTTPMethod = @"GET";
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:request.URL
+                                                              statusCode:200
+                                                             HTTPVersion:@"1.1"
+                                                            headerFields:@{@"Content-Type" : @"application/json"}];
+    NSData *responseData = [RKTestFixture dataWithContentsOfFixture:@"hoarderWithCats_issue_2192.json"];
+    
+    id mockRequestOperation = [OCMockObject niceMockForClass:[RKHTTPRequestOperation class]];
+    [[[mockRequestOperation stub] andReturn:request] request];
+    [[[mockRequestOperation stub] andReturn:response] response];
+    [[[mockRequestOperation stub] andReturn:responseData] responseData];
+    [[[mockRequestOperation stub] andDo:^(NSInvocation *invocation) {
+        void(^successHandler)(AFHTTPRequestOperation *operation, id responseObject) = nil;
+        [invocation getArgument:&successHandler atIndex:2];
+        successHandler(mockRequestOperation, [RKTestFixture parsedObjectWithContentsOfFixture:@"hoarderWithCats_issue_2192.json"]);
+        
+    }] setCompletionBlockWithSuccess:[OCMArg any] failure:[OCMArg any]];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:catHoarderMapping
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:nil
+                                                                                           keyPath:nil
+                                                                                       statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor.baseURL = baseURL;
+    
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:mockRequestOperation
+                                                                                                                       responseDescriptors:@[responseDescriptor]];
+    managedObjectRequestOperation.managedObjectContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType
+                                                                                                               tracksChanges:NO];
     
     NSFetchRequest*(^requestBlock)(NSURL *url) = ^(NSURL *url) {
-        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Cat"];
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"CatHoarder"];
         return request;
     };
     

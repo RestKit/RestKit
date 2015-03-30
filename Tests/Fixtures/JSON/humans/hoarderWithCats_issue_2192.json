@@ -1,0 +1,24 @@
+{
+    "name" : "HoarderJoe",
+    "railsID" : 5555,
+    
+    "cats" :
+    [
+        {
+            "name" : "Asia",
+            "railsID" : 1234,
+            "human" : {"name" : "Gargamel", "type" : "Child", "railsID" : 1111}
+        },
+        {
+            "name": "Roy",
+            "railsID": 5678,
+            "human":
+            {
+                "name" : "Dan",
+                "type" : "Parent",
+                "railsID" : 2222,
+                "children" : [{"name" : "John", "type" : "Child", "railsID" : 3333 }]
+            }
+        }
+    ]
+}
