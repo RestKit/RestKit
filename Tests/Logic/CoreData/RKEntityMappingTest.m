@@ -24,6 +24,7 @@
 #import "RKMappableObject.h"
 #import "RKChild.h"
 #import "RKParent.h"
+#import "RKCat.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKDynamicMapping.h"
 
@@ -411,6 +412,86 @@
     @try {
         [managedObjectRequestOperation start];
         [managedObjectRequestOperation waitUntilFinished];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(nilValue()));
+    }
+}
+
+- (void)testOneToOneRelationshipMappingWithReplacementPolicyWillNotCrash {
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    
+    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
+    childMapping.identificationAttributes = @[ @"railsID" ];
+    [childMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
+    
+    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
+    parentMapping.identificationAttributes = @[ @"railsID" ];
+    [parentMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
+    [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
+    
+    RKDynamicMapping *humanMapping = [[RKDynamicMapping alloc] init];
+    [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Parent" objectMapping:parentMapping]];
+    [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Child" objectMapping:childMapping]];
+    
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
+    catMapping.identificationAttributes = @[ @"railsID" ];
+    [catMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
+    
+    RKRelationshipMapping *relationMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"human" toKeyPath:@"human" withMapping:humanMapping];
+    relationMapping.assignmentPolicy = RKAssignmentPolicyReplace;
+    [catMapping addPropertyMapping:relationMapping];
+    
+    NSURL *baseURL = [NSURL URLWithString:@"http://example.org"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"path" relativeToURL:baseURL]];
+    request.HTTPMethod = @"POST";
+    NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:request.URL
+                                                              statusCode:200
+                                                             HTTPVersion:@"1.1"
+                                                            headerFields:@{@"Content-Type" : @"application/json"}];
+    NSData *responseData = [RKTestFixture dataWithContentsOfFixture:@"catsWithParent_issue_2194.json"];
+    
+    id mockRequestOperation = [OCMockObject niceMockForClass:[RKHTTPRequestOperation class]];
+    [[[mockRequestOperation stub] andReturn:request] request];
+    [[[mockRequestOperation stub] andReturn:response] response];
+    [[[mockRequestOperation stub] andReturn:responseData] responseData];
+    [[[mockRequestOperation stub] andDo:^(NSInvocation *invocation) {
+        void(^successHandler)(AFHTTPRequestOperation *operation, id responseObject) = nil;
+        [invocation getArgument:&successHandler atIndex:2];
+        successHandler(mockRequestOperation, [RKTestFixture parsedObjectWithContentsOfFixture:@"catsWithParent_issue_2194.json"]);
+        
+    }] setCompletionBlockWithSuccess:[OCMArg any] failure:[OCMArg any]];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:catMapping
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:nil
+                                                                                           keyPath:nil
+                                                                                       statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    responseDescriptor.baseURL = baseURL;
+    
+    RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:mockRequestOperation
+                                                                                                          responseDescriptors:@[responseDescriptor]];
+    
+    NSManagedObjectContext *context = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType
+                                                                                            tracksChanges:NO];
+    requestOperation.managedObjectContext = context;
+    requestOperation.savesToPersistentStore = NO;
+    
+    RKCat *targetCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:context];
+    targetCat.railsID = @(5555);
+    
+    RKChild *child = [NSEntityDescription insertNewObjectForEntityForName:@"Child" inManagedObjectContext:context];
+    targetCat.human = child;
+    
+    requestOperation.targetObject = targetCat;
+    
+    NSException *exception = nil;
+    @try {
+        [requestOperation start];
+        [requestOperation waitUntilFinished];
     }
     @catch (NSException *e) {
         exception = e;
