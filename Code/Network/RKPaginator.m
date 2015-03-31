@@ -56,6 +56,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 @property (nonatomic, copy) void (^successBlock)(RKPaginator *paginator, NSArray *objects, NSUInteger page);
 @property (nonatomic, copy) void (^failureBlock)(RKPaginator *paginator, NSError *error);
+@property (nonatomic, copy) void (^pageFinishedBlock)(RKPaginator *paginator);
 @end
 
 @implementation RKPaginator
@@ -268,6 +269,9 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         self.loaded = (self.objectRequestOperation.mappingResult != nil);
         self.mappingResult = self.objectRequestOperation.mappingResult;
         self.error = self.objectRequestOperation.error;
+        if (self.pageFinishedBlock) {
+            self.pageFinishedBlock(self);
+        }
         [object removeObserver:self forKeyPath:@"isFinished"];
     }
 }
