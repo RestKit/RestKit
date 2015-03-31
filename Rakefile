@@ -19,10 +19,12 @@ XCTasks::TestTask.new(:test) do |t|
 
   t.subtask(ios: 'RestKitTests') do |s|
     s.sdk = :iphonesimulator
+    s.destinations = ['platform=iOS Simulator,name=iPhone 6,OS=latest']
   end
 
   t.subtask(osx: 'RestKitFrameworkTests') do |s|
     s.sdk = :macosx
+    s.destinations = []
   end
 end
 
