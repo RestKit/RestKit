@@ -24,7 +24,6 @@ XCTasks::TestTask.new(:test) do |t|
 
   t.subtask(osx: 'RestKitFrameworkTests') do |s|
     s.sdk = :macosx
-    s.destination()
   end
 end
 
