@@ -22,6 +22,7 @@
 #import "RKPaginator.h"
 #import "RKObjectMapperTestModel.h"
 #import "RKURLEncodedSerialization.h"
+#import "RKMappingResult.h"
 
 @interface RKPaginator (Testability)
 - (void)waitUntilFinished;
@@ -45,6 +46,18 @@
 @property (nonatomic, readonly) NSURL *paginationURL;
 @property (nonatomic, readonly) RKObjectMapping *paginationMapping;
 @property (nonatomic, readonly) RKResponseDescriptor *responseDescriptor;
+@end
+
+@interface RKPaginator(Test)
+@property (nonatomic, strong, readwrite) RKObjectRequestOperation *objectRequestOperation;
+@end
+
+@interface NSOperation(Test)
+@property (copy) void (^completionBlock)(void);
+@end
+
+@interface RKObjectRequestOperation(Test)
+@property (nonatomic, strong, readwrite) RKMappingResult *mappingResult;
 @end
 
 @implementation RKPaginatorTest
@@ -251,9 +264,10 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     [paginator loadPage:1];
     [paginator waitUntilFinished];
-    expect([paginator.mappingResult array]).will.haveCountOf(3);
+    // I cannot use here `haveCountOf` because prerequsities are checked not asynchronously and `nil` does not pass them
+    expect([[paginator.mappingResult array] count]).will.equal(3);
     NSArray *expectedNames = @[ @"Blake", @"Sarah", @"Colin" ];
-    expect([[paginator.mappingResult array] valueForKey:@"name"]).to.equal(expectedNames);
+    expect([[paginator.mappingResult array] valueForKey:@"name"]).will.equal(expectedNames);
 }
 
 - (void)testLoadingPageOfObjectHasPageCount
@@ -323,7 +337,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     [paginator waitUntilFinished];
     expect(paginator.currentPage).to.equal(2);
     NSArray *names = @[ @"Asia", @"Roy", @"Lola" ];
-    expect([[paginator.mappingResult array] valueForKey:@"name"]).to.equal(names);
+    expect([[paginator.mappingResult array] valueForKey:@"name"]).will.equal(names);
 }
 
 - (void)testLoadingPreviousPageOfObjects
@@ -337,7 +351,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     [paginator waitUntilFinished];
     expect(paginator.currentPage).to.equal(1);
     NSArray *names = @[ @"Blake", @"Sarah", @"Colin" ];
-    expect([[paginator.mappingResult array] valueForKey:@"name"]).to.equal(names);
+    expect([[paginator.mappingResult array] valueForKey:@"name"]).will.equal(names);
 }
 
 - (void)testFailureWhenLoadingAPageOfObjects
@@ -517,6 +531,26 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     [paginator loadPage:2];
     [paginator waitUntilFinished];
     expect(paginator.objectRequestOperation).willNot.equal(operation);
+}
+
+- (void)testHavingFinishedStateInCallback
+{
+    NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
+    RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:self.paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
+    __block NSArray *blockObjects = nil;
+    [paginator setCompletionBlockWithSuccess:^(RKPaginator *paginator, NSArray *objects, NSUInteger page) {
+        blockObjects = objects;
+    } failure:nil];
+    [paginator loadPage:1];
+    // I am mocking here behaviour where NSOperation isFinished KVO was called after callback
+    paginator.objectRequestOperation.completionBlock();
+    paginator.objectRequestOperation.mappingResult = [[RKMappingResult alloc] initWithDictionary:@{@"data": @[@{@"name": @"Blake"}]}];
+    
+    // So even that isFinished was not called but completionBlock was, evertyhing should work. (race condition)
+    NSArray *expectedNames = @[ @"Blake" ];
+    expect([[paginator.mappingResult array] valueForKey:@"name"]).will.equal(expectedNames);
+    expect(paginator.error).will.beNil();
+    expect(paginator.loaded).will.beTruthy();
 }
 
 @end
