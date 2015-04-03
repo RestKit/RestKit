@@ -85,7 +85,7 @@ static NSArray *RKEntityIdentificationAttributeNamesForEntity(NSEntityDescriptio
 
 static NSArray *RKEntityIdentificationAttributeNames()
 {
-    return [NSArray arrayWithObjects:@"identifier", @"id", @"ID", @"URL", @"url", nil];
+    return @[@"identifier", @"id", @"ID", @"URL", @"url"];
 }
 
 static NSArray *RKArrayOfAttributesForEntityFromAttributesOrNames(NSEntityDescription *entity, NSArray *attributesOrNames)
@@ -154,12 +154,12 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 {
     NSParameterAssert(entityName);
     NSParameterAssert(managedObjectStore);
-    NSEntityDescription *entity = [[managedObjectStore.managedObjectModel entitiesByName] objectForKey:entityName];
+    NSEntityDescription *entity = [managedObjectStore.managedObjectModel entitiesByName][entityName];
     NSAssert(entity, @"Unable to find an Entity with the name '%@' in the managed object model", entityName);
     return [[self alloc] initWithEntity:entity];
 }
 
-- (id)initWithEntity:(NSEntityDescription *)entity
+- (instancetype)initWithEntity:(NSEntityDescription *)entity
 {
     NSAssert(entity, @"Cannot initialize an RKEntityMapping without an entity. Maybe you want RKObjectMapping instead?");
     Class objectClass = NSClassFromString([entity managedObjectClassName]);
@@ -174,7 +174,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return self;
 }
 
-- (id)initWithClass:(Class)objectClass
+- (instancetype)initWithClass:(Class)objectClass
 {
     self = [super initWithClass:objectClass];
     if (self) {
@@ -191,6 +191,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     copy.identificationAttributes = self.identificationAttributes;
     copy.identificationPredicate = self.identificationPredicate;
     copy.deletionPredicate = self.deletionPredicate;
+    copy.modificationAttribute = self.modificationAttribute;
     copy.mutableConnections = [NSMutableArray array];
     
     for (RKConnectionDescription *connection in self.connections) {
@@ -257,7 +258,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
         NSMutableDictionary *attributes = [NSMutableDictionary dictionaryWithCapacity:[connectionSpecifier count]];
         for (NSString *sourceAttribute in connectionSpecifier) {
             NSString *destinationAttribute = [self transformSourceKeyPath:sourceAttribute];
-            [attributes setObject:destinationAttribute forKey:sourceAttribute];
+            attributes[sourceAttribute] = destinationAttribute;
         }
         connection = [[RKConnectionDescription alloc] initWithRelationship:relationship attributes:attributes];
     } else if ([connectionSpecifier isKindOfClass:[NSDictionary class]]) {
@@ -307,7 +308,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
 - (void)setModificationAttributeForName:(NSString *)attributeName
 {
     if (attributeName) {
-        NSAttributeDescription *attribute = [[self.entity attributesByName] objectForKey:attributeName];
+        NSAttributeDescription *attribute = [self.entity attributesByName][attributeName];
         if (!attribute) [NSException raise:NSInvalidArgumentException format:@"No attribute with the name '%@' was found in the '%@' entity.", attributeName, self.entity.name];
         self.modificationAttribute = attribute;
     } else {

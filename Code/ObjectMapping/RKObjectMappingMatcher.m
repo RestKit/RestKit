@@ -19,7 +19,7 @@
 @property (nonatomic, copy) NSString *keyPath;
 @property (nonatomic, strong, readwrite) id expectedValue;
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping;
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping NS_DESIGNATED_INITIALIZER;
 @end
 
 @interface RKKeyPathClassObjectMappingMatcher : RKObjectMappingMatcher
@@ -27,7 +27,7 @@
 @property (nonatomic, copy) NSString *keyPath;
 @property (nonatomic, readwrite) Class expectedClass;
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping;
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -35,19 +35,19 @@
 @property (nonatomic, copy) NSString *keyPath;
 @property (nonatomic, copy) NSDictionary *valueMap;
 
-- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping;
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping NS_DESIGNATED_INITIALIZER;
 @end
 
 @interface RKPredicateObjectMappingMatcher : RKObjectMappingMatcher
 @property (nonatomic, strong) NSPredicate *predicate;
 
-- (id)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping;
+- (instancetype)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping NS_DESIGNATED_INITIALIZER;
 @end
 
 @interface RKBlockObjectMatchingMatcher : RKObjectMappingMatcher
 @property (nonatomic, copy) NSArray *possibleMappings;
 @property (nonatomic, copy) RKObjectMapping *(^block)(id representation);
-- (instancetype)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block;
+- (instancetype)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block NS_DESIGNATED_INITIALIZER;
 @end
 
 
@@ -80,7 +80,7 @@
     return [[RKBlockObjectMatchingMatcher alloc] initWithPossibleMappings:mappings block:block];
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -110,7 +110,7 @@
 
 @implementation RKKeyPathObjectMappingMatcher
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(keyPath);
     NSParameterAssert(expectedValue);
@@ -141,7 +141,7 @@
 
 @implementation RKKeyPathClassObjectMappingMatcher
 
-- (id)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping
+- (instancetype)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(keyPath);
     NSParameterAssert(expectedClass);
@@ -192,7 +192,7 @@
 - (BOOL)matches:(id)object
 {
     id value = [object valueForKeyPath:self.keyPath];
-    RKObjectMapping *mapping = [self.valueMap objectForKey:value];
+    RKObjectMapping *mapping = (self.valueMap)[value];
     if (mapping) {
         self.objectMapping = mapping;
         return YES;
@@ -210,7 +210,7 @@
 
 @implementation RKPredicateObjectMappingMatcher
 
-- (id)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
+- (instancetype)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(predicate);
     NSParameterAssert(objectMapping);

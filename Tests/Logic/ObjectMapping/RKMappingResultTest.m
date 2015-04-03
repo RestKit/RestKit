@@ -30,7 +30,7 @@
 - (void)testShouldNotCrashWhenAsObjectIsInvokedOnAnEmptyResult
 {
     NSException *exception = nil;
-    RKMappingResult *result = [[RKMappingResult alloc] initWithDictionary:[NSDictionary dictionary]];
+    RKMappingResult *result = [[RKMappingResult alloc] initWithDictionary:@{}];
     @try {
         [result firstObject];
     }
@@ -44,13 +44,13 @@
 
 - (void)testShouldReturnNilForAnEmptyCollectionCoercedToAsObject
 {
-    RKMappingResult *result = [[RKMappingResult alloc] initWithDictionary:[NSDictionary dictionary]];
+    RKMappingResult *result = [[RKMappingResult alloc] initWithDictionary:@{}];
     assertThat([result firstObject], is(equalTo(nil)));
 }
 
 - (void)testShouldReturnTheFirstObjectInTheCollectionWhenCoercedToAsObject
 {
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"one", @"one", @"two", @"two", nil];
+    NSDictionary *dictionary = @{@"one": @"one", @"two": @"two"};
     RKMappingResult *result = [[RKMappingResult alloc] initWithDictionary:dictionary];
     assertThat([result firstObject], is(equalTo(@"one")));
 }

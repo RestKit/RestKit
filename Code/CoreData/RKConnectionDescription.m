@@ -44,7 +44,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
 
 @implementation RKConnectionDescription
 
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)attributes
+- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship attributes:(NSDictionary *)attributes
 {
     NSParameterAssert(relationship);
     NSParameterAssert(attributes);
@@ -63,7 +63,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     return self;
 }
 
-- (id)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath
+- (instancetype)initWithRelationship:(NSRelationshipDescription *)relationship keyPath:(NSString *)keyPath
 {
     NSParameterAssert(relationship);
     NSParameterAssert(keyPath);
@@ -75,7 +75,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     return self;
 }
 
-- (id)init
+- (instancetype)init
 {
     if ([self class] == [RKConnectionDescription class]) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException

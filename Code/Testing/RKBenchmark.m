@@ -32,10 +32,10 @@ static NSMutableDictionary *__sharedBenchmarks = nil;
 {
     @synchronized (self) {
         // get the benchmark or create it on-the-fly
-        id benchmark = [[self sharedBenchmarks] objectForKey:name];
+        id benchmark = [self sharedBenchmarks][name];
         if (!benchmark) {
             benchmark = [self benchmarkWithName:name];
-            [[self sharedBenchmarks] setObject:benchmark forKey:name];
+            [self sharedBenchmarks][name] = benchmark;
         }
         return benchmark;
     }
@@ -69,12 +69,12 @@ static NSMutableDictionary *__sharedBenchmarks = nil;
 # pragma mark -
 # pragma mark Initializers
 
-+ (id)benchmarkWithName:(NSString *)name
++ (instancetype)benchmarkWithName:(NSString *)name
 {
     return [[self alloc] initWithName:name];
 }
 
-- (id)initWithName:(NSString *)name
+- (instancetype)initWithName:(NSString *)name
 {
     if (self = [self init]) {
         self.name = name;

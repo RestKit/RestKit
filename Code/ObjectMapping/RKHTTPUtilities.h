@@ -70,14 +70,13 @@ RKRequestMethod RKRequestMethodFromString(NSString *);
 
  See http://tools.ietf.org/html/rfc2616#section-10
  */
-enum {
+typedef NS_ENUM(NSUInteger, RKStatusCodeClass) {
     RKStatusCodeClassInformational  = 100,
     RKStatusCodeClassSuccessful     = 200,
     RKStatusCodeClassRedirection    = 300,
     RKStatusCodeClassClientError    = 400,
     RKStatusCodeClassServerError    = 500
 };
-typedef NSUInteger RKStatusCodeClass;
 
 /**
  Creates a new range covering the status codes in the given class.

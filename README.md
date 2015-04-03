@@ -25,7 +25,7 @@ RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTweet class]];
 RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:nil];
 NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1/statuses/public_timeline.json"];
 NSURLRequest *request = [NSURLRequest requestWithURL:url];
-RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]]; 
+RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
 [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
     NSLog(@"The public timeline Tweets: %@", [result array]);
 } failure:nil];
@@ -37,7 +37,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 - [Download RestKit](https://github.com/RestKit/RestKit/releases) and play with the [examples](https://github.com/RestKit/RestKit/tree/development/Examples) for iPhone and Mac OS X
 - First time with RestKit? Read the ["Overview"](#overview) section below and then check out the ["Getting Acquainted with RestKit"](https://github.com/RestKit/RKGist/blob/master/TUTORIAL.md) tutorial and [Object Mapping Reference](https://github.com/RestKit/RestKit/wiki/Object-mapping) documents in the wiki to jump right in.
 - Upgrading from RestKit 0.9.x or 0.10.x? Read the ["Upgrading to RestKit 0.20.x"](https://github.com/RestKit/RestKit/wiki/Upgrading-from-v0.10.x-to-v0.20.0) guide in the wiki
-- Adding RestKit to an existing [AFNetworking](http://afnetworking.org) application? Read the [AFNetworking Integration](https://github.com/RestKit/RestKit/wiki/AFNetworking-Integration) document to learn details about how the frameworks fit together.
+- Adding RestKit to an existing [AFNetworking](https://github.com/AFNetworking/AFNetworking) application? Read the [AFNetworking Integration](https://github.com/RestKit/RestKit/wiki/AFNetworking-Integration) document to learn details about how the frameworks fit together.
 - Review the [source code API documentation](http://restkit.org/api/latest) for a detailed look at the classes and API's in RestKit. A great place to start is [RKObjectManager](http://restkit.org/api/latest/Classes/RKObjectManager.html).
 - Still need some help? Ask questions on [Stack Overflow](http://stackoverflow.com/questions/tagged/restkit) or the [mailing list](http://groups.google.com/group/restkit), ping us on [Twitter](http://twitter.com/RestKit) or chat with us on [IRC](https://kiwiirc.com/client/irc.freenode.net/?nick=rkuser|?&theme=basic#RestKit).
 
@@ -92,11 +92,11 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKResponseDescriptor.html">RKResponseDescriptor</a></td>
-    <td>Describes an object mappable response that may be returned from a remote web application in terms of an object mapping, a key path, a <a href="">SOCKit pattern</a> for matching the URL, and a set of status codes that define the circumstances in which the mapping is appropriate for a given response.</td>
+    <td>Describes an object mappable response that may be returned from a remote web application in terms of an object mapping, a key path, a <a href="http://cocoadocs.org/docsets/SOCKit/">SOCKit pattern</a> for matching the URL, and a set of status codes that define the circumstances in which the mapping is appropriate for a given response.</td>
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectParameterization.html">RKObjectParameterization</a></td>
-    <td>Performs mapping of a given object into an <tt>NSDictionary</tt> represenation suitable for use as the parameters of an HTTP request.</td>
+    <td>Performs mapping of a given object into an <tt>NSDictionary</tt> representation suitable for use as the parameters of an HTTP request.</td>
   </tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectRequestOperation.html">RKObjectRequestOperation</a></td>
@@ -176,7 +176,7 @@ RestKit is broken into several modules that cleanly separate the mapping engine 
   </tr>
 </table>
 
-### 
+###
 
 ## Examples
 
@@ -261,7 +261,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 [operation setCompletionBlockWithSuccess:nil failure:^(RKObjectRequestOperation *operation, NSError *error) {
     // The `description` method of the class the error is mapped to is used to construct the value of the localizedDescription
 	NSLog(@"Loaded this error: %@", [error localizedDescription]);
-    
+
     // You can access the model object used to construct the `NSError` via the `userInfo`
     RKErrorMessage *errorMessage =  [[error.userInfo objectForKey:RKObjectMapperErrorObjectsKey] firstObject];
 }];
@@ -316,7 +316,7 @@ manager.managedObjectStore = managedObjectStore;
 
 ### Load a Collection of Objects at a Path
 ``` objective-c
-RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 [manager getObjectsAtPath:@"/articles" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
 } failure:^(RKObjectRequestOperation *operation, NSError *error) {
 }];
@@ -347,7 +347,7 @@ RKObjectMapping *requestMapping = [RKObjectMapping requestMapping]; // objectCla
 // under the 'article' key path
 RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:requestMapping objectClass:[Article class] rootKeyPath:@"article" method:RKRequestMethodAny];
 
-RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 [manager addRequestDescriptor:requestDescriptor];
 [manager addResponseDescriptor:articleDescriptor];
 
@@ -383,7 +383,7 @@ RKLogWithLevelWhileExecutingBlock(RKLogLevelTrace, ^{
 
 ### Configure Routing
 ``` objective-c
-RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"];
+RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://restkit.org"]];
 
 // Class Routing
 [manager.router.routeSet addRoute:[RKRoute routeWithClass:[GGSegment class] pathPattern:@"/segments/:segmentID\\.json" method:RKRequestMethodGET]];
@@ -426,7 +426,7 @@ rdu.code = @"rdu";
 
 // Enqueue a GET for '/airports/jfk/weather', '/airports/lga/weather', '/airports/rdu/weather'
 RKRoute *route = [RKRoute routeWithName:@"airport_weather" resourcePathPattern:@"/airports/:code/weather" method:RKRequestMethodGET];
-                                
+
 [manager enqueueBatchOfObjectRequestOperationsWithRoute:route
                                                 objects:@[ jfk, lga, rdu]
                                                progress:^(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations) {
@@ -462,7 +462,7 @@ RKManagedObjectImporter *importer = [[RKManagedObjectImporter alloc] initWithMan
 // JSON looks like {"articles": [ {"title": "Article 1", "body": "Text", "author": "Blake" ]}
 NSError *error;
 NSBundle *mainBundle = [NSBundle mainBundle];
-[importer importObjectsFromItemAtPath:[mainBundle pathForResource:@"articles" ofType:@"json"]    
+[importer importObjectsFromItemAtPath:[mainBundle pathForResource:@"articles" ofType:@"json"]
                           withMapping:articleMapping
                               keyPath:@"articles"
                                 error:&error];
@@ -528,7 +528,7 @@ RKMappingTest *mappingTest = [[RKMappingTest alloc] initWithMapping:mapping sour
 
 ## Requirements
 
-RestKit requires [iOS 5.0](http://developer.apple.com/library/ios/#releasenotes/General/WhatsNewIniPhoneOS/Articles/iOS5.html#//apple_ref/doc/uid/TP30915195-SW1) and above or [Mac OS X 10.7](http://developer.apple.com/library/mac/#releasenotes/MacOSX/WhatsNewInOSX/Articles/MacOSX10_7.html#//apple_ref/doc/uid/TP40010355-SW5) and above.
+RestKit requires [iOS 5.1.1](http://developer.apple.com/library/ios/#releasenotes/General/WhatsNewIniPhoneOS/Articles/iOS5.html#//apple_ref/doc/uid/TP30915195-SW1) and above or [Mac OS X 10.7](http://developer.apple.com/library/mac/#releasenotes/MacOSX/WhatsNewInOSX/Articles/MacOSX10_7.html#//apple_ref/doc/uid/TP40010355-SW5) and above.
 
 Several third-party open source libraries are used within RestKit, including:
 
@@ -588,7 +588,7 @@ Change to the directory of your Xcode project, and Create and Edit your Podfile 
 $ cd /path/to/MyProject
 $ touch Podfile
 $ edit Podfile
-platform :ios, '5.0' 
+platform :ios, '5.0'
 # Or platform :osx, '10.7'
 pod 'RestKit', '~> 0.20.0'
 

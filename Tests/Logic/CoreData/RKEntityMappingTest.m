@@ -66,7 +66,7 @@
     RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"(name).id" toKeyPath:@"railsID"];
     [mapping addPropertyMapping:idMapping];
     NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
-    [mappingsDictionary setObject:mapping forKey:@"users"];
+    mappingsDictionary[@"users"] = mapping;
 
     id mockCacheStrategy = [OCMockObject partialMockForObject:managedObjectStore.managedObjectCache];
     [[[mockCacheStrategy expect] andForwardToRealObject] managedObjectsWithEntity:OCMOCK_ANY
@@ -116,12 +116,12 @@
     NSDictionary *attributesByName = [entity attributesByName];
     NSDictionary *propertiesByName = [entity propertiesByName];
     NSDictionary *relationshipsByName = [entity relationshipsByName];
-    assertThat([attributesByName objectForKey:@"favoriteColors"], is(notNilValue()));
-    assertThat([propertiesByName objectForKey:@"favoriteColors"], is(notNilValue()));
-    assertThat([relationshipsByName objectForKey:@"favoriteColors"], is(nilValue()));
+    assertThat(attributesByName[@"favoriteColors"], is(notNilValue()));
+    assertThat(propertiesByName[@"favoriteColors"], is(notNilValue()));
+    assertThat(relationshipsByName[@"favoriteColors"], is(nilValue()));
 
     NSDictionary *propertyNamesAndTypes = [[RKPropertyInspector sharedInspector] propertyInspectionForEntity:entity];
-    assertThat([(RKPropertyInspectorPropertyInfo *)[propertyNamesAndTypes objectForKey:@"favoriteColors"] keyValueCodingClass], is(notNilValue()));
+    assertThat([(RKPropertyInspectorPropertyInfo *)propertyNamesAndTypes[@"favoriteColors"] keyValueCodingClass], is(notNilValue()));
 }
 
 - (void)testMappingAnArrayToATransformableWithoutABackingManagedObjectSubclass
@@ -319,6 +319,26 @@
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Parent" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *entityMapping = [[RKEntityMapping alloc] initWithEntity:entity];
     expect(entityMapping.identificationAttributes).to.beNil();
+}
+
+- (void)testEntityMappingCopy
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    entityMapping.identificationAttributes = RKIdentificationAttributesInferredFromEntity(entityMapping.entity);
+    entityMapping.identificationPredicate = [NSPredicate predicateWithValue:YES];
+    entityMapping.deletionPredicate = [NSPredicate predicateWithValue:NO];
+    [entityMapping setModificationAttributeForName:@"railsID"];
+    [entityMapping addConnectionForRelationship:@"cats" connectedBy:@{ @"railsID": @"railsID", @"name": @"name" }];
+    
+    RKEntityMapping *entityMappingCopy = [entityMapping copy];
+    
+    expect(entityMappingCopy.entity).to.equal(entityMapping.entity);
+    expect(entityMappingCopy.identificationAttributes).to.equal(entityMapping.identificationAttributes);
+    expect(entityMappingCopy.identificationPredicate).to.equal(entityMapping.identificationPredicate);
+    expect(entityMappingCopy.deletionPredicate).to.equal(entityMapping.deletionPredicate);
+    expect(entityMappingCopy.modificationAttribute).to.equal(entityMapping.modificationAttribute);
+    expect(entityMappingCopy.connections.count == entityMapping.connections.count);
 }
 
 #pragma mark - Entity Identification

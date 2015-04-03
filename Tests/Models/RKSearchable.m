@@ -28,7 +28,7 @@
 
 + (NSArray *)searchableAttributes
 {
-    return [NSArray arrayWithObjects:@"title", @"body", nil];
+    return @[@"title", @"body"];
 }
 
 @end

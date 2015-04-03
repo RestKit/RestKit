@@ -36,9 +36,9 @@ static NSString *RKPredicateCacheKeyForAttributeValues(NSDictionary *attributesV
     NSArray *sortedKeys = [[attributesValues allKeys] sortedArrayUsingSelector:@selector(compare:)];
     NSMutableArray *keyFragments = [NSMutableArray array];
     for (NSString *attributeName in sortedKeys) {
-        id value = [attributesValues objectForKey:attributeName];
-        char *suffix = [value respondsToSelector:@selector(count)] ? "+" : ".";
-        [keyFragments addObject:[attributeName stringByAppendingString:[NSString stringWithUTF8String:suffix]]];
+        id value = attributesValues[attributeName];
+        NSString *suffix = [value respondsToSelector:@selector(count)] ? @"+" : @".";
+        [keyFragments addObject:[attributeName stringByAppendingString:suffix]];
     }
     return [keyFragments componentsJoinedByString:@":"];
 }
@@ -69,7 +69,7 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
 
 @implementation RKFetchRequestManagedObjectCache
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
@@ -101,13 +101,13 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
     
     __block NSPredicate *substitutionPredicate;
     dispatch_sync(self.cacheQueue, ^{
-        substitutionPredicate = [self.predicateCache objectForKey:predicateCacheKey];
+        substitutionPredicate = (self.predicateCache)[predicateCacheKey];
     });
          
     if (! substitutionPredicate) {
         substitutionPredicate = RKPredicateWithSubsitutionVariablesForAttributeValues(attributeValues);
         dispatch_barrier_async(self.cacheQueue, ^{
-            [self.predicateCache setObject:substitutionPredicate forKey:predicateCacheKey];
+            (self.predicateCache)[predicateCacheKey] = substitutionPredicate;
         });
     }
     

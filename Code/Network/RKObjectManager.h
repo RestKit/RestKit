@@ -284,7 +284,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param client The AFNetworking HTTP client with which to initialize the receiver.
  @return The receiver, initialized with the given client.
  */
-- (id)initWithHTTPClient:(AFHTTPClient *)client;
+- (instancetype)initWithHTTPClient:(AFHTTPClient *)client NS_DESIGNATED_INITIALIZER;
 
 ///------------------------------------------
 /// @name Accessing Object Manager Properties
@@ -865,6 +865,19 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @warning Will raise an exception if the value of the `paginationMapping` property is nil.
  */
 - (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
+
+/**
+ Creates and returns a paginator object configured to paginate the collection resource accessible at the specified path pattern and the given parameters.
+ 
+ The paginator instantiated will be initialized with a URL built by appending the given pathPattern to the baseURL of the client and the given parameters if any. The response descriptors and Core Data configuration, if any, are inherited from the receiver.
+ 
+ @param pathPattern A patterned URL fragment to be appended to the baseURL of the receiver in order to construct the pattern URL with which to access the paginated collection.
+ @param parameters The parameters to be encoded and appended as the query string for the request URL. May be nil.
+ @return The newly created paginator instance.
+ @see RKPaginator
+ @warning Will raise an exception if the value of the `paginationMapping` property is nil.
+ */
+- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern parameters:(NSDictionary *)parameters;
 
 @end
 

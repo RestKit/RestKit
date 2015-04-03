@@ -37,7 +37,7 @@
 
     RKCat *reginald = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     reginald.name = @"Reginald";
-    reginald.railsID = [NSNumber numberWithInt:123456];
+    reginald.railsID = @123456;
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
     
     NSSet *managedObjects = [cache managedObjectsWithEntity:entity

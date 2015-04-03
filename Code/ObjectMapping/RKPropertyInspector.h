@@ -30,7 +30,7 @@
 /**
  Creates a new RKPropertyInspectorPropertyInfo instance with the given information
  */
-+ (id)propertyInfoWithName:(NSString *)name keyValueClass:(Class)kvClass isPrimitive:(BOOL)isPrimitive;
++ (instancetype)propertyInfoWithName:(NSString *)name keyValueClass:(Class)kvClass isPrimitive:(BOOL)isPrimitive;
 
 /**
  The name of the property

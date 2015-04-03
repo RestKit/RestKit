@@ -46,10 +46,11 @@ NSError *RKErrorFromMappingResult(RKMappingResult *mappingResult)
     if ([collection count] > 0) {
         description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
     } else {
-        RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
+        description = @"Expected mapping result to contain at least one object to construct an error";
+        RKLogWarning(@"%@", description);
     }
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
-                              description, NSLocalizedDescriptionKey, nil];
+    NSDictionary *userInfo = @{RKObjectMapperErrorObjectsKey: collection,
+                              NSLocalizedDescriptionKey: description};
 
     NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorFromMappingResult userInfo:userInfo];
     return error;
@@ -131,6 +132,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 @property (nonatomic, strong, readwrite) NSError *error;
 @property (nonatomic, strong, readwrite) NSArray *matchingResponseDescriptors;
 @property (nonatomic, strong, readwrite) NSDictionary *responseMappingsDictionary;
+@property (nonatomic, strong, readwrite) NSDictionary *responseMappingArgumentsDictionary;
 @property (nonatomic, strong) RKMapperOperation *mapperOperation;
 @property (nonatomic, copy) id (^willMapDeserializedResponseBlock)(id);
 @property (nonatomic, copy) void(^didFinishMappingBlock)(RKMappingResult *, NSError *);
@@ -139,7 +141,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
 - (id)parseResponseData:(NSError **)error;
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error;
-- (BOOL)hasEmptyResponse;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasEmptyResponse;
 @end
 
 @implementation RKResponseMapperOperation
@@ -163,7 +165,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     }
     
     if (dataSourceClass) {
-        [RKRegisteredResponseMapperOperationDataSourceClasses setObject:dataSourceClass forKey:(id<NSCopying>)self];
+        RKRegisteredResponseMapperOperationDataSourceClasses[(id<NSCopying>)self] = dataSourceClass;
     } else {
         [RKRegisteredResponseMapperOperationDataSourceClasses removeObjectForKey:(id<NSCopying>)self];
     }
@@ -171,7 +173,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 
 #pragma mark 
 
-- (id)initWithRequest:(NSURLRequest *)request
+- (instancetype)initWithRequest:(NSURLRequest *)request
              response:(NSHTTPURLResponse *)response
                  data:(NSData *)data
   responseDescriptors:(NSArray *)responseDescriptors;
@@ -188,6 +190,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
         self.responseDescriptors = responseDescriptors;
         self.matchingResponseDescriptors = [self buildMatchingResponseDescriptors];
         self.responseMappingsDictionary = [self buildResponseMappingsDictionary];
+        self.responseMappingArgumentsDictionary = [self buildResponseMappingArgumentsDictionary];
         self.treatsEmptyResponseAsSuccess = YES;
         self.mappingMetadata = @{}; // Initialize the metadata
     }
@@ -230,9 +233,33 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     for (RKResponseDescriptor *responseDescriptor in self.matchingResponseDescriptors) {
-        [dictionary setObject:responseDescriptor.mapping forKey:(responseDescriptor.keyPath ?: [NSNull null])];
+        dictionary[(responseDescriptor.keyPath ?: [NSNull null])] = responseDescriptor.mapping;
     }
 
+    return dictionary;
+}
+
+- (NSDictionary *)buildResponseMappingArgumentsDictionary
+{
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+    for (RKResponseDescriptor *responseDescriptor in self.matchingResponseDescriptors) {
+        
+        NSDictionary *arguments = [responseDescriptor parsedArgumentsFromResponse:self.response];
+        if (arguments)
+        {
+            // We don't add nil keypath at an [NSNull null] key, because that causes a crash later
+            // in RKDictionaryByMergingDictionaryWithDictionary
+            if (responseDescriptor.keyPath)
+            {
+                [dictionary setObject:arguments forKey:responseDescriptor.keyPath];
+            }
+            else
+            {
+                [dictionary addEntriesFromDictionary:arguments];
+            }
+        }
+    }
+    
     return dictionary;
 }
 
@@ -259,6 +286,12 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     NSDictionary *HTTPMetadata = @{ @"HTTP": @{ @"request":  @{ @"URL": self.request.URL, @"method": self.request.HTTPMethod, @"headers": [self.request allHTTPHeaderFields] ?: @{} },
                                                 @"response": @{ @"URL": self.response.URL, @"headers": [self.response allHeaderFields] ?: @{} } } };
     _mappingMetadata = RKDictionaryByMergingDictionaryWithDictionary(HTTPMetadata, mappingMetadata);
+    
+    if (self.responseMappingArgumentsDictionary)
+    {
+        NSDictionary *argumentsMetadata = @{ @"network" : @{ @"arguments" : self.responseMappingArgumentsDictionary } };
+        _mappingMetadata = RKDictionaryByMergingDictionaryWithDictionary(argumentsMetadata, _mappingMetadata);
+    }
 }
 
 - (void)cancel
@@ -301,7 +334,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     // If we are successful and empty, we may optionally consider the response mappable (i.e. 204 response or 201 with no body)
     if ([self hasEmptyResponse] && self.treatsEmptyResponseAsSuccess) {
         if (self.targetObject) {
-            self.mappingResult = [[RKMappingResult alloc] initWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:[NSNull null]]];
+            self.mappingResult = [[RKMappingResult alloc] initWithDictionary:@{[NSNull null]: self.targetObject}];
         } else {
             // NOTE: For alignment with the behavior of loading an empty array or empty dictionary, if there is a nil targetObject we return a nil mappingResult.
             // This informs the caller that operation succeeded, but performed no mapping.
@@ -375,7 +408,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error
 {
-    Class dataSourceClass = [RKRegisteredResponseMapperOperationDataSourceClasses objectForKey:[self class]] ?: [RKObjectMappingOperationDataSource class];
+    Class dataSourceClass = RKRegisteredResponseMapperOperationDataSourceClasses[[self class]] ?: [RKObjectMappingOperationDataSource class];
     id<RKMappingOperationDataSource> dataSource = [dataSourceClass new];
     self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
     self.mapperOperation.mappingOperationDataSource = dataSource;
@@ -437,7 +470,7 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         self.mapperOperation.metadata = self.mappingMetadata;
         
         // Configure a data source to defer execution of connection operations until mapping is complete
-        Class dataSourceClass = [RKRegisteredResponseMapperOperationDataSourceClasses objectForKey:[self class]] ?: [RKManagedObjectMappingOperationDataSource class];
+        Class dataSourceClass = RKRegisteredResponseMapperOperationDataSourceClasses[[self class]] ?: [RKManagedObjectMappingOperationDataSource class];
         RKManagedObjectMappingOperationDataSource *dataSource = [[dataSourceClass alloc] initWithManagedObjectContext:self.managedObjectContext
                                                                                                                 cache:self.managedObjectCache];
         dataSource.operationQueue = self.operationQueue;

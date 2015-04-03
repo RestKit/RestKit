@@ -43,7 +43,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
 
 @implementation RKOperationStateMachine
 
-- (id)initWithOperation:(NSOperation *)operation dispatchQueue:(dispatch_queue_t)dispatchQueue
+- (instancetype)initWithOperation:(NSOperation *)operation dispatchQueue:(dispatch_queue_t)dispatchQueue
 {
     if (! operation) [NSException raise:NSInvalidArgumentException format:@"Invalid argument: `operation` cannot be nil."];
     if (! dispatchQueue) [NSException raise:NSInvalidArgumentException format:@"Invalid argument: `dispatchQueue` cannot be nil."];
@@ -106,7 +106,7 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
     return self;
 }
 
-- (id)init
+- (instancetype)init
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"%@ Failed to call designated initializer. Invoke initWithOperation: instead.",
