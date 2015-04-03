@@ -30,7 +30,7 @@ PODS:
     - RestKit/Network
   - RKCLLocationValueTransformer (1.1.0):
     - RKValueTransformers (~> 1.1.0)
-  - RKValueTransformers (1.1.1)
+  - RKValueTransformers (1.1.2)
   - SOCKit (1.1)
   - Specta (0.2.1)
   - TransitionKit (2.1.1)
@@ -57,9 +57,9 @@ SPEC CHECKSUMS:
   OCMock: a6a7dc0e3997fb9f35d99f72528698ebf60d64f2
   RestKit: 2de92bacf59485ce361c60fd6c1547d93ece5631
   RKCLLocationValueTransformer: 2cf0ea0fb7cd4bc70c56834fb92abc717c66f982
-  RKValueTransformers: d016f1967ae67997e492520fd0f9c512ccf168ae
+  RKValueTransformers: 66ac5e4f077fdbe3496e792d89eeff4c3eb67701
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392
   Specta: 15a276a6343867b426d5ed135d5aa4d04123a573
   TransitionKit: 3a14b6acc7cf2d1dd3e454e24dbad1cfab9a1ef1
 
-COCOAPODS: 0.36.1
+COCOAPODS: 0.36.3
