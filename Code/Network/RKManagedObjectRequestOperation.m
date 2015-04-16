@@ -733,7 +733,10 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     if (! [fetchRequests count]) return YES;
     
     // Proceed with cleanup
-    NSSet *managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo) ?: [NSSet set];
+    __block NSSet *managedObjectsInMappingResult;
+    [self.privateContext performBlockAndWait:^{
+        managedObjectsInMappingResult = RKManagedObjectsFromMappingResultWithMappingInfo(mappingResult, self.mappingInfo) ?: [NSSet set];
+    }];
     NSSet *localObjects = [self localObjectsFromFetchRequests:fetchRequests matchingRequestURL:error];
     if (! localObjects) {
         RKLogError(@"Failed when attempting to fetch local candidate objects for orphan cleanup: %@", error ? *error : nil);
