@@ -581,6 +581,12 @@
 		54CDB45C17B408B100FAC285 /* RKStringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKStringTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54CDB45D17B408B100FAC285 /* RKStringTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */; };
 		54CDB45E17B408B100FAC285 /* RKStringTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */; };
+		5910B0B11AC9811900721876 /* hoarderWithCats_issue_2192.json in Resources */ = {isa = PBXBuildFile; fileRef = 5910B0B01AC9811900721876 /* hoarderWithCats_issue_2192.json */; };
+		5910B0B21AC9811900721876 /* hoarderWithCats_issue_2192.json in Resources */ = {isa = PBXBuildFile; fileRef = 5910B0B01AC9811900721876 /* hoarderWithCats_issue_2192.json */; };
+		5910B0B31AC9811900721876 /* hoarderWithCats_issue_2192.json in Resources */ = {isa = PBXBuildFile; fileRef = 5910B0B01AC9811900721876 /* hoarderWithCats_issue_2192.json */; };
+		5910B0BE1AC9A23E00721876 /* catsWithParent_issue_2194.json in Resources */ = {isa = PBXBuildFile; fileRef = 5910B0BD1AC9A23E00721876 /* catsWithParent_issue_2194.json */; };
+		5910B0BF1AC9A23E00721876 /* catsWithParent_issue_2194.json in Resources */ = {isa = PBXBuildFile; fileRef = 5910B0BD1AC9A23E00721876 /* catsWithParent_issue_2194.json */; };
+		5910B0C01AC9A23E00721876 /* catsWithParent_issue_2194.json in Resources */ = {isa = PBXBuildFile; fileRef = 5910B0BD1AC9A23E00721876 /* catsWithParent_issue_2194.json */; };
 		5C927E141608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5C927E151608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -970,6 +976,8 @@
 		3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty_human.json; sourceTree = "<group>"; };
 		54CDB45917B408B100FAC285 /* RKStringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKStringTokenizer.h; sourceTree = "<group>"; };
 		54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKStringTokenizer.m; sourceTree = "<group>"; };
+		5910B0B01AC9811900721876 /* hoarderWithCats_issue_2192.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hoarderWithCats_issue_2192.json; sourceTree = "<group>"; };
+		5910B0BD1AC9A23E00721876 /* catsWithParent_issue_2194.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = catsWithParent_issue_2194.json; sourceTree = "<group>"; };
 		5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilitiesTest.m; sourceTree = "<group>"; };
 		5CCC295515B7124A0045F0F5 /* RKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMacros.h; sourceTree = "<group>"; };
 		7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCaching.h; sourceTree = "<group>"; };
@@ -1380,6 +1388,7 @@
 		25160FD01456F2330060A5C5 /* JSON */ = {
 			isa = PBXGroup;
 			children = (
+				5910B0BC1AC9A23E00721876 /* cats */,
 				259D983B154F6C90008C90F5 /* benchmark_parents_and_children.json */,
 				252EFB2714DA0689004863C8 /* NakedEvents.json */,
 				25160FD11456F2330060A5C5 /* ArrayOfNestedDictionaries.json */,
@@ -1421,6 +1430,7 @@
 		25160FE01456F2330060A5C5 /* humans */ = {
 			isa = PBXGroup;
 			children = (
+				5910B0B01AC9811900721876 /* hoarderWithCats_issue_2192.json */,
 				25160FE11456F2330060A5C5 /* 1.json */,
 				25160FE21456F2330060A5C5 /* all.json */,
 				3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */,
@@ -1688,6 +1698,14 @@
 				25EC1ADA14F8022600C3CF3F /* RestKitTests-Info.plist */,
 			);
 			path = PLISTs;
+			sourceTree = "<group>";
+		};
+		5910B0BC1AC9A23E00721876 /* cats */ = {
+			isa = PBXGroup;
+			children = (
+				5910B0BD1AC9A23E00721876 /* catsWithParent_issue_2194.json */,
+			);
+			path = cats;
 			sourceTree = "<group>";
 		};
 		E4081DFC15FB89DF00364948 /* ManagedObjectCaching */ = {
@@ -2117,6 +2135,7 @@
 				2516106E1456F2330060A5C5 /* boy.json in Resources */,
 				251610701456F2330060A5C5 /* friends.json in Resources */,
 				251610721456F2330060A5C5 /* girl.json in Resources */,
+				5910B0BE1AC9A23E00721876 /* catsWithParent_issue_2194.json in Resources */,
 				251610741456F2330060A5C5 /* mixed.json in Resources */,
 				251610761456F2330060A5C5 /* DynamicKeys.json in Resources */,
 				251610781456F2330060A5C5 /* DynamicKeysWithNestedRelationship.json in Resources */,
@@ -2141,6 +2160,7 @@
 				73D3907414CA1AE00093E3D6 /* parent.json in Resources */,
 				73D3907614CA1AE60093E3D6 /* child.json in Resources */,
 				73D3907914CA1DD40093E3D6 /* channels.xml in Resources */,
+				5910B0B11AC9811900721876 /* hoarderWithCats_issue_2192.json in Resources */,
 				252EFB2814DA0689004863C8 /* NakedEvents.json in Resources */,
 				25CAAA9415254E7800CAE5D7 /* ArrayOfHumans.json in Resources */,
 				25119FB6154A34B400C6BC58 /* parents_and_children.json in Resources */,
@@ -2152,6 +2172,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5910B0BF1AC9A23E00721876 /* catsWithParent_issue_2194.json in Resources */,
+				5910B0B21AC9811900721876 /* hoarderWithCats_issue_2192.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2176,10 +2198,12 @@
 				251610811456F2330060A5C5 /* Foursquare.json in Resources */,
 				251610831456F2330060A5C5 /* 1.json in Resources */,
 				251610851456F2330060A5C5 /* all.json in Resources */,
+				5910B0B31AC9811900721876 /* hoarderWithCats_issue_2192.json in Resources */,
 				251610871456F2330060A5C5 /* with_to_one_relationship.json in Resources */,
 				251610891456F2330060A5C5 /* nested_user.json in Resources */,
 				2516108B1456F2330060A5C5 /* RailsUser.json in Resources */,
 				2516108D1456F2330060A5C5 /* SameKeyDifferentTargetClasses.json in Resources */,
+				5910B0C01AC9A23E00721876 /* catsWithParent_issue_2194.json in Resources */,
 				2516108F1456F2330060A5C5 /* user.json in Resources */,
 				251610911456F2330060A5C5 /* users.json in Resources */,
 				251610931456F2330060A5C5 /* .gitignore in Resources */,
