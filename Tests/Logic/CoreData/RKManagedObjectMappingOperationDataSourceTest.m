@@ -580,6 +580,42 @@
     expect(object).to.equal(human1);
 }
 
+- (void)testEntityIdentifierWithPredicateBlock
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    managedObjectStore.managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    mapping.identificationAttributes = @[ @"railsID" ];
+    mapping.identificationPredicateBlock = ^(NSDictionary *representation) {
+        return [NSPredicate predicateWithFormat:@"age + 94 < %@", representation[@"id"]];
+    };
+    [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    
+    // Create two humans matching the identifier, but differ in matching the
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    human1.name = @"Colin";
+    human1.railsID = @123;
+    human1.age = @28;
+    
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    human2.name = @"Blake";
+    human2.railsID = @123;
+    human2.age = @30;
+    [managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    
+    NSError *error = nil;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    NSUInteger count = [managedObjectStore.persistentStoreManagedObjectContext countForFetchRequest:fetchRequest error:&error];
+    expect(count).to.beGreaterThan(0);
+    
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                      cache:managedObjectStore.managedObjectCache];
+    NSDictionary *data = @{@"id": @123};
+    id object = [dataSource mappingOperation:nil targetObjectForRepresentation:data withMapping:mapping inRelationship:nil];
+    expect(object).notTo.beNil();
+    expect(object).to.equal(human1);
+}
+
 - (void)testMappingInPrivateQueue
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
