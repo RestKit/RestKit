@@ -165,8 +165,8 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
             return nil;
         }
         __block NSSet *managedObjects = [self.managedObjectCache managedObjectsWithEntity:[connection.relationship destinationEntity]
-                                                                  attributeValues:attributeValues
-                                                           inManagedObjectContext:self.managedObjectContext];
+                                                                          attributeValues:attributeValues
+                                                                   inManagedObjectContext:self.managedObjectContext];
 
         [self.managedObjectContext performBlockAndWait:^{
             if (connection.destinationPredicate) managedObjects = [managedObjects filteredSetUsingPredicate:connection.destinationPredicate];
