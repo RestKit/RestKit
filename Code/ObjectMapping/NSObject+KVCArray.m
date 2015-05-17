@@ -12,7 +12,7 @@
 
 - (id)valueForIndexedKeyPath:(NSString *)keyPath
 {
-    NSRegularExpression *testExpression = [NSRegularExpression regularExpressionWithPattern: @"\\[(0-9)+\\]" options:0 error:nil];
+    NSRegularExpression *testExpression = [NSRegularExpression regularExpressionWithPattern: @"\\[(\\d+)\\]" options:0 error:nil];
     
     NSArray *matches = [testExpression matchesInString:keyPath
                                                options:0
@@ -28,7 +28,7 @@
     int i = 0;
     
     for (NSTextCheckingResult *result in matches) {
-        NSRange range = result.range;
+        NSRange range = [result rangeAtIndex:1];
         
         NSString *keyPathPart = [keyPath substringWithRange:NSMakeRange(offset, range.location - 1 - offset)];
         
