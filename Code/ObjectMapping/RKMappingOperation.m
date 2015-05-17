@@ -32,6 +32,7 @@
 #import "RKObjectUtilities.h"
 #import "RKValueTransformers.h"
 #import "RKDictionaryUtilities.h"
+#import "NSObject+KVCArray.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -760,7 +761,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             continue;
         }
 
-        id value = (sourceKeyPath == nil) ? [sourceObject valueForKey:@"self"] : [sourceObject valueForKeyPath:sourceKeyPath];
+        id value = (sourceKeyPath == nil) ? [sourceObject valueForKey:@"self"] : [sourceObject valueForIndexedKeyPath:sourceKeyPath];
         if ([self applyAttributeMapping:attributeMapping withValue:value]) {
             appliedMappings = YES;
         } else {
