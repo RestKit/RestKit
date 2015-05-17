@@ -577,6 +577,8 @@
 		25FBB853159272DD00955D27 /* RKRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FBB850159272DD00955D27 /* RKRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FBB854159272DD00955D27 /* RKRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FBB851159272DD00955D27 /* RKRouter.m */; };
 		25FBB855159272DD00955D27 /* RKRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FBB851159272DD00955D27 /* RKRouter.m */; };
+		4F86A2711B08E10B00AB20BC /* NSObject+KVCArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F86A26F1B08E10B00AB20BC /* NSObject+KVCArray.h */; };
+		4F86A2721B08E10B00AB20BC /* NSObject+KVCArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F86A2701B08E10B00AB20BC /* NSObject+KVCArray.m */; };
 		54CDB45B17B408B100FAC285 /* RKStringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKStringTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54CDB45C17B408B100FAC285 /* RKStringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKStringTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54CDB45D17B408B100FAC285 /* RKStringTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */; };
@@ -974,6 +976,8 @@
 		25FBB851159272DD00955D27 /* RKRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouter.m; sourceTree = "<group>"; };
 		3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = has_many_with_to_one_relationship.json; sourceTree = "<group>"; };
 		3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty_human.json; sourceTree = "<group>"; };
+		4F86A26F1B08E10B00AB20BC /* NSObject+KVCArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+KVCArray.h"; sourceTree = "<group>"; };
+		4F86A2701B08E10B00AB20BC /* NSObject+KVCArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+KVCArray.m"; sourceTree = "<group>"; };
 		54CDB45917B408B100FAC285 /* RKStringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKStringTokenizer.h; sourceTree = "<group>"; };
 		54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKStringTokenizer.m; sourceTree = "<group>"; };
 		5910B0B01AC9811900721876 /* hoarderWithCats_issue_2192.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hoarderWithCats_issue_2192.json; sourceTree = "<group>"; };
@@ -1236,6 +1240,8 @@
 				2598888C15EC169E006CAE95 /* RKPropertyMapping.m */,
 				25A226D41618A57500952D72 /* RKObjectUtilities.h */,
 				25A226D51618A57500952D72 /* RKObjectUtilities.m */,
+				4F86A26F1B08E10B00AB20BC /* NSObject+KVCArray.h */,
+				4F86A2701B08E10B00AB20BC /* NSObject+KVCArray.m */,
 			);
 			path = ObjectMapping;
 			sourceTree = "<group>";
@@ -1884,6 +1890,7 @@
 				259B96F91604CCCC0000C250 /* AFNetworking.h in Headers */,
 				25F53F391606269400A093BE /* RKObjectRequestOperationSubclass.h in Headers */,
 				25A226D61618A57500952D72 /* RKObjectUtilities.h in Headers */,
+				4F86A2711B08E10B00AB20BC /* NSObject+KVCArray.h in Headers */,
 				C0F11CE3190883380054AEA0 /* RKPathMatcher.h in Headers */,
 				252CCE6617E08E2D00B7F0BF /* RKValueTransformers.h in Headers */,
 				2507C327161BD5C700EA71FF /* RKTestHelpers.h in Headers */,
@@ -2334,6 +2341,7 @@
 				25104F2115C30CD900829135 /* RKSearchWord.m in Sources */,
 				25104F2B15C30D1700829135 /* RKManagedObjectStore+RKSearchAdditions.m in Sources */,
 				25104F3115C30E7400829135 /* RKSearchIndexer.m in Sources */,
+				4F86A2721B08E10B00AB20BC /* NSObject+KVCArray.m in Sources */,
 				25104F3715C30EF500829135 /* RKSearchPredicate.m in Sources */,
 				25104F3D15C30F2100829135 /* RKSearchWordEntity.m in Sources */,
 				25F53AE415E7B612008B54E6 /* RKHTTPUtilities.m in Sources */,

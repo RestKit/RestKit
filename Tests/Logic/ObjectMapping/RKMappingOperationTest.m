@@ -570,4 +570,39 @@
     assertThat(newObject.url, is(equalTo([NSURL URLWithString:@"http://www.restkit.org/test"])));
 }
 
+- (void)testSourceKeyWithKVCArraySupport
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"foo[1].bar[0].url": @"url"
+                                                  }];
+    
+    TestMappable *object = [[TestMappable alloc] init];
+    
+    id data = @{@"foo": @[
+                            @{
+                                @"bar": @[
+                                        @{
+                                            @"url": @"http://microsoft.com"
+                                            }
+                                        ]
+                            },
+                            @{
+                                @"bar": @[
+                                        @{
+                                            @"url": @"http://google.com"
+                                         }
+                                     ]
+                            }
+                         ]
+              };
+    
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
+    operation.dataSource = dataSource;
+    [operation start];
+    
+    assertThat(object.url, is(equalTo([NSURL URLWithString:@"http://google.com"])));
+}
+
 @end
