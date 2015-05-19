@@ -623,6 +623,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 - (NSData *)rkData
 {
+#if TARGET_OS_IPHONE
     BOOL isSystemVersion8OrLater = [NSProcessInfo instancesRespondToSelector:@selector(operatingSystemVersion)];
     if (isSystemVersion8OrLater) {
         return self.data;
@@ -645,6 +646,9 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         
         return result;
     }
+#else
+    return self.data;
+#endif
 }
 
 @end
