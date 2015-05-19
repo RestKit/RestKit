@@ -623,6 +623,11 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 - (NSData *)rkData
 {
+    BOOL isSystemVersion8OrLater = [NSProcessInfo instancesRespondToSelector:@selector(operatingSystemVersion)];
+    if (isSystemVersion8OrLater) {
+        return self.data;
+    }
+    
     @synchronized(self) {
         NSData *result;
         CFIndex count;
