@@ -6,7 +6,7 @@ RestKit ships with a testing infrastructure built around OCUnit and a Ruby testi
 1. Install the Xcode **Command Line Tools** by selecting the **Xcode** > **Preferences…** menu and then navigating to the **Downloads** tab, then clicking the **Install** button next to the appropriate entry in the table.
 1. After installation completes, ensure your command line Xcode installation is configured by executing `xcode-select -print-path`. If no path is returned, configure xcode-select by executing `xcode-select -switch /Applications/Xcode.app/Contents/Developer`.
 1. Check out the Git submodules: `git submodule update --init --recursive`
-1. Ensure that you have **Ruby 2.0.0** available. We recommend installation via [rbenv](https://github.com/sstephenson/rbenv), [RVM](http://beginrescueend.com/rvm/install/) or [Homebrew](http://mxcl.github.com/homebrew/).
+1. Ensure that you have **Ruby 2.0.0** available. We recommend installation via [rbenv](https://github.com/sstephenson/rbenv), [RVM](https://rvm.io/) or [Homebrew](http://brew.sh/).
 1. Install the Ruby Bundler Gem (if necessary): `gem install bundler`
 1. Install the other required Gems via Bundler: `bundle`
 1. Install the required CocoaPods: `pod install`
@@ -66,13 +66,13 @@ configured and there are integration tests that test the full request/response l
 1. Tests are implemented in Objective-C and run inside the Simulator or on the Device.
 1. Test files live in sub-directories under Tests/ appropriate to the layer the code under test belongs to
 1. Tests begin with "test" and should be camel-cased descriptive. i.e. testShouldConsiderA200ResponseSuccessful
-1. Expectations are provided using [Expecta](https://github.com/petejkim/expecta) and [OCHamcrest](http://jonreid.github.com/OCHamcrest/). Expectations are generally of th form:
+1. Expectations are provided using [Expecta](https://github.com/specta/expecta) and [OCHamcrest](https://github.com/hamcrest/OCHamcrest). Expectations are generally of th form:
         expect(someObject).to.equal(@"some value"); // Expecta
         assertThat([someObject someMethod], is(equalTo(@"some value"))); // OCHamcrest
         
     There is a corresponding `notTo` and `isNot` method available as well.
 1. The RKTestEnvironment.h header includes a number of helpers for initializing and configuring a clean testing environment.
-1. OCMock is available for mock objects support. See [http://www.mulle-kybernetik.com/software/OCMock/](http://www.mulle-kybernetik.com/software/OCMock/) for details.
+1. OCMock is available for mock objects support. See [http://ocmock.org/](http://ocmock.org/) for details.
 1. RestKit is available for 32bit (iOS) and 64bit (OS X) platforms. This introduces some complexity when working with integer data types as NSInteger
 and NSUInteger are int's on 32bit and long's on 64bit. Cocoa and OC Hamcrest provide helper methods for dealing with these differences. Rather than using the **Int**
 flavor of methods (i.e. `[NSNumber numberWithInt:3]`) use the **Integer** flavor (i.e. `[NSNumber numberWithInteger:]`). This will account for the type differences without
@@ -125,12 +125,14 @@ That's really all there is to it. Consult the existing test code in Tests/ for r
 Continuous Integration
 -------------
 
+**Note:** RestKit currently uses [Travis CI](https://travis-ci.org/RestKit/RestKit)
+
 The RestKit team keeps the master, development, and active branches of RestKit under the watchful eye of the [Jenkins Continuous Integration Server](http://jenkins-ci.org/). There is a fair amount of complexity involved in getting iOS projects running under Jenkins, so to make things as easy as possible all Jenkins configuration has been collected into a single script within the source code. Currently use of the Jenkins build **requires** the use of RVM for managing the Ruby environment.
 
 To configure Jenkins to build RestKit, do the following:
 
 1. Ensure the RestKit test suite executes cleanly on the CI host using the above reference.
-1. Install Jenkins (again, we recommend [Homebrew](http://mxcl.github.com/)): `brew install jenkins`
+1. Install Jenkins (again, we recommend [Homebrew](https://github.com/Homebrew/homebrew)): `brew install jenkins`
 2. Install Jenkins as a system service. Instructions are printed post installation via Homebrew
 3. Configure your CI user's OS X account to automatically manage the RVM environment. Create an `~/.rvmrc` file and populate it with the following:
 ```bash

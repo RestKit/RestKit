@@ -38,7 +38,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 - First time with RestKit? Read the ["Overview"](#overview) section below and then check out the ["Getting Acquainted with RestKit"](https://github.com/RestKit/RKGist/blob/master/TUTORIAL.md) tutorial and [Object Mapping Reference](https://github.com/RestKit/RestKit/wiki/Object-mapping) documents in the wiki to jump right in.
 - Upgrading from RestKit 0.9.x or 0.10.x? Read the ["Upgrading to RestKit 0.20.x"](https://github.com/RestKit/RestKit/wiki/Upgrading-from-v0.10.x-to-v0.20.0) guide in the wiki
 - Adding RestKit to an existing [AFNetworking](https://github.com/AFNetworking/AFNetworking) application? Read the [AFNetworking Integration](https://github.com/RestKit/RestKit/wiki/AFNetworking-Integration) document to learn details about how the frameworks fit together.
-- Review the [source code API documentation](http://restkit.org/api/latest) for a detailed look at the classes and API's in RestKit. A great place to start is [RKObjectManager](http://restkit.org/api/latest/Classes/RKObjectManager.html).
+- Review the [source code API documentation](http://cocoadocs.org/docsets/RestKit/) for a detailed look at the classes and API's in RestKit. A great place to start is [RKObjectManager](http://restkit.org/api/latest/Classes/RKObjectManager.html).
 - Still need some help? Ask questions on [Stack Overflow](http://stackoverflow.com/questions/tagged/restkit) or the [mailing list](http://groups.google.com/group/restkit), ping us on [Twitter](http://twitter.com/RestKit) or chat with us on [IRC](https://kiwiirc.com/client/irc.freenode.net/?nick=rkuser|?&theme=basic#RestKit).
 
 ## Overview
@@ -60,7 +60,7 @@ Object mapping is a deep topic and is explored in exhaustive detail in the [Obje
 RestKit is broken into several modules that cleanly separate the mapping engine from the HTTP and Core Data integrations to provide maximum flexibility. Key classes in each module are highlighted below and each module is hyperlinked to the README.md contained within the source code.
 
 <table>
-  <tr><th colspan="2" style="text-align:center;"><a href="Code/ObjectMapping/README.md">Object Mapping</a></th></tr>
+  <tr><th colspan="2" style="text-align:center;"><a href="https://github.com/RestKit/RestKit/wiki/Object-mapping">Object Mapping</a></th></tr>
   <tr>
     <td><a href="http://restkit.org/api/latest/Classes/RKObjectMapping.html">RKObjectMapping</a></td>
     <td>Encapsulates configuration for transforming object representations as expressed by key-value coding keypaths.</td>
@@ -534,7 +534,7 @@ Several third-party open source libraries are used within RestKit, including:
 
 1. [AFNetworking](https://github.com/AFNetworking/AFNetworking) - Networking Support
 2. [LibComponentLogging](http://0xc0.de/LibComponentLogging) - Logging Support
-3. [SOCKit](https://github.com/jverkoey/sockit) - String <-> Object Coding
+3. [SOCKit](https://github.com/NimbusKit/sockit) - String <-> Object Coding
 4. [iso8601parser](http://boredzo.org/iso8601parser/) - Support for parsing and generating ISO-8601 dates
 
 The following Cocoa frameworks must be linked into the application target for proper compilation:
@@ -590,11 +590,11 @@ $ touch Podfile
 $ edit Podfile
 platform :ios, '5.0'
 # Or platform :osx, '10.7'
-pod 'RestKit', '~> 0.20.0'
+pod 'RestKit', '~> 0.24.0'
 
 # Testing and Search are optional components
-pod 'RestKit/Testing', '~> 0.20.0'
-pod 'RestKit/Search',  '~> 0.20.0'
+pod 'RestKit/Testing', '~> 0.24.0'
+pod 'RestKit/Search',  '~> 0.24.0'
 ```
 
 Install into your project:
