@@ -22,11 +22,7 @@
 #import "RKPaginator.h"
 #import "RKMacros.h"
 
-#if __has_include(<AFNetworking/AFNetworking.h>)
-#   import <AFNetworking/AFNetworking.h>
-#else
-#   import "AFNetworking.h"
-#endif
+#import <AFNetworking/AFNetworking.h>
 
 #ifdef _COREDATADEFINES_H
 #   if __has_include("RKCoreData.h")

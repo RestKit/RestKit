@@ -21,11 +21,7 @@
 #import "RKMacros.h"
 #import "RKMapping.h"
 
-#if __has_include(<RKValueTransformers/RKValueTransformers.h>)
-#   import <RKValueTransformers/RKValueTransformers.h>
-#else
-#   import "RKValueTransformers.h"
-#endif
+#import <RKValueTransformers/RKValueTransformers.h>
 
 @class RKPropertyMapping, RKAttributeMapping, RKRelationshipMapping;
 @protocol RKValueTransforming;
