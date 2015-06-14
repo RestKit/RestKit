@@ -165,6 +165,7 @@ end
 task :lint do
   title 'Linting pod'
   run('bundle exec pod lib lint')
+  run('bundle exec pod lib lint --use-libraries')
 end
 
 desc 'Runs the CI suite'
