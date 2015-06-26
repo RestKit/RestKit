@@ -5,6 +5,11 @@
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
 
+// Fix for compilation on iOS 6 where this is not defined.
+#if !defined NS_DESIGNATED_INITIALIZER
+#define NS_DESIGNATED_INITIALIZER
+#endif
+
     #import <Availability.h>
     #if __IPHONE_OS_VERSION_MIN_REQUIRED
         #import <SystemConfiguration/SystemConfiguration.h>
