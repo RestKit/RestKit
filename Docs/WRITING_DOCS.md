@@ -1,7 +1,7 @@
 Writing Documentation
 =====================
 
-RestKit utilizes the excellent [Appledoc](http://www.gentlebytes.com/home/appledocapp/) utility from [Gentle Bytes](http://www.gentlebytes.com/). 
+RestKit utilizes the excellent [Appledoc](http://www.gentlebytes.com/appledoc/) utility from [Gentle Bytes](http://www.gentlebytes.com/). 
 Appledoc provides a commandline utility for parsing and generating documentation from Objective-C code in HTML and DocSet format. This HTML can be
 published to the Web and installed directly within Xcode. 
 
@@ -21,7 +21,7 @@ The tasks available for working with Appledoc are:
 
 ## Writing Documentation
 
-Writing documentation in Appledoc markup is simple. There is extensive documentation available on the [Appledoc project page](http://tomaz.github.com/appledoc/comments.html), but 
+Writing documentation in Appledoc markup is simple. There is extensive documentation available on the [Appledoc project page](https://github.com/tomaz/appledoc), but 
 the guidelines below should be sufficient for basic authoring tasks. For clarity, let's consider the following example class:    
     
     /**
@@ -107,6 +107,6 @@ If you want to contribute documentation, the process is simple:
 1. Edit the headers in Code/ and regenerate the docs via `rake docs`
 1. Repeat the editing and reload cycle until your are happy.
 1. Commit the code and push to Github
-1. Submit a Pull Request to the RestKit repository on Github at: https://github.com/RestKit/RestKit/pull/new/master
+1. Submit a Pull Request to the RestKit repository on Github at: https://github.com/RestKit/RestKit/compare
 
 You may want to coordinate your efforts via the mailing list to ensure nobody else is working on documentation in the same place.
