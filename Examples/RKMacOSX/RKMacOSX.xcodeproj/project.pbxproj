@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		250DF24F14C67F560001DEFA /* RestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250DF24B14C67E9A0001DEFA /* RestKit.framework */; };
+		1CE1DD3E5F2FE7DA177F56EF /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A28BE5513E3B77C342497A9E /* libPods.a */; };
 		25D63919135184CE000879B1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D63918135184CE000879B1 /* Cocoa.framework */; };
 		25D63923135184CE000879B1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 25D63921135184CE000879B1 /* InfoPlist.strings */; };
 		25D63926135184CE000879B1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25D63925135184CE000879B1 /* main.m */; };
@@ -18,44 +18,6 @@
 		25D639811351858A000879B1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D639801351858A000879B1 /* AppKit.framework */; };
 		25D63983135185B6000879B1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D63982135185B6000879B1 /* SystemConfiguration.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		250DF24614C67E9A0001DEFA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25D63938135184F0000879B1 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160D1614564E810060A5C5;
-			remoteInfo = RestKit;
-		};
-		250DF24814C67E9A0001DEFA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25D63938135184F0000879B1 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160D2614564E820060A5C5;
-			remoteInfo = RestKitTests;
-		};
-		250DF24A14C67E9A0001DEFA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25D63938135184F0000879B1 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160E62145651060060A5C5;
-			remoteInfo = RestKitFramework;
-		};
-		250DF24C14C67E9A0001DEFA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25D63938135184F0000879B1 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160E78145651060060A5C5;
-			remoteInfo = RestKitFrameworkTests;
-		};
-		250DF25014C67F630001DEFA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25D63938135184F0000879B1 /* RestKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 25160E61145651060060A5C5;
-			remoteInfo = RestKitFramework;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		25D63914135184CE000879B1 /* RKMacOSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RKMacOSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,10 +33,12 @@
 		25D6392A135184CE000879B1 /* RKMacOSXAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKMacOSXAppDelegate.h; sourceTree = "<group>"; };
 		25D6392B135184CE000879B1 /* RKMacOSXAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKMacOSXAppDelegate.m; sourceTree = "<group>"; };
 		25D6392E135184CF000879B1 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		25D63938135184F0000879B1 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../RestKit.xcodeproj; sourceTree = "<group>"; };
 		25D6397E13518574000879B1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		25D639801351858A000879B1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		25D63982135185B6000879B1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		663395048EDD9B445E77BF72 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		A28BE5513E3B77C342497A9E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDF0146ADF834F0317B19719 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,11 +46,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				250DF24F14C67F560001DEFA /* RestKit.framework in Frameworks */,
 				25D63983135185B6000879B1 /* SystemConfiguration.framework in Frameworks */,
 				25D639811351858A000879B1 /* AppKit.framework in Frameworks */,
 				25D6397F13518574000879B1 /* CoreData.framework in Frameworks */,
 				25D63919135184CE000879B1 /* Cocoa.framework in Frameworks */,
+				1CE1DD3E5F2FE7DA177F56EF /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,9 +61,9 @@
 			isa = PBXGroup;
 			children = (
 				25D6391E135184CE000879B1 /* RKMacOSX */,
-				25D639841351868E000879B1 /* RestKit */,
 				25D63917135184CE000879B1 /* Frameworks */,
 				25D63915135184CE000879B1 /* Products */,
+				F73078E151260A102FEB82F9 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +83,7 @@
 				25D6397E13518574000879B1 /* CoreData.framework */,
 				25D63918135184CE000879B1 /* Cocoa.framework */,
 				25D6391A135184CE000879B1 /* Other Frameworks */,
+				A28BE5513E3B77C342497A9E /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -156,23 +121,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		25D63939135184F0000879B1 /* Products */ = {
+		F73078E151260A102FEB82F9 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				250DF24714C67E9A0001DEFA /* libRestKit.a */,
-				250DF24914C67E9A0001DEFA /* RestKitTests.xctest */,
-				250DF24B14C67E9A0001DEFA /* RestKit.framework */,
-				250DF24D14C67E9A0001DEFA /* RestKitFrameworkTests.xctest */,
+				663395048EDD9B445E77BF72 /* Pods.debug.xcconfig */,
+				CDF0146ADF834F0317B19719 /* Pods.release.xcconfig */,
 			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		25D639841351868E000879B1 /* RestKit */ = {
-			isa = PBXGroup;
-			children = (
-				25D63938135184F0000879B1 /* RestKit.xcodeproj */,
-			);
-			name = RestKit;
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,14 +137,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 25D63935135184CF000879B1 /* Build configuration list for PBXNativeTarget "RKMacOSX" */;
 			buildPhases = (
+				0E7867D148FBAD64B7DE1EB6 /* Check Pods Manifest.lock */,
 				25D63910135184CE000879B1 /* Sources */,
 				25D63911135184CE000879B1 /* Frameworks */,
 				25D63912135184CE000879B1 /* Resources */,
+				E02916F51F1155DFDAB83400 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				250DF25114C67F630001DEFA /* PBXTargetDependency */,
 			);
 			name = RKMacOSX;
 			productName = RKMacOSX;
@@ -202,7 +158,7 @@
 		25D6390B135184CE000879B1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = 25D6390E135184CE000879B1 /* Build configuration list for PBXProject "RKMacOSX" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -214,49 +170,12 @@
 			mainGroup = 25D63909135184CE000879B1;
 			productRefGroup = 25D63915135184CE000879B1 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 25D63939135184F0000879B1 /* Products */;
-					ProjectRef = 25D63938135184F0000879B1 /* RestKit.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				25D63913135184CE000879B1 /* RKMacOSX */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		250DF24714C67E9A0001DEFA /* libRestKit.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRestKit.a;
-			remoteRef = 250DF24614C67E9A0001DEFA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250DF24914C67E9A0001DEFA /* RestKitTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitTests.xctest;
-			remoteRef = 250DF24814C67E9A0001DEFA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250DF24B14C67E9A0001DEFA /* RestKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RestKit.framework;
-			remoteRef = 250DF24A14C67E9A0001DEFA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250DF24D14C67E9A0001DEFA /* RestKitFrameworkTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitFrameworkTests.xctest;
-			remoteRef = 250DF24C14C67E9A0001DEFA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		25D63912135184CE000879B1 /* Resources */ = {
@@ -271,6 +190,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0E7867D148FBAD64B7DE1EB6 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		E02916F51F1155DFDAB83400 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		25D63910135184CE000879B1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -282,14 +234,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		250DF25114C67F630001DEFA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RestKitFramework;
-			targetProxy = 250DF25014C67F630001DEFA /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		25D63921135184CE000879B1 /* InfoPlist.strings */ = {
@@ -330,7 +274,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -360,6 +306,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -375,6 +322,7 @@
 		};
 		25D63936135184CF000879B1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 663395048EDD9B445E77BF72 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -384,14 +332,9 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKMacOSX/RKMacOSX-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "RKMacOSX/RKMacOSX-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.twotoasters.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -399,6 +342,7 @@
 		};
 		25D63937135184CF000879B1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CDF0146ADF834F0317B19719 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -408,14 +352,9 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKMacOSX/RKMacOSX-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "RKMacOSX/RKMacOSX-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.twotoasters.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

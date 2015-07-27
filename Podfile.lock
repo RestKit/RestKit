@@ -52,7 +52,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   RestKit:
-    :path: "."
+    :path: .
 
 SPEC CHECKSUMS:
   AFNetworking: cf8e418e16f0c9c7e5c3150d019a3c679d015018
@@ -60,9 +60,9 @@ SPEC CHECKSUMS:
   ISO8601DateFormatterValueTransformer: 3ac3a721381697cab4e792d8049ce2f2e9ad3036
   OCHamcrest: e19857683e4eefab64b878668eac04c2f4567118
   OCMock: a6a7dc0e3997fb9f35d99f72528698ebf60d64f2
-  RestKit: 1987b5efef289c6b27bd980714d6ca48d3871b78
+  RestKit: ff2e08e9e07a646e086af3f5ef3cd186c52646c6
   RKCLLocationValueTransformer: 2cf0ea0fb7cd4bc70c56834fb92abc717c66f982
-  RKValueTransformers: d016f1967ae67997e492520fd0f9c512ccf168ae
+  RKValueTransformers: 66ac5e4f077fdbe3496e792d89eeff4c3eb67701
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392
   Specta: 15a276a6343867b426d5ed135d5aa4d04123a573
   TransitionKit: 3a14b6acc7cf2d1dd3e454e24dbad1cfab9a1ef1
