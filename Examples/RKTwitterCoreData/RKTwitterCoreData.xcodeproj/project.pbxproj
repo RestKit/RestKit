@@ -12,9 +12,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		25014071153706FD004E0466 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA6CF147D90C50047D347 /* Security.framework */; };
-		25014085153707CB004E0466 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA6C6147D90A50047D347 /* libRestKit.a */; };
 		25014086153707E2004E0466 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD39C14D14EEED8700E84874 /* QuartzCore.framework */; };
-		250CA6CE147D90BA0047D347 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA6C6147D90A50047D347 /* libRestKit.a */; };
 		250CA6D0147D90C50047D347 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA6CF147D90C50047D347 /* Security.framework */; };
 		252E157D16397DCA000B729E /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2536AF3B16397A0200AD803D /* MainStoryboard.storyboard */; };
 		2536AF3C16397A0200AD803D /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2536AF3B16397A0200AD803D /* MainStoryboard.storyboard */; };
@@ -55,53 +53,12 @@
 		3FB46641131D78A400E37C51 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FB46640131D78A400E37C51 /* libxml2.dylib */; };
 		8452D3F9128244D90069F4A9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3F8128244D90069F4A9 /* CFNetwork.framework */; };
 		8452D3FD128244E60069F4A9 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */; };
+		91E489421B66047A004B5AB5 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0702A131DA8B31559EADB35 /* Pods.framework */; };
+		91E489431B6604A9004B5AB5 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FB46640131D78A400E37C51 /* libxml2.dylib */; };
+		91E489461B660547004B5AB5 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 259D0FC318076E40007C66D6 /* Default-568h@2x.png */; };
+		A4AAAC70510CB014ED4378BD /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0702A131DA8B31559EADB35 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CD39C14E14EEED8700E84874 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD39C14D14EEED8700E84874 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		250CA6C5147D90A50047D347 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160D1614564E810060A5C5;
-			remoteInfo = RestKit;
-		};
-		250CA6C7147D90A50047D347 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160D2614564E820060A5C5;
-			remoteInfo = RestKitTests;
-		};
-		250CA6C9147D90A50047D347 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160E62145651060060A5C5;
-			remoteInfo = RestKitFramework;
-		};
-		250CA6CB147D90A50047D347 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160E78145651060060A5C5;
-			remoteInfo = RestKitFrameworkTests;
-		};
-		25F2A1771322D59400A33DE4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 25160D1514564E810060A5C5;
-			remoteInfo = RestKit;
-		};
-		3F3CE2E3125B93EB0083FDCB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 25160D1514564E810060A5C5;
-			remoteInfo = RestKit;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -111,12 +68,11 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		250CA6CF147D90C50047D347 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2536AF3B16397A0200AD803D /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
-		2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../RestKit.xcodeproj; sourceTree = SOURCE_ROOT; };
 		2538E812123419EC00ACB5D7 /* RKTweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTweet.h; sourceTree = "<group>"; };
 		2538E813123419EC00ACB5D7 /* RKTweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTweet.m; sourceTree = "<group>"; };
 		2538E864123424F000ACB5D7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2538E8661234250100ACB5D7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		259D0FC318076E40007C66D6 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		259D0FC318076E40007C66D6 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		25F2A1961322D59400A33DE4 /* Generate Seed Database.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Generate Seed Database.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25F2A1981322D93500A33DE4 /* restkit.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = restkit.json; sourceTree = SOURCE_ROOT; };
 		25F2A19A1322DCDC00A33DE4 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = users.json; path = ../users.json; sourceTree = "<group>"; };
@@ -134,9 +90,12 @@
 		3F3CE40D125B9B450083FDCB /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		3F94E0C6125BA8C0001E8585 /* RKTwitterCoreData.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = RKTwitterCoreData.xcdatamodel; sourceTree = "<group>"; };
 		3FB46640131D78A400E37C51 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		4C54AB4C3537B4FFC4CDAA11 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		76894C65C72E67BEB1D13573 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		8452D3F8128244D90069F4A9 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* RKTwitter-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RKTwitter-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		A0702A131DA8B31559EADB35 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD39C14D14EEED8700E84874 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -147,7 +106,6 @@
 			files = (
 				CD39C14E14EEED8700E84874 /* QuartzCore.framework in Frameworks */,
 				250CA6D0147D90C50047D347 /* Security.framework in Frameworks */,
-				250CA6CE147D90BA0047D347 /* libRestKit.a in Frameworks */,
 				3FB46641131D78A400E37C51 /* libxml2.dylib in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -156,6 +114,7 @@
 				2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */,
 				8452D3F9128244D90069F4A9 /* CFNetwork.framework in Frameworks */,
 				8452D3FD128244E60069F4A9 /* MobileCoreServices.framework in Frameworks */,
+				A4AAAC70510CB014ED4378BD /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,8 +123,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				25014086153707E2004E0466 /* QuartzCore.framework in Frameworks */,
-				25014085153707CB004E0466 /* libRestKit.a in Frameworks */,
 				25014071153706FD004E0466 /* Security.framework in Frameworks */,
+				91E489431B6604A9004B5AB5 /* libxml2.dylib in Frameworks */,
 				25F2A1871322D59400A33DE4 /* Foundation.framework in Frameworks */,
 				25F2A1881322D59400A33DE4 /* UIKit.framework in Frameworks */,
 				25F2A1891322D59400A33DE4 /* CoreGraphics.framework in Frameworks */,
@@ -173,6 +132,7 @@
 				25F2A18B1322D59400A33DE4 /* SystemConfiguration.framework in Frameworks */,
 				25F2A1911322D59400A33DE4 /* CFNetwork.framework in Frameworks */,
 				25F2A1921322D59400A33DE4 /* MobileCoreServices.framework in Frameworks */,
+				91E489421B66047A004B5AB5 /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,27 +161,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2538E800123417E500ACB5D7 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				250CA6C6147D90A50047D347 /* libRestKit.a */,
-				250CA6C8147D90A50047D347 /* RestKitTests.octest */,
-				250CA6CA147D90A50047D347 /* RestKit.framework */,
-				250CA6CC147D90A50047D347 /* RestKitFrameworkTests.octest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				259D0FC318076E40007C66D6 /* Default-568h@2x.png */,
-				2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				753DD8BB8B8DB90C68C1122C /* Pods */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -238,6 +186,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				259D0FC318076E40007C66D6 /* Default-568h@2x.png */,
 				25F2A2D813240CEC00A33DE4 /* RKSeedDatabase.sqlite */,
 				25F2A19A1322DCDC00A33DE4 /* users.json */,
 				25F2A1981322D93500A33DE4 /* restkit.json */,
@@ -267,8 +216,18 @@
 				8452D3F8128244D90069F4A9 /* CFNetwork.framework */,
 				8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */,
 				3FB46640131D78A400E37C51 /* libxml2.dylib */,
+				A0702A131DA8B31559EADB35 /* Pods.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		753DD8BB8B8DB90C68C1122C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4C54AB4C3537B4FFC4CDAA11 /* Pods.debug.xcconfig */,
+				76894C65C72E67BEB1D13573 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -285,7 +244,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				3F3CE2E4125B93EB0083FDCB /* PBXTargetDependency */,
 			);
 			name = RKTwitterCoreData;
 			productName = RKTwitter;
@@ -303,7 +261,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				25F2A1761322D59400A33DE4 /* PBXTargetDependency */,
 			);
 			name = "Generate Seed Database";
 			productName = RKTwitter;
@@ -316,7 +273,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0700;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RKTwitterCoreData" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -330,12 +287,6 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 2538E800123417E500ACB5D7 /* Products */;
-					ProjectRef = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* RKTwitterCoreData */,
@@ -343,37 +294,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		250CA6C6147D90A50047D347 /* libRestKit.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRestKit.a;
-			remoteRef = 250CA6C5147D90A50047D347 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250CA6C8147D90A50047D347 /* RestKitTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitTests.octest;
-			remoteRef = 250CA6C7147D90A50047D347 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250CA6CA147D90A50047D347 /* RestKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RestKit.framework;
-			remoteRef = 250CA6C9147D90A50047D347 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250CA6CC147D90A50047D347 /* RestKitFrameworkTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitFrameworkTests.octest;
-			remoteRef = 250CA6CB147D90A50047D347 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1D60588D0D05DD3D006BFB54 /* Resources */ = {
@@ -399,6 +319,7 @@
 				25F2A19C1322DD1800A33DE4 /* users.json in Resources */,
 				25F2A1791322D59400A33DE4 /* listbg.png in Resources */,
 				25F2A17A1322D59400A33DE4 /* listbg@2x.png in Resources */,
+				91E489461B660547004B5AB5 /* Default-568h@2x.png in Resources */,
 				25F2A17B1322D59400A33DE4 /* BG.png in Resources */,
 				25F2A17C1322D59400A33DE4 /* BG@2x.png in Resources */,
 				25F2A17D1322D59400A33DE4 /* Default.png in Resources */,
@@ -437,22 +358,10 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		25F2A1761322D59400A33DE4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RestKit;
-			targetProxy = 25F2A1771322D59400A33DE4 /* PBXContainerItemProxy */;
-		};
-		3F3CE2E4125B93EB0083FDCB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RestKit;
-			targetProxy = 3F3CE2E3125B93EB0083FDCB /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4C54AB4C3537B4FFC4CDAA11 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				BUILD_STYLE = Debug;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -463,14 +372,15 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				OTHER_LDFLAGS = "-ObjC";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = RKTwitterCoreData;
 			};
 			name = Debug;
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 76894C65C72E67BEB1D13573 /* Pods.release.xcconfig */;
 			buildSettings = {
 				BUILD_STYLE = Release;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -479,8 +389,8 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = "${TARGET_BUILD_DIR}/../../Headers";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				OTHER_LDFLAGS = "-ObjC";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = RKTwitterCoreData;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -488,6 +398,7 @@
 		};
 		25F2A1941322D59400A33DE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4C54AB4C3537B4FFC4CDAA11 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				BUILD_STYLE = Debug;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -496,28 +407,35 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					RESTKIT_GENERATE_SEED_DB,
+					"$(inherited)",
+				);
 				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				OTHER_LDFLAGS = "-ObjC";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "Generate Seed Database";
 			};
 			name = Debug;
 		};
 		25F2A1951322D59400A33DE4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 76894C65C72E67BEB1D13573 /* Pods.release.xcconfig */;
 			buildSettings = {
 				BUILD_STYLE = Release;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					RESTKIT_GENERATE_SEED_DB,
+					"$(inherited)",
+				);
 				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				OTHER_LDFLAGS = "-ObjC";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "Generate Seed Database";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -528,6 +446,7 @@
 			buildSettings = {
 				BUILD_STYLE = Debug;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;

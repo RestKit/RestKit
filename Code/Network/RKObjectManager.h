@@ -21,12 +21,13 @@
 #import "RKRouter.h"
 #import "RKPaginator.h"
 #import "RKMacros.h"
-#import "AFNetworking.h"
+
+#import <AFNetworking/AFNetworking.h>
 
 #ifdef _COREDATADEFINES_H
-#if __has_include("RKCoreData.h")
-#define RKCoreDataIncluded
-#endif
+#   if __has_include("RKCoreData.h")
+#       define RKCoreDataIncluded
+#   endif
 #endif
 
 @protocol RKSerialization;

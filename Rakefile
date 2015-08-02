@@ -34,7 +34,7 @@ namespace :test do
   task :building_without_core_data do
     title 'Testing without Core Data'
     run("cd Examples/RKTwitter && pod install")
-    run("xctool -workspace Examples/RKTwitter/RKTwitter.xcworkspace -scheme RKTwitterCocoaPods -sdk iphonesimulator clean build ONLY_ACTIVE_ARCH=NO")
+    run("xctool -workspace Examples/RKTwitter/RKTwitter.xcworkspace -scheme RKTwitter -sdk iphonesimulator clean build ONLY_ACTIVE_ARCH=NO")
   end
 end
 
@@ -165,6 +165,7 @@ end
 task :lint do
   title 'Linting pod'
   run('bundle exec pod lib lint')
+  run('bundle exec pod lib lint --use-libraries')
 end
 
 desc 'Runs the CI suite'

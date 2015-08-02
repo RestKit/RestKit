@@ -34,7 +34,7 @@ _RKlcl_level_narrow_t _RKlcl_component_level[_RKlcl_component_t_count];
 const char * const _RKlcl_component_identifier[] = {
 #   define  _RKlcl_component(_identifier, _header, _name)                        \
     #_identifier,
-#   include "lcl_config_components_RK.h"
+    RKLCLComponentDefinitions
 #   undef   _RKlcl_component
 };
 
@@ -42,7 +42,7 @@ const char * const _RKlcl_component_identifier[] = {
 const char * const _RKlcl_component_header[] = {
 #   define  _RKlcl_component(_identifier, _header, _name)                        \
     _header,
-#   include "lcl_config_components_RK.h"
+    RKLCLComponentDefinitions
 #   undef   _RKlcl_component
 };
 
@@ -50,7 +50,7 @@ const char * const _RKlcl_component_header[] = {
 const char * const _RKlcl_component_name[] = {
 #   define  _RKlcl_component(_identifier, _header, _name)                        \
     _name,
-#   include "lcl_config_components_RK.h"
+    RKLCLComponentDefinitions
 #   undef   _RKlcl_component
 };
 
