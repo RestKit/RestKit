@@ -75,7 +75,7 @@
     [DDLog log:async
          level:componentLevel
           flag:flag
-       context:0 /* Could define a special value here to identify RestKit logs to any backend loggers */
+       context:0x524B5F00 + component
           file:path function:function line:line
            tag:nil
         format:format args:args];
