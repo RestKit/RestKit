@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#include <objc/runtime.h>
+#import <objc/runtime.h>
 #import "RKTestEnvironment.h"
 
 @implementation RKTestCase

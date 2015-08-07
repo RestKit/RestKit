@@ -16,7 +16,6 @@
 		259C800B15D20B5600F447D2 /* RKSAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 259C800A15D20B5600F447D2 /* RKSAppDelegate.m */; };
 		259C800E15D20B5600F447D2 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 259C800C15D20B5600F447D2 /* MainStoryboard.storyboard */; };
 		259C801115D20B5600F447D2 /* RKSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 259C801015D20B5600F447D2 /* RKSViewController.m */; };
-		259C802E15D20BAA00F447D2 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C802315D20B7100F447D2 /* libRestKit.a */; };
 		259C803415D20BAA00F447D2 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C802F15D20BAA00F447D2 /* CFNetwork.framework */; };
 		259C803515D20BAA00F447D2 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803015D20BAA00F447D2 /* CoreData.framework */; };
 		259C803615D20BAA00F447D2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803115D20BAA00F447D2 /* QuartzCore.framework */; };
@@ -26,45 +25,8 @@
 		259C803C15D20C4000F447D2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803B15D20C4000F447D2 /* libxml2.dylib */; };
 		25AA7D1415D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 25AA7D1215D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld */; };
 		25AABCF017B69B590061DC5B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25AABCEF17B69B590061DC5B /* Default-568h@2x.png */; };
+		45F73EB9D2311FFAF6C1338B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F88520F4AEA4E5CA9B38E99 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		259C802215D20B7100F447D2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160D1614564E810060A5C5;
-			remoteInfo = RestKit;
-		};
-		259C802415D20B7100F447D2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160D2614564E820060A5C5;
-			remoteInfo = RestKitTests;
-		};
-		259C802615D20B7100F447D2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160E62145651060060A5C5;
-			remoteInfo = RestKitFramework;
-		};
-		259C802815D20B7100F447D2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160E78145651060060A5C5;
-			remoteInfo = RestKitFrameworkTests;
-		};
-		259C802C15D20B7B00F447D2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 25160D1514564E810060A5C5;
-			remoteInfo = RestKit;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		2583C49B15D96D4000E05CAE /* contacts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = contacts.json; sourceTree = "<group>"; };
@@ -81,7 +43,6 @@
 		259C800D15D20B5600F447D2 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		259C800F15D20B5600F447D2 /* RKSViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKSViewController.h; sourceTree = "<group>"; };
 		259C801015D20B5600F447D2 /* RKSViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKSViewController.m; sourceTree = "<group>"; };
-		259C801715D20B7100F447D2 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../RestKit.xcodeproj; sourceTree = "<group>"; };
 		259C802F15D20BAA00F447D2 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		259C803015D20BAA00F447D2 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		259C803115D20BAA00F447D2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -91,6 +52,9 @@
 		259C803B15D20C4000F447D2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		25AA7D1315D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RKSearchExampleModel.xcdatamodel; sourceTree = "<group>"; };
 		25AABCEF17B69B590061DC5B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		4839D63C1F0B427271E84C9B /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		5F88520F4AEA4E5CA9B38E99 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		97374605117FDAA6FDA05691 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,10 +69,10 @@
 				259C803615D20BAA00F447D2 /* QuartzCore.framework in Frameworks */,
 				259C803715D20BAA00F447D2 /* Security.framework in Frameworks */,
 				259C803815D20BAA00F447D2 /* SystemConfiguration.framework in Frameworks */,
-				259C802E15D20BAA00F447D2 /* libRestKit.a in Frameworks */,
 				259C7FFF15D20B5600F447D2 /* CoreGraphics.framework in Frameworks */,
 				259C7FFB15D20B5600F447D2 /* UIKit.framework in Frameworks */,
 				259C7FFD15D20B5600F447D2 /* Foundation.framework in Frameworks */,
+				45F73EB9D2311FFAF6C1338B /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,7 +86,7 @@
 				259C800015D20B5600F447D2 /* RKSearchExample */,
 				259C7FF915D20B5600F447D2 /* Frameworks */,
 				259C7FF715D20B5600F447D2 /* Products */,
-				259C801715D20B7100F447D2 /* RestKit.xcodeproj */,
+				8045C6A1DC1A7B372A75E95F /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -147,6 +111,7 @@
 				259C7FFA15D20B5600F447D2 /* UIKit.framework */,
 				259C7FFC15D20B5600F447D2 /* Foundation.framework */,
 				259C7FFE15D20B5600F447D2 /* CoreGraphics.framework */,
+				5F88520F4AEA4E5CA9B38E99 /* Pods.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -177,15 +142,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		259C801815D20B7100F447D2 /* Products */ = {
+		8045C6A1DC1A7B372A75E95F /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				259C802315D20B7100F447D2 /* libRestKit.a */,
-				259C802515D20B7100F447D2 /* RestKitTests.octest */,
-				259C802715D20B7100F447D2 /* RestKit.framework */,
-				259C802915D20B7100F447D2 /* RestKitFrameworkTests.octest */,
+				97374605117FDAA6FDA05691 /* Pods.debug.xcconfig */,
+				4839D63C1F0B427271E84C9B /* Pods.release.xcconfig */,
 			);
-			name = Products;
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -195,14 +158,16 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 259C801415D20B5600F447D2 /* Build configuration list for PBXNativeTarget "RKSearchExample" */;
 			buildPhases = (
+				647A518E7D82E5FBFCACA0DF /* Check Pods Manifest.lock */,
 				259C7FF215D20B5600F447D2 /* Sources */,
 				259C7FF315D20B5600F447D2 /* Frameworks */,
 				259C7FF415D20B5600F447D2 /* Resources */,
+				64884B0BE0AA32A1480DCC81 /* Embed Pods Frameworks */,
+				750345EDEDC2028EA5111217 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				259C802D15D20B7B00F447D2 /* PBXTargetDependency */,
 			);
 			name = RKSearchExample;
 			productName = RKSearchExample;
@@ -216,7 +181,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = RKS;
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Blake Watters";
 			};
 			buildConfigurationList = 259C7FF015D20B5600F447D2 /* Build configuration list for PBXProject "RKSearchExample" */;
@@ -229,49 +194,12 @@
 			mainGroup = 259C7FEB15D20B5600F447D2;
 			productRefGroup = 259C7FF715D20B5600F447D2 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 259C801815D20B7100F447D2 /* Products */;
-					ProjectRef = 259C801715D20B7100F447D2 /* RestKit.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				259C7FF515D20B5600F447D2 /* RKSearchExample */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		259C802315D20B7100F447D2 /* libRestKit.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRestKit.a;
-			remoteRef = 259C802215D20B7100F447D2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		259C802515D20B7100F447D2 /* RestKitTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitTests.octest;
-			remoteRef = 259C802415D20B7100F447D2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		259C802715D20B7100F447D2 /* RestKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RestKit.framework;
-			remoteRef = 259C802615D20B7100F447D2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		259C802915D20B7100F447D2 /* RestKitFrameworkTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitFrameworkTests.octest;
-			remoteRef = 259C802815D20B7100F447D2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		259C7FF415D20B5600F447D2 /* Resources */ = {
@@ -287,6 +215,54 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		647A518E7D82E5FBFCACA0DF /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		64884B0BE0AA32A1480DCC81 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		750345EDEDC2028EA5111217 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		259C7FF215D20B5600F447D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -300,14 +276,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		259C802D15D20B7B00F447D2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RestKit;
-			targetProxy = 259C802C15D20B7B00F447D2 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		259C800315D20B5600F447D2 /* InfoPlist.strings */ = {
@@ -332,13 +300,13 @@
 		259C801215D20B5600F447D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -359,7 +327,6 @@
 		259C801315D20B5600F447D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -379,16 +346,13 @@
 		};
 		259C801515D20B5600F447D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 97374605117FDAA6FDA05691 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKSearchExample/RKSearchExample-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "RKSearchExample/RKSearchExample-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-all_load",
-				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.restkit.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -396,16 +360,13 @@
 		};
 		259C801615D20B5600F447D2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4839D63C1F0B427271E84C9B /* Pods.release.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKSearchExample/RKSearchExample-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "RKSearchExample/RKSearchExample-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-all_load",
-				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.restkit.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

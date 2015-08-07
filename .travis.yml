@@ -1,5 +1,5 @@
 language: objective-c
-rvm: 2.2.1
+rvm: 2.2.2
 install:
     - bundle install
     - bundle exec pod install

@@ -717,7 +717,7 @@ We hope that you have found learning about RestKit fun and rewarding. At this po
 
 ## Learning More
 * RestKit: [http://restkit.org]()
-* Github: [https://github.com/twotoasters/RestKit]()
-* API Docs: [http://restkit.org/api/]()
+* Github: [https://github.com/RestKit/RestKit]()
+* API Docs: [http://cocoadocs.org/docsets/RestKit/]()
 * Google Group: [http://groups.google.com/group/restkit]()
 * Brought to you by Two Toasters: [http://twotoasters.com/]()

@@ -1,0 +1,11 @@
+{
+    "name" : "Asia",
+    "railsID" : 5555,
+    
+    "human" : {
+        "name": "Roy",
+        "railsID": 5678,
+        "type" : "Parent",
+        "children" : [{"name" : "John", "type" : "Child", "railsID" : 3333 }]
+    }
+}

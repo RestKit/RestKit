@@ -1,6 +1,4 @@
-platform :ios, '8.0'
-use_frameworks!
-
 # Install via CocoaPods pointing at current local codebase
 pod 'RestKit/Network', :path => '../../'
 pod 'RestKit/ObjectMapping', :path => '../../'
+pod 'RestKit/CoreData', :path => '../../'

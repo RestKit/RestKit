@@ -115,6 +115,13 @@
 @property (nonatomic, copy) NSPredicate *identificationPredicate;
 
 /**
+ An optional block which returns a predicate used to filter identified objects during mapping.
+ 
+ @return The identification predicate block.
+ */
+@property (nonatomic, copy) NSPredicate *(^identificationPredicateBlock)(NSDictionary *representation, NSManagedObjectContext *managedObjectContext);
+
+/**
  An optional attribute of the receiver's entity that can be used to detect modification of a given instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object if it is found to be not modified.
  
  A common modification attribute is a 'last modified' or 'updated at' timestamp that specifies the timestamp of the last change to an object. When the `modificationAttribute` is non-nil, the mapper will compare the value returned of the attribute on an existing object instance with the value in the representation being mapped. 

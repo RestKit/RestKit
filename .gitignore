@@ -33,3 +33,4 @@ DerivedData
 # Bundler binstubs
 .bundle
 bin
+RestKit.xcscmblueprint

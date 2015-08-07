@@ -18,10 +18,11 @@
 //  limitations under the License.
 //
 
+#import <RKValueTransformers/RKValueTransformers.h>
+
 #import "RKObjectMapping.h"
 #import "RKAttributeMapping.h"
 #import "RKRelationshipMapping.h"
-#import "RKValueTransformers.h"
 #import "RKMappingResult.h"
 #import "RKMapperOperation.h"
 #import "RKDynamicMapping.h"

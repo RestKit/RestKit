@@ -49,14 +49,15 @@
 // RestKit Logging Components
 //
 
-_RKlcl_component(App,                         "app",                              "App")
-_RKlcl_component(RestKit,                     "restkit",                          "RestKit")
-_RKlcl_component(RestKitCoreData,             "restkit.core_data",                "RestKit/CoreData")
-_RKlcl_component(RestKitCoreDataCache,        "restkit.core_data.cache",          "RestKit/CoreData/Cache")
-_RKlcl_component(RestKitNetwork,              "restkit.network",                  "RestKit/Network")
-_RKlcl_component(RestKitNetworkCoreData,      "restkit.network.core_data",        "RestKit/Network/CoreData")
-_RKlcl_component(RestKitObjectMapping,        "restkit.object_mapping",           "RestKit/ObjectMapping")
-_RKlcl_component(RestKitSearch,               "restkit.search",                   "RestKit/Search")
-_RKlcl_component(RestKitSupport,              "restkit.support",                  "RestKit/Support")
-_RKlcl_component(RestKitTesting,              "restkit.testing",                  "RestKit/Testing")
+#define RKLCLComponentDefinitions \
+_RKlcl_component(App,                         "app",                              "App") \
+_RKlcl_component(RestKit,                     "restkit",                          "RestKit") \
+_RKlcl_component(RestKitCoreData,             "restkit.core_data",                "RestKit/CoreData") \
+_RKlcl_component(RestKitCoreDataCache,        "restkit.core_data.cache",          "RestKit/CoreData/Cache") \
+_RKlcl_component(RestKitNetwork,              "restkit.network",                  "RestKit/Network") \
+_RKlcl_component(RestKitNetworkCoreData,      "restkit.network.core_data",        "RestKit/Network/CoreData") \
+_RKlcl_component(RestKitObjectMapping,        "restkit.object_mapping",           "RestKit/ObjectMapping") \
+_RKlcl_component(RestKitSearch,               "restkit.search",                   "RestKit/Search") \
+_RKlcl_component(RestKitSupport,              "restkit.support",                  "RestKit/Support") \
+_RKlcl_component(RestKitTesting,              "restkit.testing",                  "RestKit/Testing") \
 _RKlcl_component(RestKitUI,                   "restkit.ui",                       "RestKit/UI")

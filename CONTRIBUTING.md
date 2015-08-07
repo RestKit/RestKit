@@ -1,6 +1,6 @@
 ## Issues
 
-GitHub Issues is for reporting bugs in RestKit and discussing changes to RestKit itself. Please check the [documentation](http://cocoadocs.org/docsets/RestKit/), [wiki](https://github.com/RestKit/RestKit/wiki), and [existing issues](https://github.com/RestKit/RestKit/issues?state=closed) before opening a new issue.
+GitHub Issues is for reporting bugs in RestKit and discussing changes to RestKit itself. Please check the [documentation](http://cocoadocs.org/docsets/RestKit/), [wiki](https://github.com/RestKit/RestKit/wiki), and [existing issues](https://github.com/RestKit/RestKit/issues?q=is:issue) before opening a new issue.
 
 Additionaly, please do not post general usage questions to Issues, but instead take them to [Stack Overflow](http://stackoverflow.com/questions/tagged/restkit).
 

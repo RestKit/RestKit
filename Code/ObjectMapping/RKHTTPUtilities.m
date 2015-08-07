@@ -344,8 +344,13 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
     int parsed = 0, cs = 1;
     NSDate *date = NULL;
     
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED < 70000)) || \
+(defined(MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9))
     CFGregorianDate gdate;
     memset(&gdate, 0, sizeof(CFGregorianDate));
+#else
+    NSDateComponents *gdate = [[NSDateComponents alloc] init];
+#endif
     
     {
         int _slen, _trans;
@@ -397,11 +402,29 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
     _out: {}
     }
     
-    static CFTimeZoneRef gmtTimeZone;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{ gmtTimeZone = CFTimeZoneCreateWithTimeIntervalFromGMT(NULL, 0.0); });
     
-    if(parsed == 1) { date = [NSDate dateWithTimeIntervalSinceReferenceDate:CFGregorianDateGetAbsoluteTime(gdate, gmtTimeZone)]; }
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED < 70000)) || \
+(defined(MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9))
+    static CFTimeZoneRef gmtTimeZone;
+    dispatch_once(&onceToken, ^{
+        gmtTimeZone = CFTimeZoneCreateWithTimeIntervalFromGMT(NULL, 0.0);
+    });
+    
+    if (parsed == 1) {
+        date = [NSDate dateWithTimeIntervalSinceReferenceDate:CFGregorianDateGetAbsoluteTime(gdate, gmtTimeZone)];
+    }
+#else
+    static NSCalendar *gregorian;
+    dispatch_once(&onceToken, ^{
+        gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        gregorian.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    });
+    
+    if (parsed == 1) {
+        date = [gregorian dateFromComponents:gdate];
+    }
+#endif
     
     return(date);
 }
