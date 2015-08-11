@@ -27,7 +27,7 @@
   #import "LCLNSLogger_RK.h"
   #define RKLOG_CLASS LCLNSLogger_RK
 
-#elif __has_include("DDLog.h")
+#elif RKLOG_USE_COCOALUMBERJACK && __has_include("DDLog.h")
   #import "RKLumberjackLogger.h"
   #define RKLOG_CLASS RKLumberjackLogger
 
