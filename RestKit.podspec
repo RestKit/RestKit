@@ -104,7 +104,9 @@ EOS
   end
 
   s.subspec 'CocoaLumberjack' do |cl|
+    cl.source_files = 'Code/CocoaLumberjack/RKLumberjackLogger.*'
     cl.dependency 'CocoaLumberjack'
+    cl.dependency 'RestKit/Support'
     cl.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) RKLOG_USE_COCOALUMBERJACK=1' }
   end
 end
