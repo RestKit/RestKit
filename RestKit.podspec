@@ -102,4 +102,9 @@ EOS
     ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core'
     ss.dependency 'TransitionKit', '~> 2.2'
   end
+
+  s.subspec 'CocoaLumberjack' do |cl|
+    cl.dependency 'CocoaLumberjack'
+    cl.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) RKLOG_USE_COCOALUMBERJACK=1' }
+  end
 end
