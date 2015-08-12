@@ -35,10 +35,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 
 static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyTransformationBlock = nil;
 
-@interface RKObjectMapping (Copying)
-- (void)copyPropertiesFromMapping:(RKObjectMapping *)mapping;
-@end
-
 @interface RKMappingInverter : NSObject
 @property (nonatomic, strong) RKObjectMapping *mapping;
 @property (nonatomic, strong) NSMutableDictionary *invertedMappings;

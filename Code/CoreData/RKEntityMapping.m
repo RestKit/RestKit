@@ -184,16 +184,22 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     return self;
 }
 
+- (void)copyPropertiesFromMapping:(RKEntityMapping *)mapping
+{
+    self.entity = mapping.entity;
+    self.identificationAttributes = mapping.identificationAttributes;
+    self.identificationPredicate = mapping.identificationPredicate;
+    self.identificationPredicateBlock = mapping.identificationPredicateBlock;
+    self.deletionPredicate = mapping.deletionPredicate;
+    self.modificationAttribute = mapping.modificationAttribute;
+    self.mutableConnections = [NSMutableArray array];
+    
+    [super copyPropertiesFromMapping:mapping];
+}
+
 - (id)copyWithZone:(NSZone *)zone
 {
     RKEntityMapping *copy = [super copyWithZone:zone];
-    copy.entity = self.entity;
-    copy.identificationAttributes = self.identificationAttributes;
-    copy.identificationPredicate = self.identificationPredicate;
-    copy.identificationPredicateBlock = self.identificationPredicateBlock;
-    copy.deletionPredicate = self.deletionPredicate;
-    copy.modificationAttribute = self.modificationAttribute;
-    copy.mutableConnections = [NSMutableArray array];
     
     for (RKConnectionDescription *connection in self.connections) {
         [copy addConnection:[connection copy]];
