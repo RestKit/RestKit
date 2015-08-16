@@ -350,12 +350,12 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
     memset(&gdate, 0, sizeof(CFGregorianDate));
 #else
     NSDateComponents *gdate = [[NSDateComponents alloc] init];
-	gdate.year = 0;
-	gdate.month = 0;
-	gdate.day = 0;
-	gdate.hour = 0;
-	gdate.minute = 0;
-	gdate.second = 0;
+    gdate.year = 0;
+    gdate.month = 0;
+    gdate.day = 0;
+    gdate.hour = 0;
+    gdate.minute = 0;
+    gdate.second = 0;
 #endif
     
     {
