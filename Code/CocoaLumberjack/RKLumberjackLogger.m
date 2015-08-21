@@ -6,51 +6,51 @@
 //
 //
 
-#if RKLOG_USE_COCOALUMBERJACK && __has_include("DDLog.h")
+#if RKLOG_USE_COCOALUMBERJACK && __has_include(<CocoaLumberjack/CocoaLumberjack.h>)
 #import "RKLumberjackLogger.h"
-#import "DDLog.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 @implementation RKLumberjackLogger
 
-+ (int)ddLogLevelFromRKLogLevel:(_RKlcl_level_t)rkLevel
++ (DDLogLevel)ddLogLevelFromRKLogLevel:(_RKlcl_level_t)rkLevel
 {
     switch (rkLevel)
     {
-        case RKLogLevelOff:      return LOG_LEVEL_OFF;
-        case RKLogLevelCritical: return LOG_LEVEL_ERROR;
-        case RKLogLevelError:    return LOG_LEVEL_ERROR;
-        case RKLogLevelWarning:  return LOG_LEVEL_WARN;
-        case RKLogLevelInfo:     return LOG_LEVEL_INFO;
-        case RKLogLevelDebug:    return LOG_LEVEL_DEBUG;
-        case RKLogLevelTrace:    return LOG_LEVEL_VERBOSE;
+        case RKLogLevelOff:      return DDLogLevelOff;
+        case RKLogLevelCritical: return DDLogLevelError;
+        case RKLogLevelError:    return DDLogLevelError;
+        case RKLogLevelWarning:  return DDLogLevelWarning;
+        case RKLogLevelInfo:     return DDLogLevelInfo;
+        case RKLogLevelDebug:    return DDLogLevelDebug;
+        case RKLogLevelTrace:    return DDLogLevelVerbose;
     }
     
-    return LOG_LEVEL_DEBUG;
+    return DDLogLevelDebug;
 }
 
-+ (int)ddLogFlagFromRKLogLevel:(_RKlcl_level_t)rkLevel
++ (DDLogFlag)ddLogFlagFromRKLogLevel:(_RKlcl_level_t)rkLevel
 {
     switch (rkLevel)
     {
         case RKLogLevelOff:      return 0;
-        case RKLogLevelCritical: return LOG_FLAG_ERROR;
-        case RKLogLevelError:    return LOG_FLAG_ERROR;
-        case RKLogLevelWarning:  return LOG_FLAG_WARN;
-        case RKLogLevelInfo:     return LOG_FLAG_INFO;
-        case RKLogLevelDebug:    return LOG_FLAG_DEBUG;
-        case RKLogLevelTrace:    return LOG_FLAG_VERBOSE;
+        case RKLogLevelCritical: return DDLogFlagError;
+        case RKLogLevelError:    return DDLogFlagError;
+        case RKLogLevelWarning:  return DDLogFlagWarning;
+        case RKLogLevelInfo:     return DDLogFlagInfo;
+        case RKLogLevelDebug:    return DDLogFlagDebug;
+        case RKLogLevelTrace:    return DDLogFlagVerbose;
     }
     
-    return LOG_FLAG_DEBUG;
+    return DDLogFlagDebug;
 }
 
-+ (_RKlcl_level_t)rkLogLevelFromDDLogLevel:(int)ddLogLevel
++ (_RKlcl_level_t)rkLogLevelFromDDLogLevel:(DDLogLevel)ddLogLevel
 {
-    if (ddLogLevel & LOG_FLAG_VERBOSE) return RKLogLevelTrace;
-    if (ddLogLevel & LOG_FLAG_DEBUG)   return RKLogLevelDebug;
-    if (ddLogLevel & LOG_FLAG_INFO)    return RKLogLevelInfo;
-    if (ddLogLevel & LOG_FLAG_WARN)    return RKLogLevelWarning;
-    if (ddLogLevel & LOG_FLAG_ERROR)   return RKLogLevelError;
+    if (ddLogLevel & DDLogFlagVerbose) return RKLogLevelTrace;
+    if (ddLogLevel & DDLogFlagDebug)   return RKLogLevelDebug;
+    if (ddLogLevel & DDLogFlagInfo)    return RKLogLevelInfo;
+    if (ddLogLevel & DDLogFlagWarning) return RKLogLevelWarning;
+    if (ddLogLevel & DDLogFlagError)   return RKLogLevelError;
     
     return RKLogLevelOff;
 }
@@ -68,9 +68,9 @@
     va_list args;
     va_start(args, format);
 
-    int flag = [self ddLogFlagFromRKLogLevel:level];
-    int componentLevel = [self ddLogLevelFromRKLogLevel:_RKlcl_component_level[component]];
-    BOOL async = LOG_ASYNC_ENABLED && ((flag & LOG_FLAG_ERROR) == 0);
+    DDLogFlag flag = [self ddLogFlagFromRKLogLevel:level];
+    DDLogLevel componentLevel = [self ddLogLevelFromRKLogLevel:_RKlcl_component_level[component]];
+    BOOL async = LOG_ASYNC_ENABLED && ((flag & DDLogFlagError) == 0);
 
     [DDLog log:async
          level:componentLevel
@@ -93,11 +93,11 @@
     @interface RKLumberjackLog##_identifier : NSObject <DDRegisteredDynamicLogging>          \
     @end                                                                                     \
     @implementation RKLumberjackLog##_identifier                                             \
-    + (int)ddLogLevel {                                                                      \
+    + (DDLogLevel)ddLogLevel {                                                                      \
         _RKlcl_level_t level = _RKlcl_component_level[RKlcl_c##_identifier];                 \
         return [RKLumberjackLogger ddLogLevelFromRKLogLevel:level];                          \
     }                                                                                        \
-    + (void)ddSetLogLevel:(int)logLevel {                                                    \
+    + (void)ddSetLogLevel:(DDLogLevel)logLevel {                                                    \
         RKLogConfigureByName(_name, [RKLumberjackLogger rkLogLevelFromDDLogLevel:logLevel]); \
     }                                                                                        \
     @end
