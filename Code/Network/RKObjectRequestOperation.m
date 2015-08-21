@@ -38,6 +38,8 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetwork
 
+#define RKLogIsTrace() (_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))
+
 static BOOL RKLogIsStringBlank(NSString *string)
 {
     return ([[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] == 0);
@@ -132,15 +134,10 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
     objc_setAssociatedObject(objectRequestOperation.HTTPRequestOperation, RKParentObjectRequestOperation, objectRequestOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     NSURLRequest *request = objectRequestOperation.HTTPRequestOperation.request;
-    if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-        NSString *body = nil;
-        if (request.HTTPBody) {
-            body = RKLogTruncateString([[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]);
-        }
-        
-        RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", request.HTTPMethod, request.URL.absoluteString, request.allHTTPHeaderFields, body);
-    } else {
-        RKLogInfo(@"%@ '%@'", request.HTTPMethod, request.URL.absoluteString);
+    RKLogInfo(@"%@ '%@'", request.HTTPMethod, request.URL.absoluteString);
+    RKLogDebug(@"request.headers=%@", request.allHTTPHeaderFields);
+    if (request.HTTPBody && RKLogIsTrace()) {
+        RKLogTrace(@"request.body=%@", RKLogTruncateString([[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]));
     }
 }
 
@@ -172,22 +169,17 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
     NSString *elapsedTimeString = [NSString stringWithFormat:@"[request=%.04fs mapping=%.04fs total=%.04fs]", httpRequestExecutionDuration, mappingDuration, objectRequestExecutionDuration];
     NSString *statusCodeAndElapsedTime = [NSString stringWithFormat:@"(%ld%@/ %lu objects) %@", (long)response.statusCode, statusCodeDescription, (unsigned long) [objectRequestOperation.mappingResult count], elapsedTimeString];
     if (objectRequestOperation.error) {
-        if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogError(@"%@ '%@' %@:\nerror=%@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime, objectRequestOperation.error);
-            RKLogDebug(@"response.body=%@", HTTPRequestOperation.responseString);
+        if (objectRequestOperation.error.code == NSURLErrorCancelled) {
+            RKLogDebug(@"%@ '%@' %@: Cancelled", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime);
         } else {
-            if (objectRequestOperation.error.code == NSURLErrorCancelled) {
-                RKLogError(@"%@ '%@' %@: Cancelled", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime);
-            } else {
-                RKLogError(@"%@ '%@' %@: %@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime, objectRequestOperation.error);
-            }
+            RKLogError(@"%@ '%@' %@: %@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime, objectRequestOperation.error);
         }
     } else {
-        if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogTrace(@"%@ '%@' %@:\nresponse.headers=%@\nresponse.body=%@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime, response.allHeaderFields, RKLogTruncateString(HTTPRequestOperation.responseString));
-        } else {
-            RKLogInfo(@"%@ '%@' %@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime);
-        }
+        RKLogInfo(@"%@ '%@' %@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime);
+        RKLogDebug(@"response.headers=%@", response.allHeaderFields);
+    }
+    if (RKLogIsTrace()) {
+        RKLogTrace(@"response.body=%@", RKLogTruncateString(HTTPRequestOperation.responseString));
     }
 }
 
