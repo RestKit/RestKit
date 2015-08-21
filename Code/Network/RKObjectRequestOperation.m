@@ -128,19 +128,19 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
 {
     // Weakly tag the HTTP operation with its parent object request operation
     RKObjectRequestOperation *objectRequestOperation = [notification object];
-    RKHTTPRequestOperation *operation = objectRequestOperation.HTTPRequestOperation;
     objc_setAssociatedObject(objectRequestOperation, RKOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     objc_setAssociatedObject(objectRequestOperation.HTTPRequestOperation, RKParentObjectRequestOperation, objectRequestOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
+    NSURLRequest *request = objectRequestOperation.HTTPRequestOperation.request;
     if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
         NSString *body = nil;
-        if ([operation.request HTTPBody]) {
-            body = RKLogTruncateString([[NSString alloc] initWithData:[operation.request HTTPBody] encoding:NSUTF8StringEncoding]);
+        if (request.HTTPBody) {
+            body = RKLogTruncateString([[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding]);
         }
         
-        RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], [operation.request allHTTPHeaderFields], body);
+        RKLogTrace(@"%@ '%@':\nrequest.headers=%@\nrequest.body=%@", request.HTTPMethod, request.URL.absoluteString, request.allHTTPHeaderFields, body);
     } else {
-        RKLogInfo(@"%@ '%@'", [operation.request HTTPMethod], [[operation.request URL] absoluteString]);
+        RKLogInfo(@"%@ '%@'", request.HTTPMethod, request.URL.absoluteString);
     }
 }
 
@@ -165,26 +165,28 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
     NSDate *mappingDidStartTime = (notification.userInfo)[RKObjectRequestOperationMappingDidFinishUserInfoKey];
     NSTimeInterval mappingDuration = [mappingDidStartTime isEqual:[NSNull null]] ? 0.0 : [mappingDidStartTime timeIntervalSinceDate:(notification.userInfo)[RKObjectRequestOperationMappingDidStartUserInfoKey]];
     
-    NSString *statusCodeString = RKStringFromStatusCode([HTTPRequestOperation.response statusCode]);
+    NSURLRequest *request = HTTPRequestOperation.request;
+    NSHTTPURLResponse *response = HTTPRequestOperation.response;
+    NSString *statusCodeString = RKStringFromStatusCode(response.statusCode);
     NSString *statusCodeDescription = statusCodeString ? [NSString stringWithFormat:@" %@ ", statusCodeString] : @" ";
     NSString *elapsedTimeString = [NSString stringWithFormat:@"[request=%.04fs mapping=%.04fs total=%.04fs]", httpRequestExecutionDuration, mappingDuration, objectRequestExecutionDuration];
-    NSString *statusCodeAndElapsedTime = [NSString stringWithFormat:@"(%ld%@/ %lu objects) %@", (long)[HTTPRequestOperation.response statusCode], statusCodeDescription, (unsigned long) [objectRequestOperation.mappingResult count], elapsedTimeString];
+    NSString *statusCodeAndElapsedTime = [NSString stringWithFormat:@"(%ld%@/ %lu objects) %@", (long)response.statusCode, statusCodeDescription, (unsigned long) [objectRequestOperation.mappingResult count], elapsedTimeString];
     if (objectRequestOperation.error) {
         if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogError(@"%@ '%@' %@:\nerror=%@", [HTTPRequestOperation.request HTTPMethod], [[HTTPRequestOperation.request URL] absoluteString], statusCodeAndElapsedTime, objectRequestOperation.error);
+            RKLogError(@"%@ '%@' %@:\nerror=%@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime, objectRequestOperation.error);
             RKLogDebug(@"response.body=%@", HTTPRequestOperation.responseString);
         } else {
             if (objectRequestOperation.error.code == NSURLErrorCancelled) {
-                RKLogError(@"%@ '%@' %@: Cancelled", [HTTPRequestOperation.request HTTPMethod], [[HTTPRequestOperation.request URL] absoluteString], statusCodeAndElapsedTime);
+                RKLogError(@"%@ '%@' %@: Cancelled", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime);
             } else {
-                RKLogError(@"%@ '%@' %@: %@", [HTTPRequestOperation.request HTTPMethod], [[HTTPRequestOperation.request URL] absoluteString], statusCodeAndElapsedTime, objectRequestOperation.error);
+                RKLogError(@"%@ '%@' %@: %@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime, objectRequestOperation.error);
             }
         }
     } else {
         if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogTrace(@"%@ '%@' %@:\nresponse.headers=%@\nresponse.body=%@", [HTTPRequestOperation.request HTTPMethod], [[HTTPRequestOperation.request URL] absoluteString], statusCodeAndElapsedTime, [HTTPRequestOperation.response allHeaderFields], RKLogTruncateString(HTTPRequestOperation.responseString));
+            RKLogTrace(@"%@ '%@' %@:\nresponse.headers=%@\nresponse.body=%@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime, response.allHeaderFields, RKLogTruncateString(HTTPRequestOperation.responseString));
         } else {
-            RKLogInfo(@"%@ '%@' %@", [HTTPRequestOperation.request HTTPMethod], [[HTTPRequestOperation.request URL] absoluteString], statusCodeAndElapsedTime);
+            RKLogInfo(@"%@ '%@' %@", request.HTTPMethod, request.URL.absoluteString, statusCodeAndElapsedTime);
         }
     }
 }
