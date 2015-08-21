@@ -128,16 +128,9 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
 {
     // Weakly tag the HTTP operation with its parent object request operation
     RKObjectRequestOperation *objectRequestOperation = [notification object];
+    RKHTTPRequestOperation *operation = objectRequestOperation.HTTPRequestOperation;
     objc_setAssociatedObject(objectRequestOperation, RKOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     objc_setAssociatedObject(objectRequestOperation.HTTPRequestOperation, RKParentObjectRequestOperation, objectRequestOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (void)HTTPOperationDidStart:(NSNotification *)notification
-{
-    RKHTTPRequestOperation *operation = [notification object];    
-    if (![operation isKindOfClass:[AFHTTPRequestOperation class]]) return;
-    
-    objc_setAssociatedObject(operation, RKOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
         NSString *body = nil;
@@ -151,42 +144,14 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
     }
 }
 
+- (void)HTTPOperationDidStart:(NSNotification *)notification
+{
+    objc_setAssociatedObject(notification.object, RKOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 - (void)HTTPOperationDidFinish:(NSNotification *)notification
 {
-    RKHTTPRequestOperation *operation = [notification object];    
-    if (![operation isKindOfClass:[AFHTTPRequestOperation class]]) return;
-    
-    // NOTE: if we have a parent object request operation, we'll wait it to finish to emit the logging info
-    RKObjectRequestOperation *parentOperation = objc_getAssociatedObject(operation, RKParentObjectRequestOperation);
-    objc_setAssociatedObject(operation, RKParentObjectRequestOperation, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    if (parentOperation) {
-        objc_setAssociatedObject(operation, RKOperationFinishDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        return;
-    }
-    
-    NSTimeInterval elapsedTime = [[NSDate date] timeIntervalSinceDate:objc_getAssociatedObject(operation, RKOperationStartDate)];
-    
-    NSString *statusCodeString = RKStringFromStatusCode([operation.response statusCode]);
-    NSString *elapsedTimeString = [NSString stringWithFormat:@"[%.04f s]", elapsedTime];
-    NSString *statusCodeAndElapsedTime = statusCodeString ? [NSString stringWithFormat:@"(%ld %@) %@", (long)[operation.response statusCode], statusCodeString, elapsedTimeString] : [NSString stringWithFormat:@"(%ld) %@", (long)[operation.response statusCode], elapsedTimeString];
-    if (operation.error) {
-        if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogError(@"%@ '%@' %@:\nerror=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime, operation.error);
-            RKLogDebug(@"response.body=%@", operation.responseString);
-        } else {
-            if (operation.error.code == NSURLErrorCancelled) {
-                RKLogError(@"%@ '%@' %@: Cancelled", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime);
-            } else {
-                RKLogError(@"%@ '%@' %@: %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime, operation.error);
-            }
-        }
-    } else {
-        if ((_RKlcl_component_level[(__RKlcl_log_symbol(RKlcl_cRestKitNetwork))]) >= (__RKlcl_log_symbol(RKlcl_vTrace))) {
-            RKLogTrace(@"%@ '%@' %@:\nresponse.headers=%@\nresponse.body=%@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime, [operation.response allHeaderFields], RKLogTruncateString(operation.responseString));
-        } else {
-            RKLogInfo(@"%@ '%@' %@", [operation.request HTTPMethod], [[operation.request URL] absoluteString], statusCodeAndElapsedTime);
-        }
-    }
+    objc_setAssociatedObject(notification.object, RKOperationFinishDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)objectRequestOperationDidFinish:(NSNotification *)notification
