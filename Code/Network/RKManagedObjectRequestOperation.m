@@ -830,7 +830,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
         if (error) *error = localError;
         // Logging the error requires calling -[NSManagedObject description] which
         // can only be done on the context's queue
-        [self.managedObjectContext performBlock:^{
+        [context performBlock:^{
             RKLogError(@"Failed saving managed object context %@ %@: %@", (self.savesToPersistentStore ? @"to the persistent store" : @""),  context, localError);
             RKLogCoreDataError(localError);
         }];
