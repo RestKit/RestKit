@@ -615,6 +615,10 @@ Please note that if your installation fails, it may be because you are installin
 
 Detailed installation instructions are available in the [Visual Install Guide](https://github.com/RestKit/RestKit/wiki/Installing-RestKit-v0.20.x-as-a-Git-Submodule) on the Wiki.
 
+## Using RestKit in a Swift Project
+
+Install RestKit using one of the above methods, then add `#import <RestKit/RestKit.h>` into the bridging header for your Swift project. To enable the Core Data functionality in RestKit, add `@import CoreData;` into your bridging header _before_ you import `RestKit.h`.
+
 ## License
 
 RestKit is licensed under the terms of the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html). Please see the [LICENSE](LICENSE) file for full details.
