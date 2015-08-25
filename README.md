@@ -617,7 +617,7 @@ Detailed installation instructions are available in the [Visual Install Guide](h
 
 ## Using RestKit in a Swift Project
 
-Install RestKit using one of the above methods, then add `#import <RestKit/RestKit.h>` into the bridging header for your Swift project. To enable the Core Data functionality in RestKit, add `@import CoreData;` into your bridging header _before_ you import `RestKit.h`.
+Install RestKit using one of the above methods. Then add `@import RestKit;` (if RestKit is built as a dynamic framework) or `#import <RestKit/RestKit.h>` (if RestKit is built as a static library) into the bridging header for your Swift project. To enable the Core Data functionality in RestKit, add `@import CoreData;` into your bridging header _before_ you import RestKit.
 
 ## License
 
