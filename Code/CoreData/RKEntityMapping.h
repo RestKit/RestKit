@@ -133,6 +133,15 @@
 @property (nonatomic, strong) NSAttributeDescription *modificationAttribute;
 
 /**
+ If this is YES, mapping operations will map relationships of the object even if the `modificationAttribute` shows that the object has not been modified.
+ 
+ This is useful if a response contains a nested object that has been updated inside an object that has not.
+ 
+ Defaults to NO.
+ */
+@property (nonatomic) BOOL shouldMapRelationshipsIfObjectIsUnmodified;
+
+/**
  Sets the `modificationAttribute` to the receiver to the attribute with the specified name.
  
  The given name must correspond to the name of an attribute within the receiver's entity.

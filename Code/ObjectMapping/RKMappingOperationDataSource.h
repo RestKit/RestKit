@@ -93,7 +93,9 @@
  */
 - (BOOL)mappingOperationShouldSetUnchangedValues:(RKMappingOperation *)mappingOperation;
 
-- (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation;
+- (BOOL)mappingOperationShouldSkipAttributeMapping:(RKMappingOperation *)mappingOperation;
+
+- (BOOL)mappingOperationShouldSkipRelationshipMapping:(RKMappingOperation *)mappingOperation;
 
 /**
  Asks the data source if the mapping operation should collect `RKMappingInfo` information during the mapping
