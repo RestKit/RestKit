@@ -5,7 +5,11 @@
   },
   {
      "id":187,
-     "name":"Jeremy Ellison"
+     "name":"Jeremy Ellison",
+     "friend": {
+         "id": 255,
+         "name": "Anthony Stark"
+     }
   },
   {
      "id":7,
