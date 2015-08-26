@@ -126,7 +126,7 @@
  
  A common modification attribute is a 'last modified' or 'updated at' timestamp that specifies the timestamp of the last change to an object. When the `modificationAttribute` is non-nil, the mapper will compare the value returned of the attribute on an existing object instance with the value in the representation being mapped. 
  
- The semantics of the comparison are dependent on the data type of the modification attribute. If the attribute is a string, then the values are compared for equality. If the attribute is a date or a numeric value, then the values will be compared numerically and mapping will be skipped if the value in the representation is greater than the value of the modification attribute stored on the object.
+ The semantics of the comparison are dependent on the data type of the modification attribute. If the attribute is a string, then the values are compared for equality. If the attribute is a date or a numeric value, then the values will be compared numerically and mapping will be skipped unless the value in the representation is greater than the value of the modification attribute stored on the object.
  
  @raises NSInvalidArgumentException Raised if the attribute given is not a property of the receiver's entity.
  */
