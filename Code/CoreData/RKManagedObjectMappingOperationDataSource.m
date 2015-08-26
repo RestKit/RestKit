@@ -497,6 +497,11 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
 }
 
+- (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation
+{
+    return [self isDestinationObjectNotModifiedInMappingOperation:mappingOperation];
+}
+
 - (BOOL)mappingOperationShouldSkipAttributeMapping:(RKMappingOperation *)mappingOperation
 {
     return [self isDestinationObjectNotModifiedInMappingOperation:mappingOperation];

@@ -93,6 +93,8 @@
  */
 - (BOOL)mappingOperationShouldSetUnchangedValues:(RKMappingOperation *)mappingOperation;
 
+- (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation DEPRECATED_MSG_ATTRIBUTE("use mappingOperationShouldSkipAttributeMapping: and mappingOperationShouldSkipRelationshipMapping: instead");
+
 - (BOOL)mappingOperationShouldSkipAttributeMapping:(RKMappingOperation *)mappingOperation;
 
 - (BOOL)mappingOperationShouldSkipRelationshipMapping:(RKMappingOperation *)mappingOperation;
