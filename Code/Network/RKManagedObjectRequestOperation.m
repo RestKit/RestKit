@@ -126,7 +126,7 @@ static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managed
     NSManagedObjectID *managedObjectID = [managedObject objectID];
     if ([managedObjectID isTemporaryID]) {
         RKLogWarning(@"Unable to refetch managed object %@: the object has a temporary managed object ID.", managedObject);
-        return managedObject;
+        return nil;
     }
     NSError *error = nil;
     NSManagedObject *refetchedObject = [managedObjectContext existingObjectWithID:managedObjectID error:&error];
@@ -241,7 +241,7 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     NSAssert(!self.refetched, @"Mapping result should only be refetched once");
     if (! [self.mappingResult count]) return self.mappingResult;
     
-    NSMutableDictionary *newDictionary = [self.mappingResult.dictionary mutableCopy];
+    NSMutableDictionary *newDictionary = [NSMutableDictionary dictionary];
     [self.managedObjectContext performBlockAndWait:^{
         NSArray *entityMappingEvents = [RKEntityMappingEvent entityMappingEventsForMappingInfo:self.mappingInfo];
         NSSet *rootKeys = [NSSet setWithArray:[entityMappingEvents valueForKey:@"rootKey"]];
@@ -251,7 +251,7 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
             // If keyPaths contains null, then the root object is a managed object and we only need to refetch it
             NSSet *nonNestedKeyPaths = ([keyPaths containsObject:[NSNull null]]) ? [NSSet setWithObject:[NSNull null]] : RKSetByRemovingSubkeypathsFromSet(keyPaths);
             
-            NSDictionary *mappingResultsAtRootKey = newDictionary[rootKey];
+            NSDictionary *mappingResultsAtRootKey = self.mappingResult.dictionary[rootKey];
             for (NSString *keyPath in nonNestedKeyPaths) {
                 id value = nil;
                 if ([keyPath isEqual:[NSNull null]]) {
