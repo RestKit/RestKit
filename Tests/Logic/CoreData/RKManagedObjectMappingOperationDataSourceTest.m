@@ -1671,8 +1671,10 @@
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
     mappingOperation.dataSource = mappingOperationDataSource;
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(YES);
+    BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+    BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+    expect(canSkipAttributes).to.equal(YES);
+	expect(canSkipRelationships).to.equal(YES);
 }
 
 - (void)testThatStringInequalityCausesSkipPropertyMappingToReturnNO
@@ -1693,8 +1695,10 @@
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
     mappingOperation.dataSource = mappingOperationDataSource;
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(NO);
+	BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+	BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+	expect(canSkipAttributes).to.equal(NO);
+	expect(canSkipRelationships).to.equal(NO);
 }
 
 - (void)testThatDateEqualityCausesSkipPropertyMappingToReturnYES
@@ -1716,8 +1720,10 @@
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
     mappingOperation.dataSource = mappingOperationDataSource;
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(YES);
+	BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+	BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+	expect(canSkipAttributes).to.equal(YES);
+	expect(canSkipRelationships).to.equal(YES);
 }
 
 - (void)testThatDateDecensionCausesSkipPropertyMappingToReturnYES
@@ -1740,8 +1746,10 @@
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
     mappingOperation.dataSource = mappingOperationDataSource;
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(YES);
+	BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+	BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+	expect(canSkipAttributes).to.equal(YES);
+	expect(canSkipRelationships).to.equal(YES);
 }
 
 - (void)testThatDateAscensionCausesSkipPropertyMappingToReturnNO
@@ -1764,8 +1772,10 @@
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
     mappingOperation.dataSource = mappingOperationDataSource;
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(NO);
+	BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+	BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+	expect(canSkipAttributes).to.equal(NO);
+	expect(canSkipRelationships).to.equal(NO);
 }
 
 - (void)testThatNumericEqualityCausesSkipPropertyMappingToReturnYES
@@ -1786,8 +1796,10 @@
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
     mappingOperation.dataSource = mappingOperationDataSource;
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(YES);
+	BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+	BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+	expect(canSkipAttributes).to.equal(YES);
+	expect(canSkipRelationships).to.equal(YES);
 }
 
 - (void)testThatNumericDecensionCausesSkipPropertyMappingToReturnYES
@@ -1808,8 +1820,10 @@
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
     mappingOperation.dataSource = mappingOperationDataSource;
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(YES);
+	BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+	BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+	expect(canSkipAttributes).to.equal(YES);
+	expect(canSkipRelationships).to.equal(YES);
 }
 
 - (void)testThatNumericAscensionCausesSkipPropertyMappingToReturnNO
@@ -1830,8 +1844,10 @@
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
     mappingOperation.dataSource = mappingOperationDataSource;
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(NO);
+	BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+	BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+	expect(canSkipAttributes).to.equal(NO);
+	expect(canSkipRelationships).to.equal(NO);
 }
 
 - (void)testThatDynamicMappingCanSkipPropertyMapping
@@ -1863,8 +1879,10 @@
     [mappingOperationDataSource.operationQueue waitUntilAllOperationsAreFinished];
     assertThat(error, is(nilValue()));
     
-    BOOL canSkipMapping = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
-    expect(canSkipMapping).to.equal(YES);
+	BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+	BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+	expect(canSkipAttributes).to.equal(YES);
+	expect(canSkipRelationships).to.equal(YES);
 }
 
 @end
