@@ -93,7 +93,36 @@
  */
 - (BOOL)mappingOperationShouldSetUnchangedValues:(RKMappingOperation *)mappingOperation;
 
-- (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation;
+/**
+ **Deprecated in v0.26.0**
+ Asks the data source if it should skip mapping. This method can significantly improve performance if, for example, the data source has determined that the properties in the representation are not newer than the current target object's properties. See `modificationAttribute` in `RKEntityMapping` for an example of when skipping property mapping would be appropriate.
+ 
+ If this method is not implemented by the data source, then the mapping operation defaults to `NO`.
+ 
+ @param mappingOperation The mapping operation that is querying the data source.
+ @return `YES` if the mapping operation should skip mapping properties, else `NO`.
+ */
+- (BOOL)mappingOperationShouldSkipPropertyMapping:(RKMappingOperation *)mappingOperation DEPRECATED_MSG_ATTRIBUTE("use mappingOperationShouldSkipAttributeMapping: and mappingOperationShouldSkipRelationshipMapping: instead");
+
+/**
+ Asks the data source if it should skip mapping attributes. This method can significantly improve performance if, for example, the data source has determined that the attributes in the representation are not newer than the current target object's attributes. See `modificationAttribute` in `RKEntityMapping` for an example of when skipping attribute mapping would be appropriate.
+ 
+ If this method is not implemented by the data source, then the mapping operation defaults to `NO`.
+ 
+ @param mappingOperation The mapping operation that is querying the data source.
+ @return `YES` if the mapping operation should skip mapping attributes, else `NO`.
+ */
+- (BOOL)mappingOperationShouldSkipAttributeMapping:(RKMappingOperation *)mappingOperation;
+
+/**
+ Asks the data source if it should skip mapping relationships. This method can significantly improve performance if, for example, the data source has determined that the relationships in the representation are not newer than the current target object's relationships. See `modificationAttribute` and `shouldMapRelationshipsIfObjectIsUnmodified` in `RKEntityMapping` for an example of when skipping relationship mapping might be appropriate.
+ 
+ If this method is not implemented by the data source, then the mapping operation defaults to `NO`.
+ 
+ @param mappingOperation The mapping operation that is querying the data source.
+ @return `YES` if the mapping operation should skip mapping relationships, else `NO`.
+ */
+- (BOOL)mappingOperationShouldSkipRelationshipMapping:(RKMappingOperation *)mappingOperation;
 
 /**
  Asks the data source if the mapping operation should collect `RKMappingInfo` information during the mapping
