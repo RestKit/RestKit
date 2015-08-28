@@ -288,6 +288,20 @@
     assertThat(error, isNot(nilValue()));
 }
 
+- (void)testShouldFailWithoutThrowingIfMappingAnInvalidKeyPath
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping addAttributeMappingsFromDictionary:@{ @"object.number": @"number" }];
+    TestMappable *object = [[TestMappable alloc] init];
+    NSDictionary *dictionary = @{@"object": @"a string instead of a dictionary"};
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    NSError *error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(NO)));
+    assertThat(error.domain, is(equalTo(RKErrorDomain)));
+    assertThatInteger(error.code, is(equalToInteger(RKMappingErrorUnmappableRepresentation)));
+}
+
 - (void)testShouldNotSetTheAttributeIfKeyValueValidationReturnsNo
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
