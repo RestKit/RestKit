@@ -340,7 +340,7 @@
  
  @return A new mapping that will map the inverse of the receiver.
  */
-- (instancetype)inverseMapping;
+- (RKObjectMapping *)inverseMapping;
 
 /**
  Generates an inverse mapping with all property mappings of the receiver that pass the given test. Each `RKAttributeMapping` and `RKRelationshipMapping` added to the receiver is yielded to the block for evaluation. The block is also invoked for any nested relationships that are traversed during the inversion process.
@@ -349,7 +349,7 @@
  @return A new mapping that will map the inverse of the receiver.
  @see inverseMapping
  */
-- (instancetype)inverseMappingWithPropertyMappingsPassingTest:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate;
+- (RKObjectMapping *)inverseMappingWithPropertyMappingsPassingTest:(BOOL (^)(RKPropertyMapping *propertyMapping))predicate;
 
 ///---------------------------------------------------
 /// @name Obtaining Information About the Target Class
