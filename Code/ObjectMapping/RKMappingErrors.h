@@ -20,8 +20,7 @@
 
 #import "RKErrors.h"
 
-typedef UInt32 RKMappingErrorCode;
-enum {
+typedef NS_ENUM(NSInteger, RKMappingErrorCode) {
     RKMappingErrorNotFound                     = 1001,     // No mapping found
     RKMappingErrorTypeMismatch                 = 1002,     // Target class and object mapping are in disagreement
     RKMappingErrorUnmappableRepresentation     = 1003,     // No values were found at the key paths of any attribute or relationship mappings in the given representation
