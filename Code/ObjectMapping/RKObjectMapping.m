@@ -140,7 +140,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     return objectMapping;
 }
 
-+ (void)initialize
++ (void)load
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
