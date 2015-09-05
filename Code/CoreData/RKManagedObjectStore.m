@@ -79,8 +79,8 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
     if (self) {
         self.observedContext = observedContext;
         self.mergeContext = mergeContext;
-		self.active = YES;
-		
+        self.active = YES;
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleManagedObjectContextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:observedContext];
         
         if (RKIsManagedObjectContextDescendentOfContext(mergeContext, observedContext)) {
@@ -98,17 +98,17 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
 
 - (void)handleManagedObjectContextWillSaveNotification:(NSNotification *)notification
 {
-	if (!self.active) { return; }
+    if (!self.active) { return; }
     self.objectIDsFromChildDidSaveNotification = RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification);
 }
 
 - (void)handleManagedObjectContextDidSaveNotification:(NSNotification *)notification
 {
-	if (!self.active) {
-		self.objectIDsFromChildDidSaveNotification = nil;
-		return;
-	}
-	
+    if (!self.active) {
+        self.objectIDsFromChildDidSaveNotification = nil;
+        return;
+    }
+    
     NSAssert([notification object] == self.observedContext, @"Received Managed Object Context Did Save Notification for Unexpected Context: %@", [notification object]);
     if (! [self.objectIDsFromChildDidSaveNotification isEqual:RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification)]) {
         [self.mergeContext performBlock:^{
@@ -180,8 +180,8 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     if (self) {
         self.managedObjectModel = managedObjectModel;
         self.managedObjectCache = [RKFetchRequestManagedObjectCache new];
-		self.shouldMergeChangesFromPersistenceContextIntoMainQueueContext = YES;
-		
+        self.shouldMergeChangesFromPersistenceContextIntoMainQueueContext = YES;
+        
         // Hydrate the defaultStore
         if (! defaultStore) {
             [RKManagedObjectStore setDefaultStore:self];
@@ -353,7 +353,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 
     // Merge changes from a primary MOC back into the main queue when complete
     RKManagedObjectContextChangeMergingObserver *observer = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:self.persistentStoreManagedObjectContext mergeContext:self.mainQueueManagedObjectContext];
-	observer.active = self.shouldMergeChangesFromPersistenceContextIntoMainQueueContext;
+    observer.active = self.shouldMergeChangesFromPersistenceContextIntoMainQueueContext;
     objc_setAssociatedObject(self.mainQueueManagedObjectContext,
                              &RKManagedObjectContextChangeMergingObserverAssociationKey,
                              observer,
@@ -361,10 +361,10 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 }
 
 - (void)setShouldMergeChangesFromPersistenceContextIntoMainQueueContext:(BOOL)shouldMergeChangesFromPersistenceContextIntoMainQueueContext {
-	_shouldMergeChangesFromPersistenceContextIntoMainQueueContext = shouldMergeChangesFromPersistenceContextIntoMainQueueContext;
-	
-	RKManagedObjectContextChangeMergingObserver *observer = objc_getAssociatedObject(self.mainQueueManagedObjectContext, &RKManagedObjectContextChangeMergingObserverAssociationKey);
-	observer.active = self.shouldMergeChangesFromPersistenceContextIntoMainQueueContext;
+    _shouldMergeChangesFromPersistenceContextIntoMainQueueContext = shouldMergeChangesFromPersistenceContextIntoMainQueueContext;
+    
+    RKManagedObjectContextChangeMergingObserver *observer = objc_getAssociatedObject(self.mainQueueManagedObjectContext, &RKManagedObjectContextChangeMergingObserverAssociationKey);
+    observer.active = self.shouldMergeChangesFromPersistenceContextIntoMainQueueContext;
 }
 
 - (void)recreateManagedObjectContexts
