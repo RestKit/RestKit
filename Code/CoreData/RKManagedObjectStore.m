@@ -369,8 +369,6 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 
 - (void)recreateManagedObjectContexts
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:self.persistentStoreManagedObjectContext];
-
     self.persistentStoreManagedObjectContext = nil;
     self.mainQueueManagedObjectContext = nil;
     [self createManagedObjectContexts];
