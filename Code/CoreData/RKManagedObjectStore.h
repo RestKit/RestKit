@@ -237,6 +237,14 @@
 @property (nonatomic, strong, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 /**
+ If YES, then when `persistentStoreManagedObjectContext` is saved, the changes will be merged into `mainQueueManagedObjectContext`
+ 
+ This is useful if your application saves changes from background contexts directly into `persistentStoreManagedObjectContext` so that those changes will be reflected in the `mainQueueManagedObjectContext`-driven user interface after the merge.
+ Default value: YES
+ */
+@property (nonatomic) BOOL shouldMergeChangesFromPersistenceContextIntoMainQueueContext;
+
+/**
  Creates a new child managed object context of the persistent store managed object context with a given concurrency type, optionally tracking changes saved to the parent context and merging them on save.
 
  @param concurrencyType The desired concurrency type for the new context.
