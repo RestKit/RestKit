@@ -125,6 +125,71 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     assertThat([[seededHuman.objectID URIRepresentation] URLByDeletingLastPathComponent], is(equalTo([[seedObjectID URIRepresentation] URLByDeletingLastPathComponent])));
 }
 
+- (void)testThatChangesGetMergedFromPersistenceContextWhenTheyShould
+{
+    // Create a store with an object to serve as our seed database
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    RKManagedObjectStore *seedStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    __block NSError *error;
+    NSString *seedPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Seed.sqlite"];
+    NSPersistentStore *seedPersistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    assertThat(seedPersistentStore, is(notNilValue()));
+    [seedStore createManagedObjectContexts];
+    NSFetchRequest *humanRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    NSArray *arrayBeforeInsert = [seedStore.mainQueueManagedObjectContext executeFetchRequest:humanRequest error:&error] ?: @[];
+    assertThatInteger(arrayBeforeInsert.count, is(equalToInteger(0)));
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:seedStore.mainQueueManagedObjectContext];
+    human.name = @"Brake";
+    BOOL permanentIDObtained = [seedStore.mainQueueManagedObjectContext obtainPermanentIDsForObjects:@[ human ] error:&error];
+    assertThatBool(permanentIDObtained, is(equalToBool(YES)));
+    BOOL initialSaved = [seedStore.mainQueueManagedObjectContext save:&error];
+    assertThatBool(initialSaved, is(equalToBool(YES)));
+    NSManagedObjectID *blakeID = human.objectID;
+    [seedStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        RKHuman *human = [seedStore.persistentStoreManagedObjectContext objectWithID:blakeID];
+        human.name = @"Blake";
+
+        BOOL success = [seedStore.persistentStoreManagedObjectContext save:&error];
+        assertThatBool(success, is(equalToBool(YES)));
+    }];
+
+    assertThat(human.name, is(equalTo(@"Blake")));
+}
+
+- (void)testThatChangesDontGetMergedFromPersistenceContextWhenTheyShouldnt
+{
+    // Create a store with an object to serve as our seed database
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    RKManagedObjectStore *seedStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
+    __block NSError *error;
+    NSString *seedPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Seed.sqlite"];
+    NSPersistentStore *seedPersistentStore = [seedStore addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
+    assertThat(seedPersistentStore, is(notNilValue()));
+    seedStore.shouldMergeChangesFromPersistenceContextIntoMainQueueContext = NO;
+    [seedStore createManagedObjectContexts];
+    NSFetchRequest *humanRequest = [NSFetchRequest fetchRequestWithEntityName:@"Human"];
+    NSArray *arrayBeforeInsert = [seedStore.mainQueueManagedObjectContext executeFetchRequest:humanRequest error:&error] ?: @[];
+    assertThatInteger(arrayBeforeInsert.count, is(equalToInteger(0)));
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:seedStore.mainQueueManagedObjectContext];
+    human.name = @"Brake";
+    BOOL permanentIDObtained = [seedStore.mainQueueManagedObjectContext obtainPermanentIDsForObjects:@[ human ] error:&error];
+    assertThatBool(permanentIDObtained, is(equalToBool(YES)));
+    BOOL initialSaved = [seedStore.mainQueueManagedObjectContext save:&error];
+    assertThatBool(initialSaved, is(equalToBool(YES)));
+    NSManagedObjectID *blakeID = human.objectID;
+    [seedStore.persistentStoreManagedObjectContext performBlockAndWait:^{
+        RKHuman *human = [seedStore.persistentStoreManagedObjectContext objectWithID:blakeID];
+        human.name = @"Blake";
+        
+        BOOL success = [seedStore.persistentStoreManagedObjectContext save:&error];
+        assertThatBool(success, is(equalToBool(YES)));
+    }];
+    
+    assertThat(human.name, is(equalTo(@"Brake")));
+}
+
 - (void)testResetPersistentStoresRecreatesInMemoryStoreThusDeletingAllManagedObjects
 {
     NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
