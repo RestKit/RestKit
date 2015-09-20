@@ -39,9 +39,17 @@ static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDes
     do {
         id userInfoValue = [[entity userInfo] valueForKey:RKEntityIdentificationAttributesUserInfoKey];
         if (userInfoValue) {
-            NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
+            NSArray *attributeNames;
+            if ([userInfoValue isKindOfClass:[NSString class]]) {
+                attributeNames = [userInfoValue componentsSeparatedByString:@","];
+            } else if ([userInfoValue isKindOfClass:[NSArray class]]) {
+                attributeNames = userInfoValue;
+            } else {
+                attributeNames = @[ userInfoValue ];
+            }
+            
             NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
-            [attributeNames enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
+            for (NSString *attributeName in attributeNames) {
                 if (! [attributeName isKindOfClass:[NSString class]]) {
                     [NSException raise:NSInvalidArgumentException format:@"Invalid value given in user info key '%@' of entity '%@': expected an `NSString` or `NSArray` of strings, instead got '%@' (%@)", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName, [attributeName class]];
                 }
@@ -52,7 +60,7 @@ static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDes
                 }
                 
                 [attributes addObject:attribute];
-            }];
+            };
             return attributes;
         }
         entity = [entity superentity];
@@ -111,7 +119,9 @@ NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entit
 {
     NSArray *attributes = RKEntityIdentificationAttributesFromUserInfoOfEntity(entity);
     if (attributes) {
-        return RKArrayOfAttributesForEntityFromAttributesOrNames(entity, attributes);
+        NSArray *identificationAttributes = RKArrayOfAttributesForEntityFromAttributesOrNames(entity, attributes);
+        RKLogDebug(@"Inferred identification attributes for %@: %@", entity.name, [[identificationAttributes valueForKeyPath:@"name"] componentsJoinedByString:@", "]);
+        return identificationAttributes;
     }
     
     NSMutableArray *identifyingAttributes = [RKEntityIdentificationAttributeNamesForEntity(entity) mutableCopy];
@@ -119,9 +129,11 @@ NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entit
     for (NSString *attributeName in identifyingAttributes) {
         NSAttributeDescription *attribute = [[entity attributesByName] valueForKey:attributeName];
         if (attribute) {
+            RKLogDebug(@"Inferred identification attribute for %@: %@", entity.name, attributeName);
             return @[ attribute ];
         }
     }
+    RKLogDebug(@"No inferred identification attributes for %@", entity.name);
     return nil;
 }
 
