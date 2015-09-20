@@ -39,7 +39,15 @@ static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDes
     do {
         id userInfoValue = [[entity userInfo] valueForKey:RKEntityIdentificationAttributesUserInfoKey];
         if (userInfoValue) {
-            NSArray *attributeNames = [userInfoValue isKindOfClass:[NSArray class]] ? userInfoValue : @[ userInfoValue ];
+            NSArray *attributeNames;
+            if ([userInfoValue isKindOfClass:[NSString class]]) {
+                attributeNames = [userInfoValue componentsSeparatedByString:@","];
+            } else if ([userInfoValue isKindOfClass:[NSArray class]]) {
+                attributeNames = userInfoValue;
+            } else {
+                attributeNames = @[ userInfoValue ];
+            }
+            
             NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
             [attributeNames enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
                 if (! [attributeName isKindOfClass:[NSString class]]) {
