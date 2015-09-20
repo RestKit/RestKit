@@ -49,7 +49,7 @@ static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDes
             }
             
             NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
-            [attributeNames enumerateObjectsUsingBlock:^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
+            for (NSString *attributeName in attributeNames) {
                 if (! [attributeName isKindOfClass:[NSString class]]) {
                     [NSException raise:NSInvalidArgumentException format:@"Invalid value given in user info key '%@' of entity '%@': expected an `NSString` or `NSArray` of strings, instead got '%@' (%@)", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName, [attributeName class]];
                 }
@@ -60,7 +60,7 @@ static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDes
                 }
                 
                 [attributes addObject:attribute];
-            }];
+            };
             return attributes;
         }
         entity = [entity superentity];
