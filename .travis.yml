@@ -5,3 +5,8 @@ install:
     - bundle exec pod install
 script:
     - bundle exec rake ci
+branches:
+  only:
+    - master
+    - development
+    - /^release/
