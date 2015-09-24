@@ -14,8 +14,8 @@
 #endif
 #import <Availability.h>
 #import <sys/xattr.h>
-#import "RKPathUtilities.h"
-#import "RKLog.h"
+#import <RestKit/Support/RKPathUtilities.h>
+#import <RestKit/Support/RKLog.h>
 
 NSString *RKExecutableName(void);
 

@@ -19,7 +19,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKHTTPUtilities.h"
+#import <RestKit/ObjectMapping/RKHTTPUtilities.h>
 
 @class RKMapping;
 

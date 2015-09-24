@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import "RKMIMETypes.h"
-#import "RKSerialization.h"
+#import <RestKit/Support/RKMIMETypes.h>
+#import <RestKit/Support/RKSerialization.h>
 
 /**
  The `RKMIMETypeSerialization` class provides support for the registration of classes conforming to the `RKSerialization` protocol by MIME Type and the serialization and deserialization of content by MIME Type. Serialization implementations may be registered by an exact string match (i.e. 'application/json' for a JSON serialization implementation) or by regular expression to match MIME Type by pattern.

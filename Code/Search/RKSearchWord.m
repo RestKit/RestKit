@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import "RKSearchWord.h"
-#import "RKLog.h"
+#import <RestKit/Search/RKSearchWord.h>
+#import <RestKit/Support/RKLog.h>
 
 // Set Logging Component
 #undef RKLogComponent

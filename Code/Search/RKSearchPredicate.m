@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
-#import "RKSearchPredicate.h"
-#import "RKStringTokenizer.h"
+#import <RestKit/Search/RKSearchPredicate.h>
+#import <RestKit/Support/RKStringTokenizer.h>
 
 @interface RKSearchPredicate()
 

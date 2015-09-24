@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKURLEncodedSerialization.h"
+#import <RestKit/Support/RKURLEncodedSerialization.h>
 
 #pragma mark - AFNetworking
 

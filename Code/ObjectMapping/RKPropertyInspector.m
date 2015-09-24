@@ -19,9 +19,9 @@
 //
 
 #import <objc/runtime.h>
-#import "RKPropertyInspector.h"
-#import "RKLog.h"
-#import "RKObjectUtilities.h"
+#import <RestKit/ObjectMapping/RKPropertyInspector.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/ObjectMapping/RKObjectUtilities.h>
 
 // Set Logging Component
 #undef RKLogComponent

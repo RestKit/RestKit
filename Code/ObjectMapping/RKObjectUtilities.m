@@ -20,7 +20,7 @@
 
 #import <objc/message.h>
 #import <objc/runtime.h>
-#import "RKObjectUtilities.h"
+#import <RestKit/ObjectMapping/RKObjectUtilities.h>
 
 BOOL RKObjectIsEqualToObject(id object, id anotherObject) {
     NSCAssert(object, @"Expected object not to be nil");

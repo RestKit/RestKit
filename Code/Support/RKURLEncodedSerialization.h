@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKSerialization.h"
+#import <RestKit/Support/RKSerialization.h>
 
 /**
  The `RKURLEncodedSerialization` class conforms to the `RKSerialization` protocol and provides support for the serialization and deserialization of URL encoded data. URL encoding is used to replace certain characters in a string with equivalent percent escape sequences. The list of characters replaced by the implementation are designed as illegal URL characters by RFC 3986. URL encoded data is used for the submission of HTML forms with the MIME Type `application/x-www-form-urlencoded`.

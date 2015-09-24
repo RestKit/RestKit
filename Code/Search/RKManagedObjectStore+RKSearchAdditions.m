@@ -19,8 +19,8 @@
 //
 
 #import <objc/runtime.h>
-#import "RKManagedObjectStore+RKSearchAdditions.h"
-#import "RKSearchWordEntity.h"
+#import <RestKit/Search/RKManagedObjectStore+RKSearchAdditions.h>
+#import <RestKit/Search/RKSearchWordEntity.h>
 
 static char searchIndexerAssociationKey;
 

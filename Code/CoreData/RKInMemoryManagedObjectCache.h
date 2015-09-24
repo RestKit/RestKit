@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKManagedObjectCaching.h"
+#import <RestKit/CoreData/RKManagedObjectCaching.h>
 
 /**
  Provides a fast managed object cache where-in object instances are retained in memory to avoid hitting the Core Data persistent store. Performance is greatly increased over fetch request based strategy at the expense of memory consumption.

@@ -7,7 +7,7 @@
 //  Copyleft 2009. Some rights reserved.
 //
 
-#import "RKBenchmark.h"
+#import <RestKit/Testing/RKBenchmark.h>
 
 @interface RKBenchmark ()
 @property (nonatomic, assign, readwrite) CFAbsoluteTime startTime;

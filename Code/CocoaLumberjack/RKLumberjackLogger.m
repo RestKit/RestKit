@@ -7,7 +7,7 @@
 //
 
 #if __has_include(<CocoaLumberjack/CocoaLumberjack.h>)
-#import "RKLumberjackLogger.h"
+#import <RestKit/Support/RKLumberjackLogger.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
 
 @implementation RKLumberjackLogger
@@ -86,7 +86,7 @@
 
 /* Create a DDRegisteredDynamicLogging class for each RestKit component */
 
-#import "lcl_config_components_RK.h"
+#import <RestKit/Support/lcl_config_components_RK.h>
 
 #undef   _RKlcl_component
 #define  _RKlcl_component(_identifier, _header, _name)                                       \

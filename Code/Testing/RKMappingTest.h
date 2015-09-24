@@ -19,8 +19,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKMappingOperation.h"
-#import "RKPropertyMappingTestExpectation.h"
+#import <RestKit/ObjectMapping/RKMappingOperation.h>
+#import <RestKit/Testing/RKPropertyMappingTestExpectation.h>
 
 @protocol RKMappingOperationDataSource, RKManagedObjectCaching;
 

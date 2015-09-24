@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKRequestDescriptor.h"
+#import <RestKit/Network/RKRequestDescriptor.h>
 
 /**
  The `RKObjectParameterization` class provides an interface for mapping a local domain object into an `NSDictionary` representation suitable for use as the parameters of an HTTP request.

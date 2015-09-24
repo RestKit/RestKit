@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
-#import "RKSearchWordEntity.h"
+#import <RestKit/Search/RKSearchWordEntity.h>
 
 NSString * const RKSearchWordEntityName = @"RKSearchWord";
 NSString * const RKSearchWordAttributeName = @"word";
