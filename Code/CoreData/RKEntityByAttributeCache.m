@@ -22,12 +22,12 @@
 #import <UIKit/UIKit.h>
 #endif
 
-#import <RestKit/CoreData/RKEntityByAttributeCache.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
-#import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
 #import <RestKit/CoreData/NSManagedObject+RKAdditions.h>
+#import <RestKit/CoreData/RKEntityByAttributeCache.h>
+#import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
 #import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/ObjectMapping/RKPropertyInspector.h>
+#import <RestKit/Support/RKLog.h>
 
 // Set Logging Component
 #undef RKLogComponent

@@ -18,16 +18,16 @@
 //  limitations under the License.
 //
 
+#import <RestKit/Network/RKObjectManager.h>
+#import <RestKit/Network/RKObjectParameterization.h>
+#import <RestKit/Network/RKObjectRequestOperation.h>
+#import <RestKit/Network/RKPathMatcher.h>
+#import <RestKit/Network/RKRequestDescriptor.h>
+#import <RestKit/Network/RKResponseDescriptor.h>
 #import <RestKit/Network/RKRoute.h>
 #import <RestKit/Network/RKRouteSet.h>
 #import <RestKit/Network/RKRouter.h>
-#import <RestKit/Network/RKRequestDescriptor.h>
-#import <RestKit/Network/RKResponseDescriptor.h>
-#import <RestKit/Network/RKObjectManager.h>
 #import <RestKit/ObjectMapping/RKHTTPUtilities.h>
-#import <RestKit/Network/RKObjectRequestOperation.h>
-#import <RestKit/Network/RKObjectParameterization.h>
-#import <RestKit/Network/RKPathMatcher.h>
 
 #ifdef _COREDATADEFINES_H
 #import <RestKit/Network/RKManagedObjectRequestOperation.h>

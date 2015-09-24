@@ -20,11 +20,11 @@
 
 #import <RestKit/CoreData/RKEntityMapping.h>
 #import <RestKit/CoreData/RKManagedObjectStore.h>
-#import <RestKit/ObjectMapping/RKObjectMappingMatcher.h>
 #import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
+#import <RestKit/ObjectMapping/RKObjectMappingMatcher.h>
 #import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
+#import <RestKit/Support/RKLog.h>
 
 // Set Logging Component
 #undef RKLogComponent

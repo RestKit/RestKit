@@ -8,8 +8,8 @@
 
 #import <RestKit/CoreData/NSManagedObject+RKAdditions.h>
 #import <RestKit/CoreData/NSManagedObjectContext+RKAdditions.h>
-#import <RestKit/Support/RKLog.h>
 #import <RestKit/CoreData/RKManagedObjectStore.h>
+#import <RestKit/Support/RKLog.h>
 
 @implementation NSManagedObject (RKAdditions)
 

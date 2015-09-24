@@ -19,11 +19,11 @@
 //
 
 #import <RestKit/Network/RKPaginator.h>
-#import <RestKit/ObjectMapping/RKMappingOperation.h>
-#import <SOCKit/SOCKit.h>
-#import <RestKit/Support/RKLog.h>
 #import <RestKit/Network/RKPathMatcher.h>
 #import <RestKit/ObjectMapping/RKHTTPUtilities.h>
+#import <RestKit/ObjectMapping/RKMappingOperation.h>
+#import <RestKit/Support/RKLog.h>
+#import <SOCKit/SOCKit.h>
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")

@@ -22,8 +22,8 @@
 //
 
 #import <RestKit/Network/RKRequestDescriptor.h>
-#import <RestKit/ObjectMapping/RKObjectMapping.h>
 #import <RestKit/ObjectMapping/RKDynamicMapping.h>
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
 
 static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
 {

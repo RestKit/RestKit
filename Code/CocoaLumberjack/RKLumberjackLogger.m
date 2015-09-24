@@ -7,8 +7,8 @@
 //
 
 #if __has_include(<CocoaLumberjack/CocoaLumberjack.h>)
-#import <RestKit/Support/RKLumberjackLogger.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
+#import <RestKit/Support/RKLumberjackLogger.h>
 
 @implementation RKLumberjackLogger
 

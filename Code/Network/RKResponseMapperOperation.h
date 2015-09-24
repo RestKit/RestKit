@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import <RestKit/ObjectMapping/RKMappingOperationDataSource.h>
 #import <RestKit/ObjectMapping/RKMapperOperation.h>
+#import <RestKit/ObjectMapping/RKMappingOperationDataSource.h>
 #import <RestKit/ObjectMapping/RKMappingResult.h>
 
 #ifdef _COREDATADEFINES_H

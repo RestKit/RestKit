@@ -19,10 +19,10 @@
 //
 
 #import <RestKit/CoreData/RKFetchRequestManagedObjectCache.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
 #import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
 #import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/ObjectMapping/RKPropertyInspector.h>
+#import <RestKit/Support/RKLog.h>
 
 // Set Logging Component
 #undef RKLogComponent

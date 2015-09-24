@@ -19,12 +19,12 @@
 //
 
 #import "AFHTTPClient.h"
-#import <RestKit/Testing/RKTestFactory.h>
-#import <RestKit/Support/RKLog.h>
 #import <RestKit/Network/RKObjectManager.h>
-#import <RestKit/Support/RKPathUtilities.h>
-#import <RestKit/Support/RKMIMETypeSerialization.h>
 #import <RestKit/Network/RKObjectRequestOperation.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/Support/RKMIMETypeSerialization.h>
+#import <RestKit/Support/RKPathUtilities.h>
+#import <RestKit/Testing/RKTestFactory.h>
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")

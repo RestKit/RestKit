@@ -20,8 +20,8 @@
 
 #ifdef _COREDATADEFINES_H
 
-#import <RestKit/Testing/RKConnectionTestExpectation.h>
 #import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/Testing/RKConnectionTestExpectation.h>
 
 @interface RKConnectionTestExpectation ()
 @property (nonatomic, copy, readwrite) NSString *relationshipName;

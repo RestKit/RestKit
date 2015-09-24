@@ -19,9 +19,9 @@
 //
 
 #import <RestKit/Network/RKPathMatcher.h>
-#import <SOCKit/SOCKit.h>
-#import <RestKit/Support/RKLog.h>
 #import <RestKit/Support/RKDictionaryUtilities.h>
+#import <RestKit/Support/RKLog.h>
+#import <SOCKit/SOCKit.h>
 
 static NSString *RKEncodeURLString(NSString *unencodedString);
 extern NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding stringEncoding);
