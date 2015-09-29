@@ -506,6 +506,7 @@
 		25FBB854159272DD00955D27 /* RKRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FBB851159272DD00955D27 /* RKRouter.m */; };
 		25FBB855159272DD00955D27 /* RKRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FBB851159272DD00955D27 /* RKRouter.m */; };
 		3304DA75F9D62CBBA0F1D286 /* libPods-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DC09A8FD6016D24B797977A1 /* libPods-ios.a */; };
+		489A701B1BBB3708009D5A1F /* DynamicKeysContainingPeriod.json in Resources */ = {isa = PBXBuildFile; fileRef = 489A701A1BBB3606009D5A1F /* DynamicKeysContainingPeriod.json */; };
 		54CDB45B17B408B100FAC285 /* RKStringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKStringTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54CDB45C17B408B100FAC285 /* RKStringTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CDB45917B408B100FAC285 /* RKStringTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54CDB45D17B408B100FAC285 /* RKStringTokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */; };
@@ -868,6 +869,7 @@
 		25FBB851159272DD00955D27 /* RKRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouter.m; sourceTree = "<group>"; };
 		3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = has_many_with_to_one_relationship.json; sourceTree = "<group>"; };
 		3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty_human.json; sourceTree = "<group>"; };
+		489A701A1BBB3606009D5A1F /* DynamicKeysContainingPeriod.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DynamicKeysContainingPeriod.json; sourceTree = "<group>"; };
 		54CDB45917B408B100FAC285 /* RKStringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKStringTokenizer.h; sourceTree = "<group>"; };
 		54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKStringTokenizer.m; sourceTree = "<group>"; };
 		5910B0B01AC9811900721876 /* hoarderWithCats_issue_2192.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hoarderWithCats_issue_2192.json; sourceTree = "<group>"; };
@@ -1295,6 +1297,7 @@
 				25160FD41456F2330060A5C5 /* ConnectingParents.json */,
 				25160FD51456F2330060A5C5 /* Dynamic */,
 				25160FDA1456F2330060A5C5 /* DynamicKeys.json */,
+				489A701A1BBB3606009D5A1F /* DynamicKeysContainingPeriod.json */,
 				25160FDB1456F2330060A5C5 /* DynamicKeysWithNestedRelationship.json */,
 				25160FDC1456F2330060A5C5 /* DynamicKeysWithRelationship.json */,
 				25160FDD1456F2330060A5C5 /* error.json */,
@@ -1928,6 +1931,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				489A701B1BBB3708009D5A1F /* DynamicKeysContainingPeriod.json in Resources */,
 				251610641456F2330060A5C5 /* blake.png in Resources */,
 				251610661456F2330060A5C5 /* ArrayOfNestedDictionaries.json in Resources */,
 				251610681456F2330060A5C5 /* ArrayOfResults.json in Resources */,
