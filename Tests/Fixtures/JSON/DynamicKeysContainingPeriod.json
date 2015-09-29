@@ -1,0 +1,12 @@
+{
+    "users": {
+        "blake@email.com": {
+            "id": 31337,
+            "website": "http://restkit.org/"
+        },
+        "rachit@something.com": {
+            "id": 7,
+            "website": "http://www.twotoasters.com/"
+        }
+    }
+}

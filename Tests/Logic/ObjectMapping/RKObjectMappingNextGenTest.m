@@ -397,6 +397,33 @@
     assertThat(user.name, is(equalTo(@"rachit")));
 }
 
+- (void)testShouldMapACollectionOfObjectsWithDynamicKeysContainingPeriod
+{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    mapping.forceCollectionMapping = YES;
+    [mapping addAttributeMappingFromKeyOfRepresentationToAttribute:@"name"];
+    RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"(name).id" toKeyPath:@"userID"];
+    [mapping addPropertyMapping:idMapping];
+    NSMutableDictionary *mappingsDictionary = [NSMutableDictionary dictionary];
+    mappingsDictionary[@"users"] = mapping;
+    
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeysContainingPeriod.json"];
+    
+    RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:userInfo mappingsDictionary:mappingsDictionary];
+    [mapper start];
+    NSArray *users = [mapper.mappingResult array];
+    assertThatBool([users isKindOfClass:[NSArray class]], is(equalToBool(YES)));
+    assertThatUnsignedInteger([users count], is(equalToInt(2)));
+    RKTestUser *user = users[0];
+    assertThatBool([user isKindOfClass:[RKTestUser class]], is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"blake@email.com")));
+    assertThat(user.userID, is(equalToInteger(31337)));
+    user = users[1];
+    assertThatBool([user isKindOfClass:[RKTestUser class]], is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"rachit@something.com")));
+    assertThat(user.userID, is(equalToInteger(7)));
+}
+
 - (void)testShouldMapACollectionOfObjectsWithDynamicKeysAndRelationships
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
