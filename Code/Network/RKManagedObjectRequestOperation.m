@@ -262,26 +262,28 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
                     NSString *destinationKey = [keyPathComponents lastObject];
                     [keyPathComponents removeLastObject];
                     id sourceObject = [keyPathComponents count] ? [mappingResultsAtRootKey valueForKeyPath:[keyPathComponents componentsJoinedByString:@"."]] : mappingResultsAtRootKey;
-                    if (RKObjectIsCollection(sourceObject)) {
-                        // This is a to-many relationship, we want to refetch each item at the keyPath
-                        for (id nestedObject in sourceObject) {
-                            // NOTE: If this collection was mapped with a dynamic mapping then each instance may not respond to the key
-                            if ([nestedObject respondsToSelector:NSSelectorFromString(destinationKey)]) {
-                                NSManagedObject *managedObject = [nestedObject valueForKey:destinationKey];
-                                [nestedObject setValue:RKRefetchedValueInManagedObjectContext(managedObject, self.managedObjectContext) forKey:destinationKey];
-                            }
-                        }
-                    } else {
-                        // This is a singular relationship. We want to refetch the object and set it directly.
-                        id valueToRefetch = [sourceObject valueForKey:destinationKey];
-                        [sourceObject setValue:RKRefetchedValueInManagedObjectContext(valueToRefetch, self.managedObjectContext) forKey:destinationKey];
-                    }
+                    [self refetchSourceObject:sourceObject atDestinationKey:destinationKey];
                 }
             }
         }
     }];
     
     return [[RKMappingResult alloc] initWithDictionary:newDictionary];
+}
+
+- (void) refetchSourceObject:(id) sourceObject atDestinationKey:(NSString *)destinationKey {
+    if (RKObjectIsCollection(sourceObject)) {
+        // This is a to-many relationship, we want to refetch each item at the keyPath
+        for (id nestedObject in sourceObject) {
+            [self refetchSourceObject:nestedObject atDestinationKey:destinationKey];
+        }
+    } else {
+        // NOTE: If this collection was mapped with a dynamic mapping then each instance may not respond to the key
+        if ([sourceObject respondsToSelector:NSSelectorFromString(destinationKey)]) {
+            id valueToRefetch = [sourceObject valueForKey:destinationKey];
+            [sourceObject setValue:RKRefetchedValueInManagedObjectContext(valueToRefetch, self.managedObjectContext) forKey:destinationKey];
+        }
+    }
 }
 
 @end
