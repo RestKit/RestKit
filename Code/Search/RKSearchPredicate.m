@@ -24,7 +24,7 @@
     return [self init];
 }
 
-- (instancetype)initWithType:(NSCompoundPredicateType)type subpredicates:(NSArray<NSPredicate *> *)subpredicates
+- (instancetype)initWithType:(NSCompoundPredicateType)type subpredicates:(NSArray *)subpredicates
 {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"-initWithType: is not a valid initializer for the class %@, use designated initilizer -initWithSearchText:type:", NSStringFromClass([self class])]
