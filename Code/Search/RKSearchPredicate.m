@@ -9,6 +9,12 @@
 #import "RKSearchPredicate.h"
 #import "RKStringTokenizer.h"
 
+@interface RKSearchPredicate()
+
+- (instancetype)initWithType:(NSCompoundPredicateType)type subpredicates:(NSArray *)subpredicates NS_DESIGNATED_INITIALIZER;
+
+@end
+
 @implementation RKSearchPredicate
 
 + (NSPredicate *)searchPredicateWithText:(NSString *)searchText type:(NSCompoundPredicateType)type
@@ -26,10 +32,7 @@
 
 - (instancetype)initWithType:(NSCompoundPredicateType)type subpredicates:(NSArray *)subpredicates
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:@"-initWithType: is not a valid initializer for the class %@, use designated initilizer -initWithSearchText:type:", NSStringFromClass([self class])]
-                                 userInfo:nil];
-    return [self init];
+    return [super initWithType:type subpredicates:subpredicates];
 }
 
 - (instancetype)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type

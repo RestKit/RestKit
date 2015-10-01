@@ -63,8 +63,8 @@
  @return The receiver, initialized with the request, pagination mapping, and response descriptors.
  */
 - (instancetype)initWithRequest:(NSURLRequest *)request
-    paginationMapping:(RKObjectMapping *)paginationMapping
-  responseDescriptors:(NSArray *)responseDescriptors NS_DESIGNATED_INITIALIZER;
+              paginationMapping:(RKObjectMapping *)paginationMapping
+            responseDescriptors:(NSArray *)responseDescriptors;
 
 ///-----------------------------
 /// @name Configuring Networking

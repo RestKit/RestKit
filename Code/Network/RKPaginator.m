@@ -60,13 +60,6 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 @implementation RKPaginator
 
-- (instancetype)init
-{
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use designated initilizer -initWithRequest:paginationMapping:responseDescriptors:", NSStringFromClass([self class])]
-                                 userInfo:nil];
-    return [self init];
-}
 
 - (instancetype)initWithRequest:(NSURLRequest *)request
     paginationMapping:(RKObjectMapping *)paginationMapping
