@@ -16,6 +16,22 @@
     return [[self alloc] initWithSearchText:searchText type:type];
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-initWithcoder: is not a valid initializer for the class %@, use designated initilizer -initWithSearchText:type:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
+
+- (instancetype)initWithType:(NSCompoundPredicateType)type subpredicates:(NSArray<NSPredicate *> *)subpredicates
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-initWithType: is not a valid initializer for the class %@, use designated initilizer -initWithSearchText:type:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
+
 - (instancetype)initWithSearchText:(NSString *)searchText type:(NSCompoundPredicateType)type
 {
     RKStringTokenizer *tokenizer = [RKStringTokenizer new];
