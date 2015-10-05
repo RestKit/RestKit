@@ -173,14 +173,6 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     }
 }
 
-- (instancetype)init
-{
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use designated initilizer -initWithManagedObjectModel:", NSStringFromClass([self class])]
-                                 userInfo:nil];
-    return [self init];
-}
-
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
     self = [super init];
@@ -195,6 +187,12 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     }
 
     return self;
+}
+
+- (instancetype)init
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    return [self initWithManagedObjectModel:managedObjectModel];
 }
 
 - (instancetype)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator
