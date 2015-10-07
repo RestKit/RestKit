@@ -172,6 +172,14 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 
 @implementation RKMappingGraphVisitor
 
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use designated initilizer -initWithMapping:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
+
 - (instancetype)initWithMapping:(RKMapping *)mapping
 {
     self = [super init];
@@ -347,6 +355,14 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 @end
 
 @implementation RKObjectManager
+
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use designated initilizer -initWithHTTPClient:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
 
 - (instancetype)initWithHTTPClient:(AFHTTPClient *)client
 {

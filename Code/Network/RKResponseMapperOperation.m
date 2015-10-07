@@ -173,6 +173,14 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 
 #pragma mark 
 
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use designated initilizer -initWithRequest:response:data:responseDescriptors:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
+
 - (instancetype)initWithRequest:(NSURLRequest *)request
              response:(NSHTTPURLResponse *)response
                  data:(NSData *)data

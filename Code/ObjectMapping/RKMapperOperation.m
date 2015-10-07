@@ -80,6 +80,11 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 
 @implementation RKMapperOperation
 
+- (instancetype)init
+{
+    return [self initWithRepresentation:nil mappingsDictionary:nil];
+}
+
 - (instancetype)initWithRepresentation:(id)representation mappingsDictionary:(NSDictionary *)mappingsDictionary;
 {
     self = [super init];

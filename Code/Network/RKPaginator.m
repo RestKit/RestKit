@@ -60,6 +60,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
 
 @implementation RKPaginator
 
+
 - (instancetype)initWithRequest:(NSURLRequest *)request
     paginationMapping:(RKObjectMapping *)paginationMapping
   responseDescriptors:(NSArray *)responseDescriptors;
