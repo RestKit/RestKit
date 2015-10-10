@@ -23,7 +23,7 @@
 		25AABD0B17B69CC50061DC5B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		25AABD0C17B69CC50061DC5B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		25AABD0D17B69CC50061DC5B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
-		73D990C2D2D5A068521FACEF /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0C5817426474EE329BB79E2 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		73D990C2D2D5A068521FACEF /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0C5817426474EE329BB79E2 /* Pods.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
