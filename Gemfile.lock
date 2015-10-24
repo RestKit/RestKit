@@ -1,14 +1,8 @@
-GEM
-  remote: https://rubygems.org/
+GIT
+  remote: git://github.com/CocoaPods/CocoaPods.git
+  revision: 0370e99b04d7be7128a2fb32a2f785123d7ff6f9
+  branch: seg-frameworks-nested-headers
   specs:
-    activesupport (4.2.4)
-      i18n (~> 0.7)
-      json (~> 1.7, >= 1.7.7)
-      minitest (~> 5.1)
-      thread_safe (~> 0.3, >= 0.3.4)
-      tzinfo (~> 1.1)
-    backports (3.6.5)
-    claide (0.9.1)
     cocoapods (0.39.0)
       activesupport (>= 4.0.2)
       claide (~> 0.9.1)
@@ -24,6 +18,18 @@ GEM
       molinillo (~> 0.4.0)
       nap (~> 1.0)
       xcodeproj (~> 0.28.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (4.2.4)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
+    backports (3.6.5)
+    claide (0.9.1)
     cocoapods-core (0.39.0)
       activesupport (>= 4.0.2)
       fuzzy_match (~> 2.0.4)
@@ -84,7 +90,7 @@ GEM
       activesupport (>= 3)
       claide (~> 0.9.1)
       colored (~> 1.2)
-    xcpretty (0.1.10)
+    xcpretty (0.1.12)
     xctasks (0.5.0)
       nokogiri (~> 1.6, >= 1.6.3.1)
       rake (~> 10.0, >= 10.0.0)
@@ -93,7 +99,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  cocoapods (~> 0.39.0)
+  cocoapods!
   rakeup (~> 1.2.0)
   sinatra (~> 1.4.0)
   sinatra-contrib (~> 1.4.0)
