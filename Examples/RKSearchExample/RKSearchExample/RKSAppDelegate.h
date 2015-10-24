@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 Blake Watters. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <RestKit/RestKit.h>
+#import <UIKit/UIKit.h>
 
 @interface RKSAppDelegate : UIResponder <UIApplicationDelegate>
 
