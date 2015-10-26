@@ -503,7 +503,16 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
             [cacheControlScanner setScanLocation:foundRange.location + foundRange.length];
             [cacheControlScanner scanString:@"=" intoString:nil];
             if ([cacheControlScanner scanInteger:&maxAge]) {
-                return maxAge > 0 ? [[NSDate alloc] initWithTimeInterval:maxAge sinceDate:now] : nil;
+            	if(maxAge > 0)
+                {
+                    const NSInteger age = ((NSString *)headers[@"Age"]).integerValue;
+                    if(age > 0)
+                    	return [[NSDate alloc] initWithTimeIntervalSinceNow:(maxAge - age)];
+                    else
+                    	return [[NSDate alloc] initWithTimeInterval:maxAge sinceDate:now];
+                }
+                else
+                	return nil;
             }
         }
     }
