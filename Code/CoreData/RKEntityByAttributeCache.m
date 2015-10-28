@@ -211,16 +211,17 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 {
     /**
      NOTE:
-
+     
      We use `existingObjectWithID:` as opposed to `objectWithID:` as `objectWithID:` can return us a fault
-     that will raise an exception when fired. `existingObjectWithID:error:` will return nil if the ID has been
-     deleted. `objectRegisteredForID:` is also an acceptable approach.
+     that will raise an exception when fired. `objectRegisteredForID:` is also an acceptable approach.
      */
     __block NSError *error = nil;
     __block NSManagedObject *object;
     [context performBlockAndWait:^{
         object = [context existingObjectWithID:objectID error:&error];
     }];
+    // Don't return the object if it has been deleted.
+    if ([object isDeleted]) object = nil;
     if (! object) {
         // Referential integrity errors often indicates that the temporary objectID does not exist in the specified context
         if (error && !([objectID isTemporaryID] && [error code] == NSManagedObjectReferentialIntegrityError)) {
