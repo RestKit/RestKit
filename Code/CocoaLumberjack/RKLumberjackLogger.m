@@ -6,7 +6,7 @@
 //
 //
 
-#if RKLOG_USE_COCOALUMBERJACK && __has_include(<CocoaLumberjack/CocoaLumberjack.h>)
+#if __has_include(<CocoaLumberjack/CocoaLumberjack.h>)
 #import "RKLumberjackLogger.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 
