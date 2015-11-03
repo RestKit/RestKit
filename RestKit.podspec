@@ -102,4 +102,10 @@ EOS
     ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core'
     ss.dependency 'TransitionKit', '~> 2.2'
   end
+
+  s.subspec 'CocoaLumberjack' do |cl|
+    cl.source_files = 'Code/CocoaLumberjack/RKLumberjackLogger.*'
+    cl.dependency 'CocoaLumberjack'
+    cl.dependency 'RestKit/Support'
+  end
 end
