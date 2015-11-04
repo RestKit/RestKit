@@ -40,6 +40,9 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetworkCoreData
 
+NSString *const RKManagedObjectRequestOperationWillSaveMappingContextNotification = @"RKManagedObjectRequestOperationWillSaveMappingContextNotification";
+NSString *const RKManagedObjectRequestOperationMappingContextUserInfoKey = @"RKManagedObjectRequestOperationMappingContextUserInfoKey";
+
 @interface RKEntityMappingEvent : NSObject
 @property (nonatomic, copy) id rootKey;
 @property (nonatomic, copy) NSString *keyPath;
