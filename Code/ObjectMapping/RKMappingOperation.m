@@ -325,22 +325,27 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     /* Using firstChar as a small performance enhancement -- one check can avoid several hasPrefix calls */
     unichar firstChar = [keyPath length] > 0 ? [keyPath characterAtIndex:0] : 0;
 
-    if (firstChar == 's' && [keyPath hasPrefix:RKSelfKeyPathPrefix]) {
-        NSString *selfKeyPath = [keyPath substringFromIndex:[RKSelfKeyPathPrefix length]];
-        return [_object valueForKeyPath:selfKeyPath];
-    } else if (firstChar != '@') {
-        return [_object valueForKeyPath:keyPath];
-    } else if ([keyPath hasPrefix:RKMetadataKeyPathPrefix]) {
-        NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
-        return [self metadataValueForKeyPath:metadataKeyPath];
-    } else if ([keyPath hasPrefix:RKParentKeyPathPrefix]) {
-        NSString *parentKeyPath = [keyPath substringFromIndex:[RKParentKeyPathPrefix length]];
-        return [self.parentObject valueForKeyPath:parentKeyPath];
-    } else if ([keyPath hasPrefix:RKRootKeyPathPrefix]) {
-        NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
-        return [self.rootObject valueForKeyPath:rootKeyPath];
-    } else {
-        return [_object valueForKeyPath:keyPath];
+    @try {
+        if (firstChar == 's' && [keyPath hasPrefix:RKSelfKeyPathPrefix]) {
+            NSString *selfKeyPath = [keyPath substringFromIndex:[RKSelfKeyPathPrefix length]];
+            return [_object valueForKeyPath:selfKeyPath];
+        } else if (firstChar != '@') {
+            return [_object valueForKeyPath:keyPath];
+        } else if ([keyPath hasPrefix:RKMetadataKeyPathPrefix]) {
+            NSString *metadataKeyPath = [keyPath substringFromIndex:[RKMetadataKeyPathPrefix length]];
+            return [self metadataValueForKeyPath:metadataKeyPath];
+        } else if ([keyPath hasPrefix:RKParentKeyPathPrefix]) {
+            NSString *parentKeyPath = [keyPath substringFromIndex:[RKParentKeyPathPrefix length]];
+            return [self.parentObject valueForKeyPath:parentKeyPath];
+        } else if ([keyPath hasPrefix:RKRootKeyPathPrefix]) {
+            NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
+            return [self.rootObject valueForKeyPath:rootKeyPath];
+        } else {
+            return [_object valueForKeyPath:keyPath];
+        }
+    }
+    @catch (NSException *exception) {
+        return nil;
     }
 }
 
