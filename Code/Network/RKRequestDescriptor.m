@@ -21,9 +21,9 @@
 //  limitations under the License.
 //
 
-#import "RKRequestDescriptor.h"
-#import "RKObjectMapping.h"
-#import "RKDynamicMapping.h"
+#import <RestKit/Network/RKRequestDescriptor.h>
+#import <RestKit/ObjectMapping/RKDynamicMapping.h>
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
 
 static void RKAssertValidMappingForRequestDescriptor(RKMapping *mapping)
 {

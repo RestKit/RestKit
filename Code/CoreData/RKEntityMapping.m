@@ -18,13 +18,13 @@
 //  limitations under the License.
 //
 
-#import "RKEntityMapping.h"
-#import "RKManagedObjectStore.h"
-#import "RKObjectMappingMatcher.h"
-#import "RKPropertyInspector+CoreData.h"
-#import "RKLog.h"
-#import "RKRelationshipMapping.h"
-#import "RKObjectUtilities.h"
+#import <RestKit/CoreData/RKEntityMapping.h>
+#import <RestKit/CoreData/RKManagedObjectStore.h>
+#import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
+#import <RestKit/ObjectMapping/RKObjectMappingMatcher.h>
+#import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
+#import <RestKit/Support/RKLog.h>
 
 // Set Logging Component
 #undef RKLogComponent

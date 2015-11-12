@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKPropertyMapping.h"
+#import <RestKit/ObjectMapping/RKPropertyMapping.h>
 
 /**
  Instances of `RKAttributeMapping` define a transformation of data between an attribute value on source object and an attribute value on a destination object within an object mapping.

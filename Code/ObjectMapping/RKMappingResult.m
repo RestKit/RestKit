@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKMappingResult.h"
+#import <RestKit/ObjectMapping/RKMappingResult.h>
 
 @interface RKMappingResult ()
 @property (nonatomic, strong) NSDictionary *keyPathToMappedObjects;

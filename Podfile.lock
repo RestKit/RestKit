@@ -15,6 +15,9 @@ PODS:
   - OCMock (2.2.4)
   - RestKit (0.25.0):
     - RestKit/Core (= 0.25.0)
+  - RestKit/CocoaLumberjack (0.25.0):
+    - CocoaLumberjack
+    - RestKit/Support
   - RestKit/Core (0.25.0):
     - RestKit/CoreData
     - RestKit/Network
@@ -51,6 +54,7 @@ DEPENDENCIES:
   - OCHamcrest (= 3.0.1)
   - OCMock (= 2.2.4)
   - RestKit (from `.`)
+  - RestKit/CocoaLumberjack (from `.`)
   - RestKit/Search (from `.`)
   - RestKit/Testing (from `.`)
   - RKCLLocationValueTransformer (~> 1.1.0)
@@ -70,11 +74,13 @@ SPEC CHECKSUMS:
   ISO8601DateFormatterValueTransformer: 52da467d6ec899d6aedda8e48280ac92e8ee97e6
   OCHamcrest: e19857683e4eefab64b878668eac04c2f4567118
   OCMock: a6a7dc0e3997fb9f35d99f72528698ebf60d64f2
-  RestKit: 6a1ceadec4fb2bfdffbcbe60b706d37444679e5b
+  RestKit: 4149b1e118cb8e16a6e268d9ae53bc7465268813
   RKCLLocationValueTransformer: 2cf0ea0fb7cd4bc70c56834fb92abc717c66f982
   RKValueTransformers: 66ac5e4f077fdbe3496e792d89eeff4c3eb67701
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392
   Specta: 15a276a6343867b426d5ed135d5aa4d04123a573
   TransitionKit: 9ceccda4cd0cdc0a05ef85eb235e5a3292c3c250
+
+PODFILE CHECKSUM: 91f6f04d66d133ff760630c4003e5a332894bb0f
 
 COCOAPODS: 0.39.0

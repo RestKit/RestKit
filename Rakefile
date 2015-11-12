@@ -164,12 +164,12 @@ end
 
 task :lint do
   title 'Linting pod'
-  run('bundle exec pod lib lint')
-  run('bundle exec pod lib lint --use-libraries')
+  run('bundle exec pod lib lint --allow-warnings ')
+  run('bundle exec pod lib lint --allow-warnings  --use-libraries')
 end
 
 desc 'Runs the CI suite'
-task :ci => ['server:start', :test, 'test:building_without_core_data', :lint]
+task :ci => ['server:autostart', :test, 'test:building_without_core_data', :lint]
 
 def title(title)
   cyan_title = "\033[0;36m#{title}\033[0m"

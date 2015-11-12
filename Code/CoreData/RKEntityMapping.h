@@ -19,9 +19,9 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKObjectMapping.h"
-#import "RKConnectionDescription.h"
-#import "RKMacros.h"
+#import <RestKit/CoreData/RKConnectionDescription.h>
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
+#import <RestKit/Support/RKMacros.h>
 
 @class RKManagedObjectStore;
 

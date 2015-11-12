@@ -19,13 +19,13 @@
 //
 
 
-#import "RKTestFixture.h"
-#import "RKTestNotificationObserver.h"
-#import "RKTestFactory.h"
-#import "RKTestHelpers.h"
-#import "RKMappingTest.h"
+#import <RestKit/Testing/RKMappingTest.h>
+#import <RestKit/Testing/RKTestFactory.h>
+#import <RestKit/Testing/RKTestFixture.h>
+#import <RestKit/Testing/RKTestHelpers.h>
+#import <RestKit/Testing/RKTestNotificationObserver.h>
 
 #ifdef _COREDATADEFINES_H
-#import "RKConnectionTestExpectation.h"
+#import <RestKit/Testing/RKConnectionTestExpectation.h>
 #endif
 

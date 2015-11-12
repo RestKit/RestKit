@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKSerialization.h"
+#import <RestKit/Support/RKSerialization.h>
 
 /**
  The `RKNSJSONSerialization` class conforms to the `RKSerialization` protocol and provides support for the serialization and deserialization of data in the JSON format using the Apple provided `NSJSONSerialization` class. This is the default JSON implementation for RestKit.

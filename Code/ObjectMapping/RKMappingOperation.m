@@ -18,20 +18,20 @@
 //  limitations under the License.
 //
 
+#import <RKValueTransformers/RKValueTransformers.h>
+#import <RestKit/ObjectMapping/RKAttributeMapping.h>
+#import <RestKit/ObjectMapping/RKDynamicMapping.h>
+#import <RestKit/ObjectMapping/RKMappingErrors.h>
+#import <RestKit/ObjectMapping/RKMappingOperation.h>
+#import <RestKit/ObjectMapping/RKMappingOperationDataSource.h>
+#import <RestKit/ObjectMapping/RKObjectMappingOperationDataSource.h>
+#import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/ObjectMapping/RKPropertyInspector.h>
+#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
+#import <RestKit/Support/RKDictionaryUtilities.h>
+#import <RestKit/Support/RKErrors.h>
+#import <RestKit/Support/RKLog.h>
 #import <objc/runtime.h>
-#import "RKMappingOperation.h"
-#import "RKMappingErrors.h"
-#import "RKPropertyInspector.h"
-#import "RKAttributeMapping.h"
-#import "RKRelationshipMapping.h"
-#import "RKErrors.h"
-#import "RKLog.h"
-#import "RKMappingOperationDataSource.h"
-#import "RKObjectMappingOperationDataSource.h"
-#import "RKDynamicMapping.h"
-#import "RKObjectUtilities.h"
-#import "RKValueTransformers.h"
-#import "RKDictionaryUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent

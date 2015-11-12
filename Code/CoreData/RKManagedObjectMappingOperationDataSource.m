@@ -18,21 +18,21 @@
 //  limitations under the License.
 //
 
+#import <RKValueTransformers/RKValueTransformers.h>
+#import <RestKit/CoreData/NSManagedObject+RKAdditions.h>
+#import <RestKit/CoreData/RKEntityMapping.h>
+#import <RestKit/CoreData/RKManagedObjectCaching.h>
+#import <RestKit/CoreData/RKManagedObjectMappingOperationDataSource.h>
+#import <RestKit/CoreData/RKManagedObjectStore.h>
+#import <RestKit/CoreData/RKRelationshipConnectionOperation.h>
+#import <RestKit/ObjectMapping/RKMappingErrors.h>
+#import <RestKit/ObjectMapping/RKMappingOperation.h>
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
+#import <RestKit/ObjectMapping/RKObjectMappingMatcher.h>
+#import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
+#import <RestKit/Support/RKLog.h>
 #import <objc/runtime.h>
-#import "RKManagedObjectMappingOperationDataSource.h"
-#import "RKObjectMapping.h"
-#import "RKEntityMapping.h"
-#import "RKLog.h"
-#import "RKManagedObjectStore.h"
-#import "RKMappingOperation.h"
-#import "RKObjectMappingMatcher.h"
-#import "RKManagedObjectCaching.h"
-#import "RKRelationshipConnectionOperation.h"
-#import "RKMappingErrors.h"
-#import "RKValueTransformers.h"
-#import "RKRelationshipMapping.h"
-#import "RKObjectUtilities.h"
-#import "NSManagedObject+RKAdditions.h"
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 

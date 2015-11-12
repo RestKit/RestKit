@@ -18,12 +18,12 @@
 //  limitations under the License.
 //
 
-#import "RKMIMETypeSerialization.h"
-#import "RKErrors.h"
-#import "RKSerialization.h"
-#import "RKLog.h"
-#import "RKURLEncodedSerialization.h"
-#import "RKNSJSONSerialization.h"
+#import <RestKit/Support/RKErrors.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/Support/RKMIMETypeSerialization.h>
+#import <RestKit/Support/RKNSJSONSerialization.h>
+#import <RestKit/Support/RKSerialization.h>
+#import <RestKit/Support/RKURLEncodedSerialization.h>
 
 // Define logging component
 #undef RKLogComponent

@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKRoute.h"
+#import <RestKit/Network/RKRoute.h>
 
 NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 NSString *RKStringDescribingRequestMethod(RKRequestMethod method)

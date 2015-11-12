@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKErrors.h"
+#import <RestKit/Support/RKErrors.h>
 
 typedef NS_ENUM(NSInteger, RKMappingErrorCode) {
     RKMappingErrorNotFound                     = 1001,     // No mapping found

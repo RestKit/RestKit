@@ -24,7 +24,7 @@
  @see lcl_config_components_RK.h
  @see lcl_config_logger_RK.h
  */
-#import "lcl_RK.h"
+#import <RestKit/Support/lcl_RK.h>
 
 /**
  * Protocol which classes can implement to determine how RestKit log messages actually get handled.

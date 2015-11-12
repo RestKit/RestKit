@@ -18,18 +18,18 @@
 //  limitations under the License.
 //
 
-#import "RKTestHelpers.h"
-#import "RKObjectManager.h"
-#import "RKRoute.h"
-#import "RKPathUtilities.h"
-#import "RKLog.h"
-#import "SOCKit.h"
-#import "RKRouteSet.h"
+#import <RestKit/Network/RKObjectManager.h>
+#import <RestKit/Network/RKRoute.h>
+#import <RestKit/Network/RKRouteSet.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/Support/RKPathUtilities.h>
+#import <RestKit/Testing/RKTestHelpers.h>
+#import <SOCKit/SOCKit.h>
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")
 #define RKCoreDataIncluded
-#import "RKManagedObjectRequestOperation.h"
+#import <RestKit/Network/RKManagedObjectRequestOperation.h>
 #endif
 #endif
 
@@ -80,7 +80,7 @@
                                   onObjectManager:(RKObjectManager *)nilOrObjectManager
 {
     RKObjectManager *objectManager = nilOrObjectManager ?: [RKObjectManager sharedManager];
-    
+
     // Extract the dynamic portions of the path pattern to construct a set of parameters
     SOCPattern *pattern = [SOCPattern patternWithString:pathPattern];
     NSArray *parameterNames = [pattern valueForKeyPath:@"parameters.string"];
@@ -89,7 +89,7 @@
         [stubbedParameters setValue:@"value" forKey:parameter];
     }
     NSString *stubbedPathPattern = [pattern stringFromObject:stubbedParameters];
-    
+
     NSURL *URL = [NSURL URLWithString:stubbedPathPattern relativeToURL:objectManager.HTTPClient.baseURL];
     NSAssert(URL, @"Failed to build URL from path pattern '%@' relative to base URL '%@'", pathPattern, objectManager.HTTPClient.baseURL);
     for (RKFetchRequestBlock block in objectManager.fetchRequestBlocks) {
@@ -102,10 +102,10 @@
                 if ([[URL path] isEqualToString:relativeString]) {
                     return fetchRequest;
                 }
-                
+
                 return nil;
             }];
-            
+
             break;
         }
     }
@@ -122,16 +122,16 @@
 {
     NSParameterAssert(request);
     NSParameterAssert(responseData);
-    
+
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:[request URL] statusCode:200 HTTPVersion:@"1.1" headerFields:nil];
     NSAssert(response, @"Failed to build cached response");
     NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:response data:responseData];
     [[NSURLCache sharedURLCache] storeCachedResponse:cachedResponse forRequest:request];
-    
+
     // Verify that we can get the cached response back
     NSCachedURLResponse *__unused storedResponse = [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
     NSAssert(storedResponse, @"Expected to retrieve cached response for request '%@', instead got nil.", request);
-    
+
     return cachedResponse;
 }
 
@@ -140,7 +140,7 @@
     NSParameterAssert(URL);
     NSParameterAssert(HTTPMethod);
     NSParameterAssert(responseData);
-    
+
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.HTTPMethod = HTTPMethod;
     [request setAllHTTPHeaderFields:requestHeaders];

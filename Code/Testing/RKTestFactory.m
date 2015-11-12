@@ -18,18 +18,18 @@
 //  limitations under the License.
 //
 
-#import "AFHTTPClient.h"
-#import "RKTestFactory.h"
-#import "RKLog.h"
-#import "RKObjectManager.h"
-#import "RKPathUtilities.h"
-#import "RKMIMETypeSerialization.h"
-#import "RKObjectRequestOperation.h"
+#import <AFNetworking/AFHTTPClient.h>
+#import <RestKit/Network/RKObjectManager.h>
+#import <RestKit/Network/RKObjectRequestOperation.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/Support/RKMIMETypeSerialization.h>
+#import <RestKit/Support/RKPathUtilities.h>
+#import <RestKit/Testing/RKTestFactory.h>
 
 #ifdef _COREDATADEFINES_H
 #if __has_include("RKCoreData.h")
 #define RKCoreDataIncluded
-#import "RKManagedObjectStore.h"
+#import <RestKit/CoreData/RKManagedObjectStore.h>
 #endif
 #endif
 
@@ -277,7 +277,7 @@
 #ifdef RKCoreDataIncluded
     // Ensure the existing defaultStore is shut down
     [[NSNotificationCenter defaultCenter] removeObserver:[RKManagedObjectStore defaultStore]];
-    
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
     if ([[RKManagedObjectStore defaultStore] respondsToSelector:@selector(stopIndexingPersistentStoreManagedObjectContext)]) {

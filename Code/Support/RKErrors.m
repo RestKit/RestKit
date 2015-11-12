@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKErrors.h"
+#import <RestKit/Support/RKErrors.h>
 
 NSString * const RKErrorDomain = @"org.restkit.RestKit.ErrorDomain";
 

@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import "RKMapping.h"
-#import "RKObjectMappingMatcher.h"
+#import <RestKit/ObjectMapping/RKMapping.h>
+#import <RestKit/ObjectMapping/RKObjectMappingMatcher.h>
 
 /**
  The `RKDynamicMapping` class is an `RKMapping` subclass that provides an interface for deferring the decision about how a given object representation is to be mapped until run time. This enables many interesting mapping strategies, such as mapping similarly structured data differently and constructing object mappings at run time by examining the data being mapped.
