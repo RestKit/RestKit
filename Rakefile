@@ -206,10 +206,12 @@ task :release do
   sh "git tag '#{tag}'"
   sh 'git checkout master'
   sh "git merge --no-ff `#{tag}`"
-  sh 'git push'
+  sh 'git push --tags'
+  sh "git checkout '#{tag}'"
+  sh "bundle exec pod trunk push"
   sh 'git checkout development'
   sh "git merge --no-ff `#{tag}`"
-  sh 'git push --tags'
+  sh 'git push'
 end
 
 def title(title)
