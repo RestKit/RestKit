@@ -241,7 +241,7 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
     NSAssert(!self.refetched, @"Mapping result should only be refetched once");
     if (! [self.mappingResult count]) return self.mappingResult;
     
-    NSMutableDictionary *newDictionary = [NSMutableDictionary dictionary];
+    NSMutableDictionary *newDictionary = [self.mappingResult.dictionary mutableCopy];
     [self.managedObjectContext performBlockAndWait:^{
         NSArray *entityMappingEvents = [RKEntityMappingEvent entityMappingEventsForMappingInfo:self.mappingInfo];
         NSSet *rootKeys = [NSSet setWithArray:[entityMappingEvents valueForKey:@"rootKey"]];
@@ -251,12 +251,19 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
             // If keyPaths contains null, then the root object is a managed object and we only need to refetch it
             NSSet *nonNestedKeyPaths = ([keyPaths containsObject:[NSNull null]]) ? [NSSet setWithObject:[NSNull null]] : RKSetByRemovingSubkeypathsFromSet(keyPaths);
             
-            NSDictionary *mappingResultsAtRootKey = self.mappingResult.dictionary[rootKey];
+            NSDictionary *mappingResultsAtRootKey = newDictionary[rootKey];
             for (NSString *keyPath in nonNestedKeyPaths) {
                 id value = nil;
                 if ([keyPath isEqual:[NSNull null]]) {
                     value = RKRefetchedValueInManagedObjectContext(mappingResultsAtRootKey, self.managedObjectContext);
-                    if (value) newDictionary[rootKey] = value;
+                    if (value) {
+                        newDictionary[rootKey] = value;
+                    }
+                    // else there's no object on the correct context
+                    else {
+                        // ensure newDictionary doesn't have an object on an incorrect context
+                        [newDictionary removeObjectForKey:rootKey];
+                    }
                 } else {
                     NSMutableArray *keyPathComponents = [[keyPath componentsSeparatedByString:@"."] mutableCopy];
                     NSString *destinationKey = [keyPathComponents lastObject];
