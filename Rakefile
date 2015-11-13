@@ -183,7 +183,7 @@ task :release do
 
   diff_lines = `git diff --name-only`.strip.split("\n")
   if diff_lines.size == 0
-    errors << 'Change the version number of the pod yourself'
+    error 'Change the version number of the pod yourself'
   end
   diff_lines.delete('Podfile.lock')
   unless diff_lines == %w(VERSION)
@@ -191,6 +191,10 @@ task :release do
     error << "\n- " + diff_lines.join("\n- ")
     error(error)
   end
+
+  podspec = File.read('RestKit.podspec')
+  podspec.gsub!(/(s\.version\s*=\s*)'#{Gem::Version::VERSION_PATTERN}'/, "\\1'#{restkit_version}'")
+  File.open('RestKit.podspec', 'w') { |f| f << podspec }
 
   title 'Running tests'
   Rake::Task['ci'].invoke
