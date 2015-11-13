@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import "RKEntityCache.h"
-#import "RKEntityByAttributeCache.h"
+#import <RestKit/CoreData/RKEntityByAttributeCache.h>
+#import <RestKit/CoreData/RKEntityCache.h>
 
 @interface RKEntityCache ()
 @property (nonatomic, strong) NSMutableSet *attributeCaches;

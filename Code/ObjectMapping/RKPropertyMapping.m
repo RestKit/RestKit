@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import "RKPropertyMapping.h"
-#import "RKObjectMapping.h"
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
+#import <RestKit/ObjectMapping/RKPropertyMapping.h>
 
 /**
  For consistency with URI Templates (and most web templating languages in general) we are transitioning

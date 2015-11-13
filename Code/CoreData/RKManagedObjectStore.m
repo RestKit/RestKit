@@ -18,15 +18,15 @@
 //  limitations under the License.
 //
 
+#import <RestKit/CoreData/NSManagedObjectContext+RKAdditions.h>
+#import <RestKit/CoreData/RKFetchRequestManagedObjectCache.h>
+#import <RestKit/CoreData/RKInMemoryManagedObjectCache.h>
+#import <RestKit/CoreData/RKManagedObjectStore.h>
+#import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
+#import <RestKit/ObjectMapping/RKPropertyInspector.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/Support/RKPathUtilities.h>
 #import <objc/runtime.h>
-#import "RKManagedObjectStore.h"
-#import "RKLog.h"
-#import "RKPropertyInspector.h"
-#import "RKPropertyInspector+CoreData.h"
-#import "RKPathUtilities.h"
-#import "RKInMemoryManagedObjectCache.h"
-#import "RKFetchRequestManagedObjectCache.h"
-#import "NSManagedObjectContext+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -69,6 +69,14 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
 @end
 
 @implementation RKManagedObjectContextChangeMergingObserver
+
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use designated initilizer -initWithObservedContext:mergeContext:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
 
 - (instancetype)initWithObservedContext:(NSManagedObjectContext *)observedContext mergeContext:(NSManagedObjectContext *)mergeContext
 {
@@ -181,6 +189,12 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     return self;
 }
 
+- (instancetype)init
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    return [self initWithManagedObjectModel:managedObjectModel];
+}
+
 - (instancetype)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator
 {
     self = [self initWithManagedObjectModel:persistentStoreCoordinator.managedObjectModel];
@@ -189,12 +203,6 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     }
 
     return self;
-}
-
-- (instancetype)init
-{
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
-    return [self initWithManagedObjectModel:managedObjectModel];
 }
 
 - (void)dealloc

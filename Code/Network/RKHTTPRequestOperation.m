@@ -18,11 +18,11 @@
 //  limitations under the License.
 //
 
-#import "RKHTTPRequestOperation.h"
-#import "RKLog.h"
-#import "lcl_RK.h"
-#import "RKHTTPUtilities.h"
-#import "RKMIMETypes.h"
+#import <RestKit/Network/RKHTTPRequestOperation.h>
+#import <RestKit/ObjectMapping/RKHTTPUtilities.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/Support/RKMIMETypes.h>
+#import <RestKit/Support/lcl_RK.h>
 
 extern NSString * const RKErrorDomain;
 
@@ -92,7 +92,7 @@ static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSUR
             [userInfo setValue:[self.request URL] forKey:NSURLErrorFailingURLErrorKey];
             [userInfo setValue:self.request forKey:AFNetworkingOperationFailingURLRequestErrorKey];
             [userInfo setValue:self.response forKey:AFNetworkingOperationFailingURLResponseErrorKey];
-            
+
             if (![self hasAcceptableStatusCode]) {
                 NSUInteger statusCode = ([self.response isKindOfClass:[NSHTTPURLResponse class]]) ? (NSUInteger)[self.response statusCode] : 200;
                 [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected status code in (%@), got %d", nil), RKStringFromIndexSet(self.acceptableStatusCodes ?: [NSMutableIndexSet indexSet]), statusCode] forKey:NSLocalizedDescriptionKey];
@@ -104,7 +104,7 @@ static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSUR
             }
         }
     }
-    
+
     NSError *error = self.rkHTTPError ?: [super error];
     [self.lock unlock];
     return error;

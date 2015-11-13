@@ -19,9 +19,9 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKObjectMapping.h"
-#import "RKConnectionDescription.h"
-#import "RKMacros.h"
+#import <RestKit/CoreData/RKConnectionDescription.h>
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
+#import <RestKit/Support/RKMacros.h>
 
 @class RKManagedObjectStore;
 
@@ -126,11 +126,20 @@
  
  A common modification attribute is a 'last modified' or 'updated at' timestamp that specifies the timestamp of the last change to an object. When the `modificationAttribute` is non-nil, the mapper will compare the value returned of the attribute on an existing object instance with the value in the representation being mapped. 
  
- The semantics of the comparison are dependent on the data type of the modification attribute. If the attribute is a string, then the values are compared for equality. If the attribute is a date or a numeric value, then the values will be compared numerically and mapping will be skipped if the value in the representation is greater than the value of the modification attribute stored on the object.
+ The semantics of the comparison are dependent on the data type of the modification attribute. If the attribute is a string, then the values are compared for equality. If the attribute is a date or a numeric value, then the values will be compared numerically and mapping will be skipped unless the value in the representation is greater than the value of the modification attribute stored on the object.
  
  @raises NSInvalidArgumentException Raised if the attribute given is not a property of the receiver's entity.
  */
 @property (nonatomic, strong) NSAttributeDescription *modificationAttribute;
+
+/**
+ If this is YES, mapping operations will map relationships of the object even if the `modificationAttribute` shows that the object has not been modified.
+ 
+ This is useful if a response contains a nested object that has been updated inside an object that has not.
+ 
+ Defaults to NO.
+ */
+@property (nonatomic) BOOL shouldMapRelationshipsIfObjectIsUnmodified;
 
 /**
  Sets the `modificationAttribute` to the receiver to the attribute with the specified name.

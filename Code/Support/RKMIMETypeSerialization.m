@@ -18,12 +18,12 @@
 //  limitations under the License.
 //
 
-#import "RKMIMETypeSerialization.h"
-#import "RKErrors.h"
-#import "RKSerialization.h"
-#import "RKLog.h"
-#import "RKURLEncodedSerialization.h"
-#import "RKNSJSONSerialization.h"
+#import <RestKit/Support/RKErrors.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/Support/RKMIMETypeSerialization.h>
+#import <RestKit/Support/RKNSJSONSerialization.h>
+#import <RestKit/Support/RKSerialization.h>
+#import <RestKit/Support/RKURLEncodedSerialization.h>
 
 // Define logging component
 #undef RKLogComponent
@@ -39,6 +39,14 @@
 @end
 
 @implementation RKMIMETypeSerializationRegistration
+
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use designated initilizer -initWithMIMEType:serializationClass:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
 
 - (instancetype)initWithMIMEType:(id)MIMETypeStringOrRegularExpression serializationClass:(Class<RKSerialization>)serializationClass
 {

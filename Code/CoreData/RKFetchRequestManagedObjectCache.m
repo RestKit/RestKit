@@ -18,11 +18,11 @@
 //  limitations under the License.
 //
 
-#import "RKFetchRequestManagedObjectCache.h"
-#import "RKLog.h"
-#import "RKPropertyInspector.h"
-#import "RKPropertyInspector+CoreData.h"
-#import "RKObjectUtilities.h"
+#import <RestKit/CoreData/RKFetchRequestManagedObjectCache.h>
+#import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
+#import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/ObjectMapping/RKPropertyInspector.h>
+#import <RestKit/Support/RKLog.h>
 
 // Set Logging Component
 #undef RKLogComponent

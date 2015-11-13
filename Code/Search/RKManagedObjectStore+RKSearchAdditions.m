@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
+#import <RestKit/Search/RKManagedObjectStore+RKSearchAdditions.h>
+#import <RestKit/Search/RKSearchWordEntity.h>
 #import <objc/runtime.h>
-#import "RKManagedObjectStore+RKSearchAdditions.h"
-#import "RKSearchWordEntity.h"
 
 static char searchIndexerAssociationKey;
 

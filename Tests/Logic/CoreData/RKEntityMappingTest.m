@@ -619,6 +619,22 @@
     expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
 }
 
+- (void)testEntityIdentifierInferenceFromUserInfoKeyForCommaSeparatedString
+{
+    NSEntityDescription *entity = [[NSEntityDescription alloc] init];
+    [entity setName:@"Monkey"];
+    NSAttributeDescription *identifierAttribute = [NSAttributeDescription new];
+    [identifierAttribute setName:@"monkeyID"];
+    NSAttributeDescription *nameAttribute = [NSAttributeDescription new];
+    [nameAttribute setName:@"name"];
+    [entity setProperties:@[ identifierAttribute, nameAttribute ]];
+    [entity setUserInfo:@{ RKEntityIdentificationAttributesUserInfoKey: @"name,monkeyID" }];
+    NSArray *identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
+    expect(identificationAttributes).notTo.beNil();
+    NSArray *attributeNames = @[ @"name", @"monkeyID" ];
+    expect([identificationAttributes valueForKey:@"name"]).to.equal(attributeNames);
+}
+
 - (void)testEntityIdentifierInferenceFromUserInfoKeyForArrayOfValues
 {
     NSEntityDescription *entity = [[NSEntityDescription alloc] init];

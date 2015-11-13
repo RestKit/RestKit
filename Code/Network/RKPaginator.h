@@ -18,10 +18,10 @@
 //  limitations under the License.
 //
 
-#import "RKHTTPRequestOperation.h"
-#import "RKObjectRequestOperation.h"
-#import "RKObjectMapping.h"
-#import "RKMappingResult.h"
+#import <RestKit/Network/RKHTTPRequestOperation.h>
+#import <RestKit/Network/RKObjectRequestOperation.h>
+#import <RestKit/ObjectMapping/RKMappingResult.h>
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
 
 @protocol RKManagedObjectCaching;
 
@@ -63,8 +63,8 @@
  @return The receiver, initialized with the request, pagination mapping, and response descriptors.
  */
 - (instancetype)initWithRequest:(NSURLRequest *)request
-    paginationMapping:(RKObjectMapping *)paginationMapping
-  responseDescriptors:(NSArray *)responseDescriptors NS_DESIGNATED_INITIALIZER;
+              paginationMapping:(RKObjectMapping *)paginationMapping
+            responseDescriptors:(NSArray *)responseDescriptors;
 
 ///-----------------------------
 /// @name Configuring Networking

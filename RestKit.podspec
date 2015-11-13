@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             =  'RestKit'
-  s.version          =  '0.25.0'
+  s.version          =  '0.26.0'
   s.summary          =  'RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X.'
   s.homepage         =  'https://github.com/RestKit/RestKit'
   s.social_media_url =  'https://twitter.com/RestKit'
@@ -99,7 +99,14 @@ EOS
   end
 
   s.subspec 'Support' do |ss|
-    ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support', 'Vendor/LibComponentLogging/Core'
-    ss.dependency 'TransitionKit', '~> 2.1.0'
+    ss.source_files   = 'Code/RestKit.h', 'Code/Support.h', 'Code/Support'
+    ss.preserve_paths = 'Vendor/LibComponentLogging/Core' # Preserved because they are symlinked
+    ss.dependency 'TransitionKit', '~> 2.2'
+  end
+
+  s.subspec 'CocoaLumberjack' do |cl|
+    cl.source_files = 'Code/CocoaLumberjack/RKLumberjackLogger.*'
+    cl.dependency 'CocoaLumberjack'
+    cl.dependency 'RestKit/Support'
   end
 end

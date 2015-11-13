@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKMappingOperationDataSource.h"
+#import <RestKit/ObjectMapping/RKMappingOperationDataSource.h>
 
 /**
  The `RKObjectMappingOperationDataSource` class is an implementation of the `RKMappingOperationDataSource` protocol for use in performing object mappings that target plain old `NSObject` derived classes (as opposed to `NSManagedObject` derived persistent entities).

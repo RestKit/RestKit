@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "RKHTTPRequestOperation.h"
-#import "RKMappingResult.h"
-#import "RKMapperOperation.h"
+#import <RestKit/Network/RKHTTPRequestOperation.h>
+#import <RestKit/ObjectMapping/RKMapperOperation.h>
+#import <RestKit/ObjectMapping/RKMappingResult.h>
 
 /**
  The key for a Boolean NSNumber value that indicates if a `NSCachedURLResponse` stored in the `NSURLCache` has been object mapped to completion. This key is stored on the `userInfo` of the cached response, if any, just before an `RKObjectRequestOperation` transitions to the finished state.

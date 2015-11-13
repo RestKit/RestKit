@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKURLEncodedSerialization.h"
+#import <RestKit/Support/RKURLEncodedSerialization.h>
 
 #pragma mark - AFNetworking
 
@@ -48,6 +48,14 @@ static NSString * AFPercentEscapedQueryStringValueFromStringWithEncoding(NSStrin
 @end
 
 @implementation RKAFQueryStringPair
+
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use designated initilizer -initWithField:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
 
 - (instancetype)initWithField:(id)field value:(id)value {
     self = [super init];

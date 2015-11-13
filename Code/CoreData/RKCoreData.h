@@ -21,6 +21,6 @@
 #ifndef RestKit_RKCoreData_h
 #define RestKit_RKCoreData_h
 
-#import "CoreData.h"
+#import <RestKit/CoreData.h>
 
 #endif

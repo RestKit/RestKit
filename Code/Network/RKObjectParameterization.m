@@ -18,17 +18,17 @@
 //  limitations under the License.
 //
 
-#import "RKMIMETypes.h"
-#import "RKSerialization.h"
-#import "RKObjectParameterization.h"
-#import "RKMIMETypeSerialization.h"
-#import "RKLog.h"
-#import "RKObjectMappingOperationDataSource.h"
-#import "RKObjectMapping.h"
-#import "RKMappingOperation.h"
-#import "RKMappingErrors.h"
-#import "RKPropertyInspector.h"
-#import "RKValueTransformers.h"
+#import <RKValueTransformers/RKValueTransformers.h>
+#import <RestKit/Network/RKObjectParameterization.h>
+#import <RestKit/ObjectMapping/RKMappingErrors.h>
+#import <RestKit/ObjectMapping/RKMappingOperation.h>
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
+#import <RestKit/ObjectMapping/RKObjectMappingOperationDataSource.h>
+#import <RestKit/ObjectMapping/RKPropertyInspector.h>
+#import <RestKit/Support/RKLog.h>
+#import <RestKit/Support/RKMIMETypeSerialization.h>
+#import <RestKit/Support/RKMIMETypes.h>
+#import <RestKit/Support/RKSerialization.h>
 
 // Set Logging Component
 #undef RKLogComponent

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectMapping.h"
+#import <RestKit/ObjectMapping/RKObjectMapping.h>
 
 /**
  The `RKObjectMappingMatcher` class provides an interface for encapsulating the selection of an object mapping based on runtime values. Matcher objects may be configured by key path and expected value or with a predicate object.

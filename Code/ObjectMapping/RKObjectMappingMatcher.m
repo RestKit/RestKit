@@ -6,8 +6,8 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import "RKObjectMappingMatcher.h"
-#import "RKObjectUtilities.h"
+#import <RestKit/ObjectMapping/RKObjectMappingMatcher.h>
+#import <RestKit/ObjectMapping/RKObjectUtilities.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,6 +110,14 @@
 
 @implementation RKKeyPathObjectMappingMatcher
 
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use -initWithKeyPath:expectedValue:objectMapping:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
+
 - (instancetype)initWithKeyPath:(NSString *)keyPath expectedValue:(id)expectedValue objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(keyPath);
@@ -141,6 +149,14 @@
 
 @implementation RKKeyPathClassObjectMappingMatcher
 
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use initilizer -initWithKeyPath:expectedClass:objectMapping:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
+
 - (instancetype)initWithKeyPath:(NSString *)keyPath expectedClass:(Class)expectedClass objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(keyPath);
@@ -170,6 +186,14 @@
 @end
 
 @implementation RKKeyPathValueMapObjectMappingMatcher
+
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use initilizer -initWithKeyPath:expectedValueMap:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
 
 - (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping
 {
@@ -210,6 +234,14 @@
 
 @implementation RKPredicateObjectMappingMatcher
 
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use initilizer -initWithPredicate:objectMapping:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
+
 - (instancetype)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping
 {
     NSParameterAssert(predicate);
@@ -236,6 +268,14 @@
 @end
 
 @implementation RKBlockObjectMatchingMatcher
+
+- (instancetype)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"-init is not a valid initializer for the class %@, use initilizer -initWithPossibleMappings:block:", NSStringFromClass([self class])]
+                                 userInfo:nil];
+    return [self init];
+}
 
 - (instancetype)initWithPossibleMappings:(NSArray *)mappings block:(RKObjectMapping *(^)(id representation))block
 {

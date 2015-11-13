@@ -6,7 +6,7 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import "RKTestNotificationObserver.h"
+#import <RestKit/Testing/RKTestNotificationObserver.h>
 
 @interface RKTestNotificationObserver ()
 @property (nonatomic, assign, getter = isObserverAdded) BOOL observerAdded;

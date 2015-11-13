@@ -262,6 +262,23 @@
     assertThat(blake.name, is(equalTo(@"Blake Watters")));
 }
 
+- (void)testShouldIgnoreNSNullInCollections {
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKAttributeMapping *idMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addPropertyMapping:idMapping];
+    RKAttributeMapping *nameMapping = [RKAttributeMapping attributeMappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addPropertyMapping:nameMapping];
+    
+    RKMapperOperation *mapper = [RKMapperOperation new];
+    mapper.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
+    NSArray *friendReps = [userInfo valueForKey:@"friend"];
+    NSArray *friends = [mapper mapRepresentations:friendReps atKeyPath:@"" usingMapping:mapping];
+    assertThatUnsignedInteger([friends count], is(equalToInt(1)));
+    RKTestUser *tony = friends[0];
+    assertThat(tony.name, is(equalTo(@"Anthony Stark")));
+}
+
 - (void)testShouldDetermineTheObjectMappingByConsultingTheMappingProviderWhenThereIsATargetObject
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];

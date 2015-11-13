@@ -6,8 +6,8 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <RestKit/RestKit.h>
+#import <UIKit/UIKit.h>
 
 @interface RKTwitterViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
     UITableView *_tableView;

@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKManagedObjectCaching.h"
+#import <RestKit/CoreData/RKManagedObjectCaching.h>
 
 /**
  Provides a simple managed object cache strategy in which every request for an object

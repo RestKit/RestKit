@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "RKMappingOperationDataSource.h"
-#import "RKMapperOperation.h"
-#import "RKMappingResult.h"
+#import <RestKit/ObjectMapping/RKMapperOperation.h>
+#import <RestKit/ObjectMapping/RKMappingOperationDataSource.h>
+#import <RestKit/ObjectMapping/RKMappingResult.h>
 
 #ifdef _COREDATADEFINES_H
 @protocol RKManagedObjectCaching;

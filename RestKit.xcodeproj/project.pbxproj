@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1689DAEF1B87CEA900254FB7 /* RKLumberjackLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 1689DAED1B87CEA900254FB7 /* RKLumberjackLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1689DAF01B87CEA900254FB7 /* RKLumberjackLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 1689DAED1B87CEA900254FB7 /* RKLumberjackLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1689DAF11B87CEA900254FB7 /* RKLumberjackLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 1689DAEE1B87CEA900254FB7 /* RKLumberjackLogger.m */; };
+		1689DAF21B87CEA900254FB7 /* RKLumberjackLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 1689DAEE1B87CEA900254FB7 /* RKLumberjackLogger.m */; };
 		2502C8ED15F79CF70060FD75 /* CoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2502C8E715F79CF70060FD75 /* CoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2502C8EE15F79CF70060FD75 /* CoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2502C8E715F79CF70060FD75 /* CoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2502C8EF15F79CF70060FD75 /* Network.h in Headers */ = {isa = PBXBuildFile; fileRef = 2502C8E815F79CF70060FD75 /* Network.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -538,10 +542,6 @@
 		C0F11CE6190883460054AEA0 /* RKPathMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = C0F11CE2190883380054AEA0 /* RKPathMatcher.m */; };
 		C0F11CE81908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C0F11CE91908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DB1148441A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DB1148451A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DB1148461A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */; };
-		DB1148471A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */; };
 		FFD7948D0AE44A4290977909 /* libPods-RestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EA1EF52129B3341280753E4 /* libPods-RestKit.a */; };
 /* End PBXBuildFile section */
 
@@ -576,6 +576,8 @@
 
 /* Begin PBXFileReference section */
 		0B096CE4874E766ECE78D229 /* Pods-ios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ios/Pods-ios.debug.xcconfig"; sourceTree = "<group>"; };
+		1689DAED1B87CEA900254FB7 /* RKLumberjackLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLumberjackLogger.h; sourceTree = "<group>"; };
+		1689DAEE1B87CEA900254FB7 /* RKLumberjackLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKLumberjackLogger.m; sourceTree = "<group>"; };
 		1ABDEC386A27292EF883B0BE /* Pods-RestKitFramework.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKitFramework.release.xcconfig"; path = "Pods/Target Support Files/Pods-RestKitFramework/Pods-RestKitFramework.release.xcconfig"; sourceTree = "<group>"; };
 		2501405215366000004E0466 /* RKObjectiveCppTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RKObjectiveCppTest.mm; sourceTree = "<group>"; };
 		2502C8E715F79CF70060FD75 /* CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreData.h; sourceTree = "<group>"; };
@@ -868,6 +870,7 @@
 		25FBB851159272DD00955D27 /* RKRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouter.m; sourceTree = "<group>"; };
 		3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = has_many_with_to_one_relationship.json; sourceTree = "<group>"; };
 		3EB0D83816ADCEFC00E9CEA2 /* empty_human.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = empty_human.json; sourceTree = "<group>"; };
+		538B0BD51BBCAF8C0068C386 /* with_to_one_relationship_inside_collection.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = with_to_one_relationship_inside_collection.json; sourceTree = "<group>"; };
 		54CDB45917B408B100FAC285 /* RKStringTokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKStringTokenizer.h; sourceTree = "<group>"; };
 		54CDB45A17B408B100FAC285 /* RKStringTokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKStringTokenizer.m; sourceTree = "<group>"; };
 		5910B0B01AC9811900721876 /* hoarderWithCats_issue_2192.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hoarderWithCats_issue_2192.json; sourceTree = "<group>"; };
@@ -883,19 +886,17 @@
 		73D3907114CA19F90093E3D6 /* parent.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = parent.json; sourceTree = "<group>"; };
 		73D3907314CA1A4A0093E3D6 /* child.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = child.json; sourceTree = "<group>"; };
 		73D3907814CA1D710093E3D6 /* channels.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = channels.xml; sourceTree = "<group>"; };
+		8AB68F0A1AE5B3B300DD655A /* RKFetchedResultsControllerUpdateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchedResultsControllerUpdateTest.m; sourceTree = "<group>"; };
 		9B15BBB1F11B91C32F72DFBF /* libPods-RestKitFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RestKitFramework.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A339C3AFD7C094BEAFE92A93 /* Pods-ios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.release.xcconfig"; path = "Pods/Target Support Files/Pods-ios/Pods-ios.release.xcconfig"; sourceTree = "<group>"; };
 		A920AEDAEC3C6599433D2720 /* Pods-osx.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.debug.xcconfig"; path = "Pods/Target Support Files/Pods-osx/Pods-osx.debug.xcconfig"; sourceTree = "<group>"; };
 		AD144E244684975F290D70ED /* Pods-RestKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-RestKit/Pods-RestKit.release.xcconfig"; sourceTree = "<group>"; };
 		AD2DD8D9C9EA769B53865C88 /* Pods-RestKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RestKit/Pods-RestKit.debug.xcconfig"; sourceTree = "<group>"; };
-		8AB68F0A1AE5B3B300DD655A /* RKFetchedResultsControllerUpdateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchedResultsControllerUpdateTest.m; sourceTree = "<group>"; };
 		BE05BDCF1782109F00F7C9C9 /* RKRouteTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRouteTest.m; sourceTree = "<group>"; };
 		C0F11CE1190883380054AEA0 /* RKPathMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPathMatcher.h; sourceTree = "<group>"; };
 		C0F11CE2190883380054AEA0 /* RKPathMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcher.m; sourceTree = "<group>"; };
 		C0F11CE71908C7E60054AEA0 /* RKCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCoreData.h; sourceTree = "<group>"; };
 		C5608EB544CBB19BBACC13BA /* Pods-RestKitFramework.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKitFramework.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RestKitFramework/Pods-RestKitFramework.debug.xcconfig"; sourceTree = "<group>"; };
-		DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLumberjackLogger.h; sourceTree = "<group>"; };
-		DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKLumberjackLogger.m; sourceTree = "<group>"; };
 		DB867C56C81696C5E9366366 /* libPods-osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-osx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC09A8FD6016D24B797977A1 /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
@@ -956,6 +957,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1689DAEC1B87CEA900254FB7 /* CocoaLumberjack */ = {
+			isa = PBXGroup;
+			children = (
+				1689DAED1B87CEA900254FB7 /* RKLumberjackLogger.h */,
+				1689DAEE1B87CEA900254FB7 /* RKLumberjackLogger.m */,
+			);
+			path = CocoaLumberjack;
+			sourceTree = "<group>";
+		};
 		21C3ABBAD1E23EF5D671E158 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -1010,6 +1020,7 @@
 				21C3ABBAD1E23EF5D671E158 /* Pods */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		25160D1714564E810060A5C5 /* Products */ = {
 			isa = PBXGroup;
@@ -1064,6 +1075,7 @@
 				2502C8EB15F79CF70060FD75 /* Support.h */,
 				25160DA2145650490060A5C5 /* Support */,
 				2502C8EC15F79CF70060FD75 /* Testing.h */,
+				1689DAEC1B87CEA900254FB7 /* CocoaLumberjack */,
 				252EFB1F14D9A8D4004863C8 /* Testing */,
 				2502C8EA15F79CF70060FD75 /* Search.h */,
 				25104F0E15C30C7900829135 /* Search */,
@@ -1169,8 +1181,6 @@
 				25160DBF145650490060A5C5 /* RKDotNetDateFormatter.m */,
 				25160DC1145650490060A5C5 /* RKLog.h */,
 				25160DC2145650490060A5C5 /* RKLog.m */,
-				DB1148421A0B26B100C8A00A /* RKLumberjackLogger.h */,
-				DB1148431A0B26B100C8A00A /* RKLumberjackLogger.m */,
 				25160DC3145650490060A5C5 /* RKMIMETypes.h */,
 				25160DC4145650490060A5C5 /* RKMIMETypes.m */,
 				25160DC5145650490060A5C5 /* RKSerialization.h */,
@@ -1334,6 +1344,7 @@
 				3E886DC0169E10A70069C56B /* has_many_with_to_one_relationship.json */,
 				25160FE31456F2330060A5C5 /* with_to_one_relationship.json */,
 				F66056291744FF9000A87A45 /* and_cats.json */,
+				538B0BD51BBCAF8C0068C386 /* with_to_one_relationship_inside_collection.json */,
 			);
 			path = humans;
 			sourceTree = "<group>";
@@ -1633,7 +1644,6 @@
 				25160E0B145650490060A5C5 /* RKErrorMessage.h in Headers */,
 				25160E0F145650490060A5C5 /* RKAttributeMapping.h in Headers */,
 				25160E16145650490060A5C5 /* RKMapperOperation.h in Headers */,
-				DB1148441A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */,
 				25160E18145650490060A5C5 /* RKMapperOperation_Private.h in Headers */,
 				25160E1A145650490060A5C5 /* RKObjectMapping.h in Headers */,
 				25160E1C145650490060A5C5 /* RKMapping.h in Headers */,
@@ -1651,6 +1661,7 @@
 				25160E4E145650490060A5C5 /* RKSerialization.h in Headers */,
 				25160EE21456532C0060A5C5 /* lcl_RK.h in Headers */,
 				25160E2E145650490060A5C5 /* RestKit.h in Headers */,
+				1689DAEF1B87CEA900254FB7 /* RKLumberjackLogger.h in Headers */,
 				25B408261491CDDC00F21111 /* RKPathUtilities.h in Headers */,
 				25B6E95514CF795D00B1E881 /* RKErrors.h in Headers */,
 				25B6E95C14CF7E3C00B1E881 /* RKObjectMappingMatcher.h in Headers */,
@@ -1724,7 +1735,6 @@
 				25160F4A145655C60060A5C5 /* RKAttributeMapping.h in Headers */,
 				25160F51145655C60060A5C5 /* RKMapperOperation.h in Headers */,
 				25160F53145655C60060A5C5 /* RKMapperOperation_Private.h in Headers */,
-				DB1148451A0B26B100C8A00A /* RKLumberjackLogger.h in Headers */,
 				25160F55145655C60060A5C5 /* RKObjectMapping.h in Headers */,
 				25160F57145655C60060A5C5 /* RKMapping.h in Headers */,
 				25160F58145655C60060A5C5 /* RKMappingOperation.h in Headers */,
@@ -1744,6 +1754,7 @@
 				25160F971456576C0060A5C5 /* RKSerialization.h in Headers */,
 				25160F25145655AF0060A5C5 /* RestKit.h in Headers */,
 				25B408271491CDDC00F21111 /* RKPathUtilities.h in Headers */,
+				1689DAF01B87CEA900254FB7 /* RKLumberjackLogger.h in Headers */,
 				25B6E95614CF795D00B1E881 /* RKErrors.h in Headers */,
 				25B6E95D14CF7E3C00B1E881 /* RKObjectMappingMatcher.h in Headers */,
 				25FABED314E3796C00E609E7 /* RKTestNotificationObserver.h in Headers */,
@@ -1839,6 +1850,7 @@
 				25160D2314564E820060A5C5 /* Resources */,
 				25160D2414564E820060A5C5 /* ShellScript */,
 				D00A58B091EC84A57A1FB098 /* Copy Pods Resources */,
+				D53939EC83FE6753732850FE /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1881,6 +1893,7 @@
 				250CA67F147D8EEC0047D347 /* CopyFiles */,
 				25160E76145651060060A5C5 /* ShellScript */,
 				D9DDA304517443E2F6FD2B2C /* Copy Pods Resources */,
+				2FFB30DF4A3D492F0C2C5F2C /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2068,6 +2081,21 @@
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
+		2FFB30DF4A3D492F0C2C5F2C /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-osx/Pods-osx-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		31E61254417653D2A601DDF8 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2143,6 +2171,21 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ios/Pods-ios-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		D53939EC83FE6753732850FE /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ios/Pods-ios-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		D9DDA304517443E2F6FD2B2C /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2186,7 +2229,6 @@
 				25160DE2145650490060A5C5 /* RKManagedObjectStore.m in Sources */,
 				25160DE6145650490060A5C5 /* RKPropertyInspector+CoreData.m in Sources */,
 				25160E0A145650490060A5C5 /* RKDynamicMapping.m in Sources */,
-				DB1148461A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */,
 				25160E0C145650490060A5C5 /* RKErrorMessage.m in Sources */,
 				25160E10145650490060A5C5 /* RKAttributeMapping.m in Sources */,
 				25160E17145650490060A5C5 /* RKMapperOperation.m in Sources */,
@@ -2205,6 +2247,7 @@
 				25CA7A8F14EC570200888FF8 /* RKMapping.m in Sources */,
 				25055B8614EEF32A00B9C4DD /* RKMappingTest.m in Sources */,
 				25055B8A14EEF32A00B9C4DD /* RKTestFactory.m in Sources */,
+				1689DAF11B87CEA900254FB7 /* RKLumberjackLogger.m in Sources */,
 				25055B9114EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m in Sources */,
 				25EC1A3B14F72B1300C3CF3F /* RKFetchRequestManagedObjectCache.m in Sources */,
 				25EC1A3F14F72B3100C3CF3F /* RKInMemoryManagedObjectCache.m in Sources */,
@@ -2329,7 +2372,6 @@
 				25160F45145655C60060A5C5 /* RKDynamicMapping.m in Sources */,
 				25160F47145655C60060A5C5 /* RKErrorMessage.m in Sources */,
 				25160F4B145655C60060A5C5 /* RKAttributeMapping.m in Sources */,
-				DB1148471A0B26B100C8A00A /* RKLumberjackLogger.m in Sources */,
 				25160F52145655C60060A5C5 /* RKMapperOperation.m in Sources */,
 				25160F56145655C60060A5C5 /* RKObjectMapping.m in Sources */,
 				25160F59145655C60060A5C5 /* RKMappingOperation.m in Sources */,
@@ -2350,6 +2392,7 @@
 				25CA7A9114EC5C2D00888FF8 /* RKTestFixture.m in Sources */,
 				25055B8714EEF32A00B9C4DD /* RKMappingTest.m in Sources */,
 				25055B8B14EEF32A00B9C4DD /* RKTestFactory.m in Sources */,
+				1689DAF21B87CEA900254FB7 /* RKLumberjackLogger.m in Sources */,
 				25055B9214EEF40000B9C4DD /* RKPropertyMappingTestExpectation.m in Sources */,
 				25EC1A3C14F72B1400C3CF3F /* RKFetchRequestManagedObjectCache.m in Sources */,
 				25EC1A4014F72B3300C3CF3F /* RKInMemoryManagedObjectCache.m in Sources */,

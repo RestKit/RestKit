@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "RKSearchPredicate.h"
+#import <RestKit/Search/RKSearchPredicate.h>
 
 #ifdef _COREDATADEFINES_H
-#import "RKSearchIndexer.h"
-#import "RKManagedObjectStore+RKSearchAdditions.h"
+#import <RestKit/Search/RKManagedObjectStore+RKSearchAdditions.h>
+#import <RestKit/Search/RKSearchIndexer.h>
 #endif
