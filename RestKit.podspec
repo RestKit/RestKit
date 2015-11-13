@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             =  'RestKit'
-  s.version          =  '0.25.0'
+  s.version          =  File.read(File.expand_path('../VERSION', __FILE__)).strip
   s.summary          =  'RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X.'
   s.homepage         =  'https://github.com/RestKit/RestKit'
   s.social_media_url =  'https://twitter.com/RestKit'
