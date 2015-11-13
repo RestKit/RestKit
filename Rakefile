@@ -196,6 +196,8 @@ task :release do
   podspec.gsub!(/(s\.version\s*=\s*)'#{Gem::Version::VERSION_PATTERN}'/, "\\1'#{restkit_version}'")
   File.open('RestKit.podspec', 'w') { |f| f << podspec }
 
+  sh "bundle exec pod install"
+
   title 'Running tests'
   Rake::Task['ci'].invoke
 
