@@ -171,4 +171,28 @@
     testBlock(dateComponents);
 }
 
+- (void)testRKHTTPCacheExpirationDateFromHeadersWithStatusCode
+{
+	const NSInteger maxAge = 3600;
+    NSDate * const date = [NSDate dateWithTimeIntervalSinceReferenceDate:1234];
+
+    NSDateFormatter * const dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    dateFormatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss z";
+
+	NSMutableDictionary * const headers = [[NSMutableDictionary alloc] initWithDictionary:@{
+    	@"Cache-Control" : [NSString stringWithFormat:@"public, max-age=%d", maxAge],
+        @"Date" : [dateFormatter stringFromDate:date]
+    }];
+    
+    expect(RKHTTPCacheExpirationDateFromHeadersWithStatusCode(headers, 200)).to.equal([date dateByAddingTimeInterval:maxAge]);
+    
+    [headers setObject:[NSNumber numberWithInteger:(maxAge + 60)] forKey:@"Age"];
+    expect(RKHTTPCacheExpirationDateFromHeadersWithStatusCode(headers, 200)).to.beLessThan(NSDate.date);
+
+    [headers setObject:[NSNumber numberWithInteger:(maxAge - 60)] forKey:@"Age"];
+    expect(RKHTTPCacheExpirationDateFromHeadersWithStatusCode(headers, 200)).to.beGreaterThan(NSDate.date);
+}
+
 @end
