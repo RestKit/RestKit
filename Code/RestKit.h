@@ -33,7 +33,7 @@
 #import <RestKit/Support.h>
 #endif
 
-#if __has_include("RKCoreData.h")
+#if __has_include(<RestKit/CoreData.h>)
 #import <RestKit/CoreData/RKCoreData.h>
 #endif
 
