@@ -542,6 +542,7 @@
 		C0F11CE6190883460054AEA0 /* RKPathMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = C0F11CE2190883380054AEA0 /* RKPathMatcher.m */; };
 		C0F11CE81908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C0F11CE91908C7E60054AEA0 /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = C0F11CE71908C7E60054AEA0 /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DEAC698D1B8F55A600FF6134 /* RKRefetchingMappingResultTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAC698C1B8F55A600FF6134 /* RKRefetchingMappingResultTests.m */; };
 		FFD7948D0AE44A4290977909 /* libPods-RestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EA1EF52129B3341280753E4 /* libPods-RestKit.a */; };
 /* End PBXBuildFile section */
 
@@ -899,6 +900,7 @@
 		C5608EB544CBB19BBACC13BA /* Pods-RestKitFramework.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKitFramework.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RestKitFramework/Pods-RestKitFramework.debug.xcconfig"; sourceTree = "<group>"; };
 		DB867C56C81696C5E9366366 /* libPods-osx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-osx.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC09A8FD6016D24B797977A1 /* libPods-ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DEAC698C1B8F55A600FF6134 /* RKRefetchingMappingResultTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRefetchingMappingResultTests.m; sourceTree = "<group>"; };
 		F66056291744FF9000A87A45 /* and_cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = and_cats.json; sourceTree = "<group>"; };
 		F6B428543BF5CF359F239FE1 /* Pods-osx.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-osx.release.xcconfig"; path = "Pods/Target Support Files/Pods-osx/Pods-osx.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1254,20 +1256,21 @@
 		25160FC61456F2330060A5C5 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				25160FC71456F2330060A5C5 /* RKManagedObjectLoaderTest.m */,
-				25160FC91456F2330060A5C5 /* RKEntityMappingTest.m */,
-				25160FCB1456F2330060A5C5 /* RKManagedObjectStoreTest.m */,
-				25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */,
 				25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */,
 				25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */,
+				2546A95716628EDD0078E044 /* RKConnectionDescriptionTest.m */,
 				259D98591550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m */,
 				259D986315521B1F008C90F5 /* RKEntityCacheTest.m */,
+				25160FC91456F2330060A5C5 /* RKEntityMappingTest.m */,
+				8AB68F0A1AE5B3B300DD655A /* RKFetchedResultsControllerUpdateTest.m */,
+				25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */,
+				2582F56C173038750043B8BB /* RKInMemoryManagedObjectCacheTest.m */,
+				25160FC71456F2330060A5C5 /* RKManagedObjectLoaderTest.m */,
 				25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */,
 				258EFF7915C0CE1400EE4E0D /* RKManagedObjectSeederTest.m */,
+				25160FCB1456F2330060A5C5 /* RKManagedObjectStoreTest.m */,
+				DEAC698C1B8F55A600FF6134 /* RKRefetchingMappingResultTests.m */,
 				2564E40A16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m */,
-				2546A95716628EDD0078E044 /* RKConnectionDescriptionTest.m */,
-				2582F56C173038750043B8BB /* RKInMemoryManagedObjectCacheTest.m */,
-				8AB68F0A1AE5B3B300DD655A /* RKFetchedResultsControllerUpdateTest.m */,
 			);
 			name = CoreData;
 			path = Logic/CoreData;
@@ -2340,6 +2343,7 @@
 				25C246A415C83B090032212E /* RKSearchTest.m in Sources */,
 				5C927E141608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */,
 				25E9C8F01612523400647F84 /* RKObjectParameterizationTest.m in Sources */,
+				DEAC698D1B8F55A600FF6134 /* RKRefetchingMappingResultTests.m in Sources */,
 				25EDFCE3161538F6008BAA1D /* RKObjectManagerTest.m in Sources */,
 				2564E40B16173F7B00C12D7D /* RKRelationshipConnectionOperationTest.m in Sources */,
 				25CDA0E7161E828D00F583F3 /* RKISODateFormatterTest.m in Sources */,
