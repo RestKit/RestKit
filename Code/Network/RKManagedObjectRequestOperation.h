@@ -19,7 +19,7 @@
 //
 
 #ifdef _COREDATADEFINES_H
-#if __has_include("RKManagedObjectCaching.h")
+#if __has_include(<RestKit/CoreData/RKManagedObjectCaching.h>)
 
 #import <RestKit/CoreData/RKManagedObjectCaching.h>
 #import <RestKit/Network/RKObjectRequestOperation.h>
