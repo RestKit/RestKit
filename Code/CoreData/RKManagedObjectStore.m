@@ -134,8 +134,12 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
         }
     }
     
-    NSError* err = nil;
-    [context obtainPermanentIDsForObjects:[objectsForTemps allObjects] error:&err];
+    __block NSError* err = nil;
+    [context performBlockAndWait:^
+    {
+        [context obtainPermanentIDsForObjects:[objectsForTemps allObjects] error:&err];
+    }];
+    
     NSCAssert(!err, @"unable to obtain permanent ids for objects");
     
     [permanentIds unionSet:[objectsForTemps valueForKey:@"objectID"]];
