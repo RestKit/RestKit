@@ -297,13 +297,21 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     _successCallbackQueue = NULL;
 }
 
+// Compiler requires that we override this.
+- (instancetype)init
+{
+    self = [self initWithHTTPRequestOperation:nil responseDescriptors:nil];
+    NSAssert(NO, @"Failed to call designated initializer on %@.", self);
+    return self;
+}
+
 // Designated initializer
 - (instancetype)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors
 {
     NSParameterAssert(requestOperation);
     NSParameterAssert(responseDescriptors);
     
-    self = [self init];
+    self = [super init];
     if (self) {
         self.responseDescriptors = responseDescriptors;
         self.HTTPRequestOperation = requestOperation;
