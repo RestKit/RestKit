@@ -149,6 +149,14 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     });
 }
 
+// Compiler requires we override this.
+- (instancetype)init
+{
+    self = [self initWithClass:nil];
+    NSAssert(NO, @"Failed to call designated initializer of %@", self);
+    return self;
+}
+
 - (instancetype)initWithClass:(Class)objectClass
 {
     self = [super init];

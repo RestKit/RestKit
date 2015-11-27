@@ -85,7 +85,7 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
  @param responseDescriptors An array of `RKResponseDescriptor` objects specifying how object mapping is to be performed on the response loaded by the network operation.
  @return The receiver, initialized with the given request and response descriptors.
  */
-- (instancetype)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors;
+- (instancetype)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors NS_DESIGNATED_INITIALIZER;
 
 /**
  Initializes an object request operation with a request object and a set of response descriptors.
