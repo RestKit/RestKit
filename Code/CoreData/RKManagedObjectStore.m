@@ -105,19 +105,25 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
     //the save could have potentially assigned permament IDs to temporary ones
     //that were being held on to. This would result in merging a notification back
     //in to the child that triggered it, and bad things happen when you do that.
-    NSSet* childIDs = [self permanentObjectIDsForIds:self.objectIDsFromChildDidSaveNotification inContext:self.mergeContext];
-    
-    if (! [childIDs isEqual:RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification)]) {
-        [self.mergeContext performBlock:^{
-            [self.mergeContext mergeChangesFromContextDidSaveNotification:notification];
-        }];
-    } else {
-        RKLogDebug(@"Skipping merge of `NSManagedObjectContextDidSaveNotification`: the save event originated from the mergeContext and thus no save is necessary.");
-    }
-    self.objectIDsFromChildDidSaveNotification = nil;
+    [self getPermanentObjectIDsForIds:self.objectIDsFromChildDidSaveNotification
+                            inContext:self.mergeContext
+                            didFinish:^(NSSet *permanentIDs)
+    {
+        if (! [permanentIDs isEqual:RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification)])
+        {
+            [self.mergeContext performBlock:^{
+                [self.mergeContext mergeChangesFromContextDidSaveNotification:notification];
+            }];
+        }
+        else
+        {
+            RKLogDebug(@"Skipping merge of `NSManagedObjectContextDidSaveNotification`: the save event originated from the mergeContext and thus no save is necessary.");
+        }
+        self.objectIDsFromChildDidSaveNotification = nil;
+    }];
 }
 
-- (NSSet*)permanentObjectIDsForIds:(NSSet*)objectIDs inContext:(NSManagedObjectContext*)context
+- (void)getPermanentObjectIDsForIds:(NSSet*)objectIDs inContext:(NSManagedObjectContext*)context didFinish:(void (^)(NSSet* permanentIDs))didFinish
 {
     NSMutableSet* permanentIds = [NSMutableSet setWithCapacity:objectIDs.count];
     NSMutableSet* objectsForTemps = [NSMutableSet setWithCapacity:objectIDs.count];
@@ -134,16 +140,16 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
         }
     }
     
-    __block NSError* err = nil;
-    [context performBlockAndWait:^
+    [context performBlock:^
     {
+        NSError* err = nil;
         [context obtainPermanentIDsForObjects:[objectsForTemps allObjects] error:&err];
+        
+        NSCAssert(!err, @"unable to obtain permanent ids for objects");
+        
+        [permanentIds unionSet:[objectsForTemps valueForKey:@"objectID"]];
+        didFinish(permanentIds);
     }];
-    
-    NSCAssert(!err, @"unable to obtain permanent ids for objects");
-    
-    [permanentIds unionSet:[objectsForTemps valueForKey:@"objectID"]];
-    return permanentIds;
 }
 
 @end
