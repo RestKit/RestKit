@@ -18,6 +18,10 @@
 //  limitations under the License.
 //
 
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
+
 #import <RestKit/CoreData/RKEntityByAttributeCache.h>
 #import <RestKit/CoreData/RKEntityCache.h>
 
