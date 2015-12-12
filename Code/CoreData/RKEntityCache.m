@@ -139,12 +139,11 @@
 - (void)waitForDispatchGroup:(dispatch_group_t)dispatchGroup withCompletionBlock:(void (^)(void))completion
 {
     if (completion) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
-            dispatch_group_wait(dispatchGroup, DISPATCH_TIME_FOREVER);
+        dispatch_group_notify(dispatchGroup, self.callbackQueue ?: dispatch_get_main_queue(), ^{
 #if !OS_OBJECT_USE_OBJC
             dispatch_release(dispatchGroup);
 #endif
-            dispatch_async(self.callbackQueue ?: dispatch_get_main_queue(), completion);
+            completion();
         });
     }
 }
