@@ -422,22 +422,4 @@
     [self.cache objectsWithAttributeValues:attributeValues inContext:self.managedObjectContext];
 }
 
-#if TARGET_OS_IPHONE
-- (void)testCacheIsFlushedOnMemoryWarning
-{
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human1.railsID = @12345;
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
-    human2.railsID = @12345;
-    [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
-    
-    [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];
-    expect([self.cache containsObject:human1]).will.equal(YES);
-    expect([self.cache containsObject:human2]).will.equal(YES);
-    [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidReceiveMemoryWarningNotification object:self];
-    expect([self.cache containsObject:human1]).will.equal(NO);
-    expect([self.cache containsObject:human2]).will.equal(NO);
-}
-#endif
-
 @end

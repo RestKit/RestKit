@@ -244,4 +244,26 @@
     assertThatBool([entityAttributeCache containsObject:human1], is(equalToBool(NO)));
 }
 
+#if TARGET_OS_IPHONE
+- (void)testCacheIsFlushedOnMemoryWarning
+{
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    human1.railsID = @12345;
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
+    human2.railsID = @12345;
+    [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
+
+    __block BOOL done = NO;
+    [self.cache cacheObjectsForEntity:human1.entity byAttributes:@[ @"railsID" ]completion:^{
+        done = YES;
+        expect([self.cache containsObject:human1]).will.equal(YES);
+        expect([self.cache containsObject:human2]).will.equal(YES);
+        [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidReceiveMemoryWarningNotification object:self];
+        expect([self.cache containsObject:human1]).will.equal(NO);
+        expect([self.cache containsObject:human2]).will.equal(NO);
+    }];
+    expect(done).will.equal(YES);
+}
+#endif
+
 @end
