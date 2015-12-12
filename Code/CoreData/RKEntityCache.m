@@ -23,6 +23,9 @@
 
 @interface RKEntityCache ()
 @property (nonatomic, strong) NSMutableSet *attributeCaches;
+@property (nonatomic, strong) NSLock *accessLock;
+@property (nonatomic, strong) NSMutableArray *pendingFlushCompletionBlocks;
+@property (nonatomic) NSInteger accessCount;
 @end
 
 @implementation RKEntityCache
@@ -34,6 +37,15 @@
     if (self) {
         _managedObjectContext = context;
         _attributeCaches = [[NSMutableSet alloc] init];
+        _accessLock = [NSLock new];
+        _pendingFlushCompletionBlocks = [NSMutableArray new];
+
+#if TARGET_OS_IPHONE
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(didReceiveMemoryWarning:)
+                                                     name:UIApplicationDidReceiveMemoryWarningNotification
+                                                   object:nil];
+#endif
     }
 
     return self;
@@ -42,6 +54,11 @@
 - (instancetype)init
 {
     return [self initWithManagedObjectContext:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)cacheObjectsForEntity:(NSEntityDescription *)entity byAttributes:(NSArray *)attributeNames completion:(void (^)(void))completion
@@ -134,6 +151,19 @@
 
 - (void)flush:(void (^)(void))completion
 {
+    [_accessLock lock];
+    if (_accessCount == 0) {
+        [self _flushNow:^{
+            if (completion) completion();
+        }];
+    } else {
+        [_pendingFlushCompletionBlocks addObject:completion ?: ^{}];
+    }
+    [_accessLock unlock];
+}
+
+- (void)_flushNow:(void (^)(void))completion
+{
     dispatch_group_t dispatchGroup = completion ? dispatch_group_create() : NULL;
     for (RKEntityByAttributeCache *cache in self.attributeCaches) {
         if (dispatchGroup) dispatch_group_enter(dispatchGroup);
@@ -225,6 +255,34 @@
     }
     
     return NO;
+}
+
+- (void)beginAccessing
+{
+    [_accessLock lock];
+    _accessCount += 1;
+    [_accessLock unlock];
+}
+
+- (void)endAccessing
+{
+    [_accessLock lock];
+    _accessCount -= 1;
+    if (_accessCount == 0 && _pendingFlushCompletionBlocks.count > 0) {
+        NSArray *blocks = [_pendingFlushCompletionBlocks copy];
+        [_pendingFlushCompletionBlocks removeAllObjects];
+        [self _flushNow:^{
+            for (dispatch_block_t block in blocks) {
+                block();
+            }
+        }];
+    }
+    [_accessLock unlock];
+}
+
+- (void)didReceiveMemoryWarning:(NSNotification *)notification
+{
+    [self flush:nil];
 }
 
 @end
