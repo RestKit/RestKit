@@ -155,6 +155,24 @@
  */
 - (BOOL)containsObject:(NSManagedObject *)managedObject;
 
+/**
+ Call this before beginning a sequence of operations that require the cache not to be flushed.
+ 
+ This is used by RKInMemoryManagedObjectCache to workaround https://github.com/RestKit/RestKit/issues/1613 .
+ 
+ @see endAccessing
+ */
+- (void)beginAccessing;
+
+/**
+ Call this after completing a sequence of operations that require the cache not to be flushed.
+
+ This is used by RKInMemoryManagedObjectCache to workaround https://github.com/RestKit/RestKit/issues/1613 .
+
+ @see beginAccessing
+ */
+- (void)endAccessing;
+
 @end
 
 // Deprecated in v0.20.1

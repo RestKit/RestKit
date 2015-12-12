@@ -18,10 +18,6 @@
 //  limitations under the License.
 //
 
-#if TARGET_OS_IPHONE
-#import <UIKit/UIKit.h>
-#endif
-
 #import <RestKit/CoreData/NSManagedObject+RKAdditions.h>
 #import <RestKit/CoreData/RKEntityByAttributeCache.h>
 #import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
@@ -105,13 +101,6 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
         _managedObjectContext = context;
         NSString *queueName = [[NSString alloc] initWithFormat:@"%@.%p", @"org.restkit.core-data.entity-by-attribute-cache", self];
         self.queue = dispatch_queue_create([queueName UTF8String], DISPATCH_QUEUE_CONCURRENT);        
-
-#if TARGET_OS_IPHONE
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(didReceiveMemoryWarning:)
-                                                     name:UIApplicationDidReceiveMemoryWarningNotification
-                                                   object:nil];
-#endif
     }
 
     return self;
@@ -119,8 +108,6 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
 #if !OS_OBJECT_USE_OBJC
     dispatch_release(_queue);
     _queue = NULL;
@@ -396,11 +383,6 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
         allObjectIDs = [[self.cacheKeysToObjectIDs allValues] valueForKeyPath:@"@distinctUnionOfSets.self"];
     });
     return [allObjectIDs containsObject:object.objectID];
-}
-
-- (void)didReceiveMemoryWarning:(NSNotification *)notification
-{
-    [self flush:nil];
 }
 
 @end

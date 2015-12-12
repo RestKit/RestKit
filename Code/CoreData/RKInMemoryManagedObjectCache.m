@@ -90,6 +90,7 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
     NSParameterAssert(managedObjectContext);
     
     NSArray *attributes = [attributeValues allKeys];
+    [self.entityCache beginAccessing];
     if (! [self.entityCache isEntity:entity cachedByAttributes:attributes]) {
         RKLogInfo(@"Caching instances of Entity '%@' by attributes '%@'", entity.name, [attributes componentsJoinedByString:@", "]);
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -127,7 +128,9 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
         RKLogTrace(@"Cached %ld objects", (long)[attributeCache count]);
     }
     
-    return [self.entityCache objectsForEntity:entity withAttributeValues:attributeValues inContext:managedObjectContext];
+    NSSet *result = [self.entityCache objectsForEntity:entity withAttributeValues:attributeValues inContext:managedObjectContext];
+    [self.entityCache endAccessing];
+    return result;
 }
 
 - (void)didFetchObject:(NSManagedObject *)object
