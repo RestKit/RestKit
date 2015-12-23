@@ -301,73 +301,51 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
     }
 }
 
-- (void)addObjects:(NSSet *)managedObjects completion:(void (^)(void))completion
+- (void)addObjects:(NSSet *)managedObjects
 {
     if ([managedObjects count] == 0) {
-        if (completion) dispatch_async(self.callbackQueue ?: dispatch_get_main_queue(), completion);
         return;
     }
-    __block NSEntityDescription *entity;
-    __block NSDictionary *attributeValues;
-    __block NSManagedObjectID *objectID;
     NSManagedObjectContext *managedObjectContext = [[managedObjects anyObject] managedObjectContext];
     [managedObjectContext performBlockAndWait:^{
         NSMutableDictionary *newObjectIDsToAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[managedObjects count]];
         for (NSManagedObject *managedObject in managedObjects) {
-            entity = managedObject.entity;
-            objectID = [managedObject objectID];
-            attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
+            NSEntityDescription *entity = managedObject.entity;
+            NSDictionary *attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
             
             NSAssert([entity isKindOfEntity:self.entity], @"Cannot add object with entity '%@' to cache for entity of '%@'", [entity name], [self.entity name]);
-            newObjectIDsToAttributeValues[objectID] = attributeValues;
+            newObjectIDsToAttributeValues[managedObject.objectID] = attributeValues;
         }
-        
-        if ([newObjectIDsToAttributeValues count]) {
-            dispatch_barrier_async(self.queue, ^{
-                [newObjectIDsToAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID *objectID, NSDictionary *attributeValues, BOOL *stop) {
-                    [self cacheObjectID:objectID forAttributeValues:attributeValues];
-                }];
-                
-                if (completion) dispatch_async(self.callbackQueue ?: dispatch_get_main_queue(), completion);
-            });
-        } else {
-            if (completion) dispatch_async(self.callbackQueue ?: dispatch_get_main_queue(), completion);
-        }
+
+        dispatch_barrier_sync(self.queue, ^{
+            [newObjectIDsToAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID *objectID, NSDictionary *attributeValues, BOOL *stop) {
+                [self cacheObjectID:objectID forAttributeValues:attributeValues];
+            }];
+        });
     }];
 }
 
-- (void)removeObjects:(NSSet *)managedObjects completion:(void (^)(void))completion
+- (void)removeObjects:(NSSet *)managedObjects
 {
     if ([managedObjects count] == 0) {
-        if (completion) dispatch_async(self.callbackQueue ?: dispatch_get_main_queue(), completion);
         return;
     }
-    __block NSEntityDescription *entity;
-    __block NSDictionary *attributeValues;
-    __block NSManagedObjectID *objectID;
     NSManagedObjectContext *managedObjectContext = [[managedObjects anyObject] managedObjectContext];
-    [managedObjectContext performBlock:^{
+    [managedObjectContext performBlockAndWait:^{
         NSMutableDictionary *deletedObjectIDsToAttributeValues = [NSMutableDictionary dictionaryWithCapacity:[managedObjects count]];
         for (NSManagedObject *managedObject in managedObjects) {
-            entity = managedObject.entity;
-            objectID = [managedObject objectID];
-            attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
+            NSEntityDescription *entity = managedObject.entity;
+            NSDictionary *attributeValues = [managedObject dictionaryWithValuesForKeys:self.attributes];
             
             NSAssert([entity isKindOfEntity:self.entity], @"Cannot remove object with entity '%@' from cache for entity of '%@'", [entity name], [self.entity name]);
-            deletedObjectIDsToAttributeValues[objectID] = attributeValues;
+            deletedObjectIDsToAttributeValues[managedObject.objectID] = attributeValues;
         }
-        
-        if ([deletedObjectIDsToAttributeValues count]) {
-            dispatch_barrier_async(self.queue, ^{
-                [deletedObjectIDsToAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID *objectID, NSDictionary *attributeValues, BOOL *stop) {
-                    [self deleteObjectID:objectID forAttributeValues:attributeValues];
-                }];
-                
-                if (completion) dispatch_async(self.callbackQueue ?: dispatch_get_main_queue(), completion);
-            });
-        } else {
-            if (completion) dispatch_async(self.callbackQueue ?: dispatch_get_main_queue(), completion);
-        }
+
+        dispatch_barrier_sync(self.queue, ^{
+            [deletedObjectIDsToAttributeValues enumerateKeysAndObjectsUsingBlock:^(NSManagedObjectID *objectID, NSDictionary *attributeValues, BOOL *stop) {
+                [self deleteObjectID:objectID forAttributeValues:attributeValues];
+            }];
+        });
     }];
 }
 
@@ -404,12 +382,12 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 
 - (void)addObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE
 {
-    [self addObjects:[NSSet setWithObject:object] completion:nil];
+    [self addObjects:[NSSet setWithObject:object]];
 }
 
 - (void)removeObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE
 {
-    [self removeObjects:[NSSet setWithObject:object] completion:nil];
+    [self removeObjects:[NSSet setWithObject:object]];
 }
 
 - (void)setMonitorsContextForChanges:(BOOL)monitorsContextForChanges DEPRECATED_ATTRIBUTE

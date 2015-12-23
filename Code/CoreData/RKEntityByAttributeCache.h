@@ -164,24 +164,22 @@
 ///------------------------------
 
 /**
- Asynchronously adds a managed object to the cache.
+ Adds a managed object to the cache.
 
- The object must be an instance of the cached entity.
+ The objects must be instances of the cached entity.
 
- @param managedObjects The managed object to add to the cache.
- @param completion An optional block to execute once the object has been added to the cache.
+ @param managedObjects The managed objects to add to the cache.
  */
-- (void)addObjects:(NSSet *)managedObjects completion:(void (^)(void))completion;
+- (void)addObjects:(NSSet *)managedObjects;
 
 /**
- Asynchronously removes a managed object from the cache.
+ Removes a managed object from the cache.
 
- The object must be an instance of the cached entity.
+ The objects must be an instances of the cached entity.
 
- @param managedObjects The managed object to remove from the cache.
- @param completion An optional block to execute once the object has been removed from the cache.
+ @param managedObjects The managed objects to remove from the cache.
  */
-- (void)removeObjects:(NSSet *)managedObjects completion:(void (^)(void))completion;
+- (void)removeObjects:(NSSet *)managedObjects;
 
 @end
 

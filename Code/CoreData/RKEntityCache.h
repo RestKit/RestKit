@@ -137,7 +137,7 @@
  @param objects The set of objects to add to the appropriate entity attribute caches.
  @param completion An optional block to be executed when the object addition has completed.
  */
-- (void)addObjects:(NSSet *)objects completion:(void (^)(void))completion;
+- (void)addObjects:(NSSet *)objects;
 
 /**
  Removes the given set of objects from all entity attribute caches for the object's entity contained within the receiver.
@@ -145,7 +145,7 @@
  @param objects The set of objects to remove from the appropriate entity attribute caches.
  @param completion An optional block to be executed when the object removal has completed.
  */
-- (void)removeObjects:(NSSet *)objects completion:(void (^)(void))completion;
+- (void)removeObjects:(NSSet *)objects;
 
 /**
  Returns a Boolean value that indicates if the receiver contains the given object in any of its attribute caches.
@@ -177,6 +177,6 @@
 
 // Deprecated in v0.20.1
 @interface RKEntityCache (Deprecations)
-- (void)addObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE; // use `addObjects:completion:`
-- (void)removeObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE; // use `removeObjects:completion:`
+- (void)addObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE; // use `addObjects:`
+- (void)removeObject:(NSManagedObject *)object DEPRECATED_ATTRIBUTE; // use `removeObjects:`
 @end

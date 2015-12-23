@@ -181,39 +181,20 @@
     if (dispatchGroup) [self waitForDispatchGroup:dispatchGroup withCompletionBlock:completion];
 }
 
-- (void)addObject:(NSManagedObject *)object completion:(void (^)(void))completion
+- (void)addObject:(NSManagedObject *)object
 {
     NSAssert(object, @"Cannot add a nil object to the cache");
-    dispatch_group_t dispatchGroup = completion ? dispatch_group_create() : NULL;
-    NSArray *attributeCaches = [self attributeCachesForEntity:object.entity];
-    NSSet *objects = [NSSet setWithObject:object];
-    for (RKEntityByAttributeCache *cache in attributeCaches) {
-        if (dispatchGroup) dispatch_group_enter(dispatchGroup);
-        [cache addObjects:objects completion:^{
-            if (dispatchGroup) dispatch_group_leave(dispatchGroup);
-        }];
-    }    
-    if (dispatchGroup) [self waitForDispatchGroup:dispatchGroup withCompletionBlock:completion];
+    [self addObjects:[NSSet setWithObject:object]];
 }
 
-- (void)removeObject:(NSManagedObject *)object completion:(void (^)(void))completion
+- (void)removeObject:(NSManagedObject *)object
 {
     NSAssert(object, @"Cannot remove a nil object from the cache");
-    NSArray *attributeCaches = [self attributeCachesForEntity:object.entity];
-    NSSet *objects = [NSSet setWithObject:object];
-    dispatch_group_t dispatchGroup = completion ? dispatch_group_create() : NULL;
-    for (RKEntityByAttributeCache *cache in attributeCaches) {
-        if (dispatchGroup) dispatch_group_enter(dispatchGroup);
-        [cache removeObjects:objects completion:^{
-            if (dispatchGroup) dispatch_group_leave(dispatchGroup);
-        }];
-    }
-    if (dispatchGroup) [self waitForDispatchGroup:dispatchGroup withCompletionBlock:completion];
+    [self removeObjects:[NSSet setWithObject:object]];
 }
 
-- (void)addObjects:(NSSet *)objects completion:(void (^)(void))completion
+- (void)addObjects:(NSSet *)objects
 {
-    dispatch_group_t dispatchGroup = completion ? dispatch_group_create() : NULL;
     NSSet *distinctEntities = [objects valueForKeyPath:@"entity"];
     for (NSEntityDescription *entity in distinctEntities) {
         NSArray *attributeCaches = [self attributeCachesForEntity:entity];
@@ -223,19 +204,14 @@
                 if ([managedObject.entity isEqual:entity]) [objectsToAdd addObject:managedObject];
             }
             for (RKEntityByAttributeCache *cache in attributeCaches) {
-                if (dispatchGroup) dispatch_group_enter(dispatchGroup);
-                [cache addObjects:objectsToAdd completion:^{
-                    if (dispatchGroup) dispatch_group_leave(dispatchGroup);
-                }];
+                [cache addObjects:objectsToAdd];
             }
         }
     }
-    if (dispatchGroup) [self waitForDispatchGroup:dispatchGroup withCompletionBlock:completion];
 }
 
-- (void)removeObjects:(NSSet *)objects completion:(void (^)(void))completion
+- (void)removeObjects:(NSSet *)objects
 {
-    dispatch_group_t dispatchGroup = completion ? dispatch_group_create() : NULL;
     NSSet *distinctEntities = [objects valueForKeyPath:@"entity"];
     for (NSEntityDescription *entity in distinctEntities) {
         NSArray *attributeCaches = [self attributeCachesForEntity:entity];
@@ -245,14 +221,10 @@
                 if ([managedObject.entity isEqual:entity]) [objectsToRemove addObject:managedObject];
             }
             for (RKEntityByAttributeCache *cache in attributeCaches) {
-                if (dispatchGroup) dispatch_group_enter(dispatchGroup);
-                [cache removeObjects:objectsToRemove completion:^{
-                    if (dispatchGroup) dispatch_group_leave(dispatchGroup);
-                }];
+                [cache removeObjects:objectsToRemove];
             }
         }
     }
-    if (dispatchGroup) [self waitForDispatchGroup:dispatchGroup withCompletionBlock:completion];
 }
 
 - (BOOL)containsObject:(NSManagedObject *)managedObject
