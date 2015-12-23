@@ -156,10 +156,13 @@
 {
     [_accessLock lock];
     if (_accessCount == 0) {
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
         [self _flushNow:^{
-            [_accessLock unlock];
-            if (completion) completion();
+            dispatch_semaphore_signal(sem);
         }];
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        [_accessLock unlock];
+        if (completion) completion();
     } else {
         [_pendingFlushCompletionBlocks addObject:completion ?: ^{}];
         [_accessLock unlock];
@@ -273,14 +276,18 @@
     [_accessLock lock];
     _accessCount -= 1;
     if (_accessCount == 0 && _pendingFlushCompletionBlocks.count > 0) {
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
         [self _flushNow:^{
-            NSArray *blocks = [_pendingFlushCompletionBlocks copy];
-            [_pendingFlushCompletionBlocks removeAllObjects];
-            [_accessLock unlock];
-            for (dispatch_block_t block in blocks) {
-                block();
-            }
+            dispatch_semaphore_signal(sem);
         }];
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        [_accessLock unlock];
+
+        NSArray *blocks = [_pendingFlushCompletionBlocks copy];
+        [_pendingFlushCompletionBlocks removeAllObjects];
+        for (dispatch_block_t block in blocks) {
+            block();
+        }
     } else {
         [_accessLock unlock];
     }
