@@ -157,12 +157,13 @@
     [_accessLock lock];
     if (_accessCount == 0) {
         [self _flushNow:^{
+            [_accessLock unlock];
             if (completion) completion();
         }];
     } else {
         [_pendingFlushCompletionBlocks addObject:completion ?: ^{}];
+        [_accessLock unlock];
     }
-    [_accessLock unlock];
 }
 
 - (void)_flushNow:(void (^)(void))completion
@@ -272,15 +273,18 @@
     [_accessLock lock];
     _accessCount -= 1;
     if (_accessCount == 0 && _pendingFlushCompletionBlocks.count > 0) {
-        NSArray *blocks = [_pendingFlushCompletionBlocks copy];
-        [_pendingFlushCompletionBlocks removeAllObjects];
         [self _flushNow:^{
+            NSArray *blocks = [_pendingFlushCompletionBlocks copy];
+            [_pendingFlushCompletionBlocks removeAllObjects];
+            [_accessLock unlock];
             for (dispatch_block_t block in blocks) {
                 block();
             }
         }];
+    } else {
+        [_accessLock unlock];
     }
-    [_accessLock unlock];
+
 }
 
 - (void)didReceiveMemoryWarning:(NSNotification *)notification
