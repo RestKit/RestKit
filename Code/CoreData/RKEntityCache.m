@@ -140,18 +140,6 @@
     return [NSSet setWithSet:set];
 }
 
-- (void)waitForDispatchGroup:(dispatch_group_t)dispatchGroup withCompletionBlock:(void (^)(void))completion
-{
-    if (completion) {
-        dispatch_group_notify(dispatchGroup, self.callbackQueue ?: dispatch_get_main_queue(), ^{
-#if !OS_OBJECT_USE_OBJC
-            dispatch_release(dispatchGroup);
-#endif
-            completion();
-        });
-    }
-}
-
 - (void)flush:(void (^)(void))completion
 {
     [_accessLock lock];
@@ -171,14 +159,8 @@
 
 - (void)_flushNow:(void (^)(void))completion
 {
-    dispatch_group_t dispatchGroup = completion ? dispatch_group_create() : NULL;
-    for (RKEntityByAttributeCache *cache in self.attributeCaches) {
-        if (dispatchGroup) dispatch_group_enter(dispatchGroup);
-        [cache flush:^{
-            if (dispatchGroup) dispatch_group_leave(dispatchGroup);
-        }];
-    }
-    if (dispatchGroup) [self waitForDispatchGroup:dispatchGroup withCompletionBlock:completion];
+    _attributeCaches = [[NSMutableSet alloc] init];
+    completion();
 }
 
 - (void)addObject:(NSManagedObject *)object
