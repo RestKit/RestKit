@@ -127,6 +127,8 @@ static BOOL RKDeleteInvalidNewManagedObject(NSManagedObject *managedObject)
     return NO;
 }
 
+static RKManagedObjectMappingFoundDuplicatedObjectHandler foundDuplicatedObjectHandler = nil;
+
 @interface RKManagedObjectDeletionOperation : NSOperation
 
 - (instancetype)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
@@ -283,7 +285,12 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         }
         if ([objects count] > 0) {
             managedObject = [objects anyObject];
-            if ([objects count] > 1) RKLogWarning(@"Managed object cache returned %ld objects for the identifier configured for the '%@' entity, expected 1.", (long) [objects count], [entity name]);
+            if ([objects count] > 1) {
+                RKLogWarning(@"Managed object cache returned %ld objects for the identifier configured for the '%@' entity, expected 1.", (long) [objects count], [entity name]);
+                if (foundDuplicatedObjectHandler) {
+                    foundDuplicatedObjectHandler(entity, entityIdentifierAttributes, objects);
+                }
+            }
         }
         if (managedObject && [self.managedObjectCache respondsToSelector:@selector(didFetchObject:)]) {
             [self.managedObjectCache didFetchObject:managedObject];
@@ -519,6 +526,11 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 - (BOOL)mappingOperationShouldCollectMappingInfo:(RKMappingOperation *)mappingOperation
 {
     return YES;
+}
+
++ (void)setFoundDuplicatedManagedObjectHandler:(RKManagedObjectMappingFoundDuplicatedObjectHandler)handler
+{
+    foundDuplicatedObjectHandler = handler;
 }
 
 @end

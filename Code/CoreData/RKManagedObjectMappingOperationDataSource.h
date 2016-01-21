@@ -21,6 +21,8 @@
 #import <CoreData/CoreData.h>
 #import <RestKit/ObjectMapping/RKMappingOperationDataSource.h>
 
+typedef void (^RKManagedObjectMappingFoundDuplicatedObjectHandler)(NSEntityDescription *entity, NSDictionary *entityIdentifierAttributes, NSSet *objects);
+
 @protocol RKManagedObjectCaching;
 
 /**
@@ -80,5 +82,12 @@
  Please see the documentation for `parentOperation` for a discussion of this property's function.
  */
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
+
+/**
+ This is a debug feature. If a mapping operation data source attempts to look up an object in the managed object cache but finds multiple objects that satisfy the identification attribute, this condition is logged and this optional block is executed. 
+ 
+ The default value is `nil`.
+ */
++ (void)setFoundDuplicatedManagedObjectHandler:(RKManagedObjectMappingFoundDuplicatedObjectHandler)handler;
 
 @end
