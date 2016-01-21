@@ -1609,6 +1609,25 @@
     expect(human.catIDs).to.beNil();
 }
 
+- (void)testThatMappingToNonOptionalPropertyWithDefaultSetsDefault
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromArray:@[ @"name", @"likesDogs" ]];
+    [humanMapping setAssignsDefaultValueForMissingAttributes:YES];
+    
+    NSDictionary *dictionary = @{ @"name" : @"Blake Watters" };
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:humanMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(error, is(nilValue()));
+    assertThat(human.likesDogs, is(equalTo(@YES)));
+}
+
 #pragma mark - Relationship Mapping
 
 - (void)testShouldMapANestedObject
