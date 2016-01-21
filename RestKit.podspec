@@ -35,14 +35,14 @@ EOS
   end
 
   s.subspec 'ObjectMapping' do |os|
-    os.source_files   = 'Code/ObjectMapping.h', 'Code/ObjectMapping'
+    os.source_files   = 'Code/ObjectMapping.h', 'Code/ObjectMapping/**/*'
     os.dependency       'RestKit/Support'
     os.dependency       'RKValueTransformers', '~> 1.1.0'
     os.dependency       'ISO8601DateFormatterValueTransformer', '~> 0.6.1'
   end
 
   s.subspec 'Network' do |ns|
-    ns.source_files   = 'Code/Network.h', 'Code/Network'
+    ns.source_files   = 'Code/Network.h', 'Code/Network/**/*'
     ns.ios.frameworks = 'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration'
     ns.osx.frameworks = 'CoreServices', 'Security', 'SystemConfiguration'
     ns.dependency       'SOCKit'
@@ -68,7 +68,7 @@ EOS
   end
 
   s.subspec 'CoreData' do |cdos|
-    cdos.source_files = 'Code/CoreData.h', 'Code/CoreData'
+    cdos.source_files = 'Code/CoreData.h', 'Code/CoreData/**/*'
     cdos.frameworks   = 'CoreData'
     cdos.dependency 'RestKit/ObjectMapping'
   end
