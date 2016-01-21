@@ -42,6 +42,8 @@
 @property (nonatomic, strong) NSArray *catIDs;
 @property (nonatomic, strong) NSOrderedSet *catsInOrderByAge;
 
+@property (nonatomic, strong) NSNumber *likesDogs;
+
 @property (nonatomic, strong) RKHouse *house;
 @property (nonatomic, strong) RKHuman *landlord;
 @property (nonatomic, strong) NSSet *roommates;
