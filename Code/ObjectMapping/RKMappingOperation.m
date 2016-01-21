@@ -683,7 +683,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     if (! inputValue) {
         // We only want to consider the transformation successful and assign the default if the mapping calls for it
         if (propertyMapping.objectMapping.assignsDefaultValueForMissingAttributes) {
-            *outputValue = nil;//[propertyMapping.objectMapping defaultValueForAttribute:propertyMapping.destinationKeyPath];
+            *outputValue = [propertyMapping.objectMapping defaultValueForAttribute:propertyMapping.destinationKeyPath];
             return YES;
         } else {
             *outputValue = nil;
