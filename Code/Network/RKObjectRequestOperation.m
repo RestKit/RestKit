@@ -426,21 +426,25 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     
     __weak __typeof(self) const weakSelf = self;
     self.completionBlock = ^ {
-        if ([weakSelf isCancelled] && !weakSelf.error) {
-            weakSelf.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:nil];
-        }
-        
-        if (weakSelf.error) {
-            if (failure) {
-                dispatch_async(weakSelf.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
-                    failure(weakSelf, weakSelf.error);
-                });
+		__typeof(self) const strongSelf = weakSelf; // Retain object, so we for sure have something to pass to the success and/or failure blocks.
+		if(strongSelf)
+        {
+            if ([strongSelf isCancelled] && !strongSelf.error) {
+                strongSelf.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:nil];
             }
-        } else {
-            if (success) {
-                dispatch_async(weakSelf.successCallbackQueue ?: dispatch_get_main_queue(), ^{
-                    success(weakSelf, weakSelf.mappingResult);
-                });
+            
+            if (strongSelf.error) {
+                if (failure) {
+                    dispatch_async(strongSelf.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
+                        failure(strongSelf, strongSelf.error);
+                    });
+                }
+            } else {
+                if (success) {
+                    dispatch_async(strongSelf.successCallbackQueue ?: dispatch_get_main_queue(), ^{
+                        success(strongSelf, strongSelf.mappingResult);
+                    });
+                }
             }
         }
     };
