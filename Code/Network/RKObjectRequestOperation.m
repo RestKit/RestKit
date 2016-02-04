@@ -127,7 +127,6 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
 
 - (void)objectRequestOperationDidStart:(NSNotification *)notification
 {
-    // Weakly tag the HTTP operation with its parent object request operation
     RKObjectRequestOperation *objectRequestOperation = [notification object];
     objc_setAssociatedObject(objectRequestOperation, RKOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
