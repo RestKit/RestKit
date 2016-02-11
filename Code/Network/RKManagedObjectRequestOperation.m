@@ -390,15 +390,15 @@ static NSSet *RKManagedObjectsFromObjectWithMappingInfo(id object, RKMappingInfo
             if([object conformsToProtocol:@protocol(NSFastEnumeration)]) {
                 NSMutableSet* results = [NSMutableSet set];
                 for (id item in object) {
-					id value = nil;
+                    id value = nil;
                     @try {
                         value = [item valueForKeyPath:destinationKeyPath];
                     } @catch(NSException*) {
                         continue;
                     }
-					if (value != nil) {
-						[results addObject:value];
-					}
+                    if (value != nil) {
+                        [results addObject:value];
+                    }
                 }
                 
                 relationshipValue = results;
