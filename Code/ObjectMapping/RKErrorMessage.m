@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <RestKit/ObjectMapping/RKErrorMessage.h>
+#import "RKErrorMessage.h"
 
 @implementation RKErrorMessage
 
