@@ -21,6 +21,6 @@
 #import "RKSearchPredicate.h"
 
 #ifdef _COREDATADEFINES_H
-#import "RKSearchIndexer.h"
-#import "RKManagedObjectStore+RKSearchAdditions.h"
+#import "Search/RKSearchIndexer.h"
+#import "Search/RKManagedObjectStore+RKSearchAdditions.h"
 #endif

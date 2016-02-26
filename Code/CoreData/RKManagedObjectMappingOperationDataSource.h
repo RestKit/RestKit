@@ -19,7 +19,7 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKMappingOperationDataSource.h"
+#import "../ObjectMapping/RKMappingOperationDataSource.h"
 
 @protocol RKManagedObjectCaching;
 

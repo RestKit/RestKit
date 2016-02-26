@@ -20,8 +20,8 @@
 
 #import "RKHTTPRequestOperation.h"
 #import "RKObjectRequestOperation.h"
-#import "RKObjectMapping.h"
-#import "RKMappingResult.h"
+#import "../ObjectMapping/RKObjectMapping.h"
+#import "../ObjectMapping/RKMappingResult.h"
 
 @protocol RKManagedObjectCaching;
 

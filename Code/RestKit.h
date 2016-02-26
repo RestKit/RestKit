@@ -33,8 +33,8 @@
 #import "Support.h"
 #endif
 
-#if __has_include("RKCoreData.h")
-#import "RKCoreData.h"
+#if __has_include("CoreData.h")
+#import "CoreData.h"
 #endif
 
 /**

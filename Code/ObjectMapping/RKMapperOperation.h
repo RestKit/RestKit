@@ -23,7 +23,7 @@
 #import "RKMappingOperation.h"
 #import "RKMappingResult.h"
 #import "RKMappingOperationDataSource.h"
-#import "RKErrors.h"
+#import "../Support/RKErrors.h"
 
 @protocol RKMapperOperationDelegate;
 

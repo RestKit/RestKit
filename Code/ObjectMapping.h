@@ -20,10 +20,10 @@
 
 #import <RKValueTransformers/RKValueTransformers.h>
 
-#import "RKObjectMapping.h"
-#import "RKAttributeMapping.h"
-#import "RKRelationshipMapping.h"
-#import "RKMappingResult.h"
-#import "RKMapperOperation.h"
-#import "RKDynamicMapping.h"
-#import "RKErrorMessage.h"
+#import "ObjectMapping/RKObjectMapping.h"
+#import "ObjectMapping/RKAttributeMapping.h"
+#import "ObjectMapping/RKRelationshipMapping.h"
+#import "ObjectMapping/RKMappingResult.h"
+#import "ObjectMapping/RKMapperOperation.h"
+#import "ObjectMapping/RKDynamicMapping.h"
+#import "ObjectMapping/RKErrorMessage.h"

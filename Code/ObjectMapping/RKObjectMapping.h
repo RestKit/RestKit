@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKMacros.h"
+#import "../Support/RKMacros.h"
 #import "RKMapping.h"
 
 #import <RKValueTransformers/RKValueTransformers.h>
