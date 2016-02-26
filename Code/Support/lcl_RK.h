@@ -31,7 +31,7 @@
 #define _RKLCL_VERSION_BUILD  1
 #define _RKLCL_VERSION_SUFFIX ""
 
-#import <RestKit/Support/lcl_config_components_RK.h>
+#import "lcl_config_components_RK.h"
 
 //
 // lcl -- LibComponentLogging, embedded, RestKit/RK
@@ -324,7 +324,7 @@ enum {
 
 
 // Include logging back-end and definition of _RKlcl_logger.
-#import <RestKit/Support/lcl_config_logger_RK.h>
+#import "lcl_config_logger_RK.h"
 
 
 // For simple configurations where 'lcl_config_logger_RK.h' is empty, define a
@@ -383,7 +383,7 @@ enum {
 
 
 // Include extensions.
-#import <RestKit/Support/lcl_config_extensions_RK.h>
+#import "lcl_config_extensions_RK.h"
 
 
 #endif // __RKLCL_H__

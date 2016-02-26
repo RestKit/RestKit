@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #if __has_include(<CocoaLumberjack/CocoaLumberjack.h>)
-#import <RestKit/Support/RKLog.h>
+#import "RKLog.h"
 
 @interface RKLumberjackLogger : NSObject <RKLogging>
 @end

@@ -19,14 +19,14 @@
 //
 
 #import <CoreData/CoreData.h>
-#import <RestKit/CoreData/RKConnectionDescription.h>
-#import <RestKit/CoreData/RKEntityMapping.h>
-#import <RestKit/CoreData/RKManagedObjectCaching.h>
-#import <RestKit/CoreData/RKRelationshipConnectionOperation.h>
-#import <RestKit/ObjectMapping/RKObjectMappingMatcher.h>
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/Support/RKErrors.h>
-#import <RestKit/Support/RKLog.h>
+#import "RKRelationshipConnectionOperation.h"
+#import "RKConnectionDescription.h"
+#import "RKEntityMapping.h"
+#import "RKLog.h"
+#import "RKManagedObjectCaching.h"
+#import "RKObjectMappingMatcher.h"
+#import "RKErrors.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent

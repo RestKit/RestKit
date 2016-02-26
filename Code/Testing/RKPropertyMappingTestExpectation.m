@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import <RestKit/ObjectMapping/RKPropertyMapping.h>
-#import <RestKit/Testing/RKPropertyMappingTestExpectation.h>
+#import "RKPropertyMappingTestExpectation.h"
+#import "RKPropertyMapping.h"
 
 @interface RKPropertyMappingTestExpectation ()
 @property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
