@@ -8,7 +8,7 @@ RestKit ships with a testing infrastructure built around OCUnit and a Ruby testi
 1. Check out the Git submodules: `git submodule update --init --recursive`
 1. Ensure that you have **Ruby 2.0.0** available. We recommend installation via [rbenv](https://github.com/sstephenson/rbenv), [RVM](https://rvm.io/) or [Homebrew](http://brew.sh/).
 1. Install the Ruby Bundler Gem (if necessary): `gem install bundler`
-1. Install the other required Gems via Bundler: `bundle`
+1. Install the other required Gems via Bundler: `bundle install`
 1. Install the required CocoaPods: `pod install`
 1. Start the Test server: `rake server`
 1. Ensure that you have opened **RestKit.xcworkspace** rather than the project file. The tests leverage CocoaPods for managing dependencies, so you must execute tests from the Workspace.
