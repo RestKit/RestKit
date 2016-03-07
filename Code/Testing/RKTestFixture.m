@@ -18,10 +18,10 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKMIMETypeSerialization.h>
-#import <RestKit/Support/RKPathUtilities.h>
-#import <RestKit/Testing/RKTestFixture.h>
+#import <RestKit/RKLog.h>
+#import <RestKit/RKMIMETypeSerialization.h>
+#import <RestKit/RKPathUtilities.h>
+#import <RestKit/RKTestFixture.h>
 
 static NSBundle *fixtureBundle = nil;
 

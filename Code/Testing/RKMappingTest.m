@@ -18,22 +18,22 @@
 //  limitations under the License.
 //
 
-#import <RestKit/ObjectMapping/RKObjectMappingOperationDataSource.h>
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
-#import <RestKit/Support/RKErrors.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Testing/RKMappingTest.h>
+#import <RestKit/RKObjectMappingOperationDataSource.h>
+#import <RestKit/RKObjectUtilities.h>
+#import <RestKit/RKRelationshipMapping.h>
+#import <RestKit/RKErrors.h>
+#import <RestKit/RKLog.h>
+#import <RestKit/RKMappingTest.h>
 
 // Core Data
 #ifdef _COREDATADEFINES_H
 #if __has_include(<RestKit/CoreData.h>)
 #define RKCoreDataIncluded
-#import <RestKit/CoreData/RKConnectionDescription.h>
-#import <RestKit/CoreData/RKEntityMapping.h>
-#import <RestKit/CoreData/RKFetchRequestManagedObjectCache.h>
-#import <RestKit/CoreData/RKManagedObjectMappingOperationDataSource.h>
-#import <RestKit/Testing/RKConnectionTestExpectation.h>
+#import <RestKit/RKConnectionDescription.h>
+#import <RestKit/RKEntityMapping.h>
+#import <RestKit/RKFetchRequestManagedObjectCache.h>
+#import <RestKit/RKManagedObjectMappingOperationDataSource.h>
+#import <RestKit/RKConnectionTestExpectation.h>
 #endif
 #endif
 

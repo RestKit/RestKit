@@ -18,14 +18,14 @@
 //  limitations under the License.
 //
 
-#import <RestKit/CoreData/NSManagedObjectContext+RKAdditions.h>
-#import <RestKit/CoreData/RKFetchRequestManagedObjectCache.h>
-#import <RestKit/CoreData/RKInMemoryManagedObjectCache.h>
-#import <RestKit/CoreData/RKManagedObjectStore.h>
-#import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKPathUtilities.h>
+#import <RestKit/NSManagedObjectContext+RKAdditions.h>
+#import <RestKit/RKFetchRequestManagedObjectCache.h>
+#import <RestKit/RKInMemoryManagedObjectCache.h>
+#import <RestKit/RKManagedObjectStore.h>
+#import <RestKit/RKPropertyInspector+CoreData.h>
+#import <RestKit/RKPropertyInspector.h>
+#import <RestKit/RKLog.h>
+#import <RestKit/RKPathUtilities.h>
 #import <objc/runtime.h>
 
 // Set Logging Component

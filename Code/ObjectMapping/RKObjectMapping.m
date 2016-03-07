@@ -21,11 +21,11 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <ISO8601DateFormatterValueTransformer/ISO8601DateFormatterValueTransformer.h>
 #import <RKValueTransformers/RKValueTransformers.h>
-#import <RestKit/ObjectMapping/RKAttributeMapping.h>
-#import <RestKit/ObjectMapping/RKObjectMapping.h>
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
-#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
-#import <RestKit/Support/RKLog.h>
+#import <RestKit/RKAttributeMapping.h>
+#import <RestKit/RKObjectMapping.h>
+#import <RestKit/RKPropertyInspector.h>
+#import <RestKit/RKRelationshipMapping.h>
+#import <RestKit/RKLog.h>
 
 typedef NSString * (^RKSourceToDesinationKeyTransformationBlock)(RKObjectMapping *, NSString *);
 

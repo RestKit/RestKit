@@ -6,7 +6,7 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import <RestKit/ObjectMapping/RKMapping.h>
+#import <RestKit/RKMapping.h>
 
 @implementation RKMapping
 

@@ -18,12 +18,12 @@
 //  limitations under the License.
 //
 
-#import <RestKit/CoreData/NSManagedObject+RKAdditions.h>
-#import <RestKit/CoreData/RKEntityByAttributeCache.h>
-#import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
-#import <RestKit/Support/RKLog.h>
+#import <RestKit/NSManagedObject+RKAdditions.h>
+#import <RestKit/RKEntityByAttributeCache.h>
+#import <RestKit/RKPropertyInspector+CoreData.h>
+#import <RestKit/RKObjectUtilities.h>
+#import <RestKit/RKPropertyInspector.h>
+#import <RestKit/RKLog.h>
 
 // Set Logging Component
 #undef RKLogComponent

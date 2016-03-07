@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Support/RKOperationStateMachine.h>
+#import <RestKit/RKOperationStateMachine.h>
 #import <TransitionKit/TransitionKit.h>
 
 NSString *const RKOperationFailureException = @"RKOperationFailureException";
