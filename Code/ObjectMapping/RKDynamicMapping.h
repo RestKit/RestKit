@@ -26,9 +26,10 @@
 
  ## Configuring Mapping Selection
 
- Dynamic mappings support the selection of the concrete object mapping in one of two ways:
+ Dynamic mappings support the selection of the concrete object mapping in one of three ways:
 
  1. Through the use of a mapping selection block configured by `setObjectMappingForRepresentationBlock:`. When configured, the block is called with a reference to the current object representation being mapped and is expected to return an `RKObjectMapping` object. Returning `nil` declines the mapping of the representation.
+ 1. Through the use of a mapping selection block configured by `setObjectMappingForParentRepresentationBlock:`. When configured, the block is called with a reference to the current object's parent representation and is expected to return an `RKObjectMapping` object. Returning `nil` declines the mapping of the representation.
  1. Through the configuration of one of more `RKObjectMappingMatcher` objects. The matchers are consulted in registration order and the first matcher to return an object mapping is used to map the matched representation.
 
  When both a mapping selection block and matchers are configured on a `RKDynamicMapping` object, the matcher objects are consulted first and if none match, the selection block is invoked.
@@ -69,6 +70,13 @@
 - (void)setObjectMappingForRepresentationBlock:(RKObjectMapping *(^)(id representation))block;
 
 /**
+ Sets a block to be invoked to determine the appropriate concrete object mapping with which to map an object representation according to parent representation.
+ 
+ @param block The block object to invoke to select the object mapping with which to map linked object representation. The block returns an object mapping and accepts a single parameter: the object's parent representation.
+ */
+- (void)setObjectMappingForParentRepresentationBlock:(RKObjectMapping *(^)(id parentRepresentation))block;
+
+/**
  Returns the array of matchers objects added to the receiver.
  */
 @property (nonatomic, strong, readonly) NSArray *matchers;
@@ -105,11 +113,13 @@
 /**
  Invoked by the `RKMapperOperation` and `RKMappingOperation` to determine the appropriate `RKObjectMapping` to use when mapping the given object representation.
 
- This method searches the stack of registered matchers and then executes the block, if any, set by `setObjectMappingForRepresentationBlock:`. If `nil` is returned, then mapping for the representation is declined and it will not be mapped.
+ This method searches the stack of registered matchers, then executes the block, if any, set by `setObjectMappingForRepresentationBlock:` and then executes the block, if any, set by `setObjectMappingForParentRepresentationBlock:`. If `nil` is returned, then mapping for the representation is declined and it will not be mapped.
 
  @param representation The object representation that being mapped dynamically for which to determine the appropriate concrete mapping.
+ @param parentRepresentation The object's parent representation.
  @return The object mapping to be used to map the given object representation.
  */
 - (RKObjectMapping *)objectMappingForRepresentation:(id)representation;
+- (RKObjectMapping *)objectMappingForRepresentation:(id)representation parentRepresentation:(id)parentRepresentation;
 
 @end

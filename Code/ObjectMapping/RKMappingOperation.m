@@ -520,7 +520,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 {
     RKObjectMapping *concreteMapping = nil;
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-        concreteMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:representation];
+        concreteMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:representation parentRepresentation:parentRepresentation];
         if (! concreteMapping) {
             RKLogDebug(@"Unable to determine concrete object mapping from dynamic mapping %@ with which to map object representation: %@", mapping, representation);
             return nil;
