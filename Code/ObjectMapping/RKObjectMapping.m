@@ -465,7 +465,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
     if ([self.propertyMappings count] != [otherMapping.propertyMappings count]) return NO;
 
     for (RKPropertyMapping *propertyMapping in self.propertyMappings) {
-        RKPropertyMapping *otherPropertyMapping = [otherMapping mappingForSourceKeyPath:propertyMapping.sourceKeyPath];
+        RKPropertyMapping *otherPropertyMapping = [otherMapping mappingForDestinationKeyPath:propertyMapping.destinationKeyPath];
         if (! [propertyMapping isEqualToMapping:otherPropertyMapping]) return NO;
     }
 
