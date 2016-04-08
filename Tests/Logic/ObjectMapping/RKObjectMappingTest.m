@@ -86,7 +86,7 @@
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
 }
 
-- (void)testThatTwoMappingsWithMultipleSourceKeyPathAndSameDestinationKeyPathAreConsideredEqual
+- (void)testThatTwoMappingsWithMultipleDestinationKeyPathAndSameSourceKeyPathAreConsideredEqual
 {
     RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[NSString class]];
     [mapping1 addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"this" toKeyPath:@"that"]];
