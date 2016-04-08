@@ -86,6 +86,18 @@
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
 }
 
+- (void)testThatTwoMappingsWithMultipleDestinationKeyPathAndSameSourceKeyPathAreConsideredEqual
+{
+    RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[NSString class]];
+    [mapping1 addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"this" toKeyPath:@"that"]];
+    [mapping1 addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"this" toKeyPath:@"that2"]];
+    RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[NSString class]];
+    [mapping2 addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"this" toKeyPath:@"that"]];
+    [mapping2 addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"this" toKeyPath:@"that2"]];
+    
+    assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
+}
+
 - (void)testThatTwoMappingsWithDifferingRelationshipMappingClassesAreNotConsideredEqual
 {
     RKObjectMapping *relationshipMapping1 = [RKObjectMapping mappingForClass:[NSSet class]];
