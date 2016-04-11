@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKPathMatcher.h>
-#import <RestKit/Network/RKRouteSet.h>
+#import <RestKit/RKPathMatcher.h>
+#import <RestKit/RKRouteSet.h>
 
 @interface RKRouteSet ()
 

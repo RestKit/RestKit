@@ -19,18 +19,18 @@
 //
 
 #import <RKValueTransformers/RKValueTransformers.h>
-#import <RestKit/ObjectMapping/RKAttributeMapping.h>
-#import <RestKit/ObjectMapping/RKDynamicMapping.h>
-#import <RestKit/ObjectMapping/RKMappingErrors.h>
-#import <RestKit/ObjectMapping/RKMappingOperation.h>
-#import <RestKit/ObjectMapping/RKMappingOperationDataSource.h>
-#import <RestKit/ObjectMapping/RKObjectMappingOperationDataSource.h>
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
-#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
-#import <RestKit/Support/RKDictionaryUtilities.h>
-#import <RestKit/Support/RKErrors.h>
-#import <RestKit/Support/RKLog.h>
+#import <RestKit/RKAttributeMapping.h>
+#import <RestKit/RKDynamicMapping.h>
+#import <RestKit/RKMappingErrors.h>
+#import <RestKit/RKMappingOperation.h>
+#import <RestKit/RKMappingOperationDataSource.h>
+#import <RestKit/RKObjectMappingOperationDataSource.h>
+#import <RestKit/RKObjectUtilities.h>
+#import <RestKit/RKPropertyInspector.h>
+#import <RestKit/RKRelationshipMapping.h>
+#import <RestKit/RKDictionaryUtilities.h>
+#import <RestKit/RKErrors.h>
+#import <RestKit/RKLog.h>
 #import <objc/runtime.h>
 
 // Set Logging Component

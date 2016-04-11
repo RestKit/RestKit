@@ -19,22 +19,22 @@
 //
 
 #ifdef _COREDATADEFINES_H
-#if __has_include(<RestKit/CoreData/RKManagedObjectCaching.h>)
+#if __has_include(<RestKit/RKManagedObjectCaching.h>)
 
-#import <RestKit/CoreData/NSManagedObject+RKAdditions.h>
-#import <RestKit/CoreData/NSManagedObjectContext+RKAdditions.h>
-#import <RestKit/Network/RKManagedObjectRequestOperation.h>
-#import <RestKit/Network/RKObjectRequestOperationSubclass.h>
-#import <RestKit/Network/RKResponseMapperOperation.h>
-#import <RestKit/ObjectMapping/RKHTTPUtilities.h>
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/Support/RKLog.h>
+#import <RestKit/NSManagedObject+RKAdditions.h>
+#import <RestKit/NSManagedObjectContext+RKAdditions.h>
+#import <RestKit/RKManagedObjectRequestOperation.h>
+#import <RestKit/RKObjectRequestOperationSubclass.h>
+#import <RestKit/RKResponseMapperOperation.h>
+#import <RestKit/RKHTTPUtilities.h>
+#import <RestKit/RKObjectUtilities.h>
+#import <RestKit/RKLog.h>
 
 // Graph visitor
-#import <RestKit/CoreData/RKEntityMapping.h>
-#import <RestKit/Network/RKResponseDescriptor.h>
-#import <RestKit/ObjectMapping/RKDynamicMapping.h>
-#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
+#import <RestKit/RKEntityMapping.h>
+#import <RestKit/RKResponseDescriptor.h>
+#import <RestKit/RKDynamicMapping.h>
+#import <RestKit/RKRelationshipMapping.h>
 
 // Set Logging Component
 #undef RKLogComponent

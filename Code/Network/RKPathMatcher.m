@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKPathMatcher.h>
-#import <RestKit/Support/RKDictionaryUtilities.h>
-#import <RestKit/Support/RKLog.h>
+#import <RestKit/RKPathMatcher.h>
+#import <RestKit/RKDictionaryUtilities.h>
+#import <RestKit/RKLog.h>
 #import <SOCKit/SOCKit.h>
 
 static NSString *RKEncodeURLString(NSString *unencodedString);

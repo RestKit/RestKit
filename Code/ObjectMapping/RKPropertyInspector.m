@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
-#import <RestKit/Support/RKLog.h>
+#import <RestKit/RKObjectUtilities.h>
+#import <RestKit/RKPropertyInspector.h>
+#import <RestKit/RKLog.h>
 #import <objc/runtime.h>
 
 // Set Logging Component

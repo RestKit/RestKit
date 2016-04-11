@@ -18,20 +18,20 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKPathMatcher.h>
-#import <RestKit/Network/RKResponseDescriptor.h>
-#import <RestKit/Network/RKResponseMapperOperation.h>
-#import <RestKit/ObjectMapping/RKHTTPUtilities.h>
-#import <RestKit/ObjectMapping/RKMappingErrors.h>
-#import <RestKit/ObjectMapping/RKObjectMappingOperationDataSource.h>
-#import <RestKit/Support/RKDictionaryUtilities.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKMIMETypeSerialization.h>
+#import <RestKit/RKPathMatcher.h>
+#import <RestKit/RKResponseDescriptor.h>
+#import <RestKit/RKResponseMapperOperation.h>
+#import <RestKit/RKHTTPUtilities.h>
+#import <RestKit/RKMappingErrors.h>
+#import <RestKit/RKObjectMappingOperationDataSource.h>
+#import <RestKit/RKDictionaryUtilities.h>
+#import <RestKit/RKLog.h>
+#import <RestKit/RKMIMETypeSerialization.h>
 
 #ifdef _COREDATADEFINES_H
 #if __has_include(<RestKit/CoreData.h>)
 #define RKCoreDataIncluded
-#import <RestKit/CoreData/RKManagedObjectMappingOperationDataSource.h>
+#import <RestKit/RKManagedObjectMappingOperationDataSource.h>
 #endif
 #endif
 

@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKPaginator.h>
-#import <RestKit/Network/RKRouter.h>
-#import <RestKit/Support/RKMacros.h>
+#import <RestKit/RKPaginator.h>
+#import <RestKit/RKRouter.h>
+#import <RestKit/RKMacros.h>
 
 #import <AFNetworking/AFNetworking.h>
 

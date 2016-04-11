@@ -18,17 +18,17 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKPaginator.h>
-#import <RestKit/Network/RKPathMatcher.h>
-#import <RestKit/ObjectMapping/RKHTTPUtilities.h>
-#import <RestKit/ObjectMapping/RKMappingOperation.h>
-#import <RestKit/Support/RKLog.h>
+#import <RestKit/RKPaginator.h>
+#import <RestKit/RKPathMatcher.h>
+#import <RestKit/RKHTTPUtilities.h>
+#import <RestKit/RKMappingOperation.h>
+#import <RestKit/RKLog.h>
 #import <SOCKit/SOCKit.h>
 
 #ifdef _COREDATADEFINES_H
 #if __has_include(<RestKit/CoreData.h>)
 #define RKCoreDataIncluded
-#import <RestKit/Network/RKManagedObjectRequestOperation.h>
+#import <RestKit/RKManagedObjectRequestOperation.h>
 #endif
 #endif
 

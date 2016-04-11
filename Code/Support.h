@@ -19,13 +19,13 @@
 //
 
 // Load shared support code
-#import <RestKit/Support/RKDictionaryUtilities.h>
-#import <RestKit/Support/RKDotNetDateFormatter.h>
-#import <RestKit/Support/RKErrors.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKMIMETypeSerialization.h>
-#import <RestKit/Support/RKMIMETypes.h>
-#import <RestKit/Support/RKNSJSONSerialization.h>
-#import <RestKit/Support/RKPathUtilities.h>
-#import <RestKit/Support/RKStringTokenizer.h>
-#import <RestKit/Support/RKURLEncodedSerialization.h>
+#import <RestKit/RKDictionaryUtilities.h>
+#import <RestKit/RKDotNetDateFormatter.h>
+#import <RestKit/RKErrors.h>
+#import <RestKit/RKLog.h>
+#import <RestKit/RKMIMETypeSerialization.h>
+#import <RestKit/RKMIMETypes.h>
+#import <RestKit/RKNSJSONSerialization.h>
+#import <RestKit/RKPathUtilities.h>
+#import <RestKit/RKStringTokenizer.h>
+#import <RestKit/RKURLEncodedSerialization.h>

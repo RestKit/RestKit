@@ -6,8 +6,8 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import <RestKit/ObjectMapping/RKObjectMappingMatcher.h>
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
+#import <RestKit/RKObjectMappingMatcher.h>
+#import <RestKit/RKObjectUtilities.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

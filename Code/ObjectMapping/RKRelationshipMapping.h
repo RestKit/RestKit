@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <RestKit/ObjectMapping/RKPropertyMapping.h>
+#import <RestKit/RKPropertyMapping.h>
 
 @class RKMapping;
 
