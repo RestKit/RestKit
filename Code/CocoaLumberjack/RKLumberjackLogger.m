@@ -24,7 +24,7 @@
         case RKLogLevelDebug:    return DDLogLevelDebug;
         case RKLogLevelTrace:    return DDLogLevelVerbose;
     }
-    
+
     return DDLogLevelDebug;
 }
 
@@ -40,7 +40,7 @@
         case RKLogLevelDebug:    return DDLogFlagDebug;
         case RKLogLevelTrace:    return DDLogFlagVerbose;
     }
-    
+
     return DDLogFlagDebug;
 }
 
@@ -51,7 +51,7 @@
     if (ddLogLevel & DDLogFlagInfo)    return RKLogLevelInfo;
     if (ddLogLevel & DDLogFlagWarning) return RKLogLevelWarning;
     if (ddLogLevel & DDLogFlagError)   return RKLogLevelError;
-    
+
     return RKLogLevelOff;
 }
 
