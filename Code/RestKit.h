@@ -21,20 +21,20 @@
 #ifndef _RESTKIT_
 #define _RESTKIT_
 
-#if __has_include(<RestKit/ObjectMapping.h>)
-#import <RestKit/ObjectMapping.h>
+#if __has_include("ObjectMapping.h")
+#import "ObjectMapping.h"
 #endif
 
-#if __has_include(<RestKit/Network.h>)
-#import <RestKit/Network.h>
+#if __has_include("Network.h")
+#import "Network.h"
 #endif
 
-#if __has_include(<RestKit/Support.h>)
-#import <RestKit/Support.h>
+#if __has_include("Support.h")
+#import "Support.h"
 #endif
 
-#if __has_include(<RestKit/CoreData.h>)
-#import <RestKit/CoreData.h>
+#if __has_include("RKCoreData.h")
+#import "RKCoreData.h"
 #endif
 
 /**

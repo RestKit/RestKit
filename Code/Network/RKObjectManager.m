@@ -18,27 +18,27 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKObjectManager.h>
-#import <RestKit/Network/RKObjectParameterization.h>
-#import <RestKit/Network/RKObjectRequestOperation.h>
-#import <RestKit/Network/RKPaginator.h>
-#import <RestKit/Network/RKPathMatcher.h>
-#import <RestKit/Network/RKRequestDescriptor.h>
-#import <RestKit/Network/RKResponseDescriptor.h>
-#import <RestKit/Network/RKRoute.h>
-#import <RestKit/Network/RKRouteSet.h>
-#import <RestKit/Network/RKRouter.h>
-#import <RestKit/ObjectMapping/RKDynamicMapping.h>
-#import <RestKit/ObjectMapping/RKMappingErrors.h>
-#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
-#import <RestKit/Support/RKDictionaryUtilities.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKMIMETypeSerialization.h>
-#import <RestKit/Support/RKMIMETypes.h>
 #import <objc/runtime.h>
+#import "RKObjectManager.h"
+#import "RKObjectParameterization.h"
+#import "RKRequestDescriptor.h"
+#import "RKResponseDescriptor.h"
+#import "RKDictionaryUtilities.h"
+#import "RKMIMETypes.h"
+#import "RKLog.h"
+#import "RKMIMETypeSerialization.h"
+#import "RKPathMatcher.h"
+#import "RKMappingErrors.h"
+#import "RKPaginator.h"
+#import "RKDynamicMapping.h"
+#import "RKRelationshipMapping.h"
+#import "RKObjectRequestOperation.h"
+#import "RKRouter.h"
+#import "RKRoute.h"
+#import "RKRouteSet.h"
 
 #ifdef _COREDATADEFINES_H
-#   if __has_include(<RestKit/CoreData.h>)
+#   if __has_include("RKCoreData.h")
 #       define RKCoreDataIncluded
 #       import "RKManagedObjectStore.h"
 #       import "RKManagedObjectRequestOperation.h"

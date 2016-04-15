@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKRoute.h>
+#import "RKRoute.h"
 
 /**
  The `RKRouteSet` class provides for the storage and retrieval of `RKRoute` objects. Route objects are added and removed the route set to manipulate the routing table of the application.

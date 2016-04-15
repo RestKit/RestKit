@@ -1,9 +1,9 @@
 //
-//  RKError.m
+//  RKCoreData.h
 //  RestKit
 //
-//  Created by Jeremy Ellison on 5/10/11.
-//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  Created by Samuel E. Giddins on 4/23/14.
+//  Copyright (c) 2014 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,13 +18,9 @@
 //  limitations under the License.
 //
 
-#import "RKErrorMessage.h"
+#ifndef RestKit_RKCoreData_h
+#define RestKit_RKCoreData_h
 
-@implementation RKErrorMessage
+#import "CoreData.h"
 
-- (NSString *)description
-{
-    return self.errorMessage;
-}
-
-@end
+#endif

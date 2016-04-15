@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
-#import <RestKit/Support/RKDictionaryUtilities.h>
+#import "RKDictionaryUtilities.h"
 
 NSDictionary *RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1, NSDictionary *dict2)
 {
