@@ -70,7 +70,7 @@
         self.connectionQueue = [NSOperationQueue new];
         [self.connectionQueue setName:@"RKManagedObjectImporter Connection Queue"];
         [self.connectionQueue setSuspended:YES];
-        
+
         self.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectContext];
 
         self.hasPerformedResetIfNecessary = NO;
@@ -201,7 +201,7 @@
     if (!parsedData) {
         RKLogError(@"Failed to parse file at path '%@': %@", path, [localError localizedDescription]);
     }
-    
+
     if (! parsedData) {
         if (error) *error = localError;
         return NSNotFound;

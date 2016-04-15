@@ -40,13 +40,13 @@ extern NSString * const RKMIMETypeTextXML;
 
 /**
  Returns `YES` if the given MIME Type matches any MIME Type identifiers in the given set.
- 
+
  @param MIMEType The MIME Type to evaluate the match for.
  @param MIMETypes An `NSSet` object who entries are `NSString` or `NSRegularExpression` objects specifying MIME Types.
  @return `YES` if the given MIME Type matches any identifier in the set, else `NO`.
  */
 BOOL RKMIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes);
-    
+
 #ifdef __cplusplus
 }
 #endif

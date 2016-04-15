@@ -12,7 +12,7 @@ In this article we will continue our exploration of RestKit, an iOS framework fo
 
 ## Companion Example Code
 
-To aid the reader in following the concepts presented here, an accompanying example application is provided with the RestKit distribution. Each section of the tutorial will refer you to a specific example in the __RKCatalog__ example, found in the RestKit/Examples/RKCatalog directory. 
+To aid the reader in following the concepts presented here, an accompanying example application is provided with the RestKit distribution. Each section of the tutorial will refer you to a specific example in the __RKCatalog__ example, found in the RestKit/Examples/RKCatalog directory.
 
 At the time of this writing, RestKit is currently at version *0.9.2*. Library source and example code can be downloaded from the [RestKit Downloads Page](https://github.com/twotoasters/RestKit/downloads).
 
@@ -134,7 +134,7 @@ more granularly. For example, an ad-hoc queue could be useful for downloading or
         [queue start];
     }
 
-In this example we have created an ad-hoc queue that dispatches one request at a time and spins the system network activity indicator. There are a number of delegate methods available for the request queue to make managing groups of requests easier. Check out the RKRequestQueue example in RKCatalog for detailed examples. 
+In this example we have created an ad-hoc queue that dispatches one request at a time and spins the system network activity indicator. There are a number of delegate methods available for the request queue to make managing groups of requests easier. Check out the RKRequestQueue example in RKCatalog for detailed examples.
 
 **Example Code** - See [RKRequestQueueExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKRequestQueueExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
 
@@ -150,7 +150,7 @@ RKReachabilityObserver abstracts away the SCReachability C API's and instead pre
       /**
        * Initialize an observer against a hostname. Note that we can also provide an IP address in the hostname
        * string and RestKit will configure the observer to watch the network address instead of the host
-       */   
+       */
       RKReachabilityObserver* observer = [RKReachabilityObserver reachabilityObserverWithHostName:@"restkit.org"];
 
       // Let the run-loop execute so reachability can be determined
@@ -257,18 +257,18 @@ We are going to use key-value coding to access some information within the paylo
       NSNumber* _averageTransactionAmount;
       NSArray*  _distinctPayees;
     }
-    
+
     @property (nonatomic, retain) NSNumber* accountID;
     @property (nonatomic, retain) NSString* name;
     @property (nonatomic, retain) NSNumber* balance;
     @property (nonatomic, retain) NSNumber* transactionsCount;
     @property (nonatomic, retain) NSNumber* averageTransactionAmount;
     @property (nonatomic, retain) NSArray*  distinctPayees;
-    
+
     @end
-    
+
     @implementation SimpleAccount
-    
+
     + (NSDictionary*)elementToPropertyMappings {
       return [NSDictionary dictionaryWithKeysAndObjects:
               @"id", @"accountID",
@@ -279,24 +279,24 @@ We are going to use key-value coding to access some information within the paylo
               @"transactions.@distinctUnionOfObjects.payee", @"distinctPayees",
               nil];
     }
-    
+
     @end
-    
+
     // -- snip --
-    
+
     - (void)workWithKVC {
       [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/accounts.json" objectClass:[SimpleAccount class] delegate:self];
     }
-    
+
     - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
       SimpleAccount* account = [objects objectAtIndex:0];
-      
+
       // Will output "The count is 4"
       NSLog(@"The count is %@", [account transactionsCount]);
-      
+
       // Will output "The average transaction amount is 150.115"
       NSLog(@"The average transaction amount is %@", [account averageTransactionAmount]);
-      
+
       // Will output "The distinct list of payees is: Joe Blow, Grocery Store, John Doe"
       NSLog(@"The distinct list of payees is: %@", [[account distinctPayees] componentsJoinedByString:@", "]);
     }
@@ -395,7 +395,7 @@ This JSON collection is oriented around an array of Project models, with nested 
         return [NSDictionary dictionaryWithKeysAndObjects:
                 @"id", @"projectID",
                 @"name", @"name",
-                @"description", @"description", 
+                @"description", @"description",
                 nil];
       }
 
@@ -440,7 +440,7 @@ Enabling persistent object mapping is a relatively straight-forward process. It 
 1. A Primary Key property must be defined on each persistent model by implementing the `primaryKeyProperty` method
 1. Implementation for properties on managed objects are generated via @dynamic rather than @synthesize
 
-Once these configuration changes have been completed, RestKit will load & map payloads into Core Data backed classes. 
+Once these configuration changes have been completed, RestKit will load & map payloads into Core Data backed classes.
 
 There are a couple of common gotchas and things to keep in mind when working with Core Data:
 
@@ -461,10 +461,10 @@ For help getting started with Core Data, please refer to the RKTwitter and RKTwi
 Now that we have a grounding in the basic requirements for adding Core Data to a RestKit project, let's take a look at some code to help us make things happen. All the code in this section is contained in the Examples/RKCoreDataExamples project for reference. Please pop the project open and follow along as we work through the examples.
 
 First, we need to actually get RestKit and Core Data initialized. Open RKCDAppDelegate.m and note the following snippets of code:
-    
+
     // Import RestKit's Core Data support
     #import <RestKit/CoreData/CoreData.h>
-    
+
     RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://restkit.org"];
     manager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKCoreDataExamples.sqlite"];
 
@@ -473,7 +473,7 @@ What we have done here is instantiated an instance of the object manager and an 
 Now let's take a look at the rather anemic model in Examples/RKCatalog/Examples/RKCoreDataExample/RKCoreDataExample.m:
 
     @implementation Article
-    
+
       + (NSDictionary*)elementToPropertyMappings {
         return [NSDictionary dictionaryWithKeysAndObjects:
                 @"id", @"articleID",
@@ -481,11 +481,11 @@ Now let's take a look at the rather anemic model in Examples/RKCatalog/Examples/
                 @"body", @"body",
                 nil];
       }
-    
+
       + (NSString*)primaryKeyProperty {
         return @"articleID";
       }
-    
+
     @end
 
 Here we see the familiar elementToPropertyMappings method from RKObjectMappable. The only thing new here is the implementation of a method indicating the primary key. This allows the object mapper to know that when working with instances of Article, it should consult the `articleID` property to obtain the primary key value for the instance. This allows RestKit to update the properties for this object no matter what resource path it is loaded from.
@@ -544,7 +544,7 @@ RestKit solves this problem by introducing a new mapper configuration directive 
     {"id": 5, "name": "Place cat in bathtub", "assigned_user_id": 3}
 
 Note the `assigned_user_id` element in the payload -- this is the primary key value for the User object that the Task has been assigned to. Let's look at the code:
-    
+
     @interface Task : RKManagedObject {
     }
 
@@ -561,7 +561,7 @@ Note the `assigned_user_id` element in the payload -- this is the primary key va
       return [NSDictionary dictionaryWithKeysAndObjects:
               @"id", @"taskID",
               @"name", @"name",
-              @"assigned_user_id", @"assignedUserID", 
+              @"assigned_user_id", @"assignedUserID",
               nil];
     }
 
@@ -586,26 +586,26 @@ A primary use case for RestKit's Core Data integration is to provide offline acc
     - (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath;
 
 To utilize the object cache, you need to provide an implementation of `RKManagedObjectCache` and assign it to the managed object store. The implementation of the method needs to parse the resource path and construct one or more fetch requests that can be used to retrieve objects that 'live' at that resource path. For example, in an app like GateGuru that has a collection of airport objects, your implementation might look something like this:
-  
+
     @interface MyObjectCache : NSObject <RKManagedObjectCache> {
-    
+
     }
-  
+
     @end
 
     @implementation MyObjectCache
-  
+
     - (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath {
       if ([resourcePath isEqualToString:@"/airports"]) {
         NSFetchRequest* fetchRequest = [Airport fetchRequest]; // A fetch request with an entity set, but nothing else fetches all objects
         return [NSArray arrayWithObject:fetchRequest];
       }
-    
+
       return nil;
     }
-  
+
     @end
-  
+
     MyObjectCache* cache = [[MyObjectCache alloc] init];
     [RKObjectManager sharedManager].objectStore.managedObjectCache = cache;
     [cache release];
@@ -613,7 +613,7 @@ To utilize the object cache, you need to provide an implementation of `RKManaged
 An array of fetch requests is returned to support the case where your remote endpoint returns objects of more than one type -- Core Data fetch requests can only target a single entity. Once you have provided an implementation and covered all your resource paths, you can retrieve the locally cached objects for a resource path from the object store:
 
     NSArray* objects = [[RKObjectManager sharedManager].objectStore objectsForResourcePath:@"/airports"];
-    
+
 The object cache is used extensively within the Three20 integration layer we will discuss in more detail below. In summary, if you are using Three20 in your application RestKit ships with an object cache aware implementation of TTModel that can be used to populate a table with data from an object loader or the cache.
 
 ### Handling Remote Object Deletion
@@ -646,7 +646,7 @@ Let's take a look at some example code, taken from the RKTwitterCoreData example
     //      This is what triggers the conditional compilation to cause the seed database to be built
     //  2) Source JSON files are added to the 'Generate Seed Database' target to be copied into the bundle. This is required
     //      so that the object seeder can find the files when run in the simulator.
-    #ifdef RESTKIT_GENERATE_SEED_DB    
+    #ifdef RESTKIT_GENERATE_SEED_DB
         RKManagedObjectSeeder* seeder = [RKManagedObjectSeeder objectSeederWithObjectManager:objectManager];
 
         // Seed the database with instances of RKTStatus from a snapshot of the RestKit Twitter timeline
@@ -685,20 +685,20 @@ The attribute nesting is understood simply with an example. Imagine that we have
     [router setModelName:@"article" forClass:[Article class]];
     [router routeClass:[Article class] toResourcePath:@"/articles/(articleID)"];
     [router routeClass:[Article class] toResourcePath:@"/articles" forMethod:RKRequestMethodPOST];
-    
+
     Article* article = [Article object];
     article.title = @"This is the title";
     article.body = @"This is the body";
-    
+
     [[RKObjectManager sharedManager] postObject:article delegate:self];
-    
+
 When the object is serialized for the POST request, RestKit will nest the attributes into a hash like so:
 
     article[title]=This is the title&
     article[body]=This is the body
 
 This matches the format Rail's controllers expect attributes to be delivered in. The changes to the DELETE payload are self-explanatory -- Rails simply expects the params to be empty during DELETE requests and the Rails router abides.
-    
+
 ### Three20 Support
 
 At Two Toasters, the vast majority of our iOS applications are built on top of two frameworks: RestKit and Three20. We have found that Three20 greatly simplifies and streamlines a number of common patterns in our iOS applications (such as the support for URL based dispatch) and provides a rich library of UI components and helpers that make us happier, more productive programmers. And RestKit obviously makes working with data so much more pleasant. So it should come as little surprise that there integration points available between the two frameworks.

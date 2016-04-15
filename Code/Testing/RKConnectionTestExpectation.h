@@ -24,7 +24,7 @@
 
 /**
  An `RKConnectionTestExpectation` object defines an expectation that a Core Data relationship is connected during the execution of a `RKMappingTest`. These expectation are used to unit test a connection specified via an `RKConnectionDescription` object.
- 
+
  @see `RKMappingTest`
  @see `RKConnectionDescription`
  */
@@ -36,7 +36,7 @@
 
 /**
  Creates and returns a connection expectation for the specified relationship name, attributes dictionary, and value.
- 
+
  @param relationshipName The name of the relationship expected to be connected.
  @param attributes A dictionary specifying the attributes that are expected to be used to establish the connection.
  @param value The value that is expected to be set for the relationship when the connection is established.
@@ -46,7 +46,7 @@
 
 /**
  Initializes the receiver with the given relationship name, attributes dictionary, and value.
- 
+
  @param relationshipName The name of the relationship expected to be connected.
  @param attributes A dictionary specifying the attributes that are expected to be used to establish the connection.
  @param value The value that is expected to be set for the relationship when the connection is established.
@@ -70,14 +70,14 @@
 
 /**
  The value that is expected to be set for the relationship when connected. May be `nil`.
- 
+
  A value of `nil` indicates that expectation does not specify an exact value for the connection, only that it was set during the execution of the test. A value of `[NSNull null]` indicates that the connection is expected to be connected to a nil value.
  */
 @property (nonatomic, strong, readonly) id value;
 
 /**
  Returns a string summary of the connection that is expected to be established.
- 
+
  @return A string describing the expected connection.
  */
 @property (nonatomic, readonly, copy) NSString *summary;

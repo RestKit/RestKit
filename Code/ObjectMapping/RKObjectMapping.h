@@ -35,29 +35,29 @@
  1. `RKRelationshipMapping`: A relationship mapping describes a transformation between a nested child object or objects from a source key path to a destination key path using another `RKObjectMapping`. The child objects to be mapped are read from the source object representation using `valueForKeyPath:`, then mapped recursively using the object mapping associated with the relationship mapping, and then finally assigned to the destination key path. Before assignment to the destination key path runtime type introspection is performed to determine if any type transformation is necessary. For relationship mappings, common type transformations include transforming a single object value in an `NSArray` or transforming an `NSArray` of object values into an `NSSet`.
 
  All type transformations available are discussed in detail in the documentation for `RKValueTransformer`.
- 
+
  ## Transforming Representation to Property Keys
- 
+
  Configuring object mappings can become quite repetitive if the keys in your serialized object representations follow a different convention than their local domain counterparts. For example, consider a typical JSON document in the "snake case" format:
- 
+
     {"user": {"first_name": "Blake", "last_name": "Watters", "email_address": "blake@restkit.org"}}
- 
+
  Typically when configuring a mapping for the object represented in this document we would transform the destination properties into the Objective-C idiomatic "llama case" variation. This can produce lengthy, error-prone mapping configurations in which the transformations are specified manually:
- 
+
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKUser class]];
     [userMapping addAttributeMappingsFromDictionary:@{ @"first_name": @"firstName", @"last_name": @"lastName", @"email_address", @"emailAddress" }];
- 
+
  To combat this repetition, a block can be designated to perform a transformation on source keys to produce corresponding destination keys:
- 
+
     [userMapping setSourceToDestinationKeyTransformationBlock:^NSString *(RKObjectMapping *mapping, NSString *sourceKey) {
         // Value transformer compliments of TransformerKit (See https://github.com/mattt/TransformerKit)
         return [[NSValueTransformer valueTransformerForName:TKLlamaCaseStringTransformerName] transformedValue:sourceKey];
     }];
- 
+
  With the block configured, the original configuration can be changed into a simpler array based invocation:
- 
+
     [userMapping addAttributeMappingsFromArray:@[ @"first_name", @"last_name", @"email_address" ]];
- 
+
  Transformation blocks can be configured on a per-mapping basis via `setSourceToDestinationKeyTransformationBlock:` or globally via `[RKObjectMapping setDefaultSourceToDestinationKeyTransformationBlock:]`.
 
  @see `RKAttributeMapping`
@@ -110,7 +110,7 @@
 
 /**
  Returns the property mappings of the receiver in a dictionary, where the keys are the source key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
- 
+
  @return The property mappings of the receiver in a dictionary, where the keys are the source key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
  @warning Note this method does not return any property mappings with a `nil` value for the source key path in the dictionary returned.
  */
@@ -118,7 +118,7 @@
 
 /**
  Returns the property mappings of the receiver in a dictionary, where the keys are the destination key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
- 
+
  @return The property mappings of the receiver in a dictionary, where the keys are the destination key paths and the values are instances of `RKAttributeMapping` or `RKRelationshipMapping`.
  @warning Note this method does not return any property mappings with a `nil` value for the source key path in the dictionary returned.
  */
@@ -131,14 +131,14 @@
 
 /**
  The collection of single key attribute mappings within this object mapping.
- 
+
  These are mappings where the source key path is a single key, and not a key path with multiple components.
  */
 @property (nonatomic, readonly) NSArray *keyAttributeMappings;
 
 /**
  The collection of key path attribute mappings within this object mapping.
- 
+
  A key path mapping is one where the source key path is actually a path with multiple components.
  */
 @property (nonatomic, readonly) NSArray *keyPathAttributeMappings;
@@ -150,14 +150,14 @@
 
 /**
  Returns the property mapping registered with the receiver with the given source key path.
- 
+
  @param sourceKeyPath The key path to retrieve.
  */
 - (id)mappingForSourceKeyPath:(NSString *)sourceKeyPath;
 
 /**
  Returns the property mapping registered with the receiver with the given destinationKeyPath key path.
- 
+
  @param destinationKeyPath The key path to retrieve.
  */
 - (id)mappingForDestinationKeyPath:(NSString *)destinationKeyPath;
@@ -205,9 +205,9 @@
 
 /**
  Adds a relationship mapping to the receiver with the given source key path and mapping.
- 
+
  The destination key path will be the same as the source key path or processed by the source to destination key transformation block, if any is configured.
- 
+
  @param sourceKeyPath The source key path at which to read the nested representation of the related objects.
  @param mapping The object mapping with which to process the related object representation.
  */
@@ -219,7 +219,7 @@
 
 /**
  Sets an application-wide default transformation block to be used when attribute or relationship mappings are added to an object mapping by source key path.
- 
+
  @param block The block to be set as the default source to destination key transformer for all object mappings in the application.
  @see [RKObjectMapping setPropertyNameTransformationBlock:]
  */
@@ -227,11 +227,11 @@
 
 /**
  Sets a block to executed to transform a source key into a destination key.
- 
+
  The transformation block set with this method is used whenever an attribute or relationship mapping is added to the receiver via a method that accepts a string value for the source key. The block will be executed with the source key as the only argument and the value returned will be taken as the corresponding destination key. Methods on the `RKObjectMapping` class that will trigger the execution of the block configured via this method include:
  * `addAttributeMappingsFromArray:` - Each string element contained in the given array is interpretted as a source key path and will be evaluated with the block to obtain a corresponding destination key path.
  * `addRelationshipMappingWithSourceKeyPath:mapping:` - The source key path will be evaluated with the block to obtain a corresponding destination key path.
- 
+
  @param block The block to execute when the receiver needs to transform a source key into a destination key. The block has a string return value specifying the destination key and accepts a single string argument: the source key that is to be transformed.
  @warning Please note that the block given accepts a **key** as opposed to a **key path**. When a key path is given to a method supporting key transformation it will be decomposed into its key components by splitting the key path at the '.' (period) character, then each key will be evaluated using the transformation block and the results will be joined together into a new key path with the period character delimiter.
  */
@@ -264,20 +264,20 @@
 
 /**
  Adds an attribute mapping to a dynamic nesting key from an attribute. The mapped attribute name can then be referenced wthin other attribute mappings to map content under the nesting key path.
- 
+
  For example, consider that we wish to map a local user object with the properties 'id', 'firstName' and 'email':
- 
+
     RKUser *user = [RKUser new];
     user.firstName = @"blake";
     user.userID = @(1234);
     user.email = @"blake@restkit.org";
 
  And we wish to map it into JSON that looks like:
- 
+
     { "blake": { "id": 1234, "email": "blake@restkit.org" } }
- 
+
  We can configure our request mapping to handle this like so:
- 
+
      RKObjectMapping *mapping = [RKObjectMapping requestMapping];
      [mapping addAttributeMappingToKeyOfRepresentationFromAttribute:@"firstName"];
      [mapping addAttributeMappingsFromDictionary:@{ @"userID": @"{firstName}.id", @"email": @"{firstName}.email" }];
@@ -334,10 +334,10 @@
 ///----------------------------------
 
 /**
- Generates an inverse mapping for the rules specified within this object mapping. 
- 
+ Generates an inverse mapping for the rules specified within this object mapping.
+
  This can be used to quickly generate a corresponding serialization mapping from a configured object mapping. The inverse mapping will have the source and destination keyPaths swapped for all attribute and relationship mappings. All mapping configuration and date formatters are copied from the parent to the inverse mapping.
- 
+
  @return A new mapping that will map the inverse of the receiver.
  */
 - (RKObjectMapping *)inverseMapping;
@@ -381,7 +381,7 @@
 
 /**
  **Deprecated in v0.21.0**
- 
+
  This category contains deprecated API interfaces for configuring date formatters. Starting in RestKit 0.20.4 date formatting is configured via the `RKValueTransformer` API's.
 
  Defines the interface for configuring time and date formatting handling within RestKit object mappings. For performance reasons, RestKit reuses a pool of date formatters rather than constructing them at mapping time. This collection of date formatters can be configured on a per-object mapping or application-wide basis using the static methods exposed in this category.
@@ -390,7 +390,7 @@
 
 /**
  **Deprecated in v0.21.0**
- 
+
  This method accesses `[RKValueTransformer defaultTransformer]` and returns all `NSDate` <-> `NSString` value transformers.
 
  Returns the collection of default date formatters that will be used for all object mappings that have not been configured specifically.
@@ -406,7 +406,7 @@
 
 /**
  **Deprecated in v0.21.0**
- 
+
  This method accesses `[RKValueTransformer defaultTransformer]` and removes all `NSDate` <-> `NSString` value transformers that are instances of `NSFormatter` and then adds the given array of formatters to the default transformer.
 
  Sets the collection of default date formatters to the specified array. The array should contain configured instances of NSDateFormatter in the order in which you want them applied during object mapping operations.
@@ -418,7 +418,7 @@
 
 /**
  **Deprecated in v0.21.0**
- 
+
  This methods prepends the given date formatter to `[RKValueTransformer defaultValueTransformer]`.
 
  Adds a date formatter instance to the default collection
@@ -430,7 +430,7 @@
 
 /**
  **Deprecated in v0.21.0**
- 
+
  This method instantiates a new `NSDateFormatter` object with the given format string and time zone and prepends it to `[RKValueTransformer defaultValueTransformer]`.
 
  Convenience method for quickly constructing a date formatter and adding it to the collection of default date formatters. The locale is auto-configured to `en_US_POSIX`.
@@ -443,13 +443,13 @@
 
 /**
  **Deprecated in v0.21.0**
- 
+
  This method returns the first `NSString` -> `NSDate` value transformer that is an instance of `NSFormatter` in `[RKValueTransformer defaultValueTransformer]`.
 
  Returns the preferred date formatter to use when generating NSString representations from NSDate attributes. This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations that do not have a native time construct.
 
  Defaults to an instance of the `RKISO8601DateFormatter` configured with the UTC time-zone. The format string is equal to "yyyy-MM-DDThh:mm:ssTZD"
- 
+
  For details about the ISO-8601 format, see http://www.w3.org/TR/NOTE-datetime
 
  @return The preferred NSFormatter object to use when serializing dates into strings
@@ -458,7 +458,7 @@
 
 /**
  **Deprecated in v0.21.0**
- 
+
  This method inserts the given date formatter at position zero in `[RKValueTransformer defaultValueTransformer]`, ensuring that it will be used for all transformations from `NSDate` -> `NSString`.
 
  Sets the preferred date formatter to use when generating NSString representations from NSDate attributes. This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations that do not have a native time construct.
@@ -473,7 +473,7 @@
 
 /**
  **Deprecated in v0.21.0**
- 
+
  An array of `NSFormatter` objects to use when mapping string values into `NSDate` attributes on the target `objectClass`. Each date formatter will be invoked with the string value being mapped until one of the date formatters does not return nil.
 
  Defaults to the application-wide collection of date formatters configured via `[RKObjectMapping setDefaultDateFormatters:]`

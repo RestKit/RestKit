@@ -39,7 +39,7 @@
     reginald.name = @"Reginald";
     reginald.railsID = @123456;
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
-    
+
     NSSet *managedObjects = [cache managedObjectsWithEntity:entity
                                               attributeValues:@{ @"railsID": @123456 }
                                        inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -59,7 +59,7 @@
     RKEvent *birthday = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     birthday.eventID = @"e-1234-a8-b12";
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
-    
+
     NSSet *managedObjects = [cache managedObjectsWithEntity:entity
                                               attributeValues:@{ @"eventID": @"e-1234-a8-b12" }
                                        inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
@@ -75,29 +75,29 @@
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Event" inManagedObjectStore:managedObjectStore];
     mapping.identificationAttributes = @[ @"eventID" ];
-    
+
     RKEvent *event1 = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     event1.eventID = @"e-1234-a8-b12";
-    
+
     RKEvent *event2 = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     event2.eventID = @"ff-1234-a8-b12";
-    
+
     [managedObjectStore.persistentStoreManagedObjectContext save:nil];
-    
+
     NSSet *managedObjects = [cache managedObjectsWithEntity:entity
                                             attributeValues:@{ @"eventID": @[ event1.eventID, event2.eventID ] }
                                      inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSSet *events = [NSSet setWithObjects:event1, event2, nil];
     expect(managedObjects).to.haveCountOf(2);
     expect(managedObjects).to.equal(events);
-    
+
     managedObjects = [cache managedObjectsWithEntity:entity
                                      attributeValues:@{ @"eventID": event1.eventID }
                               inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     events = [NSSet setWithObject:event1];
     expect(managedObjects).to.haveCountOf(1);
     expect(managedObjects).to.equal(events);
-    
+
     managedObjects = [cache managedObjectsWithEntity:entity
                                      attributeValues:@{ @"eventID": @[ event1.eventID ] }
                               inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];

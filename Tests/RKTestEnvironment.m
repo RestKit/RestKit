@@ -44,11 +44,11 @@
         RKLogError(@"Failed to create caches directory. Unable to run tests: %@", error);
         NSAssert(directoryExists, @"Failed to create caches directory.");
     }
-    
+
     // Configure logging from the environment variable. See RKLog.h for details
     RKLogConfigureByName("*", RKLogLevelOff);
     RKLogConfigureFromEnvironment();
-    
+
     // Configure the Test Factory to use a specific model file
     [RKTestFactory defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
         NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
@@ -63,7 +63,7 @@
                 RKLogError(@"Failed to reset persistent store: %@", error);
             }
         }
-        
+
         return managedObjectStore;
     }];
 }

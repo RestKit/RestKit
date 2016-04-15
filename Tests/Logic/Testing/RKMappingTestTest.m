@@ -36,7 +36,7 @@
     RKObjectMapping *coordinateMapping = [RKObjectMapping mappingForClass:[RKTestCoordinate class]];
     [coordinateMapping addAttributeMappingsFromArray:@[ @"latitude", @"longitude" ]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"coordinate" withMapping:coordinateMapping]];
-    
+
     self.mappingTest = [[RKMappingTest alloc] initWithMapping:mapping sourceObject:self.objectRepresentation destinationObject:nil];
 }
 
@@ -172,7 +172,7 @@
 - (void)setUp
 {
     [RKTestFactory setUp];
-    
+
     self.objectRepresentation = [RKTestFixture parsedObjectWithContentsOfFixture:@"with_to_one_relationship.json"];
     self.managedObjectStore = [RKTestFactory managedObjectStore];
     self.entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:self.managedObjectStore];
@@ -180,7 +180,7 @@
      @"name":               @"name",
      @"age":                @"age",
      @"favorite_cat_id":    @"favoriteCatID"
-     }];   
+     }];
     self.mappingTest = [[RKMappingTest alloc] initWithMapping:self.entityMapping sourceObject:self.objectRepresentation destinationObject:nil];
     self.mappingTest.rootKeyPath = @"human";
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
@@ -189,7 +189,7 @@
     self.mappingTest.mappingOperationDataSource = dataSource;
     self.mappingTest.managedObjectContext = self.managedObjectStore.persistentStoreManagedObjectContext;
     self.mappingTest.managedObjectCache = managedObjectCache;
-    
+
     self.asia = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:self.mappingTest.managedObjectContext];
     self.asia.name = @"Asia";
     self.asia.railsID = @(1234);

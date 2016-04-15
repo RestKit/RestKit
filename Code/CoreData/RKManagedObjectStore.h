@@ -74,7 +74,7 @@
     // NOTE: Due to an iOS 5 bug, the managed object model returned is immutable.
     NSManagedObjectModel *managedObjectModel = [[[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL] mutableCopy];
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
- 
+
  */
 - (instancetype)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel NS_DESIGNATED_INITIALIZER;
 
@@ -148,9 +148,9 @@
  @bug This method will implictly result in the managed object contexts associated with the receiver to be discarded and recreated. Any managed objects or additional child contexts associated with the store will need to be discarded or else exceptions may be raised (i.e. `NSObjectInaccessibleException`).
 
  Also note that care must be taken to cancel/suspend all mapping operations, reset all managed object contexts, and disconnect all `NSFetchedResultController` objects that are associated with managed object contexts using the persistent stores of the receiver before attempting a reset. Failure to completely disconnect usage before calling this method is likely to result in a deadlock.
- 
+
  As an alternative to resetting the persistent store, you may wish to consider simply deleting all managed objects out of the managed object context. If your data set is not very large, this can be a performant operation and is significantly easier to implement correctly. An example implementation for truncating all managed objects from the store is provided below:
- 
+
     NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
         NSManagedObjectContext *managedObjectContext = [RKManagedObjectStore defaultStore].persistentStoreManagedObjectContext;
         [managedObjectContext performBlockAndWait:^{
@@ -165,7 +165,7 @@
                     [managedObjectContext deleteObject:managedObject];
                 }
             }
-     
+
             BOOL success = [managedObjectContext save:&error];
             if (!success) RKLogWarning(@"Failed saving managed object context: %@", error);
             }];
@@ -199,7 +199,7 @@
  The managed object cache associated with the receiver.
 
  The managed object cache is used to accelerate intensive Core Data operations by caching managed objects by one or more attributes.
- 
+
  **Default**: An instance of `RKFetchRequestManagedObjectCache`.
 
  @see `RKManagedObjectCaching`
@@ -252,11 +252,11 @@
 
 /**
  Performs a migration on a persistent store at a given URL to the model at the specified URL.
- 
+
  This method provides support for migrating persistent stores in which the source and destination models have been mutated after being loaded from the model archive on disk, such as when the RestKit managed object searching support is used. In a situation where the persistent store has been created with a dynamically modified managed object model. Core Data is unable to infer the mapping model because the metadata of the persistent store does not agree with that of the managed object model due to the dynamic modifications. In order to perform a migration, one must load the appropriate source model, apply the dynamic changes appropriate for that model, then infer a mapping model from the modified model. This method assists in this process by accepting a source store and a destination model as arguments and searching through all models in the .momd package and yielding each model to the given configuration block for processing. After the block is invoked, the metadata of the store is checked for compatibility with the modified managed object model to identify the source store. Once the source store is found, a mapping model is inferred and the migration proceeds. The migration is done against a copy of the given persistent store and if successful, the migrated store is moved to replace the original store.
- 
+
  To understand how this is used, consider the following example: Given a managed object model containing two entities 'Article' and 'Tag', the user wishes to configure managed object search indexing on the models and wishes to be able to migrate existing persistent stores across versions. The migration configuration would look something like this:
- 
+
      NSURL *storeURL = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"MyStore.sqlite"];
      NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"VersionedModel" withExtension:@"momd"];
      BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:^(NSManagedObjectModel *model, NSURL *sourceURL) {
@@ -279,13 +279,13 @@
             [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
         }
      }];
- 
+
  @param storeType The type of store that given URL. May be `nil`.
  @param storeURL A URL to the store that is to be migrated.
  @param destinationModelURL A URL to the managed object model that the persistent store is to be updated to. This URL may target a specific model version with a .momd package or point to the .momd package itself, in which case the migration is performed to the current version of the model as configured on the .xcdatamodeld file used to the build the .momd package.
  @param error A pointer to an error object that is set in the event that the migration is unsuccessful.
  @param block A block object used to configure
- 
+
  @warning This method is only usable with a versioned Managed Object Model stored as a .momd package containing .mom managed object model archives.
  */
 + (BOOL)migratePersistentStoreOfType:(NSString *)storeType

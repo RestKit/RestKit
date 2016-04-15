@@ -65,18 +65,18 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     NSValue *dictionaryKey = [NSValue valueWithNonretainedObject:mapping];
     RKObjectMapping *inverseMapping = (self.invertedMappings)[dictionaryKey];
     if (inverseMapping) return inverseMapping;
-    
+
     inverseMapping = [RKObjectMapping requestMapping];
     (self.invertedMappings)[dictionaryKey] = inverseMapping;
     [inverseMapping copyPropertiesFromMapping:mapping];
     // We want to serialize `nil` values
     inverseMapping.assignsDefaultValueForMissingAttributes = YES;
-    
+
     for (RKAttributeMapping *attributeMapping in mapping.attributeMappings) {
         if (predicate && !predicate(attributeMapping)) continue;
         [inverseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeMapping.destinationKeyPath toKeyPath:attributeMapping.sourceKeyPath]];
     }
-    
+
     for (RKRelationshipMapping *relationshipMapping in mapping.relationshipMappings) {
         RKObjectMapping *mapping = (RKObjectMapping *) relationshipMapping.mapping;
         if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
@@ -87,7 +87,7 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
         RKMapping *inverseRelationshipMapping = [self invertMapping:mapping withPredicate:predicate];
         if (inverseRelationshipMapping) [inverseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withMapping:inverseRelationshipMapping]];
     }
-    
+
     return inverseMapping;
 }
 
@@ -279,7 +279,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
             self.keyPathAttributeMappings = RKAddProperty(self.keyPathAttributeMappings, propertyMapping);
         }
     }
-    
+
     if (propertyMapping.propertyValueClass == Nil && ![self.objectClass isSubclassOfClass:[NSDictionary class]]) {
         propertyMapping.propertyValueClass = [self classForKeyPath:propertyMapping.destinationKeyPath];
     }
@@ -324,7 +324,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
     [components enumerateObjectsUsingBlock:^(id component, NSUInteger idx, BOOL *stop) {
         [mutableComponents addObject:self.sourceToDestinationKeyTransformationBlock(self, component)];
     }];
-    
+
     return [mutableComponents componentsJoinedByString:@"."];
 }
 
@@ -357,7 +357,7 @@ static NSArray *RKRemoveProperty(NSArray *array, RKPropertyMapping *mapping)
 {
     NSParameterAssert(sourceKeyPath);
     NSParameterAssert(mapping);
-    
+
     NSString *destinationKeyPath = [self transformSourceKeyPath:sourceKeyPath];
     RKRelationshipMapping *relationshipMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:mapping];
     [self addPropertyMapping:relationshipMapping];

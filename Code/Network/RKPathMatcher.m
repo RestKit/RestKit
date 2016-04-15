@@ -94,9 +94,9 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
     NSString *rootPath = [sourcePath copy];
     NSArray *components = [sourcePath componentsSeparatedByString:@"?"];
     SOCPattern *socPattern = [SOCPattern patternWithString:pattern];
-    
+
     // Bifurcate Source Path From Query Parameters
-    
+
     if ([components count] > 1) {
         rootPath = [components objectAtIndex:0];
         NSDictionary *queryParameters = RKQueryParametersFromStringWithEncoding([components objectAtIndex:1], NSUTF8StringEncoding);
@@ -104,9 +104,9 @@ NSString *RKPathFromPatternWithObject(NSString *pathPattern, id object)
             [argumentsCollection addEntriesFromDictionary:queryParameters];
         }
     }
-    
+
     bool rootPathMatchesPattern = RKNumberOfSlashesInString(pattern) == RKNumberOfSlashesInString(rootPath);
-    
+
     if (![socPattern stringMatches:rootPath]) return NO;
     if (!arguments) return YES && rootPathMatchesPattern;
     NSDictionary *extracted = [socPattern parameterDictionaryFromSourceString:rootPath];

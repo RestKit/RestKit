@@ -52,7 +52,7 @@
     RKObjectMapping *invalidMapping = [RKObjectMapping mappingForClass:[RKRequestDescriptorTest class]];
     RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
     [dynamicMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"whatever" expectedValue:@"whatever" objectMapping:invalidMapping]];
-    
+
     NSException *exception = nil;
     @try {
         [RKRequestDescriptor requestDescriptorWithMapping:dynamicMapping objectClass:[RKRequestDescriptorTest class] rootKeyPath:nil method:RKRequestMethodAny];
@@ -74,7 +74,7 @@
                                                                                  objectClass:[RKRequestDescriptorTest class]
                                                                                  rootKeyPath:@"/issues"
                                                                                       method:RKRequestMethodAny];
-    
+
     RKRequestDescriptor *secondDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                   objectClass:[RKRequestDescriptorTest class]
                                                                                   rootKeyPath:@"/issues"
@@ -88,7 +88,7 @@
                                                                                  objectClass:[RKRequestDescriptorTest class]
                                                                                  rootKeyPath:@"/issues"
                                                                                       method:RKRequestMethodAny];
-    
+
     RKRequestDescriptor *secondDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[RKDynamicMapping new]
                                                                                   objectClass:[RKRequestDescriptorTest class]
                                                                                   rootKeyPath:@"/issues"
@@ -103,7 +103,7 @@
                                                                                  objectClass:[RKRequestDescriptorTest class]
                                                                                  rootKeyPath:@"/issues"
                                                                                       method:RKRequestMethodAny];
-    
+
     RKRequestDescriptor *secondDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                   objectClass:[NSObject class]
                                                                                   rootKeyPath:@"/issues"
@@ -118,7 +118,7 @@
                                                                                  objectClass:[RKRequestDescriptorTest class]
                                                                                  rootKeyPath:@"/issues"
                                                                                       method:RKRequestMethodAny];
-    
+
     RKRequestDescriptor *secondDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping
                                                                                   objectClass:[RKRequestDescriptorTest class]
                                                                                   rootKeyPath:@"/"

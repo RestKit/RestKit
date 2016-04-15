@@ -25,7 +25,7 @@
 BOOL RKObjectIsEqualToObject(id object, id anotherObject) {
     NSCAssert(object, @"Expected object not to be nil");
     NSCAssert(anotherObject, @"Expected anotherObject not to be nil");
-    
+
     return (object == anotherObject) || [object isEqual:anotherObject];
 }
 
@@ -95,17 +95,17 @@ Class RKKeyValueCodingClassForObjCType(const char *type)
             case _C_FLT: // float
             case _C_DBL: // double
                 return [NSNumber class];
-                
+
             case _C_BOOL: // C++ bool or C99 _Bool
                 return objc_getClass("NSCFBoolean")
                 ?: objc_getClass("__NSCFBoolean")
                 ?: [NSNumber class];
-                
+
             case _C_STRUCT_B: // struct
             case _C_BFLD: // bitfield
             case _C_UNION_B: // union
                 return [NSValue class];
-                
+
             case _C_ARY_B: // c array
             case _C_PTR: // pointer
             case _C_VOID: // void
@@ -136,7 +136,7 @@ NSString *RKPropertyTypeFromAttributeString(NSString *attributeString)
     NSString *type = [NSString string];
     NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
     [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
-    
+
     // we are not dealing with an object
     if ([typeScanner isAtEnd]) {
         return @"NULL";

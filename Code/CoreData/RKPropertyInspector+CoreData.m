@@ -66,7 +66,7 @@
             Class managedObjectClass = objc_getClass(className);
 
             objc_property_t prop = class_getProperty(managedObjectClass, propertyName);
-            
+
             // Property is not defined in the Core Data model -- we cannot infer any details about the destination type
             if (prop) {
                 const char *attr = property_getAttributes(prop);
@@ -154,7 +154,7 @@
         if (! propertyClass) break;
         currentPropertyClass = propertyClass;
     }
-    
+
     return propertyClass;
 }
 

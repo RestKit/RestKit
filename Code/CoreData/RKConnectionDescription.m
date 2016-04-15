@@ -53,7 +53,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     if ([invalidSourceAttributes count]) [NSException raise:NSInvalidArgumentException format:@"Cannot connect relationship: invalid attributes given for source entity '%@': %@", [[relationship entity] name], [[invalidSourceAttributes allObjects] componentsJoinedByString:@", "]];
     NSSet *invalidDestinationAttributes = RKSetWithInvalidAttributesForEntity([attributes allValues], [relationship destinationEntity]);
     if ([invalidDestinationAttributes count]) [NSException raise:NSInvalidArgumentException format:@"Cannot connect relationship: invalid attributes given for destination entity '%@': %@", [[relationship destinationEntity] name], [[invalidDestinationAttributes allObjects] componentsJoinedByString:@", "]];
-    
+
     self = [[RKForeignKeyConnectionDescription alloc] init];
     if (self) {
         self.relationship = relationship;
@@ -94,7 +94,7 @@ static NSSet *RKSetWithInvalidAttributesForEntity(NSArray *attributes, NSEntityD
     } else if ([self isKeyPathConnection]) {
         return [[[self class] allocWithZone:zone] initWithRelationship:self.relationship keyPath:self.keyPath];
     }
-    
+
     return nil;
 }
 

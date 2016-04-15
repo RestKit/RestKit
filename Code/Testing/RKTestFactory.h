@@ -151,7 +151,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 #ifdef RKCoreDataIncluded
 /**
  Inserts a new managed object for the `NSEntityDescription` with the given name into the specified  managed object context and sets properties on the instance from the given dictionary. A permanent managed object ID is obtained for the object so that it can be referenced across threads without any further work.
- 
+
  @param entityName The name of the entity to insert a new managed object for.
  @param managedObjectContext The managed object context to insert the new object into. If nil, then the managed object context returned by invoking `[RKTestFactory managedObjectStore].mainQueueManagedObjectContext]` is used.
  @param properties A dictionary of properties to be set on the new managed object instance.

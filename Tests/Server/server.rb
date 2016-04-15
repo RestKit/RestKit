@@ -14,7 +14,7 @@ end
 
 class RestKitTestServer < Sinatra::Base
   register Sinatra::MultiRoute
-  
+
   self.app_file = __FILE__
 
   configure do
@@ -117,7 +117,7 @@ class RestKitTestServer < Sinatra::Base
     content_type 'application/json'
     { :error => "Resource not found." }.to_json
   end
-  
+
   get '/410' do
     status 410
     content_type 'application/json'

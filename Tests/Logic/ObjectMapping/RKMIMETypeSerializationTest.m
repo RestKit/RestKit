@@ -91,7 +91,7 @@
 {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:&error];
-    
+
     [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:regex];
     Class serializationClass = [RKMIMETypeSerialization serializationClassForMIMEType:@"application/xml+whatever"];
     assertThat(NSStringFromClass(serializationClass), is(equalTo(@"RKNSJSONSerialization")));
@@ -101,7 +101,7 @@
 {
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:&error];
-    
+
     [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:regex];
     [RKMIMETypeSerialization registerClass:[RKTestSerialization class] forMIMEType:@"application/xml+whatever"];
 
@@ -119,7 +119,7 @@
     [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"this/that"];
     [RKMIMETypeSerialization registerClass:[RKTestSerialization class] forMIMEType:@"application/xml+whatever"];
     [RKMIMETypeSerialization registerClass:[RKNSJSONSerialization class] forMIMEType:@"whatever"];
-    
+
     Class exactMatch = [RKMIMETypeSerialization serializationClassForMIMEType:@"application/xml+whatever"];
     assertThat(exactMatch, is(equalTo([RKTestSerialization class])));
 }

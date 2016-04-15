@@ -39,6 +39,6 @@ BOOL RKMIMETypeInSet(NSString *MIMEType, NSSet *MIMETypes)
             @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
         }
     }
-    
+
     return NO;
 }

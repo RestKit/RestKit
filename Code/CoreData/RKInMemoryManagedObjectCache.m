@@ -62,7 +62,7 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
         [cacheContext setPersistentStoreCoordinator:RKPersistentStoreCoordinatorFromManagedObjectContext(managedObjectContext)];
         self.entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:cacheContext];
         self.entityCache.callbackQueue = RKInMemoryManagedObjectCacheCallbackQueue();
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleManagedObjectContextDidChangeNotification:) name:NSManagedObjectContextObjectsDidChangeNotification object:managedObjectContext];
     }
     return self;
@@ -88,7 +88,7 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
     NSParameterAssert(entity);
     NSParameterAssert(attributeValues);
     NSParameterAssert(managedObjectContext);
-    
+
     NSArray *attributes = [attributeValues allKeys];
     [self.entityCache beginAccessing];
     if (! [self.entityCache isEntity:entity cachedByAttributes:attributes]) {
@@ -98,14 +98,14 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
             dispatch_semaphore_signal(semaphore);
         }];
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        
+
         RKEntityByAttributeCache *attributeCache = [self.entityCache attributeCacheForEntity:entity attributes:attributes];
-        
+
         // Fetch any pending objects and add them to the cache
         NSFetchRequest *fetchRequest = [NSFetchRequest new];
         fetchRequest.entity = entity;
         fetchRequest.includesPendingChanges = YES;
-        
+
         [managedObjectContext performBlockAndWait:^{
             NSError *error = nil;
             NSArray *objects = nil;
@@ -120,14 +120,14 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
             }
         }];
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        
+
 #if !OS_OBJECT_USE_OBJC
         dispatch_release(semaphore);
 #endif
-        
+
         RKLogTrace(@"Cached %ld objects", (long)[attributeCache count]);
     }
-    
+
     NSSet *result = [self.entityCache objectsForEntity:entity withAttributeValues:attributeValues inContext:managedObjectContext];
     [self.entityCache endAccessing];
     return result;
@@ -156,10 +156,10 @@ static dispatch_queue_t RKInMemoryManagedObjectCacheCallbackQueue(void)
     NSSet *updatedObjects = userInfo[NSUpdatedObjectsKey];
     NSSet *deletedObjects = userInfo[NSDeletedObjectsKey];
     RKLogTrace(@"insertedObjects=%@, updatedObjects=%@, deletedObjects=%@", insertedObjects, updatedObjects, deletedObjects);
-    
+
     NSMutableSet *objectsToAdd = [NSMutableSet setWithSet:insertedObjects];
     [objectsToAdd unionSet:updatedObjects];
-    
+
     [self.entityCache addObjects:objectsToAdd completion:nil];
     [self.entityCache removeObjects:deletedObjects completion:nil];
 }

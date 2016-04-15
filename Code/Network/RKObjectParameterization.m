@@ -58,7 +58,7 @@
 {
     NSParameterAssert(object);
     NSParameterAssert(requestDescriptor);
-    
+
     self = [super init];
     if (self) {
         self.object = object;
@@ -90,7 +90,7 @@
             // If the mapped object is empty, return an empty dictionary and no error
             return self.rootKeyPath ? @{ self.rootKeyPath: @{} } : @{};
         }
-        
+
         if (error) *error = operation.error;
         return nil;
     }

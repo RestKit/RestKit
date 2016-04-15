@@ -58,7 +58,7 @@
 </div>
 </li>
 <li>Switch to the &#8216;Build&#8217; tab in your project inspector. Make sure that your <strong>Configuration</strong> pop-up menu reads <strong>All Configurations</strong> so that your changes will work for all build configurations. </li>
-<li>Find the <strong>Header Search Paths</strong> setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out to the &#8216;Libraries&#8217; subdirectory of your project, your header path would be &#8216;Libraries/RestKit/Build&#8217;. 
+<li>Find the <strong>Header Search Paths</strong> setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out to the &#8216;Libraries&#8217; subdirectory of your project, your header path would be &#8216;Libraries/RestKit/Build&#8217;.
 
 Now find the <strong>Other Linker Flags</strong> setting. Double click it and add entries for <strong>-all_load</strong> and <strong>-ObjC</strong>. Your setting should match the screenshot below.
 <div class="tutorial_image">
@@ -71,8 +71,8 @@ Now find the <strong>Other Linker Flags</strong> setting. Double click it and ad
 <p>Congratulations, you are now done adding RestKit into your project!</p>
 
 <p>You now only need to add includes for the RestKit libraries at the appropriate places in your application. The relevant includes are:
-<pre name="code" class="c++">  
-    #import &lt;RestKit/RestKit.h&gt;    
+<pre name="code" class="c++">
+    #import &lt;RestKit/RestKit.h&gt;
     #import &lt;RestKit/CoreData/CoreData.h&gt;// If you are using Core Data&#8230;
 </pre>
 <p>
@@ -130,7 +130,7 @@ NSLog(@"I am your RKClient singleton : %@", [RKClient sharedClient]);
   [[RKClient client] delete:@"/missing_resource.txt" delegate:self];
 }
 
-- (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response {  
+- (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response {
   if ([request isGET]) {
     // Handling GET /foo.xml
 
@@ -141,7 +141,7 @@ NSLog(@"I am your RKClient singleton : %@", [RKClient sharedClient]);
 
   } else if ([request isPOST]) {
 
-    // Handling POST /other.json        
+    // Handling POST /other.json
     if ([response isJSON]) {
       NSLog(@"Got a JSON response back from our POST!");
     }
@@ -206,7 +206,7 @@ NSLog(@"I am your RKClient singleton : %@", [RKClient sharedClient]);
   return [NSDictionary dictionaryWithKeysAndObjects:
           @"id", @"identifier",
           @"name", @"name",
-          @"company", @"company", 
+          @"company", @"company",
           nil];
 }
 
@@ -278,7 +278,7 @@ NSLog(@"I am your RKClient singleton : %@", [RKClient sharedClient]);
 - (void)updateObject {
   Contact* blake = [Contact object];
   blake.identifier = [NSNumber numberWithInt:1];
-  blake.name = @"Blake Watters"; 
+  blake.name = @"Blake Watters";
   blake.company = @"RestKit";
 
   // PUT to /contacts/1
@@ -353,7 +353,7 @@ manager.router = router;
 [router routeClass:[Comment class] toResourcePath:@"/articles/(article.articleID)/comments" forMethod:RKRequestMethodPOST];
 
 // Let's create an Article
-Article* article = [Article object]; 
+Article* article = [Article object];
 article.title = @"Foo";
 article.body = @"This is the body";
 

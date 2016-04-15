@@ -144,27 +144,27 @@
         dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
         dateFormatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss z";
-        
+
         NSCalendar * const calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         calendar.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
-        
+
         NSDate * const sourceDate = [calendar dateFromComponents:dateComponents];
         NSString * const sourceString = [dateFormatter stringFromDate:sourceDate];
         NSDate * const destdate = RKDateFromHTTPDateString(sourceString);
         expect(destdate).to.equal(sourceDate);
     };
-    
+
     NSDateComponents * const dateComponents = [[NSDateComponents alloc] init];
     dateComponents.hour = 0; dateComponents.minute = 0; dateComponents.second = 0;
-    
+
     // epoch
     dateComponents.year = 1970; dateComponents.month = 1; dateComponents.day = 1;
     testBlock(dateComponents);
-    
+
     // pre epoc
     dateComponents.year = 1969; dateComponents.month = 1; dateComponents.day = 27;
     testBlock(dateComponents);
-    
+
     // release of U2's Achtung Baby album
     dateComponents.year = 1991; dateComponents.month = 11; dateComponents.day = 18;
     dateComponents.hour = 12; dateComponents.minute = 34; dateComponents.second = 56;
@@ -185,9 +185,9 @@
     	@"Cache-Control" : [NSString stringWithFormat:@"public, max-age=%d", maxAge],
         @"Date" : [dateFormatter stringFromDate:date]
     }];
-    
+
     expect(RKHTTPCacheExpirationDateFromHeadersWithStatusCode(headers, 200)).to.equal([date dateByAddingTimeInterval:maxAge]);
-    
+
     [headers setObject:[NSNumber numberWithInteger:(maxAge + 60)] forKey:@"Age"];
     expect(RKHTTPCacheExpirationDateFromHeadersWithStatusCode(headers, 200)).to.beLessThan(NSDate.date);
 

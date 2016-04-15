@@ -6,10 +6,10 @@ This document details the design of object mapping in RestKit as of version 0.9.
 
 RestKit's key differentiating feature from other HTTP toolkits in the iOS space is the
 tightly integrated support for object mapping. Object mapping is the process of taking a representation
-of data in one format and transforming it into another form. This mechanism is used extensively within 
+of data in one format and transforming it into another form. This mechanism is used extensively within
 RestKit to streamline the serialization and deserialization of resources exchanged with a remote
-backend application server via HTTP. Object mapping operations are performed when you load a remote 
-resource via an instance of `RKObjectManager` and when a local object is sent to the backend for processing. 
+backend application server via HTTP. Object mapping operations are performed when you load a remote
+resource via an instance of `RKObjectManager` and when a local object is sent to the backend for processing.
 
 ### Key-Value Coding
 
@@ -22,7 +22,7 @@ grasp on KVC.
 
 ## Object Mapping by Example
 
-To understand the object mapping subsystem of RestKit, let's consider an example. Imagine that we are building an app 
+To understand the object mapping subsystem of RestKit, let's consider an example. Imagine that we are building an app
 that loads a collection of news articles from a remote system. Each article has a title, a body,
 an author, and a publication date. We expect our JSON to come back something like this:
 
@@ -56,8 +56,8 @@ class to hold this data that looks like the following:
 Our goal is to leverage RestKit's object mapping capabilities to turn the above JSON into an array of Article instances. To make
 this happen, we must first become familiar with a few RestKit classes:
 
-1. **RKObjectMapping**: An object mapping defines the rules for transforming a parsed data payload into a local domain object. 
-Each object mapping is composed of a collection of attribute and relationship mappings that define how to transform key paths in the 
+1. **RKObjectMapping**: An object mapping defines the rules for transforming a parsed data payload into a local domain object.
+Each object mapping is composed of a collection of attribute and relationship mappings that define how to transform key paths in the
 source data into properties on the local object.
 1. **RKObjectMappingProvider**: The object mapping provider defines the rules for what key paths in a loaded set of data correspond to
 an object mapping.
@@ -77,7 +77,7 @@ RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article clas
 Let's consider what we've done here. In the first line, we created an instance of `RKObjectMapping` defining a mapping
 for the `Article` class. We then configured the mapping to define rules for transforming data within the parsed payload to attributes
 on an instance of `Article`. Finally, we instructed the mapping provider to use `articleMapping` whenever it encounters data at the `@"articles"`
-key path. 
+key path.
 
 Now that we have configured our object mapping, we can load this collection:
 
@@ -124,10 +124,10 @@ means that we would generate two object mapping operations:
 `mapKeyPath:toAttribute:` are now evaluated against the dictionary. RestKit will invoke `valueForKeyPath:@"title"`, `valueForKeyPath:@"body"`,
 `valueForKeyPath:@"author"`, and `valueForKeyPath:@"publication_date"` against the dictionary to determine if there is any data available for
 mapping. If any data is found, it will set the data on the target object by invoking `setValue:forKeyPath:`. In the above example, RestKit will
-find the data for the title via `valueForKeyPath:@"title"` and then set the title attribute of our Article object to 
+find the data for the title via `valueForKeyPath:@"title"` and then set the title attribute of our Article object to
 "RestKit Object Mapping Intro" and "RestKit 1.0 Released", respectively. This process is repeated for all the attributes and relationships
 defined in the object mapping. It is worth noting that although the key paths are often symmetrical between the source and destination objects
-(i.e. mapping a title to a title), they do not have to be and you can store your data in more logical or idiomatic names as appropriate (i.e. 
+(i.e. mapping a title to a title), they do not have to be and you can store your data in more logical or idiomatic names as appropriate (i.e.
 we mapped `publication_date` to `publicationDate` so that it fits better with Cocoa naming conventions).
 
 From this example, it should now be clear that object mapping can be thought of as a declarative, key-value coding chainsaw for your JSON/XML
@@ -170,7 +170,7 @@ various use-cases of object mapping in turn with brief discussion and code sampl
 One of the notable features of object mapping is that it infers a great deal of information about your intentions by leveraging the dynamic
 features of the Objective-C runtime. RestKit will examine the source and destination types of your attribute at mapping time and perform a
 variety of type transformations for you. This feature eliminates a great deal of glue code that you would otherwise have to write if you
-were assigning a parsed data structure to your object model manually. The following table enumerates a number of available transformations 
+were assigning a parsed data structure to your object model manually. The following table enumerates a number of available transformations
 from a source type to a destination type that are automatically applied when you define an attribute mapping:
 
 <table>
@@ -305,12 +305,12 @@ mapping and assign the mapped collection back to the destination property.
 Until now we have been concerned with loading remote object representations into our applications and mapping them into local objects. RestKit also supports
 an object mapping powered mechanism for serializing local objects into a textual format for submission back to your backend system for processing. This facility
 is provided by the `RKObjectSerializer` class. It is important to note that serialization is just another object mapping operation -- it leverages the same core
-engine that is used to map parsed objects into local domain objects. The fundamental difference is that the target output of a serialization operation is an 
+engine that is used to map parsed objects into local domain objects. The fundamental difference is that the target output of a serialization operation is an
 NSMutableDictionary. The attributes and relationships of your local domain objects are mapped into an intermediate dictionary implementation so that they can
 then be run through an encoder to produce URL Form Encoded or JSON data to be sent in the body of the request.
 
 Enough theory, let's take a look at how we configure object serialization. In addition to its duties in providing the object mapper with mappings for key paths,
-`RKObjectMappingProvider` has a secondary responsibility of providing the appropriate mapping for serializing an object of a given type. There are a couple of 
+`RKObjectMappingProvider` has a secondary responsibility of providing the appropriate mapping for serializing an object of a given type. There are a couple of
 options for configuring serialization that are best understood through code:
 
 ```objc
@@ -322,7 +322,7 @@ RKObjectMapping* articleSerializationMapping = [RKObjectMapping mappingForClass:
 [[RKObjectManager sharedManager].mappingProvider setSerializationMapping:articleSerializationMapping forClass:[Article class]];
 ```
 
-We have now built an object mapping that can take our local `Article` objects and turn them back into `NSMutableDictionary` instances and 
+We have now built an object mapping that can take our local `Article` objects and turn them back into `NSMutableDictionary` instances and
 we have told the mapping provider how the mapping and classes are related. Life is good -- let's see how it comes into play in the app:
 
 ```objc
@@ -333,7 +333,7 @@ article.body = @"RestKit is pretty cool. This is kinda slick.";
 [[RKObjectManager sharedManager] postObject:article delegate:self];
 ```
 
-So how do these pieces connect, you may be asking? When we use postObject:, we are essentially asking RestKit to create and perform an 
+So how do these pieces connect, you may be asking? When we use postObject:, we are essentially asking RestKit to create and perform an
 object serialization on our behalf. Behind the scenes, the following things have just happened:
 
 1. `RKObjectManager` initializes an `RKObjectLoader` instance with a sourceObject property targeting our article object.
@@ -364,7 +364,7 @@ Because serialization uses `NSMutableDictionary` as the intermediate format, new
 down the line without major changes to the serializer. We'll examine how this all works in greater depth in the `RKParser` discussion.
 
 Something else you may have noticed when configuring the serialization mapping is that most of the time our serialization mappings are extremely similar
-to our object mappings -- except the source and destination key paths are reversed and the destination class is always `NSMutableDictionary`. RestKit 
+to our object mappings -- except the source and destination key paths are reversed and the destination class is always `NSMutableDictionary`. RestKit
 understands and recognizes this relationship between our mappings and provides some extremely convenient shortcuts for configuring serialization:
 
 ```objc
@@ -378,9 +378,9 @@ RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article clas
 // Build a serialization mapping by inverting our object mapping. Includes attributes and relationships
 RKObjectMapping* articleSerializationMapping = [articleMapping inverseMapping];
 // You can customize the mapping here as necessary -- adding/removing mappings
-[[RKObjectManager sharedManager].mappingProvider setSerializationMapping:articleSerializationMapping forClass:[Article class]]; 
+[[RKObjectManager sharedManager].mappingProvider setSerializationMapping:articleSerializationMapping forClass:[Article class]];
 ```
-    
+
 ### Mapping without KVC
 
 As should be obvious by now, RestKit is a big believer in KVC and offers a very seamless workflow if your JSON conforms
@@ -451,7 +451,7 @@ We have configured a serialization mapping for the object and want to fetch our 
     query.searchTerm = @"Monkey";
     query.pageNumber = [NSNumber numberWithInt:5];
     query.yearPublished = [NSNumber numberWithInt:2011];
-    
+
     RKObjectMapping* articleMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Article class]];
     [[RKObjectManager sharedManager] postObject:query mapResponseWith:articleMapping delegate:self];
 }
@@ -466,19 +466,19 @@ appropriate object mapping for you:
 ```
 
 This will cause RestKit to search the mapping provider for the first registered mapping targeting the `Article` class and configure the
-object loader to map the results with that mapping. This is provided as a convenience for users who cannot use KVC mappings and is disabled by 
+object loader to map the results with that mapping. This is provided as a convenience for users who cannot use KVC mappings and is disabled by
 default.
 
 ### Core Data
 
 Until now we have focused on transient objects within RestKit. For many applications transient objects are completely the right choice --
-if your data set is constantly changing and your use-cases can rely on the availability of network access, using transient objects is a 
+if your data set is constantly changing and your use-cases can rely on the availability of network access, using transient objects is a
 simpler, easier way forward. But for some applications, you really need the full power of a queryable, persistent object model for performance,
 flexibility, offline access, etc. Apple has provided a great solution in Core Data. RestKit integrates with Core Data to bridge the gap between
 your remote server backend and your local object model. Since Core Data managed objects are KVC compliant, we get much of the integration "for free".
 But there are some Core Data specific steps and features that you must understand to leverage the persistence.
 
-First off, when you begin using Core Data you must import the Core Data headers, then configure an object store and connect it your object manager. 
+First off, when you begin using Core Data you must import the Core Data headers, then configure an object store and connect it your object manager.
 The object store is a RestKit component that handles the details of setting of a Core Data environment that is backed with a SQLite database. Let's
 take a look at how this works:
 
@@ -492,7 +492,7 @@ objectManager.objectStore = objectStore;
 
 Now that we have set up the object store, we can configure persistent mappings. Let's say that we want to take our familiar Article object
 and make it persistent. You'll have to create a Core Data Managed Object Model and add it to your project. The configuration is outside the
-scope of this document, but there are great resources about how this works all over the net. Having done that, we'll update the Article 
+scope of this document, but there are great resources about how this works all over the net. Having done that, we'll update the Article
 interface & implementation, then configure a managed object mapping:
 
 ```objc
@@ -532,7 +532,7 @@ a string (i.e. a UUID or permalink).
 we'd see a fragment like `"id": 12345` added to the dictionary for each Article.
 1. We have a new property set on the articleMapping: `primaryKeyAttribute`. This property is significant because it helps RestKit
 understand how to uniquely identify your objects and perform intelligently update existing instances. The primaryKeyAttribute is used
-to look up an existing object instance by server-side primary key and map updates onto that object instance. If you do not specify a 
+to look up an existing object instance by server-side primary key and map updates onto that object instance. If you do not specify a
 primaryKeyAttribute, then you will get new objects created every time you trigger object mapping.
 
 ### Handling Dynamic Nesting Attributes
@@ -582,12 +582,12 @@ There is also a subtlety with nesting mappings and collections like this:
 
 ```json
 {
-  "blake": {        
-    "email": "blake@restkit.org",        
-    "favorite_animal": "Monkey"    
-  },    
+  "blake": {
+    "email": "blake@restkit.org",
+    "favorite_animal": "Monkey"
+  },
   "sarah": {
-    "email": "sarah@restkit.org",   
+    "email": "sarah@restkit.org",
     "favorite_animal": "Cat"
   }
 }
@@ -609,20 +609,20 @@ Thus far we have examined clear-cut cases where the appropriate object mapping c
 key path or by the developer directly providing the mapping. Sometimes it is desirable to dynamically determine the appropriate
 object mapping to use at mapping time. Perhaps we have a collection of objects with identical attribute names, but we wish
 to represent them differently. Or maybe we are loading a collection of objects that are not KVC compliant, but contain a mixture
-of types that we would like to model. RestKit supports such use cases via the RKDynamicObjectMapping class. 
+of types that we would like to model. RestKit supports such use cases via the RKDynamicObjectMapping class.
 RKDynamicObjectMapping is a sibling class to RKObjectMapping and can be added to instances of RKObjectMappingProvider and
 used to configure RKObjectMappingOperation instances. RKDynamicObjectMapping allows you to hook into the mapping process
-and determine an appropriate RKObjectMapping to use on a per-object basis. 
+and determine an appropriate RKObjectMapping to use on a per-object basis.
 
 When RestKit is performing a mapping operation and the current mapping being applied is an RKDynamicObjectMapping instance,
-the dynamic mapping will be sent the `objectMappingForDictionary:` message with the NSDictionary that is currently being 
+the dynamic mapping will be sent the `objectMappingForDictionary:` message with the NSDictionary that is currently being
 mapped. The dynamic mapping is responsible for introspecting the contents of the dictionary and returning an RKObjectMapping
 instance that can be used to map the data into a concrete object.
 
 There are three ways in which the determination of the appropriate object mapping can be made:
 
 1. Via a declarative matcher on an attribute within the mappable data. If your dynamic data contains an attribute that can
-be used to infer the appropriate object type, then you are in luck -- RestKit can handle the dynamic mapping via simple 
+be used to infer the appropriate object type, then you are in luck -- RestKit can handle the dynamic mapping via simple
 configuration.
 2. Via a delegate callback. If your data requires some special analysis or you want to dynamically construct an object mapping
 to handle the data, you can assign a delegate to the RKDynamicObjectMapping and you will be called back to perform whatever
@@ -656,7 +656,7 @@ To illustrate these concepts, let's consider the following JSON fragment:
 }
 ```
 
-In this JSON we have a dictionary containing an array of people at the "people" key path. We want to map each of the 
+In this JSON we have a dictionary containing an array of people at the "people" key path. We want to map each of the
 people within that collection into different classes: `Boy` and `Girl`. Our meaningful attributes are the name and
 the friends, which is itself a dynamic collection of people. The `type` attribute will be used to determine what
 the appropriate destination mapping and class will be. Let's set it up:
@@ -692,7 +692,7 @@ dynamicMapping.delegate = self;
             [mapping mapAttributes:@"name", nil];
         }];
     }
-    
+
     return nil;
 }
 
@@ -703,7 +703,7 @@ dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) 
     } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
         return girlMapping;
     }
-    
+
     return nil;
 }];
 ```
@@ -711,7 +711,7 @@ dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) 
 Notable within this code are the calls to `setObjectMapping:whenValueOfKeyPath:isEqualTo:`. This is the declarative
 matcher form of dynamic configuration. When you use these matchers, RestKit will invoke `valueForKeyPath:` on your
 mappable data and then attempt to compare the resulting value with the value provided in the invocation. If you have
-a simple string or numeric value that can be used to differentiate your mappings, then you don't need to use the 
+a simple string or numeric value that can be used to differentiate your mappings, then you don't need to use the
 delegate or block callbacks at all to perform dynamic mapping.
 
 That's all there is to it. RestKit will invoke the dynamic mapping with the data and apply whatever object
@@ -728,7 +728,7 @@ workflow. Using KVC validation, you can:
 1. Fail out the mapping operation using custom logic.
 
 Unlike the vast majority of the work we have done thus far, key-value validation is performed by adding methods onto your model class. KVC validation is
-a standard part of the Cocoa stack, but must be manually invoked on NSObject's. It is always performed for you on Core Data 
+a standard part of the Cocoa stack, but must be manually invoked on NSObject's. It is always performed for you on Core Data
 managed object when the managed object context is saved. RestKit provides KVC validation for you when object mapping is taking place.
 
 Let's take a look at how you can leverage key-value validation to perform the above three tasks on our familiar Article object:
@@ -746,17 +746,17 @@ Let's take a look at how you can leverage key-value validation to perform the ab
     if ([(NSNumber*)ioValue intValue] == 0) {
         return NO;
     }
-    
+
     return YES;
 }
- 
+
 - (BOOL)validateBody:(id *)ioValue error:(NSError **)outError {
     // If the body is blank, return NO and fail out the operation.
     if ([(NSString*)ioValue length] == 0) {
         *outError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
         return NO;
     }
-    
+
     return YES;
 }
 @end
@@ -783,7 +783,7 @@ defining how attributes in a particular mappable object should be mapped onto th
 specifying how to map nested object structures into one-to-one or one-to-many relationships. Object mappings are registered with the
 mapping provider to define rules for mapping and serializing objects.
 - **RKObjectAttributeMapping** - Defines a mapping from a source keyPath to a destination keyPath within an object mapping
-definition. For example, defines a rule that the NSString attribute at the `created_at` keyPath maps to the NSString property at 
+definition. For example, defines a rule that the NSString attribute at the `created_at` keyPath maps to the NSString property at
 the `createdAt` keyPath on the destination object.
 - **RKObjectRelationshipMapping** - A subclass of `RKObjectAttributeMapping` that defines a mapping to a related mappable object.
 Includes an objectMapping property defining the rules for mapping the related object. Used for transforming nested arrays and dictionaries into
@@ -795,7 +795,7 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
 operations for all relationships and continues on until a full object graph has been constructed according to the mapping rules.
 - **RKObjectMappingResult** - When `RKObjectMapper` has finished its work, it will either return nil to indicate an unrecoverable error occurred or
 will return an instance of `RKObjectMappingResult`. The mapping result enables you to coerce the mapped results into the format you wish to work with.
-The currently available result coercions are: 
+The currently available result coercions are:
     1. `asObject` - Return the result as a single object. Useful when you know you have mapped a single object back (i.e. used `postObject`).
     1. `asCollection` - Return the result as a collection of mapped objects. This will take all the mapped keyPaths and combine all mapped objects
         under those keyPaths and return it as a single array of objects.
@@ -849,7 +849,7 @@ RKObjectRelationshipMapping* articleCommentsMapping = [RKObjectRelationshipMappi
 // Configuration using helper methods
 [mapping mapRelationship:@"comments" withMapping:commentMapping];
 [mapping hasMany:@"comments" withMapping:commentMapping];
-[mapping belongsTo:@"user" withMapping:userMapping];    
+[mapping belongsTo:@"user" withMapping:userMapping];
 
 // Register the mapping with the object manager
 [objectManager.mappingProvider setMapping:mapping forKeyPath:@"article"];
@@ -881,7 +881,7 @@ RKManagedObjectMapping* articleMapping = [RKObjectMapping objectMappingForClass:
 RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/articles" delegate:self];
 
 /**
- The object mapper will try to determine the mappings by examining keyPaths in the loaded payload. If 
+ The object mapper will try to determine the mappings by examining keyPaths in the loaded payload. If
  the payload contains a dictionary with data at the 'articles' key, it will be mapped
  */
 ```

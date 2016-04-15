@@ -107,13 +107,13 @@
 
     NSURL *URL = [importer.persistentStore.persistentStoreCoordinator URLForPersistentStore:importer.persistentStore];
     return [URL path];
- 
+
  */
 @property (nonatomic, strong, readonly) NSString *storePath;
 
 /**
  A class that conforms to the `RKManagedObjectCaching` protocol that should be used when performing the import.
- 
+
  **Default**: An instance of `RKInMemoryManagedObjectCache`.
  */
 @property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;

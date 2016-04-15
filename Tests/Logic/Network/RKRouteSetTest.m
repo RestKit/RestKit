@@ -363,7 +363,7 @@
     RKRouteSet *router = [RKRouteSet new];
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/1" method:RKRequestMethodGET | RKRequestMethodHEAD]];
     [router addRoute:[RKRoute routeWithClass:[RKTestObject class] pathPattern:@"/users/:userID/2" method:RKRequestMethodAny]];
-    
+
     RKTestSubclassedObject *subclassed = [RKTestSubclassedObject new];
     RKRoute *route = [router routeForObject:subclassed method:RKRequestMethodGET];
     assertThat(route, is(notNilValue()));

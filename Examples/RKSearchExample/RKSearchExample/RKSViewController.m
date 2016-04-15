@@ -22,10 +22,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     RKManagedObjectStore *managedObjectStore = [(RKSAppDelegate *)[UIApplication sharedApplication].delegate managedObjectStore];
     self.managedObjectContext = managedObjectStore.mainQueueManagedObjectContext;
-    
+
     NSError *error = nil;
     self.fetchedResultsController = [self newFetchedResultsController];
     BOOL success = [self.fetchedResultsController performFetch:&error];
@@ -53,7 +53,7 @@
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
         return [[self.searchFetchedResultsController sections] count];
     }
-    
+
     return NSNotFound;
 
 }
@@ -62,17 +62,17 @@
 {
     if (tableView == self.tableView) {
         return [[[self.fetchedResultsController sections] objectAtIndex:section] numberOfObjects];
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {        
+    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
         return [[[self.searchFetchedResultsController sections] objectAtIndex:section] numberOfObjects];
     }
-    
+
     return NSNotFound;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"ContactCell";
-    
+
     UITableViewCell *cell = nil;
     if ([tableView isEqual:self.tableView]) {
         cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
@@ -82,7 +82,7 @@
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:cellIdentifier];
         }
     }
-    
+
     NSManagedObject *managedObject = nil;
     if (tableView == self.tableView) {
         managedObject = [_fetchedResultsController objectAtIndexPath:indexPath];
@@ -91,7 +91,7 @@
     }
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", [managedObject valueForKey:@"firstName"], [managedObject valueForKey:@"lastName"]];
     cell.detailTextLabel.text = [managedObject valueForKey:@"phoneNumber"];
-    
+
     return cell;
 }
 
@@ -133,7 +133,7 @@
     self.searchFetchedResultsController.fetchRequest.predicate = predicate;
     NSError *error = nil;
     [self.searchFetchedResultsController performFetch:&error];
-    
+
     return YES;
 }
 

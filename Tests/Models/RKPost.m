@@ -17,7 +17,7 @@
     if ((*ioValue == nil) || ([[(NSString*)*ioValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""])) {
         return NO;
     }
-    
+
     return YES;
 }
 

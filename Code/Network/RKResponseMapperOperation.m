@@ -63,7 +63,7 @@ static NSIndexSet *RKErrorStatusCodes()
     dispatch_once(&onceToken, ^{
         errorStatusCodes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(400, 200)];
     });
-    
+
     return errorStatusCodes;
 }
 
@@ -73,7 +73,7 @@ static NSError *RKUnprocessableErrorFromResponse(NSHTTPURLResponse *response)
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
     [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable error response (%ld)", (long) response.statusCode] forKey:NSLocalizedDescriptionKey];
     [userInfo setValue:[response URL] forKey:NSURLErrorFailingURLErrorKey];
-    
+
     return [[NSError alloc] initWithDomain:RKErrorDomain code:NSURLErrorBadServerResponse userInfo:userInfo];
 }
 
@@ -83,13 +83,13 @@ static NSString *RKMatchFailureDescriptionForResponseDescriptorWithResponse(RKRe
     if (responseDescriptor.statusCodes && ![responseDescriptor.statusCodes containsIndex:response.statusCode]) {
         return [NSString stringWithFormat:@"response status code %ld is not within the range %@", (long) response.statusCode, RKStringFromIndexSet(responseDescriptor.statusCodes)];
     }
-    
+
     NSString *pathAndQueryString = RKPathAndQueryStringFromURLRelativeToURL(response.URL, responseDescriptor.baseURL);
     if (responseDescriptor.baseURL && !RKURLIsRelativeToURL(response.URL, responseDescriptor.baseURL)) {
         // Not relative to the baseURL
         return [NSString stringWithFormat:@"response URL '%@' is not relative to the baseURL '%@'.", response.URL, responseDescriptor.baseURL];
     }
-    
+
     // Must be a path pattern mismatch
     return [NSString stringWithFormat:@"response path '%@' did not match the path pattern '%@'.", pathAndQueryString, responseDescriptor.pathPattern];
 }
@@ -99,14 +99,14 @@ static NSString *RKFailureReasonErrorStringForResponseDescriptorsMismatchWithRes
     NSMutableString *failureReason = [NSMutableString string];
     [failureReason appendFormat:@"A %ld response was loaded from the URL '%@', which failed to match all (%ld) response descriptors:",
      (long) response.statusCode, response.URL, (long) [responseDescriptors count]];
-    
+
     for (RKResponseDescriptor *responseDescriptor in responseDescriptors) {
         [failureReason appendFormat:@"\n  <RKResponseDescriptor: %p baseURL=%@ pathPattern=%@ statusCodes=%@> failed to match: %@",
          responseDescriptor, responseDescriptor.baseURL, responseDescriptor.pathPattern,
          responseDescriptor.statusCodes ? RKStringFromIndexSet(responseDescriptor.statusCodes) : responseDescriptor.statusCodes,
          RKMatchFailureDescriptionForResponseDescriptorWithResponse(responseDescriptor, response)];
     }
-    
+
     return failureReason;
 }
 
@@ -119,7 +119,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
     dispatch_once(&onceToken, ^{
         serializationQueue = dispatch_queue_create("org.restkit.response-mapper.serialization", DISPATCH_QUEUE_SERIAL);
     });
-    
+
     return serializationQueue;
 }
 
@@ -163,7 +163,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     if (dataSourceClass && ![(Class)dataSourceClass conformsToProtocol:@protocol(RKMappingOperationDataSource)]) {
         [NSException raise:NSInvalidArgumentException format:@"Registered data source class '%@' does not conform to the `RKMappingOperationDataSource` protocol.", NSStringFromClass(dataSourceClass)];
     }
-    
+
     if (dataSourceClass) {
         RKRegisteredResponseMapperOperationDataSourceClasses[(id<NSCopying>)self] = dataSourceClass;
     } else {
@@ -171,7 +171,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     }
 }
 
-#pragma mark 
+#pragma mark
 
 - (instancetype)init
 {
@@ -189,7 +189,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     NSParameterAssert(request);
     NSParameterAssert(response);
     NSParameterAssert(responseDescriptors);
-    
+
     self = [super init];
     if (self) {
         self.request = request;
@@ -213,7 +213,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     __block id object;
     dispatch_sync(RKResponseMapperSerializationQueue(), ^{
         object = [RKMIMETypeSerialization objectFromData:self.data MIMEType:MIMEType error:&underlyingError];
-    });    
+    });
     if (! object) {
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
         [userInfo setValue:[NSString stringWithFormat:@"Loaded an unprocessable response (%ld) with content type '%@'", (long) self.response.statusCode, MIMEType]
@@ -251,7 +251,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     for (RKResponseDescriptor *responseDescriptor in self.matchingResponseDescriptors) {
-        
+
         NSDictionary *arguments = [responseDescriptor parsedArgumentsFromResponse:self.response];
         if (arguments)
         {
@@ -267,7 +267,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
             }
         }
     }
-    
+
     return dictionary;
 }
 
@@ -294,7 +294,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     NSDictionary *HTTPMetadata = @{ @"HTTP": @{ @"request":  @{ @"URL": self.request.URL, @"method": self.request.HTTPMethod, @"headers": [self.request allHTTPHeaderFields] ?: @{} },
                                                 @"response": @{ @"URL": self.response.URL, @"headers": [self.response allHeaderFields] ?: @{} } } };
     _mappingMetadata = RKDictionaryByMergingDictionaryWithDictionary(HTTPMetadata, mappingMetadata);
-    
+
     if (self.responseMappingArgumentsDictionary)
     {
         NSDictionary *argumentsMetadata = @{ @"network" : @{ @"arguments" : self.responseMappingArgumentsDictionary } };
@@ -305,10 +305,10 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 - (void)cancel
 {
     BOOL cancelledBeforeExecution = ![self isExecuting] && ![self isCancelled];
-    
+
     [super cancel];
     [self.mapperOperation cancel];
- 
+
     // NOTE: If we are cancelled before being started, then `main` and the `completionBlock` are never executed. We must ensure that we invoke `didFinishMappingBlock`, see Github issue #1494
     if (cancelledBeforeExecution) {
         [self willFinish];
@@ -318,7 +318,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
 - (void)willFinish
 {
     if (self.isCancelled && !self.error) self.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:@{ NSLocalizedDescriptionKey: @"The operation was cancelled." }];
-    
+
     @synchronized(self) {
         if (self.didFinishMappingBlock) {
             if (self.error) self.didFinishMappingBlock(nil, self.error);
@@ -333,7 +333,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     if (self.isCancelled) return [self willFinish];
 
     BOOL isErrorStatusCode = [RKErrorStatusCodes() containsIndex:self.response.statusCode];
-    
+
     // If we are an error response and empty, we emit an error that the content is unmappable
     if (isErrorStatusCode && [self hasEmptyResponse]) {
         self.error = RKUnprocessableErrorFromResponse(self.response);
@@ -365,8 +365,8 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
         [self willFinish];
         return;
     }
-    if (self.isCancelled) return [self willFinish];        
-    
+    if (self.isCancelled) return [self willFinish];
+
     // Invoke the will map deserialized response block
     if (self.willMapDeserializedResponseBlock) {
         parsedBody = self.willMapDeserializedResponseBlock(parsedBody);
@@ -380,8 +380,8 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     }
 
     // Object map the response
-    self.mappingResult = [self performMappingWithObject:parsedBody error:&error];    
-    
+    self.mappingResult = [self performMappingWithObject:parsedBody error:&error];
+
     // If the response is a client error return either the mapping error or the mapped result to the caller as the error
     if (isErrorStatusCode) {
         if ([self.mappingResult count] > 0) {
@@ -394,7 +394,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
         [self willFinish];
         return;
     }
-    
+
     // Fail if no response descriptors matched
     if (error.code == RKMappingErrorNotFound && [self.responseMappingsDictionary count] == 0) {
         NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: NSLocalizedString(@"No response descriptors match the response loaded.", nil),
@@ -407,8 +407,8 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
         [self willFinish];
         return;
     }
-    
-    if (! self.mappingResult) self.error = error;    
+
+    if (! self.mappingResult) self.error = error;
     [self willFinish];
 }
 
@@ -478,7 +478,7 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         self.mapperOperation = [[RKMapperOperation alloc] initWithRepresentation:sourceObject mappingsDictionary:self.responseMappingsDictionary];
         self.mapperOperation.delegate = self.mapperDelegate;
         self.mapperOperation.metadata = self.mappingMetadata;
-        
+
         // Configure a data source to defer execution of connection operations until mapping is complete
         Class dataSourceClass = RKRegisteredResponseMapperOperationDataSourceClasses[[self class]] ?: [RKManagedObjectMappingOperationDataSource class];
         RKManagedObjectMappingOperationDataSource *dataSource = [[dataSourceClass alloc] initWithManagedObjectContext:self.managedObjectContext
@@ -489,7 +489,7 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         [self.operationQueue setMaxConcurrentOperationCount:1];
         [self.operationQueue setName:[NSString stringWithFormat:@"Relationship Connection Queue for '%@'", self.mapperOperation]];
         self.mapperOperation.mappingOperationDataSource = dataSource;
-        
+
         if (NSLocationInRange(self.response.statusCode, RKStatusCodeRangeForClass(RKStatusCodeClassSuccessful))) {
             self.mapperOperation.targetObject = self.targetObject;
 
@@ -519,14 +519,14 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
         blockError = self.mapperOperation.error;
         mappingResult = self.mapperOperation.mappingResult;
     }];
-    
+
     if (self.isCancelled) return nil;
 
     if (! mappingResult) {
         if (error) *error = blockError;
         return nil;
     }
-    
+
     // Mapping completed without error, allow the connection operations to execute
     if ([self.operationQueue operationCount]) {
         RKLogTrace(@"Awaiting execution of %ld enqueued connection operations: %@", (long) [self.operationQueue operationCount], [self.operationQueue operations]);

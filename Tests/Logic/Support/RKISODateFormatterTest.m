@@ -20,15 +20,15 @@
     RKISO8601DateFormatter *formatter = [[RKISO8601DateFormatter alloc] init];
     [formatter setIncludeTime:YES];
     [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]]; // UTC
-    
+
     NSDateFormatter *nsformatter = [[NSDateFormatter alloc] init];
     [nsformatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
     [nsformatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]]; // UTC
-    
+
     NSDate *date = [NSDate date];
     NSString *isoFormatted = [formatter stringFromDate:date];
     NSString *nsFormatted = [nsformatter stringFromDate:date];
-    
+
     expect(isoFormatted).to.equal(nsFormatted);
 }
 

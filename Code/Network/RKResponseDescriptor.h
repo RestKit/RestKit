@@ -36,7 +36,7 @@
 
 /**
  Creates and returns a new `RKResponseDescriptor` object.
- 
+
  This method is deprecated. Use `+ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
  method:(RKRequestMethod)method
  pathPattern:(NSString *)pathPattern
@@ -56,7 +56,7 @@
 
 /**
  Creates and returns a new `RKResponseDescriptor` object.
- 
+
  @param mapping The mapping for the response descriptor.
  @param method The HTTP method(s) for which the mapping is to be used.
  @param pathPattern A path pattern that matches against URLs for which the mapping should be used.
@@ -160,11 +160,11 @@
 
 /**
  Returns a dictionary of parsed arguments extracted from the URL of the given response object.
- 
+
  @param response The HTTP response object to compare with the base URL, path pattern, and status codes set of the receiver.
  @return A dictionary of parsed arguments if the response matches the base URL, path pattern, and status codes set of the receiver, else `nil`.
  @see `matchesResponse:`
- 
+
  */
 - (NSDictionary *)parsedArgumentsFromResponse:(NSHTTPURLResponse *)response;
 

@@ -128,12 +128,12 @@
 {
     RKObjectMapping *relationshipMapping1 = [RKObjectMapping mappingForClass:[NSNumber class]];
     RKObjectMapping *relationshipMapping2 = [RKObjectMapping mappingForClass:[NSNumber class]];
-    
+
     RKObjectMapping *mapping1 = [RKObjectMapping mappingForClass:[NSString class]];
     [mapping1 addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"that" withMapping:relationshipMapping1]];;
     RKObjectMapping *mapping2 = [RKObjectMapping mappingForClass:[NSString class]];
     [mapping2 addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"that" withMapping:relationshipMapping2]];;
-    
+
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
 }
 
@@ -265,9 +265,9 @@
     // Map @"Blake" to RKTestUser with name = @"Blake"
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [mapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"name"]];
-    
+
     RKObjectMapping *inverseMapping = [mapping inverseMapping];
-    
+
     RKTestUser *user = [RKTestUser new];
     user.name = @"Blake";
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
@@ -275,7 +275,7 @@
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     [operation start];
-    
+
     expect(operation.destinationObject).to.equal(@{ @"Blake": @{} });
 }
 

@@ -186,7 +186,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     NSAssert(self.responseDescriptors, @"Cannot perform a load with nil response descriptors.");
     NSAssert(! self.objectRequestOperation, @"Cannot perform a load while one is already in progress.");
     self.currentPage = pageNumber;
-    
+
     NSMutableURLRequest *mutableRequest = [self.request mutableCopy];
     mutableRequest.URL = self.URL;
 
@@ -198,7 +198,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         managedObjectRequestOperation.managedObjectCache = self.managedObjectCache;
         managedObjectRequestOperation.fetchRequestBlocks = self.fetchRequestBlocks;
         managedObjectRequestOperation.deletesOrphanedObjects = NO;
-        
+
         self.objectRequestOperation = managedObjectRequestOperation;
     } else {
         self.objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:mutableRequest responseDescriptors:self.responseDescriptors];
@@ -224,7 +224,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         } else {
             RKLogError(@"Paginator perPage set is 0.");
         }
-        
+
         return deserializedResponseBody;
     }];
     [self.objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
@@ -239,7 +239,7 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
         }
     }];
 #pragma clang diagnostic pop
-    
+
     if (self.operationQueue) {
         [self.operationQueue addOperation:self.objectRequestOperation];
     } else {

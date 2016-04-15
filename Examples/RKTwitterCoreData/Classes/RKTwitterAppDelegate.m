@@ -24,7 +24,7 @@
     // Initialize RestKit
     NSURL *baseURL = [NSURL URLWithString:@"https://twitter.com"];
     RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:baseURL];
-    
+
     // HACK: Set User-Agent to Mac OS X so that Twitter will let us access the Timeline
     [objectManager.HTTPClient setDefaultHeader:@"User-Agent" value:[NSString stringWithFormat:@"%@/%@ (Mac OS X %@)", [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleExecutableKey] ?: [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleIdentifierKey], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] ?: [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey], [[NSProcessInfo processInfo] operatingSystemVersionString]]];
 
@@ -81,17 +81,17 @@
     // Uncomment this to use XML, comment it to use JSON
     //  objectManager.acceptMIMEType = RKMIMETypeXML;
     //  [objectManager.mappingProvider setMapping:statusMapping forKeyPath:@"statuses.status"];
-    
+
     // Database seeding is configured as a copied target of the main application. There are only two differences
     // between the main application target and the 'Generate Seed Database' target:
     //  1) RESTKIT_GENERATE_SEED_DB is defined in the 'Preprocessor Macros' section of the build setting for the target
     //      This is what triggers the conditional compilation to cause the seed database to be built
     //  2) Source JSON files are added to the 'Generate Seed Database' target to be copied into the bundle. This is required
-    //      so that the object seeder can find the files when run in the simulator.    
+    //      so that the object seeder can find the files when run in the simulator.
 #ifdef RESTKIT_GENERATE_SEED_DB
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelInfo);
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelTrace);
-    
+
     NSError *error = nil;
     BOOL success = RKEnsureDirectoryExistsAtPath(RKApplicationDataDirectory(), &error);
     if (! success) {
@@ -126,10 +126,10 @@
     NSError *error;
     NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath withConfiguration:nil options:nil error:&error];
     NSAssert(persistentStore, @"Failed to add persistent store with error: %@", error);
-    
+
     // Create the managed object contexts
     [managedObjectStore createManagedObjectContexts];
-    
+
     // Configure a managed object cache to ensure we do not create duplicate objects
     managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
 #endif

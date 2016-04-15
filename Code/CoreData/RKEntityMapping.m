@@ -47,25 +47,25 @@ static NSArray *RKEntityIdentificationAttributesFromUserInfoOfEntity(NSEntityDes
             } else {
                 attributeNames = @[ userInfoValue ];
             }
-            
+
             NSMutableArray *attributes = [NSMutableArray arrayWithCapacity:[attributeNames count]];
             for (NSString *attributeName in attributeNames) {
                 if (! [attributeName isKindOfClass:[NSString class]]) {
                     [NSException raise:NSInvalidArgumentException format:@"Invalid value given in user info key '%@' of entity '%@': expected an `NSString` or `NSArray` of strings, instead got '%@' (%@)", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName, [attributeName class]];
                 }
-                
+
                 NSAttributeDescription *attribute = [[entity attributesByName] valueForKey:attributeName];
                 if (! attribute) {
                     [NSException raise:NSInvalidArgumentException format:@"Invalid identifier attribute specified in user info key '%@' of entity '%@': no attribue was found with the name '%@'", RKEntityIdentificationAttributesUserInfoKey, [entity name], attributeName];
                 }
-                
+
                 [attributes addObject:attribute];
             };
             return attributes;
         }
         entity = [entity superentity];
     } while (entity);
-    
+
     return nil;
 }
 
@@ -111,7 +111,7 @@ static NSArray *RKArrayOfAttributesForEntityFromAttributesOrNames(NSEntityDescri
             [NSException raise:NSInvalidArgumentException format:@"Invalid value provided for entity identifier attribute: Acceptable values are either `NSAttributeDescription` or `NSString` objects."];
         }
     }
-    
+
     return attributes;
 }
 
@@ -123,7 +123,7 @@ NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entit
         RKLogDebug(@"Inferred identification attributes for %@: %@", entity.name, [[identificationAttributes valueForKeyPath:@"name"] componentsJoinedByString:@", "]);
         return identificationAttributes;
     }
-    
+
     NSMutableArray *identifyingAttributes = [RKEntityIdentificationAttributeNamesForEntity(entity) mutableCopy];
     [identifyingAttributes addObjectsFromArray:RKEntityIdentificationAttributeNames()];
     for (NSString *attributeName in identifyingAttributes) {
@@ -207,11 +207,11 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     copy.deletionPredicate = self.deletionPredicate;
     copy.modificationAttribute = self.modificationAttribute;
     copy.mutableConnections = [NSMutableArray array];
-    
+
     for (RKConnectionDescription *connection in self.connections) {
         [copy addConnection:[connection copy]];
     }
-    
+
     return copy;
 }
 
@@ -280,7 +280,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     } else {
         [NSException raise:NSInvalidArgumentException format:@"Connections can only be described using `NSString`, `NSArray`, or `NSDictionary` objects. Instead, got: %@", connectionSpecifier];
     }
-    
+
     [self.mutableConnections addObject:connection];
 }
 

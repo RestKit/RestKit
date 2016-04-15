@@ -36,7 +36,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.managedObjectStore = managedObjectStore;
-    
+
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     human.name = @"Blake Watters";
     human.railsID = [NSNumber numberWithInt:1];
@@ -57,7 +57,7 @@
     [objectLoader send];
     responseLoader.timeout = 60;
     [responseLoader waitForResponse];
-    
+
     assertThatBool([human hasBeenDeleted], equalToBool(YES));
 }
 
@@ -269,7 +269,7 @@
     objectLoader.objectMapping = mapping;
     objectLoader.serializationMapping = [RKObjectMapping serializationMapping];
     [objectLoader.serializationMapping addAttributeMappingsFromArray:@[@"name"]];
-    
+
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContextContext];
     assertThatBool([human.objectID isTemporaryID], is(equalToBool(YES)));
     objectLoader.sourceObject = human;

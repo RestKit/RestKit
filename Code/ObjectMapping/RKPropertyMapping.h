@@ -57,7 +57,7 @@
 
 /**
  Specifies the class used to represent the value of the mapped property. A value of `Nil` (which is the default value) indicates the property class is to be determined by runtime introspection.
- 
+
  In cases where run-time type introspection cannot be performed (such as during object parameterization) you can specify the class used to represent the value of the property being mapped.
  */
 @property (nonatomic, strong) Class propertyValueClass;

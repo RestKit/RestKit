@@ -195,12 +195,12 @@
         RKRoute *bitMaskMatch = nil;
         for (RKRoute *route in routes) {
             if (route.method == method) return route;
-            
+
             // We want to favor bitmask matches separate from the Any wildcard match
             if (route.method == RKRequestMethodAny) wildcardRoute = route;
             else if (route.method & method) bitMaskMatch = route;
         }
-        
+
         if (bitMaskMatch) return bitMaskMatch;
         if (wildcardRoute) return wildcardRoute;
         searchClass = [searchClass superclass];

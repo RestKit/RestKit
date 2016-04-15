@@ -27,7 +27,7 @@
 
 /**
  Returns a dictionary wherein the keys are the names of attribute and relationship properties and the values are the class used to represent the corresponding property for a given entity.
- 
+
  @param entity The entity to retrieve the properties names and classes of.
  @return A dictionary containing the names and classes of the given entity.
  */
@@ -35,7 +35,7 @@
 
 /**
  Returns the class used to represent the property with the given name on the given entity.
- 
+
  @param propertyName The name of the property to retrieve the class for.
  @param entity The entity containing the property to retrieve the class for.
  @return The class used to represent the property.

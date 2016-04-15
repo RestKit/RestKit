@@ -153,10 +153,10 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
         [self.managedObject.managedObjectContext performBlockAndWait:^{
             evaluationResult = [connection.sourcePredicate evaluateWithObject:self.managedObject];
         }];
-        
+
         if (!evaluationResult) return nil;
     }
-    
+
     if ([connection isForeignKeyConnection]) {
         NSDictionary *attributeValues = RKConnectionAttributeValuesWithObject(connection, self.managedObject);
         // If there are no attribute values available for connecting, skip the connection entirely
@@ -172,7 +172,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
             if (connection.destinationPredicate) managedObjects = [managedObjects filteredSetUsingPredicate:connection.destinationPredicate];
             if (!connection.includesSubentities) managedObjects = [managedObjects filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"entity == %@", [connection.relationship destinationEntity]]];
         }];
-        
+
         if ([connection.relationship isToMany]) {
             connectionResult = managedObjects;
         } else {
@@ -202,7 +202,7 @@ static NSDictionary *RKConnectionAttributeValuesWithObject(RKConnectionDescripti
         if (self.isCancelled || isDeleted) return;
         NSString *relationshipName = connection.relationship.name;
         RKLogTrace(@"Connecting relationship '%@' with mapping: %@", relationshipName, connection);
-        
+
         BOOL shouldConnect = YES;
         // TODO: What I need to do is make all of this based on callbacks so I can jump in/out of the MOC queue
         id connectedValue = [self findConnectedValueForConnection:connection shouldConnect:&shouldConnect];

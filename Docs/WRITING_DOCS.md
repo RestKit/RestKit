@@ -1,9 +1,9 @@
 Writing Documentation
 =====================
 
-RestKit utilizes the excellent [Appledoc](http://www.gentlebytes.com/appledoc/) utility from [Gentle Bytes](http://www.gentlebytes.com/). 
+RestKit utilizes the excellent [Appledoc](http://www.gentlebytes.com/appledoc/) utility from [Gentle Bytes](http://www.gentlebytes.com/).
 Appledoc provides a commandline utility for parsing and generating documentation from Objective-C code in HTML and DocSet format. This HTML can be
-published to the Web and installed directly within Xcode. 
+published to the Web and installed directly within Xcode.
 
 To generate meaningful and informative documentation, Appledoc needs support in the form of markup within the header files. This document
 seeks to outline the process for marking up RestKit headers to generate great end-user documentation directly from the source code.
@@ -21,9 +21,9 @@ The tasks available for working with Appledoc are:
 
 ## Writing Documentation
 
-Writing documentation in Appledoc markup is simple. There is extensive documentation available on the [Appledoc project page](https://github.com/tomaz/appledoc), but 
-the guidelines below should be sufficient for basic authoring tasks. For clarity, let's consider the following example class:    
-    
+Writing documentation in Appledoc markup is simple. There is extensive documentation available on the [Appledoc project page](https://github.com/tomaz/appledoc), but
+the guidelines below should be sufficient for basic authoring tasks. For clarity, let's consider the following example class:
+
     /**
      * Demonstrates how to document a RestKit class using Appledoc
      *
@@ -35,16 +35,16 @@ the guidelines below should be sufficient for basic authoring tasks. For clarity
         NSString* _rank;
         NSString* _serialNumber;
     }
-    
+
     /// @name Demonstrates Documentation Task Groups
-    
+
     /**
      * Returns the name of the person in this documentation example
      *
      * This property is *important* and that's why the preceeding text will be bolded
      */
      @property (nonatomic, retain) NSString* name;
-     
+
      /**
       * The rank of this example in the theoretical documentation hierarchy
       *
@@ -56,7 +56,7 @@ the guidelines below should be sufficient for basic authoring tasks. For clarity
       * - Private
       */
      @property (nonatomic, retain) NSString* rank;
-     
+
      /**
       * Serial number for this example, as issued by the Colonial Fleet of the 12 Colonies of Kobol
       *
@@ -64,27 +64,27 @@ the guidelines below should be sufficient for basic authoring tasks. For clarity
       @ @see RKDocumentationSerialNumberGenerator
       */
      @property (nonatomic, retain) NSString* serialNumber;
-     
+
      /**
       * Promotes the example to the rank specified
       *
       * For example: `[exampleObject promoteToRank:@"General"];`
-      * 
+      *
       * @bug This might be broken
       * @param rank The rank to promote the example to
       */
      - (void)promoteToRank:(NSString*)rank;
-     
+
      /**
       * Returns the next rank for this example.
-      * 
+      *
       * @return The next rank this example could be promoted to
       * @exception RKInvalidRankException Raised when there is no current rank
       */
      - (NSString*)nextRank;
-     
+
      @end
-     
+
 1. Documentation blocks must precede the item being documented and begin with a slash and a double star. They must be terminated with a single star and a slash.
 1. The first paragraph forms the short description of the entity being documented.
 1. The second paragraph forms the long description of the entity and can contain an arbitrary number of paragraphs.

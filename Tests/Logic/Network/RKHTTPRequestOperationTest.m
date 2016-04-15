@@ -23,7 +23,7 @@
     requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
     [requestOperation start];
     [requestOperation waitUntilFinished];
-    
+
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"Expected content type {(\n    \"application/json\"\n)}, got application/xml");
 }
@@ -36,7 +36,7 @@
     requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
     [requestOperation start];
     [requestOperation waitUntilFinished];
-    
+
     expect(requestOperation.error).notTo.beNil();
     expect([requestOperation.error localizedDescription]).to.equal(@"Expected status code in (200), got 503");
 }
@@ -50,7 +50,7 @@
     requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
     [requestOperation start];
     [requestOperation waitUntilFinished];
-    
+
     expect(requestOperation.error).to.beNil();
 }
 
@@ -62,7 +62,7 @@
     requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:304];
     [requestOperation start];
     [requestOperation waitUntilFinished];
-    
+
     expect(requestOperation.error).to.beNil();
 }
 
@@ -74,7 +74,7 @@
     requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:204];
     [requestOperation start];
     [requestOperation waitUntilFinished];
-    
+
     expect(requestOperation.error).to.beNil();
 }
 
@@ -86,7 +86,7 @@
     requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:202];
     [requestOperation start];
     [requestOperation waitUntilFinished];
-    
+
     expect(requestOperation.error).to.beNil();
 }
 

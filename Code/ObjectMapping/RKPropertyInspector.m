@@ -101,7 +101,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
         inspection = (self.inspectionCache)[objectClass];
     });
     if (inspection) return inspection;
-    
+
     inspection = [NSMutableDictionary dictionary];
 
     //include superclass properties
@@ -130,7 +130,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
                                     isPrimitive = (typeIdentifierLoc[1] != '@');
                                 }
                             }
-                            
+
                             RKPropertyInspectorPropertyInfo *info;
                             info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:propNameString
                                                                            keyValueClass:aClass
@@ -178,7 +178,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
     NSRange dotRange = [keyPath rangeOfString:@"." options:NSLiteralSearch];
     RKPropertyInspector *inspector = [RKPropertyInspector sharedInspector];
     Class propertyClass = [self class];
-    
+
     if (dotRange.length == 0) {
         return [inspector classForPropertyNamed:keyPath ofClass:propertyClass isPrimitive:isPrimitive];
     }
@@ -188,7 +188,7 @@ NSString * const RKPropertyInspectionIsPrimitiveKey = @"isPrimitive";
         propertyClass = [inspector classForPropertyNamed:property ofClass:propertyClass isPrimitive:isPrimitive];
         if (! propertyClass) break;
     }
-    
+
     return propertyClass;
 }
 

@@ -52,7 +52,7 @@
  ### Mapping the Root Object Representation
 
  A mapping set for the key `[NSNull null]` value has special significance to the mapper operation. When a mapping is encountered with the a null key, the entire `representation` is processed using the given mapping. This provides support for mapping content that does not have an outer nesting attribute.
- 
+
  Note that it is possible to map the same representation with multiple mappings, including a combination of a root key mapping and nested keypaths.
 
  ## Data Source
@@ -156,7 +156,7 @@
 
 /**
  Executes the mapper operation to completion.
- 
+
  @param error A pointer to an `NSError` object to set in the event an error occurs during execution.
  @return A Boolean value that indicates if the operation completed successfully.
  */
@@ -195,7 +195,7 @@
 
 /**
  Tells the delegate that the mapper has been cancelled.
- 
+
  @param mapper The mapper operation that was cancelled.
  */
 - (void)mapperDidCancelMapping:(RKMapperOperation *)mapper;
@@ -217,7 +217,7 @@
  Tells the delegate that the mapper failed to find any mappable object representations at a key path specified in the `mappingsDictionary`.
 
  @param mapper The mapper operation performing the mapping.
- @param keyPath The key path that was searched for a mappable object representation. 
+ @param keyPath The key path that was searched for a mappable object representation.
  */
 - (void)mapper:(RKMapperOperation *)mapper didNotFindRepresentationOrArrayOfRepresentationsAtKeyPath:(NSString *)keyPath;
 

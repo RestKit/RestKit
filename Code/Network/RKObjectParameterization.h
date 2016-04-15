@@ -30,10 +30,10 @@
 ///-------------------------------
 
 /**
- Returns a dictionary representation of the given object by performing object mapping using the mapping 
- from the given request descriptor. If the request descriptor specifies a root key path, the mapped parameters 
+ Returns a dictionary representation of the given object by performing object mapping using the mapping
+ from the given request descriptor. If the request descriptor specifies a root key path, the mapped parameters
  will be nested within the dictionary under the specified root key path.
- 
+
  @param object The object to be parameterized.
  @param requestDescriptor The request descriptor describing how the object is to be mapped into an `NSDictionary` of parameters.
  @param error If there is a problem mapping the parameters, upon return contains a pointer to an instance of `NSError` that describes the problem.

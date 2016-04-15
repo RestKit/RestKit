@@ -22,7 +22,7 @@
 
 /**
  The `RKNSJSONSerialization` class conforms to the `RKSerialization` protocol and provides support for the serialization and deserialization of data in the JSON format using the Apple provided `NSJSONSerialization` class. This is the default JSON implementation for RestKit.
- 
+
  @see http://www.json.org/
  */
 @interface RKNSJSONSerialization : NSObject <RKSerialization>

@@ -69,7 +69,7 @@
 
 /**
  A dictionary keyed by the name of each relationship that was established by the receiver wherein each value is the objects or objects that were connected.
- 
+
  For each key in the dictionary, the value will either be `[NSNull null]`, indicating that the relationship could not be connected, a single `NSManagedObject` object (if the relationship is one-to-one), or an array of `NSManagedObject` objects (if the relationship is one-to-many).
  */
 @property (nonatomic, strong, readonly) NSDictionary *connectedValuesByRelationshipName;
@@ -80,9 +80,9 @@
 
 /**
  Sets a block to be executed on the operation attempted to establish the connection.
- 
+
  Unlike the block set with `setCompletionBlock:`, this block is executed during the body of the operation within the queue of the managed object context in which the connection was established. This means that it is safe to executed both the `connectedValue` and `managedObject` directly within the body of the block.
- 
+
  @param block A block object to be executed when the connection is evaluated. The block accepts two arguments: the operation itself and the value, if any, that was set for the relationship targetted by the connection description.
  */
 - (void)setConnectionBlock:(void (^)(RKRelationshipConnectionOperation *operation, RKConnectionDescription *connection, id connectedValue))block;

@@ -55,13 +55,13 @@
     NSAssert([MIMETypeStringOrRegularExpression isKindOfClass:[NSString class]]
              || [MIMETypeStringOrRegularExpression isKindOfClass:[NSRegularExpression class]],
              @"Can only register a serialization class for a MIME Type by string or regular expression.");
-    
+
     self = [super init];
     if (self) {
         self.MIMETypeStringOrRegularExpression = MIMETypeStringOrRegularExpression;
         self.serializationClass = serializationClass;
     }
-    
+
     return self;
 }
 
@@ -105,12 +105,12 @@
     if (self) {
         self.registrations = [NSMutableArray new];
     }
-    
+
     return self;
 }
 
 - (void)addRegistrationsForKnownSerializations
-{    
+{
     // URL Encoded
     [self.registrations addObject:[[RKMIMETypeSerializationRegistration alloc] initWithMIMEType:RKMIMETypeFormURLEncoded
                                                                              serializationClass:[RKURLEncodedSerialization class]]];
@@ -166,7 +166,7 @@
         }
         return nil;
     }
-    
+
     return [serializationClass objectFromData:data error:error];
 }
 
@@ -183,7 +183,7 @@
         }
         return nil;
     }
-    
+
     return [serializationClass dataFromObject:object error:error];
 }
 
