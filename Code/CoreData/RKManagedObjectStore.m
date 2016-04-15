@@ -87,7 +87,7 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
         self.observedContext = observedContext;
         self.mergeContext = mergeContext;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleManagedObjectContextDidSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:observedContext];
-        
+
         if (RKIsManagedObjectContextDescendentOfContext(mergeContext, observedContext)) {
             RKLogDebug(@"Detected observation of ancestor context by child: enabling child context save detection");
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleManagedObjectContextWillSaveNotification:) name:NSManagedObjectContextDidSaveNotification object:mergeContext];
@@ -111,7 +111,7 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
     NSAssert([notification object] == self.observedContext, @"Received Managed Object Context Did Save Notification for Unexpected Context: %@", [notification object]);
     if (! [self.objectIDsFromChildDidSaveNotification isEqual:RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification)]) {
         [self.mergeContext performBlock:^{
-            
+
             /*
              Fault updated objects before merging changes into mainQueueManagedObjectContext.
 
@@ -135,7 +135,7 @@ static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification
                     }
                 }
             }
-            
+
             [self.mergeContext mergeChangesFromContextDidSaveNotification:notification];
         }];
     } else {
@@ -231,7 +231,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     if (! self.persistentStoreCoordinator) [self createPersistentStoreCoordinator];
 
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
-    
+
     if (seedPath) {
         BOOL success = [self copySeedDatabaseIfNecessaryFromPath:seedPath toPath:storePath error:error];
         if (! success) return nil;
@@ -247,13 +247,13 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                      NSMigratePersistentStoresAutomaticallyOption: @(YES),
                      NSInferMappingModelAutomaticallyOption: @(YES) };
     }
-    
-    /** 
+
+    /**
      There seems to be trouble with combining configurations and migration. So do this in two steps: first, attach the store with NO configuration, but WITH migration options; then remove it and reattach WITH configuration, but NOT migration options.
-     
+
      http://blog.atwam.com/blog/2012/05/11/multiple-persistent-stores-and-seed-data-with-core-data/
      http://stackoverflow.com/questions/1774359/core-data-migration-error-message-model-does-not-contain-configuration-xyz
-     */    
+     */
     NSPersistentStore *persistentStore = [self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:error];
     if (! persistentStore) return nil;
     if (! [self.persistentStoreCoordinator removePersistentStore:persistentStore error:error]) return nil;
@@ -268,10 +268,10 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     }
     persistentStore = [self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nilOrConfigurationName URL:storeURL options:seedOptions error:error];
     if (! persistentStore) return nil;
-    
+
     // Exclude the SQLite database from iCloud Backups to conform to the iCloud Data Storage Guidelines
     RKSetExcludeFromBackupAttributeForItemAtPath(storePath);
-    
+
     return persistentStore;
 }
 
@@ -289,7 +289,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
             if (![[NSFileManager defaultManager] copyItemAtPath:[seedPath stringByAppendingString:@"-shm"] toPath:[storePath stringByAppendingString:@"-shm"] error:&localError]) {
                 RKLogError(@"Failed to copy seed database (SHM) from path '%@' to path '%@': %@", seedPath, storePath, [localError localizedDescription]);
                 if (error) *error = localError;
-                
+
                 return NO;
             }
         }
@@ -297,12 +297,12 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
             if (![[NSFileManager defaultManager] copyItemAtPath:[seedPath stringByAppendingString:@"-wal"] toPath:[storePath stringByAppendingString:@"-wal"] error:&localError]) {
                 RKLogError(@"Failed to copy seed database (WAL) from path '%@' to path '%@': %@", seedPath, storePath, [localError localizedDescription]);
                 if (error) *error = localError;
-                
+
                 return NO;
             }
         }
     }
-    
+
     return YES;
 }
 
@@ -313,9 +313,9 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
         managedObjectContext.parentContext = self.persistentStoreManagedObjectContext;
         managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     }];
-    
+
     if (tracksChanges) {
-        RKManagedObjectContextChangeMergingObserver *observer = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:self.persistentStoreManagedObjectContext mergeContext:managedObjectContext];        
+        RKManagedObjectContextChangeMergingObserver *observer = [[RKManagedObjectContextChangeMergingObserver alloc] initWithObservedContext:self.persistentStoreManagedObjectContext mergeContext:managedObjectContext];
         objc_setAssociatedObject(managedObjectContext,
                                  &RKManagedObjectContextChangeMergingObserverAssociationKey,
                                  observer,
@@ -372,7 +372,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     [self.persistentStoreManagedObjectContext performBlockAndWait:^{
         [self.persistentStoreManagedObjectContext reset];
     }];
-    
+
     NSError *localError;
     for (NSPersistentStore *persistentStore in self.persistentStoreCoordinator.persistentStores) {
         NSURL *URL = [self.persistentStoreCoordinator URLForPersistentStore:persistentStore];
@@ -384,7 +384,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                     if (error) *error = localError;
                     return NO;
                 }
-                
+
                 // Check for and remove an external storage directory
                 NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[URL lastPathComponent] stringByDeletingPathExtension]];
                 NSURL *supportDirectoryFileURL = [NSURL URLWithString:supportDirectoryName relativeToURL:[URL URLByDeletingLastPathComponent]];
@@ -424,7 +424,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                 if ([seedPath isEqual:[NSNull null]]) {
                     seedPath = nil;
                 }
-                
+
                 // Add a new store with the same options, except RKSQLitePersistentStoreSeedDatabasePathOption option
                 // that is not expected in this method.
                 NSMutableDictionary *mutableOptions = [persistentStore.options mutableCopy];
@@ -443,10 +443,10 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
                                                                          configuration:persistentStore.configurationName
                                                                                    URL:persistentStore.URL
                                                                                options:persistentStore.options error:&localError];
-                
+
             }
-            
-            
+
+
             if (! newStore) {
                 if (error) *error = localError;
                 return NO;
@@ -459,9 +459,9 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     }
 
     [self recreateManagedObjectContexts];
-    
+
     [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidResetPersistentStoresNotification object:self];
-    
+
     return YES;
 }
 
@@ -473,10 +473,10 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 {
     BOOL isMomd = [[destinationModelURL pathExtension] isEqualToString:@"momd"]; // Momd contains a directory of versioned models
     NSManagedObjectModel *destinationModel = [[[NSManagedObjectModel alloc] initWithContentsOfURL:destinationModelURL] mutableCopy];
-    
+
     // Yield the destination model for configuration (i.e. search indexing)
     if (block) block(destinationModel, destinationModelURL);
-    
+
     // Check if the store is compatible with our model
     NSDictionary *storeMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType
                                                                                              URL:storeURL
@@ -486,18 +486,18 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
         // Our store is compatible with the current model, no migration is necessary
         return YES;
     }
-    
+
     RKLogInfo(@"Determined that store at URL %@ has incompatible metadata for managed object model: performing migration...", storeURL);
-        
+
     NSURL *momdURL = isMomd ? destinationModelURL : [destinationModelURL URLByDeletingLastPathComponent];
-    
+
     // We can only do migrations within a versioned momd
     if (![[momdURL pathExtension] isEqualToString:@"momd"]) {
         NSString *errorDescription = [NSString stringWithFormat:@"Migration failed: Migrations can only be performed to versioned destination models contained in a .momd package. Incompatible destination model given at path '%@'", [momdURL path]];
         if (error) *error = [NSError errorWithDomain:RKErrorDomain code:NSMigrationError userInfo:@{ NSLocalizedDescriptionKey: errorDescription }];
         return NO;
     }
-    
+
     NSArray *versionedModelURLs = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:momdURL
                                                                 includingPropertiesForKeys:@[] // We only want the URLs
                                                                                    options:NSDirectoryEnumerationSkipsPackageDescendants|NSDirectoryEnumerationSkipsHiddenFiles
@@ -505,7 +505,7 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     if (! versionedModelURLs) {
         return NO;
     }
-    
+
     // Iterate across each model version and try to find a compatible store
     NSManagedObjectModel *sourceModel = nil;
     for (NSURL *versionedModelURL in versionedModelURLs) {
@@ -513,20 +513,20 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
         NSManagedObjectModel *model = [[[NSManagedObjectModel alloc] initWithContentsOfURL:versionedModelURL] mutableCopy];
         if (! model) continue;
         if (block) block(model, versionedModelURL);
-        
+
         if ([model isConfiguration:nil compatibleWithStoreMetadata:storeMetadata]) {
             sourceModel = model;
             break;
         }
     }
-    
+
     // Cannot complete the migration as we can't find a source model
     if (! sourceModel) {
         NSString *errorDescription = [NSString stringWithFormat:@"Migration failed: Unable to find the source managed object model used to create the %@ store at path '%@'", storeType, [storeURL path]];
         if (error) *error = [NSError errorWithDomain:RKErrorDomain code:NSMigrationMissingSourceModelError userInfo:@{ NSLocalizedDescriptionKey: errorDescription }];
         return NO;
     }
-    
+
     // Infer a mapping model and complete the migration
     NSMappingModel *mappingModel = [NSMappingModel inferredMappingModelForSourceModel:sourceModel
                                                                      destinationModel:destinationModel
@@ -543,13 +543,13 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 
     NSString *migrationPath = [NSTemporaryDirectory() stringByAppendingFormat:@"Migration-%@.sqlite", UUID];
     NSURL *migrationURL = [NSURL fileURLWithPath:migrationPath];
-    
+
     // Create a migration manager to perform the migration.
     NSMigrationManager *manager = [[NSMigrationManager alloc] initWithSourceModel:sourceModel destinationModel:destinationModel];
     BOOL success = [manager migrateStoreFromURL:storeURL type:NSSQLiteStoreType
                                         options:nil withMappingModel:mappingModel toDestinationURL:migrationURL
                                 destinationType:NSSQLiteStoreType destinationOptions:nil error:error];
-    
+
     if (success) {
         success = [[NSFileManager defaultManager] removeItemAtURL:storeURL error:error];
         if (success) {

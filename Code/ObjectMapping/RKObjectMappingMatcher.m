@@ -168,7 +168,7 @@
         self.expectedClass = expectedClass;
         self.objectMapping = objectMapping;
     }
-    
+
     return self;
 }
 
@@ -204,7 +204,7 @@
         self.keyPath = keyPath;
         self.valueMap = valueToObjectMapping;
     }
-    
+
     return self;
 }
 
@@ -221,7 +221,7 @@
         self.objectMapping = mapping;
         return YES;
     }
-    
+
     return NO;
 }
 
@@ -285,7 +285,7 @@
         self.block = block;
         self.possibleMappings = mappings;
     }
-    
+
     return self;
 }
 
@@ -301,7 +301,7 @@
         self.objectMapping = mapping;
         return YES;
     }
-    
+
     return NO;
 }
 

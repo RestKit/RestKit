@@ -134,7 +134,7 @@
         done = YES;
     }];
     expect(done).will.equal(YES);
-    
+
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 
@@ -172,20 +172,20 @@
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human2.railsID = @12345;
     human2.name = @"Sarah";
-    
+
     __block NSError *error;
     __block BOOL success;
     [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
         success = [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
     }];
     assertThatBool(success, is(equalToBool(YES)));
-    
+
     done = NO;
     [_cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:^{
         done = YES;
     }];
     expect(done).will.equal(YES);
-    
+
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 
@@ -213,20 +213,20 @@
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human2.railsID = @12345;
     human2.name = @"Sarah";
-    
+
     __block NSError *error;
     __block BOOL success;
     [self.managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
         success = [self.managedObjectStore.persistentStoreManagedObjectContext save:&error];
     }];
     assertThatBool(success, is(equalToBool(YES)));
-    
+
     done = NO;
     [_cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:^{
         done = YES;
     }];
     expect(done).will.equal(YES);
-    
+
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectStore.persistentStoreManagedObjectContext;
 

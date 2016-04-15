@@ -92,7 +92,7 @@ static NSDictionary *RKStatusCodesToNamesDictionary()
         @(100): @"Continue",
         @(101): @"Switching Protocols",
         @(102): @"Processing",
-        
+
         // 2xx (Success)
         @(200): @"OK",
         @(201): @"Created",
@@ -104,7 +104,7 @@ static NSDictionary *RKStatusCodesToNamesDictionary()
         @(207): @"Multi-Status",
         @(208): @"Already Reported",
         @(226): @"IM Used",
-        
+
         // 3xx (Redirection)
         @(300): @"Multiple Choices",
         @(301): @"Moved Permanently",
@@ -115,7 +115,7 @@ static NSDictionary *RKStatusCodesToNamesDictionary()
         @(306): @"Switch Proxy",
         @(307): @"Temporary Redirect",
         @(308): @"Permanent Redirect",
-        
+
         // 4xx (Client Error)
         @(400): @"Bad Request",
         @(401): @"Unauthorized",
@@ -147,7 +147,7 @@ static NSDictionary *RKStatusCodesToNamesDictionary()
         @(429): @"Too Many Requests",
         @(431): @"Request Header Fields Too Large",
         @(451): @"Unavailable For Legal Reasons",
-        
+
         // 5xx (Server Error)
         @(500): @"Internal Server Error",
         @(501): @"Not Implemented",
@@ -175,7 +175,7 @@ NSString * RKStringFromStatusCode(NSInteger statusCode)
 /**
  Below is ragel source used to compile those tables. The output was polished / pretty-printed and tweaked from ragel.
  As the generated code is "hard" to debug, we store the code in http-date.r1
- 
+
  shell% ragel -F1 http-date.rl
  shell% gcc -o http-date http-date.c
  shell% ./http-date 'Sun, 06 Nov 1994 08:49:37 GMT' 'Sunday, 06-Nov-94 08:49:37 GMT' 'Sun Nov  6 08:49:37 1994' 'Sat Dec 24 14:34:26 2037' 'Sunday, 06-Nov-94 08:49:37 GMT' 'Sun, 06 Nov 1994 08:49:37 GMT'
@@ -343,7 +343,7 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
     const char *p = buf, *pe = p + bufLen, *eof = pe;
     int parsed = 0, cs = 1;
     NSDate *date = NULL;
-    
+
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED < 70000)) || \
 (defined(MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9))
     CFGregorianDate gdate;
@@ -357,7 +357,7 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
     gdate.minute = 0;
     gdate.second = 0;
 #endif
-    
+
     {
         int _slen, _trans;
         const char *_keys;
@@ -369,9 +369,9 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
         _slen  = _httpDate_key_spans[cs];
         _trans = _inds[(_slen > 0) && (_keys[0] <= (*p)) && ((*p) <= _keys[1]) ? (*p) - _keys[0] : _slen];
         cs     = _httpDate_trans_targs[_trans];
-        
+
         if(_httpDate_trans_actions[_trans] == 0) { goto _again; }
-        
+
         switch(_httpDate_trans_actions[_trans]) {
             case 6:  gdate.year   = gdate.year * 10 + ((*p) - '0');                     break;
             case 18: gdate.year   = gdate.year * 10 + ((*p) - '0'); gdate.year += 1900; break;
@@ -392,7 +392,7 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
             case 4:  gdate.minute = gdate.minute * 10   + ((*p) - '0'); break;
             case 5:  gdate.second = gdate.second * 10.0 + ((*p) - '0'); break;
         }
-        
+
     _again:
         if(  cs ==  0) { goto _out;    }
         if(++p  != pe) { goto _resume; }
@@ -404,19 +404,19 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
                 case 21: parsed = 1; break;
             }
         }
-        
+
     _out: {}
     }
-    
+
     static dispatch_once_t onceToken;
-    
+
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED < 70000)) || \
 (defined(MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9))
     static CFTimeZoneRef gmtTimeZone;
     dispatch_once(&onceToken, ^{
         gmtTimeZone = CFTimeZoneCreateWithTimeIntervalFromGMT(NULL, 0.0);
     });
-    
+
     if (parsed == 1) {
         date = [NSDate dateWithTimeIntervalSinceReferenceDate:CFGregorianDateGetAbsoluteTime(gdate, gmtTimeZone)];
     }
@@ -426,12 +426,12 @@ static NSDate *_parseHTTPDate(const char *buf, size_t bufLen) {
         gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         gregorian.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
     });
-    
+
     if (parsed == 1) {
         date = [gregorian dateFromComponents:gdate];
     }
 #endif
-    
+
     return(date);
 }
 
@@ -465,19 +465,19 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
         // Uncacheable response status code
         return nil;
     }
-    
+
     // Check Pragma: no-cache
     NSString *pragma = headers[@"Pragma"];
     if (pragma && [pragma isEqualToString:@"no-cache"]) {
         // Uncacheable response
         return nil;
     }
-    
+
     // Define "now" based on the request
     NSString *date = headers[@"Date"];
     // If no Date: header, define now from local clock
     NSDate *now = date ? RKDateFromHTTPDateString(date) : [NSDate date];
-    
+
     // Look at info from the Cache-Control: max-age=n header
     NSString *cacheControl = [headers[@"Cache-Control"] lowercaseString];
     if (cacheControl)
@@ -488,14 +488,14 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
             // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.2
             return nil;
         }
-        
+
         foundRange = [cacheControl rangeOfString:@"no-cache"];
         if (foundRange.length > 0) {
             // If no-cache, we must revalidate with the origin server
             // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1
             return nil;
         }
-        
+
         NSInteger maxAge;
         foundRange = [cacheControl rangeOfString:@"max-age"];
         if (foundRange.length > 0) {
@@ -516,7 +516,7 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
             }
         }
     }
-    
+
     // If not Cache-Control found, look at the Expires header
     NSString *expires = headers[@"Expires"];
     if (expires) {
@@ -534,12 +534,12 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
             return nil;
         }
     }
-    
+
     if (statusCode == 302 || statusCode == 307) {
         // If not explict cache control defined, do not cache those status
         return nil;
     }
-    
+
     // If no cache control defined, try some heristic to determine an expiration date
     NSString *lastModified = headers[@"Last-Modified"];
     if (lastModified) {
@@ -551,7 +551,7 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
         }
         return age > 0 ? [NSDate dateWithTimeIntervalSinceNow:(age * kRKURLCacheLastModFraction)] : nil;
     }
-    
+
     // If nothing permitted to define the cache expiration delay nor to restrict its cacheability, use a default cache expiration delay
     return [[NSDate alloc] initWithTimeInterval:kRKURLCacheDefault sinceDate:now];
 }

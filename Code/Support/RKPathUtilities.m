@@ -110,7 +110,7 @@ NSString *RKMIMETypeFromPathExtension(NSString *path)
             return type;
         }
     }
-    
+
     // Consult our internal dictionary of mappings if not found
     return [RKDictionaryOfFileExtensionsToMIMETypes() valueForKey:pathExtension];
 }
@@ -123,7 +123,7 @@ void RKSetExcludeFromBackupAttributeForItemAtPath(NSString *path)
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
     NSError *error = nil;
     NSURL *URL = [NSURL fileURLWithPath:path];
-    
+
     NSComparisonResult order = [[UIDevice currentDevice].systemVersion compare:@"5.1" options:NSNumericSearch];
     if (order == NSOrderedSame || order == NSOrderedDescending) {
         // On iOS >= 5.1, we can use the resource value API's. Note that we probe the iOS version number directly because the `setResourceValue:forKey:` symbol is defined in iOS 4.0 and greater, but performs no operation when invoked until iOS 5.1
@@ -138,7 +138,7 @@ void RKSetExcludeFromBackupAttributeForItemAtPath(NSString *path)
             const char* filePath = [[URL path] fileSystemRepresentation];
             const char* attrName = "com.apple.MobileBackup";
             u_int8_t attrValue = 1;
-            
+
             int result = setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
             if (result != 0) {
                 RKLogError(@"Failed to exclude item at path '%@' from Backup. setxattr returned result code %d", path, result);

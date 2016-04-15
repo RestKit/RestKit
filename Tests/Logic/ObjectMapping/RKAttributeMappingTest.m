@@ -40,7 +40,7 @@
         return YES;
     }];
     propertyMapping.propertyValueClass = [NSString class];
-    
+
     RKAttributeMapping *propertyMappingCopy = [propertyMapping copy];
     expect([propertyMappingCopy.sourceKeyPath isEqual:propertyMapping.sourceKeyPath]);
     expect([propertyMappingCopy.destinationKeyPath isEqual:propertyMapping.destinationKeyPath]);

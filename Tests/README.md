@@ -54,7 +54,7 @@ The server can be run interactively or daemonized into a background process. Tas
 	rake server:start                 # Start the Test server daemon
 	rake server:status                # Check the status of the Test server daemon
 	rake server:stop                  # Stop the Test server daemon
-	
+
 The tasks are reusable via the RestKit gem and can be used to provide a test server for applications using RestKit as well. Details about configuring the RestKit gem to quickly build an application specific test server are available on the [RestKit Gem Github Page](https://github.com/RestKit/RestKit-Gem). An example application leveraging the test server is provided in the [RKGithub](https://github.com/RestKit/RKGithub) application.
 
 Writing Tests
@@ -69,7 +69,7 @@ configured and there are integration tests that test the full request/response l
 1. Expectations are provided using [Expecta](https://github.com/specta/expecta) and [OCHamcrest](https://github.com/hamcrest/OCHamcrest). Expectations are generally of th form:
         expect(someObject).to.equal(@"some value"); // Expecta
         assertThat([someObject someMethod], is(equalTo(@"some value"))); // OCHamcrest
-        
+
     There is a corresponding `notTo` and `isNot` method available as well.
 1. The RKTestEnvironment.h header includes a number of helpers for initializing and configuring a clean testing environment.
 1. OCMock is available for mock objects support. See [http://ocmock.org/](http://ocmock.org/) for details.
@@ -98,7 +98,7 @@ caching component to the application and want to test the functionality, we migh
 You now have a functional server-side component to work with. Consult the Sinatra documentation for example on setting
 response headers, MIME types, etc. It's all very simple and low ceremony.
 
-You can now switch to the RestKit sources and look in the Tests directory. To test our new '/author.json' endpoint, we could create a new test and import "RKTestEnvironment.h" or find an existing test case that matches the functionality we are testing. In this case, we are doing some basic testing of object mapping over HTTP, so we might add the test to 'RKObjectRequestOperationTest.m'. Once we have found a proper home for the test, we can then implement the appropriate code. 
+You can now switch to the RestKit sources and look in the Tests directory. To test our new '/author.json' endpoint, we could create a new test and import "RKTestEnvironment.h" or find an existing test case that matches the functionality we are testing. In this case, we are doing some basic testing of object mapping over HTTP, so we might add the test to 'RKObjectRequestOperationTest.m'. Once we have found a proper home for the test, we can then implement the appropriate code.
 
 RestKit was designed with testability in mind, so in this we would only need to leverage the `RKObjectRequestOperation` and some appropriate matchers. Let's take a look at an example of how to write a basic test:
 
@@ -108,7 +108,7 @@ RestKit was designed with testability in mind, so in this we would only need to 
         [mapping addAttributeMappingsFromArray:@[ @"name", @"organization" ]];
         NSURL *URL = [NSURL URLWithString:@"/author.json" relativeToURL:[RKTestFactory baseURL]];
         NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/author.json" keyPath:@"author" statusCodes:[NSIndexSet indexSetWithIndex:200]];        
+        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping pathPattern:@"/author.json" keyPath:@"author" statusCodes:[NSIndexSet indexSetWithIndex:200]];
         RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
         [operation start];
         [operation waitUntilFinished];

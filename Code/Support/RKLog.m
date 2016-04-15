@@ -163,13 +163,13 @@ void RKLogIntegerAsBinary(NSUInteger bitMask)
     do {
         [string appendString:(((NSUInteger)bitMask & bit) ? @"1" : @"0")];
     } while (bit >>= 1);
-    
+
     NSLog(@"Value of %ld in binary: %@", (long)bitMask, string);
 }
 
 void RKLogValidationError(NSError *error)
 {
-#ifdef _COREDATADEFINES_H    
+#ifdef _COREDATADEFINES_H
     if ([[error domain] isEqualToString:NSCocoaErrorDomain]) {
         NSDictionary *userInfo = [error userInfo];
         NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];

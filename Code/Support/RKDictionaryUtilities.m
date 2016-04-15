@@ -25,7 +25,7 @@ NSDictionary *RKDictionaryByMergingDictionaryWithDictionary(NSDictionary *dict1,
             mergedDictionary[key2] = obj2;
         }
     }
-    
+
     return mergedDictionary;
 }
 

@@ -150,7 +150,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
 - (BOOL)matchesResponse:(NSHTTPURLResponse *)response parsedArguments:(NSDictionary **)outParsedArguments
 {
     if (![self matchesURL:response.URL parsedArguments:outParsedArguments]) return NO;
-    
+
     if (self.statusCodes) {
         if (! [self.statusCodes containsIndex:response.statusCode]) {
             return NO;
@@ -171,7 +171,7 @@ extern NSString *RKStringDescribingRequestMethod(RKRequestMethod method);
     {
         return parsedArguments;
     }
-    
+
     return nil;
 }
 

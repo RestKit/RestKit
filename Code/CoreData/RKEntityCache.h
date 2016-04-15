@@ -50,7 +50,7 @@
 
 /**
  The queue on which to dispatch callbacks for asynchronous operations. When `nil`, the main queue is used.
- 
+
  **Default**: `nil`
  */
 @property (nonatomic, assign) dispatch_queue_t callbackQueue;
@@ -149,7 +149,7 @@
 
 /**
  Returns a Boolean value that indicates if the receiver contains the given object in any of its attribute caches.
- 
+
  @param managedObject The object to check for.
  @return `YES` if the receiver contains the given object in one or more of its caches, else `NO`.
  */
@@ -157,9 +157,9 @@
 
 /**
  Call this before beginning a sequence of operations that require the cache not to be flushed.
- 
+
  This is used by RKInMemoryManagedObjectCache to workaround https://github.com/RestKit/RestKit/issues/1613 .
- 
+
  @see endAccessing
  */
 - (void)beginAccessing;

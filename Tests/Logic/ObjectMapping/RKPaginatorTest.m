@@ -35,7 +35,7 @@
 @implementation RKCustomPaginator
 -(void) setPerPage:(NSUInteger)perPage {
     [super setPerPage:perPage];
-    
+
     // log how many items are being pulled back per page.
     self.perPageStr = [NSString stringWithFormat:@"You're pulling in %@ items per page.", @(self.perPage)];
     NSLog(@"%@", self.perPageStr);
@@ -79,7 +79,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     [mapping addAttributeMappingsFromArray:@[@"name", @"age"]];
-    
+
     return [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:@"entries" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
 }
 
@@ -101,7 +101,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     [customPaginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"per_page" toKeyPath:@"perPage"]];
     [customPaginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"total_entries" toKeyPath:@"objectCount"]];
     [customPaginationMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:@"offset" toKeyPath:@"offset"]];
-    
+
     return customPaginationMapping;
 }
 
@@ -223,7 +223,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
      @"total_pages":     @"pageCount",
      @"total_objects":   @"objectCount",
      }];
-    
+
     NSURLRequest *request = [NSURLRequest requestWithURL:self.paginationURL];
     RKPaginator *paginator = [[RKPaginator alloc] initWithRequest:request paginationMapping:paginationMapping responseDescriptors:@[ self.responseDescriptor ]];
     [paginator loadPage:1];
@@ -426,15 +426,15 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     [paginator setValue:@(12345) forKey:@"pageCountNumber"];
     expect(paginator.pageCount).to.equal(12345);
     expect([paginator valueForKey:@"pageCountNumber"]).to.equal(12345);
-    
+
     [paginator setValue:@(1) forKey:@"currentPageNumber"];
     expect(paginator.currentPage).to.equal(1);
     expect([paginator valueForKey:@"currentPageNumber"]).to.equal(1);
-    
+
     [paginator setValue:@(25) forKey:@"objectCountNumber"];
     expect(paginator.objectCount).to.equal(25);
     expect([paginator valueForKey:@"objectCountNumber"]).to.equal(25);
-    
+
     [paginator setValue:@(10) forKey:@"perPageNumber"];
     expect(paginator.perPage).to.equal(10);
     expect([paginator valueForKey:@"perPageNumber"]).to.equal(10);
@@ -488,7 +488,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 {
     RKObjectManager* manager = [RKTestFactory objectManager];
     [RKObjectManager setSharedManager:manager];
-    
+
     manager.paginationMapping = [self customPaginationMapping];
     RKPaginator* paginator = [manager paginatorWithPathPattern:RKPaginatorTestResourcePathPattern];
     expect(paginator.class).to.equal(RKCustomPaginator.class);
@@ -500,7 +500,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
 {
     RKObjectManager* manager = [RKTestFactory objectManager];
     [RKObjectManager setSharedManager:manager];
-    
+
     manager.paginationMapping = [self customPaginationMapping];
     RKPaginator* paginator = [manager paginatorWithPathPattern:RKPaginatorTestResourcePathPattern parameters:@{@"param1":@"value1"}];
     [paginator loadPage:1];
@@ -545,7 +545,7 @@ static NSString * const RKPaginatorTestResourcePathPatternWithOffset = @"/pagina
     // I am mocking here behaviour where NSOperation isFinished KVO was called after callback
     paginator.objectRequestOperation.completionBlock();
     paginator.objectRequestOperation.mappingResult = [[RKMappingResult alloc] initWithDictionary:@{@"data": @[@{@"name": @"Blake"}]}];
-    
+
     // So even that isFinished was not called but completionBlock was, evertyhing should work. (race condition)
     NSArray *expectedNames = @[ @"Blake" ];
     expect([[paginator.mappingResult array] valueForKey:@"name"]).will.equal(expectedNames);

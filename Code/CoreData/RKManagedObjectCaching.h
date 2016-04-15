@@ -33,7 +33,7 @@
 
 /**
  Returns all managed objects for a given entity with attributes whose names and values match the given dictionary in a given context.
- 
+
  @param entity The entity to retrieve managed objects for.
  @param attributeValues A dictionary specifying the attribute criteria for retrieving managed objects.
  @param managedObjectContext The context to fetch the matching objects in.

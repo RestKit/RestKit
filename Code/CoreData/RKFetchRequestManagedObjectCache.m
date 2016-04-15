@@ -94,23 +94,23 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
     NSAssert(entity, @"Cannot find existing managed object without a target class");
     NSAssert(attributeValues, @"Cannot retrieve cached objects without attribute values to identify them with.");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a nil context");
-    
+
     if ([attributeValues count] == 0) return [NSSet set];
-    
+
     NSString *predicateCacheKey = RKPredicateCacheKeyForAttributeValues(attributeValues);
-    
+
     __block NSPredicate *substitutionPredicate;
     dispatch_sync(self.cacheQueue, ^{
         substitutionPredicate = (self.predicateCache)[predicateCacheKey];
     });
-         
+
     if (! substitutionPredicate) {
         substitutionPredicate = RKPredicateWithSubsitutionVariablesForAttributeValues(attributeValues);
         dispatch_barrier_async(self.cacheQueue, ^{
             (self.predicateCache)[predicateCacheKey] = substitutionPredicate;
         });
     }
-    
+
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[entity name]];
     fetchRequest.predicate = [substitutionPredicate predicateWithSubstitutionVariables:attributeValues];
     __block NSError *error = nil;

@@ -23,11 +23,11 @@
 
 /**
  Convenience method for generating a path against the properties of an object. Takes an `NSString` with property names prefixed with a colon and interpolates the values of the properties specified and returns the generated path.
- 
+
  For example, given an `article` object with an `articleID` property whose value is `@12345`, `RKPathFromPatternWithObject(@"articles/:articleID", article)` would return `@"articles/12345"`.
- 
+
  This functionality is the basis for path generation in the `RKRouter` class.
- 
+
  @param pathPattern An `SOCPattern` string containing zero or more colon-prefixed property names.
  @param object The object to interpolate the properties against
  @return A new `NSString` object with the values of the given object interpolated for the colon-prefixed properties name in the given pattern string.

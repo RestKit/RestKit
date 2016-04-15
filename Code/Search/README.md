@@ -38,15 +38,15 @@ Searching an indexed entity is performed via a standard Core Data fetch request 
 #import <RestKit/Search.h>
 
 /* Construct the predicate.
-	
-   Supported predicate types are NSNotPredicateType, NSAndPredicateType, and NSOrPredicateType. 
+
+   Supported predicate types are NSNotPredicateType, NSAndPredicateType, and NSOrPredicateType.
    See NSCompoundPredicate.h for details.
  */
 RKSearchPredicate *searchPredicate = [RKSearchPredicate predicateWithSearchText:@"vietnamese food" type:NSAndPredicateType];
 
 NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestForEntityWithName:@"Recipe"];
 fetchRequest.predicate = searchPredicate;
-NSError *error;	
+NSError *error;
 NSArray *matches = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
 
 NSLog(@"Found the following matching recipes: %@", matches);
@@ -55,7 +55,7 @@ NSLog(@"Found the following matching recipes: %@", matches);
 
 ### Using an Indexing Context
 
-For applications loading payloads containing a large number of searchable entities, it may become desirable to make use of a dedicated managed object context for the purposes of search indexing. When observing the persistent store context for changes, the indexer awaits the posting of a `NSManagedObjectContextWillSave` notification and performs indexing before the save is complete. Because of the nature of parent/child managed object contexts in Core Data, this can introduce blockage of any managed object contexts with the `NSMainQueueConcurrencyType` that are children of the persistent store context. 
+For applications loading payloads containing a large number of searchable entities, it may become desirable to make use of a dedicated managed object context for the purposes of search indexing. When observing the persistent store context for changes, the indexer awaits the posting of a `NSManagedObjectContextWillSave` notification and performs indexing before the save is complete. Because of the nature of parent/child managed object contexts in Core Data, this can introduce blockage of any managed object contexts with the `NSMainQueueConcurrencyType` that are children of the persistent store context.
 
 To avoid this, a dedicated `indexingContext` can be assigned to the search indexer. When an indexing context is provided, the indexing is performed in response to a `NSManagedObjectContextDidSave` notification on the indexing context. It is recommended that the indexing context have a direct connection to the persistent store coordinator and that its changes are merged back into the persistent store and main queue managed object contexts via observation of the `NSManagedObjectContextDidSave`.
 
@@ -92,7 +92,7 @@ To configure an `RKEntityByAttributeCache` for indexing your application, add th
     	self.searchWordCache = [[RKEntityByAttributeCache alloc] initWithEntity:searchWordEntity attributes:@[ @"word" ] managedObjectContext:indexingContext];
     	[self.searchWordCache load];
 	}
-	
+
 	return self;
 }
 

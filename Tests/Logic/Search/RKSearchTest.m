@@ -26,30 +26,30 @@
     [managedObjectStore addInMemoryPersistentStore:&error];
     [managedObjectStore createManagedObjectContexts];
     [managedObjectStore startIndexingPersistentStoreManagedObjectContext];
-    
+
     // Get some content into the index
     RKCat *cat1 = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     cat1.name = @"Asia Penelope Watters";
     RKCat *cat2 = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     cat2.name = @"Reginald Royford Williams, III";
-    
+
     [managedObjectStore.mainQueueManagedObjectContext obtainPermanentIDsForObjects:@[cat1, cat2] error:&error];
     [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:&error];
-    
+
     // Execute fetches to verify
     [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
         NSPredicate *predicate = [RKSearchPredicate searchPredicateWithText:@"Asia" type:NSAndPredicateType];
-        
+
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Cat"];
         fetchRequest.predicate = predicate;
         NSArray *objects = [managedObjectStore.persistentStoreManagedObjectContext executeFetchRequest:fetchRequest error:&error];
         assertThat(objects, hasCountOf(1));
         assertThat([objects[0] objectID], is(equalTo(cat1.objectID)));
     }];
-    
+
     [managedObjectStore.persistentStoreManagedObjectContext performBlockAndWait:^{
         NSPredicate *predicate = [RKSearchPredicate searchPredicateWithText:@"Asia Roy" type:NSOrPredicateType];
-        
+
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Cat"];
         fetchRequest.predicate = predicate;
         fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES] ];

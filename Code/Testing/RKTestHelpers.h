@@ -40,7 +40,7 @@
 
 /**
  Stubs the route with the given class and method with a given path pattern.
- 
+
  @param objectClass The class of the route to stub.
  @param method The method of the route to stub.
  @param pathPattern The path pattern to return instead in place of the current route's value.
@@ -54,7 +54,7 @@
 
 /**
  Stubs the route with the given name with a given path pattern.
- 
+
  @param routeName The name of the route to stub.
  @param pathPattern The path pattern to return instead in place of the current route's value.
  @param nilOrObjectManager The object manager to stub the route on. If `nil`, the shared object manager be be used.
@@ -66,7 +66,7 @@
 
 /**
  Stubs the relationship route for a given class with a given path pattern.
- 
+
  @param relationshipName The name of the relationship to stub the route of.
  @param objectClass The class of the route to stub.
  @param pathPattern The path pattern to return instead in place of the current route's value.
@@ -82,7 +82,7 @@
 #ifdef RKCoreDataIncluded
 /**
  Finds all registered fetch request blocks matching the given path pattern and adds a new fetch request block that returns the same value as the origin block that matches the given relative string portion of a URL object.
- 
+
  @param pathPattern The path pattern that matches the fetch request blocks to be copied.
  @param relativeString The relative string portion of the NSURL objects that the new blocks will match exactly.
  @param nilOrObjectManager The object manager to stub the route on. If `nil`, the shared object manager be be used.
@@ -103,7 +103,7 @@
 
 /**
  Creates, stores, and returns a `NSCachedURLResponse` object containing an `NSHTTPURLResponse` for the given request with a 200 (OK) status code.
- 
+
  @param request The request to cache the response for.
  @param responseData The response data to be stored in the cache.
  @return The cached URL response that was stored to the cache.
@@ -112,7 +112,7 @@
 
 /**
  Creates, stores, and returns a `NSCachedURLResponse` object containing an `NSHTTPURLResponse` for the given URL and HTTP method with the given response data and a 200 (OK) status code.
- 
+
  @param URL The URL to cache the response for.
  @param HTTPMethod The HTTP method of the request (i.e. 'GET', 'POST', 'PUT', 'PATCH', or 'DELETE').
  @param responseData The response data to be stored in the cache.

@@ -42,7 +42,7 @@
 - (void)tearDown
 {
     [RKTestFactory tearDown];
-    
+
     [RKEntityMapping setEntityIdentificationInferenceEnabled:YES];
 }
 
@@ -135,26 +135,26 @@
     [transformableAttribute setAttributeType:NSTransformableAttributeType];
     [entity setProperties:@[ transformableAttribute ]];
     [model setEntities:@[ entity ]];
-    
+
     RKEntityMapping *entityMapping = [[RKEntityMapping alloc] initWithEntity:entity];
     [entityMapping addAttributeMappingsFromDictionary:@{ @"URLs": @"transformableURLs" }];
-    
+
     NSArray *URLs = @[ @"http://restkit.org", @"http://gateguruapp.com" ];
     NSDictionary *representation = @{ @"URLs": URLs };
-    
+
     NSError *error = nil;
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
     [managedObjectStore createPersistentStoreCoordinator];
     [managedObjectStore addInMemoryPersistentStore:&error];
     [managedObjectStore createManagedObjectContexts];
-    
+
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:entityMapping];
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
     operation.dataSource = dataSource;
     BOOL success = [operation performMapping:&error];
     expect(success).to.equal(YES);
     expect(operation.destinationObject).notTo.beNil();
-    
+
     NSArray *mappedURLs = [operation.destinationObject valueForKey:@"transformableURLs"];
     expect(mappedURLs).to.equal(URLs);
 }
@@ -165,14 +165,14 @@
     RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
     RKCat *roy = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Roy" }];
     blake.cats = [NSSet setWithObjects:asia, roy, nil];
-    
+
     NSDictionary *JSON = @{ @"name" : @"Blake Watters", @"cats" : @[] };
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
-    
+
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:[[RKTestFactory managedObjectStore] mainQueueManagedObjectContext] cache:nil];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:JSON destinationObject:blake mapping:humanMapping];
     mappingOperation.dataSource = dataSource;
@@ -187,14 +187,14 @@
     RKHuman *blake = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:@{ @"name": @"Blake" }];
     RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
     blake.favoriteCat = asia;
-    
+
     NSDictionary *JSON = @{ @"name" : @"Blake Watters", @"favoriteCat" : [NSNull null] };
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"favoriteCat" toKeyPath:@"favoriteCat" withMapping:catMapping]];
-    
+
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:[[RKTestFactory managedObjectStore] mainQueueManagedObjectContext] cache:nil];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:JSON destinationObject:blake mapping:humanMapping];
     mappingOperation.dataSource = dataSource;
@@ -211,14 +211,14 @@
     RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Asia" }];
     RKCat *roy = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{ @"name": @"Roy" }];
     blake.cats = [NSSet setWithObjects:asia, roy, nil];
-    
+
     NSDictionary *JSON = @{ @"name" : @"Blake Watters", @"cats" : [NSNull null] };
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [catMapping addAttributeMappingsFromArray:@[@"name"]];
     RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [humanMapping addAttributeMappingsFromArray:@[@"name"]];
     [humanMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"cats" withMapping:catMapping]];
-    
+
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:[[RKTestFactory managedObjectStore] mainQueueManagedObjectContext] cache:nil];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:JSON destinationObject:blake mapping:humanMapping];
     mappingOperation.dataSource = dataSource;
@@ -332,9 +332,9 @@
     entityMapping.deletionPredicate = [NSPredicate predicateWithValue:NO];
     [entityMapping setModificationAttributeForName:@"railsID"];
     [entityMapping addConnectionForRelationship:@"cats" connectedBy:@{ @"railsID": @"railsID", @"name": @"name" }];
-    
+
     RKEntityMapping *entityMappingCopy = [entityMapping copy];
-    
+
     expect(entityMappingCopy.entity).to.equal(entityMapping.entity);
     expect(entityMappingCopy.identificationAttributes).to.equal(entityMapping.identificationAttributes);
     expect(entityMappingCopy.identificationPredicate).to.equal(entityMapping.identificationPredicate);
@@ -346,30 +346,30 @@
 
 - (void)testEntityDynamicPropertyMappingWithFetchRequestBlockNotCrashing {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    
+
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
     childMapping.identificationAttributes = @[ @"railsID" ];
     [childMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
-    
+
     RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
     parentMapping.identificationAttributes = @[ @"railsID" ];
     [parentMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
     [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
-    
+
     RKDynamicMapping *humanMapping = [[RKDynamicMapping alloc] init];
     [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Parent" objectMapping:parentMapping]];
     [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Child" objectMapping:childMapping]];
-    
+
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"HoardedCat" inManagedObjectStore:managedObjectStore];
     catMapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
     [catMapping addRelationshipMappingWithSourceKeyPath:@"human" mapping:humanMapping];
-    
+
     RKEntityMapping *catHoarderMapping = [RKEntityMapping mappingForEntityForName:@"CatHoarder" inManagedObjectStore:managedObjectStore];
     [catHoarderMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"cats" toKeyPath:@"hoardedCats" withMapping:catMapping]];
     catHoarderMapping.identificationAttributes = @[ @"railsID" ];
     [catHoarderMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
-    
+
     NSURL *baseURL = [NSURL URLWithString:@"http://example.org"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"path" relativeToURL:baseURL]];
     request.HTTPMethod = @"GET";
@@ -378,7 +378,7 @@
                                                              HTTPVersion:@"1.1"
                                                             headerFields:@{@"Content-Type" : @"application/json"}];
     NSData *responseData = [RKTestFixture dataWithContentsOfFixture:@"hoarderWithCats_issue_2192.json"];
-    
+
     id mockRequestOperation = [OCMockObject niceMockForClass:[RKHTTPRequestOperation class]];
     [[[mockRequestOperation stub] andReturn:request] request];
     [[[mockRequestOperation stub] andReturn:response] response];
@@ -387,29 +387,29 @@
         void(^successHandler)(AFHTTPRequestOperation *operation, id responseObject) = nil;
         [invocation getArgument:&successHandler atIndex:2];
         successHandler(mockRequestOperation, [RKTestFixture parsedObjectWithContentsOfFixture:@"hoarderWithCats_issue_2192.json"]);
-        
+
     }] setCompletionBlockWithSuccess:[OCMArg any] failure:[OCMArg any]];
-    
+
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:catHoarderMapping
                                                                                             method:RKRequestMethodAny
                                                                                        pathPattern:nil
                                                                                            keyPath:nil
                                                                                        statusCodes:[NSIndexSet indexSetWithIndex:200]];
     responseDescriptor.baseURL = baseURL;
-    
+
     RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:mockRequestOperation
                                                                                                                        responseDescriptors:@[responseDescriptor]];
     managedObjectRequestOperation.managedObjectContext = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType
                                                                                                                tracksChanges:NO];
-    
+
     NSFetchRequest*(^requestBlock)(NSURL *url) = ^(NSURL *url) {
         NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"CatHoarder"];
         return request;
     };
-    
+
     managedObjectRequestOperation.fetchRequestBlocks = @[[requestBlock copy]];
     managedObjectRequestOperation.savesToPersistentStore = NO;
-    
+
     NSException *exception = nil;
     @try {
         [managedObjectRequestOperation start];
@@ -425,28 +425,28 @@
 
 - (void)testOneToOneRelationshipMappingWithReplacementPolicyWillNotCrash {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    
+
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"Child" inManagedObjectStore:managedObjectStore];
     childMapping.identificationAttributes = @[ @"railsID" ];
     [childMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
-    
+
     RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityForName:@"Parent" inManagedObjectStore:managedObjectStore];
     parentMapping.identificationAttributes = @[ @"railsID" ];
     [parentMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
     [parentMapping addRelationshipMappingWithSourceKeyPath:@"children" mapping:childMapping];
-    
+
     RKDynamicMapping *humanMapping = [[RKDynamicMapping alloc] init];
     [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Parent" objectMapping:parentMapping]];
     [humanMapping addMatcher:[RKObjectMappingMatcher matcherWithKeyPath:@"type" expectedValue:@"Child" objectMapping:childMapping]];
-    
+
     RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"Cat" inManagedObjectStore:managedObjectStore];
     catMapping.identificationAttributes = @[ @"railsID" ];
     [catMapping addAttributeMappingsFromArray:@[@"name", @"railsID"]];
-    
+
     RKRelationshipMapping *relationMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"human" toKeyPath:@"human" withMapping:humanMapping];
     relationMapping.assignmentPolicy = RKAssignmentPolicyReplace;
     [catMapping addPropertyMapping:relationMapping];
-    
+
     NSURL *baseURL = [NSURL URLWithString:@"http://example.org"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"path" relativeToURL:baseURL]];
     request.HTTPMethod = @"POST";
@@ -455,7 +455,7 @@
                                                              HTTPVersion:@"1.1"
                                                             headerFields:@{@"Content-Type" : @"application/json"}];
     NSData *responseData = [RKTestFixture dataWithContentsOfFixture:@"catsWithParent_issue_2194.json"];
-    
+
     id mockRequestOperation = [OCMockObject niceMockForClass:[RKHTTPRequestOperation class]];
     [[[mockRequestOperation stub] andReturn:request] request];
     [[[mockRequestOperation stub] andReturn:response] response];
@@ -464,32 +464,32 @@
         void(^successHandler)(AFHTTPRequestOperation *operation, id responseObject) = nil;
         [invocation getArgument:&successHandler atIndex:2];
         successHandler(mockRequestOperation, [RKTestFixture parsedObjectWithContentsOfFixture:@"catsWithParent_issue_2194.json"]);
-        
+
     }] setCompletionBlockWithSuccess:[OCMArg any] failure:[OCMArg any]];
-    
+
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:catMapping
                                                                                             method:RKRequestMethodAny
                                                                                        pathPattern:nil
                                                                                            keyPath:nil
                                                                                        statusCodes:[NSIndexSet indexSetWithIndex:200]];
     responseDescriptor.baseURL = baseURL;
-    
+
     RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithHTTPRequestOperation:mockRequestOperation
                                                                                                           responseDescriptors:@[responseDescriptor]];
-    
+
     NSManagedObjectContext *context = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType
                                                                                             tracksChanges:NO];
     requestOperation.managedObjectContext = context;
     requestOperation.savesToPersistentStore = NO;
-    
+
     RKCat *targetCat = [NSEntityDescription insertNewObjectForEntityForName:@"Cat" inManagedObjectContext:context];
     targetCat.railsID = @(5555);
-    
+
     RKChild *child = [NSEntityDescription insertNewObjectForEntityForName:@"Child" inManagedObjectContext:context];
     targetCat.human = child;
-    
+
     requestOperation.targetObject = targetCat;
-    
+
     NSException *exception = nil;
     @try {
         [requestOperation start];
@@ -661,7 +661,7 @@
     [nameAttribute setName:@"name"];
     [entity setProperties:@[ identifierAttribute, nameAttribute ]];
     [entity setUserInfo:@{ RKEntityIdentificationAttributesUserInfoKey: @(12345) }];
-    
+
     NSException *caughtException = nil;
     @try {
         NSArray __unused *identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
@@ -683,7 +683,7 @@
     [identifierAttribute setName:@"monkeyID"];
     [entity setProperties:@[ identifierAttribute ]];
     [entity setUserInfo:@{ RKEntityIdentificationAttributesUserInfoKey: @"nonExistant" }];
-    
+
     NSException *caughtException = nil;
     @try {
         NSArray __unused *identificationAttributes = RKIdentificationAttributesInferredFromEntity(entity);
@@ -762,7 +762,7 @@
     [nameAttribute setName:@"name"];
     [entity setProperties:@[ identifierAttribute, nameAttribute ]];
     [entity setUserInfo:@{ RKEntityIdentificationAttributesUserInfoKey: @"name" }];
-    
+
     NSEntityDescription *subentity = [NSEntityDescription new];
     [subentity setName:@"SubMonkey"];
     [entity setSubentities:@[ subentity ]];
@@ -790,7 +790,7 @@
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
     [mapping addAttributeMappingsFromDictionary:@{ @"favoriteColors": @"mutableFavoriteColors" }];
-    
+
     NSDictionary *dictionary = @{ @"favoriteColors": @[ @"Blue", @"Red" ] };
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:mapping];
@@ -798,7 +798,7 @@
     operation.dataSource = dataSource;
     NSError *error = nil;
     [operation performMapping:&error];
-    
+
     assertThat(human.mutableFavoriteColors, is(equalTo([NSMutableSet setWithArray:@[ @"Blue", @"Red" ]])));
     assertThat(human.mutableFavoriteColors, is(instanceOf([NSMutableSet class])));
 }

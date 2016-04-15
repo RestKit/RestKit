@@ -144,9 +144,9 @@ extern NSString * const RKMappingTestExpectationErrorKey;
 
 /**
  Evaluates the given expectation against the mapping test and returns a Boolean value indicating if the expectation is met by the receiver.
- 
+
  Invocation of this method will implicitly invoke `performMapping` if the mapping has not yet been performed.
- 
+
  @param expectation The expectation to evaluate against the receiver. Must be an intance of either `RKPropertyMappingTestExpectation` or `RKConnectionTestExpectation`.
  @param error A pointer to an `NSError` object to be set describing the failure in the event that the expectation is not met.
  @return `YES` if the expectation is met, else `NO`.
@@ -225,14 +225,14 @@ extern NSString * const RKMappingTestExpectationErrorKey;
 
 /**
  The managed object context within which to perform the mapping test. Required if testing an `RKEntityMapping` object and an appropriate `mappingOperationDataSource` has not been configured.
- 
+
  When the `mappingOperationDataSource` property is `nil` and the test targets an entity mapping, this context is used to configure an `RKManagedObjectMappingOperationDataSource` object for the purpose of executing the test.
  */
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 
 /**
  The managed object cache to use when performing a mapping test.
- 
+
  If the value of this property is `nil` and the test targets an entity mapping, an instance of `RKFetchRequestManagedObjectCache` will be constructed and used as the cache for the purposes of testing.
  */
 @property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;

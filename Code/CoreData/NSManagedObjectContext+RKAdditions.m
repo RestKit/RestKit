@@ -42,7 +42,7 @@
     NSManagedObjectContext *contextToSave = self;
     while (contextToSave) {
         __block BOOL success;
-     
+
         /**
          To work around issues in ios 5 first obtain permanent object ids for any inserted objects.  If we don't do this then its easy to get an `NSObjectInaccessibleException`.  This happens when:
 

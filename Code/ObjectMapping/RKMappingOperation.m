@@ -98,7 +98,7 @@ NSArray *RKApplyNestingAttributeValueToMappings(NSString *attributeName, id valu
         nestedPropertyMapping.valueTransformer = propertyMapping.valueTransformer;
         if (nestedPropertyMapping) [nestedMappings addObject:nestedPropertyMapping];
     }
-    
+
     return nestedMappings;
 }
 
@@ -206,7 +206,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         self.inValueForKeyPath = NO;
         return value;
     }
-    
+
     return nil;
 }
 
@@ -282,7 +282,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         id val = [dict valueForKey:key];
         if (val != nil) return val;
     }
-    
+
     return nil;
 }
 
@@ -293,7 +293,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         id val = [dict valueForKeyPath:keyPath];
         if (val != nil) return val;
     }
-    
+
     return nil;
 }
 
@@ -528,14 +528,14 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
         concreteMapping = (RKObjectMapping *)mapping;
     }
-    
+
     id destinationObject = nil;
     id dataSource = self.dataSource;
     if ([dataSource respondsToSelector:@selector(mappingOperation:targetObjectForMapping:inRelationship:)])
     {
         destinationObject = [dataSource mappingOperation:self targetObjectForMapping:concreteMapping inRelationship:relationshipMapping];
     }
-    
+
     if (destinationObject == nil)
     {
         NSDictionary *dictionaryRepresentation = [representation isKindOfClass:[NSDictionary class]] ? representation : @{ [NSNull null] : representation };
@@ -555,7 +555,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
     if (self.objectMapping.performsKeyValueValidation) {
         id destinationObject = self.destinationObject;
-        
+
         if ([destinationObject respondsToSelector:@selector(validateValue:forKeyPath:error:)]) {
             NSError *validationError;
             success = [destinationObject validateValue:value forKeyPath:keyPath error:&validationError];
@@ -580,12 +580,12 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     if ([self.delegate respondsToSelector:@selector(mappingOperation:shouldSetValue:forKeyPath:usingMapping:)]) {
         return [self.delegate mappingOperation:self shouldSetValue:*value forKeyPath:keyPath usingMapping:propertyMapping];
     }
-    
+
     // Always set the properties
     if (self.shouldSetUnchangedValues) {
         return [self validateValue:value atKeyPath:keyPath];
     }
-    
+
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null]) {
         currentValue = nil;
@@ -618,7 +618,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 - (NSArray *)applyNestingToMappings:(NSArray *)propertyMappings
 {
     if (self.nestedAttributeSubstitutionKey == nil) return propertyMappings;
-    
+
     return RKApplyNestingAttributeValueToMappings(self.nestedAttributeSubstitutionKey, self.nestedAttributeSubstitutionValue, propertyMappings);
 }
 
@@ -639,7 +639,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             _relationshipMappings = [self applyNestingToMappings:mapping.relationshipMappings];
             NSMutableArray *simpleList = [[NSMutableArray alloc] initWithCapacity:[_nestedAttributeMappings count]];
             NSMutableArray *keyPathList = [[NSMutableArray alloc] initWithCapacity:[_nestedAttributeMappings count]];
-            
+
             // The nested substitution may have changed which properties are simple vs keyPath, so we have to
             // re-check based on the nesting result.
             for (RKPropertyMapping *mapping in _nestedAttributeMappings) {
@@ -647,7 +647,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
                 NSMutableArray *arrayToAdd = isSimple? simpleList : keyPathList;
                 [arrayToAdd addObject:mapping];
             }
-            
+
             _simpleAttributeMappings = simpleList;
             _keyPathAttributeMappings = keyPathList;
         }
@@ -715,7 +715,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         [delegate mappingOperation:self didFindValue:value forKeyPath:attributeMapping.sourceKeyPath mapping:attributeMapping];
     }
     RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, destinationKeyPath);
-    
+
     // If we have a nil value for a primitive property, we need to coerce it into a KVC usable value or bail out
     if (transformedValue == nil && RKPropertyInspectorIsPropertyAtKeyPathOfObjectPrimitive(destinationKeyPath, destinationObject)) {
         RKLogDebug(@"Detected `nil` value transformation for primitive property at keyPath '%@'", destinationKeyPath);
@@ -727,11 +727,11 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     }
 
     RKSetIntermediateDictionaryValuesOnObjectForKeyPath(destinationObject, destinationKeyPath);
-    
+
     // Ensure that the value is different
     if ([self shouldSetValue:&transformedValue forKeyPath:destinationKeyPath usingMapping:attributeMapping]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, destinationKeyPath, transformedValue);
-        
+
         if (destinationKeyPath) {
             [destinationObject setValue:transformedValue forKeyPath:destinationKeyPath];
         } else {
@@ -819,7 +819,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     subOperation.rootSourceObject = self.rootSourceObject;
     subOperation.newDestinationObject = YES;
     [subOperation start];
-    
+
     if (subOperation.error) {
         RKLogWarning(@"WARNING: Failed mapping nested object: %@", [subOperation.error localizedDescription]);
     } else if (self.collectsMappingInfo) {
@@ -850,7 +850,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             RKLogWarning(@"Requested mapping with `RKReplaceAssignmentPolicy` assignment policy, but the data source does not support it. Mapping has proceeded identically to the `RKSetAssignmentPolicy`.");
         }
     }
-    
+
     return YES;
 }
 
@@ -865,13 +865,13 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     // One to one relationship
     NSString *destinationKeyPath = relationshipMapping.destinationKeyPath;
     RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, destinationKeyPath);
-    
+
     if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
         NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"Invalid assignment policy: cannot union a one-to-one relationship." };
         self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorInvalidAssignmentPolicy userInfo:userInfo];
         return NO;
     }
-    
+
     // Remove existing destination entity before mapping the new one
     if (relationshipMapping.assignmentPolicy == RKAssignmentPolicyReplace && ![self applyReplaceAssignmentPolicyForRelationshipMapping:relationshipMapping]) {
         return NO;
@@ -925,7 +925,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 - (BOOL)mapOneToManyRelationshipWithValue:(id)value mapping:(RKRelationshipMapping *)relationshipMapping
 {
     NSString *destinationKeyPath = relationshipMapping.destinationKeyPath;
-    
+
     // One to many relationship
     RKLogDebug(@"Mapping one to many relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, destinationKeyPath);
 
@@ -935,7 +935,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects", relationshipMapping.sourceKeyPath);
         RKLogDebug(@"(Value at key path '%@': %@)", relationshipMapping.sourceKeyPath, value);
     }
-    
+
     if (relationshipMapping.assignmentPolicy == RKUnionAssignmentPolicy) {
         RKLogDebug(@"Mapping relationship with union assignment policy: constructing combined relationship value.");
         id existingObjects = [self.destinationObject valueForKeyPath:destinationKeyPath];
@@ -1000,7 +1000,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
     for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         if ([self isCancelled]) return NO;
-        
+
         NSString *sourceKeyPath = relationshipMapping.sourceKeyPath;
         NSString *destinationKeyPath = relationshipMapping.destinationKeyPath;
         id value = nil;
@@ -1012,13 +1012,13 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             value = sourceObject;
             RKMapping *destinationMapping = relationshipMapping.mapping;
             RKObjectMapping *objectMapping = nil;
-            
+
             if ([destinationMapping isKindOfClass:[RKObjectMapping class]]) {
                 objectMapping = (RKObjectMapping *)destinationMapping;
             } else if ([destinationMapping isKindOfClass:[RKDynamicMapping class]]) {
                 objectMapping = [(RKDynamicMapping *)destinationMapping objectMappingForRepresentation:value];
             }
-            
+
             if (! objectMapping) continue; // Mapping declined
             if (! RKObjectContainsValueForMappings(value, objectMapping.propertyMappings)) {
                 continue;
@@ -1032,7 +1032,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", sourceKeyPath);
             if (! parentObjectMapping.assignsNilForMissingRelationships) continue;
         }
-        
+
         if (value == [NSNull null]) {
             RKLogDebug(@"Found null value at keyPath '%@'", sourceKeyPath);
             value = nil;
@@ -1138,7 +1138,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             RKLogWarning(@"Unable to find nesting value for attribute '%@'", attributeMapping.destinationKeyPath);
         }
     }
-    
+
     // Serialization
     attributeMapping = [objectMapping mappingForDestinationKeyPath:RKObjectMappingNestingAttributeKeyName];
     if (attributeMapping) {
@@ -1176,7 +1176,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
 
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
-    
+
     id dataSource = self.dataSource;
     id delegate = self.delegate;
     RKMapping *mapping = self.mapping;
@@ -1192,13 +1192,13 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         }
         self.newDestinationObject = YES;
     }
-    
+
     self.collectsMappingInfo = (![dataSource respondsToSelector:@selector(mappingOperationShouldCollectMappingInfo:)] ||
                                 [dataSource mappingOperationShouldCollectMappingInfo:self]);
 
     self.shouldSetUnchangedValues = ([self.dataSource respondsToSelector:@selector(mappingOperationShouldSetUnchangedValues:)] &&
                                      [self.dataSource mappingOperationShouldSetUnchangedValues:self]);
-    
+
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
         self.objectMapping = objectMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:sourceObject];
@@ -1221,7 +1221,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             self.mappingInfo = [[RKMappingInfo alloc] initWithObjectMapping:objectMapping dynamicMapping:nil];
         }
     }
-    
+
     BOOL canSkipProperties = [dataSource respondsToSelector:@selector(mappingOperationShouldSkipPropertyMapping:)] && [dataSource mappingOperationShouldSkipPropertyMapping:self];
     BOOL canSkipAttributes = canSkipProperties;
     BOOL canSkipRelationships = canSkipProperties;
@@ -1255,7 +1255,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"No mappable values found for any of the attributes or relationship mappings" };
             self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableRepresentation userInfo:userInfo];
         }
-    
+
         // We did some mapping work, if there's no error let's commit our changes to the data source
         if (self.error == nil) {
             if ([dataSource respondsToSelector:@selector(commitChangesForMappingOperation:error:)]) {

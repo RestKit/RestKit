@@ -266,13 +266,13 @@
     lola.sex = @"female";
     RKCat *roy = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:nil];
     roy.sex = @"male";
-    
+
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [mapping addConnectionForRelationship:@"cats" connectedBy:@"sex"];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKConnectionDescription *connection = [mapping connectionForRelationship:@"cats"];
     connection.sourcePredicate = [NSPredicate predicateWithFormat:@"sex == %@", @"male"];
-    
+
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connections:@[ connection ] managedObjectCache:managedObjectCache];
     [operation start];
     assertThat(human.cats, hasCountOf(0));
@@ -282,18 +282,18 @@
 {
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     human.sex = @"female";
-    
+
     RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2011}];
     asia.sex = @"female";
     RKCat *lola = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2012}];
     lola.sex = @"female";
-    
+
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [mapping addConnectionForRelationship:@"cats" connectedBy:@"sex"];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKConnectionDescription *connection = [mapping connectionForRelationship:@"cats"];
     connection.destinationPredicate = [NSPredicate predicateWithFormat:@"birthYear = 2011"];
-       
+
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connections:@[ connection ] managedObjectCache:managedObjectCache];
     [operation start];
     assertThat(human.cats, hasCountOf(1));
@@ -305,12 +305,12 @@
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     RKCat __unused *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2011}];
     RKCat __unused *lola = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2012}];
-    
+
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [mapping addConnectionForRelationship:@"cats" connectedBy:@"sex"];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKConnectionDescription *connection = [mapping connectionForRelationship:@"cats"];
-    
+
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connections:@[ connection ] managedObjectCache:managedObjectCache];
     [operation start];
     assertThat(human.cats, hasCountOf(0));
@@ -320,19 +320,19 @@
 {
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     human.sex = @"female";
-    
+
     RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2011}];
     asia.sex = @"female";
     asia.name = @"Asia";
     RKCat *lola = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2012}];
     lola.sex = @"female";
     lola.name = nil;
-    
+
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [mapping addConnectionForRelationship:@"cats" connectedBy:@[ @"sex", @"name" ]];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKConnectionDescription *connection = [mapping connectionForRelationship:@"cats"];
-    
+
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connections:@[ connection ] managedObjectCache:managedObjectCache];
     [operation start];
     assertThat(human.cats, hasCountOf(1));
@@ -342,24 +342,24 @@
 - (void)testConnectionOfOptionalRelationshipIsSkippedWhenAllAttributesEvaluateToNil
 {
     RKHuman *human = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
-    
+
     RKCat *asia = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2011}];
     asia.sex = @"female";
     asia.name = @"Asia";
     RKCat *lola = [RKTestFactory insertManagedObjectForEntityForName:@"Cat" inManagedObjectContext:nil withProperties:@{@"birthYear": @2012}];
     lola.sex = @"female";
     lola.name = nil;
-    
+
     human.cats = [NSSet setWithObject:asia];
-    
+
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:[RKTestFactory managedObjectStore]];
     [mapping addConnectionForRelationship:@"cats" connectedBy:@[ @"sex", @"name" ]];
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKConnectionDescription *connection = [mapping connectionForRelationship:@"cats"];
-    
+
     RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:human connections:@[ connection ] managedObjectCache:managedObjectCache];
     [operation start];
-    
+
     // Operation should be skipped due to lack of connectable attributes
     assertThat(human.cats, hasCountOf(1));
     assertThat(human.cats, hasItems(asia, nil));

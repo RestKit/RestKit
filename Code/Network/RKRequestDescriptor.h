@@ -38,7 +38,7 @@
 
 /**
  Creates and returns a new `RKRequestDescriptor` object.
- 
+
  This method is deprecated. Use `+ (instancetype)requestDescriptorWithMapping:(RKMapping *)mapping
  objectClass:(Class)objectClass
  rootKeyPath:(NSString *)rootKeyPath

@@ -46,7 +46,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
 - (void)setUp
 {
     [RKTestFactory setUp];
-    
+
     // Delete any sqlite files in the app data directory
     NSError *error;
     NSArray *paths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:RKApplicationDataDirectory() error:&error];
@@ -80,7 +80,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
 
     // Create a secondary store using the seed
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
-    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Test.sqlite"];    
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"Test.sqlite"];
     persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath withConfiguration:nil options:nil error:&error];
     expect(persistentStore).notTo.beNil();
 
@@ -138,7 +138,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     human.name = @"Blake";
     BOOL success = [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:&error];
     assertThatBool(success, is(equalToBool(YES)));
-    
+
     // Spin the run loop to allow the did save notifications to propogate
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
 
@@ -173,7 +173,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
 
     // Spin the run loop to allow the did save notifications to propogate
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
-    
+
     success = [managedObjectStore resetPersistentStores:&error];
     assertThatBool(success, is(equalToBool(YES)));
 
@@ -267,20 +267,20 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
 - (void)testResetPersistentStoreThatNeedsMigration
 {
     NSError *error = nil;
-    
+
     // Create a seed Store with model version 1
     NSManagedObjectModel *model_v1 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
     RKManagedObjectStore *managedObjectStoreModel_v1 = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v1];
     NSString *seedPath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"SeedV1.sqlite"];
     [managedObjectStoreModel_v1 addSQLitePersistentStoreAtPath:seedPath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:nil];
-    
+
     // Adding persistent store for model version 2
     NSManagedObjectModel *model_v2 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 2);
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"SeededStore.sqlite"];
     RKManagedObjectStore *managedObjectStoreModel_v2 = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v2];
     [managedObjectStoreModel_v2 addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:seedPath withConfiguration:nil options:nil error:&error];
     [managedObjectStoreModel_v2 createManagedObjectContexts];
-    
+
     BOOL success = [managedObjectStoreModel_v2 resetPersistentStores:&error];
     assertThatBool(success, is(equalToBool(YES)));
     expect(error).to.beNil();
@@ -294,7 +294,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model];
     NSError *error;
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestBackupExclusion.sqlite"];
-    [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];    
+    [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:nil error:&error];
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     id resourceValue = nil;
     BOOL success = [storeURL getResourceValue:&resourceValue forKey:NSURLIsExcludedFromBackupKey error:&error];
@@ -366,13 +366,13 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
         expect(isDirectory).to.equal(YES);
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
         NSDate *creationDate = attributes[NSFileCreationDate];
-        
+
         BOOL success = [managedObjectStore resetPersistentStores:&error];
         expect(success).to.equal(YES);
-        
+
         attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[supportDirectoryFileURL path] error:&error];
         NSDate *newCreationDate = attributes[NSFileCreationDate];
-        
+
         expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
     }
 }
@@ -413,20 +413,20 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
         // Check that there is a support directory
         NSString *supportDirectoryName = [NSString stringWithFormat:@".%@_SUPPORT", [[persistentStore.URL lastPathComponent] stringByDeletingPathExtension]];
         NSString *supportDirectoryPath = [[[[persistentStore URL] path] stringByDeletingLastPathComponent] stringByAppendingPathComponent:supportDirectoryName];
-        
+
         BOOL isDirectory = NO;
         BOOL supportDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:supportDirectoryPath isDirectory:&isDirectory];
         expect(supportDirectoryExists).to.equal(YES);
         expect(isDirectory).to.equal(YES);
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:supportDirectoryPath error:&error];
         NSDate *creationDate = attributes[NSFileCreationDate];
-        
+
         BOOL success = [managedObjectStore resetPersistentStores:&error];
         expect(success).to.equal(YES);
-        
+
         attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:supportDirectoryPath error:&error];
         NSDate *newCreationDate = attributes[NSFileCreationDate];
-        
+
         expect([creationDate laterDate:newCreationDate]).to.equal(newCreationDate);
     }
 }
@@ -457,7 +457,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
     [managedObjectStore createManagedObjectContexts];
     managedObjectStore = nil;
-    
+
     // Attempting to update to `modelURL` will fail because this is an unversioned model
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:nil];
@@ -473,7 +473,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     NSEntityDescription *extraEntity = [NSEntityDescription new];
     [extraEntity setName:@"Extra"];
     [model_v1 setEntities:[[model_v1 entities] arrayByAddingObject:extraEntity]];
-    
+
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v1];
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestStore.sqlite"];
     NSError *error = nil;
@@ -481,14 +481,14 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
     [managedObjectStore createManagedObjectContexts];
     managedObjectStore = nil;
-    
+
     // Attempting to upgrade to v2 returns NO, because it can't find the source model (due to the added entity)
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 2);
     BOOL success = [RKManagedObjectStore migratePersistentStoreOfType:NSSQLiteStoreType atURL:storeURL toModelAtURL:modelURL error:&error configuringModelsWithBlock:nil];
     expect(success).to.equal(NO);
     expect(error).notTo.beNil();
-    expect(error.code).to.equal(NSMigrationMissingSourceModelError);    
+    expect(error.code).to.equal(NSMigrationMissingSourceModelError);
     assertThat([error localizedDescription], startsWith(@"Migration failed: Unable to find the source managed object model used to create the SQLite store at path"));
 }
 
@@ -502,7 +502,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
     [managedObjectStore createManagedObjectContexts];
     managedObjectStore = nil;
-    
+
     // Attempting to upgrade to v1 returns YES, because its already compatible
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
@@ -522,7 +522,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
     [managedObjectStore createManagedObjectContexts];
     managedObjectStore = nil;
-    
+
     // Now upgrade it to v2
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 2);
@@ -542,7 +542,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
     [managedObjectStore createManagedObjectContexts];
     managedObjectStore = nil;
-    
+
     // Now upgrade it to v4
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 4);
@@ -555,11 +555,11 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
 {
     // Create a v2 Store
     NSManagedObjectModel *model_v2 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 2);
-    
+
     // Add search indexing on the title attribute
     NSEntityDescription *articleEntity = [model_v2 entitiesByName][@"Article"];
     [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
-     
+
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v2];
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestStore.sqlite"];
     NSError *error = nil;
@@ -567,7 +567,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
     [managedObjectStore createManagedObjectContexts];
     managedObjectStore = nil;
-    
+
     // Now upgrade it to v3
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     NSURL *modelURL = RKURLForManagedObjectModelWithNameAtVersion(@"VersionedModel", 4);
@@ -585,13 +585,13 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
 {
     // Create a v1 Store
     NSManagedObjectModel *model_v1 = RKManagedObjectModelWithNameAtVersion(@"VersionedModel", 1);
-    
+
     // Add search indexing on the title attribute
     NSEntityDescription *articleEntity = [model_v1 entitiesByName][@"Article"];
     NSEntityDescription *tagEntity = [model_v1 entitiesByName][@"Tag"];
     [RKSearchIndexer addSearchIndexingToEntity:articleEntity onAttributes:@[ @"title" ]];
     [RKSearchIndexer addSearchIndexingToEntity:tagEntity onAttributes:@[ @"name" ]];
-    
+
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:model_v1];
     NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:@"TestStore.sqlite"];
     NSError *error = nil;
@@ -599,7 +599,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:options error:&error];
     [managedObjectStore createManagedObjectContexts];
     managedObjectStore = nil;
-    
+
     // Now upgrade it to the latest version
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"VersionedModel" withExtension:@"momd"];

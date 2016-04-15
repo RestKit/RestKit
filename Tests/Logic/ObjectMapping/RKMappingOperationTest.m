@@ -186,7 +186,7 @@
     BOOL success = (operation.error == nil);
     assertThatBool(success, is(equalToBool(YES)));
     assertThatUnsignedLongLong([object.number unsignedLongLongValue], is(equalToUnsignedLongLong(69726278940360707)));
-    
+
 }
 
 - (void)testShouldSuccessfullyMapFloatingPointNumberStringsToNumbers
@@ -205,7 +205,7 @@
     BOOL success = (operation.error == nil);
     assertThatBool(success, is(equalToBool(YES)));
     assertThatDouble([object.number doubleValue], is(equalToDouble(1234.5678)));
-    
+
 }
 
 - (void)testShouldSuccessfullyMapPropertiesBeforeKeyPathAttributes
@@ -509,12 +509,12 @@
 {
     RKObjectMapping *childMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [childMapping addAttributeMappingsFromArray:@[@"name"]];
-    
+
     RKObjectMapping *parentMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [parentMapping addAttributeMappingsFromArray:@[@"name"]];
     [parentMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"children" toKeyPath:@"friends" withMapping:childMapping]];
     NSDictionary *mappingsDictionary = @{ @"parents": parentMapping };
-    
+
     NSOperationQueue *operationQueue = [NSOperationQueue new];
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
     RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:JSON mappingsDictionary:mappingsDictionary];
@@ -531,7 +531,7 @@
     NSDictionary *representation = @{ @"MyObject": @{ @"ObjectAttribute1": @{} }, @"MyRootString": @"SomeString" };
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping addAttributeMappingsFromDictionary:@{ @"MyRootString": @"MyRootString" }];
-    
+
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:nil mapping:mapping];
     mappingOperation.dataSource = dataSource;

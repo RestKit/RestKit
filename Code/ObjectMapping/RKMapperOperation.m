@@ -162,7 +162,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     NSAssert([representation respondsToSelector:@selector(setValue:forKeyPath:)], @"Expected self.object to be KVC compliant");
     id destinationObject = nil;
     BOOL isNewObject = NO;
-    
+
     if (self.targetObject) {
         destinationObject = self.targetObject;
         RKObjectMapping *objectMapping = nil;
@@ -173,7 +173,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
         } else {
             NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
         }
-        
+
         if (NO == [[self.targetObject class] isSubclassOfClass:objectMapping.objectClass]) {
             if ([_mappingsDictionary count] == 1) {
                 NSString *errorMessage = [NSString stringWithFormat:
@@ -227,7 +227,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             RKLogWarning(@"Collection mapping forced but representations is of type '%@' rather than NSDictionary", NSStringFromClass([representations class]));
         }
     }
-    
+
     RKMapperMetadata *mappingData = [RKMapperMetadata new];
     mappingData.rootKeyPath = keyPath;
     NSDictionary *metadata = @{ @"mapping": mappingData };
@@ -235,7 +235,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     NSMutableArray *mappedObjects = [NSMutableArray arrayWithCapacity:[representations count]];
     [objectsToMap enumerateObjectsUsingBlock:^(id mappableObject, NSUInteger index, BOOL *stop) {
         if (mappableObject == [NSNull null]) { return; }
-        
+
         id destinationObject = [self objectForRepresentation:mappableObject withMapping:mapping];
         if (destinationObject) {
             mappingData.collectionIndex = index;
@@ -269,13 +269,13 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
             [self.delegate mapper:self didFailMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath) withError:mappingOperation.error];
         }
         [self addError:mappingOperation.error];
-     
+
         return NO;
     } else {
         if ([self.delegate respondsToSelector:@selector(mapper:didFinishMappingOperation:forKeyPath:)]) {
             [self.delegate mapper:self didFinishMappingOperation:mappingOperation forKeyPath:RKDelegateKeyPathFromKeyPath(keyPath)];
         }
-        
+
         if (mappingOperation.mappingInfo) {
             id infoKey = keyPath ?: [NSNull null];
             NSMutableArray *infoForKeyPath = (self.mutableMappingInfo)[infoKey];
@@ -286,7 +286,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
                 [self.mutableMappingInfo setValue:infoForKeyPath forKey:infoKey];
             }
         }
-        
+
         return YES;
     }
 }
@@ -349,7 +349,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     NSMutableDictionary *results = [NSMutableDictionary dictionary];
     for (NSString *keyPath in mappingsByKeyPath) {
         if ([self isCancelled]) return nil;
-        
+
         @autoreleasepool {
             id mappingResult = nil;
             id nestedRepresentation = nil;
@@ -396,7 +396,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 {
     [super cancel];
     RKLogDebug(@"%@:%p received `cancel` message: cancelling mapping...", [self class], self);
-    
+
     if ([self.delegate respondsToSelector:@selector(mapperDidCancelMapping:)]) {
         [self.delegate mapperDidCancelMapping:self];
     }
@@ -406,7 +406,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
 {
     NSAssert(self.representation != nil, @"Cannot perform object mapping without a source object to map from");
     NSAssert(self.mappingsDictionary, @"Cannot perform object mapping without a dictionary of mappings");
-    
+
     if ([self isCancelled]) return;
     self.mutableMappingInfo = [NSMutableDictionary dictionary];
     self.mappingErrors = [NSMutableArray new];
@@ -421,7 +421,7 @@ static NSString *RKFailureReasonErrorStringForMappingNotFoundError(id representa
     BOOL foundMappable = NO;
     NSMutableDictionary *results = [self mapSourceRepresentationWithMappingsDictionary:self.mappingsDictionary];
     if ([self isCancelled]) return;
-    foundMappable = (results != nil);    
+    foundMappable = (results != nil);
 
     // If we found nothing eligible for mapping in the content, add an unmappable key path error and fail mapping
     // If the content is empty, we don't consider it an error

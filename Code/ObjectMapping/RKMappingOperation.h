@@ -56,7 +56,7 @@
 
 /**
  Asks the delegate if the mapping operation should set a value for a given key path with an attribute or relationship mapping. This method is invoked before the value is set. If the delegate does not implement this method, then the mapping operation will determine if the value should be set by comparing the current property value with the new property value.
- 
+
  @param operation The object mapping operation being performed.
  @param value A new value that was set on the destination object.
  @param keyPath The key path in the destination object for which a new value has been set.
@@ -162,10 +162,10 @@
 
     RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[RKMetadataExample class]];
     [objectMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"@metadata.URL": @"URL" }];
- 
+
     RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:example mapping:objectMapping];
     mappingOperation.metadata = metadata;
- 
+
     NSError *error = nil;
     BOOL success = [mappingOperation execute:&error];
 
@@ -175,18 +175,18 @@
 
  1. `@metadata.mapping.collectionIndex` - An `NSNumber` object specifying the index of the current object within a collection being mapped. This key is only available if the current representation exists within a collection.
  1. `@metadata.mapping.parentObject` - The direct parent object of the object that is currently being mapped. This key is only available for objects that are mapped as relationships of a parent object.
- 
+
  ## Traversing the Representation Hierarchy
- 
+
  In certain mapping scenarios it can become desirable to access ancestors of the current source object. For example, consider the following example JSON:
- 
+
     {
         "user": {
             "id": 1,
             "name": "Blake Watters",
             "preferences": [
                 {
-                    { 
+                    {
                         "name": "push_notifications_enabled",
                         "value": true,
                     },
@@ -198,27 +198,27 @@
             ]
         }
     }
- 
+
  And it's corresponding model:
- 
+
     @interface RKPreferenceExample : NSObject
     @property (nonatomic, strong) NSNumber *userID;
     @property (nonatomic, copy) NSString *name;
     @property (nonatomic, strong) id value;
     @end
- 
- Notice that `userID` is a field that we wish to model as part of our local `RKPreferenceExample` class, but its not available within the `@"preferences"` key path that our 
+
+ Notice that `userID` is a field that we wish to model as part of our local `RKPreferenceExample` class, but its not available within the `@"preferences"` key path that our
  mapping will target. In this case we'd up like to reach "up" in the parsed JSON hierarchy to access our parent node, as demonstrated in the following mapping:
- 
+
     RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[RKPreferenceExample class]];
     [objectMapping addAttributeMappingsFromDictionary:@{ @"name": @"name", @"value": @"value", @"@parent.id": @"userID" }];
- 
+
  Note the use of the `@parent` key in the final attribute mapping: this pseudo-key always points to the direct parent node of the representation being mapped (or `nil` if there is none). Parent access can be chained to traverse upward all the way to the root node of the representation.
- 
+
  ### Representation Traversal Keys
- 
+
  There are currently two keys provided for traversing the representation hierarchy:
- 
+
  1. `@"root"` - Returns the root node of the representation being mapped. When a large JSON document is being mapped by an instance of `RKMapperOperation` this will point to the parsed JSON document that was used to initialize the operation.
  1. `@"parent"` - Returns the direct parent node of the `sourceObject` being mapped or `nil` if the `sourceObject` is itself a root node.
  */
@@ -230,7 +230,7 @@
 
 /**
  Initializes the receiver with a source object, a destination object and an object mapping with which to perform an object mapping.
- 
+
  @param sourceObject The source object to be mapped. Cannot be `nil`.
  @param destinationObject The destination object the results are to be mapped onto. May be `nil`, in which case a new object target object will be obtained from the `dataSource`.
  @param objectOrDynamicMapping An instance of `RKObjectMapping` or `RKDynamicMapping` defining how the mapping is to be performed.
@@ -240,7 +240,7 @@
 
 /**
  Initializes the receiver with a source object, a destination object and an object mapping with which to perform an object mapping, and metadata information to be made available to the mapping.
- 
+
  @param sourceObject The source object to be mapped. Cannot be `nil`.
  @param destinationObject The destination object the results are to be mapped onto. May be `nil`, in which case a new object target object will be obtained from the `dataSource`.
  @param objectOrDynamicMapping An instance of `RKObjectMapping` or `RKDynamicMapping` defining how the mapping is to be performed.
@@ -260,7 +260,7 @@
 
 /**
  The target object for this operation. Mappable values in the source object will be applied to the destination object using key-value coding.
- 
+
  If initialized with a `nil` destination object, the mapping operation will attempt to find or create a destination object via the data source and will populate the value of the `destinationObject` property.
  */
 @property (nonatomic, strong, readonly) id destinationObject;
@@ -316,7 +316,7 @@
 
 /**
  Returns a dictionary containing information about the mappings applied during the execution of the operation. The keys of the dictionary are key paths into the `destinationObject` for values that were mapped and the values are instances of `RKMappingDetails` that specify the object mapping and property mappings that were applied.
- 
+
  Mapping info is aggregated for all child mapping operations executed for relationships.
  */
 @property (nonatomic, readonly) RKMappingInfo *mappingInfo;
@@ -381,7 +381,7 @@
 
 /**
  Retrieves the property mapping with the specified destination key path.
- 
+
  @param key An `NSString` object specifying the destination key path for the property that is to be retrieved.
  @return The `RKPropertyMapping` with the specified destination key path or `nil` if none was found.
  */

@@ -51,16 +51,16 @@ BOOL RKIsSpecificRequestMethod(RKRequestMethod method);
 
 /**
  Returns the corresponding string for value for a given HTTP request method.
- 
+
  For example, given `RKRequestMethodGET` would return `@"GET"`.
- 
+
  @param method The request method to return the corresponding string value for. The given request method must be specific.
  */
 NSString *RKStringFromRequestMethod(RKRequestMethod method);
 
 /**
  Returns the corresponding request method value for a given string.
- 
+
  For example, given `@"PUT"` would return `@"RKRequestMethodPUT"`
  */
 RKRequestMethod RKRequestMethodFromString(NSString *);
@@ -103,9 +103,9 @@ NSIndexSet *RKCacheableStatusCodes(void);
 
 /**
  Returns string representation of a given HTTP status code.
- 
+
  The list of supported status codes was built from http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
- 
+
  @param statusCode The HTTP status code to return a string from.
  @return A string representation of the given status code.
  */
@@ -118,7 +118,7 @@ NSDate *RKDateFromHTTPDateString(NSString *);
 
 /**
  Returns the cache expiration data from a dictionary of HTTP response headers as appropriate for the given status code. If the status code is not cachable, `nil` is returned.
- 
+
  @param headers The HTTP response headers from which to extract the cache expiration date.
  @param statusCode The HTTP response status code of the response.
  @return The expiration date as specified by the cache headers or `nil` if none was found.

@@ -93,7 +93,7 @@
 
 /**
  Returns an array of object mappings that have been registered with the receiver.
- 
+
  @return An array of `RKObjectMapping` objects registered with the receiver.
  */
 @property (nonatomic, readonly) NSArray *objectMappings;

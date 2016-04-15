@@ -26,7 +26,7 @@
 {
     [RKTestFactory setUp];
     self.managedObjectStore = [RKTestFactory managedObjectStore];
-    
+
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:self.managedObjectContext];
     self.cache = [[RKEntityByAttributeCache alloc] initWithEntity:entity
                                                        attributes:@[ @"railsID" ]
@@ -96,7 +96,7 @@
         done = YES;
     }];
     expect(done).will.equal(YES);
-    
+
     done = NO;
     [self.cache flush:^{
         expect([self.cache containsObject:human1]).to.equal(NO);
@@ -238,18 +238,18 @@
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human.railsID = @12345;
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
-    
+
     __block BOOL done = NO;
     [self.cache addObjects:[NSSet setWithObjects:human, nil] completion:^{
         done = YES;
     }];
     expect(done).will.equal(YES);
-    
+
     NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     childContext.parentContext = self.managedObjectContext;
-    
+
     [childContext deleteObject:[childContext objectWithID:[human objectID]]];
-    
+
     NSManagedObject *object = [self.cache objectWithAttributeValues:@{ @"railsID": @"12345" } inContext:childContext];
     assertThat(object, is(nilValue()));
 }
@@ -277,7 +277,7 @@
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
 
     [self.cache addObjects:[NSSet setWithObjects:human1, human2, nil] completion:nil];
-    
+
     expect([self.cache containsObject:human1]).will.equal(YES);
     expect([self.cache containsObject:human2]).will.equal(YES);
 }
@@ -350,7 +350,7 @@
 - (void)testCount
 {
     assertThatInteger([self.cache count], is(equalToInteger(0)));
-    
+
     RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];
     human1.railsID = @12345;
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:self.managedObjectStore.persistentStoreManagedObjectContext];

@@ -69,7 +69,7 @@
 
 /**
  The queue on which to dispatch callbacks for asynchronous operations. When `nil`, the main queue is used.
- 
+
  **Default**: `nil`
  */
 @property (nonatomic, assign) dispatch_queue_t callbackQueue;
@@ -82,14 +82,14 @@
  Loads the cache by finding all instances of the configured entity and building
  an association between the value of the cached attribute's value and the
  managed object ID for the object.
- 
+
  @param completion A block to execute when the cache has finished loading.
  */
 - (void)load:(void (^)(void))completion;
 
 /**
  Flushes the cache by releasing all cache attribute value to managed object ID associations.
- 
+
  @param completion A block to execute when the cache has finished flushing.
  */
 - (void)flush:(void (^)(void))completion;
@@ -187,7 +187,7 @@
 
 /*
  Deprecated in 0.20.1
- 
+
  All methods below now accept a completion block
  */
 @interface RKEntityByAttributeCache (Deprecations)
