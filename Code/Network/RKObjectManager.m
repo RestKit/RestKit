@@ -19,6 +19,8 @@
 //
 
 #import <objc/runtime.h>
+#import <AFNetworking/AFNetworking.h>
+
 #import "RKObjectManager.h"
 #import "RKObjectParameterization.h"
 #import "RKRequestDescriptor.h"
