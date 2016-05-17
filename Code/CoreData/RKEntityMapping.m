@@ -206,6 +206,7 @@ static BOOL entityIdentificationInferenceEnabled = YES;
     copy.identificationPredicateBlock = self.identificationPredicateBlock;
     copy.deletionPredicate = self.deletionPredicate;
     copy.modificationAttribute = self.modificationAttribute;
+    copy.modificationPredicateBlock = self.modificationPredicateBlock;
     copy.mutableConnections = [NSMutableArray array];
     
     for (RKConnectionDescription *connection in self.connections) {
