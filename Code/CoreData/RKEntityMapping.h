@@ -131,6 +131,10 @@
  @raises NSInvalidArgumentException Raised if the attribute given is not a property of the receiver's entity.
  */
 @property (nonatomic, strong) NSAttributeDescription *modificationAttribute;
+/**
+ *  An optional block which returns whether a destination object is not modified against source representation. Returns YES if destination object is modified. If any of `modificationAttribute` and `modificationPredicateBlock` states that object is unmodified, mapping will be skipped
+ */
+@property (nonatomic, copy) BOOL(^modificationPredicateBlock)(id sourceObject, id destinationObject);
 
 /**
  If this is YES, mapping operations will map relationships of the object even if the `modificationAttribute` shows that the object has not been modified.
