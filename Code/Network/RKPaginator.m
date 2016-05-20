@@ -91,6 +91,11 @@ static NSUInteger RKPaginatorDefaultPerPage = 25;
     [self.objectRequestOperation cancel];
 }
 
+-(id)valueForUndefinedKey:(NSString *)key {
+    // If parameter is unknown, ignore it
+    return [NSString stringWithFormat:@":%@",key];
+}
+
 - (NSURL *)patternURL
 {
     return self.request.URL;
