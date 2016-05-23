@@ -1021,7 +1021,6 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 
 @end
 
-#ifdef _SYSTEMCONFIGURATION_H
 NSString *RKStringFromNetworkReachabilityStatus(AFNetworkReachabilityStatus networkReachabilityStatus)
 {
     switch (networkReachabilityStatus) {
@@ -1033,4 +1032,3 @@ NSString *RKStringFromNetworkReachabilityStatus(AFNetworkReachabilityStatus netw
     }
     return nil;
 }
-#endif
