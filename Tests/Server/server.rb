@@ -262,7 +262,7 @@ class RestKitTestServer < Sinatra::Base
      :current_page => 1, :entries => [], :total_pages => 0}.to_json
   end
 
-  get '/paginate/doc:123/' do
+  get '/paginate/do:123/' do
     status 200
     content_type 'application/json'
     {:per_page => 10, :total_entries => 0,
