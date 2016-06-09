@@ -9,6 +9,8 @@
 #import "RKTestEnvironment.h"
 #import "RKCat.h"
 #import "RKEvent.h"
+#import "RKHouse.h"
+#import "RKHuman.h"
 
 @interface RKFetchRequestMappingCacheTest : RKTestCase
 
@@ -65,6 +67,27 @@
                                        inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
     NSSet *birthdays = [NSSet setWithObject:birthday];
     expect(managedObjects).to.equal(birthdays);
+}
+
+- (void)testFetchRequestMappingCacheReturnsObjectsWithStringUsingDotNotation
+{
+    // RKEvent entity. String primary key
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    RKHouse *house = [NSEntityDescription insertNewObjectForEntityForName:@"House" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    house.city = @"myCity";
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    human.house = house;
+    house.owner = human;
+    
+    [managedObjectStore.persistentStoreManagedObjectContext save:nil];
+    
+    NSSet *managedObjects = [cache managedObjectsWithEntity:entity
+                                            attributeValues:@{ @"house.city": @"myCity" }
+                                     inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    NSSet *humans = [NSSet setWithObject:human];
+    expect(managedObjects).to.equal(humans);
 }
 
 - (void)testThatCacheCanHandleSwitchingBetweenSingularAndPluralAttributeValues
