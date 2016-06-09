@@ -882,7 +882,6 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 @end
 
-#ifdef _SYSTEMCONFIGURATION_H
 /**
  Returns a string description of the given network status.
 
@@ -890,4 +889,3 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @return A string describing the reachability status.
  */
 NSString *RKStringFromNetworkReachabilityStatus(AFNetworkReachabilityStatus networkReachabilityStatus);
-#endif

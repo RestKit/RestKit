@@ -23,9 +23,6 @@ Pod::Spec.new do |s|
 #endif
 EOS
 
-  # Preserve the layout of headers in the Code directory
-  s.header_mappings_dir = 'Code'
-
   ### Subspecs
 
   s.subspec 'Core' do |cs|

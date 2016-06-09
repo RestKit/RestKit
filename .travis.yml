@@ -6,6 +6,7 @@ cache:
   - cocoapods
 install:
     - bundle install
+    - bundle exec pod repo update --silent
     - bundle exec pod install
 script:
     - bundle exec rake ci
