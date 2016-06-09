@@ -40,6 +40,7 @@
 @dynamic catIDs;
 @dynamic catsInOrderByAge;
 @dynamic isHappy;
+@dynamic likesDogs;
 
 @dynamic house;
 @dynamic landlord;

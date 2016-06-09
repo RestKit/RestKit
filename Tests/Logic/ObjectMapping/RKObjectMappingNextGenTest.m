@@ -1430,7 +1430,7 @@
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     id mockMapping = [OCMockObject partialMockForObject:mapping];
-    [[[mockMapping expect] andReturnValue:@NO] shouldSetDefaultValueForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:@NO] assignsDefaultValueForMissingAttributes];
     NSError *error = nil;
     [operation performMapping:&error];
     assertThat(user.name, is(equalTo(@"Blake Watters")));
@@ -1903,7 +1903,7 @@
     NSMutableDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
     [dictionary removeObjectForKey:@"address"];
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
-    [[[mockMapping expect] andReturnValue:@YES] setNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:@YES] assignsNilForMissingRelationships];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mockMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
