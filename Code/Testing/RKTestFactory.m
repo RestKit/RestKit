@@ -257,9 +257,6 @@
         [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
 
-    // Clear the NSURLCache
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
-
     if ([RKTestFactory sharedFactory].setUpBlock) [RKTestFactory sharedFactory].setUpBlock();
 }
 
@@ -269,7 +266,6 @@
 
     // Cancel any network operations and clear the cache
     [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     // Cancel any object mapping in the response mapping queue
     [[RKObjectRequestOperation responseMappingQueue] cancelAllOperations];
