@@ -813,6 +813,8 @@
 
 - (void)testThatCacheEntryIsNotFlaggedWhenMappingFails
 {
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:@"/mismatch" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
