@@ -30,6 +30,23 @@
 #   endif
 #endif
 
+/*
+    This is a workaround for:
+    https://github.com/CocoaPods/CocoaPods/issues/5390
+    Although, it's not completely safe, `AFNetworking` is not going to release
+    new versions of `1.3.x`, so this enum won't change.
+    This allows `RestKit` to compile and `Reachability` would still be available
+    when the `SystemConfiguration` framework is linked.
+ */
+#ifdef _SYSTEMCONFIGURATION_H
+typedef enum {
+    RKNetworkReachabilityStatusUnknown          = -1,
+    RKNetworkReachabilityStatusNotReachable     = 0,
+    RKNetworkReachabilityStatusReachableViaWWAN = 1,
+    RKNetworkReachabilityStatusReachableViaWiFi = 2,
+} RKNetworkReachabilityStatus;
+#endif
+
 @protocol RKSerialization;
 @class RKManagedObjectStore, RKObjectRequestOperation, RKManagedObjectRequestOperation,
 RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
@@ -889,5 +906,5 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param networkReachabilityStatus The network reachability status.
  @return A string describing the reachability status.
  */
-NSString *RKStringFromNetworkReachabilityStatus(AFNetworkReachabilityStatus networkReachabilityStatus);
+NSString *RKStringFromNetworkReachabilityStatus(RKNetworkReachabilityStatus networkReachabilityStatus);
 #endif

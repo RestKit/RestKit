@@ -10,8 +10,8 @@ Pod::Spec.new do |s|
 
   # Platform setup
   s.requires_arc = true
-  s.ios.deployment_target = '6.1'
-  s.osx.deployment_target = '10.8'
+  s.ios.deployment_target = '8.1'
+  s.osx.deployment_target = '10.9'
 
   # Exclude optional Search and Testing modules
   s.default_subspec = 'Core'
@@ -22,9 +22,6 @@ Pod::Spec.new do |s|
     #import <CoreData/CoreData.h>
 #endif
 EOS
-
-  # Preserve the layout of headers in the Code directory
-  s.header_mappings_dir = 'Code'
 
   ### Subspecs
 

@@ -25,7 +25,7 @@
 		259C803C15D20C4000F447D2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 259C803B15D20C4000F447D2 /* libxml2.dylib */; };
 		25AA7D1415D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 25AA7D1215D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodeld */; };
 		25AABCF017B69B590061DC5B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25AABCEF17B69B590061DC5B /* Default-568h@2x.png */; };
-		45F73EB9D2311FFAF6C1338B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F88520F4AEA4E5CA9B38E99 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		42FA8BD118F2D9BE8051D7DF /* Pods_RKSearchExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD280963654306E33A8D31E9 /* Pods_RKSearchExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,9 +52,9 @@
 		259C803B15D20C4000F447D2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		25AA7D1315D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RKSearchExampleModel.xcdatamodel; sourceTree = "<group>"; };
 		25AABCEF17B69B590061DC5B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		4839D63C1F0B427271E84C9B /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
-		5F88520F4AEA4E5CA9B38E99 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		97374605117FDAA6FDA05691 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		7CD89299A4CDB0E0AEC0AFF9 /* Pods-RKSearchExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKSearchExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-RKSearchExample/Pods-RKSearchExample.release.xcconfig"; sourceTree = "<group>"; };
+		BFCB538030306E5A152BC461 /* Pods-RKSearchExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKSearchExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RKSearchExample/Pods-RKSearchExample.debug.xcconfig"; sourceTree = "<group>"; };
+		CD280963654306E33A8D31E9 /* Pods_RKSearchExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RKSearchExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,7 +72,7 @@
 				259C7FFF15D20B5600F447D2 /* CoreGraphics.framework in Frameworks */,
 				259C7FFB15D20B5600F447D2 /* UIKit.framework in Frameworks */,
 				259C7FFD15D20B5600F447D2 /* Foundation.framework in Frameworks */,
-				45F73EB9D2311FFAF6C1338B /* Pods.framework in Frameworks */,
+				42FA8BD118F2D9BE8051D7DF /* Pods_RKSearchExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,7 +112,7 @@
 				259C7FFA15D20B5600F447D2 /* UIKit.framework */,
 				259C7FFC15D20B5600F447D2 /* Foundation.framework */,
 				259C7FFE15D20B5600F447D2 /* CoreGraphics.framework */,
-				5F88520F4AEA4E5CA9B38E99 /* Pods.framework */,
+				CD280963654306E33A8D31E9 /* Pods_RKSearchExample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -146,8 +146,8 @@
 		8045C6A1DC1A7B372A75E95F /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				97374605117FDAA6FDA05691 /* Pods.debug.xcconfig */,
-				4839D63C1F0B427271E84C9B /* Pods.release.xcconfig */,
+				BFCB538030306E5A152BC461 /* Pods-RKSearchExample.debug.xcconfig */,
+				7CD89299A4CDB0E0AEC0AFF9 /* Pods-RKSearchExample.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -159,12 +159,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 259C801415D20B5600F447D2 /* Build configuration list for PBXNativeTarget "RKSearchExample" */;
 			buildPhases = (
-				647A518E7D82E5FBFCACA0DF /* Check Pods Manifest.lock */,
+				647A518E7D82E5FBFCACA0DF /* [CP] Check Pods Manifest.lock */,
 				259C7FF215D20B5600F447D2 /* Sources */,
 				259C7FF315D20B5600F447D2 /* Frameworks */,
 				259C7FF415D20B5600F447D2 /* Resources */,
-				64884B0BE0AA32A1480DCC81 /* Embed Pods Frameworks */,
-				750345EDEDC2028EA5111217 /* Copy Pods Resources */,
+				64884B0BE0AA32A1480DCC81 /* [CP] Embed Pods Frameworks */,
+				750345EDEDC2028EA5111217 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -217,14 +217,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		647A518E7D82E5FBFCACA0DF /* Check Pods Manifest.lock */ = {
+		647A518E7D82E5FBFCACA0DF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,34 +232,34 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		64884B0BE0AA32A1480DCC81 /* Embed Pods Frameworks */ = {
+		64884B0BE0AA32A1480DCC81 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RKSearchExample/Pods-RKSearchExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		750345EDEDC2028EA5111217 /* Copy Pods Resources */ = {
+		750345EDEDC2028EA5111217 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RKSearchExample/Pods-RKSearchExample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -319,7 +319,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -338,7 +338,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -347,12 +347,11 @@
 		};
 		259C801515D20B5600F447D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 97374605117FDAA6FDA05691 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = BFCB538030306E5A152BC461 /* Pods-RKSearchExample.debug.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKSearchExample/RKSearchExample-Prefix.pch";
 				INFOPLIST_FILE = "RKSearchExample/RKSearchExample-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.restkit.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -361,12 +360,11 @@
 		};
 		259C801615D20B5600F447D2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4839D63C1F0B427271E84C9B /* Pods.release.xcconfig */;
+			baseConfigurationReference = 7CD89299A4CDB0E0AEC0AFF9 /* Pods-RKSearchExample.release.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKSearchExample/RKSearchExample-Prefix.pch";
 				INFOPLIST_FILE = "RKSearchExample/RKSearchExample-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.restkit.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;

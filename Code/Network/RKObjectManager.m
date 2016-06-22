@@ -1022,13 +1022,13 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFHTTPClientParamet
 @end
 
 #ifdef _SYSTEMCONFIGURATION_H
-NSString *RKStringFromNetworkReachabilityStatus(AFNetworkReachabilityStatus networkReachabilityStatus)
+NSString *RKStringFromNetworkReachabilityStatus(RKNetworkReachabilityStatus networkReachabilityStatus)
 {
     switch (networkReachabilityStatus) {
-        case AFNetworkReachabilityStatusNotReachable:     return @"Not Reachable";
-        case AFNetworkReachabilityStatusReachableViaWiFi: return @"Reachable via WiFi";
-        case AFNetworkReachabilityStatusReachableViaWWAN: return @"Reachable via WWAN";
-        case AFNetworkReachabilityStatusUnknown:          return @"Reachability Unknown";
+        case RKNetworkReachabilityStatusNotReachable:     return @"Not Reachable";
+        case RKNetworkReachabilityStatusReachableViaWiFi: return @"Reachable via WiFi";
+        case RKNetworkReachabilityStatusReachableViaWWAN: return @"Reachable via WWAN";
+        case RKNetworkReachabilityStatusUnknown:          return @"Reachability Unknown";
         default:                                          break;
     }
     return nil;

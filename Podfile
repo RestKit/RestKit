@@ -1,6 +1,9 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
 inhibit_all_warnings!
+use_frameworks!
+
+workspace 'RestKit.xcworkspace'
 
 def import_pods
   pod 'RestKit/Testing', :path => '.'
@@ -16,7 +19,7 @@ def import_pods
 end
 
 target 'RestKit' do
-  platform :ios, '6.1'
+  platform :ios, '8.1'
   podspec
 
   target 'RestKitTests' do
@@ -26,7 +29,7 @@ target 'RestKit' do
 end
 
 target 'RestKitFramework' do
-  platform :osx, '10.8'
+  platform :osx, '10.9'
   podspec
 
   target 'RestKitFrameworkTests' do
