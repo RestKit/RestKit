@@ -26,21 +26,21 @@ NSString *RKApplicationDataDirectory(void)
     return ([paths count] > 0) ? paths[0] : nil;
 #else
     NSFileManager *sharedFM = [NSFileManager defaultManager];
-    
+
     NSArray *possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
                                              inDomains:NSUserDomainMask];
     NSURL *appSupportDir = nil;
     NSURL *appDirectory = nil;
-    
+
     if ([possibleURLs count] >= 1) {
         appSupportDir = possibleURLs[0];
     }
-    
+
     if (appSupportDir) {
         appDirectory = [appSupportDir URLByAppendingPathComponent:RKExecutableName()];
         return [appDirectory path];
     }
-    
+
     return nil;
 #endif
 }
@@ -52,7 +52,7 @@ NSString *RKExecutableName(void)
         RKLogWarning(@"Unable to determine CFBundleExecutable: storing data under RestKit directory name.");
         executableName = @"RestKit";
     }
-    
+
     return executableName;
 }
 
@@ -66,7 +66,7 @@ NSString *RKCachesDirectory(void)
     if ([paths count]) {
         path = [paths[0] stringByAppendingPathComponent:RKExecutableName()];
     }
-    
+
     return path;
 #endif
 }
@@ -81,14 +81,14 @@ BOOL RKEnsureDirectoryExistsAtPath(NSString *path, NSError **error)
             return YES;
         }
     }
-    
+
     // Create the directory and any intermediates
     NSError *errorReference = (error == nil) ? nil : *error;
     if (! [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&errorReference]) {
         RKLogError(@"Failed to create requested directory at path '%@': %@", path, errorReference);
         return NO;
     }
-    
+
     return YES;
 }
 
@@ -110,7 +110,7 @@ NSString *RKMIMETypeFromPathExtension(NSString *path)
             return type;
         }
     }
-    
+
     // Consult our internal dictionary of mappings if not found
     return [RKDictionaryOfFileExtensionsToMIMETypes() valueForKey:pathExtension];
 }
@@ -119,7 +119,7 @@ void RKSetExcludeFromBackupAttributeForItemAtPath(NSString *path)
 {
     NSCParameterAssert(path);
     NSCAssert([[NSFileManager defaultManager] fileExistsAtPath:path], @"Cannot set Exclude from Backup attribute for non-existant item at path: '%@'", path);
-    
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
     NSError *error = nil;
     NSURL *URL = [NSURL fileURLWithPath:path];
