@@ -26,15 +26,13 @@
 #import "RKLog.h"
 
 // Core Data
-#ifdef _COREDATADEFINES_H
-#if __has_include("RKCoreData.h")
+#if __has_include("CoreData.h")
 #define RKCoreDataIncluded
 #import "RKEntityMapping.h"
 #import "RKConnectionDescription.h"
 #import "RKConnectionTestExpectation.h"
 #import "RKFetchRequestManagedObjectCache.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
-#endif
 #endif
 
 // Error Constants

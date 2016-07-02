@@ -6,6 +6,7 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #if TARGET_OS_IPHONE
 #import <MobileCoreServices/UTType.h>
 #import <UIKit/UIDevice.h>

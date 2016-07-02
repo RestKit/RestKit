@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#import <Foundation/Foundation.h>
+
 @class RKMapping, RKPropertyMapping, RKPropertyMappingTestExpectation;
 
 /**

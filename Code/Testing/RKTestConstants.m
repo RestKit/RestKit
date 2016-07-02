@@ -18,6 +18,8 @@
 //  limitations under the License.
 //
 
+#import <Foundation/Foundation.h>
+
 /*
  This file defines constants used by the Testing module. It is necessary due to strange
  linking errors when building for the Device. When these constants were defined within

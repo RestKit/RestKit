@@ -19,7 +19,7 @@
 //
 
 #import <objc/runtime.h>
-#import <AFNetworking/AFNetworking.h>
+#import "AFNetworking.h"
 
 #import "RKObjectManager.h"
 #import "RKObjectParameterization.h"
@@ -39,12 +39,10 @@
 #import "RKRoute.h"
 #import "RKRouteSet.h"
 
-#ifdef _COREDATADEFINES_H
-#   if __has_include("RKCoreData.h")
-#       define RKCoreDataIncluded
-#       import "RKManagedObjectStore.h"
-#       import "RKManagedObjectRequestOperation.h"
-#   endif
+#if __has_include("CoreData.h")
+#   define RKCoreDataIncluded
+#   import "RKManagedObjectStore.h"
+#   import "RKManagedObjectRequestOperation.h"
 #endif
 
 #if !__has_feature(objc_arc)

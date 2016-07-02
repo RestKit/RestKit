@@ -28,11 +28,9 @@
 #import "RKMIMETypeSerialization.h"
 #import "RKDictionaryUtilities.h"
 
-#ifdef _COREDATADEFINES_H
-#if __has_include("RKCoreData.h")
+#if __has_include("CoreData.h")
 #define RKCoreDataIncluded
 #import "RKManagedObjectMappingOperationDataSource.h"
-#endif
 #endif
 
 // Set Logging Component
