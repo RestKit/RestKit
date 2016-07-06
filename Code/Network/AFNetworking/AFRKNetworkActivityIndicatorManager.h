@@ -39,7 +39,7 @@
  See the Apple Human Interface Guidelines section about the Network Activity Indicator for more information:
  http://developer.apple.com/library/iOS/#documentation/UserExperience/Conceptual/MobileHIG/UIElementGuidelines/UIElementGuidelines.html#//apple_ref/doc/uid/TP40006556-CH13-SW44
  */
-@interface AFNetworkActivityIndicatorManager : NSObject
+@interface AFRKNetworkActivityIndicatorManager : NSObject
 
 /**
  A Boolean value indicating whether the manager is enabled.

@@ -20,25 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "AFPropertyListRequestOperation.h"
+#import "AFRKPropertyListRequestOperation.h"
 
 static dispatch_queue_t property_list_request_operation_processing_queue() {
-    static dispatch_queue_t af_property_list_request_operation_processing_queue;
+    static dispatch_queue_t afrk_property_list_request_operation_processing_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        af_property_list_request_operation_processing_queue = dispatch_queue_create("com.alamofire.networking.property-list-request.processing", DISPATCH_QUEUE_CONCURRENT);
+        afrk_property_list_request_operation_processing_queue = dispatch_queue_create("com.restkit.alamofire.networking.property-list-request.processing", DISPATCH_QUEUE_CONCURRENT);
     });
 
-    return af_property_list_request_operation_processing_queue;
+    return afrk_property_list_request_operation_processing_queue;
 }
 
-@interface AFPropertyListRequestOperation ()
+@interface AFRKPropertyListRequestOperation ()
 @property (readwrite, nonatomic) id responsePropertyList;
 @property (readwrite, nonatomic, assign) NSPropertyListFormat propertyListFormat;
 @property (readwrite, nonatomic) NSError *propertyListError;
 @end
 
-@implementation AFPropertyListRequestOperation
+@implementation AFRKPropertyListRequestOperation
 @synthesize responsePropertyList = _responsePropertyList;
 @synthesize propertyListReadOptions = _propertyListReadOptions;
 @synthesize propertyListFormat = _propertyListFormat;
@@ -48,14 +48,14 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
 												success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id propertyList))success
 												failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id propertyList))failure
 {
-    AFPropertyListRequestOperation *requestOperation = [(AFPropertyListRequestOperation *)[self alloc] initWithRequest:request];
-    [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    AFRKPropertyListRequestOperation *requestOperation = [(AFRKPropertyListRequestOperation *)[self alloc] initWithRequest:request];
+    [requestOperation setCompletionBlockWithSuccess:^(AFRKHTTPRequestOperation *operation, id responseObject) {
         if (success) {
             success(operation.request, operation.response, responseObject);
         }
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(AFRKHTTPRequestOperation *operation, NSError *error) {
         if (failure) {
-            failure(operation.request, operation.response, error, [(AFPropertyListRequestOperation *)operation responsePropertyList]);
+            failure(operation.request, operation.response, error, [(AFRKPropertyListRequestOperation *)operation responsePropertyList]);
         }
     }];
 
@@ -104,8 +104,8 @@ static dispatch_queue_t property_list_request_operation_processing_queue() {
     return [[[request URL] pathExtension] isEqualToString:@"plist"] || [super canProcessRequest:request];
 }
 
-- (void)setCompletionBlockWithSuccess:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
-                              failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+- (void)setCompletionBlockWithSuccess:(void (^)(AFRKHTTPRequestOperation *operation, id responseObject))success
+                              failure:(void (^)(AFRKHTTPRequestOperation *operation, NSError *error))failure
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"

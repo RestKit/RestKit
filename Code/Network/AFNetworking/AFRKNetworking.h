@@ -33,22 +33,22 @@
     #import <Security/Security.h>
 #endif
 
-#ifndef _AFNETWORKING_
-    #define _AFNETWORKING_
-    #define _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifndef _AFRKNETWORKING_
+    #define _AFRKNETWORKING_
+    #define _AFRKNETWORKING_PIN_SSL_CERTIFICATES_
 
-    #import "AFURLConnectionOperation.h"
+    #import "AFRKURLConnectionOperation.h"
 
-    #import "AFHTTPRequestOperation.h"
-    #import "AFJSONRequestOperation.h"
-    #import "AFXMLRequestOperation.h"
-    #import "AFPropertyListRequestOperation.h"
-    #import "AFHTTPClient.h"
+    #import "AFRKHTTPRequestOperation.h"
+    #import "AFRKJSONRequestOperation.h"
+    #import "AFRKXMLRequestOperation.h"
+    #import "AFRKPropertyListRequestOperation.h"
+    #import "AFRKHTTPClient.h"
 
-    #import "AFImageRequestOperation.h"
+    #import "AFRKImageRequestOperation.h"
 
     #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-        #import "AFNetworkActivityIndicatorManager.h"
-        #import "UIImageView+AFNetworking.h"
+        #import "AFRKNetworkActivityIndicatorManager.h"
+        #import "UIImageView+AFRKNetworking.h"
     #endif
 #endif /* _AFNETWORKING_ */

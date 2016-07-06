@@ -20,25 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "AFJSONRequestOperation.h"
+#import "AFRKJSONRequestOperation.h"
 
 static dispatch_queue_t json_request_operation_processing_queue() {
-    static dispatch_queue_t af_json_request_operation_processing_queue;
+    static dispatch_queue_t afrk_json_request_operation_processing_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        af_json_request_operation_processing_queue = dispatch_queue_create("com.alamofire.networking.json-request.processing", DISPATCH_QUEUE_CONCURRENT);
+        afrk_json_request_operation_processing_queue = dispatch_queue_create("com.restkit.alamofire.networking.json-request.processing", DISPATCH_QUEUE_CONCURRENT);
     });
 
-    return af_json_request_operation_processing_queue;
+    return afrk_json_request_operation_processing_queue;
 }
 
-@interface AFJSONRequestOperation ()
+@interface AFRKJSONRequestOperation ()
 @property (readwrite, nonatomic, strong) id responseJSON;
 @property (readwrite, nonatomic, strong) NSError *JSONError;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @end
 
-@implementation AFJSONRequestOperation
+@implementation AFRKJSONRequestOperation
 @synthesize responseJSON = _responseJSON;
 @synthesize JSONReadingOptions = _JSONReadingOptions;
 @synthesize JSONError = _JSONError;
@@ -48,14 +48,14 @@ static dispatch_queue_t json_request_operation_processing_queue() {
 										success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))success
 										failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failure
 {
-    AFJSONRequestOperation *requestOperation = [(AFJSONRequestOperation *)[self alloc] initWithRequest:urlRequest];
-    [requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    AFRKJSONRequestOperation *requestOperation = [(AFRKJSONRequestOperation *)[self alloc] initWithRequest:urlRequest];
+    [requestOperation setCompletionBlockWithSuccess:^(AFRKHTTPRequestOperation *operation, id responseObject) {
         if (success) {
             success(operation.request, operation.response, responseObject);
         }
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(AFRKHTTPRequestOperation *operation, NSError *error) {
         if (failure) {
-            failure(operation.request, operation.response, error, [(AFJSONRequestOperation *)operation responseJSON]);
+            failure(operation.request, operation.response, error, [(AFRKJSONRequestOperation *)operation responseJSON]);
         }
     }];
 
@@ -81,7 +81,7 @@ static dispatch_queue_t json_request_operation_processing_queue() {
                 NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
                 [userInfo setValue:@"Operation responseData failed decoding as a UTF-8 string" forKey:NSLocalizedDescriptionKey];
                 [userInfo setValue:[NSString stringWithFormat:@"Could not decode string: %@", self.responseString] forKey:NSLocalizedFailureReasonErrorKey];
-                error = [[NSError alloc] initWithDomain:AFNetworkingErrorDomain code:NSURLErrorCannotDecodeContentData userInfo:userInfo];
+                error = [[NSError alloc] initWithDomain:AFRKNetworkingErrorDomain code:NSURLErrorCannotDecodeContentData userInfo:userInfo];
             }
         }
 
@@ -110,8 +110,8 @@ static dispatch_queue_t json_request_operation_processing_queue() {
     return [[[request URL] pathExtension] isEqualToString:@"json"] || [super canProcessRequest:request];
 }
 
-- (void)setCompletionBlockWithSuccess:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
-                              failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
+- (void)setCompletionBlockWithSuccess:(void (^)(AFRKHTTPRequestOperation *operation, id responseObject))success
+                              failure:(void (^)(AFRKHTTPRequestOperation *operation, NSError *error))failure
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
