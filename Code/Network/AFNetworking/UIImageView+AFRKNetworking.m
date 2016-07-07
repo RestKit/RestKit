@@ -36,17 +36,17 @@
 
 static char kAFRKImageRequestOperationObjectKey;
 
-@interface UIImageView (_AFNetworking)
+@interface UIImageView (_AFRKNetworking)
 @property (readwrite, nonatomic, strong, setter = afrk_setImageRequestOperation:) AFRKImageRequestOperation *afrk_imageRequestOperation;
 @end
 
-@implementation UIImageView (_AFNetworking)
+@implementation UIImageView (_AFRKNetworking)
 @dynamic afrk_imageRequestOperation;
 @end
 
 #pragma mark -
 
-@implementation UIImageView (AFNetworking)
+@implementation UIImageView (AFRKNetworking)
 
 - (AFRKHTTPRequestOperation *)afrk_imageRequestOperation {
     return (AFRKHTTPRequestOperation *)objc_getAssociatedObject(self, &kAFRKImageRequestOperationObjectKey);
