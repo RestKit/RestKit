@@ -40,7 +40,7 @@
 #endif
 
 #ifdef _SYSTEMCONFIGURATION_H
-NSString * const AFRKNetworkingReachabilityDidChangeNotification = @"com.restkit,alamofire.networking.reachability.change";
+NSString * const AFRKNetworkingReachabilityDidChangeNotification = @"com.restkit.alamofire.networking.reachability.change";
 NSString * const AFRKNetworkingReachabilityNotificationStatusItem = @"AFRKNetworkingReachabilityNotificationStatusItem";
 
 typedef SCNetworkReachabilityRef AFRKNetworkReachabilityRef;
