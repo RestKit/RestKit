@@ -19,8 +19,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <RestKit/ObjectMapping/RKMappingOperation.h>
-#import <RestKit/Testing/RKPropertyMappingTestExpectation.h>
+#import "RKMappingOperation.h"
+#import "RKPropertyMappingTestExpectation.h"
 
 @protocol RKMappingOperationDataSource, RKManagedObjectCaching;
 
@@ -97,6 +97,18 @@ extern NSString * const RKMappingTestExpectationErrorKey;
 + (instancetype)testForMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
 
 /**
+ Creates and returns a new test for a given object mapping, source object, destination
+ object and metadata list.
+ 
+ @param mapping The mapping being tested.
+ @param sourceObject The source object being mapped from.
+ @param destinationObject The destionation object being to.
+ @param metadataList The additional metadata list to map from.
+ @return A new mapping test object for a mapping, a source object and a destination object.
+ */
++ (instancetype)testForMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject metadataList:(NSArray *)metadataList;
+
+/**
  Initializes the receiver with a given object mapping, source object, and destination object.
 
  @param mapping The mapping being tested.
@@ -104,7 +116,18 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  @param destinationObject The destionation object being to.
  @return The receiver, initialized with mapping, sourceObject and destinationObject.
  */
-- (instancetype)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
+
+/**
+ Initializes the receiver with a given object mapping, source object, and destination object.
+ 
+ @param mapping The mapping being tested.
+ @param sourceObject The source object being mapped from.
+ @param destinationObject The destionation object being to.
+ @param metadataList The additional metadata list to map from.
+ @return The receiver, initialized with mapping, sourceObject and destinationObject.
+ */
+- (instancetype)initWithMapping:(RKMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject metadataList:(NSArray *)metadataList NS_DESIGNATED_INITIALIZER;
 
 ///----------------------------
 /// @name Managing Expectations
@@ -194,7 +217,7 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  */
 @property (nonatomic, strong, readonly) id destinationObject;
 
-#ifdef _COREDATADEFINES_H
+#if __has_include("CoreData.h")
 
 ///----------------------------
 /// @name Core Data Integration
@@ -214,6 +237,6 @@ extern NSString * const RKMappingTestExpectationErrorKey;
  */
 @property (nonatomic, strong) id<RKManagedObjectCaching> managedObjectCache;
 
-#endif // _COREDATADEFINES_H
+#endif // #if __has_include("CoreData.h")
 
 @end

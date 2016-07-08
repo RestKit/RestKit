@@ -182,7 +182,7 @@
     dateFormatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss z";
 
 	NSMutableDictionary * const headers = [[NSMutableDictionary alloc] initWithDictionary:@{
-    	@"Cache-Control" : [NSString stringWithFormat:@"public, max-age=%d", maxAge],
+    	@"Cache-Control" : [NSString stringWithFormat:@"public, max-age=%ld", (long)maxAge],
         @"Date" : [dateFormatter stringFromDate:date]
     }];
     

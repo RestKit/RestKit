@@ -813,6 +813,8 @@
 
 - (void)testThatCacheEntryIsNotFlaggedWhenMappingFails
 {
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:@"/mismatch" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
@@ -905,6 +907,33 @@
     [operationQueue cancelAllOperations];
     expect([operationQueue operationCount]).will.equal(0);
     [[RKObjectRequestOperation responseMappingQueue] setSuspended:NO];
+}
+
+- (void)testThatNonUsedOperationDoesNotLeak
+{
+    __weak RKObjectRequestOperation *weakRequestOperation = nil;
+    
+    {
+        @autoreleasepool {
+            NSURLRequest * const request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/abc"]];
+            RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[]];
+            [requestOperation setCompletionBlockWithSuccess:nil failure:nil];
+            weakRequestOperation = requestOperation;
+            requestOperation = nil;
+        }
+        expect(weakRequestOperation).to.beNil();
+    }
+    
+    {
+        @autoreleasepool {
+            RKObjectManager * const objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"dummy.com"]];
+            RKObjectRequestOperation *requestOperation = [objectManager appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodGET path:@"/abc" parameters:nil];
+            expect(requestOperation).notTo.beNil();
+            weakRequestOperation = requestOperation;
+            requestOperation = nil;
+        }
+        expect(weakRequestOperation).to.beNil();
+    }
 }
 
 @end

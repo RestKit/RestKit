@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKHTTPRequestOperation.h>
-#import <RestKit/ObjectMapping/RKMapperOperation.h>
-#import <RestKit/ObjectMapping/RKMappingResult.h>
+#import "RKHTTPRequestOperation.h"
+#import "RKMappingResult.h"
+#import "RKMapperOperation.h"
 
 /**
  The key for a Boolean NSNumber value that indicates if a `NSCachedURLResponse` stored in the `NSURLCache` has been object mapped to completion. This key is stored on the `userInfo` of the cached response, if any, just before an `RKObjectRequestOperation` transitions to the finished state.
@@ -85,7 +85,7 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
  @param responseDescriptors An array of `RKResponseDescriptor` objects specifying how object mapping is to be performed on the response loaded by the network operation.
  @return The receiver, initialized with the given request and response descriptors.
  */
-- (instancetype)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors;
+- (instancetype)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors NS_DESIGNATED_INITIALIZER;
 
 /**
  Initializes an object request operation with a request object and a set of response descriptors.

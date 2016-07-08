@@ -1,5 +1,9 @@
-# Install via CocoaPods pointing at current local codebase
+source 'https://github.com/CocoaPods/Specs.git'
+
+inhibit_all_warnings!
 use_frameworks!
-pod 'RestKit/Network', :path => '../../'
-pod 'RestKit/ObjectMapping', :path => '../../'
-pod 'RestKit/CoreData', :path => '../../'
+
+target 'RKMacOSX' do
+
+  pod 'RestKit', :path => '../../', :subspecs => ['Network', 'ObjectMapping', 'CoreData']
+end

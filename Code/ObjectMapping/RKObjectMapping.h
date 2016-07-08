@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import <RestKit/ObjectMapping/RKMapping.h>
-#import <RestKit/Support/RKMacros.h>
+#import "RKMacros.h"
+#import "RKMapping.h"
 
 #import <RKValueTransformers/RKValueTransformers.h>
 
@@ -86,7 +86,7 @@
  @param objectClass The class that the mapping targets. Cannot be `nil`.
  @return The receiver, initialized with the given class.
  */
-- (instancetype)initWithClass:(Class)objectClass;
+- (instancetype)initWithClass:(Class)objectClass NS_DESIGNATED_INITIALIZER;
 
 /**
  Returns an object mapping with an `objectClass` of `NSMutableDictionary`.

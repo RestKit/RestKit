@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#import "CoreData.h"
 #import "RKTestEnvironment.h"
 #import "RKHuman.h"
 #import "RKPathUtilities.h"

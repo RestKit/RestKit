@@ -1,9 +1,12 @@
-platform :ios, '8.0'
+source 'https://github.com/CocoaPods/Specs.git'
+
+inhibit_all_warnings!
 use_frameworks!
 
-link_with 'RKTwitterCoreData', 'Generate Seed Database'
+target 'RKTwitterCoreData' do
+  pod 'RestKit', :path => '../../', :subspecs => ['Network', 'ObjectMapping', 'CoreData']
 
-# Install via CocoaPods pointing at current local codebase
-pod 'RestKit/Network', :path => '../../'
-pod 'RestKit/ObjectMapping', :path => '../../'
-pod 'RestKit/CoreData', :path => '../../'
+  target 'Generate Seed Database' do
+    inherit! :search_paths
+  end
+end

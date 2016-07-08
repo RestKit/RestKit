@@ -1430,7 +1430,7 @@
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;
     id mockMapping = [OCMockObject partialMockForObject:mapping];
-    [[[mockMapping expect] andReturnValue:@NO] shouldSetDefaultValueForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:@NO] assignsDefaultValueForMissingAttributes];
     NSError *error = nil;
     [operation performMapping:&error];
     assertThat(user.name, is(equalTo(@"Blake Watters")));
@@ -1607,6 +1607,25 @@
     [operation performMapping:&error];
     
     expect(human.catIDs).to.beNil();
+}
+
+- (void)testThatMappingToNonOptionalPropertyWithDefaultSetsDefault
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromArray:@[ @"name", @"likesDogs" ]];
+    [humanMapping setAssignsDefaultValueForMissingAttributes:YES];
+    
+    NSDictionary *dictionary = @{ @"name" : @"Blake Watters" };
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:human mapping:humanMapping];
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext cache:nil];
+    operation.dataSource = dataSource;
+    NSError *error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(error, is(nilValue()));
+    assertThat(human.likesDogs, is(equalTo(@YES)));
 }
 
 #pragma mark - Relationship Mapping
@@ -1884,7 +1903,7 @@
     NSMutableDictionary *dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
     [dictionary removeObjectForKey:@"address"];
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
-    [[[mockMapping expect] andReturnValue:@YES] setNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:@YES] assignsNilForMissingRelationships];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser mapping:mockMapping];
     RKObjectMappingOperationDataSource *dataSource = [RKObjectMappingOperationDataSource new];
     operation.dataSource = dataSource;

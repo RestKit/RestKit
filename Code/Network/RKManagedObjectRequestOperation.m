@@ -18,23 +18,23 @@
 //  limitations under the License.
 //
 
-#ifdef _COREDATADEFINES_H
+#if __has_include("CoreData.h")
 #if __has_include("RKManagedObjectCaching.h")
 
-#import <RestKit/CoreData/NSManagedObject+RKAdditions.h>
-#import <RestKit/CoreData/NSManagedObjectContext+RKAdditions.h>
-#import <RestKit/Network/RKManagedObjectRequestOperation.h>
-#import <RestKit/Network/RKObjectRequestOperationSubclass.h>
-#import <RestKit/Network/RKResponseMapperOperation.h>
-#import <RestKit/ObjectMapping/RKHTTPUtilities.h>
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/Support/RKLog.h>
+#import "RKManagedObjectRequestOperation.h"
+#import "RKLog.h"
+#import "RKHTTPUtilities.h"
+#import "RKResponseMapperOperation.h"
+#import "RKObjectRequestOperationSubclass.h"
+#import "NSManagedObjectContext+RKAdditions.h"
+#import "NSManagedObject+RKAdditions.h"
+#import "RKObjectUtilities.h"
 
 // Graph visitor
-#import <RestKit/CoreData/RKEntityMapping.h>
-#import <RestKit/Network/RKResponseDescriptor.h>
-#import <RestKit/ObjectMapping/RKDynamicMapping.h>
-#import <RestKit/ObjectMapping/RKRelationshipMapping.h>
+#import "RKResponseDescriptor.h"
+#import "RKEntityMapping.h"
+#import "RKDynamicMapping.h"
+#import "RKRelationshipMapping.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -126,7 +126,7 @@ static NSManagedObject *RKRefetchManagedObjectInContext(NSManagedObject *managed
     NSManagedObjectID *managedObjectID = [managedObject objectID];
     if ([managedObjectID isTemporaryID]) {
         RKLogWarning(@"Unable to refetch managed object %@: the object has a temporary managed object ID.", managedObject);
-        return managedObject;
+        return nil;
     }
     NSError *error = nil;
     NSManagedObject *refetchedObject = [managedObjectContext existingObjectWithID:managedObjectID error:&error];
@@ -256,7 +256,14 @@ static id RKRefetchedValueInManagedObjectContext(id value, NSManagedObjectContex
                 id value = nil;
                 if ([keyPath isEqual:[NSNull null]]) {
                     value = RKRefetchedValueInManagedObjectContext(mappingResultsAtRootKey, self.managedObjectContext);
-                    if (value) newDictionary[rootKey] = value;
+                    if (value) {
+                        newDictionary[rootKey] = value;
+                    }
+                    // else there's no object on the correct context
+                    else {
+                        // ensure newDictionary doesn't have an object on an incorrect context
+                        [newDictionary removeObjectForKey:rootKey];
+                    }
                 } else {
                     NSMutableArray *keyPathComponents = [[keyPath componentsSeparatedByString:@"."] mutableCopy];
                     NSString *destinationKey = [keyPathComponents lastObject];
@@ -383,11 +390,14 @@ static NSSet *RKManagedObjectsFromObjectWithMappingInfo(id object, RKMappingInfo
             if([object conformsToProtocol:@protocol(NSFastEnumeration)]) {
                 NSMutableSet* results = [NSMutableSet set];
                 for (id item in object) {
+                    id value = nil;
                     @try {
-                        id value = [item valueForKeyPath:destinationKeyPath];
-                        [results addObject:value];
+                        value = [item valueForKeyPath:destinationKeyPath];
                     } @catch(NSException*) {
                         continue;
+                    }
+                    if (value != nil) {
+                        [results addObject:value];
                     }
                 }
                 

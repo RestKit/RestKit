@@ -19,12 +19,15 @@ XCTasks::TestTask.new(:test) do |t|
 
   t.subtask(ios: 'RestKitTests') do |s|
     s.sdk = :iphonesimulator
-    s.destination('platform=iOS Simulator,OS=8.1,name=iPhone 6')
+    s.destination('platform=iOS Simulator,OS=9.3,name=iPhone 6')
   end
-
+# OS X Tests disabled as part of https://github.com/RestKit/RestKit/pull/2434
+# because of the following Cocoapods issue https://github.com/CocoaPods/CocoaPods/issues/4752
+=begin
   t.subtask(osx: 'RestKitFrameworkTests') do |s|
     s.sdk = :macosx
   end
+=end
 end
 
 task default: 'test'
@@ -63,9 +66,9 @@ end
 desc 'Build RestKit for iOS and Mac OS X'
 task :build do
   title 'Building RestKit'
-  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphonesimulator5.0 clean build')
+  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphonesimulator clean build')
   run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphoneos clean build')
-  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk macosx10.6 clean build')
+  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk macosx clean build')
 end
 
 desc 'Generate documentation via appledoc'
@@ -138,7 +141,7 @@ end
 namespace :build do
   desc 'Build all Example projects to ensure they are building properly'
   task :examples do
-    ios_sdks = %w(iphonesimulator5.0 iphonesimulator6.0)
+    ios_sdks = %w(iphonesimulator)
     osx_sdks = %w(macosx)
     osx_projects = %w(RKMacOSX)
 
@@ -147,11 +150,15 @@ namespace :build do
     title "Building #{example_projects.size} Example projects..."
     example_projects.each do |example_project|
       project_name = File.basename(example_project).gsub('.xcodeproj', '')
+      project_path = example_project.gsub(File.basename(example_project), '')
+      next if project_name == "Pods"
+      project_workspace = "#{project_path}#{project_name}.xcworkspace"
       sdks = osx_projects.include?(project_name) ? osx_sdks : ios_sdks
       sdks.each do |sdk|
         puts "Building '#{example_project}' with SDK #{sdk}..."
         scheme = project_name
-        run("xctool -workspace #{example_project}/project.xcworkspace -scheme #{scheme} -sdk #{sdk} clean build")
+        run("cd #{project_path} && pod install")
+        run("xctool -workspace #{project_workspace} -scheme #{scheme} -sdk #{sdk} clean build")
       end
     end
   end
@@ -164,8 +171,8 @@ end
 
 task :lint do
   title 'Linting pod'
-  run('bundle exec pod lib lint --allow-warnings ')
-  run('bundle exec pod lib lint --allow-warnings  --use-libraries')
+  run('bundle exec pod lib lint')
+  run('bundle exec pod lib lint --use-libraries')
 end
 
 desc 'Runs the CI suite'
@@ -205,12 +212,12 @@ task :release do
   sh "git commit -am 'Release #{tag}'"
   sh "git tag '#{tag}'"
   sh 'git checkout master'
-  sh "git merge --no-ff `#{tag}`"
+  sh "git merge --no-ff --no-edit `#{tag}`"
   sh 'git push --tags'
   sh "git checkout '#{tag}'"
   sh "bundle exec pod trunk push"
   sh 'git checkout development'
-  sh "git merge --no-ff `#{tag}`"
+  sh "git merge --no-ff --no-edit `#{tag}`"
   sh 'git push'
 end
 

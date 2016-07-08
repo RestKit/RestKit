@@ -18,10 +18,11 @@
 //  limitations under the License.
 //
 
-#ifdef _COREDATADEFINES_H
+#if __has_include("CoreData.h")
+#import <CoreData/CoreData.h>
 
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/Testing/RKConnectionTestExpectation.h>
+#import "RKConnectionTestExpectation.h"
+#import "RKObjectUtilities.h"
 
 @interface RKConnectionTestExpectation ()
 @property (nonatomic, copy, readwrite) NSString *relationshipName;

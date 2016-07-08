@@ -18,11 +18,11 @@
 //  limitations under the License.
 //
 
-#import <RestKit/CoreData/RKFetchRequestManagedObjectCache.h>
-#import <RestKit/CoreData/RKPropertyInspector+CoreData.h>
-#import <RestKit/ObjectMapping/RKObjectUtilities.h>
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
-#import <RestKit/Support/RKLog.h>
+#import "RKFetchRequestManagedObjectCache.h"
+#import "RKLog.h"
+#import "RKPropertyInspector.h"
+#import "RKPropertyInspector+CoreData.h"
+#import "RKObjectUtilities.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -43,15 +43,31 @@ static NSString *RKPredicateCacheKeyForAttributeValues(NSDictionary *attributesV
     return [keyFragments componentsJoinedByString:@":"];
 }
 
-// NOTE: We build a dynamic format string here because `NSCompoundPredicate` does not support use of substiution variables
-static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDictionary *attributeValues)
+// NOTE: We make sure to convert the attribute values to compatible names that can be replaced correctly by `predicateWithSubstitutionVariables`
+static NSString *RKAttributePlaceholderForAttributeName(NSString *attributeName)
+{
+    return [[attributeName componentsSeparatedByCharactersInSet:[NSCharacterSet punctuationCharacterSet]] componentsJoinedByString:@"_"];
+}
+
+static NSDictionary *RKSubstitutionVariablesForAttributeValues(NSDictionary *attributeValues)
+{
+    NSMutableDictionary *placeholders = [[NSMutableDictionary alloc] initWithCapacity:attributeValues.count];
+    [attributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+        placeholders[RKAttributePlaceholderForAttributeName(key)] = value;
+    }];
+
+    return [NSDictionary dictionaryWithDictionary:placeholders];
+}
+
+// NOTE: We build a dynamic format string here because `NSCompoundPredicate` does not support use of substitution variables
+static NSPredicate *RKPredicateWithSubstitutionVariablesForAttributeValues(NSDictionary *attributeValues)
 {
     NSArray *attributeNames = [attributeValues allKeys];
     NSMutableArray *formatFragments = [NSMutableArray arrayWithCapacity:[attributeNames count]];
     [attributeValues enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, id value, BOOL *stop) {
         NSString *formatFragment = RKObjectIsCollection(value)
-                                 ? [NSString stringWithFormat:@"%@ IN $%@", attributeName, attributeName]
-                                 : [NSString stringWithFormat:@"%@ = $%@", attributeName, attributeName];
+                                 ? [NSString stringWithFormat:@"%@ IN $%@", attributeName, RKAttributePlaceholderForAttributeName(attributeName)]
+                                 : [NSString stringWithFormat:@"%@ = $%@", attributeName, RKAttributePlaceholderForAttributeName(attributeName)];
         [formatFragments addObject:formatFragment];
     }];
 
@@ -103,16 +119,18 @@ static NSPredicate *RKPredicateWithSubsitutionVariablesForAttributeValues(NSDict
     dispatch_sync(self.cacheQueue, ^{
         substitutionPredicate = (self.predicateCache)[predicateCacheKey];
     });
-         
+    
+    NSDictionary *substitutionVariables = RKSubstitutionVariablesForAttributeValues(attributeValues);
+    
     if (! substitutionPredicate) {
-        substitutionPredicate = RKPredicateWithSubsitutionVariablesForAttributeValues(attributeValues);
+        substitutionPredicate = RKPredicateWithSubstitutionVariablesForAttributeValues(attributeValues);
         dispatch_barrier_async(self.cacheQueue, ^{
             (self.predicateCache)[predicateCacheKey] = substitutionPredicate;
         });
     }
     
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[entity name]];
-    fetchRequest.predicate = [substitutionPredicate predicateWithSubstitutionVariables:attributeValues];
+    fetchRequest.predicate = [substitutionPredicate predicateWithSubstitutionVariables:substitutionVariables];
     __block NSError *error = nil;
     __block NSArray *objects = nil;
     [managedObjectContext performBlockAndWait:^{

@@ -1,6 +1,8 @@
-platform :ios, '8.0'
+source 'https://github.com/CocoaPods/Specs.git'
+
+inhibit_all_warnings!
 use_frameworks!
 
-# Install via CocoaPods pointing at current local codebase
-pod 'RestKit/Network', :path => '../../'
-pod 'RestKit/ObjectMapping', :path => '../../'
+target 'RKTwitter' do
+  pod 'RestKit', :path => '../../', :subspecs => ['Network', 'ObjectMapping']
+end

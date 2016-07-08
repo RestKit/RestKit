@@ -18,20 +18,20 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKObjectRequestOperation.h>
-#import <RestKit/Network/RKResponseDescriptor.h>
-#import <RestKit/Network/RKResponseMapperOperation.h>
-#import <RestKit/ObjectMapping/RKHTTPUtilities.h>
-#import <RestKit/ObjectMapping/RKMappingErrors.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKMIMETypeSerialization.h>
-#import <RestKit/Support/RKOperationStateMachine.h>
 #import <objc/runtime.h>
+#import "RKObjectRequestOperation.h"
+#import "RKResponseMapperOperation.h"
+#import "RKResponseDescriptor.h"
+#import "RKMIMETypeSerialization.h"
+#import "RKHTTPUtilities.h"
+#import "RKLog.h"
+#import "RKMappingErrors.h"
+#import "RKOperationStateMachine.h"
 
 #import <Availability.h>
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-#import <AFNetworking/AFNetworkActivityIndicatorManager.h>
+#import "AFRKNetworkActivityIndicatorManager.h"
 #endif
 
 // Set Logging Component
@@ -106,11 +106,11 @@ static NSString *RKLogTruncateString(NSString *string)
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(HTTPOperationDidStart:)
-                                                     name:AFNetworkingOperationDidStartNotification
+                                                     name:AFRKNetworkingOperationDidStartNotification
                                                    object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(HTTPOperationDidFinish:)
-                                                     name:AFNetworkingOperationDidFinishNotification
+                                                     name:AFRKNetworkingOperationDidFinishNotification
                                                    object:nil];
     }
     
@@ -122,16 +122,13 @@ static NSString *RKLogTruncateString(NSString *string)
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-static void *RKParentObjectRequestOperation = &RKParentObjectRequestOperation;
 static void *RKOperationStartDate = &RKOperationStartDate;
 static void *RKOperationFinishDate = &RKOperationFinishDate;
 
 - (void)objectRequestOperationDidStart:(NSNotification *)notification
 {
-    // Weakly tag the HTTP operation with its parent object request operation
     RKObjectRequestOperation *objectRequestOperation = [notification object];
     objc_setAssociatedObject(objectRequestOperation, RKOperationStartDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    objc_setAssociatedObject(objectRequestOperation.HTTPRequestOperation, RKParentObjectRequestOperation, objectRequestOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
     NSURLRequest *request = objectRequestOperation.HTTPRequestOperation.request;
     RKLogInfo(@"%@ '%@'", request.HTTPMethod, request.URL.absoluteString);
@@ -196,14 +193,14 @@ NSString *const RKObjectRequestOperationMappingDidFinishUserInfoKey = @"mappingF
 static void RKIncrementNetworkActivityIndicator()
 {
     #if __IPHONE_OS_VERSION_MIN_REQUIRED
-        [[AFNetworkActivityIndicatorManager sharedManager] incrementActivityCount];
+        [[AFRKNetworkActivityIndicatorManager sharedManager] incrementActivityCount];
     #endif
 }
 
 static void RKDecrementNetworkAcitivityIndicator()
 {
     #if __IPHONE_OS_VERSION_MIN_REQUIRED
-        [[AFNetworkActivityIndicatorManager sharedManager] decrementActivityCount];
+        [[AFRKNetworkActivityIndicatorManager sharedManager] decrementActivityCount];
     #endif
 }
 
@@ -299,13 +296,21 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
     _successCallbackQueue = NULL;
 }
 
+// Compiler requires that we override this.
+- (instancetype)init
+{
+    self = [self initWithHTTPRequestOperation:nil responseDescriptors:nil];
+    NSAssert(NO, @"Failed to call designated initializer on %@.", self);
+    return self;
+}
+
 // Designated initializer
 - (instancetype)initWithHTTPRequestOperation:(RKHTTPRequestOperation *)requestOperation responseDescriptors:(NSArray *)responseDescriptors
 {
     NSParameterAssert(requestOperation);
     NSParameterAssert(responseDescriptors);
     
-    self = [self init];
+    self = [super init];
     if (self) {
         self.responseDescriptors = responseDescriptors;
         self.HTTPRequestOperation = requestOperation;
@@ -415,34 +420,34 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (void)setCompletionBlockWithSuccess:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
                               failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure
 {
-// See above setCompletionBlock:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-retain-cycles"
-
     //Keep blocks for copyWithZone
     self.successBlock = success;
     self.failureBlock = failure;
-
+    
+    __weak __typeof(self) const weakSelf = self;
     self.completionBlock = ^ {
-        if ([self isCancelled] && !self.error) {
-            self.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:nil];
-        }
-
-        if (self.error) {
-            if (failure) {
-                dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
-                    failure(self, self.error);
-                });
+		__typeof(self) const strongSelf = weakSelf; // Retain object, so we for sure have something to pass to the success and/or failure blocks.
+		if(strongSelf)
+        {
+            if ([strongSelf isCancelled] && !strongSelf.error) {
+                strongSelf.error = [NSError errorWithDomain:RKErrorDomain code:RKOperationCancelledError userInfo:nil];
             }
-        } else {
-            if (success) {
-                dispatch_async(self.successCallbackQueue ?: dispatch_get_main_queue(), ^{
-                    success(self, self.mappingResult);
-                });
+            
+            if (strongSelf.error) {
+                if (failure) {
+                    dispatch_async(strongSelf.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
+                        failure(strongSelf, strongSelf.error);
+                    });
+                }
+            } else {
+                if (success) {
+                    dispatch_async(strongSelf.successCallbackQueue ?: dispatch_get_main_queue(), ^{
+                        success(strongSelf, strongSelf.mappingResult);
+                    });
+                }
             }
         }
     };
-#pragma clang diagnostic pop
 }
 
 - (void)performMappingOnResponseWithCompletionBlock:(void(^)(RKMappingResult *mappingResult, NSError *error))completionBlock
@@ -466,7 +471,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 {
     __weak __typeof(self)weakSelf = self;    
     
-    [self.HTTPRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    [self.HTTPRequestOperation setCompletionBlockWithSuccess:^(AFRKHTTPRequestOperation *operation, id responseObject) {
         if (weakSelf.isCancelled) {
             [weakSelf.stateMachine finish];
             return;
@@ -506,7 +511,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
             weakSelf.mappingDidFinishDate = [NSDate date];
             [weakSelf.stateMachine finish];
         }];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } failure:^(AFRKHTTPRequestOperation *operation, NSError *error) {
         RKLogError(@"Object request failed: Underlying HTTP request operation failed with error: %@", weakSelf.HTTPRequestOperation.error);
         weakSelf.error = weakSelf.HTTPRequestOperation.error;
         [weakSelf.stateMachine finish];

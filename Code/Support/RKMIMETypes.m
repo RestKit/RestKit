@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Support/RKMIMETypes.h>
+#import "RKMIMETypes.h"
 
 NSString * const RKMIMETypeJSON = @"application/json";
 NSString * const RKMIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";

@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <RestKit/ObjectMapping/RKPropertyInspector.h>
+#import "RKPropertyInspector.h"
 
 /**
  The `CoreData` category augments the `RKPropertyInspector` class with support for introspecting the property types for `NSManagedObject` and `NSEntityDescription` objects.

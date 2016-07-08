@@ -18,19 +18,17 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKObjectManager.h>
-#import <RestKit/Network/RKRoute.h>
-#import <RestKit/Network/RKRouteSet.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKPathUtilities.h>
-#import <RestKit/Testing/RKTestHelpers.h>
-#import <SOCKit/SOCKit.h>
+#import "RKTestHelpers.h"
+#import "RKObjectManager.h"
+#import "RKRoute.h"
+#import "RKPathUtilities.h"
+#import "RKLog.h"
+#import "SOCKit.h"
+#import "RKRouteSet.h"
 
-#ifdef _COREDATADEFINES_H
-#if __has_include("RKCoreData.h")
+#if __has_include("CoreData.h")
 #define RKCoreDataIncluded
-#import <RestKit/Network/RKManagedObjectRequestOperation.h>
-#endif
+#import "RKManagedObjectRequestOperation.h"
 #endif
 
 @implementation RKTestHelpers

@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import <RestKit/CoreData/RKManagedObjectStore.h>
-#import <RestKit/Search/RKSearchIndexer.h>
+#import "RKManagedObjectStore.h"
+#import "RKSearchIndexer.h"
 
 /**
  The search additions category provides support for configuring search indexing for entities in a managed object store.

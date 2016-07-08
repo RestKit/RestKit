@@ -23,10 +23,11 @@
 		25AABD0B17B69CC50061DC5B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		25AABD0C17B69CC50061DC5B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		25AABD0D17B69CC50061DC5B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
-		73D990C2D2D5A068521FACEF /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0C5817426474EE329BB79E2 /* Pods.framework */; };
+		9FE3DF2D03B8976BFC6E10DE /* Pods_RKTwitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C340581A64B9215FA8CCB0D /* Pods_RKTwitter.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C340581A64B9215FA8CCB0D /* Pods_RKTwitter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RKTwitter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* RKTwitterAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitterAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* RKTwitterAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTwitterAppDelegate.m; sourceTree = "<group>"; };
@@ -37,7 +38,6 @@
 		2538E810123419CA00ACB5D7 /* RKTUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTUser.m; sourceTree = "<group>"; };
 		2538E812123419EC00ACB5D7 /* RKTweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTweet.h; sourceTree = "<group>"; };
 		2538E813123419EC00ACB5D7 /* RKTweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTweet.m; sourceTree = "<group>"; };
-		2538E864123424F000ACB5D7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2538E8661234250100ACB5D7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		25AABD1417B69CC50061DC5B /* RKTwitter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RKTwitter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25BE936514F96729008BC1C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -45,8 +45,8 @@
 		28D7ACF60DDB3853001CB0EB /* RKTwitterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitterViewController.h; sourceTree = "<group>"; };
 		28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTwitterViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2C4E0FC1267B5DE1E5594342 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* RKTwitter_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitter_Prefix.pch; sourceTree = "<group>"; };
+		35E00B7155B421D2AB4FE137 /* Pods-RKTwitter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKTwitter.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RKTwitter/Pods-RKTwitter.debug.xcconfig"; sourceTree = "<group>"; };
 		3F02F591131D683A004E1F54 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		3F3CE3FA125B9A6E0083FDCB /* listbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = listbg.png; sourceTree = "<group>"; };
 		3F3CE3FB125B9A6E0083FDCB /* listbg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "listbg@2x.png"; sourceTree = "<group>"; };
@@ -57,8 +57,7 @@
 		84F524C112824D5000C370EA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		84F524C512824D5B00C370EA /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* RKTwitter-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RKTwitter-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		9459B171A0B89699CB1F7ECC /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		F0C5817426474EE329BB79E2 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F13F6402B8EC56A87769EDA /* Pods-RKTwitter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKTwitter.release.xcconfig"; path = "Pods/Target Support Files/Pods-RKTwitter/Pods-RKTwitter.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +69,7 @@
 				25AABD0B17B69CC50061DC5B /* Foundation.framework in Frameworks */,
 				25AABD0C17B69CC50061DC5B /* UIKit.framework in Frameworks */,
 				25AABD0D17B69CC50061DC5B /* CoreGraphics.framework in Frameworks */,
-				73D990C2D2D5A068521FACEF /* Pods.framework in Frameworks */,
+				9FE3DF2D03B8976BFC6E10DE /* Pods_RKTwitter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,11 +146,10 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765A40DF7441C002DB57D /* CoreGraphics.framework */,
-				2538E864123424F000ACB5D7 /* CoreData.framework */,
 				2538E8661234250100ACB5D7 /* SystemConfiguration.framework */,
 				84F524C112824D5000C370EA /* CFNetwork.framework */,
 				84F524C512824D5B00C370EA /* MobileCoreServices.framework */,
-				F0C5817426474EE329BB79E2 /* Pods.framework */,
+				1C340581A64B9215FA8CCB0D /* Pods_RKTwitter.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -159,8 +157,8 @@
 		A54F9C18924391E57B4EFF4D /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				9459B171A0B89699CB1F7ECC /* Pods.debug.xcconfig */,
-				2C4E0FC1267B5DE1E5594342 /* Pods.release.xcconfig */,
+				35E00B7155B421D2AB4FE137 /* Pods-RKTwitter.debug.xcconfig */,
+				8F13F6402B8EC56A87769EDA /* Pods-RKTwitter.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -172,12 +170,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 25AABD1117B69CC50061DC5B /* Build configuration list for PBXNativeTarget "RKTwitter" */;
 			buildPhases = (
-				B2D422E3401D465BACF8687A /* Check Pods Manifest.lock */,
+				B2D422E3401D465BACF8687A /* [CP] Check Pods Manifest.lock */,
 				25AABCF717B69CC50061DC5B /* Resources */,
 				25AABCFF17B69CC50061DC5B /* Sources */,
 				25AABD0517B69CC50061DC5B /* Frameworks */,
-				BA14B331096F49758212B549 /* Copy Pods Resources */,
-				B73887517504A74F7323976B /* Embed Pods Frameworks */,
+				BA14B331096F49758212B549 /* [CP] Copy Pods Resources */,
+				B73887517504A74F7323976B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -233,14 +231,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		B2D422E3401D465BACF8687A /* Check Pods Manifest.lock */ = {
+		B2D422E3401D465BACF8687A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -248,34 +246,34 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		B73887517504A74F7323976B /* Embed Pods Frameworks */ = {
+		B73887517504A74F7323976B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RKTwitter/Pods-RKTwitter-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BA14B331096F49758212B549 /* Copy Pods Resources */ = {
+		BA14B331096F49758212B549 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RKTwitter/Pods-RKTwitter-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -298,7 +296,7 @@
 /* Begin XCBuildConfiguration section */
 		25AABD1217B69CC50061DC5B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9459B171A0B89699CB1F7ECC /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 35E00B7155B421D2AB4FE137 /* Pods-RKTwitter.debug.xcconfig */;
 			buildSettings = {
 				BUILD_STYLE = Debug;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -308,7 +306,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.RKTwitter;
 				PRODUCT_NAME = RKTwitter;
@@ -317,7 +315,7 @@
 		};
 		25AABD1317B69CC50061DC5B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2C4E0FC1267B5DE1E5594342 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 8F13F6402B8EC56A87769EDA /* Pods-RKTwitter.release.xcconfig */;
 			buildSettings = {
 				BUILD_STYLE = Release;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -325,7 +323,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.RKTwitter;
 				PRODUCT_NAME = RKTwitter;
 				VALIDATE_PRODUCT = YES;

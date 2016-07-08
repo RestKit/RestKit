@@ -16,11 +16,11 @@
 		25D6397F13518574000879B1 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D6397E13518574000879B1 /* CoreData.framework */; };
 		25D639811351858A000879B1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D639801351858A000879B1 /* AppKit.framework */; };
 		25D63983135185B6000879B1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25D63982135185B6000879B1 /* SystemConfiguration.framework */; };
-		71754387C10576ABC5CC4966 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 148AFEC0CCE8D1725077BDEC /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		F6A25B30CC05C42E15411E20 /* Pods_RKMacOSX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80669B9FE22B35B3CA25846 /* Pods_RKMacOSX.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		148AFEC0CCE8D1725077BDEC /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		21AEEDEE307CC8875A661B25 /* Pods-RKMacOSX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKMacOSX.release.xcconfig"; path = "Pods/Target Support Files/Pods-RKMacOSX/Pods-RKMacOSX.release.xcconfig"; sourceTree = "<group>"; };
 		25D63914135184CE000879B1 /* RKMacOSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RKMacOSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25D63918135184CE000879B1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		25D6391B135184CE000879B1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -37,8 +37,8 @@
 		25D6397E13518574000879B1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		25D639801351858A000879B1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		25D63982135185B6000879B1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		663395048EDD9B445E77BF72 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		CDF0146ADF834F0317B19719 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		57141CF68EF72F2CD29F279A /* Pods-RKMacOSX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKMacOSX.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RKMacOSX/Pods-RKMacOSX.debug.xcconfig"; sourceTree = "<group>"; };
+		A80669B9FE22B35B3CA25846 /* Pods_RKMacOSX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RKMacOSX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +50,7 @@
 				25D639811351858A000879B1 /* AppKit.framework in Frameworks */,
 				25D6397F13518574000879B1 /* CoreData.framework in Frameworks */,
 				25D63919135184CE000879B1 /* Cocoa.framework in Frameworks */,
-				71754387C10576ABC5CC4966 /* Pods.framework in Frameworks */,
+				F6A25B30CC05C42E15411E20 /* Pods_RKMacOSX.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,7 +84,7 @@
 				25D6397E13518574000879B1 /* CoreData.framework */,
 				25D63918135184CE000879B1 /* Cocoa.framework */,
 				25D6391A135184CE000879B1 /* Other Frameworks */,
-				148AFEC0CCE8D1725077BDEC /* Pods.framework */,
+				A80669B9FE22B35B3CA25846 /* Pods_RKMacOSX.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -125,8 +125,8 @@
 		F73078E151260A102FEB82F9 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				663395048EDD9B445E77BF72 /* Pods.debug.xcconfig */,
-				CDF0146ADF834F0317B19719 /* Pods.release.xcconfig */,
+				57141CF68EF72F2CD29F279A /* Pods-RKMacOSX.debug.xcconfig */,
+				21AEEDEE307CC8875A661B25 /* Pods-RKMacOSX.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -138,12 +138,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 25D63935135184CF000879B1 /* Build configuration list for PBXNativeTarget "RKMacOSX" */;
 			buildPhases = (
-				0E7867D148FBAD64B7DE1EB6 /* Check Pods Manifest.lock */,
+				0E7867D148FBAD64B7DE1EB6 /* [CP] Check Pods Manifest.lock */,
 				25D63910135184CE000879B1 /* Sources */,
 				25D63911135184CE000879B1 /* Frameworks */,
 				25D63912135184CE000879B1 /* Resources */,
-				E02916F51F1155DFDAB83400 /* Copy Pods Resources */,
-				6CFBD5D31A295A90E94A1A6A /* Embed Pods Frameworks */,
+				E02916F51F1155DFDAB83400 /* [CP] Copy Pods Resources */,
+				6CFBD5D31A295A90E94A1A6A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -193,14 +193,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0E7867D148FBAD64B7DE1EB6 /* Check Pods Manifest.lock */ = {
+		0E7867D148FBAD64B7DE1EB6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -208,34 +208,34 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		6CFBD5D31A295A90E94A1A6A /* Embed Pods Frameworks */ = {
+		6CFBD5D31A295A90E94A1A6A /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RKMacOSX/Pods-RKMacOSX-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E02916F51F1155DFDAB83400 /* Copy Pods Resources */ = {
+		E02916F51F1155DFDAB83400 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RKMacOSX/Pods-RKMacOSX-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -304,7 +304,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = macosx;
@@ -331,7 +331,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = macosx;
 			};
@@ -339,7 +339,7 @@
 		};
 		25D63936135184CF000879B1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 663395048EDD9B445E77BF72 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 57141CF68EF72F2CD29F279A /* Pods-RKMacOSX.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -350,7 +350,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKMacOSX/RKMacOSX-Prefix.pch";
 				INFOPLIST_FILE = "RKMacOSX/RKMacOSX-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twotoasters.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -359,7 +358,7 @@
 		};
 		25D63937135184CF000879B1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CDF0146ADF834F0317B19719 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 21AEEDEE307CC8875A661B25 /* Pods-RKMacOSX.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -370,7 +369,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKMacOSX/RKMacOSX-Prefix.pch";
 				INFOPLIST_FILE = "RKMacOSX/RKMacOSX-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twotoasters.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;

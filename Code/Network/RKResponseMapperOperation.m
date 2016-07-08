@@ -18,21 +18,19 @@
 //  limitations under the License.
 //
 
-#import <RestKit/Network/RKPathMatcher.h>
-#import <RestKit/Network/RKResponseDescriptor.h>
-#import <RestKit/Network/RKResponseMapperOperation.h>
-#import <RestKit/ObjectMapping/RKHTTPUtilities.h>
-#import <RestKit/ObjectMapping/RKMappingErrors.h>
-#import <RestKit/ObjectMapping/RKObjectMappingOperationDataSource.h>
-#import <RestKit/Support/RKDictionaryUtilities.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKMIMETypeSerialization.h>
+#import "RKObjectMappingOperationDataSource.h"
+#import "RKLog.h"
+#import "RKResponseDescriptor.h"
+#import "RKPathMatcher.h"
+#import "RKHTTPUtilities.h"
+#import "RKResponseMapperOperation.h"
+#import "RKMappingErrors.h"
+#import "RKMIMETypeSerialization.h"
+#import "RKDictionaryUtilities.h"
 
-#ifdef _COREDATADEFINES_H
-#if __has_include("RKCoreData.h")
+#if __has_include("CoreData.h")
 #define RKCoreDataIncluded
-#import <RestKit/CoreData/RKManagedObjectMappingOperationDataSource.h>
-#endif
+#import "RKManagedObjectMappingOperationDataSource.h"
 #endif
 
 // Set Logging Component

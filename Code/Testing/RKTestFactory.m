@@ -18,19 +18,17 @@
 //  limitations under the License.
 //
 
-#import <AFNetworking/AFHTTPClient.h>
-#import <RestKit/Network/RKObjectManager.h>
-#import <RestKit/Network/RKObjectRequestOperation.h>
-#import <RestKit/Support/RKLog.h>
-#import <RestKit/Support/RKMIMETypeSerialization.h>
-#import <RestKit/Support/RKPathUtilities.h>
-#import <RestKit/Testing/RKTestFactory.h>
+#import "AFRKHTTPClient.h"
+#import "RKTestFactory.h"
+#import "RKLog.h"
+#import "RKObjectManager.h"
+#import "RKPathUtilities.h"
+#import "RKMIMETypeSerialization.h"
+#import "RKObjectRequestOperation.h"
 
-#ifdef _COREDATADEFINES_H
-#if __has_include("RKCoreData.h")
+#if __has_include("CoreData.h")
 #define RKCoreDataIncluded
-#import <RestKit/CoreData/RKManagedObjectStore.h>
-#endif
+#import "RKManagedObjectStore.h"
 #endif
 
 // Expose MIME Type singleton and initialization routine
@@ -113,9 +111,9 @@
 - (void)defineDefaultFactories
 {
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
-        __block AFHTTPClient *client;
+        __block AFRKHTTPClient *client;
         RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
-            client = [AFHTTPClient clientWithBaseURL:self.baseURL];
+            client = [AFRKHTTPClient clientWithBaseURL:self.baseURL];
         });
 
         return client;
@@ -257,9 +255,6 @@
         [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
 
-    // Clear the NSURLCache
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
-
     if ([RKTestFactory sharedFactory].setUpBlock) [RKTestFactory sharedFactory].setUpBlock();
 }
 
@@ -269,7 +264,6 @@
 
     // Cancel any network operations and clear the cache
     [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     // Cancel any object mapping in the response mapping queue
     [[RKObjectRequestOperation responseMappingQueue] cancelAllOperations];
