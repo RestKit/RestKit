@@ -384,7 +384,7 @@
     [[[mockRequestOperation stub] andReturn:response] response];
     [[[mockRequestOperation stub] andReturn:responseData] responseData];
     [[[mockRequestOperation stub] andDo:^(NSInvocation *invocation) {
-        void(^successHandler)(AFHTTPRequestOperation *operation, id responseObject) = nil;
+        void(^successHandler)(AFRKHTTPRequestOperation *operation, id responseObject) = nil;
         [invocation getArgument:&successHandler atIndex:2];
         successHandler(mockRequestOperation, [RKTestFixture parsedObjectWithContentsOfFixture:@"hoarderWithCats_issue_2192.json"]);
         
@@ -461,7 +461,7 @@
     [[[mockRequestOperation stub] andReturn:response] response];
     [[[mockRequestOperation stub] andReturn:responseData] responseData];
     [[[mockRequestOperation stub] andDo:^(NSInvocation *invocation) {
-        void(^successHandler)(AFHTTPRequestOperation *operation, id responseObject) = nil;
+        void(^successHandler)(AFRKHTTPRequestOperation *operation, id responseObject) = nil;
         [invocation getArgument:&successHandler atIndex:2];
         successHandler(mockRequestOperation, [RKTestFixture parsedObjectWithContentsOfFixture:@"catsWithParent_issue_2194.json"]);
         

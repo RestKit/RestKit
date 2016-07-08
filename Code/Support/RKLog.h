@@ -18,6 +18,11 @@
 //  limitations under the License.
 //
 
+#import <Foundation/Foundation.h>
+#if __has_include("CoreData.h")
+#import <CoreData/CoreData.h>
+#endif
+
 /**
  RestKit Logging is based on the LibComponentLogging framework
 
@@ -228,7 +233,7 @@ void RKLogConfigureFromEnvironment(void);
  */
 void RKLogValidationError(NSError *error);
 
-#ifdef _COREDATADEFINES_H
+#if __has_include("CoreData.h")
 /**
  Logs extensive information an NSError generated as the result of a
  failed Core Data interaction, such as the execution of a fetch request

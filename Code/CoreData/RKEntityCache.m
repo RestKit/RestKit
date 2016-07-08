@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#import <Foundation/Foundation.h>
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #endif

@@ -20,7 +20,7 @@
 
 #import "RKSearchPredicate.h"
 
-#ifdef _COREDATADEFINES_H
+#if __has_include("CoreData.h")
 #import "RKSearchIndexer.h"
 #import "RKManagedObjectStore+RKSearchAdditions.h"
 #endif

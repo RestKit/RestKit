@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#import <CoreLocation/CoreLocation.h>
 #import "RKTestEnvironment.h"
 #import "RKObjectParameterization.h"
 #import "RKMIMETypeSerialization.h"

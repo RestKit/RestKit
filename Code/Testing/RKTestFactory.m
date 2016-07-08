@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "AFHTTPClient.h"
+#import "AFRKHTTPClient.h"
 #import "RKTestFactory.h"
 #import "RKLog.h"
 #import "RKObjectManager.h"
@@ -26,11 +26,9 @@
 #import "RKMIMETypeSerialization.h"
 #import "RKObjectRequestOperation.h"
 
-#ifdef _COREDATADEFINES_H
-#if __has_include("RKCoreData.h")
+#if __has_include("CoreData.h")
 #define RKCoreDataIncluded
 #import "RKManagedObjectStore.h"
-#endif
 #endif
 
 // Expose MIME Type singleton and initialization routine
@@ -113,9 +111,9 @@
 - (void)defineDefaultFactories
 {
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
-        __block AFHTTPClient *client;
+        __block AFRKHTTPClient *client;
         RKLogSilenceComponentWhileExecutingBlock(RKlcl_cRestKitSupport, ^{
-            client = [AFHTTPClient clientWithBaseURL:self.baseURL];
+            client = [AFRKHTTPClient clientWithBaseURL:self.baseURL];
         });
 
         return client;
