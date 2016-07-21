@@ -588,10 +588,11 @@ Change to the directory of your Xcode project, and Create and Edit your Podfile 
 $ cd /path/to/MyProject
 $ touch Podfile
 $ edit Podfile
-platform :ios, '5.0'
-# Or platform :osx, '10.7'
-pod 'RestKit', '~> 0.24.0'
-
+target "YOUR PROJECT" do
+	platform :ios, '7.0'
+	# Or platform :osx, '10.7'
+	pod 'RestKit', '~> 0.24.0'
+end
 # Testing and Search are optional components
 pod 'RestKit/Testing', '~> 0.24.0'
 pod 'RestKit/Search',  '~> 0.24.0'
