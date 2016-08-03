@@ -634,6 +634,8 @@ static NSManagedObjectModel *RKManagedObjectModel()
     expect(error).to.beNil();
 }
 
+extern NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(NSNotification *notification);
+
 - (void)testSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification {
     
     NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
