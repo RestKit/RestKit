@@ -24,6 +24,8 @@
 
 @class RKManagedObjectStore;
 
+extern NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(NSNotification *notification);
+
 /**
  The `RKManagedObjectStore` class encapsulates a Core Data stack including a managed object model, a persistent store coordinator, and a set of managed object contexts. The managed object store simplifies the task of properly setting up a Core Data stack and provides some additional functionality, such as the use of a seed database to initialize a SQLite backed persistent store and a simple code path for resetting the store by destroying and recreating the persistent stores.
 
