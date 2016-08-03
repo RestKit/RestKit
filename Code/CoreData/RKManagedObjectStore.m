@@ -50,11 +50,26 @@ static BOOL RKIsManagedObjectContextDescendentOfContext(NSManagedObjectContext *
     return NO;
 }
 
+static NSArray *RKCountedNotificationKeys() {
+    return @[NSInsertedObjectsKey,
+             NSUpdatedObjectsKey,
+             NSDeletedObjectsKey,
+             NSRefreshedObjectsKey,
+             NSInvalidatedObjectsKey];
+}
+
 static NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(NSNotification *notification)
 {
-    NSUInteger count = [[[notification.userInfo allValues] valueForKeyPath:@"@sum.@count"] unsignedIntegerValue];
+    NSMutableArray *values = [NSMutableArray new];
+    NSArray *keys = RKCountedNotificationKeys();
+    for (NSString *key in notification.userInfo) {
+        if ([keys containsObject:key]) {
+            [values addObject:notification.userInfo[key]];
+        }
+    }
+    NSUInteger count = [[values valueForKeyPath:@"@sum.@count"] unsignedIntegerValue];
     NSMutableSet *objectIDs = [NSMutableSet setWithCapacity:count];
-    for (NSSet *objects in [notification.userInfo allValues]) {
+    for (NSSet *objects in values) {
         [objectIDs unionSet:[objects valueForKey:@"objectID"]];
     }
     return objectIDs;
