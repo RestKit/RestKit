@@ -27,6 +27,7 @@
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKFetchRequestManagedObjectCache.h"
 #import "NSManagedObjectContext+RKAdditions.h"
+#import "RKManagedObjectStore_Private.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -48,24 +49,6 @@ static BOOL RKIsManagedObjectContextDescendentOfContext(NSManagedObjectContext *
         context = [context parentContext];
     }
     return NO;
-}
-
-NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(NSNotification *notification);
-NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(NSNotification *notification)
-{
-    NSMutableSet <NSManagedObjectID *> *objectIDs = [NSMutableSet set];
-    
-    void (^unionObjectIDs)(NSMutableSet *, NSSet *) = ^(NSMutableSet *objectIDs, NSSet *objects) {
-        if (objects != nil) {
-            [objectIDs unionSet:[objects valueForKey:NSStringFromSelector(@selector(objectID))]];
-        }
-    };
-    
-    unionObjectIDs(objectIDs,notification.userInfo[NSInsertedObjectsKey]);
-    unionObjectIDs(objectIDs,notification.userInfo[NSUpdatedObjectsKey]);
-    unionObjectIDs(objectIDs,notification.userInfo[NSDeletedObjectsKey]);
-    
-    return objectIDs;
 }
 
 @interface RKManagedObjectContextChangeMergingObserver : NSObject

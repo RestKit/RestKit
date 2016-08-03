@@ -23,6 +23,7 @@
 #import "RKHuman.h"
 #import "RKPathUtilities.h"
 #import "RKSearchIndexer.h"
+#import "RKManagedObjectStore_Private.h"
 
 // TODO: Does this become `RKManagedObjectStore managedObjectModelWithName:version:inBundle:` ??? URLForManagedObjectModel
 static NSURL *RKURLForManagedObjectModelWithNameAtVersion(NSString *modelName, NSUInteger version)
@@ -633,8 +634,6 @@ static NSManagedObjectModel *RKManagedObjectModel()
     expect(success).to.equal(YES);
     expect(error).to.beNil();
 }
-
-extern NSSet *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(NSNotification *notification);
 
 - (void)testSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification {
     
