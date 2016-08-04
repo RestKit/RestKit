@@ -51,6 +51,23 @@ static BOOL RKIsManagedObjectContextDescendentOfContext(NSManagedObjectContext *
     return NO;
 }
 
+NSSet <NSManagedObjectID *> *RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(NSNotification *notification)
+{
+    NSMutableSet <NSManagedObjectID *> *objectIDs = [NSMutableSet set];
+    
+    void (^unionObjectIDs)(NSMutableSet *, NSSet *) = ^(NSMutableSet *objectIDs, NSSet *objects) {
+        if (objects != nil) {
+            [objectIDs unionSet:[objects valueForKey:NSStringFromSelector(@selector(objectID))]];
+        }
+    };
+    
+    unionObjectIDs(objectIDs,notification.userInfo[NSInsertedObjectsKey]);
+    unionObjectIDs(objectIDs,notification.userInfo[NSUpdatedObjectsKey]);
+    unionObjectIDs(objectIDs,notification.userInfo[NSDeletedObjectsKey]);
+    
+    return objectIDs;
+}
+
 @interface RKManagedObjectContextChangeMergingObserver : NSObject
 @property (nonatomic, weak) NSManagedObjectContext *observedContext;
 @property (nonatomic, weak) NSManagedObjectContext *mergeContext;
