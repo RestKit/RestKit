@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#ifdef _COREDATADEFINES_H
+#if __has_include("CoreData.h")
 
 #import <Foundation/Foundation.h>
 

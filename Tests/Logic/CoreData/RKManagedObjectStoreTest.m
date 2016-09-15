@@ -18,10 +18,12 @@
 //  limitations under the License.
 //
 
+#import "CoreData.h"
 #import "RKTestEnvironment.h"
 #import "RKHuman.h"
 #import "RKPathUtilities.h"
 #import "RKSearchIndexer.h"
+#import "RKManagedObjectStore_Private.h"
 
 // TODO: Does this become `RKManagedObjectStore managedObjectModelWithName:version:inBundle:` ??? URLForManagedObjectModel
 static NSURL *RKURLForManagedObjectModelWithNameAtVersion(NSString *modelName, NSUInteger version)
@@ -37,8 +39,14 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     return model;
 }
 
-@interface RKManagedObjectStoreTest : RKTestCase
+static NSManagedObjectModel *RKManagedObjectModel()
+{
+    NSURL *modelURL = [[RKTestFixture fixtureBundle] URLForResource:@"Data Model" withExtension:@"mom"];
+    return [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+}
 
+@interface RKManagedObjectStoreTest : RKTestCase
+@property (nonatomic, strong) id observerReference;
 @end
 
 @implementation RKManagedObjectStoreTest
@@ -62,6 +70,7 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
 
 - (void)tearDown
 {
+    if (self.observerReference) [[NSNotificationCenter defaultCenter] removeObserver:self.observerReference];
     [RKTestFactory tearDown];
 }
 
@@ -624,6 +633,43 @@ static NSManagedObjectModel *RKManagedObjectModelWithNameAtVersion(NSString *mod
     }];
     expect(success).to.equal(YES);
     expect(error).to.beNil();
+}
+
+- (void)testSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification {
+    
+    NSManagedObjectModel *managedObjectModel = RKManagedObjectModel();
+    NSEntityDescription *entity = [managedObjectModel entitiesByName][@"Human"];
+    
+    NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];
+    NSError *error;
+    [persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.persistentStoreCoordinator = persistentStoreCoordinator;
+    
+    __block NSUInteger count = 0;
+    
+    NSManagedObject *human1 = [NSEntityDescription insertNewObjectForEntityForName:entity.name inManagedObjectContext:managedObjectContext];
+    [managedObjectContext save:NULL];
+    
+    NSManagedObject *human2 = [NSEntityDescription insertNewObjectForEntityForName:entity.name inManagedObjectContext:managedObjectContext];
+    [managedObjectContext save:NULL];
+    
+    self.observerReference = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:managedObjectContext queue:nil usingBlock:^(NSNotification *notification) {
+        NSSet *set = RKSetOfManagedObjectIDsFromManagedObjectContextDidSaveNotification(notification);
+        count = set.count;
+    }];
+    
+    [human1 setValue:@"Jane Doe" forKey:@"name"];
+    [managedObjectContext deleteObject:human2];
+    
+    [NSEntityDescription insertNewObjectForEntityForName:entity.name inManagedObjectContext:managedObjectContext];
+    [managedObjectContext save:NULL];
+    
+    // 1 inserted
+    // 1 updated
+    // 1 deleted
+    expect(count).will.equal(3);
+    
 }
 
 @end

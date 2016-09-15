@@ -25,7 +25,7 @@
 #import "RKTestHelpers.h"
 #import "RKMappingTest.h"
 
-#ifdef _COREDATADEFINES_H
+#if __has_include("CoreData.h")
 #import "RKConnectionTestExpectation.h"
 #endif
 

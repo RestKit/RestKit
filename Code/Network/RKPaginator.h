@@ -156,7 +156,7 @@
 /// @name Core Data Configuration
 ///------------------------------
 
-#ifdef _COREDATADEFINES_H
+#if __has_include("CoreData.h")
 /**
  The managed object context in which paginated managed objects are to be persisted.
  */
