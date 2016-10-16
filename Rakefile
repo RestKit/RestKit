@@ -19,7 +19,7 @@ XCTasks::TestTask.new(:test) do |t|
 
   t.subtask(ios: 'RestKitTests') do |s|
     s.sdk = :iphonesimulator
-    s.destination('platform=iOS Simulator,OS=9.3,name=iPhone 6')
+    s.destination('platform=iOS Simulator,OS=10.0,name=iPhone 6')
   end
 # OS X Tests disabled as part of https://github.com/RestKit/RestKit/pull/2434
 # because of the following Cocoapods issue https://github.com/CocoaPods/CocoaPods/issues/4752
