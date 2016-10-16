@@ -254,6 +254,13 @@
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
         [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
+    // Check for and remove -shm and -wal files
+    for (NSString *suffix in @[ @"-shm", @"-wal" ]) {
+        NSString *supportFilePath = [path stringByAppendingString:suffix];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:supportFilePath]) {
+            [[NSFileManager defaultManager] removeItemAtPath:supportFilePath error:nil];
+        }
+    }
 
     if ([RKTestFactory sharedFactory].setUpBlock) [RKTestFactory sharedFactory].setUpBlock();
 }
