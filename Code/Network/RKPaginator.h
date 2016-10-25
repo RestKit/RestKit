@@ -251,6 +251,11 @@
  */
 @property (nonatomic, readonly) BOOL hasPreviousPage;
 
+/**
+ Metadata passed to request
+ */
+@property (nonatomic, strong) NSDictionary* mappingMetadata;
+
 ///------------------------
 /// @name Paginator Actions
 ///------------------------
@@ -276,5 +281,10 @@
  Cancels an in-progress pagination request.
  */
 - (void)cancel;
+
+/** 
+ Returns true if the paginator is currently loading data
+ */
+- (BOOL) isLoading;
 
 @end
