@@ -51,7 +51,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   RestKit:
-    :path: "."
+    :path: .
 
 SPEC CHECKSUMS:
   CocoaLumberjack: 97fab7ee5f507fe54445cca7ea80f926729cfd15
