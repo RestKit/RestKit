@@ -93,6 +93,7 @@ static NSTimeInterval const kAFRKNetworkActivityIndicatorInvisibilityDelay = 0.1
 }
 
 - (void)updateNetworkActivityIndicatorVisibility {
+    // test
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:[self isNetworkActivityIndicatorVisible]];
 }
 
