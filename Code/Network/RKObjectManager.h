@@ -321,6 +321,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  */
 @property (nonatomic, strong) RKRouter *router;
 
+/**
+ The HTTP method(s) for which request body is unsupported by default but may be forced. GET, HEAD, DELETE.
+ */
+@property (nonatomic, assign) RKRequestMethod forceRequestBodyMethods;
+
 ///--------------------------------------------------
 /// @name Configuring Request and Response MIME Types
 ///--------------------------------------------------

@@ -490,6 +490,28 @@
     expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
 }
 
+- (void)testThatObjectParametersAreSentDuringForUnsupportedMethodIfForced
+{
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.forceRequestBodyMethods = RKRequestMethodDELETE;
+    
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingsFromArray:@[ @"name" ]];
+    
+    RKRequestDescriptor *requestDesriptor = [RKRequestDescriptor requestDescriptorWithMapping:mapping objectClass:[RKObjectMapperTestModel class] rootKeyPath:nil method:RKRequestMethodAny];
+    objectManager.requestSerializationMIMEType = RKMIMETypeJSON;
+    [objectManager addRequestDescriptor:requestDesriptor];
+    
+    RKObjectMapperTestModel *model = [RKObjectMapperTestModel new];
+    model.name = @"Blake";
+    NSURLRequest *request = [objectManager requestWithObject:model method:RKRequestMethodDELETE path:@"/path" parameters:nil];
+    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:request.HTTPBody options:0 error:nil];
+    expect(dictionary).to.equal(@{ @"name": @"Blake" });
+    
+    objectManager.forceRequestBodyMethods = 0;
+    [objectManager removeRequestDescriptor:requestDesriptor];
+}
+
 - (void)testInitializationOfObjectRequestOperationProducesCorrectURLRequest
 {
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
