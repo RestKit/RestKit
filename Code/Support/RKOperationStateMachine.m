@@ -144,9 +144,13 @@ static NSString *const RKOperationLockName = @"org.restkit.operation.lock";
     // Ensure that we are finished from the operation queue
     dispatch_async(self.dispatchQueue, ^{
         [self performBlockWithLock:^{
-            NSError *error = nil;
-            BOOL success = [self.stateMachine fireEvent:RKOperationEventFinish userInfo:nil error:&error];
-            if (! success) [NSException raise:RKOperationFailureException format:@"The operation unexpectedly failed to finish due to an error: %@", error];
+            if ([self.stateMachine canFireEvent:RKOperationEventFinish]) {
+                NSError *error = nil;
+                BOOL success = [self.stateMachine fireEvent:RKOperationEventFinish userInfo:nil error:&error];
+                if (!success) {
+                    [NSException raise:RKOperationFailureException format:@"The operation unexpectedly failed to finish due to an error: %@", error];
+                }
+            }
         }];
     });
 }
