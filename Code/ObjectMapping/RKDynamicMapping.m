@@ -32,6 +32,10 @@
 @property (nonatomic, copy) RKObjectMapping *(^objectMappingForRepresentationBlock)(id representation);
 @end
 
+@interface RKDynamicMapping (Copying)
+- (void)copyPropertiesFromMapping:(RKDynamicMapping *)mapping;
+@end
+
 @implementation RKDynamicMapping
 
 - (instancetype)init
@@ -114,6 +118,38 @@
 - (BOOL)isEqualToMapping:(RKMapping *)otherMapping
 {
     return (self == otherMapping);
+}
+
+- (RKDynamicMapping *)inverseMapping
+{
+    RKDynamicMapping *inverseMapping = [[RKDynamicMapping alloc] init];
+    [inverseMapping copyPropertiesFromMapping:self];
+    
+    for (id matcherObject in self.matchers) {
+        if ([matcherObject isKindOfClass:[RKObjectMappingMatcher class]])
+        {
+            RKObjectMappingMatcher *matcher = matcherObject;
+            RKObjectMappingMatcher *inverseMatcher = [matcher matcherWithInverseObjectMapping];
+            [inverseMapping addMatcher:inverseMatcher];
+        }
+    }
+    
+    return inverseMapping;
+}
+
+- (void)copyPropertiesFromMapping:(RKDynamicMapping *)mapping
+{
+    self.forceCollectionMapping = mapping.forceCollectionMapping;
+    self.objectMappingForRepresentationBlock = mapping.objectMappingForRepresentationBlock;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    RKDynamicMapping *copy = [[[self class] allocWithZone:zone] init];
+    [copy copyPropertiesFromMapping:self];
+    copy.mutableMatchers = [self.matchers mutableCopy];
+    
+    return copy;
 }
 
 @end

@@ -15,7 +15,7 @@
 @property (nonatomic, strong, readwrite) RKObjectMapping *objectMapping;
 @end
 
-@interface RKKeyPathObjectMappingMatcher : RKObjectMappingMatcher
+@interface RKKeyPathObjectMappingMatcher : RKObjectMappingMatcher <NSCopying>
 @property (nonatomic, copy) NSString *keyPath;
 @property (nonatomic, strong, readwrite) id expectedValue;
 
@@ -38,7 +38,7 @@
 - (instancetype)initWithKeyPath:(NSString *)keyPath expectedValueMap:(NSDictionary *)valueToObjectMapping NS_DESIGNATED_INITIALIZER;
 @end
 
-@interface RKPredicateObjectMappingMatcher : RKObjectMappingMatcher
+@interface RKPredicateObjectMappingMatcher : RKObjectMappingMatcher <NSCopying>
 @property (nonatomic, strong) NSPredicate *predicate;
 
 - (instancetype)initWithPredicate:(NSPredicate *)predicate objectMapping:(RKObjectMapping *)objectMapping NS_DESIGNATED_INITIALIZER;
@@ -106,6 +106,23 @@
     return NO;
 }
 
+- (instancetype)matcherWithInverseObjectMapping
+{
+    return nil;
+}
+
+- (void)copyPropertiesFromMatcher:(RKObjectMappingMatcher *)mapping
+{
+    self.objectMapping = [mapping.objectMapping copy];
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    RKObjectMappingMatcher *copy = [[[self class] allocWithZone:zone] init];
+    [copy copyPropertiesFromMatcher:self];
+    return copy;
+}
+
 @end
 
 @implementation RKKeyPathObjectMappingMatcher
@@ -138,6 +155,18 @@
     id value = [object valueForKeyPath:self.keyPath];
     if (value == nil) return NO;
     return RKObjectIsEqualToObject(value, self.expectedValue);
+}
+
+- (instancetype)matcherWithInverseObjectMapping
+{
+    return [[RKKeyPathObjectMappingMatcher alloc] initWithKeyPath:self.keyPath expectedValue:self.expectedValue objectMapping:[self.objectMapping inverseMapping]];
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    RKKeyPathObjectMappingMatcher *copy = [[[self class] allocWithZone:zone] initWithKeyPath:self.keyPath expectedValue:self.expectedValue objectMapping:[self.objectMapping copy]];
+    [copy copyPropertiesFromMatcher:self];
+    return copy;
 }
 
 - (NSString *)description
@@ -258,6 +287,18 @@
 - (BOOL)matches:(id)object
 {
     return [self.predicate evaluateWithObject:object];
+}
+
+- (instancetype)matcherWithInverseObjectMapping
+{
+    return [[RKPredicateObjectMappingMatcher alloc] initWithPredicate:self.predicate objectMapping:[self.objectMapping inverseMapping]];
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    RKPredicateObjectMappingMatcher *copy = [[[self class] allocWithZone:zone] initWithPredicate:[self.predicate copy] objectMapping:[self.objectMapping copy]];
+    [copy copyPropertiesFromMatcher:self];
+    return copy;
 }
 
 - (NSString *)description

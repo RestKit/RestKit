@@ -23,7 +23,7 @@
 
 #import <RKValueTransformers/RKValueTransformers.h>
 
-@class RKPropertyMapping, RKAttributeMapping, RKRelationshipMapping;
+@class RKPropertyMapping, RKAttributeMapping, RKRelationshipMapping, RKDynamicMapping;
 @protocol RKValueTransforming;
 
 /**
