@@ -830,10 +830,12 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFRKHTTPClientParam
     paginator.managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
     paginator.managedObjectCache = self.managedObjectStore.managedObjectCache;
     paginator.fetchRequestBlocks = self.fetchRequestBlocks;
-#endif
-    paginator.operationQueue = self.operationQueue;
-    Class HTTPOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses];
+	Class HTTPOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredHTTPRequestOperationClasses];
     if (HTTPOperationClass) [paginator setHTTPOperationClass:HTTPOperationClass];
+#endif
+	Class objectRequestOperationClass = [self requestOperationClassForRequest:request fromRegisteredClasses:self.registeredObjectRequestOperationClasses];
+	if (objectRequestOperationClass) [paginator setObjectRequestOperationClass:objectRequestOperationClass];
+    paginator.operationQueue = self.operationQueue;
     return paginator;
 }
 
