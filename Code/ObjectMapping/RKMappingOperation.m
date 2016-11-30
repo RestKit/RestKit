@@ -107,6 +107,7 @@ static BOOL RKObjectContainsValueForMappings(id representation, NSArray *propert
 {
     for (RKPropertyMapping *mapping in propertyMappings) {
         NSString *keyPath = mapping.sourceKeyPath;
+        if ([keyPath isKindOfClass:[NSNull class]]) return YES;
         if (keyPath && [representation valueForKeyPath:keyPath]) return YES;
     }
     return NO;
