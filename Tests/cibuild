@@ -9,7 +9,7 @@ git submodule update --init
 
 # Bundler & CocoaPods
 bundle
-pod install
+bundle exec pod install
 
 # Run the build
 rake server:stop || true
