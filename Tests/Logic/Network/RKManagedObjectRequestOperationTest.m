@@ -1689,6 +1689,26 @@ NSSet *RKSetByRemovingSubkeypathsFromSet(NSSet *setOfKeyPaths);
     expect(blockMappingContext).notTo.beNil();
 }
 
+- (void)testThatWillSaveMappingContextNotificationIsSent
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [entityMapping addAttributeMappingsFromDictionary:@{ @"name": @"name" }];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:entityMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest  requestWithURL:[NSURL URLWithString:@"/humans/1" relativeToURL:[RKTestFactory baseURL]]];
+    RKManagedObjectRequestOperation *managedObjectRequestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    managedObjectRequestOperation.managedObjectContext = managedObjectStore.persistentStoreManagedObjectContext;
+    __block NSManagedObjectContext *blockMappingContext = nil;
+    id observer = [NSNotificationCenter.defaultCenter addObserverForName:RKManagedObjectRequestOperationWillSaveMappingContextNotification object:managedObjectRequestOperation queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        blockMappingContext = note.userInfo[RKManagedObjectRequestOperationMappingContextUserInfoKey];
+    }];
+    [managedObjectRequestOperation start];
+    [managedObjectRequestOperation waitUntilFinished];
+    [NSNotificationCenter.defaultCenter removeObserver:observer];
+    expect(blockMappingContext).notTo.beNil();
+}
+
 - (void)testThatWillSaveMappingContextMappingResultIsAvailable {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKEntityMapping *entityMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];

@@ -40,6 +40,9 @@
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitNetworkCoreData
 
+NSString *const RKManagedObjectRequestOperationWillSaveMappingContextNotification = @"RKManagedObjectRequestOperationWillSaveMappingContextNotification";
+NSString *const RKManagedObjectRequestOperationMappingContextUserInfoKey = @"RKManagedObjectRequestOperationMappingContextUserInfoKey";
+
 @interface RKEntityMappingEvent : NSObject
 @property (nonatomic, copy) id rootKey;
 @property (nonatomic, copy) NSString *keyPath;
@@ -859,17 +862,27 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
 
 - (BOOL)saveContext:(NSError **)error
 {
-    if (self.willSaveMappingContextBlock) {
-        self.mappingResult = _responseMapperOperation.mappingResult;
-        [self.privateContext performBlockAndWait:^{
-            self.willSaveMappingContextBlock(self.privateContext);
-        }];
-    }
+    
+    // FIXME: Why was this only getting set `if (self.willSaveMappingContextBlock)` before?
+    self.mappingResult = _responseMapperOperation.mappingResult;
     
     __block BOOL hasChanges;
-    [self.privateContext performBlockAndWait:^{
-        hasChanges = [self.privateContext hasChanges];
+    NSManagedObjectContext * const privateContext = self.privateContext;
+    [privateContext performBlockAndWait:^{
+        
+        // Run callback block
+        if (self.willSaveMappingContextBlock) {
+            self.willSaveMappingContextBlock(privateContext);
+        }
+        
+        // Send NSNotification
+        NSDictionary *userInfo = @{ RKManagedObjectRequestOperationMappingContextUserInfoKey: privateContext };
+        [NSNotificationCenter.defaultCenter postNotificationName:RKManagedObjectRequestOperationWillSaveMappingContextNotification object:self userInfo:userInfo];
+        
+        // Check for changes
+        hasChanges = [privateContext hasChanges];
     }];
+    
     if (hasChanges) {
         return [self saveContext:self.privateContext error:error];
     } else if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {

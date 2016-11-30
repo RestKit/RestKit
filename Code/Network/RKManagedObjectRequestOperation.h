@@ -207,3 +207,17 @@ NSArray *RKArrayOfFetchRequestFromBlocksWithURL(NSArray *fetchRequestBlocks, NSU
 
 #endif
 #endif
+
+///--------------------
+/// @name Notifications
+///--------------------
+
+/**
+ Posted synchronously when a managed object request operation will save its mapping context, just after the `willSaveMappingContextBlock` is invoked.
+ */
+extern NSString *const RKManagedObjectRequestOperationWillSaveMappingContextNotification;
+
+/**
+ The key for the `NSManagedObjectContext` object used to perform the mapping for this operation. This context will be saved immediately after RKManagedObjectRequestOperationWillSaveMappingContextNotification is sent.
+ */
+extern NSString *const RKManagedObjectRequestOperationMappingContextUserInfoKey;
