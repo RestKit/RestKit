@@ -270,17 +270,20 @@ static void AFRKSwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SE
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
 #pragma clang diagnostic ignored "-Wgnu"
+    __weak typeof(self) weakSelf = self;
+    
     self.completionBlock = ^{
-        if (self.error) {
+        __strong typeof(weakSelf)strongSelf = weakSelf;
+        if (strongSelf.error) {
             if (failure) {
-                dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
-                    failure(self, self.error);
+                dispatch_async(weakSelf.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
+                    failure(strongSelf, strongSelf.error);
                 });
             }
         } else {
             if (success) {
-                dispatch_async(self.successCallbackQueue ?: dispatch_get_main_queue(), ^{
-                    success(self, self.responseData);
+                dispatch_async(strongSelf.successCallbackQueue ?: dispatch_get_main_queue(), ^{
+                    success(strongSelf, strongSelf.responseData);
                 });
             }
         }
