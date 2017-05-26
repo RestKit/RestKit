@@ -103,7 +103,7 @@
 
 - (void)testSendingAnObjectRequestOperationToAnInvalidHostname
 {
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://invalid.is"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://whiskeytangofoxtrot.ly"]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
