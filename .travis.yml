@@ -1,6 +1,6 @@
 osx_image: xcode8.3
 language: objective-c
-rvm: 2.2.4
+rvm: 2.4.1
 cache:
   - bundler
   - cocoapods
