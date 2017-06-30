@@ -1,4 +1,4 @@
-osx_image: xcode8
+osx_image: xcode8.3
 language: objective-c
 rvm: 2.2.4
 cache:
@@ -11,7 +11,7 @@ install:
   - travis_wait 30 bundle exec pod repo update --silent
   - travis_wait 30 bundle exec pod install
 script:
-  - travis_wait 50 bundle exec rake ci
+  - travis_retry travis_wait 50 bundle exec rake ci
 branches:
   only:
     - master
