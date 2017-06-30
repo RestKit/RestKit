@@ -32,7 +32,7 @@ PODS:
     - RKValueTransformers (~> 1.1.0)
   - RKValueTransformers (1.1.3)
   - SOCKit (1.1)
-  - Specta (1.0.5)
+  - Specta (1.0.6)
   - TransitionKit (2.2.1)
 
 DEPENDENCIES:
@@ -46,7 +46,7 @@ DEPENDENCIES:
   - RKCLLocationValueTransformer (~> 1.1.0)
   - RKValueTransformers (~> 1.1.0)
   - SOCKit
-  - Specta (= 1.0.5)
+  - Specta (= 1.0.6)
   - TransitionKit (~> 2.2)
 
 EXTERNAL SOURCES:
@@ -63,9 +63,9 @@ SPEC CHECKSUMS:
   RKCLLocationValueTransformer: 2cf0ea0fb7cd4bc70c56834fb92abc717c66f982
   RKValueTransformers: e5ed67e3811229b616fe01bddeeafe3bb337b1b9
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392
-  Specta: ac94d110b865115fe60ff2c6d7281053c6f8e8a2
+  Specta: f506f3a8361de16bc0dcf3b17b75e269072ba465
   TransitionKit: 9ceccda4cd0cdc0a05ef85eb235e5a3292c3c250
 
-PODFILE CHECKSUM: 2fcdadbabd8d5e734e1a95ec3ca7e2ef9fa9a3f9
+PODFILE CHECKSUM: b8958dcfe595d2829cf28ef5cb76c4da13eb2ed0
 
-COCOAPODS: 1.1.0.rc.3
+COCOAPODS: 1.2.1
