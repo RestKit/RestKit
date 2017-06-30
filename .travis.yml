@@ -4,14 +4,12 @@ rvm: 2.4.1
 cache:
   - bundler
   - cocoapods
-before_install:
-  - gem install bundler
 install:
   - bundle install
   - travis_wait 30 bundle exec pod repo update --silent
   - travis_wait 30 bundle exec pod install
 script:
-  - travis_retry travis_wait 50 bundle exec rake ci
+  - bundle exec rake ci
 branches:
   only:
     - master
