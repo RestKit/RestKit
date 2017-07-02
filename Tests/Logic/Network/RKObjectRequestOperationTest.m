@@ -796,11 +796,17 @@
 
 - (void)testThatCacheEntryIsFlaggedWhenMappingCompletes
 {
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"email" }];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
+
+    // Make sure the shared cache doesn't contain any response from previous tests
+    while ([[NSURLCache sharedURLCache] cachedResponseForRequest:request]) { }
+
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
@@ -814,11 +820,15 @@
 - (void)testThatCacheEntryIsNotFlaggedWhenMappingFails
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    
+
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:@"/mismatch" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
+
+    // Make sure the shared cache doesn't contain any response from previous tests
+    while ([[NSURLCache sharedURLCache] cachedResponseForRequest:request]) { }
+
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();

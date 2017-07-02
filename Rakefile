@@ -33,8 +33,8 @@ namespace :test do
   # Provides validation that RestKit continues to build without Core Data. This requires conditional compilation that is error prone
   task :building_without_core_data do
     title 'Testing without Core Data'
-    run('cd Examples/RKTwitter && pod install')
-    run('xctool -workspace Examples/RKTwitter/RKTwitter.xcworkspace -scheme RKTwitter -sdk iphonesimulator clean build ONLY_ACTIVE_ARCH=NO')
+    run('cd Examples/RKTwitter && bundle exec pod install')
+    run('xctool -workspace Examples/RKTwitter/RKTwitter.xcworkspace -scheme RKTwitter -sdk iphonesimulator build ONLY_ACTIVE_ARCH=NO')
   end
 end
 
@@ -155,7 +155,7 @@ namespace :build do
         puts "Building '#{example_project}' with SDK #{sdk}..."
         scheme = project_name
         run("cd #{project_path} && pod install")
-        run("xctool -workspace #{project_workspace} -scheme #{scheme} -sdk #{sdk} clean build")
+        run("xctool -workspace #{project_workspace} -scheme #{scheme} -sdk #{sdk} build")
       end
     end
   end
