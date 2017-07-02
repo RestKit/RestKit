@@ -68,6 +68,7 @@ GEM
     rakeup (1.2.0)
       rack (~> 1.5.0)
       rake (~> 10.3.0)
+    rouge (2.0.7)
     ruby-macho (1.1.0)
     sinatra (1.4.8)
       rack (~> 1.5)
@@ -80,10 +81,10 @@ GEM
       rack-test
       sinatra (~> 1.4.0)
       tilt (>= 1.3, < 3)
-    thin (1.5.1)
-      daemons (>= 1.0.9)
-      eventmachine (>= 0.12.6)
-      rack (>= 1.0.0)
+    thin (1.7.1)
+      daemons (~> 1.0, >= 1.0.9)
+      eventmachine (~> 1.0, >= 1.0.4)
+      rack (>= 1, < 3)
     thread_safe (0.3.6)
     tilt (2.0.7)
     tzinfo (1.2.3)
@@ -93,8 +94,9 @@ GEM
       claide (>= 1.0.2, < 2.0)
       colored2 (~> 3.1)
       nanaimo (~> 0.2.3)
-    xcpretty (0.1.12)
-    xctasks (0.5.0)
+    xcpretty (0.2.8)
+      rouge (~> 2.0.7)
+    xctasks (0.6.0)
       nokogiri (~> 1.6, >= 1.6.3.1)
       rake (~> 10.0, >= 10.0.0)
 
@@ -102,13 +104,14 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bundler
   cocoapods (= 1.2.1)
   rakeup (~> 1.2.0)
-  sinatra (~> 1.4.0)
-  sinatra-contrib (~> 1.4.0)
-  thin (~> 1.5.0)
-  xcpretty (~> 0.1.6)
-  xctasks (~> 0.5.0)
+  sinatra (~> 1.4.8)
+  sinatra-contrib (~> 1.4.7)
+  thin (~> 1.7.1)
+  xcpretty (~> 0.2.8)
+  xctasks (~> 0.6.0)
 
 BUNDLED WITH
    1.15.1

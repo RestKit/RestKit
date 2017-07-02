@@ -494,9 +494,9 @@
     expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).notTo.beNil();    
     NSString *failureReason = [[requestOperation.error userInfo] valueForKey:NSLocalizedFailureReasonErrorKey];
-    assertThat(failureReason, containsString(@"A 200 response was loaded from the URL 'http://127.0.0.1:4567/users/empty', which failed to match all (2) response descriptors:"));
-    assertThat(failureReason, containsString(@"failed to match: response URL 'http://127.0.0.1:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
-    assertThat(failureReason, containsString(@"failed to match: response URL 'http://127.0.0.1:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
+    assertThat(failureReason, containsString(@"A 200 response was loaded from the URL 'http://localhost:4567/users/empty', which failed to match all (2) response descriptors:"));
+    assertThat(failureReason, containsString(@"failed to match: response URL 'http://localhost:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
+    assertThat(failureReason, containsString(@"failed to match: response URL 'http://localhost:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
 }
 
 // Test trailing slash on the baseURL
