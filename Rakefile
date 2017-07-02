@@ -34,7 +34,7 @@ namespace :test do
   task :building_without_core_data do
     title 'Testing without Core Data'
     run('cd Examples/RKTwitter && bundle exec pod install')
-    run('xctool -workspace Examples/RKTwitter/RKTwitter.xcworkspace -scheme RKTwitter -sdk iphonesimulator build ONLY_ACTIVE_ARCH=NO')
+    run('xcodebuild -workspace Examples/RKTwitter/RKTwitter.xcworkspace -scheme RKTwitter -sdk iphonesimulator clean build ONLY_ACTIVE_ARCH=NO | xcpretty && exit ${PIPESTATUS[0]}')
   end
 end
 
@@ -63,9 +63,9 @@ end
 desc 'Build RestKit for iOS and Mac OS X'
 task :build do
   title 'Building RestKit'
-  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphonesimulator clean build')
-  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphoneos clean build')
-  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk macosx clean build')
+  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphonesimulator clean build | xcpretty && exit ${PIPESTATUS[0]}')
+  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk iphoneos clean build | xcpretty && exit ${PIPESTATUS[0]}')
+  run('xcodebuild -workspace RestKit.xcworkspace -scheme RestKit -sdk macosx clean build | xcpretty && exit ${PIPESTATUS[0]}')
 end
 
 desc 'Generate documentation via appledoc'
@@ -154,8 +154,8 @@ namespace :build do
       sdks.each do |sdk|
         puts "Building '#{example_project}' with SDK #{sdk}..."
         scheme = project_name
-        run("cd #{project_path} && pod install")
-        run("xctool -workspace #{project_workspace} -scheme #{scheme} -sdk #{sdk} build")
+        run("cd #{project_path} && bundle exec pod install")
+        run("xcodebuild -workspace #{project_workspace} -scheme #{scheme} -sdk #{sdk} clean build | xcpretty && exit ${PIPESTATUS[0]}")
       end
     end
   end
@@ -173,7 +173,7 @@ task :lint do
 end
 
 desc 'Runs the CI suite'
-task ci: ['server:autostart', :test, 'test:building_without_core_data', :lint]
+task ci: ['server:autostart', :test, 'test:building_without_core_data']
 
 desc 'Make a new release of RestKit'
 task :release do
