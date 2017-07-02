@@ -4,10 +4,13 @@ rvm: 2.4.1
 cache:
   - bundler
   - cocoapods
-before_install:
-  - brew outdated xctool || brew upgrade xctool
+install:
+  - bundle install --jobs=3 --retry=3 --deployment --path=${BUNDLE_PATH:-vendor/bundle}
+  - travis_wait 30 bundle exec pod repo update --silent
+  - travis_wait 30 bundle exec pod install
 script:
   - bundle exec rake ci
+  - travis_wait 50 bundle exec rake lint
 branches:
   only:
     - master
