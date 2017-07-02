@@ -796,6 +796,7 @@
 
 - (void)testThatCacheEntryIsFlaggedWhenMappingCompletes
 {
+    [Expecta setAsynchronousTestTimeout:15];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
@@ -805,7 +806,8 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
 
     // Make sure the shared cache doesn't contain any response from previous tests
-    while ([[NSURLCache sharedURLCache] cachedResponseForRequest:request]) { }
+    [[NSURLCache sharedURLCache] removeCachedResponseForRequest:request];
+    expect([[NSURLCache sharedURLCache] cachedResponseForRequest:request]).will.beNil();
 
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
@@ -819,6 +821,7 @@
 
 - (void)testThatCacheEntryIsNotFlaggedWhenMappingFails
 {
+    [Expecta setAsynchronousTestTimeout:15];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
@@ -827,7 +830,8 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
 
     // Make sure the shared cache doesn't contain any response from previous tests
-    while ([[NSURLCache sharedURLCache] cachedResponseForRequest:request]) { }
+    [[NSURLCache sharedURLCache] removeCachedResponseForRequest:request];
+    expect([[NSURLCache sharedURLCache] cachedResponseForRequest:request]).will.beNil();
 
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
