@@ -74,7 +74,7 @@
 {
     self = [super init];
     if (self) {
-        self.baseURL = [NSURL URLWithString:@"http://127.0.0.1:4567"];
+        self.baseURL = [NSURL URLWithString:@"http://localhost:4567"];
         self.factoryBlocks = [NSMutableDictionary new];
         self.sharedObjectsByFactoryName = [NSMutableDictionary new];
         [self defineDefaultFactories];

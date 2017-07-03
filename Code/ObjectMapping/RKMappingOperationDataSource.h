@@ -57,8 +57,8 @@
  as obtaining that value is somewhat expensive.
  
  @param mappingOperation The mapping operation requesting the target object.
- @param representation A dictionary representation of the properties to be mapped onto the retrieved target object.
  @param mapping The object mapping to be used to perform a mapping from the representation to the target object.
+ @param relationshipMapping A dictionary representation of the properties to be mapped onto the retrieved target object.
  @return A key-value coding compliant object to perform the mapping on to.
  */
 - (id)mappingOperation:(RKMappingOperation *)mappingOperation targetObjectForMapping:(RKObjectMapping *)mapping inRelationship:(RKRelationshipMapping *)relationshipMapping;
