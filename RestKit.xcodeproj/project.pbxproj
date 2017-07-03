@@ -2688,6 +2688,7 @@
 			baseConfigurationReference = D65BD48D9807D81B001FA9EF /* Pods-RestKit.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				INSTALL_PATH = "@rpath";
 				OBJROOT = "$(SRCROOT)/Build";
@@ -2746,6 +2747,7 @@
 			baseConfigurationReference = BB78DD1DFB48DD64479B3E01 /* Pods-RestKitFramework.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
