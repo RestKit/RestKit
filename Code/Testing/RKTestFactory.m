@@ -74,7 +74,7 @@
 {
     self = [super init];
     if (self) {
-        self.baseURL = [NSURL URLWithString:@"http://127.0.0.1:4567"];
+        self.baseURL = [NSURL URLWithString:@"http://localhost:4567"];
         self.factoryBlocks = [NSMutableDictionary new];
         self.sharedObjectsByFactoryName = [NSMutableDictionary new];
         [self defineDefaultFactories];
@@ -253,6 +253,13 @@
     NSString *path = [RKApplicationDataDirectory() stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
         [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+    }
+    // Check for and remove -shm and -wal files
+    for (NSString *suffix in @[ @"-shm", @"-wal" ]) {
+        NSString *supportFilePath = [path stringByAppendingString:suffix];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:supportFilePath]) {
+            [[NSFileManager defaultManager] removeItemAtPath:supportFilePath error:nil];
+        }
     }
 
     if ([RKTestFactory sharedFactory].setUpBlock) [RKTestFactory sharedFactory].setUpBlock();

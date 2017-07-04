@@ -103,7 +103,7 @@
 
 - (void)testSendingAnObjectRequestOperationToAnInvalidHostname
 {
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://invalid.is"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://whiskeytangofoxtrot.ly"]];
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ [self responseDescriptorForComplexUser] ]];
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
@@ -494,9 +494,9 @@
     expect([requestOperation isFinished]).will.beTruthy();
     expect(requestOperation.error).notTo.beNil();    
     NSString *failureReason = [[requestOperation.error userInfo] valueForKey:NSLocalizedFailureReasonErrorKey];
-    assertThat(failureReason, containsString(@"A 200 response was loaded from the URL 'http://127.0.0.1:4567/users/empty', which failed to match all (2) response descriptors:"));
-    assertThat(failureReason, containsString(@"failed to match: response URL 'http://127.0.0.1:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
-    assertThat(failureReason, containsString(@"failed to match: response URL 'http://127.0.0.1:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
+    assertThat(failureReason, containsString(@"A 200 response was loaded from the URL 'http://localhost:4567/users/empty', which failed to match all (2) response descriptors:"));
+    assertThat(failureReason, containsString(@"failed to match: response URL 'http://localhost:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
+    assertThat(failureReason, containsString(@"failed to match: response URL 'http://localhost:4567/users/empty' is not relative to the baseURL 'http://restkit.org/api/v1'."));
 }
 
 // Test trailing slash on the baseURL
@@ -796,11 +796,19 @@
 
 - (void)testThatCacheEntryIsFlaggedWhenMappingCompletes
 {
+    [Expecta setAsynchronousTestTimeout:15];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     [userMapping addAttributeMappingsFromDictionary:@{ @"name": @"email" }];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:nil keyPath:@"human" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
+
+    // Make sure the shared cache doesn't contain any response from previous tests
+    [[NSURLCache sharedURLCache] removeCachedResponseForRequest:request];
+    expect([[NSURLCache sharedURLCache] cachedResponseForRequest:request]).will.beNil();
+
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
@@ -813,12 +821,18 @@
 
 - (void)testThatCacheEntryIsNotFlaggedWhenMappingFails
 {
+    [Expecta setAsynchronousTestTimeout:15];
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    
+
     RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodAny pathPattern:@"/mismatch" keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/coredata/etag" relativeToURL:[RKTestFactory baseURL]]];
+
+    // Make sure the shared cache doesn't contain any response from previous tests
+    [[NSURLCache sharedURLCache] removeCachedResponseForRequest:request];
+    expect([[NSURLCache sharedURLCache] cachedResponseForRequest:request]).will.beNil();
+
     RKObjectRequestOperation *requestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [requestOperation start];
     expect([requestOperation isFinished]).will.beTruthy();
