@@ -478,7 +478,7 @@
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:@{@"this": @"that"}];
-    expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
+    expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://localhost:4567/humans/204?this=that");
 }
 
 - (void)testThatObjectParametersAreNotSentDuringDeleteObject
@@ -487,14 +487,14 @@
     temporaryHuman.name = @"My Name";
     temporaryHuman.railsID = @204;
     RKManagedObjectRequestOperation *operation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodDELETE path:nil parameters:@{@"this": @"that"}];
-    expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/humans/204?this=that");
+    expect([operation.HTTPRequestOperation.request.URL absoluteString]).to.equal(@"http://localhost:4567/humans/204?this=that");
 }
 
 - (void)testInitializationOfObjectRequestOperationProducesCorrectURLRequest
 {
     RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:nil withProperties:nil];
     NSURLRequest *request = [_objectManager requestWithObject:temporaryHuman method:RKRequestMethodPATCH path:@"/the/path" parameters:@{@"key": @"value"}];
-    expect([request.URL absoluteString]).to.equal(@"http://127.0.0.1:4567/the/path");
+    expect([request.URL absoluteString]).to.equal(@"http://localhost:4567/the/path");
     expect(request.HTTPMethod).to.equal(@"PATCH");
     expect(request.HTTPBody).notTo.beNil();
     NSString *string = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
