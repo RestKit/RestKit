@@ -50,7 +50,7 @@
         if ([attributeDescription attributeValueClassName]) {
             Class cls = NSClassFromString([attributeDescription attributeValueClassName]);
             if ([cls isSubclassOfClass:[NSNumber class]] && [attributeDescription attributeType] == NSBooleanAttributeType) {
-                cls = objc_getClass("NSCFBoolean") ?: objc_getClass("__NSCFBoolean") ?: cls;
+                cls = [@YES class];
             }
             RKPropertyInspectorPropertyInfo *info;
             info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name

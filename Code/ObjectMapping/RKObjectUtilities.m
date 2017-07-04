@@ -97,9 +97,7 @@ Class RKKeyValueCodingClassForObjCType(const char *type)
                 return [NSNumber class];
                 
             case _C_BOOL: // C++ bool or C99 _Bool
-                return objc_getClass("NSCFBoolean")
-                ?: objc_getClass("__NSCFBoolean")
-                ?: [NSNumber class];
+                return [@YES class];
                 
             case _C_STRUCT_B: // struct
             case _C_BFLD: // bitfield

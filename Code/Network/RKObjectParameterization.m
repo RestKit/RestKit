@@ -122,7 +122,7 @@
         transformedValue = [value array];
     } else {
         Class propertyClass = RKPropertyInspectorGetClassForPropertyAtKeyPathOfObject(mapping.sourceKeyPath, operation.sourceObject);
-        if ([propertyClass isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] || [propertyClass isSubclassOfClass:NSClassFromString(@"NSCFBoolean")]) {
+        if ([propertyClass isSubclassOfClass:[@YES class]]) {
             transformedValue = @([value boolValue]);
         }
     }
