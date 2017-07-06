@@ -9,7 +9,7 @@ def import_pods
   pod 'RestKit/Testing', :path => '.'
   pod 'RestKit/Search', :path => '.'
 
-  pod 'Specta', '1.0.5'
+  pod 'Specta', '1.0.6'
   pod 'OCMock', '2.2.4'
   pod 'OCHamcrest', '3.0.1'
   pod 'Expecta', '1.0.5'
