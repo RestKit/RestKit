@@ -29,6 +29,7 @@
 #import "RKMappingErrors.h"
 #import "RKPropertyInspector.h"
 #import "RKValueTransformers.h"
+#import "RKBooleanClass.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -122,7 +123,7 @@
         transformedValue = [value array];
     } else {
         Class propertyClass = RKPropertyInspectorGetClassForPropertyAtKeyPathOfObject(mapping.sourceKeyPath, operation.sourceObject);
-        if ([propertyClass isSubclassOfClass:[@YES class]]) {
+        if ([propertyClass isSubclassOfClass:RK_BOOLEAN_CLASS]) {
             transformedValue = @([value boolValue]);
         }
     }

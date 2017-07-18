@@ -567,6 +567,7 @@
 		7AF2905218DF249C009AEB94 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
 		8AB68F0B1AE5B3B300DD655A /* RKFetchedResultsControllerUpdateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AB68F0A1AE5B3B300DD655A /* RKFetchedResultsControllerUpdateTest.m */; };
 		921177BC8BF814CE50A88BBC /* Pods_RestKitFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F006D81E09160AA4A9F0904 /* Pods_RestKitFramework.framework */; };
+		B96933B01F1DF5D10025AB6F /* RKBooleanClass.h in Headers */ = {isa = PBXBuildFile; fileRef = B96933AF1F1DF5D10025AB6F /* RKBooleanClass.h */; };
 		B9ADD4D71D1BD8D80059D029 /* RKHTTPUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B9ADD4D51D1BD8D80059D029 /* RKHTTPUtilities.h */; };
 		B9ADD4D81D1BD8D80059D029 /* RKHTTPUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B9ADD4D51D1BD8D80059D029 /* RKHTTPUtilities.h */; };
 		B9ADD4D91D1BD8D80059D029 /* RKHTTPUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B9ADD4D61D1BD8D80059D029 /* RKHTTPUtilities.m */; };
@@ -950,6 +951,7 @@
 		8AB68F0A1AE5B3B300DD655A /* RKFetchedResultsControllerUpdateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchedResultsControllerUpdateTest.m; sourceTree = "<group>"; };
 		90C7F04F6E4B2167E5855425 /* Pods-RestKitFramework.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKitFramework.release.xcconfig"; path = "Pods/Target Support Files/Pods-RestKitFramework/Pods-RestKitFramework.release.xcconfig"; sourceTree = "<group>"; };
 		949F3C99E4A550F125EB1223 /* Pods-RestKitFrameworkTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKitFrameworkTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RestKitFrameworkTests/Pods-RestKitFrameworkTests.release.xcconfig"; sourceTree = "<group>"; };
+		B96933AF1F1DF5D10025AB6F /* RKBooleanClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKBooleanClass.h; sourceTree = "<group>"; };
 		B9ADD4D51D1BD8D80059D029 /* RKHTTPUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHTTPUtilities.h; sourceTree = "<group>"; };
 		B9ADD4D61D1BD8D80059D029 /* RKHTTPUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHTTPUtilities.m; sourceTree = "<group>"; };
 		B9B1C7F31D273AB500F115CB /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = DEVELOPER_DIR; };
@@ -1247,6 +1249,7 @@
 				253477F015FFBC60002C0E4E /* RKDictionaryUtilities.m */,
 				25C6C0E61716F79B00C98A73 /* RKOperationStateMachine.h */,
 				25C6C0E71716F79B00C98A73 /* RKOperationStateMachine.m */,
+				B96933AF1F1DF5D10025AB6F /* RKBooleanClass.h */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -1731,6 +1734,7 @@
 				25160E4A145650490060A5C5 /* RKLog.h in Headers */,
 				25160E4C145650490060A5C5 /* RKMIMETypes.h in Headers */,
 				25160E4E145650490060A5C5 /* RKSerialization.h in Headers */,
+				B96933B01F1DF5D10025AB6F /* RKBooleanClass.h in Headers */,
 				25160E2E145650490060A5C5 /* RestKit.h in Headers */,
 				1689DAEF1B87CEA900254FB7 /* RKLumberjackLogger.h in Headers */,
 				25B408261491CDDC00F21111 /* RKPathUtilities.h in Headers */,
