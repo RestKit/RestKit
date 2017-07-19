@@ -54,6 +54,19 @@
     expect(requestOperation.error).to.beNil();
 }
 
+- (void)testThatLoadingAGetResponseWithNoContentTypeDoesNotReturnAnError
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/200" relativeToURL:[RKTestFactory baseURL]]];
+    request.HTTPMethod = RKStringFromRequestMethod(RKRequestMethodGET);
+    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+    requestOperation.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];
+    requestOperation.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+    [requestOperation start];
+    [requestOperation waitUntilFinished];
+    
+    expect(requestOperation.error).to.beNil();
+}
+
 - (void)testThatLoadingA304StatusDoesNotReturnExpectedContentTypeErrorWithMissingContentType
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/no_content_type/304" relativeToURL:[RKTestFactory baseURL]]];

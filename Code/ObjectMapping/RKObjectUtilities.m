@@ -21,6 +21,7 @@
 #import <objc/message.h>
 #import <objc/runtime.h>
 #import "RKObjectUtilities.h"
+#import "RKBooleanClass.h"
 
 BOOL RKObjectIsEqualToObject(id object, id anotherObject) {
     NSCAssert(object, @"Expected object not to be nil");
@@ -97,9 +98,7 @@ Class RKKeyValueCodingClassForObjCType(const char *type)
                 return [NSNumber class];
                 
             case _C_BOOL: // C++ bool or C99 _Bool
-                return objc_getClass("NSCFBoolean")
-                ?: objc_getClass("__NSCFBoolean")
-                ?: [NSNumber class];
+                return RK_BOOLEAN_CLASS;
                 
             case _C_STRUCT_B: // struct
             case _C_BFLD: // bitfield

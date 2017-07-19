@@ -24,6 +24,7 @@
 #import "RKLog.h"
 #import "RKObjectUtilities.h"
 #import "RKMacros.h"
+#import "RKBooleanClass.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -50,7 +51,7 @@
         if ([attributeDescription attributeValueClassName]) {
             Class cls = NSClassFromString([attributeDescription attributeValueClassName]);
             if ([cls isSubclassOfClass:[NSNumber class]] && [attributeDescription attributeType] == NSBooleanAttributeType) {
-                cls = objc_getClass("NSCFBoolean") ?: objc_getClass("__NSCFBoolean") ?: cls;
+                cls = RK_BOOLEAN_CLASS;
             }
             RKPropertyInspectorPropertyInfo *info;
             info = [RKPropertyInspectorPropertyInfo propertyInfoWithName:name
