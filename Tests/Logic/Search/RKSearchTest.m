@@ -103,7 +103,7 @@
         assertThat(objects, hasCountOf(3));
         assertThat([objects[0] objectID], is(equalTo(cat1.objectID))); // $
         assertThat([objects[1] objectID], is(equalTo(cat2.objectID))); // £
-        assertThat([objects[1] objectID], is(equalTo(cat2.objectID))); // €
+        assertThat([objects[2] objectID], is(equalTo(cat3.objectID))); // €
     }];
 }
 
