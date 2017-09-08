@@ -126,7 +126,7 @@
  This method searches the stack of registered matchers, then executes the block, if any, set by `setObjectMappingForRepresentationBlock:` and then executes the block, if any, set by `setObjectMappingForRootParentRepresentationBlock:`. If `nil` is returned, then mapping for the representation is declined and it will not be mapped.
 
  @param representation The object representation that being mapped dynamically for which to determine the appropriate concrete mapping.
- @param parentRepresentation The object's parent representation.
+ @param rootParentRepresentation The object's parent representation.
  @return The object mapping to be used to map the given object representation.
  */
 - (RKObjectMapping *)objectMappingForRepresentation:(id)representation rootParentRepresentation:(id)rootParentRepresentation;
