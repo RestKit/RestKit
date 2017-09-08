@@ -114,7 +114,7 @@
     }
     
     // Otherwise consult the parent's block
-    if (self.objectMappingForRootParentRepresentationBlock) {
+    else if (self.objectMappingForRootParentRepresentationBlock) {
         mapping = self.objectMappingForRootParentRepresentationBlock(rootParentRepresentation);
         if (mapping) RKLogTrace(@"Determined concrete `RKObjectMapping` using object mapping provided by rootParentRepresentation block");
     }
