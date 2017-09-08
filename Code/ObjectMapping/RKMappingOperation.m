@@ -521,7 +521,7 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     RKObjectMapping *concreteMapping = nil;
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
         id rootParentRepresentation = self.rootSourceObject;
-        concreteMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:representation parentRepresentation:rootParentRepresentation];
+        concreteMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:representation rootParentRepresentation:rootParentRepresentation];
         if (! concreteMapping) {
             RKLogDebug(@"Unable to determine concrete object mapping from dynamic mapping %@ with which to map object representation: %@", mapping, representation);
             return nil;
@@ -1017,7 +1017,8 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
             if ([destinationMapping isKindOfClass:[RKObjectMapping class]]) {
                 objectMapping = (RKObjectMapping *)destinationMapping;
             } else if ([destinationMapping isKindOfClass:[RKDynamicMapping class]]) {
-                objectMapping = [(RKDynamicMapping *)destinationMapping objectMappingForRepresentation:value parentRepresentation:self.rootSourceObject];
+                objectMapping = [(RKDynamicMapping *)destinationMapping objectMappingForRepresentation:value
+                                                                              rootParentRepresentation:self.rootSourceObject];
             }
             
             if (! objectMapping) continue; // Mapping declined
@@ -1202,7 +1203,8 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
     
     // Determine the concrete mapping if we were initialized with a dynamic mapping
     if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
-        self.objectMapping = objectMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:sourceObject parentRepresentation:self.rootSourceObject];
+        self.objectMapping = objectMapping = [(RKDynamicMapping *)mapping objectMappingForRepresentation:sourceObject
+                                                                                rootParentRepresentation:self.rootSourceObject];
         if (! objectMapping) {
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"A dynamic mapping failed to return a concrete object mapping matching the representation being mapped." };
             self.error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnableToDetermineMapping userInfo:userInfo];

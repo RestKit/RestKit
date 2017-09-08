@@ -30,7 +30,7 @@
 @property (nonatomic, strong) NSMutableArray *mutableMatchers;
 @property (nonatomic, strong) NSArray *possibleObjectMappings;
 @property (nonatomic, copy) RKObjectMapping *(^objectMappingForRepresentationBlock)(id representation);
-@property (nonatomic, copy) RKObjectMapping *(^objectMappingForParentRepresentationBlock)(id parentRepresentation);
+@property (nonatomic, copy) RKObjectMapping *(^objectMappingForRootParentRepresentationBlock)(id rootParentRepresentation);
 @end
 
 @implementation RKDynamicMapping
@@ -90,10 +90,10 @@
 }
 
 - (RKObjectMapping *)objectMappingForRepresentation:(id)representation {
-    return [self objectMappingForRepresentation:representation parentRepresentation:nil];
+    return [self objectMappingForRepresentation:representation rootParentRepresentation:nil];
 }
 
-- (RKObjectMapping *)objectMappingForRepresentation:(id)representation parentRepresentation:(id)parentRepresentation
+- (RKObjectMapping *)objectMappingForRepresentation:(id)representation rootParentRepresentation:(id)rootParentRepresentation
 {
     RKObjectMapping *mapping = nil;
 
@@ -114,9 +114,9 @@
     }
     
     // Otherwise consult the parent's block
-    if (self.objectMappingForParentRepresentationBlock) {
-        mapping = self.objectMappingForParentRepresentationBlock(parentRepresentation);
-        if (mapping) RKLogTrace(@"Determined concrete `RKObjectMapping` using object mapping provided by parentRepresentation block");
+    if (self.objectMappingForRootParentRepresentationBlock) {
+        mapping = self.objectMappingForRootParentRepresentationBlock(rootParentRepresentation);
+        if (mapping) RKLogTrace(@"Determined concrete `RKObjectMapping` using object mapping provided by rootParentRepresentation block");
     }
     
     return mapping;
