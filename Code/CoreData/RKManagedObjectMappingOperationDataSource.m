@@ -253,7 +253,12 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         if (existingObjectsOfRelationship && !RKObjectIsCollection(existingObjectsOfRelationship)) existingObjectsOfRelationship = @[ existingObjectsOfRelationship ];
         NSSet *setWithNull = [NSSet setWithObject:[NSNull null]];
         for (NSManagedObject *existingObject in existingObjectsOfRelationship) {
-            if(existingObject.isDeleted) {
+            __block BOOL isDeleted = NO;
+            [existingObject.managedObjectContext performBlockAndWait:^{
+                isDeleted = existingObject.isDeleted;
+            }];
+            
+            if(isDeleted) {
                 continue;
             }
             
