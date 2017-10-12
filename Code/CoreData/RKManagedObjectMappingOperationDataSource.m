@@ -268,7 +268,11 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
                 break;
             }
             
-            NSDictionary *identificationAttributeValues = [existingObject dictionaryWithValuesForKeys:identificationAttributes];
+            __block NSDictionary *identificationAttributeValues;
+            [existingObject.managedObjectContext performBlockAndWait:^{
+                identificationAttributeValues = [existingObject dictionaryWithValuesForKeys:identificationAttributes];
+            }];
+
             if ([[NSSet setWithArray:[identificationAttributeValues allValues]] isEqualToSet:setWithNull]) {
                 managedObject = existingObject;
                 break;
