@@ -558,6 +558,8 @@
 		5C927E151608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */; };
 		5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5CCC295715B7124A0045F0F5 /* RKMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCC295515B7124A0045F0F5 /* RKMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		60AABB68204A25D200E27367 /* AFRKNetworkingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AABB67204A25D200E27367 /* AFRKNetworkingTests.m */; };
+		60AABB69204A25D800E27367 /* AFRKNetworkingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AABB67204A25D200E27367 /* AFRKNetworkingTests.m */; };
 		73D3907414CA1AE00093E3D6 /* parent.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907114CA19F90093E3D6 /* parent.json */; };
 		73D3907514CA1AE20093E3D6 /* parent.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907114CA19F90093E3D6 /* parent.json */; };
 		73D3907614CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
@@ -938,6 +940,7 @@
 		5C927E131608FFFD00DC8B07 /* RKDictionaryUtilitiesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDictionaryUtilitiesTest.m; sourceTree = "<group>"; };
 		5CCC295515B7124A0045F0F5 /* RKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMacros.h; sourceTree = "<group>"; };
 		600765DB06173641BD7D6346 /* Pods-RestKitFrameworkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKitFrameworkTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RestKitFrameworkTests/Pods-RestKitFrameworkTests.debug.xcconfig"; sourceTree = "<group>"; };
+		60AABB67204A25D200E27367 /* AFRKNetworkingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AFRKNetworkingTests.m; sourceTree = "<group>"; };
 		64ECC43055534E1492108E64 /* Pods_RestKitFrameworkTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RestKitFrameworkTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6519C4900327D3F205277C48 /* Pods-RestKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RestKit.release.xcconfig"; path = "Pods/Target Support Files/Pods-RestKit/Pods-RestKit.release.xcconfig"; sourceTree = "<group>"; };
 		7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCaching.h; sourceTree = "<group>"; };
@@ -1456,6 +1459,7 @@
 				2548AC6C162F5E00009E79BF /* RKManagedObjectRequestOperationTest.m */,
 				2536D1FC167270F100DF9BB0 /* RKRouterTest.m */,
 				2551338E167838590017E4B6 /* RKHTTPRequestOperationTest.m */,
+				60AABB67204A25D200E27367 /* AFRKNetworkingTests.m */,
 			);
 			name = Network;
 			path = Logic/Network;
@@ -2408,6 +2412,7 @@
 				2519764815824455004FE9DD /* RKRelationshipMappingTest.m in Sources */,
 				2519764C158244F8004FE9DD /* RKObjectMappingTest.m in Sources */,
 				25AA23D815AF5085006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m in Sources */,
+				60AABB68204A25D200E27367 /* AFRKNetworkingTests.m in Sources */,
 				258EFF7A15C0CE1400EE4E0D /* RKManagedObjectSeederTest.m in Sources */,
 				25A763E515C7424500A9DF31 /* RKSearchIndexerTest.m in Sources */,
 				25C246A415C83B090032212E /* RKSearchTest.m in Sources */,
@@ -2541,6 +2546,7 @@
 				251610B71456F2330060A5C5 /* RKParent.m in Sources */,
 				251610B91456F2330060A5C5 /* RKResident.m in Sources */,
 				251610D31456F2330060A5C5 /* RKDynamicMappingTest.m in Sources */,
+				60AABB69204A25D800E27367 /* AFRKNetworkingTests.m in Sources */,
 				251610DD1456F2330060A5C5 /* RKObjectMappingNextGenTest.m in Sources */,
 				251610DF1456F2330060A5C5 /* RKMappingOperationTest.m in Sources */,
 				251610E31456F2330060A5C5 /* RKMappingResultTest.m in Sources */,
