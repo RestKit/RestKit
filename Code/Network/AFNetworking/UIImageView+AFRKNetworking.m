@@ -104,7 +104,7 @@ static char kAFRKImageRequestOperationObjectKey;
         self.afrk_imageRequestOperation = nil;
 
         if (success) {
-            success(nil, nil, cachedImage);
+            success(urlRequest, nil, cachedImage);
         } else {
             self.image = cachedImage;
         }
