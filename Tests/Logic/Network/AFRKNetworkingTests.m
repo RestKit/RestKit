@@ -23,12 +23,31 @@
 
 @interface AFRKNetworkingTests : XCTestCase
 
+@property (nonatomic, strong) UIImage *testImage;
+
 @end
 
 @implementation AFRKNetworkingTests
 
+#pragma mark - Lifecycle
+
+- (void)setUp
+{
+    [super setUp];
+    
+    self.testImage = [[UIImage alloc] init];
+}
+
+- (void)tearDown
+{
+    self.testImage = nil;
+    
+    [super tearDown];
+}
+
 #pragma mark - Tests
 
+// Success block NSURLRequest parameter
 - (void)testSetImageWithURLReturnsURLRequestInCompletionBlockWhenImageIsFetchedFromCache
 {
     [self performMockCachedSetImageWithURLRequestCallWithSuccessAssertion:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -38,30 +57,38 @@
     }];
 }
 
+// Success block NSHTTPURLResponse parameter
 - (void)testSetImageWithURLReturnsNilURLResponseInCompletionBlockWhenImageIsFetchedFromCache
 {
-    
+    [self performMockCachedSetImageWithURLRequestCallWithSuccessAssertion:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        expect(response).to.equal(nil);
+    } failureAssertion:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+        failure(@"image request should always succeed for this test");
+    }];
 }
 
+// Success block UIImage parameter
 - (void)testSetImageWithURLReturnsImageInCompletionBlockWhenImageIsFetchedFromCache
 {
-    
+    [self performMockCachedSetImageWithURLRequestCallWithSuccessAssertion:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        expect(image).to.equal(self.testImage);
+    } failureAssertion:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+        failure(@"image request should always succeed for this test");
+    }];
 }
 
 #pragma mark - Private
 
 - (void)performMockCachedSetImageWithURLRequestCallWithSuccessAssertion:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image))successAssertion failureAssertion:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error))failureAssertion
 {
-    // Act
-    // Create dummy request and image
+    // Arrange
+    // Create dummy request
     NSURL *imageURL = [[NSURL alloc] initWithString:@"https://test.com/image.png"];
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:imageURL];
     
-    UIImage *testImage = [[UIImage alloc] init];
-    
-    // Side-load the image into the cache
+    // Side-load the test image into the cache
     AFRKImageCache *cache = [UIImageView afrk_sharedImageCache];
-    [cache cacheImage:testImage forRequest:request];
+    [cache cacheImage:self.testImage forRequest:request];
     
     // Setup the System Under Test
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
