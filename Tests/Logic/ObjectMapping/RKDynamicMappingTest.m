@@ -223,4 +223,47 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
 
+- (void)testShouldPickTheAppropriateMappingBasedOnRootParentRepresentationBlock
+{
+    RKObjectMapping *expectedMapping = [RKObjectMapping mappingForClass:[Boy class]];
+
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
+    [dynamicMapping setObjectMappingForRootParentRepresentationBlock:^RKObjectMapping *(id rootParentRepresentation) {
+        NSDictionary *rawRepresentation = (NSDictionary *)rootParentRepresentation;
+        NSString *rawPresentationType = rawRepresentation[@"type"];
+        if ([rawPresentationType isEqualToString:@"Boy"]) {
+            return [RKObjectMapping mappingForClass:[Boy class]];
+        }
+        return [RKObjectMapping mappingForClass:[Girl class]];
+    }];
+
+    id objectRepresentation = [RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"];
+    id rootParentRepresentation = [RKTestFixture parsedObjectWithContentsOfFixture:@"boyWithRootRepresentation.json"];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:objectRepresentation
+                                                     rootParentRepresentation:rootParentRepresentation];
+
+    expect([expectedMapping isEqualToMapping:mapping]).to.equal(YES);
+}
+
+- (void)testMappingBasedOnRootParentRepresentationHasLowerPriorityThanBasedOnObjectRepresentation
+{
+    RKObjectMapping *expectedMapping = [RKObjectMapping mappingForClass:[Boy class]];
+
+    RKDynamicMapping *dynamicMapping = [RKDynamicMapping new];
+    [dynamicMapping setObjectMappingForRepresentationBlock:^RKObjectMapping *(id representation) {
+        return [RKObjectMapping mappingForClass:[Boy class]];
+    }];
+    [dynamicMapping setObjectMappingForRootParentRepresentationBlock:^RKObjectMapping *(id rootParentRepresentation) {
+        return [RKObjectMapping mappingForClass:[Girl class]];
+    }];
+
+    id objectRepresentation = [RKTestFixture parsedObjectWithContentsOfFixture:@"boy.json"];
+    id rootParentRepresentation = [RKTestFixture parsedObjectWithContentsOfFixture:@"boyWithRootRepresentation.json"];
+    RKObjectMapping *mapping = [dynamicMapping objectMappingForRepresentation:objectRepresentation
+                                                     rootParentRepresentation:rootParentRepresentation];
+
+    expect([expectedMapping isEqualToMapping:mapping]).to.equal(YES);
+
+}
+
 @end
