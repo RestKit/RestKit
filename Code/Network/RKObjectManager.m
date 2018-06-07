@@ -664,17 +664,18 @@ static NSString *RKMIMETypeFromAFHTTPClientParameterEncoding(AFRKHTTPClientParam
         if ([object isKindOfClass:[NSManagedObject class]]) {
             static NSPredicate *temporaryObjectsPredicate = nil;
             if (! temporaryObjectsPredicate) temporaryObjectsPredicate = [NSPredicate predicateWithFormat:@"objectID.isTemporaryID == YES"];
-            NSSet *temporaryObjects = [[managedObjectContext insertedObjects] filteredSetUsingPredicate:temporaryObjectsPredicate];
-            if ([temporaryObjects count]) {
-                RKLogInfo(@"Asked to perform object request for NSManagedObject with temporary object IDs: Obtaining permanent ID before proceeding.");
-                __block BOOL _blockSuccess;
-                __block NSError *_blockError;
-
-                [[object managedObjectContext] performBlockAndWait:^{
-                    _blockSuccess = [[object managedObjectContext] obtainPermanentIDsForObjects:[temporaryObjects allObjects] error:&_blockError];
-                }];
-                if (! _blockSuccess) RKLogWarning(@"Failed to obtain permanent ID for object %@: %@", object, _blockError);
-            }
+            [managedObjectContext performBlockAndWait:^{
+                NSSet *temporaryObjects = [[managedObjectContext insertedObjects] filteredSetUsingPredicate:temporaryObjectsPredicate];
+                if ([temporaryObjects count]) {
+                    RKLogInfo(@"Asked to perform object request for NSManagedObject with temporary object IDs: Obtaining permanent ID before proceeding.");
+                    BOOL success;
+                    NSError *error;
+                    
+                    success = [managedObjectContext obtainPermanentIDsForObjects:[temporaryObjects allObjects] error:&error];
+                    
+                    if (! success) RKLogWarning(@"Failed to obtain permanent ID for object %@: %@", object, error);
+                }
+            }];
         }
     } else {
         // Non-Core Data operation
