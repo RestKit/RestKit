@@ -49,6 +49,19 @@ DEPENDENCIES:
   - Specta (= 1.0.6)
   - TransitionKit (~> 2.2)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - CocoaLumberjack
+    - Expecta
+    - ISO8601DateFormatterValueTransformer
+    - OCHamcrest
+    - OCMock
+    - RKCLLocationValueTransformer
+    - RKValueTransformers
+    - SOCKit
+    - Specta
+    - TransitionKit
+
 EXTERNAL SOURCES:
   RestKit:
     :path: "."
@@ -59,7 +72,7 @@ SPEC CHECKSUMS:
   ISO8601DateFormatterValueTransformer: 52da467d6ec899d6aedda8e48280ac92e8ee97e6
   OCHamcrest: e19857683e4eefab64b878668eac04c2f4567118
   OCMock: a6a7dc0e3997fb9f35d99f72528698ebf60d64f2
-  RestKit: 556c913b0640c5bc5a9cb972361504e3ed628a1d
+  RestKit: c1acf16a52bcabf40bdbb91abbe406db141189fe
   RKCLLocationValueTransformer: 2cf0ea0fb7cd4bc70c56834fb92abc717c66f982
   RKValueTransformers: e5ed67e3811229b616fe01bddeeafe3bb337b1b9
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392
@@ -68,4 +81,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: b8958dcfe595d2829cf28ef5cb76c4da13eb2ed0
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.5.3

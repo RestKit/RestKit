@@ -158,7 +158,7 @@
     [_accessLock lock];
     if (_accessCount == 0) {
         [self _flushNow:^{
-            [_accessLock unlock];
+            [self->_accessLock unlock];
             if (completion) completion();
         }];
     } else {
@@ -275,9 +275,9 @@
     _accessCount -= 1;
     if (_accessCount == 0 && _pendingFlushCompletionBlocks.count > 0) {
         [self _flushNow:^{
-            NSArray *blocks = [_pendingFlushCompletionBlocks copy];
-            [_pendingFlushCompletionBlocks removeAllObjects];
-            [_accessLock unlock];
+            NSArray *blocks = [self->_pendingFlushCompletionBlocks copy];
+            [self->_pendingFlushCompletionBlocks removeAllObjects];
+            [self->_accessLock unlock];
             for (dispatch_block_t block in blocks) {
                 block();
             }
