@@ -675,7 +675,7 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     [[RKObjectRequestOperation responseMappingQueue] addOperation:self.responseMapperOperation];
 }
 
-- (BOOL)deleteTargetObject:(NSError **)error
+- (BOOL)deleteTargetObject:(NSError * __autoreleasing *)error
 {
     __block BOOL _blockSuccess = YES;
 
