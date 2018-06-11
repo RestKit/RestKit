@@ -988,6 +988,30 @@
     expect(caughtException).notTo.beNil();
 }
 
+- (void)testForConcurrencyIssueCausedByAccessingInsertedObjectsProperty {
+    NSManagedObjectContext *managedObjectContext = [[RKTestFactory managedObjectStore] persistentStoreManagedObjectContext];
+    
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+        for (NSInteger i = 0; i < 1000; ++i) {
+            RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
+            temporaryHuman.name = @"My Name";
+        }
+        
+        dispatch_semaphore_signal(sem);
+    });
+    
+    RKHuman *temporaryHuman = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
+    temporaryHuman.name = @"My Name";
+    
+    for (NSInteger i = 0; i < 1000; ++i) {
+        [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodGET path:nil parameters:nil];
+    }
+    
+    dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+}
+
 #pragma mark - Object Request Operation Registration
 
 - (void)testRegistrationOfObjectRequestOperationClass
