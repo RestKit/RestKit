@@ -204,12 +204,12 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Sets a block to be executed when the `setUp` method is called as part of a test run.
  */
-//+ (void)setSetupBlock:(void (^)(void))block;
++ (void)setSetupBlock:(void (^)(void))block;
 
 /**
  Sets a block to be executed when the `tearDown` method is called as part of a test run.
  */
-//+ (void)setTearDownBlock:(void (^)(void))block;
++ (void)setTearDownBlock:(void (^)(void))block;
 
 ///--------------------------
 /// @name Managing Test State
