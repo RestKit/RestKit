@@ -222,12 +222,12 @@
 }
 #endif
 
-+ (void)setSetupBlocvoidk:(void (^)(void))block
++ (void)setSetupBlock:(void (^)(void))block
 {
     [RKTestFactory sharedFactory].setUpBlock = block;
 }
 
-+ (void)setTearDownBlocvoidk:(void (^)(void))block
++ (void)setTearDownBlock:(void (^)(void))block
 {
     [RKTestFactory sharedFactory].tearDownBlock = block;
 }
