@@ -153,7 +153,12 @@ static NSArray *RKCacheKeysForEntityFromAttributeValues(NSEntityDescription *ent
 
     [self.managedObjectContext performBlock:^{
         NSError *error = nil;
-        NSArray *dictionaries = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        NSArray *dictionaries;
+        @try {
+            dictionaries = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        } @catch (NSException *exception) {
+            NSLog(@"%@", exception.reason);
+        }
         if (dictionaries) {
             RKLogDebug(@"Retrieved %ld dictionaries for cachable `NSManagedObjectID` objects with fetch request: %@", (long) [dictionaries count], fetchRequest);
         } else {
