@@ -84,7 +84,7 @@
  @param notificationSender The object we are waiting to post the notification
  @param block A block to invoke to trigger the notification activity
  */
-+ (void)waitForNotificationWithName:(NSString *)name object:(id)notificationSender usingBlock:(void(^)())block;
++ (void)waitForNotificationWithName:(NSString *)name object:(id)notificationSender usingBlock:(void(^)(void))block;
 
 /**
  Configures a notification observer to wait for the a notification with the given name to be posted
@@ -93,6 +93,6 @@
  @param name The name of the notification we are waiting for
  @param block A block to invoke to trigger the notification activity
  */
-+ (void)waitForNotificationWithName:(NSString *)name usingBlock:(void(^)())block;
++ (void)waitForNotificationWithName:(NSString *)name usingBlock:(void(^)(void))block;
 
 @end

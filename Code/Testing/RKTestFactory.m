@@ -42,11 +42,11 @@
 @property (nonatomic, strong) NSURL *baseURL;
 @property (nonatomic, strong) NSMutableDictionary *factoryBlocks;
 @property (nonatomic, strong) NSMutableDictionary *sharedObjectsByFactoryName;
-@property (nonatomic, copy) void (^setUpBlock)();
-@property (nonatomic, copy) void (^tearDownBlock)();
+@property (nonatomic, copy) void (^setUpBlock)(void);
+@property (nonatomic, copy) void (^tearDownBlock)(void);
 
 + (RKTestFactory *)sharedFactory;
-- (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
+- (void)defineFactory:(NSString *)factoryName withBlock:(id (^)(void))block;
 - (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties;
 - (void)defineDefaultFactories;
 
@@ -83,14 +83,14 @@
     return self;
 }
 
-- (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block
+- (void)defineFactory:(NSString *)factoryName withBlock:(id (^)(void))block
 {
     (self.factoryBlocks)[factoryName] = [block copy];
 }
 
 - (id)objectFromFactory:(NSString *)factoryName properties:(NSDictionary *)properties
 {
-    id (^block)() = (self.factoryBlocks)[factoryName];
+    id (^block)(void) = (self.factoryBlocks)[factoryName];
     NSAssert(block, @"No factory is defined with the name '%@'", factoryName);
 
     id object = block();
@@ -158,7 +158,7 @@
     [RKTestFactory sharedFactory].baseURL = URL;
 }
 
-+ (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block
++ (void)defineFactory:(NSString *)factoryName withBlock:(id (^)(void))block
 {
     [[RKTestFactory sharedFactory] defineFactory:factoryName withBlock:block];
 }
@@ -222,12 +222,12 @@
 }
 #endif
 
-+ (void)setSetupBlock:(void (^)())block
++ (void)setSetupBlock:(void (^)(void))block
 {
     [RKTestFactory sharedFactory].setUpBlock = block;
 }
 
-+ (void)setTearDownBlock:(void (^)())block
++ (void)setTearDownBlock:(void (^)(void))block
 {
     [RKTestFactory sharedFactory].tearDownBlock = block;
 }
