@@ -558,7 +558,7 @@ NSDate * RKHTTPCacheExpirationDateFromHeadersWithStatusCode(NSDictionary *header
 
 BOOL RKURLIsRelativeToURL(NSURL *URL, NSURL *baseURL)
 {
-    return YES;
+    return YES; // не проводим проверку на соответствие url-запроса и baseUrl-а, редирект маппится
 //    return [[URL absoluteString] hasPrefix:[baseURL absoluteString]];
 }
 
