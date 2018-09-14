@@ -68,6 +68,8 @@
  */
 @interface RKObjectMapping : RKMapping <NSCopying>
 
+- (void)copyPropertiesFromMapping:(RKObjectMapping *)mapping;
+
 ///---------------------------------
 /// @name Creating an Object Mapping
 ///---------------------------------
