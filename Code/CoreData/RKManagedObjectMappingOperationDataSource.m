@@ -403,11 +403,14 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 // NOTE: In theory we should be able to use the userInfo dictionary, but the dictionary was coming in empty (12/18/2012)
 - (void)updateCacheWithChangesFromContextWillSaveNotification:(NSNotification *)notification
 {
-    NSSet *objectsToAdd = [[self.managedObjectContext insertedObjects] setByAddingObjectsFromSet:[self.managedObjectContext updatedObjects]];
+    __block NSSet *objectsToAdd;
+    __block NSSet *objectsToDelete;
     
     __block BOOL success;
     __block NSError *error = nil;
     [self.managedObjectContext performBlockAndWait:^{
+        objectsToAdd = [[self.managedObjectContext insertedObjects] setByAddingObjectsFromSet:[self.managedObjectContext updatedObjects]];
+        objectsToDelete = [[self.managedObjectContext deletedObjects] copy];
         success = [self.managedObjectContext obtainPermanentIDsForObjects:[objectsToAdd allObjects] error:&error];
     }];
     
@@ -425,7 +428,7 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     }
     
     if ([self.managedObjectCache respondsToSelector:@selector(didDeleteObject:)]) {
-        for (NSManagedObject *managedObject in [self.managedObjectContext deletedObjects]) {
+        for (NSManagedObject *managedObject in objectsToDelete) {
             [self.managedObjectCache didDeleteObject:managedObject];
         }
     }

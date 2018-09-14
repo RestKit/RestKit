@@ -79,32 +79,32 @@ static char kAFRKImageRequestOperationObjectKey;
 
 #pragma mark -
 
-- (void)setImageWithURL:(NSURL *)url {
-    [self setImageWithURL:url placeholderImage:nil];
+- (void)afrk_setImageWithURL:(NSURL *)url {
+    [self afrk_setImageWithURL:url placeholderImage:nil];
 }
 
-- (void)setImageWithURL:(NSURL *)url
+- (void)afrk_setImageWithURL:(NSURL *)url
        placeholderImage:(UIImage *)placeholderImage
 {
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
 
-    [self setImageWithURLRequest:request placeholderImage:placeholderImage success:nil failure:nil];
+    [self afrk_setImageWithURLRequest:request placeholderImage:placeholderImage success:nil failure:nil];
 }
 
-- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest
+- (void)afrk_setImageWithURLRequest:(NSURLRequest *)urlRequest
               placeholderImage:(UIImage *)placeholderImage
                        success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image))success
                        failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error))failure
 {
-    [self cancelImageRequestOperation];
+    [self afrk_cancelImageRequestOperation];
 
     UIImage *cachedImage = [[[self class] afrk_sharedImageCache] cachedImageForRequest:urlRequest];
     if (cachedImage) {
         self.afrk_imageRequestOperation = nil;
 
         if (success) {
-            success(nil, nil, cachedImage);
+            success(urlRequest, nil, cachedImage);
         } else {
             self.image = cachedImage;
         }
@@ -151,7 +151,7 @@ static char kAFRKImageRequestOperationObjectKey;
     }
 }
 
-- (void)cancelImageRequestOperation {
+- (void)afrk_cancelImageRequestOperation {
     [self.afrk_imageRequestOperation cancel];
     self.afrk_imageRequestOperation = nil;
 }

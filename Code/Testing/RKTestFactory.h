@@ -124,7 +124,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  @param factoryName The name to assign the factory.
  @param block A block to execute when building an object instance for the factory name.
  */
-+ (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
++ (void)defineFactory:(NSString *)factoryName withBlock:(id (^)(void))block;
 
 /**
  Creates and returns a new instance of an object using the factory with the given name.
@@ -204,12 +204,12 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Sets a block to be executed when the `setUp` method is called as part of a test run.
  */
-+ (void)setSetupBlock:(void (^)())block;
++ (void)setSetupBlock:(void (^)(void))block;
 
 /**
  Sets a block to be executed when the `tearDown` method is called as part of a test run.
  */
-+ (void)setTearDownBlock:(void (^)())block;
++ (void)setTearDownBlock:(void (^)(void))block;
 
 ///--------------------------
 /// @name Managing Test State
