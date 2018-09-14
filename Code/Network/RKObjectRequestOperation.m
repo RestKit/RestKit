@@ -548,7 +548,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 
 #pragma mark - NSOperation
 
-- (BOOL)isConcurrent
+- (BOOL)isAsynchronous
 {
     return YES;
 }
