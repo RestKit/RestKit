@@ -74,7 +74,11 @@ static RKSourceToDesinationKeyTransformationBlock defaultSourceToDestinationKeyT
     
     for (RKAttributeMapping *attributeMapping in mapping.attributeMappings) {
         if (predicate && !predicate(attributeMapping)) continue;
-        [inverseMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:attributeMapping.destinationKeyPath toKeyPath:attributeMapping.sourceKeyPath]];
+        RKPropertyMapping *propertyMapping = [RKAttributeMapping attributeMappingFromKeyPath:attributeMapping.destinationKeyPath toKeyPath:attributeMapping.sourceKeyPath];
+        if (propertyMapping.propertyValueClass == Nil && ![mapping.objectClass isSubclassOfClass:[NSDictionary class]]) {
+            propertyMapping.propertyValueClass = [self.mapping classForKeyPath:propertyMapping.destinationKeyPath];
+        }
+        [inverseMapping addPropertyMapping:propertyMapping];
     }
     
     for (RKRelationshipMapping *relationshipMapping in mapping.relationshipMappings) {
