@@ -471,6 +471,29 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 }
 
 - (BOOL)isDestinationObjectNotModifiedInMappingOperation:(RKMappingOperation *)mappingOperation {
+    BOOL isNotModifiedByAttribute = [self isDestinationObjectNotModifiedByMappingAttributeWithMappingOperation:mappingOperation];
+    if (isNotModifiedByAttribute) {
+        return isNotModifiedByAttribute;
+    }
+    
+    RKMapping *checkedMapping = mappingOperation.objectMapping ?: mappingOperation.mapping;
+    if (! [checkedMapping isKindOfClass:[RKEntityMapping class]]) {
+        return NO;
+    }
+    
+    // Use concrete mapping or original mapping if not available
+    RKEntityMapping *entityMapping = (RKEntityMapping *)checkedMapping;
+    
+    BOOL isNotModifiedByPredicateBlock = NO;
+    if (entityMapping.modificationPredicateBlock != nil) {
+        isNotModifiedByPredicateBlock = !entityMapping.modificationPredicateBlock([mappingOperation sourceObject],
+                                                                                  [mappingOperation destinationObject]);
+    }
+    
+    return isNotModifiedByPredicateBlock;
+}
+
+- (BOOL)isDestinationObjectNotModifiedByMappingAttributeWithMappingOperation:(RKMappingOperation *)mappingOperation {
     // Use concrete mapping or original mapping if not available
     RKMapping *checkedMapping = mappingOperation.objectMapping ?: mappingOperation.mapping;
     

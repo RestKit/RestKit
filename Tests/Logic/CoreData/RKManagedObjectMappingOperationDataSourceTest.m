@@ -1885,4 +1885,89 @@
     expect(canSkipRelationships).to.equal(YES);
 }
 
+- (void)testThatModificationPredicateBlockCausesSkipPropertyMappingToReturnYES
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [NSOperationQueue new];
+    
+    NSDictionary *representation = @{@"name": @"Blake Watters", @"railsID": @100};
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromArray:@[ @"name", @"railsID", @"updatedAt" ]];
+    [humanMapping setModificationPredicateBlock:^BOOL(id sourceObject, id destinationObject) {
+        return [[destinationObject valueForKey:@"railsID"] compare:[sourceObject valueForKey:@"railsID"]] == NSOrderedAscending
+            || ![[destinationObject valueForKey:@"name"] isEqualToString:[sourceObject valueForKey:@"name"]];
+    }];
+    
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [human setValue:@999 forKey:@"railsID"];
+    [human setValue:@"Blake Watters" forKey:@"name"];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
+    mappingOperation.dataSource = mappingOperationDataSource;
+    
+    BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+    BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+    expect(canSkipAttributes).to.equal(YES);
+    expect(canSkipRelationships).to.equal(YES);
+}
+
+- (void)testThatModificationAttributeStringEqualityAndModificationPredicateBlockReturnsYESCausesSkipPropertyMappingToReturnYES
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [NSOperationQueue new];
+    
+    NSDictionary *representation = @{@"name": @"Blake Watters", @"railsID": @999};
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromArray:@[ @"name", @"railsID", @"updatedAt" ]];
+    [humanMapping setModificationAttributeForName:@"name"];
+    [humanMapping setModificationPredicateBlock:^BOOL(id sourceObject, id destinationObject) {
+        return [[destinationObject valueForKey:@"railsID"] compare:[sourceObject valueForKey:@"railsID"]] == NSOrderedAscending
+        || ![[destinationObject valueForKey:@"name"] isEqualToString:[sourceObject valueForKey:@"name"]];
+    }];
+    
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [human setValue:@100 forKey:@"railsID"];
+    [human setValue:@"Blake Watters" forKey:@"name"];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
+    mappingOperation.dataSource = mappingOperationDataSource;
+    
+    BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+    BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+    expect(canSkipAttributes).to.equal(YES);
+    expect(canSkipRelationships).to.equal(YES);
+}
+
+- (void)testThatModificationAttributeNumericAscensionAndModificationPredicateBlockReturnsNOCausesSkipPropertyMappingToReturnYES
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
+    RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext
+                                                                                                                                                      cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [NSOperationQueue new];
+    
+    NSDictionary *representation = @{@"name": @"Blake Watters", @"railsID": @999};
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"Human" inManagedObjectStore:managedObjectStore];
+    [humanMapping addAttributeMappingsFromArray:@[ @"name", @"railsID", @"updatedAt" ]];
+    [humanMapping setModificationAttributeForName:@"railsID"];
+    [humanMapping setModificationPredicateBlock:^BOOL(id sourceObject, id destinationObject) {
+        return ![[destinationObject valueForKey:@"name"] isEqualToString:[sourceObject valueForKey:@"name"]];
+    }];
+    
+    NSManagedObject *human = [NSEntityDescription insertNewObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    [human setValue:@100 forKey:@"railsID"];
+    [human setValue:@"Blake Watters" forKey:@"name"];
+    RKMappingOperation *mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:representation destinationObject:human mapping:humanMapping];
+    mappingOperation.dataSource = mappingOperationDataSource;
+    
+    BOOL canSkipAttributes = [mappingOperationDataSource mappingOperationShouldSkipAttributeMapping:mappingOperation];
+    BOOL canSkipRelationships = [mappingOperationDataSource mappingOperationShouldSkipRelationshipMapping:mappingOperation];
+    expect(canSkipAttributes).to.equal(YES);
+    expect(canSkipRelationships).to.equal(YES);
+}
+
 @end
