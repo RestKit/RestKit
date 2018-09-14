@@ -145,7 +145,16 @@ static void *RKOperationFinishDate = &RKOperationFinishDate;
 
 - (void)HTTPOperationDidFinish:(NSNotification *)notification
 {
-    objc_setAssociatedObject(notification.object, RKOperationFinishDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    RKHTTPRequestOperation *operation = [notification object];
+    if (![operation isKindOfClass:[AFHTTPRequestOperation class]]) return;
+    
+    // NOTE: if we have a parent object request operation, we'll wait it to finish to emit the logging info
+    RKObjectRequestOperation *parentOperation = objc_getAssociatedObject(operation, RKParentObjectRequestOperation);
+    objc_setAssociatedObject(operation, RKParentObjectRequestOperation, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (parentOperation) {
+        objc_setAssociatedObject(operation, RKOperationFinishDate, [NSDate date], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        return;
+    }
 }
 
 - (void)objectRequestOperationDidFinish:(NSNotification *)notification
