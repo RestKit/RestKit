@@ -12,7 +12,7 @@
 
 @interface MockFRCDelegate : NSObject <NSFetchedResultsControllerDelegate>
 
-@property (nonatomic, copy) void (^controllerDidChangeContentBlock)();
+@property (nonatomic, copy) void (^controllerDidChangeContentBlock)(void);
 
 @end
 

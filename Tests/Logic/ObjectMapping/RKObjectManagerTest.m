@@ -350,7 +350,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
-    expect([[_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/cancel"] count]).to.equal(1);
+    expect([[self->_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/cancel"] count]).to.equal(1);
 }
 
 - (void)testEnqueuedObjectRequestOperationByMultipleExactMethodAndPath
@@ -362,7 +362,7 @@
     [_objectManager enqueueObjectRequestOperation:operation];
     [_objectManager enqueueObjectRequestOperation:secondOperation];
     [_objectManager enqueueObjectRequestOperation:thirdOperation];
-    expect([[_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/cancel"] count]).to.equal(3);
+    expect([[self->_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/cancel"] count]).to.equal(3);
 }
 
 - (void)testEnqueuedObjectRequestOperationByPathMatch
@@ -370,7 +370,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/1234/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
-    expect([[_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/:objectID/cancel"] count]).to.equal(1);
+    expect([[self->_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/object_manager/:objectID/cancel"] count]).to.equal(1);
 }
 
 - (void)testEnqueuedObjectRequestOperationFailsForMismatchedMethod
@@ -378,7 +378,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
-    expect([[_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"] count]).to.equal(0);
+    expect([[self->_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"] count]).to.equal(0);
 }
 
 - (void)testEnqueuedObjectRequestOperationFailsForMismatchedPath
@@ -386,7 +386,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"/object_manager/cancel" relativeToURL:self.objectManager.HTTPClient.baseURL]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
-    expect([[_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"] count]).to.equal(0);
+    expect([[self->_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@"/wrong"] count]).to.equal(0);
 }
 
 - (void)testEnqueuedObjectRequestOperationByPathMatchForBaseURLWithPath
@@ -395,7 +395,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://localhost:4567/object_manager/1234/cancel"]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:self.objectManager.responseDescriptors];
     [_objectManager enqueueObjectRequestOperation:operation];
-    expect([[_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@":objectID/cancel"] count]).to.equal(1);
+    expect([[self->_objectManager enqueuedObjectRequestOperationsWithMethod:RKRequestMethodGET matchingPathPattern:@":objectID/cancel"] count]).to.equal(1);
 }
 
 - (void)testEnqueuedObjectRequestOperationByMultipleBitmaskMethodAndPath
@@ -435,7 +435,7 @@
     } completion:^(NSArray *operations) {
         completionBlockOperationCount = operations.count;
     }];
-    expect(_objectManager.operationQueue).notTo.beNil();
+    expect(self->_objectManager.operationQueue).notTo.beNil();
     [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -463,7 +463,7 @@
     } completion:^(NSArray *operations) {
         completionBlockOperationCount = operations.count;
     }];
-    expect(_objectManager.operationQueue).notTo.beNil();
+    expect(self->_objectManager.operationQueue).notTo.beNil();
     [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
 
     dispatch_async(dispatch_get_main_queue(), ^{
