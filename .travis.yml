@@ -11,8 +11,9 @@ install:
 jobs:
   include:
     - stage: test
+      name: "Unit Tests"
       script: travis_retry bundle exec rake ci
-    - stage: pod lib lint
+    - name: "Pod lib lint"
       script: travis_wait 50 bundle exec rake lint
 branches:
   only:
