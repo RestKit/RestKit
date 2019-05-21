@@ -40,7 +40,6 @@
 		259C800815D20B5600F447D2 /* RKSearchExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RKSearchExample-Prefix.pch"; sourceTree = "<group>"; };
 		259C800915D20B5600F447D2 /* RKSAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKSAppDelegate.h; sourceTree = "<group>"; };
 		259C800A15D20B5600F447D2 /* RKSAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKSAppDelegate.m; sourceTree = "<group>"; };
-		259C800D15D20B5600F447D2 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		259C800F15D20B5600F447D2 /* RKSViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKSViewController.h; sourceTree = "<group>"; };
 		259C801015D20B5600F447D2 /* RKSViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKSViewController.m; sourceTree = "<group>"; };
 		259C802F15D20BAA00F447D2 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -53,6 +52,7 @@
 		25AA7D1315D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RKSearchExampleModel.xcdatamodel; sourceTree = "<group>"; };
 		25AABCEF17B69B590061DC5B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		7CD89299A4CDB0E0AEC0AFF9 /* Pods-RKSearchExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKSearchExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-RKSearchExample/Pods-RKSearchExample.release.xcconfig"; sourceTree = "<group>"; };
+		B969A04D2294786900670AE5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		BFCB538030306E5A152BC461 /* Pods-RKSearchExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RKSearchExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RKSearchExample/Pods-RKSearchExample.debug.xcconfig"; sourceTree = "<group>"; };
 		CD280963654306E33A8D31E9 /* Pods_RKSearchExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RKSearchExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -182,15 +182,16 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = RKS;
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Blake Watters";
 			};
 			buildConfigurationList = 259C7FF015D20B5600F447D2 /* Build configuration list for PBXProject "RKSearchExample" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 259C7FEB15D20B5600F447D2;
 			productRefGroup = 259C7FF715D20B5600F447D2 /* Products */;
@@ -290,7 +291,7 @@
 		259C800C15D20B5600F447D2 /* MainStoryboard.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				259C800D15D20B5600F447D2 /* en */,
+				B969A04D2294786900670AE5 /* Base */,
 			);
 			name = MainStoryboard.storyboard;
 			sourceTree = "<group>";
@@ -301,6 +302,7 @@
 		259C801215D20B5600F447D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -349,6 +351,7 @@
 		259C801315D20B5600F447D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;

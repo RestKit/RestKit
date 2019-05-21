@@ -72,7 +72,7 @@ SPEC CHECKSUMS:
   ISO8601DateFormatterValueTransformer: 52da467d6ec899d6aedda8e48280ac92e8ee97e6
   OCHamcrest: e19857683e4eefab64b878668eac04c2f4567118
   OCMock: a6a7dc0e3997fb9f35d99f72528698ebf60d64f2
-  RestKit: b0ecf0b990f80861fc3d95217295495be27ba5c4
+  RestKit: 0baa8b61899d1e00c24f4f2d8aea07ecef0c88bc
   RKCLLocationValueTransformer: 2cf0ea0fb7cd4bc70c56834fb92abc717c66f982
   RKValueTransformers: e5ed67e3811229b616fe01bddeeafe3bb337b1b9
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392
@@ -81,4 +81,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: b8958dcfe595d2829cf28ef5cb76c4da13eb2ed0
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.2
