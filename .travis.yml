@@ -1,6 +1,6 @@
-osx_image: xcode9.3
+osx_image: xcode10.2
 language: objective-c
-rvm: 2.4.2
+rvm: 2.4.3
 cache:
   - bundler
   - cocoapods
@@ -11,8 +11,9 @@ install:
 jobs:
   include:
     - stage: test
+      name: "Unit Tests"
       script: travis_retry bundle exec rake ci
-    - stage: pod lib lint
+    - name: "Pod lib lint"
       script: travis_wait 50 bundle exec rake lint
 branches:
   only:
