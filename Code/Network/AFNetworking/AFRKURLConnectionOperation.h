@@ -114,6 +114,11 @@ NSCoding, NSCopying>
 @property (readonly, nonatomic, strong) NSURLRequest *request;
 
 /**
+ The object that coordinates the related network data transfer tasks.
+ */
+@property (readwrite, nonatomic, strong) NSURLSession *session;
+
+/**
  The last response received by the operation's connection.
  */
 @property (readonly, nonatomic, strong) NSURLResponse *response;
