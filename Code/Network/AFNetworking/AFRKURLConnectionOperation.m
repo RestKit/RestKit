@@ -150,7 +150,6 @@ static BOOL AFRKSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @property (readwrite, nonatomic, copy) AFRKURLConnectionOperationAuthenticationChallengeBlock authenticationChallenge;
 @property (readwrite, nonatomic, copy) AFRKURLConnectionOperationCacheResponseBlock cacheResponse;
 @property (readwrite, nonatomic, copy) AFRKURLConnectionOperationRedirectResponseBlock redirectResponse;
-@property (readwrite, nonatomic, strong) NSURLSessionConfiguration *sessionConfiguration;
 
 - (void)operationDidStart;
 - (void)finish;
@@ -282,7 +281,8 @@ static BOOL AFRKSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.runLoopModes = [NSSet setWithObject:NSRunLoopCommonModes];
     
     self.request = urlRequest;
-    [self setSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    NSURLSessionConfiguration *defaultConfigurationObject = [NSURLSessionConfiguration defaultSessionConfiguration];
+    self.session = [NSURLSession sessionWithConfiguration:defaultConfigurationObject delegate:self delegateQueue: nil];
     
     // #ifdef included for backwards-compatibility
 #ifdef _AFRKNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_
@@ -290,35 +290,6 @@ static BOOL AFRKSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 #endif
     
     self.state = AFRKOperationReadyState;
-    
-    return self;
-}
-
-- (id)initWithRequest:(NSURLRequest *)urlRequest sessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration {
-    NSParameterAssert(urlRequest);
-    
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    
-    self.lock = [[NSRecursiveLock alloc] init];
-    self.lock.name = kAFRKNetworkingLockName;
-    
-    self.runLoopModes = [NSSet setWithObject:NSRunLoopCommonModes];
-    
-    self.request = urlRequest;
-    
-    if (!sessionConfiguration) {
-        self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    } else {
-        self.sessionConfiguration = sessionConfiguration;
-    }
-    
-    // #ifdef included for backwards-compatibility
-#ifdef _AFRKNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_
-    self.allowsInvalidSSLCertificate = YES;
-#endif
     
     return self;
 }
@@ -355,12 +326,6 @@ static BOOL AFRKSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
         }];
     }
     [self.lock unlock];
-}
-
-- (void)setSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration {
-    _sessionConfiguration = sessionConfiguration;
-    self.session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue: nil];
-    self.state = AFRKOperationReadyState;
 }
 
 - (NSInputStream *)inputStream {
