@@ -38,20 +38,20 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
  
  ## Error Mapping
  
- If the HTTP request returned a response in the Client Error (400-499 range) or Server Error (500-599 range) class and an appropriate `RKResponseDescriptor` is provided to perform mapping on the response, then the object mapping result is considered to contain a server returned error. In this case, an `NSError` object is created in the `RKErrorDomain` with an error code of `RKMappingErrorFromMappingResult` and the object request operation is failed. In the event that an a response is returned in an error class and no `RKResponseDescriptor` has been provided to the operation to handle it, then an `NSError` object in the `AFNetworkingErrorDomain` with an error code of `NSURLErrorBadServerResponse` will be returned by the underlying `RKHTTPRequestOperation` indicating that an unexpected status code was returned. 
+ If the HTTP request returned a response in the Client Error (400-499 range) or Server Error (500-599 range) class and an appropriate `RKResponseDescriptor` is provided to perform mapping on the response, then the object mapping result is considered to contain a server returned error. In this case, an `NSError` object is created in the `RKErrorDomain` with an error code of `RKMappingErrorFromMappingResult` and the object request operation is failed. In the event that an a response is returned in an error class and no `RKResponseDescriptor` has been provided to the operation to handle it, then an `NSError` object in the `AFNetworkingErrorDomain` with an error code of `NSURLErrorBadServerResponse` will be returned by the underlying `RKHTTPRequestOperation` indicating that an unexpected status code was returned.
  
  ## Metadata Mapping
-
+ 
  The `RKObjectRequestOperation` class provides support for metadata mapping via the `mappingMetadata` property. This optional dictionary of user supplied information is made available to the mapping operations executed when processing the HTTP response loaded by an object request operation. More details about the metadata mapping architecture is available on the `RKMappingOperation` documentation.
-
+ 
  ## Prioritization and Cancellation
  
  Object request operations support prioritization and cancellation of the underlying `RKHTTPRequestOperation` and `RKResponseMapperOperation` operations that perform the network transport and object mapping duties on their behalf. The queue priority of the object request operation, as set via the `[NSOperation setQueuePriority:]` method, is applied to the underlying response mapping operation when it is enqueued onto the `responseMappingQueue`. If the object request operation is cancelled, then the underlying HTTP request operation and response mapping operation are also cancelled.
  
  ## Caching
  
- Instances of `RKObjectRequestOperation` support all the HTTP caching facilities available via the `NSURLConnection` family of API's. For caching to be enabled, the remote web server that the application is communicating with must emit the appropriate `Cache-Control`, `Expires`, and/or `ETag` headers. When the response headers include the appropriate caching information, the shared `NSURLCache` instance will manage responses and transparently add conditional GET support to cachable requests. HTTP caching is a deep topic explored in depth across the web and detailed in RFC 2616: http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html
-
+ Instances of `RKObjectRequestOperation` support all the HTTP caching facilities available via the `NSURLSession` family of API's. For caching to be enabled, the remote web server that the application is communicating with must emit the appropriate `Cache-Control`, `Expires`, and/or `ETag` headers. When the response headers include the appropriate caching information, the shared `NSURLCache` instance will manage responses and transparently add conditional GET support to cachable requests. HTTP caching is a deep topic explored in depth across the web and detailed in RFC 2616: http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html
+ 
  The `RKObjectRequestOperation` class also provides support for utilizing the `NSURLCache` to satisfy requests without hitting the network. This support enables applications to display views presenting data retrieved via a cachable `GET` request without revalidating with the server and incurring any overhead. The optimization is controlled via `avoidsNetworkAccess` property. When enabled, the operation will skip the network transport portion of the object request operation and proceed directly to object mapping the cached response data. When the object request operation is an instance of `RKManagedObjectRequestOperation`, the deserialization and mapping portion of the process can be skipped entirely and the operation will fetch the appropriate object directly from Core Data, falling back to network transport once the cache entry has expired. Please refer to the documentation accompanying `RKManagedObjectRequestOperation` for more details.
  
  ## Core Data
@@ -68,7 +68,7 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
  @see `RKManagedObjectRequestOperation`
  */
 @interface RKObjectRequestOperation : NSOperation <NSCopying, RKMapperOperationDelegate> {
-  @protected
+@protected
     RKMappingResult *_mappingResult;
 }
 
@@ -92,8 +92,8 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
  
  This method is a convenience initializer for initializing an object request operation from a URL request with the default HTTP operation class `RKHTTPRequestOperation`. This method is functionally equivalent to the following example code:
  
-    RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
-    RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:responseDescriptors];
+ RKHTTPRequestOperation *requestOperation = [[RKHTTPRequestOperation alloc] initWithRequest:request];
+ RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithHTTPRequestOperation:requestOperation responseDescriptors:responseDescriptors];
  
  @param request The request object to be used with the underlying network operation.
  @param responseDescriptors An array of `RKResponseDescriptor` objects specifying how object mapping is to be performed on the response loaded by the network operation.
@@ -157,7 +157,7 @@ extern NSString * const RKResponseHasBeenMappedCacheUserInfoKey;
 
 /**
  Sets the `completionBlock` property with a block that executes either the specified success or failure block, depending on the state of the object request on completion. If `error` returns a value, which can be set during HTTP transport by the underlying `HTTPRequestOperation` or during object mapping by the `RKResponseMapperOperation` object, then `failure` is executed. If the object request operation is cancelled, then the failure block will be executed with either a `RKOperationCancelledError` or a `NSURLErrorCancelled`, depending on the internal state of the operation at time of cancellation. Otherwise, `success` is executed.
-
+ 
  @param success The block to be executed on the completion of a successful operation. This block has no return value and takes two arguments: the receiver operation and the mapping result from object mapping the response data of the request.
  @param failure The block to be executed on the completion of an unsuccessful operation. This block has no return value and takes two arguments: the receiver operation and the error that occurred during the execution of the operation.
  */

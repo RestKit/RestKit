@@ -39,7 +39,7 @@ static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSUR
     return YES;
 }
 
-@interface AFRKURLConnectionOperation () <NSURLConnectionDataDelegate>
+@interface AFRKURLConnectionOperation () <NSURLSessionTaskDelegate>
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @end
 
@@ -84,7 +84,7 @@ static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSUR
 - (NSError *)error
 {
     [self.lock lock];
-
+    
     if (!self.rkHTTPError && self.response) {
         if (![self hasAcceptableStatusCode] || ![self hasAcceptableContentType]) {
             NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
@@ -92,7 +92,7 @@ static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSUR
             [userInfo setValue:[self.request URL] forKey:NSURLErrorFailingURLErrorKey];
             [userInfo setValue:self.request forKey:AFRKNetworkingOperationFailingURLRequestErrorKey];
             [userInfo setValue:self.response forKey:AFRKNetworkingOperationFailingURLResponseErrorKey];
-
+            
             if (![self hasAcceptableStatusCode]) {
                 NSUInteger statusCode = ([self.response isKindOfClass:[NSHTTPURLResponse class]]) ? (NSUInteger)[self.response statusCode] : 200;
                 [userInfo setValue:[NSString stringWithFormat:NSLocalizedString(@"Expected status code in (%@), got %d", nil), RKStringFromIndexSet(self.acceptableStatusCodes ?: [NSMutableIndexSet indexSet]), statusCode] forKey:NSLocalizedDescriptionKey];
@@ -103,28 +103,30 @@ static BOOL RKResponseRequiresContentTypeMatch(NSHTTPURLResponse *response, NSUR
             }
         }
     }
-
+    
     NSError *error = self.rkHTTPError ?: [super error];
     [self.lock unlock];
     return error;
 }
 
-#pragma mark - NSURLConnectionDelegate methods
+#pragma mark - NSURLSessionTaskDelegate methods
 
-- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
-{
-    if ([AFRKHTTPRequestOperation instancesRespondToSelector:@selector(connection:willSendRequest:redirectResponse:)]) {
-        NSURLRequest *returnValue = [super connection:connection willSendRequest:request redirectResponse:redirectResponse];
-        if (returnValue) {
-            if (redirectResponse) RKLogDebug(@"Following redirect request: %@", returnValue);
-            return returnValue;
-        } else {
-            RKLogDebug(@"Not following redirect to %@", request);
-            return nil;
-        }
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler {
+    if ([AFRKHTTPRequestOperation instancesRespondToSelector:@selector(URLSession:task:willPerformHTTPRedirection:newRequest:completionHandler:)]) {
+        [super URLSession:session task:task willPerformHTTPRedirection:response newRequest:request completionHandler:^(NSURLRequest * _Nullable requestCompletion) {
+            if (requestCompletion && response) {
+                RKLogDebug(@"Following redirect request: %@", requestCompletion);
+                completionHandler(requestCompletion);
+            } else {
+                completionHandler(nil);
+            }
+        }];
+        
     } else {
-        if (redirectResponse) RKLogDebug(@"Following redirect request: %@", request);
-        return request;
+        if (response) {
+            RKLogDebug(@"Following redirect request: %@", request);
+            completionHandler( request);
+        }
     }
 }
 
