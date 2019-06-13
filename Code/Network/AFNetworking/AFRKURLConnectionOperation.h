@@ -214,6 +214,20 @@ NSCoding, NSCopying>
  */
 - (id)initWithRequest:(NSURLRequest *)urlRequest;
 
+///------------------------------------------------------
+/// @name Initializing an AFURLConnectionOperation Object
+///------------------------------------------------------
+
+/**
+ Initializes and returns a newly allocated operation object with a url connection configured with the specified url request.
+ 
+ This is the designated initializer.
+ 
+ @param urlRequest The request object to be used by the operation connection.
+ @param sessionConfiguration The session configuration object that defines the behavior of the NSURLSession
+ */
+- (id)initWithRequest:(NSURLRequest *)urlRequest sessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration;
+
 ///----------------------------------
 /// @name Pausing / Resuming Requests
 ///----------------------------------
