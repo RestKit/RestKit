@@ -299,8 +299,12 @@ static BOOL AFRKSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     if (_backgroundTaskIdentifier) {
-        [[UIApplication sharedApplication] endBackgroundTask:_backgroundTaskIdentifier];
-        _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+        Class UIApplicationClass = NSClassFromString(@"UIApplication");
+        if (UIApplicationClass != nil && [UIApplicationClass respondsToSelector:@selector(sharedApplication)]) {
+            UIApplication *sharedApplication = [UIApplicationClass performSelector:@selector(sharedApplication)];
+            [sharedApplication endBackgroundTask:_backgroundTaskIdentifier];
+            _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+        }
     }
 #endif
 }
@@ -360,26 +364,29 @@ static BOOL AFRKSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
 - (void)setShouldExecuteAsBackgroundTaskWithExpirationHandler:(void (^)(void))handler {
-    [self.lock lock];
-    if (!self.backgroundTaskIdentifier) {
-        UIApplication *application = [UIApplication sharedApplication];
-        __weak __typeof(&*self)weakSelf = self;
-        self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-            __strong __typeof(&*weakSelf)strongSelf = weakSelf;
-            
-            if (handler) {
-                handler();
-            }
-            
-            if (strongSelf) {
-                [strongSelf cancel];
-                
-                [application endBackgroundTask:strongSelf.backgroundTaskIdentifier];
-                strongSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-            }
-        }];
+    Class UIApplicationClass = NSClassFromString(@"UIApplication");
+    if (UIApplicationClass != nil && [UIApplicationClass respondsToSelector:@selector(sharedApplication)]) {
+        [self.lock lock];
+        if (!self.backgroundTaskIdentifier) {
+            UIApplication *application = [UIApplicationClass performSelector:@selector(sharedApplication)];
+            __weak __typeof(&*self)weakSelf = self;
+            self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+                __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+
+                if (handler) {
+                    handler();
+                }
+
+                if (strongSelf) {
+                    [strongSelf cancel];
+
+                    [application endBackgroundTask:strongSelf.backgroundTaskIdentifier];
+                    strongSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+                }
+            }];
+        }
+        [self.lock unlock];
     }
-    [self.lock unlock];
 }
 #endif
 
