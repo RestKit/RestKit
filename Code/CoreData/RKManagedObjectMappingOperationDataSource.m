@@ -180,6 +180,34 @@ static BOOL RKDeleteInvalidNewManagedObject(NSManagedObject *managedObject)
 
 @end
 
+@interface NSOperation (RKManagedObjectMappingOperationDataSourceAssociatedObject)
+
+@property (nonatomic) RKManagedObjectDeletionOperation *rk_managedObjectDeletionOperation;
+
+@end
+
+@implementation NSOperation (RKManagedObjectMappingOperationDataSourceAssociatedObject)
+
+- (RKManagedObjectDeletionOperation *)rk_managedObjectDeletionOperation
+{
+    id (^blockAccessor)(void) = objc_getAssociatedObject(self, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey);
+    if (blockAccessor != nil)
+    {
+        return blockAccessor();
+    }
+    return nil;
+}
+
+- (void)setRk_managedObjectDeletionOperation:(RKManagedObjectDeletionOperation *)operation
+{
+    // Maintain a weak reference to the operation to avoid a retain cycle
+    RKManagedObjectDeletionOperation __weak *weakOperation = operation;
+    id (^blockAccessor)(void) = ^{ return weakOperation; };
+    objc_setAssociatedObject(self, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey, blockAccessor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+@end
+
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent RKlcl_cRestKitCoreData
@@ -378,13 +406,13 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
         if ([(RKEntityMapping *)mappingOperation.objectMapping deletionPredicate]) {
             RKManagedObjectDeletionOperation *predicateDeletionOperation = nil;
             // Attach a deletion operation for execution after the parent operation completes
-            predicateDeletionOperation = (RKManagedObjectDeletionOperation *)objc_getAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey);
+            predicateDeletionOperation = self.parentOperation.rk_managedObjectDeletionOperation;
             if (! predicateDeletionOperation) {
                 predicateDeletionOperation = [[RKManagedObjectDeletionOperation alloc] initWithManagedObjectContext:self.managedObjectContext];
 
                 // Attach a deletion operation for execution after the parent operation completes
                 if (self.parentOperation) {
-                    objc_setAssociatedObject(self.parentOperation, RKManagedObjectMappingOperationDataSourceAssociatedObjectKey, predicateDeletionOperation, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                    self.parentOperation.rk_managedObjectDeletionOperation = predicateDeletionOperation;
                     [predicateDeletionOperation addDependency:self.parentOperation];
                 }
 
