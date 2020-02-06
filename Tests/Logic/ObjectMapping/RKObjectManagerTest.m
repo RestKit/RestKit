@@ -428,20 +428,24 @@
     RKManagedObjectRequestOperation *successfulPOSTOperation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:nil parameters:nil];
     RKManagedObjectRequestOperation *failedPOSTOperation = [_objectManager appropriateObjectRequestOperationWithObject:temporaryHuman method:RKRequestMethodPOST path:@"/humans/fail" parameters:nil];
 
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     __block NSUInteger progressCallbackCount = 0;
     __block NSUInteger completionBlockOperationCount = 0;
     [_objectManager enqueueBatchOfObjectRequestOperations:@[successfulGETOperation, successfulPOSTOperation, failedPOSTOperation] progress:^(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations) {
         progressCallbackCount++;
     } completion:^(NSArray *operations) {
         completionBlockOperationCount = operations.count;
+        dispatch_semaphore_signal(semaphore);
     }];
-    expect(_objectManager.operationQueue).notTo.beNil();
+    expect(self->_objectManager.operationQueue).notTo.beNil();
     [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW) != 0)
+    {
+        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        expect(progressCallbackCount).to.equal(3);
-        expect(completionBlockOperationCount).to.equal(3);
-    });
+    expect(progressCallbackCount).to.equal(3);
+    expect(completionBlockOperationCount).to.equal(3);
 }
 
 - (void)testShouldProperlyFireABatchOfOperationsFromRoute
@@ -456,20 +460,24 @@
     RKHuman *jeff = [RKTestFactory insertManagedObjectForEntityForName:@"Human" inManagedObjectContext:managedObjectContext withProperties:nil];
     jeff.name = @"Jeff";
 
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     __block NSUInteger progressCallbackCount = 0;
     __block NSUInteger completionBlockOperationCount = 0;
     [_objectManager enqueueBatchOfObjectRequestOperationsWithRoute:self.humanPOSTRoute objects:@[dan, blake, jeff] progress:^(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations) {
         progressCallbackCount++;
     } completion:^(NSArray *operations) {
         completionBlockOperationCount = operations.count;
+        dispatch_semaphore_signal(semaphore);
     }];
     expect(_objectManager.operationQueue).notTo.beNil();
     [_objectManager.operationQueue waitUntilAllOperationsAreFinished];
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW) != 0)
+    {
+        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        expect(progressCallbackCount).to.equal(3);
-        expect(completionBlockOperationCount).to.equal(3);
-    });
+    expect(progressCallbackCount).to.equal(3);
+    expect(completionBlockOperationCount).to.equal(3);
 }
 
 - (void)testThatObjectParametersAreNotSentDuringGetObject
@@ -544,31 +552,56 @@
 
 - (void)testShouldLoadAHuman
 {
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     __block RKObjectRequestOperation *requestOperation = nil;
     [self.objectManager getObjectsAtPath:@"/JSON/humans/1.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         requestOperation = operation;
+        dispatch_semaphore_signal(semaphore);
     } failure:nil];
+    
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW) != 0)
+    {
+        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         expect(requestOperation.error).to.beNil();
         expect([requestOperation.mappingResult array]).notTo.beEmpty();
         RKHuman *blake = (RKHuman *)[requestOperation.mappingResult array][0];
         expect(blake.name).to.equal(@"Blake Watters");
+        dispatch_semaphore_signal(semaphore);
     });
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW) != 0)
+    {
+        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    }
 }
 
 - (void)testShouldLoadAllHumans
 {
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     __block RKObjectRequestOperation *requestOperation = nil;
     [_objectManager getObjectsAtPath:@"/JSON/humans/all.json" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         requestOperation = operation;
+        dispatch_semaphore_signal(semaphore);
     } failure:nil];
+    
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW) != 0)
+    {
+        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         NSArray *humans = [requestOperation.mappingResult array];
         expect(humans).to.haveCountOf(2);
         expect(humans[0]).to.beInstanceOf([RKHuman class]);
+        dispatch_semaphore_signal(semaphore);
+        dispatch_semaphore_signal(semaphore);
     });
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW) != 0)
+    {
+        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    }
 }
 
 - (void)testThatAttemptingToAddARequestDescriptorThatOverlapsAnExistingEntryGeneratesAnError

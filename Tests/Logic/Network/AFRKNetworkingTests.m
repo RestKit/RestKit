@@ -98,7 +98,7 @@
     // Run the provided assertion blocks inside of their respective completion blocks
     XCTestExpectation *asyncExpectation = [self expectationWithDescription:@"image view loads"];
     
-    [imageView setImageWithURLRequest:request placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+    [imageView afrk_setImageWithURLRequest:request placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         successAssertion(request, response, image);
         [asyncExpectation fulfill];
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
