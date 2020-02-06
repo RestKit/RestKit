@@ -123,10 +123,14 @@
     // object ID's being released during the cache flush.
     [self.managedObjectStore.persistentStoreManagedObjectContext save:nil];
     [self waitForPendingChangesToProcess];
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [self.managedObjectCache.entityCache cacheObjectsForEntity:self.humanEntity byAttributes:@[ @"railsID" ] completion:^{
         expect([self.managedObjectCache.entityCache containsObject:human1]).will.equal(YES);
         expect([self.managedObjectCache.entityCache containsObject:human2]).will.equal(NO);
+        dispatch_semaphore_signal(semaphore);
     }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 @end
