@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #if TARGET_OS_IPHONE
-#import <MobileCoreServices/UTType.h>
+#import <CoreServices/UTType.h>
 #import <UIKit/UIDevice.h>
 #else
 #import <CoreServices/CoreServices.h>

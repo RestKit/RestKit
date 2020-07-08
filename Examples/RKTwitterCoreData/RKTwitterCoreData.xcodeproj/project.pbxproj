@@ -94,7 +94,7 @@
 		3FB46640131D78A400E37C51 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		72583E18DCAB1CD546A942C9 /* Pods_RKTwitterCoreData.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RKTwitterCoreData.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8452D3F8128244D90069F4A9 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		8452D3FC128244E60069F4A9 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* RKTwitter-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RKTwitter-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		97B4FB2714D6937BC579D32C /* Pods-Generate Seed Database.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generate Seed Database.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generate Seed Database/Pods-Generate Seed Database.debug.xcconfig"; sourceTree = "<group>"; };
 		A418169B24B37B5A003DABC9 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -220,7 +220,7 @@
 				2538E864123424F000ACB5D7 /* CoreData.framework */,
 				2538E8661234250100ACB5D7 /* SystemConfiguration.framework */,
 				8452D3F8128244D90069F4A9 /* CFNetwork.framework */,
-				8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */,
+				8452D3FC128244E60069F4A9 /* CoreServices.framework */,
 				3FB46640131D78A400E37C51 /* libxml2.dylib */,
 				AE878A52D4F47FB7C1A63FF9 /* Pods_Generate_Seed_Database.framework */,
 				72583E18DCAB1CD546A942C9 /* Pods_RKTwitterCoreData.framework */,

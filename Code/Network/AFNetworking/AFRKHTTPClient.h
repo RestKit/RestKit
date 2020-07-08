@@ -27,7 +27,7 @@
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <SystemConfiguration/SystemConfiguration.h>
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <CoreServices/CoreServices.h>
 #import <Security/Security.h>
 #else
 #import <SystemConfiguration/SystemConfiguration.h>
@@ -96,7 +96,7 @@ typedef enum {
 
 #ifndef __UTTYPE__
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-#pragma message("MobileCoreServices framework not found in project, or not included in precompiled header. Automatic MIME type detection when uploading files in multipart requests will not be available.")
+#pragma message("CoreServices framework not found in project, or not included in precompiled header. Automatic MIME type detection when uploading files in multipart requests will not be available.")
 #else
 #pragma message("CoreServices framework not found in project, or not included in precompiled header. Automatic MIME type detection when uploading files in multipart requests will not be available.")
 #endif

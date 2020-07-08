@@ -542,7 +542,7 @@ The following Cocoa frameworks must be linked into the application target for pr
 1. **CFNetwork.framework** on iOS
 1. **CoreData.framework**
 1. **Security.framework**
-1. **MobileCoreServices.framework** on iOS or **CoreServices.framework** on OS X
+1. **CoreServices.framework** on iOS or **CoreServices.framework** on OS X
 
 And the following linker flags must be set:
 

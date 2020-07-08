@@ -48,7 +48,7 @@
 		259C803115D20BAA00F447D2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		259C803215D20BAA00F447D2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		259C803315D20BAA00F447D2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		259C803915D20C3500F447D2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		259C803915D20C3500F447D2 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		259C803B15D20C4000F447D2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		25AA7D1315D4C3A700A1B4E7 /* RKSearchExampleModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RKSearchExampleModel.xcdatamodel; sourceTree = "<group>"; };
 		25AABCEF17B69B590061DC5B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -107,7 +107,7 @@
 			children = (
 				A418169824B367E5003DABC9 /* CoreServices.framework */,
 				259C803B15D20C4000F447D2 /* libxml2.dylib */,
-				259C803915D20C3500F447D2 /* MobileCoreServices.framework */,
+				259C803915D20C3500F447D2 /* CoreServices.framework */,
 				259C803015D20BAA00F447D2 /* CoreData.framework */,
 				259C803115D20BAA00F447D2 /* QuartzCore.framework */,
 				259C803215D20BAA00F447D2 /* Security.framework */,

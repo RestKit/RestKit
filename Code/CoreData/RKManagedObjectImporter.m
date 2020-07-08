@@ -19,7 +19,7 @@
 //
 
 #if TARGET_OS_IPHONE
-#import <MobileCoreServices/UTType.h>
+#import <CoreServices/UTType.h>
 #endif
 
 #import "RKManagedObjectImporter.h"
