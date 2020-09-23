@@ -927,6 +927,14 @@ BOOL RKDoesArrayOfResponseDescriptorsContainOnlyEntityMappings(NSArray *response
     }
 }
 
+
+- (void) didFinish
+{
+    [self.privateContext performBlockAndWait:^{
+        [super didFinish];
+    }];
+}
+
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {

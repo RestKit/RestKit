@@ -41,4 +41,9 @@
  */
 - (void)willFinish;
 
+/**
+ Invoked to tell the receiver that the object request operation has finished and has transitioned into the finished state. Used to perform any necessary cleanup after the operation is finished.
+ */
+- (void)didFinish;
+
 @end
