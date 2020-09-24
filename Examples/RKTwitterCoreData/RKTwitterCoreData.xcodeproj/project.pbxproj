@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -37,7 +37,6 @@
 		25F2A18A1322D59400A33DE4 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E864123424F000ACB5D7 /* CoreData.framework */; };
 		25F2A18B1322D59400A33DE4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E8661234250100ACB5D7 /* SystemConfiguration.framework */; };
 		25F2A1911322D59400A33DE4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3F8128244D90069F4A9 /* CFNetwork.framework */; };
-		25F2A1921322D59400A33DE4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */; };
 		25F2A1991322D93500A33DE4 /* restkit.json in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A1981322D93500A33DE4 /* restkit.json */; };
 		25F2A19C1322DD1800A33DE4 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A19A1322DCDC00A33DE4 /* users.json */; };
 		25F2A2D913240CEC00A33DE4 /* RKSeedDatabase.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A2D813240CEC00A33DE4 /* RKSeedDatabase.sqlite */; };
@@ -53,9 +52,10 @@
 		3FB46641131D78A400E37C51 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FB46640131D78A400E37C51 /* libxml2.dylib */; };
 		77C638507896EC440232B991 /* Pods_Generate_Seed_Database.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE878A52D4F47FB7C1A63FF9 /* Pods_Generate_Seed_Database.framework */; };
 		8452D3F9128244D90069F4A9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3F8128244D90069F4A9 /* CFNetwork.framework */; };
-		8452D3FD128244E60069F4A9 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */; };
 		91E489431B6604A9004B5AB5 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FB46640131D78A400E37C51 /* libxml2.dylib */; };
 		91E489461B660547004B5AB5 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 259D0FC318076E40007C66D6 /* Default-568h@2x.png */; };
+		A418169C24B37B5B003DABC9 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A418169B24B37B5A003DABC9 /* CoreServices.framework */; };
+		A418169D24B37B74003DABC9 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A418169B24B37B5A003DABC9 /* CoreServices.framework */; };
 		C3799444920FBE8AF106AC93 /* Pods_RKTwitterCoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72583E18DCAB1CD546A942C9 /* Pods_RKTwitterCoreData.framework */; };
 		CD39C14E14EEED8700E84874 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD39C14D14EEED8700E84874 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
@@ -94,9 +94,10 @@
 		3FB46640131D78A400E37C51 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		72583E18DCAB1CD546A942C9 /* Pods_RKTwitterCoreData.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RKTwitterCoreData.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8452D3F8128244D90069F4A9 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		8452D3FC128244E60069F4A9 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* RKTwitter-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RKTwitter-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		97B4FB2714D6937BC579D32C /* Pods-Generate Seed Database.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generate Seed Database.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Generate Seed Database/Pods-Generate Seed Database.debug.xcconfig"; sourceTree = "<group>"; };
+		A418169B24B37B5A003DABC9 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		AD9B6E9BEBECB60B7A82F448 /* Pods-Generate Seed Database.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Generate Seed Database.release.xcconfig"; path = "Pods/Target Support Files/Pods-Generate Seed Database/Pods-Generate Seed Database.release.xcconfig"; sourceTree = "<group>"; };
 		AE878A52D4F47FB7C1A63FF9 /* Pods_Generate_Seed_Database.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Generate_Seed_Database.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD39C14D14EEED8700E84874 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -114,9 +115,9 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
 				2538E865123424F000ACB5D7 /* CoreData.framework in Frameworks */,
+				A418169D24B37B74003DABC9 /* CoreServices.framework in Frameworks */,
 				2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */,
 				8452D3F9128244D90069F4A9 /* CFNetwork.framework in Frameworks */,
-				8452D3FD128244E60069F4A9 /* MobileCoreServices.framework in Frameworks */,
 				C3799444920FBE8AF106AC93 /* Pods_RKTwitterCoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -132,9 +133,9 @@
 				25F2A1881322D59400A33DE4 /* UIKit.framework in Frameworks */,
 				25F2A1891322D59400A33DE4 /* CoreGraphics.framework in Frameworks */,
 				25F2A18A1322D59400A33DE4 /* CoreData.framework in Frameworks */,
+				A418169C24B37B5B003DABC9 /* CoreServices.framework in Frameworks */,
 				25F2A18B1322D59400A33DE4 /* SystemConfiguration.framework in Frameworks */,
 				25F2A1911322D59400A33DE4 /* CFNetwork.framework in Frameworks */,
-				25F2A1921322D59400A33DE4 /* MobileCoreServices.framework in Frameworks */,
 				77C638507896EC440232B991 /* Pods_Generate_Seed_Database.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -210,6 +211,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A418169B24B37B5A003DABC9 /* CoreServices.framework */,
 				CD39C14D14EEED8700E84874 /* QuartzCore.framework */,
 				250CA6CF147D90C50047D347 /* Security.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
@@ -218,7 +220,7 @@
 				2538E864123424F000ACB5D7 /* CoreData.framework */,
 				2538E8661234250100ACB5D7 /* SystemConfiguration.framework */,
 				8452D3F8128244D90069F4A9 /* CFNetwork.framework */,
-				8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */,
+				8452D3FC128244E60069F4A9 /* CoreServices.framework */,
 				3FB46640131D78A400E37C51 /* libxml2.dylib */,
 				AE878A52D4F47FB7C1A63FF9 /* Pods_Generate_Seed_Database.framework */,
 				72583E18DCAB1CD546A942C9 /* Pods_RKTwitterCoreData.framework */,
@@ -286,17 +288,18 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1200;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RKTwitterCoreData" */;
-			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			compatibilityVersion = "Xcode 11.4";
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
+				Base,
+				fr,
+				en,
+				ja,
+				de,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -478,7 +481,7 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = RKTwitterCoreData;
 			};
@@ -495,7 +498,7 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = "${TARGET_BUILD_DIR}/../../Headers";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = RKTwitterCoreData;
 				VALIDATE_PRODUCT = YES;
@@ -519,7 +522,7 @@
 				);
 				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "Generate Seed Database";
 			};
@@ -540,7 +543,7 @@
 				);
 				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "Generate Seed Database";
 				VALIDATE_PRODUCT = YES;
@@ -564,6 +567,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -603,6 +607,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

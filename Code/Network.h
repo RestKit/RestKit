@@ -18,17 +18,17 @@
 //  limitations under the License.
 //
 
-#import "RKRoute.h"
-#import "RKRouteSet.h"
-#import "RKRouter.h"
-#import "RKRequestDescriptor.h"
-#import "RKResponseDescriptor.h"
-#import "RKObjectManager.h"
-#import "RKHTTPUtilities.h"
-#import "RKObjectRequestOperation.h"
-#import "RKObjectParameterization.h"
-#import "RKPathMatcher.h"
+#import <RestKit/RKRoute.h>
+#import <RestKit/RKRouteSet.h>
+#import <RestKit/RKRouter.h>
+#import <RestKit/RKRequestDescriptor.h>
+#import <RestKit/RKResponseDescriptor.h>
+#import <RestKit/RKObjectManager.h>
+#import <RestKit/RKHTTPUtilities.h>
+#import <RestKit/RKObjectRequestOperation.h>
+#import <RestKit/RKObjectParameterization.h>
+#import <RestKit/RKPathMatcher.h>
 
-#if __has_include("CoreData.h")
-#import "RKManagedObjectRequestOperation.h"
+#if __has_include(<RestKit/CoreData.h>)
+#import <RestKit/RKManagedObjectRequestOperation.h>
 #endif

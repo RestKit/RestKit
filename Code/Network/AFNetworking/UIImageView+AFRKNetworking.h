@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import "AFRKImageRequestOperation.h"
+#import <RestKit/AFRKImageRequestOperation.h>
 
 #import <Availability.h>
 

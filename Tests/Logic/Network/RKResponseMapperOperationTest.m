@@ -11,6 +11,7 @@
 #import "RKErrorMessage.h"
 #import "RKMappingErrors.h"
 #import "RKTestUser.h"
+#import "RestKit-iOS-umbrella.h"
 
 NSString *RKPathAndQueryStringFromURLRelativeToURL(NSURL *URL, NSURL *baseURL);
 

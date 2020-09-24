@@ -27,6 +27,7 @@
 #import "RKCat.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKDynamicMapping.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKEntityMappingTest : RKTestCase
 

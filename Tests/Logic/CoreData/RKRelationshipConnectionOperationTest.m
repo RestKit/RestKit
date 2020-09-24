@@ -14,6 +14,7 @@
 #import "RKChild.h"
 #import "RKRelationshipConnectionOperation.h"
 #import "RKFetchRequestManagedObjectCache.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKRelationshipConnectionOperationTest : XCTestCase
 

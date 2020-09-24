@@ -7,7 +7,7 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKHTTPUtilities.h"
+//#import "RKHTTPUtilities.h"
 
 @interface RKHTTPUtilitiesTest : RKTestCase
 

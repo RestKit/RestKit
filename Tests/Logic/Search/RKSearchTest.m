@@ -9,6 +9,7 @@
 #import "RKTestEnvironment.h"
 #import "Search.h"
 #import "RKCat.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKSearchTest : RKTestCase
 

@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKHTTPUtilities.h"
+#import <RestKit/RKHTTPUtilities.h>
 
 @class RKMapping;
 
@@ -49,10 +49,10 @@
  @param statusCodes A set of HTTP status codes for which the mapping is to be used.
  @return A new `RKResponseDescriptor` object.
  */
-+ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
-                                  pathPattern:(NSString *)pathPattern
-                                      keyPath:(NSString *)keyPath
-                                  statusCodes:(NSIndexSet *)statusCodes DEPRECATED_ATTRIBUTE;
++ (instancetype _Nonnull)responseDescriptorWithMapping:(RKMapping *_Nonnull)mapping
+                                           pathPattern:(NSString *_Nullable)pathPattern
+                                               keyPath:(NSString *_Nullable)keyPath
+                                           statusCodes:(NSIndexSet *_Nullable)statusCodes DEPRECATED_ATTRIBUTE;
 
 /**
  Creates and returns a new `RKResponseDescriptor` object.
@@ -64,11 +64,11 @@
  @param statusCodes A set of HTTP status codes for which the mapping is to be used.
  @return A new `RKResponseDescriptor` object.
  */
-+ (instancetype)responseDescriptorWithMapping:(RKMapping *)mapping
-                                       method:(RKRequestMethod)method
-                                  pathPattern:(NSString *)pathPattern
-                                      keyPath:(NSString *)keyPath
-                                  statusCodes:(NSIndexSet *)statusCodes;
++ (instancetype _Nonnull)responseDescriptorWithMapping:(RKMapping *_Nonnull)mapping
+                                                method:(RKRequestMethod)method
+                                           pathPattern:(NSString *_Nullable)pathPattern
+                                               keyPath:(NSString *_Nullable)keyPath
+                                           statusCodes:(NSIndexSet *_Nullable)statusCodes;
 
 ///------------------------------------------------------
 /// @name Getting Information About a Response Descriptor
@@ -77,7 +77,7 @@
 /**
  The mapping to be used when object mapping the deserialized HTTP response body. Cannot be nil.
  */
-@property (nonatomic, strong, readonly) RKMapping *mapping;
+@property (nonatomic, strong, readonly) RKMapping *_Nonnull mapping;
 
 /**
  The HTTP method(s) for which the mapping is to be used.
@@ -89,21 +89,21 @@
 
  @see `RKPathMatcher`
  */
-@property (nonatomic, copy, readonly) NSString *pathPattern;
+@property (nonatomic, copy, readonly) NSString *_Nullable pathPattern;
 
 /**
  The key path to match against the deserialized response body. If nil, the response descriptor matches the entire response body.
 
  When evaluating a key path match, the Foundation object parsed from the response body is sent `valueForKeyPath:` with the keyPath of the receiver. If the value returned is non-nil, object mapping is performed using the response descriptor's mapping.
  */
-@property (nonatomic, copy, readonly) NSString *keyPath;
+@property (nonatomic, copy, readonly) NSString *_Nullable keyPath;
 
 /**
  The set of status codes for which response descriptor matches. If nil, the the response descriptor matches any status code.
 
  @see RKStatusCodeClass
  */
-@property (nonatomic, copy, readonly) NSIndexSet *statusCodes;
+@property (nonatomic, copy, readonly) NSIndexSet *_Nullable statusCodes;
 
 ///---------------------------
 /// @name Setting the Base URL
@@ -116,7 +116,7 @@
 
  @see `matchesURL:`
  */
-@property (nonatomic, copy) NSURL *baseURL;
+@property (nonatomic, copy) NSURL *_Nullable baseURL;
 
 ///---------------------------------
 /// @name Using Response Descriptors
@@ -131,7 +131,7 @@
  @return `YES` if the path matches the receiver's pattern, else `NO`.
  @see `RKPathMatcher`
  */
-- (BOOL)matchesPath:(NSString *)path;
+- (BOOL)matchesPath:(NSString *_Nullable)path;
 
 /**
  Returns a Boolean value that indicates if the given URL object matches the base URL and path pattern of the receiver.
@@ -145,7 +145,7 @@
  @param URL The URL to compare with the base URL and path pattern of the receiver.
  @return `YES` if the URL matches the base URL and path pattern of the receiver, else `NO`.
  */
-- (BOOL)matchesURL:(NSURL *)URL;
+- (BOOL)matchesURL:(NSURL *_Nullable)URL;
 
 /**
  Returns a Boolean value that indicates if the given URL response object matches the receiver.
@@ -156,7 +156,7 @@
  @return `YES` if the response matches the base URL, path pattern, and status codes set of the receiver, else `NO`.
  @see `matchesURL:`
  */
-- (BOOL)matchesResponse:(NSHTTPURLResponse *)response;
+- (BOOL)matchesResponse:(NSHTTPURLResponse *_Nullable)response;
 
 /**
  Returns a dictionary of parsed arguments extracted from the URL of the given response object.
@@ -166,7 +166,7 @@
  @see `matchesResponse:`
  
  */
-- (NSDictionary *)parsedArgumentsFromResponse:(NSHTTPURLResponse *)response;
+- (NSDictionary *_Nullable)parsedArgumentsFromResponse:(NSHTTPURLResponse *_Nullable)response;
 
 ///-------------------------
 /// @name Comparing Response Descriptors
@@ -176,6 +176,6 @@
  Returns `YES` if the receiver and the specified response descriptor are considered equivalent.
 
  */
-- (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *)otherDescriptor;
+- (BOOL)isEqualToResponseDescriptor:(RKResponseDescriptor *_Nullable)otherDescriptor;
 
 @end

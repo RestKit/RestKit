@@ -13,6 +13,7 @@
 #import "RKHuman.h"
 
 #import "RKMappingResult.h"
+#import "RestKit-iOS-umbrella.h"
 
 // Expose the private constructor
 @interface RKMappingInfo ()

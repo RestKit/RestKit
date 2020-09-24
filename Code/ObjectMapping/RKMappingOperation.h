@@ -18,12 +18,12 @@
 //  limitations under the License.
 //
 
-#if __has_include("CoreData.h")
+#if __has_include(<RestKit/CoreData.h>)
 #import <CoreData/CoreData.h>
 #endif
 
-#import "RKObjectMapping.h"
-#import "RKAttributeMapping.h"
+#import <RestKit/RKObjectMapping.h>
+#import <RestKit/RKAttributeMapping.h>
 
 @class RKMappingOperation, RKDynamicMapping, RKConnectionDescription, RKMappingInfo;
 @protocol RKMappingOperationDataSource;
@@ -112,7 +112,7 @@
  */
 - (void)mappingOperation:(RKMappingOperation *)operation didSelectObjectMapping:(RKObjectMapping *)objectMapping forDynamicMapping:(RKDynamicMapping *)dynamicMapping;
 
-#if __has_include("CoreData.h")
+#if __has_include(<RestKit/CoreData.h>)
 
 ///----------------------------------------
 /// @name Tracking Relationship Connections

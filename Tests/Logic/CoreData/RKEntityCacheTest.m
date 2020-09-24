@@ -10,6 +10,7 @@
 #import "RKEntityCache.h"
 #import "RKEntityByAttributeCache.h"
 #import "RKHuman.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKEntityCacheTest : RKTestCase
 @property (nonatomic, strong) RKManagedObjectStore *managedObjectStore;

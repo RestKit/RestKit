@@ -8,6 +8,7 @@
 
 #import "RKTestEnvironment.h"
 #import "RKConnectionDescription.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKConnectionDescriptionTest : RKTestCase
 @property (nonatomic, strong) NSRelationshipDescription *relationship;

@@ -9,6 +9,7 @@
 #import "RKTestEnvironment.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 #import "RKHuman.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface NSManagedObjectContext_RKAdditionsTest : XCTestCase
 

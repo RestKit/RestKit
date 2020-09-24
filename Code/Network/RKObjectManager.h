@@ -18,13 +18,13 @@
 //  limitations under the License.
 //
 
-#import "RKRouter.h"
-#import "RKPaginator.h"
-#import "RKMacros.h"
+#import <RestKit/RKRouter.h>
+#import <RestKit/RKPaginator.h>
+#import <RestKit/RKMacros.h>
 
-#import "AFRKNetworking.h"
+#import <RestKit/AFRKNetworking.h>
 
-#if __has_include("CoreData.h")
+#if __has_include(<RestKit/CoreData.h>)
 #   define RKCoreDataIncluded
 #endif
 
@@ -252,14 +252,14 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @return The shared manager instance.
  */
-+ (instancetype)sharedManager;
++ (instancetype _Nullable )sharedManager;
 
 /**
  Set the shared instance of the object manager
  
  @param manager The new shared manager instance.
  */
-+ (void)setSharedManager:(RKObjectManager *)manager;
++ (void)setSharedManager:(RKObjectManager *_Nullable)manager;
 
 ///-------------------------------------
 /// @name Initializing an Object Manager
@@ -273,7 +273,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param baseURL The base URL with which to initialize the `AFHTTPClient` object
  @return A new `RKObjectManager` initialized with an `AFHTTPClient` that was initialized with the given baseURL.
  */
-+ (instancetype)managerWithBaseURL:(NSURL *)baseURL;
++ (instancetype _Nullable )managerWithBaseURL:(NSURL *_Nullable)baseURL;
 
 /**
  Initializes the receiver with the given AFNetworking HTTP client object, adopting the network configuration from the client.
@@ -283,7 +283,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param client The AFNetworking HTTP client with which to initialize the receiver.
  @return The receiver, initialized with the given client.
  */
-- (instancetype)initWithHTTPClient:(AFRKHTTPClient *)client NS_DESIGNATED_INITIALIZER;
+- (instancetype _Nullable )initWithHTTPClient:(AFRKHTTPClient *_Nullable)client NS_DESIGNATED_INITIALIZER;
 
 ///------------------------------------------
 /// @name Accessing Object Manager Properties
@@ -292,12 +292,12 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /**
  The AFNetworking HTTP client with which the receiver makes requests.
  */
-@property (nonatomic, strong, readwrite) AFRKHTTPClient *HTTPClient;
+@property (nonatomic, strong, readwrite) AFRKHTTPClient * _Nullable HTTPClient;
 
 /**
  The base URL of the underlying HTTP client.
  */
-@property (nonatomic, readonly) NSURL *baseURL;
+@property (nonatomic, readonly) NSURL * _Nullable baseURL;
 
 /**
  The default HTTP headers for all `NSURLRequest` objects constructed by the object manager.
@@ -306,12 +306,12 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see `setAcceptHeaderWithMIMEType:`
  */
-@property (nonatomic, readonly) NSDictionary *defaultHeaders;
+@property (nonatomic, readonly) NSDictionary * _Nullable defaultHeaders;
 
 /**
  The operation queue which manages operations enqueued by the object manager.
  */
-@property (nonatomic, strong) NSOperationQueue *operationQueue;
+@property (nonatomic, strong) NSOperationQueue * _Nullable operationQueue;
 
 /**
  The router used to generate URL objects for routable requests created by the manager.
@@ -319,7 +319,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see `RKRouter`
  @see `RKRoute`
  */
-@property (nonatomic, strong) RKRouter *router;
+@property (nonatomic, strong) RKRouter * _Nullable router;
 
 ///--------------------------------------------------
 /// @name Configuring Request and Response MIME Types
@@ -334,7 +334,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
  **Default**: `RKMIMETypeFormURLEncoded` or the value of the parameter encoding for the underlying `AFHTTPClient`.
  */
-@property (nonatomic, strong) NSString *requestSerializationMIMEType;
+@property (nonatomic, strong) NSString * _Nullable requestSerializationMIMEType;
 
 /**
  Sets a default header on the HTTP client for the HTTP "Accept" header to specify the preferred serialization format for retrieved data.
@@ -345,7 +345,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
  @param MIMEType The MIME Type to set as the value for the HTTP "Accept" header.
  */
-- (void)setAcceptHeaderWithMIMEType:(NSString *)MIMEType;
+- (void)setAcceptHeaderWithMIMEType:(NSString *_Nullable)MIMEType;
 
 ///-------------------------------
 /// @name Creating Request Objects
@@ -367,10 +367,10 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see RKObjectParameterization
  @see RKRouter
  */
-- (NSMutableURLRequest *)requestWithObject:(id)object
+- (NSMutableURLRequest *_Nullable)requestWithObject:(id _Nonnull )object
                                     method:(RKRequestMethod)method
-                                      path:(NSString *)path
-                                parameters:(NSDictionary *)parameters;
+                                      path:(NSString *_Nonnull)path
+                                parameters:(NSDictionary *_Nullable)parameters;
 
 /**
  Creates an `NSMutableURLRequest` object with the specified HTTP method and path, and constructs a `multipart/form-data` HTTP body, using the specified parameters and multipart form data block. See http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.2
@@ -386,11 +386,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @warning An exception will be raised if the specified method is not `POST`, `PUT` or `DELETE`.
  @see [AFHTTPClient multipartFormRequestWithMethod:path:parameters:constructingBodyWithBlock]
  */
-- (NSMutableURLRequest *)multipartFormRequestWithObject:(id)object
+- (NSMutableURLRequest *_Nullable)multipartFormRequestWithObject:(id _Nonnull )object
                                                  method:(RKRequestMethod)method
-                                                   path:(NSString *)path
-                                             parameters:(NSDictionary *)parameters
-                              constructingBodyWithBlock:(void (^)(id <AFRKMultipartFormData> formData))block;
+                                                   path:(NSString *_Nonnull)path
+                                                      parameters:(NSDictionary *_Nullable)parameters
+                                       constructingBodyWithBlock:(void (^_Nonnull)(id <AFRKMultipartFormData> _Nullable formData))block;
 
 /**
  Creates an `NSMutableURLRequest` object with the `NSURL` returned by the router for the given route name and object and the given parameters.
@@ -404,9 +404,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see `requestWithObject:method:path:parameters`
  */
-- (NSMutableURLRequest *)requestWithPathForRouteNamed:(NSString *)routeName
-                                               object:(id)object
-                                           parameters:(NSDictionary *)parameters;
+- (NSMutableURLRequest *_Nonnull)requestWithPathForRouteNamed:(NSString *_Nonnull)routeName
+                                                       object:(id _Nullable )object
+                                                   parameters:(NSDictionary *_Nullable)parameters;
 /**
  Creates an `NSMutableURLRequest` object with the `NSURL` returned by the router for the relationship of the given object and the given parameters.
  
@@ -423,10 +423,10 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @raises NSInvalidArgumentException Raised if no route is configured for a relationship of the given object's class with the given name.
  @see `requestWithObject:method:path:parameters`
  */
-- (NSMutableURLRequest *)requestWithPathForRelationship:(NSString *)relationship
-                                               ofObject:(id)object
+- (NSMutableURLRequest *_Nullable)requestWithPathForRelationship:(NSString *_Nonnull)relationship
+                                               ofObject:(id _Nonnull )object
                                                  method:(RKRequestMethod)method
-                                             parameters:(NSDictionary *)parameters;
+                                             parameters:(NSDictionary *_Nullable)parameters;
 
 ///-----------------------------------------
 /// @name Creating Object Request Operations
@@ -442,14 +442,14 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param operationClass The subclass of `RKHTTPRequestOperation` or `RKObjectRequestOperation` to register.
  @return `YES` if the given class was registered successfully, else `NO`. The only failure condition is if `operationClass` is not a subclass of `RKHTTPRequestOperation` or `RKObjectRequestOperation`.
  */
-- (BOOL)registerRequestOperationClass:(Class)operationClass;
+- (BOOL)registerRequestOperationClass:(Class _Nonnull )operationClass;
 
 /**
  Unregisters the specified subclass of `RKHTTPRequestOperation` or `RKObjectRequestOperation` from the list of classes consulted when `objectRequestOperationWithRequest:success:failure:` or `managedObjectRequestOperationWithRequest:managedObjectContext:success:failure:` is called.
  
  @param operationClass The subclass of `RKHTTPRequestOperation` or `RKObjectRequestOperation` to unregister.
  */
-- (void)unregisterRequestOperationClass:(Class)operationClass;
+- (void)unregisterRequestOperationClass:(Class _Nonnull )operationClass;
 
 /**
  Creates an `RKObjectRequestOperation` operation with the given request and sets the completion block with the given success and failure blocks.
@@ -463,9 +463,9 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @warning Instances of `RKObjectRequestOperation` are not capable of mapping the loaded `NSHTTPURLResponse` into a Core Data entity. Use an instance of `RKManagedObjectRequestOperation` if the response is to be mapped using an `RKEntityMapping`.
  */
-- (RKObjectRequestOperation *)objectRequestOperationWithRequest:(NSURLRequest *)request
-                                                        success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                                                        failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (RKObjectRequestOperation *_Nullable)objectRequestOperationWithRequest:(NSURLRequest *_Nonnull)request
+                                                                 success:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, RKMappingResult * _Nonnull mappingResult))success
+                                                                 failure:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, NSError * _Nonnull error))failure;
 
 /**
  Creates an `RKManagedObjectRequestOperation` operation with the given request and managed object context, and sets the completion block with the given success and failure blocks.
@@ -483,10 +483,10 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see `RKManagedObjectRequestOperation`
  */
 #ifdef RKCoreDataIncluded
-- (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
-                                                         managedObjectContext:(NSManagedObjectContext *)managedObjectContext
-                                                                      success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                                                                      failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (RKManagedObjectRequestOperation *_Nullable)managedObjectRequestOperationWithRequest:(NSURLRequest *_Nonnull)request
+                                                         managedObjectContext:(NSManagedObjectContext *_Nonnull)managedObjectContext
+                                                                               success:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, RKMappingResult * _Nonnull mappingResult))success
+                                                                               failure:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, NSError * _Nonnull error))failure;
 #endif
 
 /**
@@ -510,10 +510,10 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see `requestWithObject:method:path:parameters`
  */
-- (id)appropriateObjectRequestOperationWithObject:(id)object
+- (id _Nullable )appropriateObjectRequestOperationWithObject:(id _Nullable )object
                                            method:(RKRequestMethod)method
-                                             path:(NSString *)path
-                                       parameters:(NSDictionary *)parameters;
+                                             path:(NSString *_Nullable)path
+                                       parameters:(NSDictionary *_Nullable)parameters;
 
 ///--------------------------------------------------
 /// @name Managing Enqueued Object Request Operations
@@ -524,7 +524,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @param objectRequestOperation The object request operation to be enqueued.
  */
-- (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *)objectRequestOperation;
+- (void)enqueueObjectRequestOperation:(RKObjectRequestOperation *_Nonnull)objectRequestOperation;
 
 /**
  Returns an array of operations in the object manager's operation queue whose requests match the specified HTTP method and path pattern.
@@ -536,7 +536,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @return A new array containing all enqueued `RKObjectRequestOperation` objects that match the given HTTP method and path pattern.
  @see `RKPathMatcher`
  */
-- (NSArray *)enqueuedObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
+- (NSArray *_Nonnull)enqueuedObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *_Nonnull)pathPattern;
 
 /**
  Cancels all operations in the object manager's operation queue whose requests match the specified HTTP method and path pattern.
@@ -548,7 +548,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see `RKPathMatcher`
  */
-- (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *)pathPattern;
+- (void)cancelAllObjectRequestOperationsWithMethod:(RKRequestMethod)method matchingPathPattern:(NSString *_Nonnull)pathPattern;
 
 ///-----------------------------------------
 /// @name Batching Object Request Operations
@@ -567,11 +567,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see `[RKObjectManager enqueueBatchOfObjectRequestOperations:progress:completion]`
  @see `RKRoute`
  */
-- (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *)route
-                                               objects:(NSArray *)objects
-                                              progress:(void (^)(NSUInteger numberOfFinishedOperations,
+- (void)enqueueBatchOfObjectRequestOperationsWithRoute:(RKRoute *_Nonnull)route
+                                               objects:(NSArray *_Nonnull)objects
+                                              progress:(void (^_Nonnull)(NSUInteger numberOfFinishedOperations,
                                                                  NSUInteger totalNumberOfOperations))progress
-                                            completion:(void (^)(NSArray *operations))completion;
+                                            completion:(void (^_Nonnull)(NSArray * _Nonnull operations))completion;
 
 /**
  Enqueues a set of `RKObjectRequestOperation` to the object manager's operation queue.
@@ -581,10 +581,10 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param completion A block object to be executed when the object request operations complete. This block has no return value and takes one argument: the list of operations executed.
 
  */
-- (void)enqueueBatchOfObjectRequestOperations:(NSArray *)operations
-                                     progress:(void (^)(NSUInteger numberOfFinishedOperations,
+- (void)enqueueBatchOfObjectRequestOperations:(NSArray *_Nonnull)operations
+                                     progress:(void (^_Nonnull)(NSUInteger numberOfFinishedOperations,
                                                         NSUInteger totalNumberOfOperations))progress
-                                   completion:(void (^)(NSArray *operations))completion;
+                                   completion:(void (^_Nonnull)(NSArray * _Nonnull operations))completion;
 
 ///-------------------------------------
 /// @name Making Object Requests by Path
@@ -602,10 +602,10 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (void)getObjectsAtPath:(NSString *)path
-              parameters:(NSDictionary *)parameters
-                 success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                 failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)getObjectsAtPath:(NSString *_Nonnull)path
+              parameters:(NSDictionary *_Nullable)parameters
+                 success:(void (^_Nonnull)(RKObjectRequestOperation *_Nonnull operation, RKMappingResult *_Nonnull mappingResult))success
+                 failure:(void (^_Nonnull)(RKObjectRequestOperation *_Nonnull operation, NSError *_Nonnull error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request for the relationship with the given name of the given object, and enqueues it to the manager's operation queue.
@@ -622,11 +622,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see [RKRouter URLForRelationship:ofObject:method:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (void)getObjectsAtPathForRelationship:(NSString *)relationshipName
-                               ofObject:(id)object
-                             parameters:(NSDictionary *)parameters
-                                success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                                failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)getObjectsAtPathForRelationship:(NSString *_Nonnull)relationshipName
+                               ofObject:(id _Nonnull)object
+                             parameters:(NSDictionary *_Nullable)parameters
+                                success:(void (^_Nonnull)(RKObjectRequestOperation *_Nonnull operation, RKMappingResult *_Nonnull mappingResult))success
+                                failure:(void (^_Nonnull)(RKObjectRequestOperation *_Nonnull operation, NSError *_Nonnull error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `GET` request for the URL returned by the router for the given route name, and enqueues it to the manager's operation queue.
@@ -643,11 +643,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see [RKRouter URLForRouteNamed:method:object:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (void)getObjectsAtPathForRouteNamed:(NSString *)routeName
-                               object:(id)object
-                           parameters:(NSDictionary *)parameters
-                              success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-                              failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)getObjectsAtPathForRouteNamed:(NSString *_Nonnull)routeName
+                               object:(id _Nullable)object
+                           parameters:(NSDictionary *_Nullable)parameters
+                              success:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, RKMappingResult * _Nonnull mappingResult))success
+                              failure:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, NSError * _Nonnull error))failure;
 
 ///-------------------------------------------
 /// @name Making Object Requests for an Object
@@ -667,11 +667,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see [RKRouter URLForObject:method:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (void)getObject:(id)object
-             path:(NSString *)path
-       parameters:(NSDictionary *)parameters
-          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)getObject:(id _Nullable)object
+             path:(NSString *_Nullable)path
+       parameters:(NSDictionary *_Nullable)parameters
+          success:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, RKMappingResult * _Nonnull mappingResult))success
+          failure:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, NSError * _Nonnull error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `POST` request for the given object, and enqueues it to the manager's operation queue.
@@ -685,11 +685,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see [RKRouter URLForObject:method:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (void)postObject:(id)object
-              path:(NSString *)path
-        parameters:(NSDictionary *)parameters
-           success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-           failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)postObject:(id _Nullable)object
+              path:(NSString *_Nullable)path
+        parameters:(NSDictionary *_Nullable)parameters
+           success:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, RKMappingResult * _Nonnull mappingResult))success
+           failure:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, NSError * _Nonnull error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `PUT` request for the given object, and enqueues it to the manager's operation queue.
@@ -703,11 +703,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see [RKRouter URLForObject:method:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (void)putObject:(id)object
-             path:(NSString *)path
-       parameters:(NSDictionary *)parameters
-          success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-          failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)putObject:(id _Nullable)object
+             path:(NSString *_Nullable)path
+       parameters:(NSDictionary *_Nullable)parameters
+          success:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, RKMappingResult * _Nonnull mappingResult))success
+          failure:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, NSError * _Nonnull error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `PATCH` request for the given object, and enqueues it to the manager's operation queue.
@@ -721,11 +721,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see [RKRouter URLForObject:method:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (void)patchObject:(id)object
-               path:(NSString *)path
-         parameters:(NSDictionary *)parameters
-            success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-            failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)patchObject:(id _Nullable )object
+               path:(NSString *_Nullable)path
+         parameters:(NSDictionary *_Nullable)parameters
+            success:(void (^_Nonnull)(RKObjectRequestOperation *_Nonnull operation, RKMappingResult * _Nonnull mappingResult))success
+            failure:(void (^_Nonnull)(RKObjectRequestOperation *_Nonnull operation, NSError * _Nonnull error))failure;
 
 /**
  Creates an `RKObjectRequestOperation` with a `DELETE` request for the given object, and enqueues it to the manager's operation queue.
@@ -741,11 +741,11 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see [RKRouter URLForObject:method:]
  @see [RKObjectManager appropriateObjectRequestOperationWithObject:method:path:parameters:]
  */
-- (void)deleteObject:(id)object
-                path:(NSString *)path
-          parameters:(NSDictionary *)parameters
-             success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
-             failure:(void (^)(RKObjectRequestOperation *operation, NSError *error))failure;
+- (void)deleteObject:(id _Nullable )object
+                path:(NSString *_Nullable)path
+          parameters:(NSDictionary *_Nullable)parameters
+             success:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, RKMappingResult * _Nonnull mappingResult))success
+             failure:(void (^_Nonnull)(RKObjectRequestOperation * _Nonnull operation, NSError * _Nonnull error))failure;
 
 ///------------------------------------------------
 /// @name Managing Request and Response Descriptors
@@ -758,14 +758,14 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see RKRequestDescriptor
  */
-@property (nonatomic, readonly) NSArray *requestDescriptors;
+@property (nonatomic, readonly) NSArray * _Nonnull requestDescriptors;
 
 /**
  Adds a request descriptor to the manager.
  
  @param requestDescriptor The request descriptor object to the be added to the manager.
  */
-- (void)addRequestDescriptor:(RKRequestDescriptor *)requestDescriptor;
+- (void)addRequestDescriptor:(RKRequestDescriptor *_Nonnull)requestDescriptor;
 
 /**
  Adds the `RKRequestDescriptor` objects contained in a given array to the manager.
@@ -773,14 +773,14 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param requestDescriptors An array of `RKRequestDescriptor` objects to be added to the manager. 
  @exception NSInvalidArgumentException Raised if any element of the given array is not an `RKRequestDescriptor` object.
  */
-- (void)addRequestDescriptorsFromArray:(NSArray *)requestDescriptors;
+- (void)addRequestDescriptorsFromArray:(NSArray *_Nonnull)requestDescriptors;
 
 /**
  Removes a given request descriptor from the manager.
  
  @param requestDescriptor An `RKRequestDescriptor` object to be removed from the manager.
  */
-- (void)removeRequestDescriptor:(RKRequestDescriptor *)requestDescriptor;
+- (void)removeRequestDescriptor:(RKRequestDescriptor *_Nonnull)requestDescriptor;
 
 /**
  Returns an array containing the `RKResponseDescriptor` objects added to the manager.
@@ -789,7 +789,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see RKResponseDescriptor
  */
-@property (nonatomic, readonly) NSArray *responseDescriptors;
+@property (nonatomic, readonly) NSArray * _Nonnull responseDescriptors;
 
 /**
  Adds a response descriptor to the manager.
@@ -798,7 +798,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @param responseDescriptor The response descriptor object to the be added to the manager.
  */
-- (void)addResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
+- (void)addResponseDescriptor:(RKResponseDescriptor *_Nonnull)responseDescriptor;
 
 /**
  Adds the `RKResponseDescriptor` objects contained in a given array to the manager.
@@ -806,14 +806,14 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param responseDescriptors An array of `RKResponseDescriptor` objects to be added to the manager.
  @exception NSInvalidArgumentException Raised if any element of the given array is not an `RKResponseDescriptor` object.
  */
-- (void)addResponseDescriptorsFromArray:(NSArray *)responseDescriptors;
+- (void)addResponseDescriptorsFromArray:(NSArray *_Nonnull)responseDescriptors;
 
 /**
  Removes a given response descriptor from the manager.
  
  @param responseDescriptor An `RKResponseDescriptor` object to be removed from the manager.
  */
-- (void)removeResponseDescriptor:(RKResponseDescriptor *)responseDescriptor;
+- (void)removeResponseDescriptor:(RKResponseDescriptor *_Nonnull)responseDescriptor;
 
 ///----------------------------------------
 /// @name Configuring Core Data Integration
@@ -821,23 +821,23 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 
 #ifdef RKCoreDataIncluded
 /**
- A Core Data backed object store for persisting objects that have been fetched from the Web
+ A Core Data backed object store for persisting objects that have been fe _Nonnull tched from the Web
  */
-@property (nonatomic, strong) RKManagedObjectStore *managedObjectStore;
+@property (nonatomic, strong) RKManagedObjectStore * _Nullable managedObjectStore;
 
 /**
  An array of `RKFetchRequestBlock` blocks used to map `NSURL` objects into corresponding `NSFetchRequest` objects.
  
  When searched, the blocks are iterated in the reverse-order of their registration and the first block with a non-nil return value halts the search.
  */
-@property (nonatomic, readonly) NSArray *fetchRequestBlocks;
+@property (nonatomic, readonly) NSArray * _Nonnull fetchRequestBlocks;
 
 /**
  Adds the given `RKFetchRequestBlock` block to the manager.
  
  @param block A block object to be executed when constructing an `NSFetchRequest` object from a given `NSURL`. The block has a return type of `NSFetchRequest` and accepts a single `NSURL` argument.
  */
-- (void)addFetchRequestBlock:(NSFetchRequest *(^)(NSURL *URL))block;
+- (void)addFetchRequestBlock:(NSFetchRequest *_Nonnull(^_Nonnull)(NSURL * _Nonnull URL))block;
 #endif
 
 ///------------------------------------
@@ -851,7 +851,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see [RKPaginator initWithRequest:paginationMapping:responseDescriptors]
  */
-@property (nonatomic, strong) RKObjectMapping *paginationMapping;
+@property (nonatomic, strong) RKObjectMapping * _Nonnull paginationMapping;
 
 /**
  Creates and returns a paginator object configured to paginate the collection resource accessible at the specified path pattern.
@@ -863,7 +863,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see RKPaginator
  @warning Will raise an exception if the value of the `paginationMapping` property is nil.
  */
-- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern;
+- (RKPaginator *_Nonnull)paginatorWithPathPattern:(NSString *_Nonnull)pathPattern;
 
 /**
  Creates and returns a paginator object configured to paginate the collection resource accessible at the specified path pattern and the given parameters.
@@ -876,7 +876,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @see RKPaginator
  @warning Will raise an exception if the value of the `paginationMapping` property is nil.
  */
-- (RKPaginator *)paginatorWithPathPattern:(NSString *)pathPattern parameters:(NSDictionary *)parameters;
+- (RKPaginator *_Nullable)paginatorWithPathPattern:(NSString *_Nonnull)pathPattern parameters:(NSDictionary *_Nullable)parameters;
 
 @end
 
@@ -887,5 +887,5 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  @param networkReachabilityStatus The network reachability status.
  @return A string describing the reachability status.
  */
-NSString *RKStringFromNetworkReachabilityStatus(AFRKNetworkReachabilityStatus networkReachabilityStatus);
+NSString * _Nullable RKStringFromNetworkReachabilityStatus(AFRKNetworkReachabilityStatus networkReachabilityStatus);
 #endif

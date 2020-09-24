@@ -11,6 +11,7 @@
 #import "RKTestUser.h"
 #import "RKHuman.h"
 #import "RKCat.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKMappingTestTest : XCTestCase
 @property (nonatomic, strong) id objectRepresentation;

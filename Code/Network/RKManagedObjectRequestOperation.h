@@ -18,11 +18,11 @@
 //  limitations under the License.
 //
 
-#if __has_include("CoreData.h")
-#if __has_include("RKManagedObjectCaching.h")
+#if __has_include(<RestKit/CoreData.h>)
+#if __has_include(<RestKit/RKManagedObjectCaching.h>)
 
-#import "RKObjectRequestOperation.h"
-#import "RKManagedObjectCaching.h"
+#import  <RestKit/RKObjectRequestOperation.h>
+#import  <RestKit/RKManagedObjectCaching.h>
 
 /**
  `RKManagedObjectRequestOperation` is a subclass of `RKObjectRequestOperation` that implements object mapping on the response body of an `NSHTTPResponse` loaded via an `RKHTTPRequestOperation` in which the mapping targets `NSManagedObject` objects managed by Core Data.

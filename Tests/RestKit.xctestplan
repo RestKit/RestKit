@@ -1,0 +1,27 @@
+{
+  "configurations" : [
+    {
+      "id" : "750591D1-4E93-402F-912C-BBED8B98FF91",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "AFRKNetworkingTests"
+      ],
+      "target" : {
+        "containerPath" : "container:RestKit.xcodeproj",
+        "identifier" : "25160D2514564E820060A5C5",
+        "name" : "RestKitTests"
+      }
+    }
+  ],
+  "version" : 1
+}

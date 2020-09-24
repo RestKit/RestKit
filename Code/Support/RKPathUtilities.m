@@ -8,15 +8,15 @@
 
 #import <Foundation/Foundation.h>
 #if TARGET_OS_IPHONE
-#import <MobileCoreServices/UTType.h>
+#import <CoreServices/UTType.h>
 #import <UIKit/UIDevice.h>
 #else
 #import <CoreServices/CoreServices.h>
 #endif
 #import <Availability.h>
 #import <sys/xattr.h>
-#import "RKPathUtilities.h"
-#import "RKLog.h"
+#import <RestKit/RKPathUtilities.h>
+#import <RestKit/RKLog.h>
 
 NSString *RKExecutableName(void);
 
