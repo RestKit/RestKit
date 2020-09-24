@@ -19,7 +19,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKHTTPUtilities.h"
+#import <RestKit/RKHTTPUtilities.h>
 
 #if __has_include("CoreData.h")
 #define RKCoreDataIncluded

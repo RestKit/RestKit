@@ -8,6 +8,7 @@
 
 #import "RKTestEnvironment.h"
 #import "UIImageView+AFRKNetworking.h"
+#import "RestKit-iOS-umbrella.h"
 
 // Re-defining the interface for AFRKImageCache since it's only privately declared in UIImageView+AFRKNetworking.m.
 @interface AFRKImageCache : NSCache

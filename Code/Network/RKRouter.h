@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKHTTPUtilities.h"
+#import <RestKit/RKHTTPUtilities.h>
 
 @class RKRouteSet;
 @class RKRoute;

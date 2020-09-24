@@ -31,6 +31,7 @@
 #import "RKPost.h"
 #import "RKObjectRequestOperation.h"
 #import "RKManagedObjectRequestOperation.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKSubclassedTestModel : RKObjectMapperTestModel
 @end

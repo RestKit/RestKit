@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import "AFRKHTTPRequestOperation.h"
+#import <RestKit/AFRKHTTPRequestOperation.h>
 
 #import <Availability.h>
 

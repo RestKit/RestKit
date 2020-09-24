@@ -26,7 +26,6 @@
 		25AABCF017B69B590061DC5B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25AABCEF17B69B590061DC5B /* Default-568h@2x.png */; };
 		42FA8BD118F2D9BE8051D7DF /* Pods_RKSearchExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD280963654306E33A8D31E9 /* Pods_RKSearchExample.framework */; };
 		A418169924B367E5003DABC9 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A418169824B367E5003DABC9 /* CoreServices.framework */; };
-		A418169A24B36E6A003DABC9 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A418169824B367E5003DABC9 /* CoreServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -74,7 +73,6 @@
 				259C7FFF15D20B5600F447D2 /* CoreGraphics.framework in Frameworks */,
 				259C7FFB15D20B5600F447D2 /* UIKit.framework in Frameworks */,
 				259C7FFD15D20B5600F447D2 /* Foundation.framework in Frameworks */,
-				A418169A24B36E6A003DABC9 /* CoreServices.framework in Frameworks */,
 				42FA8BD118F2D9BE8051D7DF /* Pods_RKSearchExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -186,7 +184,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = RKS;
-				LastUpgradeCheck = 1150;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Blake Watters";
 			};
 			buildConfigurationList = 259C7FF015D20B5600F447D2 /* Build configuration list for PBXProject "RKSearchExample" */;
@@ -322,6 +320,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -370,6 +369,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

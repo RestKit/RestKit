@@ -19,8 +19,8 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKEntityMapping.h"
-#import "RKManagedObjectCaching.h"
+#import <RestKit/RKEntityMapping.h>
+#import <RestKit/RKManagedObjectCaching.h>
 
 @class RKManagedObjectStore;
 

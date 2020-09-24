@@ -11,6 +11,7 @@
 #import "RKEvent.h"
 #import "RKHouse.h"
 #import "RKHuman.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKFetchRequestMappingCacheTest : RKTestCase
 

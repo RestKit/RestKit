@@ -15,6 +15,7 @@
 #import "RKMappingErrors.h"
 #import "RKMappableObject.h"
 #import "RKPost.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKManagedObjectRequestOperation ()
 @property (nonatomic, readonly, copy) NSArray *fetchRequestsMatchingResponseURL;

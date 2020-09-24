@@ -18,6 +18,7 @@
 #import "RKChild.h"
 #import "RKParent.h"
 #import "RKBenchmark.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKManagedObjectMappingOperationDataSourceTest : RKTestCase
 @end

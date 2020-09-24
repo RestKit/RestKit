@@ -19,7 +19,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#if __has_include("CoreData.h")
+#if __has_include(<RestKit/CoreData.h>)
 #import <CoreData/CoreData.h>
 #endif
 
@@ -29,7 +29,7 @@
  @see lcl_config_components_RK.h
  @see lcl_config_logger_RK.h
  */
-#import "lcl_RK.h"
+#import <RestKit/lcl_RK.h>
 
 /**
  * Protocol which classes can implement to determine how RestKit log messages actually get handled.
@@ -233,7 +233,7 @@ void RKLogConfigureFromEnvironment(void);
  */
 void RKLogValidationError(NSError *error);
 
-#if __has_include("CoreData.h")
+#if __has_include(<RestKit/CoreData.h>)
 /**
  Logs extensive information an NSError generated as the result of a
  failed Core Data interaction, such as the execution of a fetch request

@@ -29,6 +29,7 @@
 #import "RKTestUser.h"
 #import "RKCat.h"
 #import "RKCLLocationValueTransformer.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKMIMETypeSerialization ()
 @property (nonatomic, strong) NSMutableArray *registrations;

@@ -19,11 +19,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectMapping.h"
-#import "RKMappingOperation.h"
-#import "RKMappingResult.h"
-#import "RKMappingOperationDataSource.h"
-#import "RKErrors.h"
+#import <RestKit/RKObjectMapping.h>
+#import <RestKit/RKMappingOperation.h>
+#import <RestKit/RKMappingResult.h>
+#import <RestKit/RKMappingOperationDataSource.h>
+#import <RestKit/RKErrors.h>
 
 @protocol RKMapperOperationDelegate;
 

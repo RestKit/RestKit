@@ -20,6 +20,7 @@
 
 #import <objc/runtime.h>
 #import "RKTestEnvironment.h"
+#import "RestKit-iOS-umbrella.h"
 
 @implementation RKTestCase
 

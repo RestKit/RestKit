@@ -25,11 +25,11 @@
 // If Kiwi has been imported, skip Hamcrest
 #ifndef KW_VERSION
     #define HC_SHORTHAND
-    #import "OCHamcrest.h"
+    #import <OCHamcrest/OCHamcrest.h>
 #endif
 
 #define EXP_SHORTHAND
-#import "Expecta.h"
+#import <Expecta/Expecta.h>
 
 #import <RestKit/RestKit.h>
 #import <RestKit/Testing.h>

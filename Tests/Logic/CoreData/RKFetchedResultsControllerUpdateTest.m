@@ -9,10 +9,11 @@
 #import "RKTestEnvironment.h"
 #import "RKHuman.h"
 #import <CoreData/CoreData.h>
+#import "RestKit-iOS-umbrella.h"
 
 @interface MockFRCDelegate : NSObject <NSFetchedResultsControllerDelegate>
 
-@property (nonatomic, copy) void (^controllerDidChangeContentBlock)();
+@property (nonatomic, copy) void (^controllerDidChangeContentBlock)(void);
 
 @end
 

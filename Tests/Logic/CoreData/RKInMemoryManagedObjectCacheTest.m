@@ -10,6 +10,7 @@
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKHuman.h"
 #import "RKEntityCache.h"
+#import "RestKit-iOS-umbrella.h"
 
 @interface RKInMemoryManagedObjectCache ()
 @property (nonatomic, readonly) RKEntityCache *entityCache;

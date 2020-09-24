@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import "AFRKURLConnectionOperation.h"
+#import <RestKit/AFRKURLConnectionOperation.h>
 
 #import <Availability.h>
 

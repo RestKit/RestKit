@@ -38,6 +38,7 @@
 #import "RKMIMETypeSerialization.h"
 #import "ISO8601DateFormatterValueTransformer.h"
 #import "RKCLLocationValueTransformer.h"
+#import "RestKit-iOS-umbrella.h"
 
 // Managed Object Serialization Testific
 #import "RKHuman.h"

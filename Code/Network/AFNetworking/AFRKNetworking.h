@@ -37,18 +37,18 @@
     #define _AFRKNETWORKING_
     #define _AFRKNETWORKING_PIN_SSL_CERTIFICATES_
 
-    #import "AFRKURLConnectionOperation.h"
+    #import <RestKit/AFRKURLConnectionOperation.h>
 
-    #import "AFRKHTTPRequestOperation.h"
-    #import "AFRKJSONRequestOperation.h"
-    #import "AFRKXMLRequestOperation.h"
-    #import "AFRKPropertyListRequestOperation.h"
-    #import "AFRKHTTPClient.h"
+    #import <RestKit/AFRKHTTPRequestOperation.h>
+    #import <RestKit/AFRKJSONRequestOperation.h>
+    #import <RestKit/AFRKXMLRequestOperation.h>
+    #import <RestKit/AFRKPropertyListRequestOperation.h>
+    #import <RestKit/AFRKHTTPClient.h>
 
-    #import "AFRKImageRequestOperation.h"
+    #import <RestKit/AFRKImageRequestOperation.h>
 
     #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-        #import "AFRKNetworkActivityIndicatorManager.h"
-        #import "UIImageView+AFRKNetworking.h"
+        #import <RestKit/AFRKNetworkActivityIndicatorManager.h>
+        #import <RestKit/UIImageView+AFRKNetworking.h>
     #endif
 #endif /* _AFNETWORKING_ */

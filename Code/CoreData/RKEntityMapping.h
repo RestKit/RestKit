@@ -19,9 +19,9 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKObjectMapping.h"
-#import "RKConnectionDescription.h"
-#import "RKMacros.h"
+#import <RestKit/RKObjectMapping.h>
+#import <RestKit/RKConnectionDescription.h>
+#import <RestKit/RKMacros.h>
 
 @class RKManagedObjectStore;
 
@@ -68,7 +68,7 @@
  @param entity An entity with which to initialize the receiver.
  @returns The receiver, initialized with the given entity.
  */
-- (instancetype)initWithEntity:(NSEntityDescription *)entity;
+- (instancetype _Nonnull)initWithEntity:(NSEntityDescription *_Nonnull)entity;
 
 /**
  A convenience initializer that creates and returns an entity mapping for the entity with the given name in
@@ -83,7 +83,7 @@
  @param managedObjectStore A managed object store containing the managed object model in which an entity with the given name is defined.
  @return A new entity mapping for the entity with the given name in the managed object model of the given managed object store.
  */
-+ (instancetype)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore;
++ (instancetype _Nonnull)mappingForEntityForName:(NSString *_Nonnull)entityName inManagedObjectStore:(RKManagedObjectStore *_Nonnull)managedObjectStore;
 
 ///---------------------------
 /// @name Accessing the Entity
@@ -92,7 +92,7 @@
 /**
  The Core Data entity description used for this object mapping
  */
-@property (nonatomic, strong) NSEntityDescription *entity;
+@property (nonatomic, strong) NSEntityDescription * _Nonnull entity;
 
 ///------------------------------------------------
 /// @name Configuring Managed Object Identification
@@ -105,21 +105,21 @@
  @raises NSInvalidArgumentException Raised if the setter is invoked with the name of an attribute or an `NSAttributeDescription` that does not exist in the receiver's entity. Also raised if the setter is invoked with an empty array.
  @warning Note that for convenience, this property may be set with an array containing `NSAttributeDescription` objects or `NSString` objects specifying the names of attributes that exist within the receiver's entity. The getter will always return an array of `NSAttributeDescription` objects.
  */
-@property (nonatomic, copy) NSArray *identificationAttributes;
+@property (nonatomic, copy) NSArray *_Nullable identificationAttributes;
 
 /**
  An optional predicate used to filter identified objects during mapping.
  
  @return The identification predicate.
  */
-@property (nonatomic, copy) NSPredicate *identificationPredicate;
+@property (nonatomic, copy) NSPredicate * _Nullable identificationPredicate;
 
 /**
  An optional block which returns a predicate used to filter identified objects during mapping.
  
  @return The identification predicate block.
  */
-@property (nonatomic, copy) NSPredicate *(^identificationPredicateBlock)(NSDictionary *representation, NSManagedObjectContext *managedObjectContext);
+@property (nonatomic, copy) NSPredicate *_Nonnull(^ _Nonnull identificationPredicateBlock)(NSDictionary * _Nonnull representation, NSManagedObjectContext * _Nonnull managedObjectContext);
 
 /**
  An optional attribute of the receiver's entity that can be used to detect modification of a given instance. This is used to improve the performance of mapping operations by skipping the property mappings for a given object if it is found to be not modified.
@@ -130,7 +130,7 @@
  
  @raises NSInvalidArgumentException Raised if the attribute given is not a property of the receiver's entity.
  */
-@property (nonatomic, strong) NSAttributeDescription *modificationAttribute;
+@property (nonatomic, strong) NSAttributeDescription * _Nullable modificationAttribute;
 
 /**
  If this is YES, mapping operations will map relationships of the object even if the `modificationAttribute` shows that the object has not been modified.
@@ -149,7 +149,7 @@
  @param attributeName The name of an attribute in the entity of the receiver.
  @raises NSInvalidArgumentException Raised if no attribute could be found with the given name.
  */
-- (void)setModificationAttributeForName:(NSString *)attributeName;
+- (void)setModificationAttributeForName:(NSString *_Nonnull)attributeName;
 
 ///---------------------------------------------------------------
 /// @name Specifying a Persistent Store for Newly Inserted Objects
@@ -162,7 +162,7 @@
  
  **Default**: `nil`
  */
-@property (nonatomic, weak) NSPersistentStore *persistentStore;
+@property (nonatomic, weak) NSPersistentStore * _Nullable persistentStore;
 
 ///-------------------------------------------
 /// @name Configuring Relationship Connections
@@ -171,21 +171,21 @@
 /**
  Returns the array of `RKConnectionDescripton` objects configured for connecting relationships during object mapping.
  */
-@property (nonatomic, copy, readonly) NSArray *connections;
+@property (nonatomic, copy, readonly) NSArray * _Nonnull connections;
 
 /**
  Adds a connection to the receiver.
 
  @param connection The connection to be added.
  */
-- (void)addConnection:(RKConnectionDescription *)connection;
+- (void)addConnection:(RKConnectionDescription *_Nonnull)connection;
 
 /**
  Removes a connection from the receiver.
  
  @param connection The connection to be removed.
  */
-- (void)removeConnection:(RKConnectionDescription *)connection;
+- (void)removeConnection:(RKConnectionDescription *_Nonnull)connection;
 
 /**
  Adds a connection for the specified relationship connected using the attributes specified by the given `NSString`, `NSArray`, or `NSDictionary` object.
@@ -216,7 +216,7 @@
  @see `RKConnectionDescription`
  @see `[RKObjectMapping setSourceToDestinationKeyTransformationBlock:]`
  */
-- (void)addConnectionForRelationship:(id)relationshipOrName connectedBy:(id)connectionSpecifier;
+- (void)addConnectionForRelationship:(id _Nonnull )relationshipOrName connectedBy:(id _Nonnull )connectionSpecifier;
 
 /**
  Returns the connection for the specified relationship.
@@ -224,7 +224,7 @@
  @param relationshipOrName The relationship object or name of the relationship object for which to retrieve the connection.
  @return The connection object for the specified relationship or `nil` if none is configured.
  */
-- (RKConnectionDescription *)connectionForRelationship:(id)relationshipOrName;
+- (RKConnectionDescription *_Nullable)connectionForRelationship:(id _Nonnull )relationshipOrName;
 
 ///-----------------------------
 /// @name Configuring Validation
@@ -257,7 +257,7 @@
  
  When a mapping operation completes, a `NSFetchRequest` will be constructed and executed. Any objects in the store whose `shouldBeDeleted` value is true will be deleted.
  */
-@property (nonatomic, copy) NSPredicate *deletionPredicate;
+@property (nonatomic, copy) NSPredicate * _Nullable deletionPredicate;
 
 ///------------------------------------------
 /// @name Retrieving Default Attribute Values
@@ -267,7 +267,7 @@
  Returns the default value for the specified attribute as expressed in the Core Data entity definition. This value will
  be assigned if the object mapping is applied and a value for a missing attribute is not present in the payload.
  */
-- (id)defaultValueForAttribute:(NSString *)attributeName;
+- (id _Nullable )defaultValueForAttribute:(NSString *_Nullable)attributeName;
 
 ///--------------------------------------------------
 /// @name Configuring Entity Identification Inference
@@ -294,7 +294,7 @@
 /**
  The name of a key in the user info dictionary of a `NSEntityDescription` specifying the name or one or more attributes to be used to infer an entity identifier. The value of this string is 'RKEntityIdentificationAttributes'.
  */
-extern NSString * const RKEntityIdentificationAttributesUserInfoKey;
+extern NSString * _Nonnull const RKEntityIdentificationAttributesUserInfoKey;
 
 ///----------------
 /// @name Functions
@@ -308,9 +308,9 @@ extern NSString * const RKEntityIdentificationAttributesUserInfoKey;
  @param entity The entity to infer identification from.
  @return An array containing identifying attributes inferred from the given entity or `nil` if none could be inferred.
  */
-NSArray *RKIdentificationAttributesInferredFromEntity(NSEntityDescription *entity);
+NSArray * _Nullable RKIdentificationAttributesInferredFromEntity(NSEntityDescription * _Nonnull entity);
 
 
 @interface RKEntityMapping (Deprecations)
-@property (nonatomic, copy) NSString *modificationKey DEPRECATED_ATTRIBUTE_MESSAGE("Use `setModificationAttributeForName:` instead");
+@property (nonatomic, copy) NSString * _Nullable modificationKey DEPRECATED_ATTRIBUTE_MESSAGE("Use `setModificationAttributeForName:` instead");
 @end

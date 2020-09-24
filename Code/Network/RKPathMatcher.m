@@ -18,10 +18,10 @@
 //  limitations under the License.
 //
 
-#import "RKPathMatcher.h"
-#import "SOCKit.h"
-#import "RKLog.h"
-#import "RKDictionaryUtilities.h"
+#import  <RestKit/RKPathMatcher.h>
+#import  <SOCKit/SOCKit.h>
+#import  <RestKit/RKLog.h>
+#import  <RestKit/RKDictionaryUtilities.h>
 
 static NSString *RKEncodeURLString(NSString *unencodedString);
 extern NSDictionary *RKQueryParametersFromStringWithEncoding(NSString *string, NSStringEncoding stringEncoding);

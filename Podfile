@@ -19,7 +19,7 @@ def import_pods
 end
 
 target 'RestKit' do
-  platform :ios, '8.0'
+  platform :ios, '12.0'
   podspec
 
   target 'RestKitTests' do
