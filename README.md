@@ -203,7 +203,7 @@ RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWith
 ### Managed Object Request
 ``` objective-c
 // GET an Article and its Categories from /articles/888.json and map into Core Data entities
-// JSON looks like {"article": {"title": "My Article", "author": "Blake", "body": "Very cool!!", "categories": [{"id": 1, "name": "Core Data"]}
+// JSON looks like {"article": {"title": "My Article", "author": "Blake", "body": "Very cool!!", "categories": [{"id": 1, "name": "Core Data"}]}}
 NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
 RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
 NSError *error = nil;
