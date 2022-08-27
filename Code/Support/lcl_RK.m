@@ -134,7 +134,7 @@ static uint32_t _RKlcl_configure_by_text(uint32_t count, const char * const *tex
 
     // configure the components
     uint32_t num_configured = 0;
-    size_t text_len = strlen(text);
+    size_t text_len = sizeof(text);
     if (text[text_len-1] == '*') {
         // text ends with '*', wildcard suffix was specified
         text_len--;
