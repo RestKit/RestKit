@@ -1,17 +1,12 @@
 PODS:
-  - CocoaLumberjack (2.3.0):
-    - CocoaLumberjack/Default (= 2.3.0)
-    - CocoaLumberjack/Extensions (= 2.3.0)
-  - CocoaLumberjack/Core (2.3.0)
-  - CocoaLumberjack/Default (2.3.0):
-    - CocoaLumberjack/Core
-  - CocoaLumberjack/Extensions (2.3.0):
-    - CocoaLumberjack/Default
-  - Expecta (1.0.5)
+  - CocoaLumberjack (3.9.0):
+    - CocoaLumberjack/Core (= 3.9.0)
+  - CocoaLumberjack/Core (3.9.0)
+  - Expecta (1.0.6)
   - ISO8601DateFormatterValueTransformer (0.6.1):
     - RKValueTransformers (~> 1.1.0)
-  - OCHamcrest (3.0.1)
-  - OCMock (2.2.4)
+  - OCHamcrest (9.0.3)
+  - OCMock (3.9.4)
   - RestKit/CoreData (0.27.3):
     - RestKit/ObjectMapping
   - RestKit/Network (0.27.3):
@@ -32,25 +27,25 @@ PODS:
     - RKValueTransformers (~> 1.1.0)
   - RKValueTransformers (1.1.3)
   - SOCKit (1.1)
-  - Specta (1.0.6)
+  - Specta (2.0.0)
   - TransitionKit (2.2.1)
 
 DEPENDENCIES:
   - CocoaLumberjack
-  - Expecta (= 1.0.5)
+  - Expecta (= 1.0.6)
   - ISO8601DateFormatterValueTransformer (~> 0.6.1)
-  - OCHamcrest (= 3.0.1)
-  - OCMock (= 2.2.4)
+  - OCHamcrest (= 9.0.3)
+  - OCMock (= 3.9.4)
   - RestKit/Search (from `.`)
   - RestKit/Testing (from `.`)
   - RKCLLocationValueTransformer (~> 1.1.0)
   - RKValueTransformers (~> 1.1.0)
   - SOCKit
-  - Specta (= 1.0.6)
+  - Specta (= 2.0.0)
   - TransitionKit (~> 2.2)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - CocoaLumberjack
     - Expecta
     - ISO8601DateFormatterValueTransformer
@@ -67,18 +62,18 @@ EXTERNAL SOURCES:
     :path: "."
 
 SPEC CHECKSUMS:
-  CocoaLumberjack: 97fab7ee5f507fe54445cca7ea80f926729cfd15
-  Expecta: e1c022fcd33910b6be89c291d2775b3fe27a89fe
+  CocoaLumberjack: 5644158777912b7de7469fa881f8a3f259c2512a
+  Expecta: 3b6bd90a64b9a1dcb0b70aa0e10a7f8f631667d5
   ISO8601DateFormatterValueTransformer: 52da467d6ec899d6aedda8e48280ac92e8ee97e6
-  OCHamcrest: e19857683e4eefab64b878668eac04c2f4567118
-  OCMock: a6a7dc0e3997fb9f35d99f72528698ebf60d64f2
-  RestKit: b0ecf0b990f80861fc3d95217295495be27ba5c4
+  OCHamcrest: f8185bd5d90c25317e36856f079e43ef8b84b02d
+  OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
+  RestKit: a20936ad132b7f475a25b60b2a605b2207f72494
   RKCLLocationValueTransformer: 2cf0ea0fb7cd4bc70c56834fb92abc717c66f982
   RKValueTransformers: e5ed67e3811229b616fe01bddeeafe3bb337b1b9
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392
-  Specta: f506f3a8361de16bc0dcf3b17b75e269072ba465
+  Specta: b79d84043684b35ffdc2680df578dc318ec2efc2
   TransitionKit: 9ceccda4cd0cdc0a05ef85eb235e5a3292c3c250
 
-PODFILE CHECKSUM: b8958dcfe595d2829cf28ef5cb76c4da13eb2ed0
+PODFILE CHECKSUM: 35edff1ca90fb1a3e7e8c2074954384aa45b2805
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.16.2

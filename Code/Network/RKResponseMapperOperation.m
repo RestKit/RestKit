@@ -139,6 +139,7 @@ static dispatch_queue_t RKResponseMapperSerializationQueue() {
 @interface RKResponseMapperOperation (ForSubclassEyesOnly)
 - (id)parseResponseData:(NSError **)error;
 - (RKMappingResult *)performMappingWithObject:(id)sourceObject error:(NSError **)error;
+- (NSError*) errorFromMappingResult:(RKMappingResult*)mapping;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL hasEmptyResponse;
 @end
 
@@ -277,6 +278,11 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
                                  userInfo:nil];
 }
 
+- (NSError*) errorFromMappingResult:(RKMappingResult*)mapping;
+{
+    return RKErrorFromMappingResult(mapping);
+}
+
 - (BOOL)hasEmptyResponse
 {
     // NOTE: Comparison to single string whitespace character to support Ruby on Rails `render :nothing => true`
@@ -383,7 +389,7 @@ static NSMutableDictionary *RKRegisteredResponseMapperOperationDataSourceClasses
     // If the response is a client error return either the mapping error or the mapped result to the caller as the error
     if (isErrorStatusCode) {
         if ([self.mappingResult count] > 0) {
-            error = RKErrorFromMappingResult(self.mappingResult);
+            error = [self errorFromMappingResult: self.mappingResult];
         } else {
             // We encountered a client error that we could not map, throw unprocessable error
             if (! error) error = RKUnprocessableErrorFromResponse(self.response);
@@ -532,6 +538,16 @@ static inline NSManagedObjectID *RKObjectIDFromObjectIfManaged(id object)
     }
 
     return mappingResult;
+}
+
+
+- (NSError*) errorFromMappingResult:(RKMappingResult*)mapping;
+{
+    __block NSError *error;
+    [self.managedObjectContext performBlockAndWait:^{
+        error = RKErrorFromMappingResult(mapping);
+    }];
+    return error;
 }
 
 @end

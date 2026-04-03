@@ -333,7 +333,7 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
         [self.stateMachine setFinalizationBlock:^{
             [weakSelf willFinish];
             RKDecrementNetworkAcitivityIndicator();
-            [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:weakSelf userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: weakSelf.mappingDidStartDate ?: [NSNull null], RKObjectRequestOperationMappingDidFinishUserInfoKey: weakSelf.mappingDidFinishDate ?: [NSNull null] }];
+            [weakSelf didFinish];
         }];
         [self.stateMachine setCancellationBlock:^{
             [weakSelf.HTTPRequestOperation cancel];
@@ -530,6 +530,12 @@ static NSString *RKStringDescribingURLResponseWithData(NSURLResponse *response, 
 - (void)willFinish
 {
     // Default implementation does nothing
+}
+
+
+- (void) didFinish
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectRequestOperationDidFinishNotification object:self userInfo:@{ RKObjectRequestOperationMappingDidStartUserInfoKey: self.mappingDidStartDate ?: [NSNull null], RKObjectRequestOperationMappingDidFinishUserInfoKey: self.mappingDidFinishDate ?: [NSNull null] }];
 }
 
 #pragma mark - NSCopying
