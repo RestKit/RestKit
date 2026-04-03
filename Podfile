@@ -9,17 +9,17 @@ def import_pods
   pod 'RestKit/Testing', :path => '.'
   pod 'RestKit/Search', :path => '.'
 
-  pod 'Specta', '1.0.6'
-  pod 'OCMock', '2.2.4'
-  pod 'OCHamcrest', '3.0.1'
-  pod 'Expecta', '1.0.5'
+  pod 'Specta', '2.0.0'
+  pod 'OCMock', '3.9.4'
+  pod 'OCHamcrest', '9.0.3'
+  pod 'Expecta', '1.0.6'
 
   # Used for testing Value Transformer integration
   pod 'RKCLLocationValueTransformer', '~> 1.1.0'
 end
 
 target 'RestKit' do
-  platform :ios, '8.0'
+  platform :ios, '16.6'
   podspec
 
   target 'RestKitTests' do
@@ -29,7 +29,7 @@ target 'RestKit' do
 end
 
 target 'RestKitFramework' do
-  platform :osx, '10.9'
+  platform :osx, '11.5'
   podspec
 
   target 'RestKitFrameworkTests' do
